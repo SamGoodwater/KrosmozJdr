@@ -23,7 +23,7 @@
 
 # Caract principal 
 
-Niveau 1 : toutes les caractéristiques à 8 (mod −1). Répartissez 10 points (ou 12 si vous descendez une caractéristique à 6) en respectant les limites de niveau.
+Niveau 1 : toutes les caractéristiques à 8 (mod −1). Répartis 10 points (ou 12 si tu descends une caractéristique à 6) en respectant les limites de niveau.
 
 
 Sorts physique : CA

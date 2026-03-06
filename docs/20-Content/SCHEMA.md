@@ -992,6 +992,11 @@ erDiagram
     category : int(11)
     is_magic : tinyint(1)
     powerful : int(11)
+    resolution_mode : varchar(32)
+    attack_characteristic_key : varchar(64)
+    save_characteristic_key : varchar(64)
+    save_dc_formula : varchar(255)
+    save_success_note : text
     state : varchar(255)
     read_level : tinyint(4)
     write_level : tinyint(4)

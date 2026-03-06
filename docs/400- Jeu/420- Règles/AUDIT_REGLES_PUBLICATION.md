@@ -65,7 +65,7 @@ Ce document recense les points à vérifier ou corriger pour publier les règles
 
 **Constats** :
 
-- La plupart des fichiers utilisent le **vouvoiement** (« vous », « votre », « munissez-vous »).
+- La plupart des fichiers utilisaient le **vouvoiement** (pronom de politesse et impératifs associés).
 - Le guide **FORMAT_REGLES.md** ne mentionne pas le tutoiement.
 
 **Recommandations** :

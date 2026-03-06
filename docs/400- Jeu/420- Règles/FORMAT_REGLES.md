@@ -8,7 +8,7 @@ Ce document sert de référence pour toute personne qui contribue à la rédacti
 
 - **Tutoiement** : On s'adresse au lecteur (joueur ou MJ) avec **tu / ton / ta**. Ex. : « Tu peux répartir tes points… », « Si ton personnage est taclé… ».
 - **Style** : Ton léger et accessible, à la façon d'Ankama : clins d'œil possibles, pas de ton scolaire ou guindé, tout en restant clair et précis pour le jeu.
-- **Cohérence** : Utiliser le même ton dans tout le livre (éviter de mélanger « vous » et « tu »).
+- **Cohérence** : Utiliser le même ton dans tout le livre (éviter de mélanger tutoiement et vouvoiement).
 
 ---
 
@@ -125,7 +125,7 @@ Utiliser des blocs de citation avec des icônes :
 - Ajouter des liens vers les sections pertinentes :
 
 ```markdown
-Pour plus de détails, consultez :
+Pour plus de détails, consulte :
 - [Section 2.2.1 – Caractéristiques principales](../2.2-les-caracteristiques/2.2.1-caracteristiques-principales.md)
 - [Section 2.6 – S'équiper](../2.6-s-equiper/2.6.1-equipements-de-base.md)
 ```

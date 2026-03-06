@@ -175,10 +175,17 @@ class SectionController extends Controller
     public function delete(\App\Models\Section $section): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('delete', $section);
+        $page = $section->page;
         
         SectionService::delete($section, request()->user());
         NotificationService::notifyEntityDeleted($section, request()->user());
-        
+
+        if ($page && $page->slug) {
+            return redirect()
+                ->route('pages.show', $page->slug)
+                ->with('success', 'Section supprimée.');
+        }
+
         return redirect()->route('sections.index')->with('success', 'Section supprimée.');
     }
 

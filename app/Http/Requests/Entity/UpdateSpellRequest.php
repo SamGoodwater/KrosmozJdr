@@ -56,6 +56,11 @@ class UpdateSpellRequest extends FormRequest
                 ['nullable', 'integer'],
                 $this->characteristicMinMaxRules('powerful', 'spell')
             ),
+            'resolution_mode' => ['nullable', 'string', 'in:attack_roll,saving_throw,auto_success'],
+            'attack_characteristic_key' => ['nullable', 'string', 'max:64'],
+            'save_characteristic_key' => ['nullable', 'string', 'max:64'],
+            'save_dc_formula' => ['nullable', 'string', 'max:255'],
+            'save_success_note' => ['nullable', 'string'],
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],

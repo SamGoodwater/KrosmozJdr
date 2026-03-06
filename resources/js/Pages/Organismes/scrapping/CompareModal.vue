@@ -19,6 +19,12 @@ import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { getFieldLabel, getSectionFromFlatKey } from "@/Pages/Pages/scrapping/components/previewDiffLabels";
+import {
+    formatSpellStateDispellable,
+    formatSpellStateDuration,
+    formatSpellStateMode,
+    getSpellStateDispellableIcon,
+} from "@/Composables/spell/spellStateDisplay";
 
 const props = defineProps({
     entityType: { type: String, default: "" },
@@ -82,6 +88,43 @@ const existingFlat = computed(() =>
 );
 const convertedFlat = computed(() => flattenShallow(convertedData.value));
 
+/**
+ * Extrait les états détectés depuis les sous-effets convertis d'un sort.
+ * @param {any} converted
+ * @returns {{ stateId: number|null, stateName: string, mode: 'self'|'target', duration: number|null, dispellable: boolean|null, targetMask: string|null }[]}
+ */
+function extractSpellStatesFromConverted(converted) {
+    const effects = converted?.spell_effects?.effects;
+    if (!Array.isArray(effects) || effects.length === 0) return [];
+
+    const rows = [];
+    for (const effect of effects) {
+        const subs = Array.isArray(effect?.sub_effects) ? effect.sub_effects : [];
+        for (const sub of subs) {
+            const slug = String(sub?.sub_effect_slug || "");
+            if (slug !== "appliquer-etat" && slug !== "s-appliquer-etat") continue;
+            const params = sub?.params ?? {};
+            rows.push({
+                stateId: Number.isFinite(Number(params?.state_dofusdb_id)) ? Number(params.state_dofusdb_id) : null,
+                stateName: String(params?.state_name || "État inconnu"),
+                mode: slug === "s-appliquer-etat" ? "self" : "target",
+                duration: Number.isFinite(Number(params?.duration)) ? Number(params.duration) : null,
+                dispellable: typeof params?.dispellable === "boolean" ? params.dispellable : null,
+                targetMask: typeof params?.target_mask === "string" && params.target_mask.trim() !== "" ? params.target_mask : null,
+            });
+        }
+    }
+
+    const dedup = new Map();
+    for (const row of rows) {
+        const key = `${row.mode}|${row.stateId ?? "x"}|${row.stateName}|${row.duration ?? "x"}|${row.dispellable ?? "x"}|${row.targetMask ?? "x"}`;
+        if (!dedup.has(key)) dedup.set(key, row);
+    }
+    return [...dedup.values()];
+}
+
+const previewSpellStates = computed(() => extractSpellStatesFromConverted(convertedData.value));
+
 /** Clés à afficher : union Brut, Converti, Krosmoz. */
 const allKeys = computed(() => {
     const keys = new Set([
@@ -89,14 +132,30 @@ const allKeys = computed(() => {
         ...Object.keys(convertedFlat.value),
         ...Object.keys(existingFlat.value),
     ]);
+    if (convertedData.value?.spell_effects?.effects?.length) {
+        keys.add("spell_effects.summary");
+    }
     return [...keys].sort();
 });
 
 const rows = computed(() => {
     return allKeys.value.map((key) => {
         const rawVal = findInFlat(rawFlat.value, key) ?? findInFlat(rawFlat.value, key.split(".").pop());
-        const convertedVal = findInFlat(convertedFlat.value, key) ?? findInFlat(convertedFlat.value, key.split(".").pop());
+        let convertedVal = findInFlat(convertedFlat.value, key) ?? findInFlat(convertedFlat.value, key.split(".").pop());
         const krosmozVal = existingFlat.value[key];
+        if (key === "spell_effects.summary" && previewSpellStates.value.length > 0) {
+            convertedVal = previewSpellStates.value
+                .map((s) => {
+                    const bits = [
+                        `${s.stateName}${s.stateId != null ? ` (#${s.stateId})` : ""}`,
+                        formatSpellStateMode(s.mode),
+                        formatSpellStateDuration(s.duration),
+                        formatSpellStateDispellable(s.dispellable),
+                    ].filter(Boolean);
+                    return bits.join(" · ");
+                })
+                .join(" | ");
+        }
         const rawStr = rawVal === undefined || rawVal === null ? "—" : String(rawVal);
         const convertedStr = convertedVal === undefined || convertedVal === null ? "—" : String(convertedVal);
         const krosmozStr = krosmozVal === undefined || krosmozVal === null ? "—" : String(krosmozVal);
@@ -255,6 +314,52 @@ watch(
                     <Btn size="sm" variant="outline" @click="setAllChoices('dofusdb')">
                         Tout le converti (nouveau)
                     </Btn>
+                </div>
+
+                <div
+                    v-if="entityType === 'spell' && previewSpellStates.length > 0"
+                    class="rounded-lg border border-secondary/30 bg-base-200/40 p-3"
+                >
+                    <div class="flex items-center gap-2 mb-2">
+                        <Icon source="fa-solid fa-wand-magic-sparkles" alt="" pack="solid" class="text-secondary text-sm" />
+                        <p class="text-sm font-semibold text-secondary">États détectés (converti)</p>
+                    </div>
+                    <div class="overflow-x-auto rounded border border-base-300">
+                        <table class="table table-xs w-full">
+                            <thead>
+                                <tr class="bg-base-300/50">
+                                    <th>État</th>
+                                    <th class="w-24">Mode</th>
+                                    <th class="w-20">Durée</th>
+                                    <th class="w-28">Dissipable</th>
+                                    <th class="w-24">Mask</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(st, idx) in previewSpellStates" :key="`${st.mode}-${st.stateId}-${idx}`">
+                                    <td class="text-primary-100">
+                                        {{ st.stateName }}
+                                        <span v-if="st.stateId != null" class="text-primary-400">(#{{ st.stateId }})</span>
+                                    </td>
+                                    <td class="text-primary-300">{{ formatSpellStateMode(st.mode, { variant: "table" }) }}</td>
+                                    <td class="text-primary-300">{{ formatSpellStateDuration(st.duration) ?? "—" }}</td>
+                                    <td class="text-primary-300">
+                                        <span v-if="formatSpellStateDispellable(st.dispellable)" class="inline-flex items-center gap-1">
+                                            <Icon
+                                                v-if="getSpellStateDispellableIcon(st.dispellable)"
+                                                :source="getSpellStateDispellableIcon(st.dispellable)"
+                                                :alt="formatSpellStateDispellable(st.dispellable) || ''"
+                                                size="xs"
+                                            />
+                                            {{ formatSpellStateDispellable(st.dispellable) }}
+                                        </span>
+                                        <span v-else>—</span>
+                                    </td>
+                                    <td class="font-mono text-primary-400">{{ st.targetMask ?? "—" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto rounded-lg border border-base-300">

@@ -3,6 +3,11 @@
  * Dérive les valeurs d'affichage pour une ligne ; fonctions pures à partir des refs.
  * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
  */
+import {
+    formatSpellStateDispellable,
+    formatSpellStateDuration,
+    formatSpellStateMode,
+} from "@/Composables/spell/spellStateDisplay";
 
 /**
  * @param {{
@@ -182,6 +187,8 @@ export function useScrappingCompare(options) {
                 .map((s) => {
                     const slug = s?.sub_effect_slug ?? "?";
                     const order = s?.order != null ? `o${s.order}` : null;
+                    const stateId = s?.params?.state_dofusdb_id ?? null;
+                    const stateName = s?.params?.state_name ?? null;
                     const formula = s?.params?.value_formula ?? null;
                     const formulaCrit = s?.params?.value_formula_crit ?? null;
                     const converted = s?.params?.value_converted ?? null;
@@ -189,6 +196,18 @@ export function useScrappingCompare(options) {
                     const duration = s?.params?.duration ?? null;
                     const diceFormula = s?.params?.dice_formula ?? null;
                     const critOnly = s?.crit_only === true ? "crit-only" : null;
+                    if (stateId != null || stateName != null) {
+                        const mode = formatSpellStateMode(slug);
+                        const identity = [stateName, stateId != null ? `#${stateId}` : null].filter(Boolean).join(" ");
+                        const details = [
+                            order,
+                            mode,
+                            formatSpellStateDuration(duration),
+                            formatSpellStateDispellable(s?.params?.dispellable),
+                            critOnly,
+                        ].filter(Boolean).join(" ");
+                        return details ? `${slug} ${identity} ${details}` : `${slug} ${identity}`;
+                    }
                     const details = [
                         order,
                         formula != null ? String(formula) : null,
@@ -227,6 +246,10 @@ export function useScrappingCompare(options) {
                     const effectId = e?.effectId ?? "?";
                     const diceNum = e?.diceNum ?? null;
                     const diceSide = e?.diceSide ?? null;
+                    const value = e?.value ?? null;
+                    if (Number(effectId) === 950 && Number(value) > 0) {
+                        return `#${effectId} état:${value}`;
+                    }
                     const formula = Number.isFinite(Number(diceNum)) && Number.isFinite(Number(diceSide)) && Number(diceNum) > 0
                         ? (Number(diceSide) > 0 ? `${diceNum}d${diceSide}` : String(diceNum))
                         : null;

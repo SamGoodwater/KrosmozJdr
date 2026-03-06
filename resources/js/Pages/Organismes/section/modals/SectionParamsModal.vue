@@ -160,6 +160,7 @@ const initializeFormData = () => {
     const title = getSectionValue('title') || '';
     const existingSlug = getSectionValue('slug') || '';
     const sectionSettings = getSectionValue('settings') || {};
+    const sectionData = getSectionValue('data') || {};
     
     // Générer le slug si vide (depuis le titre ou l'ID)
     const slug = existingSlug || generateSlug(title, sectionId);
@@ -186,6 +187,7 @@ const initializeFormData = () => {
         read_level: getSectionValue('read_level') ?? 0,
         write_level: getSectionValue('write_level') ?? 4,
         state: getSectionValue('state') || 'draft',
+        data: { ...sectionData },
         // Settings (inclut classes et customCss)
         settings: {
             classes: sectionSettings.classes || '',
@@ -224,6 +226,7 @@ const formData = ref({
     read_level: 0,
     write_level: 4,
     state: 'draft',
+    data: {},
     settings: {
         classes: '',
         customCss: ''
@@ -363,6 +366,7 @@ const handleValidate = () => {
         read_level: formData.value.read_level,
         write_level: formData.value.write_level,
         state: formData.value.state,
+        data: formData.value.data || {},
         settings: cleanedSettings,
     });
 };
@@ -553,8 +557,10 @@ const canDeleteSection = computed(() => {
                     :is="templateParamsComponent"
                     :section="sectionModel"
                     :settings="formData.settings"
+                    :data="formData.data"
                     mode="edit"
                     @update:settings="(v) => { Object.assign(formData.settings, v); formDataVersion++; }"
+                    @update:data="(v) => { formData.data = { ...(formData.data || {}), ...(v || {}) }; formDataVersion++; }"
                 />
 
                 <!-- Sinon : génération automatique des champs depuis config.parameters -->

@@ -36,4 +36,4 @@ Le système d'input dispose d'une documentation complète et organisée dans le 
 - **Référence API** complète
 - **Exemples d'utilisation** pratiques
 
-**Pour toute question UI, commencez par le fichier correspondant à votre besoin.** 
+**Pour toute question UI, commence par le fichier correspondant à ton besoin.** 

@@ -427,7 +427,7 @@ const attrs = computed(() => getCommonAttrs(props));
 - **Exemple minimal** :
 
 ```vue
-<InputField label="Nom" v-model="name" :validator="form.errors.name" help="Votre nom complet" />
+<InputField label="Nom" v-model="name" :validator="form.errors.name" help="Ton nom complet" />
 ```
 
 > Tous les nouveaux inputs doivent suivre ce schéma pour garantir la maintenabilité et la cohérence du design system.

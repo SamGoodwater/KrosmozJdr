@@ -239,6 +239,20 @@
     "file": "section/templates/text/SectionTextEdit.vue"
   },
   {
+    "name": "SectionLegalMarkdownRead",
+    "description": "SectionLegalMarkdownRead Template",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/legal_markdown/SectionLegalMarkdownRead.vue"
+  },
+  {
+    "name": "SectionLegalMarkdownEdit",
+    "description": "SectionLegalMarkdownEdit Template",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/legal_markdown/SectionLegalMarkdownEdit.vue"
+  },
+  {
     "name": "SectionImageRead",
     "description": "SectionImageRead Template",
     "props": [],

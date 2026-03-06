@@ -67,5 +67,12 @@ return [
             'columns' => [],
         ],
     ],
+    'legal_markdown' => [
+        'settings' => [],
+        'data' => [
+            'sourceUrl' => null,
+            'title' => null,
+        ],
+    ],
 ];
 

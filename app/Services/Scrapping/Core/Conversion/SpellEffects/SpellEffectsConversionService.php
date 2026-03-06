@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
 
+use App\Models\Entity\Spell;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Jdr\DiceNotationService;
 use App\Services\Scrapping\Config\DofusDbEffectCatalog;
+use App\Services\Scrapping\Config\DofusDbSpellStateCatalog;
 use Illuminate\Support\Str;
 
 /**
@@ -23,8 +25,13 @@ use Illuminate\Support\Str;
  */
 final class SpellEffectsConversionService
 {
+    private const SAVE_DC_DEFAULT_FORMULA = '10 + modificateur de caractéristique';
+    private const SUB_EFFECT_SLUG_APPLY_STATE = 'appliquer-etat';
+    private const SUB_EFFECT_SLUG_SELF_APPLY_STATE = 's-appliquer-etat';
+
     public function __construct(
         private DofusDbEffectCatalog $effectCatalog,
+        private DofusDbSpellStateCatalog $spellStateCatalog,
         private DofusdbEffectMappingService $mappingService,
         private SpellEffectConversionFormulaResolver $formulaResolver,
         private DofusConversionService $dofusConversion,
@@ -69,7 +76,9 @@ final class SpellEffectsConversionService
 
         usort($effects, static fn (array $a, array $b) => ($a['degree'] ?? 0) <=> ($b['degree'] ?? 0));
 
-        return new SpellEffectsConversionResult($effectGroup, $effects);
+        $resolution = $this->inferSpellResolution($effects, $spellRaw);
+
+        return new SpellEffectsConversionResult($effectGroup, $effects, $resolution);
     }
 
     /**
@@ -99,11 +108,23 @@ final class SpellEffectsConversionService
                 continue;
             }
 
+            $definition = $this->effectCatalog->get($effectId, $lang);
+            $stateData = $this->resolveSpellStateData($instance, $definition, $lang);
+
+            if ($stateData !== null) {
+                $subEffects[] = [
+                    'order' => isset($instance['order']) ? (int) $instance['order'] : $index,
+                    'sub_effect_slug' => $this->resolveStateSubEffectSlug($instance),
+                    'params' => $this->buildParamsForState($instance, $stateData, $effectId),
+                    'crit_only' => false,
+                ];
+                continue;
+            }
+
             $mapping = $this->mappingService->getSubEffectForEffectId($effectId);
             $subEffectSlug = null;
             $charSource = null;
             $mappedCharacteristicKey = null;
-            $definition = [];
 
             if ($mapping !== null) {
                 $subEffectSlug = isset($mapping[0]) && is_string($mapping[0]) && $mapping[0] !== ''
@@ -115,18 +136,15 @@ final class SpellEffectsConversionService
                 $mappedCharacteristicKey = isset($mapping[2]) && is_string($mapping[2]) && $mapping[2] !== ''
                     ? $mapping[2]
                     : null;
-                if ($charSource === 'element' || ($charSource === 'characteristic' && $mappedCharacteristicKey === null)) {
-                    $definition = $this->effectCatalog->get($effectId, $lang);
-                }
             } else {
                 $subEffectSlug = DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER;
-                $definition = $this->effectCatalog->get($effectId, $lang);
             }
 
             $order = isset($instance['order']) ? (int) $instance['order'] : $index;
             $params = $subEffectSlug === DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER
                 ? $this->buildParamsForOther($instance, $definition, $lang)
                 : $this->buildParams($instance, $definition, $charSource ?? 'none', $subEffectSlug, $mappedCharacteristicKey);
+            $params['dofus_effect_id'] = $effectId;
             $critOnly = false;
 
             $criticalInstance = $criticalList[$order] ?? null;
@@ -157,6 +175,36 @@ final class SpellEffectsConversionService
             'area' => $area,
             'sub_effects' => $subEffects,
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $instance
+     * @param array<string, mixed> $definition
+     * @param array<string, mixed> $stateData
+     * @return array<string, mixed>
+     */
+    private function buildParamsForState(array $instance, array $stateData, int $effectId): array
+    {
+        $params = [
+            'state_dofusdb_id' => (int) ($stateData['id'] ?? 0),
+            'state_name' => $this->extractLocalizedValue($stateData['name'] ?? null, 'fr'),
+            'state_icon' => isset($stateData['icon']) ? (string) $stateData['icon'] : null,
+            'state_image' => isset($stateData['img']) ? (string) $stateData['img'] : null,
+            'dispellable' => isset($instance['dispellable']) ? (bool) $instance['dispellable'] : null,
+            'target_mask' => isset($instance['targetMask']) ? (string) $instance['targetMask'] : null,
+            'target_id' => isset($instance['targetId']) && is_numeric($instance['targetId']) ? (int) $instance['targetId'] : null,
+            'dofus_effect_id' => $effectId,
+            'state_flags' => [
+                'cant_be_moved' => (bool) ($stateData['cantBeMoved'] ?? false),
+                'cant_be_pushed' => (bool) ($stateData['cantBePushed'] ?? false),
+                'prevents_spell_cast' => (bool) ($stateData['preventsSpellCast'] ?? false),
+                'invulnerable' => (bool) ($stateData['invulnerable'] ?? false),
+                'incurable' => (bool) ($stateData['incurable'] ?? false),
+            ],
+        ];
+        $this->addDurationToParams($instance, $params);
+
+        return $params;
     }
 
     /**
@@ -308,6 +356,101 @@ final class SpellEffectsConversionService
         $this->addDurationToParams($instance, $params);
 
         return $params;
+    }
+
+    /**
+     * @param array<string, mixed> $instance
+     * @param array<string, mixed> $definition
+     * @return array<string, mixed>|null
+     */
+    private function resolveSpellStateData(array $instance, array $definition, string $lang): ?array
+    {
+        if (!$this->isStateEffectDefinition($definition)) {
+            return null;
+        }
+
+        $stateId = $this->extractStateIdFromInstance($instance);
+        if ($stateId <= 0) {
+            return null;
+        }
+
+        $state = $this->spellStateCatalog->get($stateId, $lang);
+        if ($state === []) {
+            return ['id' => $stateId, 'name' => null];
+        }
+
+        return $state;
+    }
+
+    /**
+     * @param array<string, mixed> $definition
+     */
+    private function isStateEffectDefinition(array $definition): bool
+    {
+        $description = $this->normalizeDecisionText($this->extractEffectDescription($definition, 'fr'));
+        if ($description === '') {
+            return false;
+        }
+
+        return str_contains($description, 'etat #') || str_contains($description, 'state #');
+    }
+
+    /**
+     * @param array<string, mixed> $instance
+     */
+    private function extractStateIdFromInstance(array $instance): int
+    {
+        foreach (['value', 'diceNum', 'diceSide'] as $candidateKey) {
+            if (isset($instance[$candidateKey]) && is_numeric($instance[$candidateKey])) {
+                $value = (int) $instance[$candidateKey];
+                if ($value > 0) {
+                    return $value;
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param array<string, mixed> $instance
+     */
+    private function resolveStateSubEffectSlug(array $instance): string
+    {
+        $targetMask = strtoupper((string) ($instance['targetMask'] ?? ''));
+        if ($targetMask !== '' && str_contains($targetMask, 'C')) {
+            return self::SUB_EFFECT_SLUG_SELF_APPLY_STATE;
+        }
+
+        return self::SUB_EFFECT_SLUG_APPLY_STATE;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    private function extractLocalizedValue(mixed $value, string $lang): ?string
+    {
+        if (is_string($value)) {
+            $trimmed = trim($value);
+            return $trimmed !== '' ? $trimmed : null;
+        }
+        if (is_array($value)) {
+            if (isset($value[$lang]) && is_string($value[$lang])) {
+                $trimmed = trim((string) $value[$lang]);
+                return $trimmed !== '' ? $trimmed : null;
+            }
+            if (isset($value['fr']) && is_string($value['fr'])) {
+                $trimmed = trim((string) $value['fr']);
+                return $trimmed !== '' ? $trimmed : null;
+            }
+            $first = reset($value);
+            if (is_string($first)) {
+                $trimmed = trim($first);
+                return $trimmed !== '' ? $trimmed : null;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -509,6 +652,283 @@ final class SpellEffectsConversionService
             return (string) $value;
         }
         return null;
+    }
+
+    /**
+     * Déduit la résolution du sort (jet d'attaque / sauvegarde / réussite auto) à partir des sous-effets.
+     * Règles métier:
+     * - Retraits caractéristiques => sauvegarde (prioritaire, même avec dommages).
+     * - Dommages (même avec déplacement) => jet d'attaque (contre CA).
+     * - Boosts/soins/invocation/soutien => réussite auto.
+     * - Placement sans dommage explicite => sauvegarde (cas défensif par défaut).
+     *
+     * @param list<array<string, mixed>> $effects
+     * @param array<string, mixed> $spellRaw
+     * @return array<string, string|null>
+     */
+    private function inferSpellResolution(array $effects, array $spellRaw): array
+    {
+        $hasDamage = false;
+        $hasPlacement = false;
+        $hasRemoval = false;
+        $hasSupport = false;
+        $saveAbilityHint = null;
+
+        foreach ($effects as $effect) {
+            $subEffects = $effect['sub_effects'] ?? [];
+            if (!is_array($subEffects)) {
+                continue;
+            }
+
+            foreach ($subEffects as $subEffect) {
+                if (!is_array($subEffect)) {
+                    continue;
+                }
+
+                $slug = (string) ($subEffect['sub_effect_slug'] ?? '');
+                $params = is_array($subEffect['params'] ?? null) ? $subEffect['params'] : [];
+                $characteristic = isset($params['characteristic']) ? strtolower((string) $params['characteristic']) : '';
+                $valueFormula = isset($params['value_formula']) ? trim((string) $params['value_formula']) : '';
+
+                if (in_array($slug, ['frapper', 'voler-vie'], true)) {
+                    $hasDamage = true;
+                    continue;
+                }
+
+                if ($slug === 'déplacer') {
+                    $hasPlacement = true;
+                    continue;
+                }
+
+                if ($slug === 'retirer' || $slug === 'voler-caracteristiques') {
+                    $hasRemoval = true;
+                    if ($saveAbilityHint === null) {
+                        $saveAbilityHint = $this->inferSaveAbilityFromCharacteristicKey($characteristic);
+                    }
+                    continue;
+                }
+
+                if (in_array($slug, ['booster', 'soigner', 'protéger', 'invoquer'], true)) {
+                    $hasSupport = true;
+                }
+
+                if ($slug === 'booster') {
+                    if ($this->isCharacteristicRemovalKey($characteristic) || str_starts_with($valueFormula, '-')) {
+                        $hasRemoval = true;
+                        if ($saveAbilityHint === null) {
+                            $saveAbilityHint = $this->inferSaveAbilityFromCharacteristicKey($characteristic);
+                        }
+                    }
+                }
+
+                if ($slug === DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER) {
+                    $otherText = strtolower((string) ($params['value'] ?? ''));
+                    if ($otherText !== '') {
+                        if ($this->isRemovalText($otherText)) {
+                            $hasRemoval = true;
+                            if ($saveAbilityHint === null) {
+                                $saveAbilityHint = $this->inferSaveAbilityFromOtherText($otherText);
+                            }
+                        }
+                        if ($this->isPlacementText($otherText)) {
+                            $hasPlacement = true;
+                        }
+                        if ($this->isDamageText($otherText)) {
+                            $hasDamage = true;
+                        }
+                        if ($this->isSupportText($otherText)) {
+                            $hasSupport = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($hasRemoval || ($hasPlacement && !$hasDamage && !$hasSupport)) {
+            return [
+                'resolution_mode' => Spell::RESOLUTION_SAVING_THROW,
+                'attack_characteristic_key' => null,
+                'save_characteristic_key' => $saveAbilityHint ?? 'sagesse',
+                'save_dc_formula' => self::SAVE_DC_DEFAULT_FORMULA,
+                'save_success_note' => $hasDamage
+                    ? "En cas de sauvegarde réussie, réduire l'effet (ex: demi-dégâts) et annuler les retraits."
+                    : "En cas de sauvegarde réussie, annuler l'effet du sort.",
+            ];
+        }
+
+        if ($hasDamage) {
+            return [
+                'resolution_mode' => Spell::RESOLUTION_ATTACK_ROLL,
+                'attack_characteristic_key' => $this->inferAttackCharacteristicFromSpellRaw($spellRaw),
+                'save_characteristic_key' => null,
+                'save_dc_formula' => null,
+                'save_success_note' => null,
+            ];
+        }
+
+        if (!$hasDamage && !$hasRemoval) {
+            return [
+                'resolution_mode' => Spell::RESOLUTION_AUTO_SUCCESS,
+                'attack_characteristic_key' => null,
+                'save_characteristic_key' => null,
+                'save_dc_formula' => null,
+                'save_success_note' => null,
+            ];
+        }
+
+        return [
+            'resolution_mode' => Spell::RESOLUTION_ATTACK_ROLL,
+            'attack_characteristic_key' => $this->inferAttackCharacteristicFromSpellRaw($spellRaw),
+            'save_characteristic_key' => null,
+            'save_dc_formula' => null,
+            'save_success_note' => null,
+        ];
+    }
+
+    private function inferAttackCharacteristicFromSpellRaw(array $spellRaw): string
+    {
+        $elementId = isset($spellRaw['elementId']) && is_numeric($spellRaw['elementId'])
+            ? (int) $spellRaw['elementId']
+            : (isset($spellRaw['spell_global']['elementId']) && is_numeric($spellRaw['spell_global']['elementId'])
+                ? (int) $spellRaw['spell_global']['elementId']
+                : null);
+
+        return match ($elementId) {
+            1 => 'intel',
+            2 => 'chance',
+            3 => 'strong',
+            4 => 'agi',
+            default => 'strong',
+        };
+    }
+
+    private function isCharacteristicRemovalKey(string $key): bool
+    {
+        if ($key === '') {
+            return false;
+        }
+
+        $needles = [
+            'retrait_pa',
+            'retrait_pm',
+            'ap_reduction',
+            'mp_reduction',
+            'dodge_action_points',
+            'dodge_movement_points',
+            'dodge_spell',
+            'fuite',
+            'tacle',
+        ];
+        foreach ($needles as $needle) {
+            if (str_contains($key, $needle)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function inferSaveAbilityFromCharacteristicKey(string $key): ?string
+    {
+        if ($key === '') {
+            return null;
+        }
+
+        if (str_contains($key, 'retrait_pa') || str_contains($key, 'retrait_pm') || str_contains($key, 'ap_reduction') || str_contains($key, 'mp_reduction')) {
+            return 'sagesse';
+        }
+        if (str_contains($key, 'fuite') || str_contains($key, 'tacle') || str_contains($key, 'agi')) {
+            return 'agi';
+        }
+
+        return null;
+    }
+
+    private function inferSaveAbilityFromOtherText(string $otherText): ?string
+    {
+        $text = $this->normalizeDecisionText($otherText);
+
+        if (preg_match('/\b(pa|pm|retrait pa|retrait pm)\b/u', $text) === 1) {
+            return 'sagesse';
+        }
+        if (preg_match('/\b(fuite|tacle|agilite)\b/u', $text) === 1) {
+            return 'agi';
+        }
+        if (preg_match('/\b(force)\b/u', $text) === 1) {
+            return 'strong';
+        }
+        if (preg_match('/\b(intelligence)\b/u', $text) === 1) {
+            return 'intel';
+        }
+        if (preg_match('/\b(chance)\b/u', $text) === 1) {
+            return 'chance';
+        }
+        if (preg_match('/\b(vitalite)\b/u', $text) === 1) {
+            return 'vitality';
+        }
+
+        return null;
+    }
+
+    private function isRemovalText(string $text): bool
+    {
+        $normalized = $this->normalizeDecisionText($text);
+
+        if ($normalized === '' || str_contains($normalized, 'kamas')) {
+            return false;
+        }
+
+        // "X dommages ... PA utilise" = scaling de dégâts, pas un retrait de PA.
+        if (str_contains($normalized, 'dommage') && str_contains($normalized, 'pa utilise')) {
+            return false;
+        }
+
+        $mentionsNegativePattern = preg_match('/-\s*#|\bretire\b|\bretrait\b/u', $normalized) === 1;
+        $mentionsSteal = preg_match('/\b(vole|vol de)\b/u', $normalized) === 1;
+        $mentionsStat = preg_match('/\b(pa|pm|fuite|tacle|portee|sagesse|intelligence|agilite|chance|force|vitalite)\b/u', $normalized) === 1;
+
+        return $mentionsNegativePattern || ($mentionsSteal && $mentionsStat);
+    }
+
+    private function isPlacementText(string $text): bool
+    {
+        $normalized = $this->normalizeDecisionText($text);
+
+        return preg_match('/\b(repousse|attire|teleporte|pousse|avance|recule|deplace|echange de position)\b/u', $normalized) === 1;
+    }
+
+    private function isDamageText(string $text): bool
+    {
+        $normalized = $this->normalizeDecisionText($text);
+
+        return preg_match('/\b(dommage|dommages|degat|degats|vol de vie|frappe)\b/u', $normalized) === 1;
+    }
+
+    private function isSupportText(string $text): bool
+    {
+        $normalized = $this->normalizeDecisionText($text);
+
+        return preg_match('/\b(invoque|soin|protege|bouclier|boost|augmente|rend)\b/u', $normalized) === 1;
+    }
+
+    private function normalizeDecisionText(string $text): string
+    {
+        $value = trim(mb_strtolower($text));
+        if ($value === '') {
+            return '';
+        }
+
+        // Supprime tags/sprites et harmonise les accents pour des regex stables.
+        $value = strip_tags($value);
+        $value = str_replace(
+            ['é', 'è', 'ê', 'ë', 'à', 'â', 'ä', 'î', 'ï', 'ô', 'ö', 'ù', 'û', 'ü', 'ç'],
+            ['e', 'e', 'e', 'e', 'a', 'a', 'a', 'i', 'i', 'o', 'o', 'u', 'u', 'u', 'c'],
+            $value
+        );
+        $value = preg_replace('/<[^>]+>/', ' ', $value) ?? $value;
+        $value = preg_replace('/\s+/', ' ', $value) ?? $value;
+
+        return trim($value);
     }
 
     private function extractSpellName(array $spellRaw, string $lang): string

@@ -30,4 +30,4 @@ Bienvenue sur la documentation du projet **Krosmoz JDR**.
 
 ---
 
-Pour toute question ou contribution, commencez par ce fichier puis suivez les liens vers la documentation détaillée adaptée à votre besoin.
+Pour toute question ou contribution, commence par ce fichier puis suis les liens vers la documentation détaillée adaptée à ton besoin.

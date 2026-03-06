@@ -28,6 +28,7 @@ import { useDevice } from "@/Composables/layout/useDevice";
 import ToggleHeader from "@/Pages/Molecules/layout/ToggleHeader.vue";
 import { useNotificationProvider } from "@/Composables/providers/useNotificationProvider";
 import { useFlashNotifications } from "@/Composables/notifications/useFlashNotifications";
+import CookieConsentBanner from "@/Pages/Molecules/privacy/CookieConsentBanner.vue";
 
 // Centralisation des classes Tailwind pour le layout
 const ASIDE_WIDTH_CLASS = 'w-64'      // 16rem = 256px
@@ -235,6 +236,7 @@ onUnmounted(() => {
 
         <!-- Notifications -->
         <NotificationContainer />
+        <CookieConsentBanner />
     </div>
 </template>
 

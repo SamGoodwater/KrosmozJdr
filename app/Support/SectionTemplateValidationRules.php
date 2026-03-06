@@ -37,8 +37,9 @@ class SectionTemplateValidationRules
 
         return match ($template) {
             SectionType::TEXT => [
-                'data.content' => ['required_without:params.content', 'nullable', 'string'],
-                'params.content' => ['required_without:data.content', 'nullable', 'string'],
+                // Permet de créer une section texte vide puis d'éditer le contenu ensuite.
+                'data.content' => ['sometimes', 'nullable', 'string'],
+                'params.content' => ['sometimes', 'nullable', 'string'],
                 'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
                 'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl'])],
             ],
@@ -63,10 +64,11 @@ class SectionTemplateValidationRules
                 'settings.gap' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg'])],
             ],
             SectionType::VIDEO => [
-                'data.src' => ['required_without:params.src', 'nullable', 'string', 'max:2048'],
-                'data.type' => ['required_without:params.type', 'nullable', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
-                'params.src' => ['required_without:data.src', 'nullable', 'string', 'max:2048'],
-                'params.type' => ['required_without:data.type', 'nullable', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
+                // Autorise une création "à vide" puis configuration dans l'éditeur.
+                'data.src' => ['sometimes', 'nullable', 'string', 'max:2048'],
+                'data.type' => ['sometimes', 'nullable', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
+                'params.src' => ['sometimes', 'nullable', 'string', 'max:2048'],
+                'params.type' => ['sometimes', 'nullable', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
                 'settings.autoplay' => ['sometimes', 'boolean'],
                 'settings.controls' => ['sometimes', 'boolean'],
                 'settings.directVideoDisplayMode' => ['sometimes', 'string', Rule::in(['preview', 'download'])],
@@ -83,6 +85,13 @@ class SectionTemplateValidationRules
                 'params.limit' => ['sometimes', 'integer', 'min:1', 'max:500'],
                 'data.columns' => ['sometimes', 'array'],
                 'params.columns' => ['sometimes', 'array'],
+            ],
+            SectionType::LEGAL_MARKDOWN => [
+                // Accepte les chemins relatifs same-origin (ex: /storage/legal/cgu.md).
+                'data.sourceUrl' => ['sometimes', 'nullable', 'string', 'max:2048'],
+                'params.sourceUrl' => ['sometimes', 'nullable', 'string', 'max:2048'],
+                'data.title' => ['sometimes', 'nullable', 'string', 'max:255'],
+                'params.title' => ['sometimes', 'nullable', 'string', 'max:255'],
             ],
         };
     }

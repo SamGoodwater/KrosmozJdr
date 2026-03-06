@@ -2,7 +2,7 @@
 
 ## En bref
 
-Le projet utilise **MySQL par défaut**. Il reste **compatible PostgreSQL** sans modification de code : si vous souhaitez repasser à PostgreSQL (base vide), un simple changement de configuration suffit.
+Le projet utilise **MySQL par défaut**. Il reste **compatible PostgreSQL** sans modification de code : si tu souhaites repasser à PostgreSQL (base vide), un simple changement de configuration suffit.
 
 ## Étapes pour basculer
 

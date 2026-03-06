@@ -42,6 +42,8 @@ class SectionResource extends JsonResource
             'slug' => $section->slug,
             'order' => $section->order,
             'template' => $section->template instanceof \App\Enums\SectionType ? $section->template->value : $section->template,
+            // Legacy compatibility: expose aussi `type` pour les clients anciens.
+            'type' => $section->type instanceof \App\Enums\SectionType ? $section->type->value : $section->type,
             'settings' => $section->settings,
             'data' => $section->data,
             'state' => $section->state,

@@ -14,11 +14,13 @@ use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\EffectUsage;
+use App\Models\SpellState;
 use App\Models\SubEffect;
 use App\Models\User;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
 use App\Models\Type\ResourceType;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -472,6 +474,11 @@ final class IntegrationService
             'category' => (int) ($data['category'] ?? 0),
             'is_magic' => (bool) (isset($data['is_magic']) ? (int) $data['is_magic'] : true),
             'powerful' => (int) ($data['powerful'] ?? 0),
+            'resolution_mode' => (string) ($data['resolution_mode'] ?? Spell::RESOLUTION_ATTACK_ROLL),
+            'attack_characteristic_key' => isset($data['attack_characteristic_key']) ? (string) $data['attack_characteristic_key'] : null,
+            'save_characteristic_key' => isset($data['save_characteristic_key']) ? (string) $data['save_characteristic_key'] : null,
+            'save_dc_formula' => isset($data['save_dc_formula']) ? (string) $data['save_dc_formula'] : null,
+            'save_success_note' => isset($data['save_success_note']) ? (string) $data['save_success_note'] : null,
             'created_by' => $userId,
         ];
         if ($propertyWhitelist !== []) {
@@ -658,6 +665,8 @@ final class IntegrationService
                 $critOnly = (bool) ($row['crit_only'] ?? false);
                 $order = isset($row['order']) && is_numeric($row['order']) ? (int) $row['order'] : 0;
 
+                $this->integrateSpellStateFromParams($spell, $slug, $params);
+
                 $alreadyExists = $effect->effectSubEffects()
                     ->where($this->effectSubEffectDedupWhere($subId, $critOnly, $params))
                     ->exists();
@@ -792,7 +801,7 @@ final class IntegrationService
      *
      * @param list<array{order?: int, sub_effect_slug?: string, params?: array, crit_only?: bool}> $rows
      * @param array<string, int> $slugToId
-     * @return list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value: mixed}>
+     * @return list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value: mixed, state_dofusdb_id: mixed}>
      */
     private function normalizeSubEffectsRowsForSignature(array $rows, array $slugToId): array
     {
@@ -813,6 +822,7 @@ final class IntegrationService
             $valueFormula = $params['value_formula'] ?? null;
             $valueFormulaCrit = $params['value_formula_crit'] ?? null;
             $value = $params['value'] ?? null;
+            $stateDofusdbId = $params['state_dofusdb_id'] ?? null;
 
             $dedupKey = $this->effectSubEffectDedupKey($slugToId[$slug], $critOnly, $params);
             if (isset($seen[$dedupKey])) {
@@ -827,6 +837,7 @@ final class IntegrationService
                 'value_formula' => $valueFormula,
                 'value_formula_crit' => $valueFormulaCrit,
                 'value' => $value,
+                'state_dofusdb_id' => $stateDofusdbId,
             ];
         }
         usort($out, static fn (array $a, array $b) => $a['order'] <=> $b['order']);
@@ -837,7 +848,7 @@ final class IntegrationService
     /**
      * Calcule une signature (hash) pour réutiliser un Effect existant.
      *
-     * @param list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value?: mixed}> $normalizedRows
+     * @param list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value?: mixed, state_dofusdb_id?: mixed}> $normalizedRows
      */
     private function computeEffectConfigSignature(array $normalizedRows): string
     {
@@ -851,6 +862,7 @@ final class IntegrationService
                 'v' => $r['value_formula'] ?? null,
                 'vcrit' => $r['value_formula_crit'] ?? null,
                 'val' => $r['value'] ?? null,
+                'state' => $r['state_dofusdb_id'] ?? null,
             ], JSON_UNESCAPED_UNICODE);
         }
 
@@ -864,7 +876,8 @@ final class IntegrationService
     {
         return $subEffectId . '|' . ($critOnly ? '1' : '0') . '|'
             . ($params['characteristic'] ?? '') . '|' . ($params['value_formula'] ?? '') . '|'
-            . ($params['value_formula_crit'] ?? '') . '|' . ($params['value'] ?? '');
+            . ($params['value_formula_crit'] ?? '') . '|' . ($params['value'] ?? '') . '|'
+            . ($params['state_dofusdb_id'] ?? '');
     }
 
     /**
@@ -884,7 +897,59 @@ final class IntegrationService
         if (array_key_exists('value', $params)) {
             $where['params->value'] = $params['value'];
         }
+        if (array_key_exists('state_dofusdb_id', $params)) {
+            $where['params->state_dofusdb_id'] = $params['state_dofusdb_id'];
+        }
         return $where;
+    }
+
+    /**
+     * Enregistre l'état DofusDB lié à un sous-effet de sort et le relie au sort.
+     *
+     * @param array<string, mixed> $params
+     */
+    private function integrateSpellStateFromParams(Spell $spell, string $subEffectSlug, array $params): void
+    {
+        if (!in_array($subEffectSlug, ['appliquer-etat', 's-appliquer-etat'], true)) {
+            return;
+        }
+        if (!isset($params['state_dofusdb_id']) || !is_numeric($params['state_dofusdb_id'])) {
+            return;
+        }
+
+        $stateDofusdbId = (int) $params['state_dofusdb_id'];
+        if ($stateDofusdbId <= 0) {
+            return;
+        }
+
+        $spellState = SpellState::query()->updateOrCreate(
+            ['dofusdb_id' => $stateDofusdbId],
+            [
+                'name' => isset($params['state_name']) && is_string($params['state_name']) ? $params['state_name'] : null,
+                'icon' => isset($params['state_icon']) && is_string($params['state_icon']) ? $params['state_icon'] : null,
+                'image' => isset($params['state_image']) && is_string($params['state_image']) ? $params['state_image'] : null,
+                'cant_be_moved' => (bool) data_get($params, 'state_flags.cant_be_moved', false),
+                'cant_be_pushed' => (bool) data_get($params, 'state_flags.cant_be_pushed', false),
+                'prevents_spell_cast' => (bool) data_get($params, 'state_flags.prevents_spell_cast', false),
+                'invulnerable' => (bool) data_get($params, 'state_flags.invulnerable', false),
+                'incurable' => (bool) data_get($params, 'state_flags.incurable', false),
+                'display_turn_remaining' => false,
+                'is_main_state' => false,
+                'raw' => is_array($params['state_flags'] ?? null) ? $params['state_flags'] : null,
+            ]
+        );
+
+        $spell->spellStates()->syncWithoutDetaching([
+            $spellState->id => [
+                'application_mode' => $subEffectSlug === 's-appliquer-etat' ? 'self' : 'target',
+                'dofus_effect_id' => isset($params['dofus_effect_id']) && is_numeric($params['dofus_effect_id'])
+                    ? (int) $params['dofus_effect_id']
+                    : null,
+                'duration' => isset($params['duration']) && is_numeric($params['duration']) ? (int) $params['duration'] : null,
+                'dispellable' => array_key_exists('dispellable', $params) ? (bool) $params['dispellable'] : null,
+                'target_mask' => isset($params['target_mask']) && is_string($params['target_mask']) ? $params['target_mask'] : null,
+            ],
+        ]);
     }
 
     /**
@@ -1464,8 +1529,9 @@ final class IntegrationService
 
     private function getSystemUserId(): int
     {
-        if (auth()->check()) {
-            return (int) auth()->id();
+        $authUser = Auth::user();
+        if ($authUser !== null) {
+            return (int) $authUser->id;
         }
         $systemUser = User::getSystemUser();
         if ($systemUser) {

@@ -21,6 +21,22 @@ import {
   getSpellCategoryOptions
 } from "@/Utils/Entity/SharedConstants";
 
+const SPELL_RESOLUTION_MODE_OPTIONS = () => [
+  { value: "attack_roll", label: "Jet d'attaque (vs CA)" },
+  { value: "saving_throw", label: "Jet de sauvegarde" },
+  { value: "auto_success", label: "Réussite automatique" },
+];
+
+const SAVE_ABILITY_OPTIONS = () => [
+  { value: "", label: "—" },
+  { value: "strong", label: "Force" },
+  { value: "intel", label: "Intelligence" },
+  { value: "chance", label: "Chance" },
+  { value: "agi", label: "Agilité" },
+  { value: "sagesse", label: "Sagesse" },
+  { value: "vitality", label: "Vitalité" },
+];
+
 /**
  * @typedef {Object} SpellFieldDescriptor
  * @property {string} key - Clé unique du champ
@@ -340,6 +356,81 @@ export function getSpellFieldDescriptors(ctx = {}) {
           showInCompact: true,
           options: getSpellCategoryOptions,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+        },
+      },
+    },
+    resolution_mode: {
+      key: "resolution_mode",
+      label: "Résolution",
+      icon: "fa-solid fa-dice-d20",
+      edit: {
+        form: {
+          type: "select",
+          group: "Combat",
+          required: false,
+          showInCompact: true,
+          options: SPELL_RESOLUTION_MODE_OPTIONS,
+          defaultValue: "attack_roll",
+          bulk: { enabled: false },
+        },
+      },
+    },
+    attack_characteristic_key: {
+      key: "attack_characteristic_key",
+      label: "Carac. attaque",
+      icon: "fa-solid fa-bullseye",
+      edit: {
+        form: {
+          type: "select",
+          group: "Combat",
+          required: false,
+          showInCompact: true,
+          options: SAVE_ABILITY_OPTIONS,
+          bulk: { enabled: false },
+        },
+      },
+    },
+    save_characteristic_key: {
+      key: "save_characteristic_key",
+      label: "Carac. sauvegarde",
+      icon: "fa-solid fa-shield-halved",
+      edit: {
+        form: {
+          type: "select",
+          group: "Combat",
+          required: false,
+          showInCompact: true,
+          options: SAVE_ABILITY_OPTIONS,
+          bulk: { enabled: false },
+        },
+      },
+    },
+    save_dc_formula: {
+      key: "save_dc_formula",
+      label: "Formule DD",
+      icon: "fa-solid fa-calculator",
+      edit: {
+        form: {
+          type: "text",
+          group: "Combat",
+          required: false,
+          showInCompact: true,
+          placeholder: "10 + modificateur de caractéristique",
+          bulk: { enabled: false },
+        },
+      },
+    },
+    save_success_note: {
+      key: "save_success_note",
+      label: "Effet si sauvegarde réussie",
+      icon: "fa-solid fa-note-sticky",
+      edit: {
+        form: {
+          type: "textarea",
+          group: "Combat",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: false },
         },
       },
     },

@@ -12,6 +12,7 @@ namespace App\Enums;
  * @method static self GALLERY()
  * @method static self VIDEO()
  * @method static self ENTITY_TABLE()
+ * @method static self LEGAL_MARKDOWN()
  */
 enum SectionType: string
 {
@@ -20,6 +21,7 @@ enum SectionType: string
     case GALLERY = 'gallery';
     case VIDEO = 'video';
     case ENTITY_TABLE = 'entity_table';
+    case LEGAL_MARKDOWN = 'legal_markdown';
 
     /**
      * Retourne le label traduit du type.
@@ -34,6 +36,7 @@ enum SectionType: string
             self::GALLERY => 'Galerie',
             self::VIDEO => 'Vidéo',
             self::ENTITY_TABLE => 'Tableau d\'entités',
+            self::LEGAL_MARKDOWN => 'Document légal (Markdown)',
         };
     }
 
@@ -50,6 +53,7 @@ enum SectionType: string
             self::GALLERY => 'fa-images',
             self::VIDEO => 'fa-video',
             self::ENTITY_TABLE => 'fa-table',
+            self::LEGAL_MARKDOWN => 'fa-scale-balanced',
         };
     }
 
@@ -88,6 +92,10 @@ enum SectionType: string
                 'entity' => 'string (required)',
                 'filters' => 'array (optional)',
                 'columns' => 'array (optional)',
+            ],
+            self::LEGAL_MARKDOWN => [
+                'sourceUrl' => 'string (required, URL du fichier markdown)',
+                'title' => 'string (optional)',
             ],
         };
     }

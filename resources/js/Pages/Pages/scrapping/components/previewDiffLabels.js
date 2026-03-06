@@ -19,6 +19,8 @@ export const SECTION_LABELS = {
     resource: "Ressource",
     consumable: "Consommable",
     equipment: "Équipement",
+    spell_effects: "Effets du sort",
+    spell_states: "États du sort",
     record: "Enregistrement",
 };
 
@@ -57,6 +59,14 @@ export const FIELD_LABELS = {
     number_between_two_cast_editable: "Relance modifiable",
     length: "Nombre d’éléments",
     summary: "Résumé",
+    state_dofusdb_id: "ID état DofusDB",
+    state_name: "Nom de l'état",
+    state_icon: "Icône état",
+    state_image: "Image état",
+    state_flags: "Propriétés état",
+    dispellable: "Dissipable",
+    target_mask: "Masque de cible",
+    target_id: "ID cible",
     shape: "Forme (shape)",
     param1: "Paramètre 1",
     param2: "Paramètre 2",

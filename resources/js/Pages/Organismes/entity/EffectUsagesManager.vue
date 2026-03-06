@@ -8,7 +8,15 @@ import { ref, watch, computed } from 'vue';
 import axios from 'axios';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import {
+    formatSpellStateDispellable,
+    formatSpellStateDuration,
+    formatSpellStateIdentity,
+    formatSpellStateMask,
+    formatSpellStateMode,
+    getSpellStateDispellableIcon,
+} from '@/Composables/spell/spellStateDisplay';
 
 const props = defineProps({
     effectUsages: { type: Array, default: () => [] },
@@ -132,9 +140,31 @@ async function deleteUsage(id) {
     }
 }
 
-function effectName(effectId) {
-    const e = props.availableEffects.find((x) => x.id === effectId);
-    return e ? (e.name || e.slug || 'Effet #' + effectId) : '—';
+function isStateSubEffect(sub) {
+    const slug = String(sub?.action_slug || "");
+    return slug === "appliquer-etat" || slug === "s-appliquer-etat";
+}
+
+function stateModeLabel(sub) {
+    return formatSpellStateMode(sub?.action_slug, { variant: "table" });
+}
+
+function stateName(sub) {
+    const ctx = sub?.context ?? {};
+    return formatSpellStateIdentity(ctx?.state_name, ctx?.state_dofusdb_id);
+}
+
+function stateMeta(sub) {
+    const ctx = sub?.context ?? {};
+    const bits = [
+        formatSpellStateDuration(ctx?.duration),
+        formatSpellStateMask(ctx?.target_mask),
+    ].filter(Boolean);
+    return bits.join(" · ");
+}
+
+function stateDispellableText(sub) {
+    return formatSpellStateDispellable(sub?.context?.dispellable);
 }
 </script>
 
@@ -216,12 +246,88 @@ function effectName(effectId) {
             <div v-else-if="previewData && previewData.length === 0" class="text-sm text-base-content/70">
                 Aucun effet pour ce niveau.
             </div>
-            <ul v-else-if="previewData" class="list-disc list-inside space-y-1 text-sm">
-                <li v-for="(item, i) in previewData" :key="i">
-                    <span class="font-medium">{{ item.effect?.name || item.effect?.slug || 'Effet' }}</span>
-                    : {{ item.resolved_text || item.description || '—' }}
-                </li>
-            </ul>
+            <div v-else-if="previewData" class="space-y-3">
+                <div
+                    v-for="(item, i) in previewData"
+                    :key="i"
+                    class="rounded border border-base-300 bg-base-200/40 p-3"
+                >
+                    <div class="text-sm">
+                        <span class="font-medium">{{ item.effect?.name || item.effect?.slug || 'Effet' }}</span>
+                        <span class="text-base-content/70"> — {{ item.resolved_text || item.description || '—' }}</span>
+                    </div>
+
+                    <div
+                        v-if="Array.isArray(item.resolved?.sub_effects) && item.resolved.sub_effects.length"
+                        class="mt-2 pl-3 border-l-2 border-base-300 space-y-1"
+                    >
+                        <p class="text-xs uppercase tracking-wide text-base-content/60 font-semibold">
+                            Sous-effets (normal)
+                        </p>
+                        <ul class="text-sm space-y-1">
+                            <li v-for="(sub, si) in item.resolved.sub_effects" :key="`n-${i}-${si}`">
+                                <template v-if="isStateSubEffect(sub)">
+                                    <span class="font-mono">{{ sub.action_slug }}</span>
+                                    <span class="text-base-content/80"> → {{ stateName(sub) }}</span>
+                                    <span class="text-base-content/60"> ({{ stateModeLabel(sub) }})</span>
+                                    <span
+                                        v-if="stateDispellableText(sub)"
+                                        class="inline-flex items-center gap-1 text-base-content/60"
+                                    >
+                                        <Icon
+                                            v-if="getSpellStateDispellableIcon(sub?.context?.dispellable)"
+                                            :source="getSpellStateDispellableIcon(sub?.context?.dispellable)"
+                                            :alt="stateDispellableText(sub) || ''"
+                                            size="xs"
+                                        />
+                                        {{ stateDispellableText(sub) }}
+                                    </span>
+                                    <span v-if="stateMeta(sub)" class="text-base-content/60"> · {{ stateMeta(sub) }}</span>
+                                </template>
+                                <template v-else>
+                                    <span class="font-mono">{{ sub.action_slug || "—" }}</span>
+                                    <span class="text-base-content/70"> — {{ sub.text || "—" }}</span>
+                                </template>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div
+                        v-if="Array.isArray(item.resolved_crit?.sub_effects) && item.resolved_crit.sub_effects.length"
+                        class="mt-2 pl-3 border-l-2 border-warning/40 space-y-1"
+                    >
+                        <p class="text-xs uppercase tracking-wide text-warning/80 font-semibold">
+                            Sous-effets (critique)
+                        </p>
+                        <ul class="text-sm space-y-1">
+                            <li v-for="(sub, si) in item.resolved_crit.sub_effects" :key="`c-${i}-${si}`">
+                                <template v-if="isStateSubEffect(sub)">
+                                    <span class="font-mono">{{ sub.action_slug }}</span>
+                                    <span class="text-base-content/80"> → {{ stateName(sub) }}</span>
+                                    <span class="text-base-content/60"> ({{ stateModeLabel(sub) }})</span>
+                                    <span
+                                        v-if="stateDispellableText(sub)"
+                                        class="inline-flex items-center gap-1 text-base-content/60"
+                                    >
+                                        <Icon
+                                            v-if="getSpellStateDispellableIcon(sub?.context?.dispellable)"
+                                            :source="getSpellStateDispellableIcon(sub?.context?.dispellable)"
+                                            :alt="stateDispellableText(sub) || ''"
+                                            size="xs"
+                                        />
+                                        {{ stateDispellableText(sub) }}
+                                    </span>
+                                    <span v-if="stateMeta(sub)" class="text-base-content/60"> · {{ stateMeta(sub) }}</span>
+                                </template>
+                                <template v-else>
+                                    <span class="font-mono">{{ sub.action_slug || "—" }}</span>
+                                    <span class="text-base-content/70"> — {{ sub.text || "—" }}</span>
+                                </template>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </Container>
 </template>

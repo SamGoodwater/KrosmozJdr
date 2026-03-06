@@ -13,6 +13,7 @@ use App\Models\Entity\Campaign;
 use App\Models\Type\SpellType;
 use App\Models\Entity\Monster;
 use App\Models\EffectUsage;
+use App\Models\SpellState;
 use App\Models\SpellEffect;
 use App\Models\Concerns\HasEntityImageMedia;
 use Spatie\MediaLibrary\HasMedia;
@@ -41,6 +42,11 @@ use Spatie\MediaLibrary\HasMedia;
  * @property int $category
  * @property bool $is_magic
  * @property int $powerful
+ * @property string $resolution_mode
+ * @property string|null $attack_characteristic_key
+ * @property string|null $save_characteristic_key
+ * @property string|null $save_dc_formula
+ * @property string|null $save_success_note
  * @property string $state
  * @property int $read_level
  * @property int $write_level
@@ -115,6 +121,10 @@ class Spell extends Model implements HasMedia
     public const CATEGORY_LEARNABLE = 2;
     public const CATEGORY_CONSUMABLE = 3;
 
+    public const RESOLUTION_ATTACK_ROLL = 'attack_roll';
+    public const RESOLUTION_SAVING_THROW = 'saving_throw';
+    public const RESOLUTION_AUTO_SUCCESS = 'auto_success';
+
     /** Répertoire Media Library pour ce modèle. */
     public const MEDIA_PATH = 'images/entity/spells';
 
@@ -180,6 +190,11 @@ class Spell extends Model implements HasMedia
         'category',
         'is_magic',
         'powerful',
+        'resolution_mode',
+        'attack_characteristic_key',
+        'save_characteristic_key',
+        'save_dc_formula',
+        'save_success_note',
         'state',
         'read_level',
         'write_level',
@@ -267,6 +282,16 @@ class Spell extends Model implements HasMedia
     public function monsters()
     {
         return $this->belongsToMany(Monster::class, 'spell_invocation');
+    }
+
+    /**
+     * Les états que ce sort peut appliquer (sur cible ou lanceur).
+     */
+    public function spellStates()
+    {
+        return $this->belongsToMany(SpellState::class, 'spell_spell_state')
+            ->withPivot(['application_mode', 'dofus_effect_id', 'duration', 'dispellable', 'target_mask'])
+            ->withTimestamps();
     }
 
     /**

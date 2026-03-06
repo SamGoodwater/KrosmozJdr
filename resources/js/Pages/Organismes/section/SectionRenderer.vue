@@ -83,7 +83,20 @@ watch(() => props.autoEdit, (shouldEdit) => {
  * Template de la section (utilise templateInfo du composable UI)
  */
 const templateValue = computed(() => {
-  return templateInfo.value.value;
+  const rawTemplate =
+    props.section?.template
+    ?? props.section?.type
+    ?? templateInfo.value.value
+    ?? 'text';
+
+  // Supporte les cas enum/object ({ value: 'text' }) et force une string stable.
+  if (rawTemplate && typeof rawTemplate === 'object' && 'value' in rawTemplate) {
+    return String(rawTemplate.value || 'text');
+  }
+  return String(rawTemplate || 'text');
+});
+const isTemplateValid = computed(() => {
+  return Boolean(templateValue.value) && registry.isValidTemplate(templateValue.value);
 });
 
 /**
@@ -105,6 +118,16 @@ const sectionSettings = computed(() => {
  */
 const loadTemplateComponent = async () => {
   if (!templateValue.value) return;
+  if (!isTemplateValid.value) {
+    const available = (registry.templates?.value || []).map((t) => t.value).filter(Boolean);
+    console.error('[SectionRenderer] Template invalide', {
+      sectionId: sectionId.value,
+      requestedTemplate: templateValue.value,
+      availableTemplates: available,
+    });
+    templateComponent.value = null;
+    return;
+  }
   
   isLoadingTemplate.value = true;
   try {
@@ -318,7 +341,10 @@ const handleDeleteSection = async () => {
         <h3 class="font-bold">Template non trouvé</h3>
                 <p class="text-sm">
           Le template "{{ templateValue }}" n'est pas disponible.
-                    Contacte un administrateur.
+                    Vérifie la valeur du template de la section et le registre des templates.
+                </p>
+                <p v-if="!isTemplateValid" class="text-xs opacity-80 mt-1">
+                    Diagnostic: template inconnu du registre frontend.
                 </p>
             </div>
         </div>

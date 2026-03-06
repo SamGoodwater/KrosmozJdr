@@ -49,7 +49,16 @@ export class BaseMapper {
         }
 
         // Extraire les données si elles sont dans .data (structure Inertia Resource)
-        if (unwrapped && unwrapped.data && typeof unwrapped.data === 'object') {
+        // IMPORTANT:
+        // - Une entité métier peut aussi contenir une clé `data` (ex: Section.data),
+        //   sans être une enveloppe Inertia.
+        // - On ne "déplie" donc que les objets qui n'ont pas d'identifiant racine.
+        if (
+            unwrapped
+            && unwrapped.data
+            && typeof unwrapped.data === 'object'
+            && !Object.prototype.hasOwnProperty.call(unwrapped, 'id')
+        ) {
             // Fusionner avec les propriétés au niveau racine (comme 'can')
             return {
                 ...unwrapped.data,

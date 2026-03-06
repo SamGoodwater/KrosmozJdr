@@ -14,9 +14,9 @@ Ce document décrit la structure des données **effets** côté DofusDB (tout en
 |-------|------------------|------|
 | **Collecte** | `CollectService` | `GET /spells/{id}` puis `GET /spell-levels?spellId=…&$sort=grade` → `raw` + `raw['levels']` |
 | **Conversion (propriétés sort)** | `ConversionService` + `spell.json` / `scrapping_entity_mappings` | Propriétés du sort (pa, po_min, po_max, name, sight_line, area au niveau spell, etc.) depuis `levels.0.*` |
-| **Conversion (effets)** | `SpellEffectsConversionService` | Pour chaque niveau : instances `effects[]` → effectId → `dofusdb_effect_mappings` → sous-effet Krosmoz ; zone = première `zoneDescr` du niveau ; `value_formula`, `value_converted`, `dice_formula` via règles **characteristic_spell** (Phase 3) |
+| **Conversion (effets)** | `SpellEffectsConversionService` | Pour chaque niveau : instances `effects[]` → effectId → `dofusdb_effect_mappings` → sous-effet Krosmoz ; zone = première `zoneDescr` du niveau ; `value_formula`, `value_converted`, `dice_formula` via règles **characteristic_spell** (Phase 3). Les effets de type état (`État #3`) sont résolus via `/spell-states/{id}` et mappés vers `appliquer-etat` / `s-appliquer-etat`. |
 | **Validation** | `CharacteristicLimitService` | Clamp et validation des données converties |
-| **Intégration** | `IntegrationService::integrateSpell` + `integrateSpellEffectsForSpell` | Création/mise à jour du **Spell**, puis **EffectGroup**, **Effect** (par grade), **EffectSubEffect** (params dont value_converted), **EffectUsage** |
+| **Intégration** | `IntegrationService::integrateSpell` + `integrateSpellEffectsForSpell` | Création/mise à jour du **Spell**, puis **EffectGroup**, **Effect** (par grade), **EffectSubEffect** (params dont value_converted), **EffectUsage**. Les états rencontrés sont upsert dans `spell_states` puis liés au sort (`spell_spell_state`). |
 
 Les valeurs numériques des effets (dégâts, soins, bonus PO/PO, etc.) sont converties selon les **formules de conversion** et **convertToDice** définies dans `characteristic_spell` (voir `SpellEffectConversionFormulaResolver`, `DofusConversionService`).
 
@@ -61,6 +61,13 @@ Pour les chemins exacts (levels.0.minRange, levels.0.range, levels.0.castTestLos
   - `useDice`, `forceMinMax`, `description` (multilingue)
 
 Exemple : effet 98 → category 2, elementId 4, description "dommages Air".
+
+### 1.4 Dictionnaire des états de sort
+
+- **`GET /spell-states/{id}?lang=fr`** renvoie la définition de l’état :
+  - `id`, `name`, `icon`, `img`
+  - flags gameplay (`cantBeMoved`, `invulnerable`, `incurable`, etc.)
+- Les instances d’effets de `spell-levels.effects[]` portent déjà des métadonnées utiles à conserver dans les params (`dispellable`, `duration`, `targetMask`).
 
 ---
 

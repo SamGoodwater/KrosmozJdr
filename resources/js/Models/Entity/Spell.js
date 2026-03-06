@@ -102,6 +102,26 @@ export class Spell extends BaseModel {
         return this._data.powerful || null;
     }
 
+    get resolutionMode() {
+        return this._data.resolution_mode || "attack_roll";
+    }
+
+    get attackCharacteristicKey() {
+        return this._data.attack_characteristic_key || null;
+    }
+
+    get saveCharacteristicKey() {
+        return this._data.save_characteristic_key || null;
+    }
+
+    get saveDcFormula() {
+        return this._data.save_dc_formula || null;
+    }
+
+    get saveSuccessNote() {
+        return this._data.save_success_note || null;
+    }
+
     get image() {
         return this._data.image || '';
     }
@@ -718,6 +738,11 @@ export class Spell extends BaseModel {
             category: this.category,
             is_magic: this.isMagic,
             powerful: this.powerful,
+            resolution_mode: this.resolutionMode,
+            attack_characteristic_key: this.attackCharacteristicKey,
+            save_characteristic_key: this.saveCharacteristicKey,
+            save_dc_formula: this.saveDcFormula,
+            save_success_note: this.saveSuccessNote,
             state: this.state,
             read_level: this.readLevel,
             write_level: this.writeLevel,

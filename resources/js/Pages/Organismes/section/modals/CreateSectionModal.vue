@@ -40,6 +40,7 @@ const sectionTypes = computed(() => registry.getOptions());
 const createStep = ref('type');
 const pendingSettings = ref({});
 const pendingData = ref({});
+const submitError = ref('');
 
 const selectedTemplateConfig = computed(() =>
   form.template ? registry.getConfig(form.template) : null
@@ -90,6 +91,7 @@ const { createSection } = useSectionAPI();
  * Si le template a une vue paramètres dédiée, on passe à l'étape "params" ; sinon on crée directement.
  */
 const handleSelectType = async (type) => {
+    submitError.value = '';
     form.template = type.value;
     const config = registry.getConfig(type.value);
     const defaults = registry.getDefaults(type.value);
@@ -129,12 +131,16 @@ const handleBackToType = () => {
 const handleCreateSection = async (template = null, overrides = {}) => {
     const sectionTemplate = template || form.template;
 
+    submitError.value = '';
+
     if (!sectionTemplate) {
+        submitError.value = 'Aucun template sélectionné.';
         return;
     }
 
     if (!props.pageId) {
         console.error('Page ID is required to create a section');
+        submitError.value = 'Impossible de créer la section: page introuvable.';
         return;
     }
 
@@ -145,6 +151,7 @@ const handleCreateSection = async (template = null, overrides = {}) => {
         slug: form.slug || null,
         order: 0,
         template: sectionTemplate,
+        type: sectionTemplate, // compat backend legacy
         settings: overrides.settings ?? defaults.settings,
         data: overrides.data ?? defaults.data,
     };
@@ -176,11 +183,14 @@ const handleCreateSection = async (template = null, overrides = {}) => {
                     Object.keys(errors).forEach(key => {
                         form.setError(key, errors[key]);
                     });
+                    const firstError = Object.values(errors).flat().find(Boolean);
+                    submitError.value = String(firstError || 'La création de la section a échoué.');
                 }
             }
         });
     } catch (errors) {
         console.error('CreateSectionModal - Exception lors de la création de la section:', errors);
+        submitError.value = 'Erreur inattendue pendant la création de la section.';
     }
 };
 
@@ -191,6 +201,7 @@ const handleClose = () => {
     form.order = 0;
     form.template = null;
     form.clearErrors();
+    submitError.value = '';
     createStep.value = 'type';
     pendingSettings.value = {};
     pendingData.value = {};
@@ -199,6 +210,10 @@ const handleClose = () => {
 
 function onParamsUpdateSettings(v) {
     pendingSettings.value = { ...pendingSettings.value, ...v };
+}
+
+function onParamsUpdateData(v) {
+    pendingData.value = { ...pendingData.value, ...v };
 }
 </script>
 
@@ -217,6 +232,11 @@ function onParamsUpdateSettings(v) {
         </template>
 
         <div class="space-y-6">
+            <div v-if="submitError" class="alert alert-error">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>{{ submitError }}</span>
+            </div>
+
             <!-- Étape 1 : type + titre -->
             <template v-if="createStep === 'type'">
                 <InputField
@@ -274,8 +294,10 @@ function onParamsUpdateSettings(v) {
                     :is="templateParamsComponent"
                     :section="null"
                     :settings="pendingSettings"
+                    :data="pendingData"
                     mode="create"
                     @update:settings="onParamsUpdateSettings"
+                    @update:data="onParamsUpdateData"
                 />
             </template>
         </div>

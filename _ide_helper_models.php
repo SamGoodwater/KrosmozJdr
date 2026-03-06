@@ -1427,6 +1427,11 @@ namespace App\Models\Entity{
  * @property int $category
  * @property bool $is_magic
  * @property int $powerful
+ * @property string $resolution_mode
+ * @property string|null $attack_characteristic_key
+ * @property string|null $save_characteristic_key
+ * @property string|null $save_dc_formula
+ * @property string|null $save_success_note
  * @property string $state
  * @property int $read_level
  * @property int $write_level
@@ -1494,6 +1499,13 @@ namespace App\Models\Entity{
  * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SpellEffect> $spellEffects
  * @property-read int|null $spell_effects_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SpellState> $spellStates
+ * @property-read int|null $spell_states_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAttackCharacteristicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereResolutionMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveCharacteristicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveDcFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveSuccessNote($value)
  */
 	class Spell extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1890,6 +1902,19 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereValueType($value)
  */
 	class SpellEffectType extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Référentiel local des états DofusDB appliqués par les sorts.
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Spell> $spells
+ * @property-read int|null $spells_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState query()
+ */
+	class SpellState extends \Eloquent {}
 }
 
 namespace App\Models{

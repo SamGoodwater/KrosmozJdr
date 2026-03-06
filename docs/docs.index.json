@@ -17,7 +17,7 @@
   {
     "path": "00-Project/MIGRATION_MYSQL_VERS_POSTGRESQL.md",
     "title": "Passage de MySQL à PostgreSQL — KrosmozJDR",
-    "description": "Le projet utilise **MySQL par défaut**. Il reste **compatible PostgreSQL** sans modification de code : si vous souhaitez repasser à PostgreSQL (base vide), un simple changement de configuration suffit."
+    "description": "Le projet utilise **MySQL par défaut**. Il reste **compatible PostgreSQL** sans modification de code : si tu souhaites repasser à PostgreSQL (base vide), un simple changement de configuration suffit."
   },
   {
     "path": "00-Project/PLAN-LIEN-ET-COPY-CARACTERISTIQUES.md",

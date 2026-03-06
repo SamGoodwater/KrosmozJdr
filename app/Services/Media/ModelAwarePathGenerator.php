@@ -4,6 +4,7 @@ namespace App\Services\Media;
 
 use Spatie\MediaLibrary\Support\PathGenerator\DefaultPathGenerator;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Models\Section;
 
 /**
  * PathGenerator qui lit le répertoire depuis la constante MEDIA_PATH du modèle.
@@ -18,9 +19,18 @@ class ModelAwarePathGenerator extends DefaultPathGenerator
     protected function getBasePath(Media $media): string
     {
         $modelClass = $media->model_type ?? '';
+        $prefix = config('media-library.prefix', '');
+
+        // Sections: stockage demandé sous sections/{section_id}/{media_id}
+        if ($modelClass === Section::class) {
+            $sectionId = (int) ($media->model_id ?? 0);
+            if ($sectionId > 0) {
+                $path = "sections/{$sectionId}/{$media->getKey()}";
+                return $prefix !== '' ? $prefix . '/' . $path : $path;
+            }
+        }
 
         if ($modelClass !== '' && defined("{$modelClass}::MEDIA_PATH")) {
-            $prefix = config('media-library.prefix', '');
             $base = trim($modelClass::MEDIA_PATH, '/');
             $path = $base . '/' . $media->getKey();
 

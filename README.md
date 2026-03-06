@@ -14,28 +14,28 @@
             épiques.</p>
         <h4 id="explorez-des-lieux-mythiques">Explorez des lieux mythiques</h4>
         <p>De la cité lumineuse de Bonta aux mystères d'Astrub, en passant par les plaines sauvages des Craqueleurs et
-            les secrets d'Amakna, découvrez un monde vaste et varié où chaque région est le théâtre d'histoires
-            légendaires. Préparez-vous à croiser la route des Wabbits malicieux, des Bouftous sauvages, des Chafeurs
+            les secrets d'Amakna, découvre un monde vaste et varié où chaque région est le théâtre d'histoires
+            légendaires. Prépare-toi à croiser la route des Wabbits malicieux, des Bouftous sauvages, des Chafeurs
             redoutables, et à affronter les puissants maîtres des donjons comme Kardorim, Groloum ou encore le Comte
             Harebourg.</p>
         <h4 id="incarnez-une-classe-iconique">Incarnez une classe iconique</h4>
-        <p>Choisissez parmi une grande variété de classes emblématiques : serez-vous un Crâ précis et implacable, un Iop
-            téméraire et valeureux, un Osamodas lié aux créatures, ou encore un Eliotrope maître des portails ? Que vous
-            soyez un soigneur Eniripsa, un stratège Roublard ou un manipulateur du temps Xélor, chaque classe offre des
+        <p>Choisis parmi une grande variété de classes emblématiques : seras-tu un Crâ précis et implacable, un Iop
+            téméraire et valeureux, un Osamodas lié aux créatures, ou encore un Eliotrope maître des portails ? Que tu
+            sois un soigneur Eniripsa, un stratège Roublard ou un manipulateur du temps Xélor, chaque classe offre des
             mécaniques uniques et des sorts adaptés à l'univers du jeu de rôle.</p>
-        <h4 id="d-veloppez-votre-personnage">Développez votre personnage</h4>
-        <p>Grâce à un système de compétences et d'aptitudes inspiré de D&amp;D, personnalisez votre héros pour qu'il
-            reflète votre style de jeu. Enrichissez vos stratégies avec des spécialisations uniques, inspirées des
-            subtilités des races de D&amp;D, et explorez des gameplays toujours plus variés et profonds.</p>
+        <h4 id="d-veloppez-votre-personnage">Développe ton personnage</h4>
+        <p>Grâce à un système de compétences et d'aptitudes inspiré de D&amp;D, personnalise ton héros pour qu'il
+            reflète ton style de jeu. Enrichis tes stratégies avec des spécialisations uniques, inspirées des
+            subtilités des races de D&amp;D, et explore des gameplays toujours plus variés et profonds.</p>
         <h4 id="un-gameplay-enrichi-et-immersif">Un gameplay enrichi et immersif</h4>
         <p>Notre jeu de rôle fusionne les règles classiques du JdR avec l'univers riche de Dofus, pour offrir une
-            expérience immersive et accessible à tous, débutants comme vétérans. Préparez-vous à vivre des quêtes
-            épiques, à forger des alliances mémorables, et à écrire votre légende dans un monde en perpétuelle
+            expérience immersive et accessible à tous, débutants comme vétérans. Prépare-toi à vivre des quêtes
+            épiques, à forger des alliances mémorables, et à écrire ta légende dans un monde en perpétuelle
             évolution.</p>
         <hr>
-        <h3 id="-tes-vous-pr-t-rejoindre-l-aventure-">Êtes-vous prêt à rejoindre l'aventure ?</h3>
-        <p>Rassemblez vos compagnons, lancez vos dés et partez à la découverte du monde des Douze. Votre destin est
-            entre vos mains !</p>
+        <h3 id="-tes-vous-pr-t-rejoindre-l-aventure-">Es-tu prêt à rejoindre l'aventure ?</h3>
+        <p>Rassemble tes compagnons, lance tes dés et pars à la découverte du monde des Douze. Ton destin est
+            entre tes mains !</p>
 
 <h2>Contacts</h2>
 <p>Une version en ligne :  <a href="https://krosmoz-jdr.fr/" target="\_blank">https://krosmoz-jdr.fr/</a> (En cours de création)</p>

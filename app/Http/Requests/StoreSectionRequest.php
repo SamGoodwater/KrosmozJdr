@@ -165,6 +165,31 @@ class StoreSectionRequest extends FormRequest
     protected function prepareForValidation()
     {
         $data = $this->all();
+
+        // Compat moderne/legacy AVANT validation:
+        // - template <-> type
+        // - data <-> params
+        $template = $data['template'] ?? null;
+        $type = $data['type'] ?? null;
+        $payloadData = $data['data'] ?? null;
+        $params = $data['params'] ?? null;
+
+        $merged = [];
+        if (!isset($data['template']) && isset($data['type'])) {
+            $merged['template'] = $type;
+        }
+        if (!isset($data['type']) && isset($data['template'])) {
+            $merged['type'] = $template;
+        }
+        if (!isset($data['data']) && isset($data['params'])) {
+            $merged['data'] = $params;
+        }
+        if (!isset($data['params']) && isset($data['data'])) {
+            $merged['params'] = $payloadData;
+        }
+        if (!empty($merged)) {
+            $this->merge($merged);
+        }
         
         // Ne pas définir params à un tableau vide si il n'est pas présent
         // Cela permet à la validation de détecter si params est manquant

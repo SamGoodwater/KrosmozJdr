@@ -128,6 +128,9 @@ importers:
       laravel-precognition-vue-inertia:
         specifier: ^0.7.3
         version: 0.7.3(@inertiajs/vue3@1.3.0(vue@3.5.26))(vue@3.5.26)
+      marked:
+        specifier: ^17.0.4
+        version: 17.0.4
       mysql-mcp:
         specifier: ^1.1.1
         version: 1.1.1(hono@4.11.3)
@@ -2567,6 +2570,11 @@ packages:
 
   markdown-it@14.1.0:
     resolution: {integrity: sha512-a54IwgWPaeBCAAsv13YgmALOF1elABB08FxO9i+r4VFk5Vl4pKokRPeX8u5TCgSsPi6ec1otfLjdOpVcgbpshg==}
+    hasBin: true
+
+  marked@17.0.4:
+    resolution: {integrity: sha512-NOmVMM+KAokHMvjWmC5N/ZOvgmSWuqJB8FoYI019j4ogb/PeRMKoKIjReZ2w3376kkA8dSJIP8uD993Kxc0iRQ==}
+    engines: {node: '>= 20'}
     hasBin: true
 
   math-intrinsics@1.1.0:
@@ -5731,6 +5739,8 @@ snapshots:
       mdurl: 2.0.0
       punycode.js: 2.3.1
       uc.micro: 2.1.0
+
+  marked@17.0.4: {}
 
   math-intrinsics@1.1.0: {}
 

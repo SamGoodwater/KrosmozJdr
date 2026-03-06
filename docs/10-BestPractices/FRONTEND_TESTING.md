@@ -177,7 +177,7 @@ Chaque test doit être indépendant et ne pas dépendre d'autres tests.
 
 ### 2. Arrange-Act-Assert (AAA)
 
-Structurez vos tests en trois parties :
+Structure tes tests en trois parties :
 ```javascript
 it('devrait faire quelque chose', () => {
   // Arrange : Préparer les données

@@ -198,6 +198,10 @@ final class Orchestrator
                         'effects' => $effectsResult->getEffects(),
                     ];
                 }
+                $converted['spells'] = array_merge(
+                    is_array($converted['spells'] ?? null) ? $converted['spells'] : [],
+                    $effectsResult->getSpellResolution()
+                );
             }
         }
 
@@ -329,6 +333,10 @@ final class Orchestrator
                             'effect_group' => $effectsResult->getEffectGroup(),
                             'effects' => $effectsResult->getEffects(),
                         ];
+                        $converted['spells'] = array_merge(
+                            is_array($converted['spells'] ?? null) ? $converted['spells'] : [],
+                            $effectsResult->getSpellResolution()
+                        );
                     }
                 }
 

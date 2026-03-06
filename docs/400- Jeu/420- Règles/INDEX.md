@@ -3680,7 +3680,7 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 
 
 
-**Personnaliser votre historique** : 
+**Personnaliser ton historique** : 
 2.5
 
 
@@ -5940,7 +5940,7 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 
 
 
-**1. Vérifier que vous avez les PA nécessaires** : 
+**1. Vérifier que tu as les PA nécessaires** : 
 3.2.2
 
 

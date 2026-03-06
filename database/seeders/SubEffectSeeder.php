@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
 
 /**
  * Seed du référentiel de sous-effets (actions fondamentales).
- * Liste : frapper, soigner, protéger, voler-vie, booster, retirer, voler-caracteristiques, invoquer, déplacer, autre.
+ * Liste : frapper, soigner, protéger, voler-vie, booster, retirer, voler-caracteristiques, invoquer, déplacer, appliquer-etat, s-appliquer-etat, autre.
  * param_schema décrit les paramètres ; categories sur characteristic filtre la liste (element / toutes caractéristiques / monster / sans option).
  *
  * @see docs/50-Fonctionnalités/Spell-Effects/ARCHITECTURE_EFFETS_3_COUCHES.md
@@ -125,6 +125,36 @@ class SubEffectSeeder extends Seeder
                 'template_text' => 'Déplace la cible.',
                 'variables_allowed' => [],
                 'param_schema' => ['action' => 'déplacer', 'params' => []],
+            ],
+            [
+                'slug' => 'appliquer-etat',
+                'type_slug' => 'appliquer-etat',
+                'template_text' => 'Applique l\'état [state_name].',
+                'variables_allowed' => ['state_name'],
+                'param_schema' => [
+                    'action' => 'appliquer-etat',
+                    'params' => [
+                        ['key' => 'state_dofusdb_id', 'type' => 'number', 'label' => 'ID état DofusDB'],
+                        ['key' => 'state_name', 'type' => 'text', 'label' => 'Nom de l\'état'],
+                        ['key' => 'duration', 'type' => 'number', 'label' => 'Durée (tours)'],
+                        ['key' => 'dispellable', 'type' => 'bool', 'label' => 'Dissipable'],
+                    ],
+                ],
+            ],
+            [
+                'slug' => 's-appliquer-etat',
+                'type_slug' => 's-appliquer-etat',
+                'template_text' => 'S\'applique l\'état [state_name].',
+                'variables_allowed' => ['state_name'],
+                'param_schema' => [
+                    'action' => 's-appliquer-etat',
+                    'params' => [
+                        ['key' => 'state_dofusdb_id', 'type' => 'number', 'label' => 'ID état DofusDB'],
+                        ['key' => 'state_name', 'type' => 'text', 'label' => 'Nom de l\'état'],
+                        ['key' => 'duration', 'type' => 'number', 'label' => 'Durée (tours)'],
+                        ['key' => 'dispellable', 'type' => 'bool', 'label' => 'Dissipable'],
+                    ],
+                ],
             ],
             [
                 'slug' => 'autre',
