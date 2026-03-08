@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('media:clean-thumbnails')->daily();
+        $schedule->command('privacy:process-deletion-requests')->dailyAt('02:00');
 
         // Digests de notifications (quotidien, hebdo, mensuel)
         $schedule->job(new SendNotificationDigestsJob('daily'))->dailyAt('00:05');

@@ -148,6 +148,19 @@ class UpdateSectionRequest extends FormRequest
                     }
                 }
             }
+
+            if ($template === SectionType::LEGAL_MARKDOWN) {
+                foreach (['data.sourceUrl', 'params.sourceUrl'] as $key) {
+                    $value = $this->input($key);
+                    if (!is_string($value) || trim($value) === '') {
+                        continue;
+                    }
+                    $error = SectionTemplatePayloadValidator::validateLegalMarkdownSourceUrl($value);
+                    if ($error) {
+                        $validator->errors()->add($key, $error);
+                    }
+                }
+            }
         });
     }
 }

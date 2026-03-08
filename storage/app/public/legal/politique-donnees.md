@@ -39,5 +39,9 @@ Les donnees sont conservees uniquement pour la duree necessaire aux finalites an
 ## 7. Tes droits
 Tu peux demander l'acces, la rectification, l'effacement, la limitation ou l'opposition, selon la reglementation applicable.
 
+### Exercer tes droits directement sur le site
+- **Export de tes donnees** : Depuis ton compte, va dans Parametres > Donnees personnelles. Tu peux demander un export complet de tes donnees (profil, contenus, notifications). Le fichier sera genere et telechargeable sous 24h.
+- **Suppression de ton compte** : Depuis Parametres > Donnees personnelles, tu peux demander la suppression definitive de ton compte. Une periode de reflexion de 7 jours est appliquee ; tu peux annuler ta demande pendant ce delai. Apres ce delai, ton compte sera anonymise et supprime.
+
 ## 8. Contact
 Pour exercer tes droits ou poser une question : contact@krosmoz-jdr.fr

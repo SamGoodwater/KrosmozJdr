@@ -2229,6 +2229,13 @@
     "file": "action/Modal.vue"
   },
   {
+    "name": "ConfirmPasswordModal",
+    "description": "ConfirmPasswordModal — Modale de confirmation par mot de passe",
+    "props": [],
+    "slots": [],
+    "file": "action/ConfirmPasswordModal.vue"
+  },
+  {
     "name": "ConfirmModal",
     "description": "ConfirmModal (Molecule)",
     "props": [

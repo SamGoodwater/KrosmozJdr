@@ -24,6 +24,7 @@
 import { computed, defineAsyncComponent } from "vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CharacteristicInlineGroup from "@/Pages/Molecules/data-display/CharacteristicInlineGroup.vue";
@@ -291,6 +292,13 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
 
         <span v-else>{{ text }}</span>
     </span>
+
+    <!-- element : badge élément avec dégradé et icône -->
+    <ElementDisplay
+        v-else-if="type === 'element'"
+        :element="params.element ?? value ?? 0"
+        size="sm"
+    />
 
     <!-- chips : colonnes résumées (icône + valeur avec tooltip par item) -->
     <CharacteristicInlineGroup

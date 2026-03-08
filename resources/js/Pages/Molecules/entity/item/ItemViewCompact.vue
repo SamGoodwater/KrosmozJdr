@@ -14,6 +14,7 @@ import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
+import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
@@ -108,38 +109,22 @@ const technicalFields = computed(() => ([
     'updated_at',
 ].filter(canShowField)));
 
-const getFieldLabel = (fieldKey) => {
-    return resolveEntityFieldUi({
+const getFieldUi = (fieldKey) =>
+    resolveEntityFieldUi({
         fieldKey,
         descriptors: descriptors.value,
         tableMeta: props.tableMeta,
         entityType: 'item',
-    }).label;
-};
+    });
 
-const getFieldIcon = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'item',
-    }).icon;
-};
+const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
 
-const getFieldTooltip = (fieldKey) => resolveEntityFieldUi({
-    fieldKey,
-    descriptors: descriptors.value,
-    tableMeta: props.tableMeta,
-    entityType: 'item',
-}).tooltip;
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
+
+const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
 
 const getFieldIconStyle = (fieldKey) => {
-    const color = resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'item',
-    }).color;
+    const color = getFieldUi(fieldKey).color;
     return color ? { color } : undefined;
 };
 
@@ -176,12 +161,7 @@ const getBadgeColor = (fieldKey) => {
     return resolveEntityBadgeUi({
         fieldKey,
         cell: getCell(fieldKey),
-        fieldUi: resolveEntityFieldUi({
-            fieldKey,
-            descriptors: descriptors.value,
-            tableMeta: props.tableMeta,
-            entityType: 'item',
-        }),
+        fieldUi: getFieldUi(fieldKey),
         localColorMap: colorMap,
     }).color;
 };
@@ -190,12 +170,7 @@ const getBadgeAutoParams = (fieldKey) => {
     const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
         fieldKey,
         cell: getCell(fieldKey),
-        fieldUi: resolveEntityFieldUi({
-            fieldKey,
-            descriptors: descriptors.value,
-            tableMeta: props.tableMeta,
-            entityType: 'item',
-        }),
+        fieldUi: getFieldUi(fieldKey),
     });
     return { autoLabel, autoScheme, autoTone };
 };
@@ -304,17 +279,13 @@ const handleAction = async (actionKey) => {
                                         {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
                                     </span>
                                 </div>
-                                <Badge
-                                    :color="getBadgeColor(fieldKey)"
-                                    :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                                    :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                                    :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
+                                <PropertyDisplay
+                                    :property="getFieldUi(fieldKey)"
+                                    :value="getCell(fieldKey)?.value"
+                                    variant="badge"
                                     size="sm"
-                                    :truncate="false"
                                     class="max-w-[14rem] whitespace-normal break-words"
-                                >
-                                    <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                                </Badge>
+                                />
                             </div>
                         </Tooltip>
                     </template>

@@ -159,6 +159,10 @@ return [
         'range_editable_spell' => 'rangeEditable.webp',
         'spell_range_min_spell' => 'range.webp',
         'spell_range_max_spell' => 'range.webp',
+        'casting_time_spell' => 'castingTime.webp',
+        'duration_spell' => 'timeBeforeUseAgain.webp',
+        'time_before_use_again_spell' => 'timeBeforeUseAgain.webp',
+        'ritual_available_spell' => 'heal.webp',
     ],
     'colors' => [
         // —— Niveau (3 groupes) ——
@@ -306,6 +310,10 @@ return [
         'range_editable_spell' => '#5c6bc0',
         'spell_range_min_spell' => '#5c6bc0',
         'spell_range_max_spell' => '#5c6bc0',
+        'casting_time_spell' => '#ff9800',
+        'duration_spell' => '#00acc1',
+        'time_before_use_again_spell' => '#757575',
+        'ritual_available_spell' => '#5c6bc0',
     ],
     'descriptions' => [
         // —— Niveau (3 groupes) ——
@@ -457,5 +465,9 @@ return [
         'range_editable_spell' => 'Indique si la portée peut être modifiée par le PO du lanceur (3.3.2.2).',
         'spell_range_min_spell' => 'Portée minimale du sort en cases (DofusDB levels.0.minRange).',
         'spell_range_max_spell' => 'Portée maximale du sort en cases (DofusDB levels.0.range).',
+        'casting_time_spell' => 'Temps d\'incantation : durée nécessaire pour lancer le sort ou la capacité (ex. 1, 10m, instantané).',
+        'duration_spell' => 'Durée de l\'effet : combien de temps l\'effet du sort ou de la capacité reste actif (ex. 24h, 3 tours).',
+        'time_before_use_again_spell' => 'Temps avant réutilisation : délai minimum avant de pouvoir relancer (ex. 1 tour, 24h, 1 fois avant repos long).',
+        'ritual_available_spell' => 'Rituel disponible : la capacité peut être utilisée en mode rituel (incantation prolongée hors combat).',
     ],
 ];

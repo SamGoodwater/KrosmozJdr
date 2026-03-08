@@ -29,6 +29,7 @@ import ToggleHeader from "@/Pages/Molecules/layout/ToggleHeader.vue";
 import { useNotificationProvider } from "@/Composables/providers/useNotificationProvider";
 import { useFlashNotifications } from "@/Composables/notifications/useFlashNotifications";
 import CookieConsentBanner from "@/Pages/Molecules/privacy/CookieConsentBanner.vue";
+import PendingErasureBanner from "@/Pages/Molecules/privacy/PendingErasureBanner.vue";
 
 // Centralisation des classes Tailwind pour le layout
 const ASIDE_WIDTH_CLASS = 'w-64'      // 16rem = 256px
@@ -225,6 +226,7 @@ onUnmounted(() => {
                 <!-- Contenu principal - utilise toute la largeur disponible -->
                 <div class="flex-1 w-full p-4">
                     <Container fluid>
+                        <PendingErasureBanner />
                         <slot />
                     </Container>
                 </div>

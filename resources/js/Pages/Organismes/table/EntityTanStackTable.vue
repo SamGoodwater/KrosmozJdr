@@ -148,6 +148,13 @@ const resolvedConfig = computed(() => {
               ...filteredColumns,
           ];
 
+    // Contexte fusionné : meta serveur (characteristics, filterOptions, etc.) pour les cellules
+    const mergedContext = {
+        ...(cfg._metadata?.context || {}),
+        ...serverMeta.value,
+        capabilities: serverMeta.value?.capabilities || cfg._metadata?.context?.capabilities || {},
+    };
+
     // Gating minimal, policy-driven (évite d'afficher sélection/bulk quand pas de droits)
     return {
         ...cfg,
@@ -156,14 +163,16 @@ const resolvedConfig = computed(() => {
             ...(cfg.features || {}),
             selection: {
                 ...((cfg.features || {}).selection || {}),
-                // enabled=true dans la config, mais activé seulement si updateAny côté backend
                 enabled: Boolean((cfg.features || {}).selection?.enabled) ? Boolean(canUpdateAny.value) : false,
             },
             export: {
                 ...((cfg.features || {}).export || {}),
-                // Export nécessite au minimum viewAny
                 csv: Boolean((cfg.features || {}).export?.csv) ? Boolean(canViewAny.value) : false,
             },
+        },
+        _metadata: {
+            ...(cfg._metadata || {}),
+            context: mergedContext,
         },
     };
 });
@@ -188,15 +197,6 @@ async function fetchServer() {
 
         serverRows.value = Array.isArray(adapted?.rows) ? adapted.rows : [];
         serverMeta.value = adapted?.meta || {};
-        
-        // Mettre à jour le contexte dans la config si disponible
-        if (resolvedConfig.value?._metadata) {
-            resolvedConfig.value._metadata.context = {
-                ...resolvedConfig.value._metadata.context,
-                ...serverMeta.value,
-                capabilities: serverMeta.value?.capabilities || resolvedConfig.value._metadata.context?.capabilities || {},
-            };
-        }
         
         emit("loaded", { rows: serverRows.value, meta: serverMeta.value });
     } catch (e) {

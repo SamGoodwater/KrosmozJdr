@@ -178,7 +178,8 @@ class XssPreventionTest extends TestCase
             ],
         ]);
 
-        $response->assertStatus(302); // Redirect après update
+        // patchJson → expectsJson → le contrôleur retourne 200 JSON, pas 302
+        $response->assertStatus(200)->assertJson(['success' => true]);
 
         $section->refresh();
         $content = $section->data['content'] ?? '';

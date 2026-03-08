@@ -1,0 +1,86 @@
+/**
+ * Thème éléments (Spell, Capability)
+ *
+ * Couleurs Tailwind pour badges/dégradés.
+ * Variables --color-* du thème Tailwind (slate, amber, red, emerald, blue).
+ */
+
+// Couleurs Tailwind (référence au thème)
+$element-neutre: var(--color-slate-500);
+$element-terre: var(--color-amber-700);
+$element-feu: var(--color-red-600);
+$element-air: var(--color-emerald-600);
+$element-eau: var(--color-blue-600);
+
+$element-colors: (
+  0: $element-neutre,
+  1: $element-terre,
+  2: $element-feu,
+  3: $element-air,
+  4: $element-eau,
+);
+
+@mixin element-gradient($stops) {
+  @if length($stops) == 1 {
+    background-color: nth($stops, 1);
+  } @else {
+    $gradient-stops: ();
+    $step: 100% / length($stops);
+    @for $i from 1 through length($stops) {
+      $pos: ($i - 1) * $step;
+      $gradient-stops: append($gradient-stops, nth($stops, $i) $pos, comma);
+    }
+    background: linear-gradient(90deg, $gradient-stops);
+  }
+}
+
+@mixin element-shadow($color) {
+  box-shadow: 0 0 10px 2px color-mix(in srgb, #{$color} 40%, transparent);
+}
+
+// Map valeur élément (0-29) → liste des couleurs pour le dégradé
+$element-value-colors: (
+  0: ($element-neutre),
+  1: ($element-terre),
+  2: ($element-feu),
+  3: ($element-air),
+  4: ($element-eau),
+  5: ($element-neutre, $element-terre),
+  6: ($element-neutre, $element-feu),
+  7: ($element-neutre, $element-air),
+  8: ($element-neutre, $element-eau),
+  9: ($element-terre, $element-feu),
+  10: ($element-terre, $element-air),
+  11: ($element-terre, $element-eau),
+  12: ($element-feu, $element-air),
+  13: ($element-feu, $element-eau),
+  14: ($element-air, $element-eau),
+  15: ($element-neutre, $element-terre, $element-feu),
+  16: ($element-neutre, $element-terre, $element-air),
+  17: ($element-neutre, $element-terre, $element-eau),
+  18: ($element-neutre, $element-feu, $element-air),
+  19: ($element-neutre, $element-feu, $element-eau),
+  20: ($element-neutre, $element-air, $element-eau),
+  21: ($element-terre, $element-feu, $element-air),
+  22: ($element-terre, $element-feu, $element-eau),
+  23: ($element-terre, $element-air, $element-eau),
+  24: ($element-feu, $element-air, $element-eau),
+  25: ($element-neutre, $element-terre, $element-feu, $element-air),
+  26: ($element-neutre, $element-terre, $element-feu, $element-eau),
+  27: ($element-neutre, $element-terre, $element-air, $element-eau),
+  28: ($element-neutre, $element-feu, $element-air, $element-eau),
+  29: ($element-neutre, $element-terre, $element-feu, $element-air, $element-eau),
+);
+
+.element-badge {
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  border: none;
+
+  @each $val, $stops in $element-value-colors {
+    &--#{$val} {
+      @include element-gradient($stops);
+      @include element-shadow(nth($stops, 1));
+    }
+  }
+}

@@ -15,7 +15,9 @@ use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingServ
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Models\DofusdbEffectMapping;
 use App\Services\Scrapping\Http\DofusDbClient;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -53,7 +55,17 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
         Model::unguard();
 
+        $this->configureRateLimiting();
         $this->registerConversionFunctions();
+    }
+
+    private function configureRateLimiting(): void
+    {
+        RateLimiter::for('privacy-actions', function (\Illuminate\Http\Request $request) {
+            $key = ($request->user()?->id ?? 'guest') . '|' . $request->ip();
+
+            return Limit::perMinutes(15, 10)->by($key);
+        });
     }
 
     private function registerConversionFunctions(): void

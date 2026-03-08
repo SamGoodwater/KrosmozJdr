@@ -54,6 +54,10 @@ export const ENTITY_ROUTE_CONFIG = {
   capability: {
     show: { name: "entities.capabilities.show", paramsMode: "scalar" },
   },
+  capabilities: {
+    show: { name: "entities.capabilities.show", paramsMode: "scalar" },
+    edit: { name: "entities.capabilities.edit", paramsMode: "object", paramKey: "capability" },
+  },
   attribute: {
     show: { name: "entities.attributes.show", paramsMode: "scalar" },
   },

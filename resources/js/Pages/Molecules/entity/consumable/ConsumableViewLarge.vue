@@ -20,6 +20,7 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
+import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     consumable: {
@@ -91,13 +92,17 @@ const extendedFields = computed(() => {
     return fields.filter(canShowField);
 });
 
-const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
-};
+const getFieldUi = (fieldKey) =>
+    resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'consumable',
+    });
 
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
-};
+const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
+
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
 
 const getCell = (fieldKey) => {
     return props.consumable.toCell(fieldKey, {

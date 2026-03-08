@@ -14,6 +14,7 @@ import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
@@ -122,14 +123,15 @@ const getFieldTooltip = (fieldKey) => resolveEntityFieldUi({
     entityType: 'monster',
 }).tooltip;
 
-const getFieldIcon = (fieldKey) => {
-    return resolveEntityFieldUi({
+const getFieldUi = (fieldKey) =>
+    resolveEntityFieldUi({
         fieldKey,
         descriptors: descriptors.value,
         tableMeta: props.tableMeta,
         entityType: 'monster',
-    }).icon;
-};
+    });
+
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
 
 const getFieldIconStyle = (fieldKey) => {
     const color = resolveEntityFieldUi({
@@ -282,14 +284,13 @@ const handleAction = async (actionKey) => {
                                         {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
                                     </span>
                                 </div>
-                                <Badge
-                                    :color="getBadgeColor(fieldKey)"
+                                <PropertyDisplay
+                                    :property="getFieldUi(fieldKey)"
+                                    :value="getCell(fieldKey)?.value"
+                                    variant="badge"
                                     size="sm"
-                                    :truncate="false"
                                     class="max-w-[18rem] whitespace-normal break-words"
-                                >
-                                    <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                                </Badge>
+                                />
                             </div>
                         </Tooltip>
                     </template>

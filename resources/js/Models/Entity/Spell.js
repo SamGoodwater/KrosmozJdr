@@ -11,6 +11,7 @@
 import { BaseModel } from '../BaseModel';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
+import { getElementLabel, ELEMENT_PRIMARY_ICONS } from '@/Utils/Entity/Elements';
 
 export class Spell extends BaseModel {
     // ============================================
@@ -611,7 +612,7 @@ export class Spell extends BaseModel {
         const paValue = this.pa != null ? String(this.pa) : null;
         const poValue = this.po ? String(this.po) : null;
         const areaValue = this.area != null ? String(this.area) : null;
-        const elementValue = this.element ? String(this.element) : null;
+        const elementValue = this.element != null ? getElementLabel(Number(this.element)) : null;
         const categoryValue = this.category ? String(this.category) : null;
         const typeCount = this.spellTypesCount;
         const typesValue = typeCount > 0 ? `${typeCount} type${typeCount > 1 ? 's' : ''}` : null;
@@ -637,7 +638,7 @@ export class Spell extends BaseModel {
                 tooltip: poValue ? `${poLabel}: ${poValue}` : '',
             },
             { icon: 'fa-solid fa-expand', value: areaValue, tooltip: areaValue ? `Zone: ${areaValue}` : '' },
-            { icon: 'fa-solid fa-fire', value: elementValue, tooltip: elementValue ? `Élément: ${elementValue}` : '' },
+            { icon: ELEMENT_PRIMARY_ICONS[Number(this.element)] ?? ELEMENT_PRIMARY_ICONS[0], value: elementValue, tooltip: elementValue ? `Élément: ${elementValue}` : '' },
             { icon: 'fa-solid fa-tag', value: categoryValue, tooltip: categoryValue ? `Catégorie: ${categoryValue}` : '' },
             { icon: 'fa-solid fa-hat-wizard', value: breedsValue, tooltip: breedsValue ? `Classes: ${this.breedsCount}` : '' },
             { icon: 'fa-solid fa-dragon', value: creaturesValue, tooltip: creaturesValue ? `Créatures: ${this.creaturesCount}` : '' },

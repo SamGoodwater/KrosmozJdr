@@ -4,7 +4,9 @@
  *
  * @description
  * Utilisé pour les rendus "chips" en tableau et cartes.
+ * Supporte icônes personnalisées (icons/caracteristics/) et couleurs hex ou token Tailwind.
  */
+import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
@@ -13,6 +15,16 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+});
+
+/** Style couleur : hex direct, token Tailwind → var(--color-xxx) */
+const colorStyle = computed(() => {
+    const c = props.item?.color;
+    if (!c || typeof c !== "string") return undefined;
+    const t = c.trim();
+    if (t.startsWith("#")) return { color: t };
+    if (t.includes("-")) return { color: `var(--color-${t})` };
+    return undefined;
 });
 </script>
 
@@ -28,8 +40,8 @@ const props = defineProps({
             :alt="item.tooltip || item.label || ''"
             size="xs"
             class="shrink-0 opacity-80"
-            :style="item.color ? { color: item.color } : undefined"
+            :style="colorStyle"
         />
-        <span class="text-xs" :style="item.color ? { color: item.color } : undefined">{{ item.value }}</span>
+        <span class="text-xs" :style="colorStyle">{{ item.value }}</span>
     </Tooltip>
 </template>

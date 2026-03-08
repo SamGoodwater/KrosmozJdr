@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/capabilities/bulk
- * { "ids":[1,2,3], "level":"5", "pa":"4", "po":"2", "element":"fire", "state":"playable", "read_level":0, "write_level":3 }
+ * { "ids":[1,2,3], "level":"5", "pa":"4", "po":"2", "element":2, "state":"playable", "read_level":0, "write_level":3 }
  */
 class CapabilityBulkController extends Controller
 {
@@ -32,7 +32,7 @@ class CapabilityBulkController extends Controller
             'level' => ['sometimes', 'nullable', 'string', 'max:255'],
             'pa' => ['sometimes', 'nullable', 'string', 'max:255'],
             'po' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'element' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'element' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:29'],
             'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],

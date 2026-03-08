@@ -7,6 +7,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use App\Http\Resources\UserResource;
@@ -87,6 +88,29 @@ class UserController extends Controller
         return Inertia::render('Pages/user/Show', [
             'user' => new UserResource($user),
         ]);
+    }
+
+    /**
+     * Confirme le mot de passe de l'utilisateur (mode modal/API).
+     * Utilisé par ConfirmPasswordModal pour protéger les actions sensibles.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function confirmPassword(Request $request)
+    {
+        $this->authorize('update', $request->user());
+
+        $request->validate(['password' => ['required', 'string']]);
+
+        if (! Hash::check($request->password, $request->user()->password)) {
+            return response()->json([
+                'errors' => ['password' => [__('auth.password')]],
+            ], 422);
+        }
+
+        $request->session()->put('auth.password_confirmed_at', time());
+
+        return response()->json(['confirmed' => true]);
     }
 
     /**

@@ -14,6 +14,8 @@ import { router } from '@inertiajs/vue3';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
+import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
@@ -81,31 +83,20 @@ const compactFields = computed(() => [
     'write_level',
 ].filter(canShowField));
 
-const getFieldLabel = (fieldKey) => {
-    return resolveEntityFieldUi({
+const getFieldUi = (fieldKey) =>
+    resolveEntityFieldUi({
         fieldKey,
         descriptors: descriptors.value,
         tableMeta: props.tableMeta,
         entityType: 'capability',
-    }).label;
-};
+    });
 
-const getFieldIcon = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'capability',
-    }).icon;
-};
+const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
+
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
 
 const getFieldIconStyle = (fieldKey) => {
-    const color = resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'capability',
-    }).color;
+    const color = getFieldUi(fieldKey).color;
     return color ? { color } : undefined;
 };
 
@@ -186,27 +177,21 @@ const handleAction = async (actionKey) => {
             <div
                 v-for="fieldKey in compactFields"
                 :key="fieldKey"
-                class="flex items-start gap-2 p-2 entity-radius-field hover:bg-base-200 transition-colors"
+                class="flex items-center justify-between gap-2 p-2 entity-radius-field hover:bg-base-200 transition-colors"
             >
-                <Icon
-                    :source="getFieldIcon(fieldKey)"
-                    size="xs"
-                    class="text-primary-400 flex-shrink-0 mt-0.5"
-                    :style="getFieldIconStyle(fieldKey)"
+                <ElementDisplay
+                    v-if="fieldKey === 'element'"
+                    :element="capability?.element ?? 0"
+                    size="sm"
                 />
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-primary-400 text-xs font-semibold uppercase">
-                            {{ getFieldLabel(fieldKey) }}
-                        </span>
-                        <div class="flex-1 text-right min-w-0 text-primary-200">
-                            <CellRenderer
-                                :cell="getCell(fieldKey)"
-                                ui-color="primary"
-                            />
-                        </div>
-                    </div>
-                </div>
+                <PropertyDisplay
+                    v-else
+                    :property="getFieldUi(fieldKey)"
+                    :value="getCell(fieldKey)?.value"
+                    variant="inline"
+                    size="sm"
+                    class="flex-1"
+                />
             </div>
         </div>
     </div>

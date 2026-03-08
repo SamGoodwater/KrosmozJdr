@@ -15,6 +15,7 @@ class ScrappingSearchControllerTest extends TestCase
     {
         parent::setUp();
         $this->seedScrappingPipeline();
+        $this->withoutMiddleware(\Illuminate\Auth\Middleware\RequirePassword::class);
     }
 
     public function test_search_endpoint_returns_items_and_meta(): void

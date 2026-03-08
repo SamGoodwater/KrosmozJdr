@@ -100,6 +100,11 @@
     "description": "Les routes sont découpées par thème pour éviter des fichiers monolithiques. Un seul point d'entrée par groupe (web, api) charge les sous-fichiers par `require`."
   },
   {
+    "path": "10-BestPractices/SECURITY_AUDIT_2026-03.md",
+    "title": "Audit de sécurité — KrosmozJDR",
+    "description": "**Date** : 2026-03-07"
+  },
+  {
     "path": "10-BestPractices/SECURITY_PRACTICES.md",
     "title": "Sécurité — Bonnes pratiques",
     "description": "- Toujours valider les entrées utilisateur (backend & frontend)."
@@ -343,6 +348,11 @@
     "path": "30-UI/BEST_PRACTICES.md",
     "title": "Bonnes pratiques UI — KrosmozJDR",
     "description": "```javascript"
+  },
+  {
+    "path": "30-UI/PROPERTY_DISPLAY_SYSTEM.md",
+    "title": "Système d'affichage des propriétés",
+    "description": "PropertyDisplay, flux caractéristiques BDD, icônes personnalisées, couleurs, tooltips. Groupes creature/object/spell, capability aligné sur spell."
   },
   {
     "path": "30-UI/CHARACTERISTICS_CARD_SCHEMA.md",
@@ -1278,6 +1288,21 @@
     "path": "50-Fonctionnalités/PLAN_REALISATION_RENOMMAGE_CLASSE_EN_BREED.md",
     "title": "Plan de réalisation : renommage classe → breed",
     "description": "Plan exécutable, phase par phase. Chaque phase se termine par un point de contrôle (tests / vérifications). Référence : [ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md](./ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md)."
+  },
+  {
+    "path": "50-Fonctionnalités/Privacy-RGPD/README.md",
+    "title": "Données personnelles et RGPD — KrosmozJDR",
+    "description": "**Date** : 2026-03-07"
+  },
+  {
+    "path": "50-Fonctionnalités/Import-Legacy/IMPORT_LEGACY_CAPABILITIES.md",
+    "title": "Import des capacités legacy (export PHPMyAdmin)",
+    "description": "Commande `capabilities:import-legacy` pour migrer les capacités depuis l'ancienne base JSON. Mapping ancien → nouveau, options --dry-run et --force-update."
+  },
+  {
+    "path": "50-Fonctionnalités/Elements/PLAN_ELEMENTS_MULTIPLES.md",
+    "title": "Plan — Éléments multiples (Spell & Capability)",
+    "description": "Audit et plan d'adaptation : éléments (Terre, Feu, Air, Eau, Neutre) avec combinaisons 0-29, couleurs/dégradés SCSS, composant Vue ElementDisplay, unification backend."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/ANALYSE_GLOBALE_REFONTE_SCRAPPING.md",

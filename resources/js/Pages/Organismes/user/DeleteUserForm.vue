@@ -30,7 +30,7 @@ const confirmingUserDeletion = ref(false);
 const passwordInput = ref(null);
 
 const form = useForm({
-    password: '',
+    current_password: '',
 });
 
 const confirmUserDeletion = () => {
@@ -39,7 +39,7 @@ const confirmUserDeletion = () => {
 };
 
 const deleteUser = () => {
-    form.delete(route('profile.delete'), {
+    form.post(route('user.privacy.delete.request'), {
         preserveScroll: true,
         onSuccess: () => {
             closeModal();
@@ -61,13 +61,14 @@ const closeModal = () => {
 
 // Validation computed pour le mot de passe
 const passwordValidation = computed(() => {
-    if (!form.errors.password) return null;
+    if (!form.errors.current_password) return null;
     return {
         state: 'error',
-        message: form.errors.password,
+        message: form.errors.current_password,
         showNotification: false
     };
 });
+
 </script>
 
 <template>
@@ -78,9 +79,9 @@ const passwordValidation = computed(() => {
                     Supprimer le compte
                 </h2>
                 <p class="mt-1 text-sm text-error-200">
-                    Une fois ton compte supprimé, toutes ses ressources et données seront définitivement supprimées.
-                    Avant de supprimer ton compte, télécharge toutes les données ou informations que tu
-                    souhaites conserver.
+                    Ton compte sera anonymisé et supprimé. La suppression définitive pourra être effectuée
+                    par un administrateur depuis l’interface de gestion des utilisateurs. Avant de supprimer,
+                    télécharge tes données si tu souhaites les conserver.
                 </p>
             </header>
 
@@ -99,16 +100,14 @@ const passwordValidation = computed(() => {
                         Es-tu sûr de vouloir supprimer ton compte ?
                     </h2>
                     <p class="mt-1 text-sm text-error-200">
-                        Une fois ton compte supprimé, toutes ses ressources et données seront définitivement
-                        supprimées.
-                        Entre ton mot de passe pour confirmer que tu souhaites supprimer définitivement
-                        ton
-                        compte.
+                        Une fois ton compte supprimé, tes données seront anonymisées. La suppression définitive
+                        pourra être effectuée par un administrateur depuis l’interface de gestion des utilisateurs.
+                        Entre ton mot de passe pour confirmer.
                     </p>
                     <div class="mt-6">
                         <InputLabel for="password" value="Mot de passe" class="sr-only" />
                         <Tooltip content="Entre ton mot de passe pour confirmer la suppression" placement="top">
-                            <InputField id="password" ref="passwordInput" v-model="form.password" type="password"
+                            <InputField id="password" ref="passwordInput" v-model="form.current_password" type="password"
                                 placeholder="Mot de passe" 
                                 :validation="passwordValidation"
                                 aria-label="Mot de passe"

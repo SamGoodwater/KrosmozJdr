@@ -223,6 +223,42 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * @property int $id
+ * @property int $user_id
+ * @property string $type
+ * @property string $status
+ * @property \Illuminate\Support\Carbon $requested_at
+ * @property \Illuminate\Support\Carbon|null $confirmed_at
+ * @property \Illuminate\Support\Carbon|null $processed_at
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property array<array-key, mixed>|null $meta
+ * @property string|null $ip_address
+ * @property string|null $user_agent
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereConfirmedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereMeta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereProcessedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereRequestedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereUserAgent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereUserId($value)
+ */
+	class DataSubjectRequest extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * Mapping effectId DofusDB → sous-effet KrosmozJDR (sub_effect_slug + characteristic_source).
  *
  * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md
@@ -1603,6 +1639,68 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereWriteLevel($value)
  */
 	class Page extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Journal d'audit des actions RGPD (export, suppression).
+ *
+ * @property int $id
+ * @property int|null $actor_id Utilisateur ayant effectué l'action
+ * @property int|null $subject_user_id Utilisateur concerné par l'action
+ * @property string $action Type d'action
+ * @property array|null $context Contexte additionnel
+ * @property string|null $ip_address
+ * @property string|null $user_agent
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property-read \App\Models\User|null $actor
+ * @property-read \App\Models\User|null $subjectUser
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereActorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereSubjectUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereUserAgent($value)
+ */
+	class PrivacyAuditLog extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property int|null $data_subject_request_id
+ * @property string $status
+ * @property string $path
+ * @property string|null $checksum
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property \Illuminate\Support\Carbon|null $downloaded_at
+ * @property array<array-key, mixed>|null $meta
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\DataSubjectRequest|null $dataSubjectRequest
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereChecksum($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereDataSubjectRequestId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereDownloadedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereMeta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereUserId($value)
+ */
+	class PrivacyExport extends \Eloquent {}
 }
 
 namespace App\Models{

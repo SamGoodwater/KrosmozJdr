@@ -117,7 +117,8 @@ class SectionControllerTest extends TestCase
     }
 
     /**
-     * Test : La validation échoue si params.content est manquant pour type text
+     * Test : Une section texte peut être créée sans contenu (édition ultérieure).
+     * Les règles SectionTemplateValidationRules autorisent data.content et params.content en sometimes/nullable.
      */
     public function test_validation_fails_if_params_content_is_missing_for_text_type(): void
     {
@@ -139,7 +140,12 @@ class SectionControllerTest extends TestCase
                 'state' => Section::STATE_DRAFT,
             ]);
 
-        $response->assertSessionHasErrors('params.content');
+        // Création autorisée sans contenu (règle métier : édition ultérieure)
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('sections', [
+            'page_id' => $page->id,
+            'template' => SectionType::TEXT->value,
+        ]);
     }
 
     /**

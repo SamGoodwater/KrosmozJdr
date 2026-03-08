@@ -26,6 +26,7 @@ export function getEntityFieldTooltip(desc) {
       desc?.table?.header?.tooltip ||
       desc?.general?.tooltip ||
       desc?.edition?.form?.help ||
+      desc?.edit?.form?.help ||
       "",
   );
 }
@@ -80,6 +81,10 @@ export function getCharacteristicsEntityAliases(entityType) {
     capability: ["capability", "spell"],
     monster: ["creature", "monster"],
     resource: ["resource", "object"],
+    consumable: ["consumable", "object"],
+    panoply: ["panoply", "object"],
+    npc: ["creature", "npc"],
+    breed: ["creature", "breed"],
   };
   return aliases[key] || [key];
 }
@@ -126,7 +131,9 @@ export function resolveEntityFieldUi(options = {}) {
   const byDbColumn = getEntityCharacteristicsByDbColumn(tableMeta, entityType);
   const characteristic = byDbColumn?.[fieldKey] || null;
 
-  const descriptorLabel = String(desc?.general?.label || fieldKey);
+  const descriptorLabel = String(
+    desc?.general?.label || desc?.label || fieldKey
+  );
   const characteristicLabel = String(
     characteristic?.short_name || characteristic?.name || ""
   );
@@ -143,7 +150,10 @@ export function resolveEntityFieldUi(options = {}) {
   const tooltip = characteristicTooltip || descriptorTooltip;
 
   const icon = String(
-    characteristic?.icon || desc?.general?.icon || "fa-solid fa-info-circle"
+    characteristic?.icon ||
+      desc?.general?.icon ||
+      desc?.icon ||
+      "fa-solid fa-info-circle"
   );
   const color = String(characteristic?.color || "");
 
@@ -181,8 +191,12 @@ export function resolveEntityBadgeUi(options = {}) {
   if (cell?.params?.color) {
     color = String(cell.params.color);
   } else if (fieldUi?.color) {
-    // Si la couleur vient de la BDD (hex), on bascule sur un thème stable.
-    color = "primary";
+    const c = String(fieldUi.color).trim();
+    if (c.startsWith("#") || /^[a-z]+-\d+$/.test(c)) {
+      color = c;
+    } else {
+      color = "primary";
+    }
   } else if (localColorMap[fieldKey]) {
     color = String(localColorMap[fieldKey]);
   }

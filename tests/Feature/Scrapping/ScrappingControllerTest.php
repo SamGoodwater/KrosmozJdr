@@ -25,6 +25,8 @@ class ScrappingControllerTest extends TestCase
         parent::setUp();
         $this->seedScrappingPipeline();
         $this->admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        // Routes scrapping protégées par password.confirm ; en tests on contourne pour éviter 423
+        $this->withoutMiddleware(\Illuminate\Auth\Middleware\RequirePassword::class);
     }
 
     /**

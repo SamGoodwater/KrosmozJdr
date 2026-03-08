@@ -166,16 +166,17 @@ const colorClasses = computed(() => {
     return `color-${props.color} bg-color-${props.color} light:bg-color-${props.color}-50`;
 });
 
-// Classes pour l'overlay
+// Classes pour l'overlay (backdrop : derrière le modal-box, couvre toute la surface cliquable)
 const overlayClasses = computed(() => {
     if (!props.overlay) return '';
-    return `modal-backdrop ${variantClasses.value} bg-base-900/30`;
+    return `modal-backdrop absolute inset-0 z-10 ${variantClasses.value} bg-base-900/30`;
 });
 
 const moleculeClasses = computed(() =>
     mergeClasses(
         [
             'modal',
+            'relative',
             props.open && 'modal-open',
             !props.overlay && 'no-overlay',
             ...placementClasses.value,
@@ -201,6 +202,8 @@ const sizeClassMap = {
 const modalBoxClasses = computed(() => {
     const base = [
         'modal-box',
+        'relative',
+        'z-20',
         'overflow-x-hidden',
         'overflow-y-auto',
         sizeClassMap[props.size] || '',
@@ -373,15 +376,18 @@ function handleKeyDown(e) {
     }
 }
 
-// Gestion du clic sur l'overlay
+// Gestion du clic sur l'overlay (dialog reçoit le clic quand on clique le backdrop)
 function handleBackdropClick(e) {
-    // Ne pas fermer si on est en train de redimensionner ou de déplacer
-    if (isResizing.value || isDragging.value) {
-        return;
-    }
+    if (isResizing.value || isDragging.value) return;
     if (props.closeOnOutsideClick && e.target === e.currentTarget) {
         closeModal();
     }
+}
+
+// Clic sur le form (backdrop) : ferme le modal car le form a @click.stop et ne remonte pas au dialog
+function handleFormBackdropClick() {
+    if (isResizing.value || isDragging.value) return;
+    if (props.closeOnOutsideClick) closeModal();
 }
 
 // Watch pour l'ouverture/fermeture
@@ -511,8 +517,8 @@ onBeforeUnmount(() => {
         <form 
             v-if="overlay"
             method="dialog" 
-            :class="overlayClasses"
-            @click.stop
+            :class="[overlayClasses, { 'cursor-pointer': closeOnOutsideClick }]"
+            @click.stop="handleFormBackdropClick"
         >
             <slot name="backdrop">
                 <button type="submit" class="sr-only">close</button>

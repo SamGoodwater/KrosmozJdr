@@ -18,6 +18,7 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
+import { getElementOptions } from '@/Utils/Entity/Elements';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -115,13 +116,7 @@ const fieldsConfig = {
         label: 'Élément',
         required: false,
         showInCompact: false,
-        options: [
-            { value: 0, label: 'Neutre' },
-            { value: 1, label: 'Terre' },
-            { value: 2, label: 'Feu' },
-            { value: 3, label: 'Air' },
-            { value: 4, label: 'Eau' },
-        ],
+        options: getElementOptions(),
     },
     is_magic: {
         type: 'checkbox',

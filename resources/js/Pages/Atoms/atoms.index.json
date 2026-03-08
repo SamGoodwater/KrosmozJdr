@@ -2364,6 +2364,34 @@
     "file": "data-display/CharacteristicBadges.vue"
   },
   {
+    "name": "PropertyDisplay",
+    "description": "PropertyDisplay — affichage standardisé d'une propriété/caractéristique (icône, couleur, tooltip). Variants: badge, icon, inline.",
+    "props": [
+      {
+        "name": "property",
+        "type": "Object",
+        "desc": "- { icon, label, tooltip, color } — issu de resolveEntityFieldUi ou caractéristiques BDD"
+      },
+      {
+        "name": "value",
+        "type": "String|Number|Boolean",
+        "desc": "- Valeur à afficher"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- 'badge' | 'icon' | 'inline'"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- 'xs' | 'sm' | 'md'"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/PropertyDisplay.vue"
+  },
+  {
     "name": "CellSkeleton",
     "description": "CellSkeleton Atom",
     "props": [],

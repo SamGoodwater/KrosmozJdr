@@ -15,6 +15,7 @@
  */
 
 import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+import { getElementOptions } from "@/Utils/Entity/Elements";
 
 /**
  * @typedef {Object} CapabilityFieldDescriptor
@@ -144,7 +145,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-bolt",
       table: {
         sortable: true,
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -174,7 +175,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "po", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -204,15 +205,15 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         filterable: { id: "element", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
-        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
         sizes: {
-          xs: { mode: "text" },
-          sm: { mode: "text" },
-          md: { mode: "text" },
-          lg: { mode: "text" },
-          xl: { mode: "text" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
       edit: {
@@ -221,15 +222,9 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
           group: "Métier",
           required: false,
           showInCompact: true,
-          options: [
-            { value: "neutral", label: "Neutre" },
-            { value: "fire", label: "Feu" },
-            { value: "water", label: "Eau" },
-            { value: "earth", label: "Terre" },
-            { value: "air", label: "Air" },
-          ],
-          defaultValue: "neutral",
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          options: () => getElementOptions(),
+          defaultValue: 0,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
     },
@@ -240,7 +235,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         searchable: true,
         filterable: { id: "description", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -298,7 +293,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "time_before_use_again", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -327,7 +322,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "casting_time", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -356,7 +351,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "duration", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -380,12 +375,33 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
     },
     capability_summary_cast: {
       key: "capability_summary_cast",
-      label: "Profil de cast",
+      label: "Détails de lancer",
       icon: "fa-solid fa-layer-group",
       table: {
         type: "chips",
         searchable: true,
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "chips" },
+          sm: { mode: "chips" },
+          md: { mode: "chips" },
+          lg: { mode: "chips" },
+          xl: { mode: "chips" },
+        },
+      },
+    },
+    capability_summary_metier: {
+      key: "capability_summary_metier",
+      label: "PA / PO / Magie",
+      icon: "fa-solid fa-bolt",
+      table: {
+        type: "chips",
+        searchable: true,
+        sortable: false,
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
       display: {
@@ -400,7 +416,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
     },
     capability_summary_relations: {
       key: "capability_summary_relations",
-      label: "Relations",
+      label: "Invocation",
       icon: "fa-solid fa-link",
       table: {
         type: "chips",
@@ -426,7 +442,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "is_magic", type: "boolean", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -456,7 +472,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "ritual_available", type: "boolean", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -486,7 +502,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "powerful", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -515,7 +531,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "state", type: "multi", defaultVisible: true },
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {

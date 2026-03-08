@@ -35,6 +35,26 @@ class HandleInertiaRequests extends Middleware
         $permissionService = new EntityPermissionService();
         return [
             ...parent::share($request),
+            'pending_erasure' => function () use ($request) {
+                $user = $request->user();
+                if (! $user) {
+                    return null;
+                }
+                $dsr = \App\Models\DataSubjectRequest::query()
+                    ->where('user_id', $user->id)
+                    ->where('type', \App\Models\DataSubjectRequest::TYPE_ERASURE)
+                    ->where('status', \App\Models\DataSubjectRequest::STATUS_PENDING)
+                    ->whereNotNull('expires_at')
+                    ->where('expires_at', '>', now())
+                    ->latest('id')
+                    ->first();
+                if (! $dsr) {
+                    return null;
+                }
+                return [
+                    'expires_at' => $dsr->expires_at->toIso8601String(),
+                ];
+            },
             'auth' => [
                 'user' => function () use ($request) {
                     if (!$request->user()) {

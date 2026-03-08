@@ -387,6 +387,21 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  DATA_SUBJECT_REQUESTS {
+    id : bigint(20) unsigned
+    user_id : bigint(20) unsigned
+    type : varchar(32)
+    status : varchar(32)
+    requested_at : timestamp
+    confirmed_at : timestamp
+    processed_at : timestamp
+    expires_at : timestamp
+    meta : longtext
+    ip_address : varchar(45)
+    user_agent : text
+    created_at : timestamp
+    updated_at : timestamp
+  }
   DOFUSDB_EFFECT_MAPPINGS {
     id : bigint(20) unsigned
     dofusdb_effect_id : int(10) unsigned
@@ -695,6 +710,29 @@ erDiagram
     email : varchar(255)
     token : varchar(255)
     created_at : timestamp
+  }
+  PRIVACY_AUDIT_LOGS {
+    id : bigint(20) unsigned
+    actor_id : bigint(20) unsigned
+    subject_user_id : bigint(20) unsigned
+    action : varchar(64)
+    context : longtext
+    ip_address : varchar(45)
+    user_agent : text
+    created_at : timestamp
+  }
+  PRIVACY_EXPORTS {
+    id : bigint(20) unsigned
+    user_id : bigint(20) unsigned
+    data_subject_request_id : bigint(20) unsigned
+    status : varchar(32)
+    path : varchar(255)
+    checksum : varchar(64)
+    expires_at : timestamp
+    downloaded_at : timestamp
+    meta : longtext
+    created_at : timestamp
+    updated_at : timestamp
   }
   RESOURCE_CAMPAIGN {
     resource_id : bigint(20) unsigned
@@ -1136,6 +1174,7 @@ erDiagram
   CREATURE_SPELL }o--|| CREATURES : "FK creature_id"
   CREATURE_SPELL }o--|| SPELLS : "FK spell_id"
   CREATURES }o--|| USERS : "FK created_by"
+  DATA_SUBJECT_REQUESTS }o--|| USERS : "FK user_id"
   EFFECT_SUB_EFFECT }o--|| EFFECTS : "FK effect_id"
   EFFECT_SUB_EFFECT }o--|| SUB_EFFECTS : "FK sub_effect_id"
   EFFECT_USAGES }o--|| EFFECTS : "FK effect_id"
@@ -1178,6 +1217,10 @@ erDiagram
   PANOPLIES }o--|| USERS : "FK created_by"
   PANOPLY_SHOP }o--|| PANOPLIES : "FK panoply_id"
   PANOPLY_SHOP }o--|| SHOPS : "FK shop_id"
+  PRIVACY_AUDIT_LOGS }o--|| USERS : "FK actor_id"
+  PRIVACY_AUDIT_LOGS }o--|| USERS : "FK subject_user_id"
+  PRIVACY_EXPORTS }o--|| DATA_SUBJECT_REQUESTS : "FK data_subject_request_id"
+  PRIVACY_EXPORTS }o--|| USERS : "FK user_id"
   RESOURCE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   RESOURCE_CAMPAIGN }o--|| RESOURCES : "FK resource_id"
   RESOURCE_RECIPE }o--|| RESOURCES : "FK ingredient_resource_id"

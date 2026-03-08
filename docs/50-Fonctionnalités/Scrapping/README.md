@@ -38,6 +38,10 @@ KrosmozJDR
 ### Architecture
 - **[Architecture/](Architecture/)** — Documentation de l’architecture scrapping (config-driven, pipeline).
 
+### Protection (accès et sécurité)
+- **Réservé aux admins** : toutes les routes scrapping (web et API) utilisent le middleware `role:admin`
+- **Confirmation mot de passe** : la page `/scrapping` affiche une porte d'accès (`ConfirmPasswordModal`) ; l'utilisateur doit confirmer son mot de passe avant d'accéder au dashboard. Les routes API utilisent le middleware `password.confirm`
+
 ### UI (admin)
 - Page : `/scrapping`
 - Recherche (collect-only) : `GET /api/scrapping/search/{entity}`

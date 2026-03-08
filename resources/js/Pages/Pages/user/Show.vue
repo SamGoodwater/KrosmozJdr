@@ -228,6 +228,11 @@ onMounted(() => {
                         </div>
                     </div>
                     <div class="flex justify-end gap-2 max-[930px]:w-full">
+                        <Tooltip content="Exercer mes droits RGPD" placement="top">
+                            <Route :href="route('user.privacy.index')">
+                                <Btn color="neutral" variant="outline" size="sm">Mes données</Btn>
+                            </Route>
+                        </Tooltip>
                         <Tooltip content="Paramètres du compte (notifications, etc.)" placement="top">
                             <Route route="user.settings">
                                 <Btn color="neutral" variant="outline" size="sm">Paramètres</Btn>

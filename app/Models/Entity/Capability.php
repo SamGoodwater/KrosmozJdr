@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Creature;
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Support\ElementConstants;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
@@ -90,6 +91,9 @@ class Capability extends Model implements HasMedia
     /** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */
     public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[slug]';
 
+    /** Référentiel éléments (0-29) — partagé avec Spell. */
+    public const ELEMENT = ElementConstants::ELEMENT;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -123,6 +127,7 @@ class Capability extends Model implements HasMedia
      * @var array<string, string>
      */
     protected $casts = [
+        'element' => 'integer',
         'read_level' => 'integer',
         'write_level' => 'integer',
         'po_editable' => 'boolean',

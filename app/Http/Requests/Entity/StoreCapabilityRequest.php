@@ -37,7 +37,7 @@ class StoreCapabilityRequest extends FormRequest
             'time_before_use_again' => ['nullable', 'string', 'max:255'],
             'casting_time' => ['nullable', 'string', 'max:255'],
             'duration' => ['nullable', 'string', 'max:255'],
-            'element' => ['nullable', 'string', 'max:255'],
+            'element' => ['nullable', 'integer', 'min:0', 'max:29'],
             'is_magic' => ['nullable', 'boolean'],
             'ritual_available' => ['nullable', 'boolean'],
             'powerful' => ['nullable', 'string', 'max:255'],

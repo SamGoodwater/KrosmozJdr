@@ -10,6 +10,7 @@
  */
 import { BaseModel } from '../BaseModel';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
+import { getFormatter } from '@/Utils/Formatters/FormatterRegistry.js';
 
 export class Capability extends BaseModel {
     // ============================================
@@ -135,7 +136,7 @@ export class Capability extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
-        const overrideFields = new Set(['pa', 'po', 'capability_summary_cast', 'effect']);
+        const overrideFields = new Set(['pa', 'po', 'capability_summary_cast', 'capability_summary_metier', 'effect']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
         if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
@@ -168,6 +169,8 @@ export class Capability extends BaseModel {
                 return this._toDurationCell(format, size, options);
             case 'capability_summary_cast':
                 return this._toCapabilitySummaryCastCell(format, size, options);
+            case 'capability_summary_metier':
+                return this._toCapabilitySummaryMetierCell(format, size, options);
             case 'capability_summary_relations':
                 return this._toCapabilitySummaryRelationsCell(format, size, options);
             case 'element':
@@ -233,11 +236,16 @@ export class Capability extends BaseModel {
 
     /**
      * Génère une cellule pour l'effet
+     * Pour le tableau, on préfère du texte sans balises HTML.
      * @private
      */
     _toEffectCell(format, size, options) {
+        const raw = this.effect;
+        const stripped = typeof raw === 'string' && raw.includes('<')
+            ? raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+            : raw;
         return buildCharacteristicEffectCell({
-            rawValues: [this.effect],
+            rawValues: [stripped ?? raw],
             options,
             sourceGroups: ['capability', 'spell'],
             format,
@@ -405,16 +413,55 @@ export class Capability extends BaseModel {
 
     /**
      * Génère une cellule résumé (type chips) pour les informations de cast.
+     * Utilise les caractéristiques BDD (options.ctx) pour icône/couleur si disponibles.
      * @private
      */
-    _toCapabilitySummaryCastCell(format, size, options) {
-        const paValue = this.pa != null ? String(this.pa) : null;
-        const poValue = this.po ? String(this.po) : null;
+    _toCapabilitySummaryCastCell(_format, _size, options = {}) {
         const castValue = this.castingTime ? String(this.castingTime) : null;
         const durationValue = this.duration ? String(this.duration) : null;
         const cooldownValue = this.timeBeforeUseAgain ? String(this.timeBeforeUseAgain) : null;
+
+        const castDef = this._getCapabilityCharacteristicDef(options, ['casting_time']);
+        const durationDef = this._getCapabilityCharacteristicDef(options, ['duration']);
+        const cooldownDef = this._getCapabilityCharacteristicDef(options, ['time_before_use_again']);
+        const castLabel = castDef?.short_name || castDef?.name || 'Cast';
+        const durationLabel = durationDef?.short_name || durationDef?.name || 'Durée';
+        const cooldownLabel = cooldownDef?.short_name || cooldownDef?.name || 'Relance';
+
+        const items = [
+            { icon: castDef?.icon || 'fa-solid fa-hourglass', color: castDef?.color || null, value: castValue, tooltip: castValue ? `${castLabel}: ${castValue}` : '' },
+            { icon: durationDef?.icon || 'fa-solid fa-stopwatch', color: durationDef?.color || null, value: durationValue, tooltip: durationValue ? `${durationLabel}: ${durationValue}` : '' },
+            { icon: cooldownDef?.icon || 'fa-solid fa-clock', color: cooldownDef?.color || null, value: cooldownValue, tooltip: cooldownValue ? `${cooldownLabel}: ${cooldownValue}` : '' },
+        ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: Number(this.level) || 0,
+                searchValue,
+                filterValue: searchValue,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule résumé PA, PO, Magique, Rituel (chips).
+     * Affiche les booléens en « Oui » / « Non ».
+     * @private
+     */
+    _toCapabilitySummaryMetierCell(_format, _size, options) {
+        const paValue = this.pa != null ? String(this.pa) : null;
+        const poValue = this.po ? String(this.po) : null;
+        const isMagic = this.isMagic ?? false;
+        const ritualAvailable = this.ritualAvailable ?? false;
         const paDef = this._getCapabilityCharacteristicDef(options, ['pa']);
         const poDef = this._getCapabilityCharacteristicDef(options, ['po', 'po_max', 'po_min']);
+        const isMagicDef = this._getCapabilityCharacteristicDef(options, ['is_magic']);
+        const ritualDef = this._getCapabilityCharacteristicDef(options, ['ritual_available']);
         const paLabel = paDef?.short_name || paDef?.name || 'PA';
         const poLabel = poDef?.short_name || poDef?.name || 'PO';
 
@@ -431,9 +478,20 @@ export class Capability extends BaseModel {
                 value: poValue,
                 tooltip: poValue ? `${poLabel}: ${poValue}` : '',
             },
-            { icon: 'fa-solid fa-hourglass', value: castValue, tooltip: castValue ? `Cast: ${castValue}` : '' },
-            { icon: 'fa-solid fa-stopwatch', value: durationValue, tooltip: durationValue ? `Durée: ${durationValue}` : '' },
-            { icon: 'fa-solid fa-clock', value: cooldownValue, tooltip: cooldownValue ? `Relance: ${cooldownValue}` : '' },
+            {
+                icon: isMagicDef?.icon || 'fa-solid fa-wand-magic',
+                color: isMagicDef?.color || null,
+                value: `Magique: ${isMagic ? 'Oui' : 'Non'}`,
+                tooltip: `Magique : ${isMagic ? 'Oui' : 'Non'}`,
+            },
+            ...(ritualAvailable
+                ? [{
+                    icon: ritualDef?.icon || 'fa-solid fa-book',
+                    color: ritualDef?.color || null,
+                    value: 'Rituel',
+                    tooltip: 'Rituel disponible',
+                }]
+                : []),
         ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
 
         const searchValue = items.map((it) => String(it.value)).join(' ');
@@ -443,7 +501,7 @@ export class Capability extends BaseModel {
             value: '',
             params: {
                 items,
-                sortValue: Number(this.level) || 0,
+                sortValue: String(this.level) || '0',
                 searchValue,
                 filterValue: searchValue,
             },
@@ -548,12 +606,21 @@ export class Capability extends BaseModel {
     }
 
     /**
-     * Génère une cellule pour image
+     * Génère une cellule pour image.
+     * Ne pas appeler super.toCell (évite la récursion avec BaseModel qui appelle _toImageCell).
      * @private
      */
     _toImageCell(format, size, options) {
-        // Utiliser le ImageFormatter via la méthode de base
-        return super.toCell('image', options);
+        const FormatterClass = getFormatter('image');
+        if (FormatterClass?.toCell) {
+            const cell = FormatterClass.toCell(this._data.image, { ...options, size, format });
+            if (cell?.type) return cell;
+        }
+        return {
+            type: 'text',
+            value: this.image || '-',
+            params: { sortValue: this.image || '', searchValue: this.image || '' },
+        };
     }
 
     /**

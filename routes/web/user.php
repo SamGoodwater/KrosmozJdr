@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserPrivacyController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -10,6 +11,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
+    Route::post('/password/confirm', [UserController::class, 'confirmPassword'])
+        ->middleware('throttle:privacy-actions')
+        ->name('password.confirm');
+
     Route::get('/', [UserController::class, 'show'])->name('show');
     Route::get('/edit', [UserController::class, 'edit'])->name('edit');
     Route::get('/settings', [UserController::class, 'settings'])->name('settings');
@@ -18,6 +23,22 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::post('/avatar', [UserController::class, 'updateAvatar'])->name('updateAvatar');
     Route::delete('/avatar', [UserController::class, 'deleteAvatar'])->name('deleteAvatar');
     Route::delete('/', [UserController::class, 'delete'])->name('delete');
+
+    Route::prefix('/privacy')->name('privacy.')->group(function () {
+        Route::get('/', [UserPrivacyController::class, 'index'])->name('index');
+        Route::post('/export', [UserPrivacyController::class, 'requestExport'])
+            ->middleware(['password.confirm', 'throttle:privacy-actions'])
+            ->name('export');
+        Route::get('/exports/{privacyExport}', [UserPrivacyController::class, 'downloadExport'])
+            ->middleware(['signed', 'throttle:privacy-actions'])
+            ->name('exports.download');
+        Route::post('/delete/request', [UserPrivacyController::class, 'requestDeletion'])
+            ->middleware(['password.confirm', 'throttle:privacy-actions'])
+            ->name('delete.request');
+        Route::post('/delete/cancel', [UserPrivacyController::class, 'cancelDeletionRequest'])
+            ->middleware(['throttle:privacy-actions'])
+            ->name('delete.cancel');
+    });
 
     Route::middleware('role:admin')->group(function () {
         Route::get('/list', [UserController::class, 'index'])->name('index');

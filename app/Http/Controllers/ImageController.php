@@ -24,6 +24,11 @@ class ImageController extends Controller
     public function show(string $path): Response
     {
         try {
+            // Protection path traversal
+            if ($this->isPathTraversalAttempt($path)) {
+                return response()->json(['error' => 'Chemin invalide'], 400);
+            }
+
             // Vérifier si c'est une icône FontAwesome
             if ($this->imageService->isFontAwesome($path)) {
                 return response()->json([
@@ -79,6 +84,11 @@ class ImageController extends Controller
     public function thumbnail(Request $request, string $path): Response
     {
         try {
+            // Protection path traversal
+            if ($this->isPathTraversalAttempt($path)) {
+                return response()->json(['error' => 'Chemin invalide'], 400);
+            }
+
             // Vérifier si c'est une icône FontAwesome
             if ($this->imageService->isFontAwesome($path)) {
                 return response()->json([
@@ -153,5 +163,23 @@ class ImageController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Détecte une tentative de path traversal (.., /, null byte).
+     */
+    private function isPathTraversalAttempt(string $path): bool
+    {
+        $path = str_replace('\\', '/', $path);
+        if (str_contains($path, '..')) {
+            return true;
+        }
+        if (preg_match('#^/+#', $path)) {
+            return true;
+        }
+        if (str_contains($path, "\0")) {
+            return true;
+        }
+        return false;
     }
 }

@@ -86,7 +86,7 @@ class LoginRequest extends FormRequest
                 RateLimiter::hit($this->throttleKey());
 
                 throw ValidationException::withMessages([
-                    'identifier' => 'Ce compte a été supprimé. Contactez un administrateur pour le restaurer.',
+                    'identifier' => 'Ce compte a été supprimé. Un administrateur peut le récupérer tant qu\'il n\'a pas été supprimé définitivement. Contacte un admin pour demander la restauration.',
                 ]);
             }
             if ($matchingUser && ! $matchingUser->canLogin()) {

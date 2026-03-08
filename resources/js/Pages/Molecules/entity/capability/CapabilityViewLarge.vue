@@ -14,6 +14,8 @@ import { router } from '@inertiajs/vue3';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
+import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
@@ -95,31 +97,20 @@ const extendedFields = computed(() => {
     return fields.filter(canShowField);
 });
 
-const getFieldLabel = (fieldKey) => {
-    return resolveEntityFieldUi({
+const getFieldUi = (fieldKey) =>
+    resolveEntityFieldUi({
         fieldKey,
         descriptors: descriptors.value,
         tableMeta: props.tableMeta,
         entityType: 'capability',
-    }).label;
-};
+    });
 
-const getFieldIcon = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'capability',
-    }).icon;
-};
+const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
+
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
 
 const getFieldIconStyle = (fieldKey) => {
-    const color = resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'capability',
-    }).color;
+    const color = getFieldUi(fieldKey).color;
     return color ? { color } : undefined;
 };
 
@@ -230,9 +221,17 @@ const handleAction = async (actionKey) => {
                         </span>
                     </div>
                     <div class="text-primary-100 break-words">
-                        <CellRenderer
-                            :cell="getCell(fieldKey)"
-                            ui-color="primary"
+                        <ElementDisplay
+                            v-if="fieldKey === 'element'"
+                            :element="capability?.element ?? 0"
+                            size="sm"
+                        />
+                        <PropertyDisplay
+                            v-else
+                            :property="getFieldUi(fieldKey)"
+                            :value="getCell(fieldKey)?.value"
+                            variant="badge"
+                            size="sm"
                         />
                     </div>
                 </div>

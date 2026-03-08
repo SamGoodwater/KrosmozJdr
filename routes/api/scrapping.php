@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Accès réservé aux administrateurs (lecture et écriture).
 */
-Route::middleware(['web', 'auth', 'role:admin'])->group(function () {
+Route::middleware(['web', 'auth', 'role:admin', 'password.confirm'])->group(function () {
 
 // Routes de test (DataCollect sans orchestrateur)
 Route::prefix('scrapping/test')->group(function () {

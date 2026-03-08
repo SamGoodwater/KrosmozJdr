@@ -17,5 +17,6 @@ Route::prefix('media')->group(function () {
         ->where('path', '.*')
         ->name('media.thumbnail');
     Route::post('/clean-thumbnails', [ImageController::class, 'cleanThumbnails'])
+        ->middleware(['auth', 'role:admin'])
         ->name('media.clean-thumbnails');
 });

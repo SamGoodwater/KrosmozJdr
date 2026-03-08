@@ -1,33 +1,28 @@
 /**
- * ElementFormatter — Formatter pour les éléments (sorts)
+ * ElementFormatter — Formatter pour les éléments (Spell, Capability)
  *
  * @description
- * Formate les valeurs d'élément (Terre, Feu, Air, Eau, Neutre) en badges colorés.
- * Utilisé par : Spell uniquement
+ * Formate les valeurs d'élément (0-29) en badges colorés.
+ * Aligné avec App\Support\ElementConstants.
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
+import { getElementLabel, getElementColor } from '@/Utils/Entity/Elements.js';
 
 export class ElementFormatter extends BaseFormatter {
   static name = 'ElementFormatter';
   static fieldKeys = ['element', 'element_type'];
 
-  /**
-   * Options d'éléments
-   * @type {Array<{value: number|string, label: string, color: string}>}
-   */
-  static options = [
-    { value: 0, label: 'Neutre', color: 'neutral' },
-    { value: 1, label: 'Terre', color: 'warning' },
-    { value: 2, label: 'Feu', color: 'error' },
-    { value: 3, label: 'Air', color: 'info' },
-    { value: 4, label: 'Eau', color: 'primary' },
-  ];
+  static isValid(value) {
+    if (value === null || value === undefined) return false;
+    const num = typeof value === 'string' ? parseInt(value, 10) : Number(value);
+    return Number.isFinite(num) && num >= 0 && num <= 29;
+  }
 
   /**
    * Formate une valeur d'élément en label
    *
-   * @param {number|string|null} value - Valeur d'élément
+   * @param {number|string|null} value - Valeur d'élément (0-29)
    * @param {Object} [options={}] - Options de formatage
    * @returns {string|null} Label formaté ou null si valeur invalide
    */
@@ -36,19 +31,17 @@ export class ElementFormatter extends BaseFormatter {
       return null;
     }
 
-    const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
-    const option = this.options.find((opt) => opt.value === numValue);
-
-    return option?.label || `Élément ${numValue}`;
+    const label = getElementLabel(value);
+    return label ?? `Élément ${value}`;
   }
 
   /**
-   * Génère une cellule badge pour un tableau
+   * Génère une cellule element pour un tableau (rendue par ElementDisplay)
    *
-   * @param {number|string|null} value - Valeur d'élément
+   * @param {number|string|null} value - Valeur d'élément (0-29)
    * @param {Object} [options={}] - Options de formatage
    * @param {string} [options.size='md'] - Taille d'écran (xs, sm, md, lg, xl)
-   * @returns {Object|null} Objet Cell {type: 'badge', value, params} ou null si valeur invalide
+   * @returns {Object|null} Objet Cell {type: 'element', value, params} ou null si valeur invalide
    */
   static toCell(value, options = {}) {
     if (!this.isValid(value)) {
@@ -56,19 +49,24 @@ export class ElementFormatter extends BaseFormatter {
     }
 
     const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
-    const option = this.options.find((opt) => opt.value === numValue);
+    const label = getElementLabel(numValue);
 
-    if (!option) {
-      // Fallback : cellule texte avec la valeur brute
+    if (!label) {
       return this.buildTextCell(`Élément ${numValue}`, {
         sortValue: numValue,
         filterValue: numValue,
       });
     }
 
-    return this.buildBadgeCell(option.label, option.color, {
-      sortValue: numValue,
-      filterValue: numValue,
-    });
+    return {
+      type: 'element',
+      value: label,
+      params: {
+        element: numValue,
+        sortValue: numValue,
+        filterValue: numValue,
+        searchValue: label,
+      },
+    };
   }
 }

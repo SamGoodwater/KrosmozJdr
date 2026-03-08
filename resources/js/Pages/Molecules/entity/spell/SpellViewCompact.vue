@@ -14,6 +14,8 @@ import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
+import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
+import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
@@ -109,30 +111,19 @@ const technicalFields = computed(() => ([
     'updated_at',
 ].filter(canShowField)));
 
-const getFieldLabel = (fieldKey) => {
-    return resolveEntityFieldUi({
+const getFieldUi = (fieldKey) =>
+    resolveEntityFieldUi({
         fieldKey,
         descriptors: descriptors.value,
         tableMeta: props.tableMeta,
         entityType: 'spell',
-    }).label;
-};
+    });
 
-const getFieldIcon = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'spell',
-    }).icon;
-};
+const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
 
-const getFieldTooltip = (fieldKey) => resolveEntityFieldUi({
-    fieldKey,
-    descriptors: descriptors.value,
-    tableMeta: props.tableMeta,
-    entityType: 'spell',
-}).tooltip;
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
+
+const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
 
 const getFieldIconStyle = (fieldKey) => {
     const color = resolveEntityFieldUi({
@@ -304,17 +295,19 @@ const handleAction = async (actionKey) => {
                                         {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
                                     </span>
                                 </div>
-                                <Badge
-                                    :color="getBadgeColor(fieldKey)"
-                                    :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                                    :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                                    :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
+                                <ElementDisplay
+                                    v-if="fieldKey === 'element'"
+                                    :element="spell?.element ?? 0"
                                     size="sm"
-                                    :truncate="false"
+                                />
+                                <PropertyDisplay
+                                    v-else
+                                    :property="getFieldUi(fieldKey)"
+                                    :value="getCell(fieldKey)?.value"
+                                    variant="badge"
+                                    size="sm"
                                     class="max-w-[14rem] whitespace-normal break-words"
-                                >
-                                    <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                                </Badge>
+                                />
                             </div>
                         </Tooltip>
                     </template>

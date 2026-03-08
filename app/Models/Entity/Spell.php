@@ -16,6 +16,7 @@ use App\Models\EffectUsage;
 use App\Models\SpellState;
 use App\Models\SpellEffect;
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Support\ElementConstants;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
@@ -131,39 +132,8 @@ class Spell extends Model implements HasMedia
     /** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */
     public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[name]';
 
-    const ELEMENT = [
-        0 => 'Neutre',
-        1 => 'Terre',
-        2 => 'Feu',
-        3 => 'Air',
-        4 => 'Eau',
-        5 => 'Neutre-Terre',
-        6 => 'Neutre-Feu',
-        7 => 'Neutre-Air',
-        8 => 'Neutre-Eau',
-        9 => 'Terre-Feu',
-        10 => 'Terre-Air',
-        11 => 'Terre-Eau',
-        12 => 'Feu-Air',
-        13 => 'Feu-Eau',
-        14 => 'Air-Eau',
-        15 => 'Neutre-Terre-Feu',
-        16 => 'Neutre-Terre-Air',
-        17 => 'Neutre-Terre-Eau',
-        18 => 'Neutre-Feu-Air',
-        19 => 'Neutre-Feu-Eau',
-        20 => 'Neutre-Air-Eau',
-        21 => 'Terre-Feu-Air',
-        22 => 'Terre-Feu-Eau',
-        23 => 'Terre-Air-Eau',
-        24 => 'Feu-Air-Eau',
-        25 => 'Neutre-Terre-Feu-Air',
-        26 => 'Neutre-Terre-Feu-Eau',
-        27 => 'Neutre-Terre-Air-Eau',
-        28 => 'Neutre-Feu-Air-Eau',
-        29 => 'Neutre-Terre-Feu-Air-Eau',
-
-    ];
+    /** @deprecated Utiliser ElementConstants::ELEMENT */
+    const ELEMENT = ElementConstants::ELEMENT;
 
     /**
      * The attributes that are mass assignable.

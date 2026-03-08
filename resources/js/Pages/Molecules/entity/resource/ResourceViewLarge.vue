@@ -18,6 +18,7 @@ import { router } from '@inertiajs/vue3';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
@@ -198,41 +199,22 @@ const handleAction = async (actionKey) => {
     }
 };
 
-// Utiliser les descriptors pour les icônes
-const getFieldIcon = (fieldKey) => {
-    return resolveEntityFieldUi({
+const getFieldUi = (fieldKey) =>
+    resolveEntityFieldUi({
         fieldKey,
         descriptors: descriptors.value,
         tableMeta: props.tableMeta,
         entityType: 'resource',
-    }).icon;
-};
+    });
 
-const getFieldLabel = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'resource',
-    }).label;
-};
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
 
-const getFieldTooltip = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'resource',
-    }).tooltip;
-};
+const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
+
+const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
 
 const getFieldIconStyle = (fieldKey) => {
-    const color = resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'resource',
-    }).color;
+    const color = getFieldUi(fieldKey).color;
     return color ? { color } : undefined;
 };
 
@@ -366,30 +348,13 @@ const getBadgeAutoParams = (fieldKey) => {
                                         {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
                                     </span>
                                 </div>
-
-                                <Badge
-                                    :color="getBadgeColor(fieldKey)"
-                                    :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                                    :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                                    :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
+                                <PropertyDisplay
+                                    :property="getFieldUi(fieldKey)"
+                                    :value="getCell(fieldKey)?.value"
+                                    variant="badge"
                                     size="sm"
-                                    :truncate="false"
                                     class="max-w-[18rem] whitespace-normal break-words"
-                                >
-                                    <template v-if="fieldKey === 'auto_update'">
-                                        <Icon
-                                            v-if="autoUpdateValue !== null"
-                                            :source="autoUpdateValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
-                                            :alt="autoUpdateValue ? 'Oui' : 'Non'"
-                                            size="sm"
-                                            :class="autoUpdateValue ? 'text-success-800' : 'text-error-800'"
-                                        />
-                                        <span v-else>—</span>
-                                    </template>
-                                    <template v-else>
-                                        <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                                    </template>
-                                </Badge>
+                                />
                             </div>
                         </Tooltip>
                     </template>

@@ -4,21 +4,29 @@
  *
  * @description
  * La logique de scrapping de la page `/scrapping` est centralisée dans `ScrappingDashboard`.
- * D'autres composants (ex: modal) peuvent réutiliser une logique similaire, mais cette page
- * vise une UX "batch" complète (search → select → simulate/import + analyse des effets).
+ * Accès réservé aux admins, protégé par confirmation du mot de passe (ConfirmPasswordModal).
  */
+import { ref } from "vue";
 import { Head } from "@inertiajs/vue3";
 import { onMounted } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 
 import Container from "@/Pages/Atoms/data-display/Container.vue";
+import Btn from "@/Pages/Atoms/action/Btn.vue";
+import ConfirmPasswordModal from "@/Pages/Molecules/action/ConfirmPasswordModal.vue";
 import ScrappingDashboard from "@/Pages/Organismes/scrapping/ScrappingDashboard.vue";
 
 const { setPageTitle } = usePageTitle();
 onMounted(() => setPageTitle("Gestion du Scrapping"));
 
+const scrappingUnlocked = ref(false);
+const showConfirmModal = ref(false);
+
+function onPasswordConfirmed() {
+    scrappingUnlocked.value = true;
+}
+
 // Après une grosse refonte, HMR peut laisser un module incohérent en mémoire.
-// On force un reload complet sur update de cette page.
 if (import.meta?.hot) {
     import.meta.hot.accept(() => {
         import.meta.hot.invalidate();
@@ -35,7 +43,7 @@ if (import.meta?.hot) {
                 <h1 class="text-3xl font-bold text-primary-100">Gestion du Scrapping</h1>
                 <p class="text-primary-200 mt-2">Importez des données depuis DofusDB vers KrosmozJDR</p>
             </div>
-            <div class="flex flex-wrap gap-2">
+            <div v-if="scrappingUnlocked" class="flex flex-wrap gap-2">
                 <a
                     :href="route('admin.scrapping-mappings.index')"
                     class="btn btn-ghost btn-sm"
@@ -51,6 +59,27 @@ if (import.meta?.hot) {
             </div>
         </div>
 
-        <ScrappingDashboard />
+        <!-- Porte d'accès : confirmation mot de passe requise -->
+        <div
+            v-if="!scrappingUnlocked"
+            class="rounded-lg border border-warning/40 bg-warning/10 p-6 text-center space-y-4"
+        >
+            <p class="text-warning-content">
+                Cette section est réservée aux administrateurs et protégée. Confirme ton mot de passe pour accéder au scrapping.
+            </p>
+            <Btn color="primary" @click="showConfirmModal = true">
+                Accéder au scrapping
+            </Btn>
+        </div>
+
+        <ScrappingDashboard v-else />
+
+        <ConfirmPasswordModal
+            v-model:open="showConfirmModal"
+            title="Accéder au scrapping"
+            message="Cette section permet d'importer des données depuis DofusDB. Entre ton mot de passe pour confirmer ton identité."
+            confirm-label="Accéder"
+            @confirmed="onPasswordConfirmed"
+        />
     </Container>
 </template>

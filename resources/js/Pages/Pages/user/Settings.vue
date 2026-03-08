@@ -123,16 +123,21 @@ function goBackToProfile() {
     <div class="container mx-auto px-4 py-6 max-w-4xl">
         <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
             <h1 class="text-2xl font-bold">Paramètres du compte</h1>
-            <Btn
-                color="neutral"
-                variant="ghost"
-                size="sm"
-                class="gap-2"
-                @click="goBackToProfile"
-            >
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                Retour au profil
-            </Btn>
+            <div class="flex items-center gap-2">
+                <a :href="route('user.privacy.index')" class="btn btn-outline btn-sm">
+                    Mes données (RGPD)
+                </a>
+                <Btn
+                    color="neutral"
+                    variant="ghost"
+                    size="sm"
+                    class="gap-2"
+                    @click="goBackToProfile"
+                >
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                    Retour au profil
+                </Btn>
+            </div>
         </div>
 
         <Tab variant="lift" size="md" class="mb-4">

@@ -372,44 +372,9 @@ export function getUserRoleOptions() {
 
 /**
  * Options d'éléments pour les sorts.
- * Aligné avec App\Models\Entity\Spell::ELEMENT (0..29).
+ * @deprecated Utiliser getElementOptions depuis @/Utils/Entity/Elements
  */
-export const SPELL_ELEMENT_OPTIONS = Object.freeze([
-  { value: 0, label: 'Neutre' },
-  { value: 1, label: 'Terre' },
-  { value: 2, label: 'Feu' },
-  { value: 3, label: 'Air' },
-  { value: 4, label: 'Eau' },
-  { value: 5, label: 'Neutre-Terre' },
-  { value: 6, label: 'Neutre-Feu' },
-  { value: 7, label: 'Neutre-Air' },
-  { value: 8, label: 'Neutre-Eau' },
-  { value: 9, label: 'Terre-Feu' },
-  { value: 10, label: 'Terre-Air' },
-  { value: 11, label: 'Terre-Eau' },
-  { value: 12, label: 'Feu-Air' },
-  { value: 13, label: 'Feu-Eau' },
-  { value: 14, label: 'Air-Eau' },
-  { value: 15, label: 'Neutre-Terre-Feu' },
-  { value: 16, label: 'Neutre-Terre-Air' },
-  { value: 17, label: 'Neutre-Terre-Eau' },
-  { value: 18, label: 'Neutre-Feu-Air' },
-  { value: 19, label: 'Neutre-Feu-Eau' },
-  { value: 20, label: 'Neutre-Air-Eau' },
-  { value: 21, label: 'Terre-Feu-Air' },
-  { value: 22, label: 'Terre-Feu-Eau' },
-  { value: 23, label: 'Terre-Air-Eau' },
-  { value: 24, label: 'Feu-Air-Eau' },
-  { value: 25, label: 'Neutre-Terre-Feu-Air' },
-  { value: 26, label: 'Neutre-Terre-Feu-Eau' },
-  { value: 27, label: 'Neutre-Terre-Air-Eau' },
-  { value: 28, label: 'Neutre-Feu-Air-Eau' },
-  { value: 29, label: 'Neutre-Terre-Feu-Air-Eau' },
-]);
-
-export function getSpellElementOptions() {
-  return SPELL_ELEMENT_OPTIONS.map(({ value, label }) => ({ value, label }));
-}
+export { ELEMENT_OPTIONS as SPELL_ELEMENT_OPTIONS, getElementOptions as getSpellElementOptions } from './Elements.js';
 
 /**
  * Options de catégorie de sort (fallback UX).

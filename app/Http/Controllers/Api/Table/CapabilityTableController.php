@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Table;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Capability;
 use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
+use App\Support\ElementConstants;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -33,6 +34,8 @@ class CapabilityTableController extends Controller
         //   Objectif : supporter une architecture "field descriptors" (Option B).
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
+        $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -56,6 +59,16 @@ class CapabilityTableController extends Controller
             });
         }
 
+        if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
+            $query->where('state', (string) $filters['state']);
+        }
+        if (array_key_exists('level', $filters) && $filters['level'] !== '' && $filters['level'] !== null) {
+            $query->where('level', (string) $filters['level']);
+        }
+        if (array_key_exists('element', $filters) && $filters['element'] !== '' && $filters['element'] !== null) {
+            $query->where('element', (int) $filters['element']);
+        }
+
         $allowedSort = ['id', 'name', 'level', 'pa', 'po', 'element', 'created_at', 'updated_at'];
         if (in_array($sort, $allowedSort, true)) {
             $query->orderBy($sort, $order);
@@ -71,6 +84,27 @@ class CapabilityTableController extends Controller
             'updateAny' => Gate::allows('updateAny', Capability::class),
             'deleteAny' => Gate::allows('deleteAny', Capability::class),
             'manageAny' => Gate::allows('manageAny', Capability::class),
+        ];
+
+        $filterOptions = [
+            'level' => [
+                ['value' => '0', 'label' => '0'],
+                ['value' => '1', 'label' => '1'],
+                ['value' => '3', 'label' => '3'],
+                ['value' => '5', 'label' => '5'],
+                ['value' => '7', 'label' => '7'],
+                ['value' => '8', 'label' => '8'],
+            ],
+            'state' => [
+                ['value' => 'raw', 'label' => 'Brut'],
+                ['value' => 'draft', 'label' => 'Brouillon'],
+                ['value' => 'playable', 'label' => 'Jouable'],
+                ['value' => 'archived', 'label' => 'Archivé'],
+            ],
+            'element' => collect(ElementConstants::ELEMENT)
+                ->map(fn (string $label, int $value) => ['value' => (string) $value, 'label' => $label])
+                ->values()
+                ->all(),
         ];
 
         // Mode "entities" : retourner les entités brutes
@@ -118,12 +152,13 @@ class CapabilityTableController extends Controller
                     'entityType' => 'capabilities',
                     'query' => [
                         'search' => $search,
+                        'filters' => $filters,
                         'sort' => $sort,
                         'order' => $order,
                         'limit' => $limit,
                     ],
                     'capabilities' => $capabilities,
-                    'filterOptions' => [],
+                    'filterOptions' => $filterOptions,
                     'characteristics' => [
                         'capability' => [
                             'byDbColumn' => $capabilityCharacteristicsByDbColumn,
@@ -180,11 +215,13 @@ class CapabilityTableController extends Controller
                         ],
                     ],
                     'element' => [
-                        'type' => 'text',
-                        'value' => $c->element ?: '-',
+                        'type' => 'element',
+                        'value' => ElementConstants::getLabel((int) ($c->element ?? 0)) ?? '-',
                         'params' => [
-                            'sortValue' => (string) ($c->element ?? ''),
-                            'searchValue' => (string) ($c->element ?? ''),
+                            'element' => (int) ($c->element ?? 0),
+                            'sortValue' => (int) ($c->element ?? 0),
+                            'searchValue' => ElementConstants::getLabel((int) ($c->element ?? 0)) ?? '',
+                            'filterValue' => (int) ($c->element ?? 0),
                         ],
                     ],
                     'created_by' => [
@@ -251,16 +288,18 @@ class CapabilityTableController extends Controller
                 'entityType' => 'capabilities',
                 'query' => [
                     'search' => $search,
+                    'filters' => $filters,
                     'sort' => $sort,
                     'order' => $order,
                     'limit' => $limit,
                 ],
                 'capabilities' => $capabilities,
-                'filterOptions' => [],
+                'filterOptions' => $filterOptions,
             ],
             'rows' => $tableRows,
         ]);
     }
+
 }
 
 

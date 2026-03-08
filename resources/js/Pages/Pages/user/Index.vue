@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
@@ -7,6 +7,7 @@ import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import Avatar from '@/Pages/Atoms/data-display/Avatar.vue';
 import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
+import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getRoleTranslation } from '@/Utils/user/RoleManager';
 
@@ -98,6 +99,35 @@ const decodeHtmlEntities = (value) => String(value)
     .replace(/&#039;/g, "'")
     .replace(/&quot;/g, '"');
 const paginationLabel = (label) => decodeHtmlEntities(label).replace(/<[^>]*>/g, '').trim();
+
+const showForceDeleteModal = ref(false);
+const userToForceDelete = ref(null);
+
+const restoreUser = (userId) => {
+    router.post(route('user.restore', userId), {}, {
+        preserveScroll: true,
+    });
+};
+
+const openForceDeleteModal = (u) => {
+    userToForceDelete.value = u;
+    showForceDeleteModal.value = true;
+};
+
+const confirmForceDelete = () => {
+    if (userToForceDelete.value?.id) {
+        router.delete(route('user.forceDelete', userToForceDelete.value.id), {
+            preserveScroll: true,
+        });
+    }
+    showForceDeleteModal.value = false;
+    userToForceDelete.value = null;
+};
+
+const closeForceDeleteModal = () => {
+    showForceDeleteModal.value = false;
+    userToForceDelete.value = null;
+};
 </script>
 
 <template>
@@ -223,9 +253,27 @@ const paginationLabel = (label) => decodeHtmlEntities(label).replace(/<[^>]*>/g,
                             <span v-else class="badge badge-success badge-soft">Actif</span>
                         </td>
                         <td>
-                            <div class="flex items-center justify-end gap-2">
+                            <div class="flex items-center justify-end gap-2 flex-wrap">
                                 <Btn size="xs" color="primary" variant="ghost" @click="goToEdit(u.id)">
                                     Ouvrir
+                                </Btn>
+                                <Btn
+                                    v-if="u.can?.restore && u.deleted_at && !isCurrentUser(u.id)"
+                                    size="xs"
+                                    color="success"
+                                    variant="ghost"
+                                    @click="restoreUser(u.id)"
+                                >
+                                    Restaurer
+                                </Btn>
+                                <Btn
+                                    v-if="u.can?.forceDelete && u.deleted_at && !isCurrentUser(u.id)"
+                                    size="xs"
+                                    color="error"
+                                    variant="ghost"
+                                    @click="openForceDeleteModal(u)"
+                                >
+                                    Supprimer définitivement
                                 </Btn>
                                 <Btn
                                     v-if="isSuperAdmin && !isCurrentUser(u.id)"
@@ -252,6 +300,19 @@ const paginationLabel = (label) => decodeHtmlEntities(label).replace(/<[^>]*>/g,
                 </tbody>
             </table>
         </div>
+
+        <ConfirmModal
+            :open="showForceDeleteModal"
+            title="Supprimer définitivement"
+            :message="userToForceDelete ? `Supprimer définitivement le compte de ${userToForceDelete.name || userToForceDelete.email} ? Cette action est irréversible.` : ''"
+            confirm-label="Supprimer définitivement"
+            cancel-label="Annuler"
+            confirm-color="error"
+            confirm-icon="fa-solid fa-trash"
+            @close="closeForceDeleteModal"
+            @confirm="confirmForceDelete"
+            @cancel="closeForceDeleteModal"
+        />
 
         <div v-if="links.length > 3" class="flex items-center justify-between gap-3 flex-wrap">
             <p class="text-sm opacity-70">

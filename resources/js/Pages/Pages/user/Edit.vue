@@ -21,6 +21,7 @@ import Avatar from '@/Pages/Atoms/data-display/Avatar.vue';
 import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
 import VerifyMailAlert from '@/Pages/Molecules/user/VerifyMailAlert.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
 
 const page = usePage();
 const { success, error } = useNotificationStore();
@@ -326,6 +327,25 @@ const roleValidation = computed(() => {
     };
 });
 
+const showForceDeleteModal = ref(false);
+
+const restoreUser = () => {
+    if (user.value?.id) {
+        router.post(route('user.restore', user.value.id), {}, {
+            preserveScroll: true,
+        });
+    }
+};
+
+const confirmForceDelete = () => {
+    if (user.value?.id) {
+        router.delete(route('user.forceDelete', user.value.id), {
+            preserveScroll: true,
+        });
+    }
+    showForceDeleteModal.value = false;
+};
+
 </script>
 
 <template>
@@ -530,9 +550,57 @@ const roleValidation = computed(() => {
                     </div>
                 </div>
             </div>
+            <!-- Section admin : actions sur compte supprimé (restaurer, supprimer définitivement) -->
+            <div
+                v-if="isAdmin && !isSelfUpdate && user?.deleted_at"
+                class="mt-6"
+            >
+                <hr class="border-gray-300 dark:border-gray-700 my-4" />
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-content-300">
+                        Compte supprimé
+                    </h3>
+                    <p class="mt-1 text-sm text-content-600">
+                        Ce compte a été supprimé. Tu peux le restaurer ou le supprimer définitivement.
+                    </p>
+                </div>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <Btn
+                        v-if="user?.can?.restore"
+                        color="success"
+                        size="sm"
+                        @click="restoreUser"
+                    >
+                        <i class="fa-solid fa-undo mr-1" aria-hidden="true" />
+                        Restaurer le compte
+                    </Btn>
+                    <Btn
+                        v-if="user?.can?.forceDelete"
+                        color="error"
+                        size="sm"
+                        @click="showForceDeleteModal = true"
+                    >
+                        <i class="fa-solid fa-trash mr-1" aria-hidden="true" />
+                        Supprimer définitivement
+                    </Btn>
+                </div>
+                <ConfirmModal
+                    :open="showForceDeleteModal"
+                    title="Supprimer définitivement"
+                    :message="user ? `Supprimer définitivement le compte de ${user.name || user.email} ? Cette action est irréversible.` : ''"
+                    confirm-label="Supprimer définitivement"
+                    cancel-label="Annuler"
+                    confirm-color="error"
+                    confirm-icon="fa-solid fa-trash"
+                    @close="showForceDeleteModal = false"
+                    @confirm="confirmForceDelete"
+                    @cancel="showForceDeleteModal = false"
+                />
+            </div>
+
             <!-- Section admin : rôle (uniquement pour les admins modifiant un autre utilisateur) -->
             <div
-                v-if="isAdmin && !isSelfUpdate"
+                v-if="isAdmin && !isSelfUpdate && !user?.deleted_at"
                 class="mt-6"
             >
                 <hr class="border-gray-300 dark:border-gray-700 my-4" />

@@ -1,6 +1,7 @@
 # Sécurité — Bonnes pratiques
 
 - Toujours valider les entrées utilisateur (backend & frontend).
+- **Audit** : Voir [SECURITY_AUDIT_2026-03.md](./SECURITY_AUDIT_2026-03.md) pour le dernier audit de sécurité (2026-03-07).
 - Prévenir les injections SQL, XSS, CSRF.
 - Gérer les permissions, rôles, accès, logs d’audit.
 - Protéger les données sensibles, anonymiser si besoin.

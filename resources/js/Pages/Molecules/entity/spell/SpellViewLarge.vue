@@ -14,6 +14,8 @@ import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
+import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
@@ -121,38 +123,22 @@ const bodyFields = computed(() => ([
     'effect',
 ].filter(canShowField)));
 
-const getFieldLabel = (fieldKey) => {
-    return resolveEntityFieldUi({
+const getFieldUi = (fieldKey) =>
+    resolveEntityFieldUi({
         fieldKey,
         descriptors: descriptors.value,
         tableMeta: props.tableMeta,
         entityType: 'spell',
-    }).label;
-};
+    });
 
-const getFieldIcon = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'spell',
-    }).icon;
-};
+const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
 
-const getFieldTooltip = (fieldKey) => resolveEntityFieldUi({
-    fieldKey,
-    descriptors: descriptors.value,
-    tableMeta: props.tableMeta,
-    entityType: 'spell',
-}).tooltip;
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
+
+const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
 
 const getFieldIconStyle = (fieldKey) => {
-    const color = resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'spell',
-    }).color;
+    const color = getFieldUi(fieldKey).color;
     return color ? { color } : undefined;
 };
 
@@ -181,12 +167,7 @@ const getBadgeColor = (fieldKey) => {
     return resolveEntityBadgeUi({
         fieldKey,
         cell: getCell(fieldKey),
-        fieldUi: resolveEntityFieldUi({
-            fieldKey,
-            descriptors: descriptors.value,
-            tableMeta: props.tableMeta,
-            entityType: 'spell',
-        }),
+        fieldUi: getFieldUi(fieldKey),
         localColorMap: colorMap,
     }).color;
 };
@@ -195,12 +176,7 @@ const getBadgeAutoParams = (fieldKey) => {
     const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
         fieldKey,
         cell: getCell(fieldKey),
-        fieldUi: resolveEntityFieldUi({
-            fieldKey,
-            descriptors: descriptors.value,
-            tableMeta: props.tableMeta,
-            entityType: 'spell',
-        }),
+        fieldUi: getFieldUi(fieldKey),
     });
     return { autoLabel, autoScheme, autoTone };
 };
@@ -315,17 +291,19 @@ const handleAction = async (actionKey) => {
                                         {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
                                     </span>
                                 </div>
-                                <Badge
-                                    :color="getBadgeColor(fieldKey)"
-                                    :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                                    :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                                    :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
+                                <ElementDisplay
+                                    v-if="fieldKey === 'element'"
+                                    :element="spell?.element ?? 0"
                                     size="sm"
-                                    :truncate="false"
+                                />
+                                <PropertyDisplay
+                                    v-else
+                                    :property="getFieldUi(fieldKey)"
+                                    :value="getCell(fieldKey)?.value"
+                                    variant="badge"
+                                    size="sm"
                                     class="max-w-[18rem] whitespace-normal break-words"
-                                >
-                                    <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                                </Badge>
+                                />
                             </div>
                         </Tooltip>
                     </template>
