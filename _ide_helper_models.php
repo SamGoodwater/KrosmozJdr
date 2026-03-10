@@ -1632,6 +1632,9 @@ namespace App\Models{
  * @mixin \Eloquent
  * @property string|null $entity_key
  * @property string|null $icon
+ * @property string|null $page_css_classes
+ * @property string|null $title_css_classes
+ * @property string|null $menu_item_css_classes
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page forMenu(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page inMenu()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page ordered()
@@ -1639,7 +1642,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page readableFor(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereEntityKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereMenuItemCssClasses($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page wherePageCssClasses($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereTitleCssClasses($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereWriteLevel($value)
  */
 	class Page extends \Eloquent {}

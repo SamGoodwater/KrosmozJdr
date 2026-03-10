@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Table;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Spell;
 use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
+use App\Services\Effect\EffectResolutionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -19,8 +20,136 @@ use Illuminate\Support\Facades\Gate;
 class SpellTableController extends Controller
 {
     public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
+        private readonly CharacteristicMetaByDbColumnService $characteristicMeta,
+        private readonly EffectResolutionService $effectResolutionService
     ) {
+    }
+
+    /** Slugs élément → id (0=Neutre, 1=Terre, 2=Feu, 3=Air, 4=Eau). */
+    private const ELEMENT_SLUG_TO_ID = [
+        'neutral' => 0,
+        'earth' => 1,
+        'fire' => 2,
+        'air' => 3,
+        'water' => 4,
+    ];
+
+    /** Labels pour target_type. */
+    private const TARGET_TYPE_LABELS = [
+        'direct' => 'Direct',
+        'trap' => 'Piège',
+        'glyph' => 'Glyphe',
+    ];
+
+    /**
+     * Construit le résumé texte (pour recherche/tri) et les chips structurés (pour affichage).
+     *
+     * @return array{summary: string, chips: list<array{text: string, element: int, element_label: string, target_type: string, target_label: string, area: string|null, duration: int|null, duration_label: string, tooltip: string}>}
+     */
+    private function buildEffectUsagesData(Spell $spell): array
+    {
+        $usages = $spell->effectUsages ?? collect();
+        if ($usages->isEmpty()) {
+            return ['summary' => '', 'chips' => []];
+        }
+
+        $level = is_numeric((string) $spell->level) ? (int) $spell->level : 1;
+        $baseContext = ['level' => $level];
+        $parts = [];
+        $chips = [];
+
+        foreach ($usages->sortBy('level_min') as $usage) {
+            $effect = $usage->effect;
+            if (! $effect) {
+                continue;
+            }
+            $targetType = $effect->target_type ?? 'direct';
+            $targetLabel = self::TARGET_TYPE_LABELS[$targetType] ?? 'Direct';
+            $area = $effect->area;
+
+            $resolved = $this->effectResolutionService->resolveEffect($effect, $baseContext, null, false, false);
+            foreach ($resolved['sub_effects'] ?? [] as $sub) {
+                $text = trim((string) ($sub['text'] ?? ''));
+                if ($text === '') {
+                    continue;
+                }
+                $text = $this->humanizeEffectText($text);
+                $parts[] = $text;
+
+                $charSlug = strtolower((string) ($sub['characteristic'] ?? ''));
+                $elementId = self::ELEMENT_SLUG_TO_ID[$charSlug] ?? 0;
+                $elementLabel = $this->elementIdToLabel($elementId);
+
+                $duration = isset($sub['duration']) && is_numeric($sub['duration']) ? (int) $sub['duration'] : null;
+                $durationLabel = $this->formatDurationLabel($duration);
+
+                $details = [];
+                if ($targetType !== 'direct') {
+                    $details[] = $targetLabel;
+                }
+                if ($area !== null && (string) $area !== '') {
+                    $details[] = "zone {$area}";
+                }
+                $details[] = $durationLabel;
+                $tooltip = $text . (\count($details) > 0 ? ' — ' . implode(', ', $details) : '');
+
+                $chips[] = [
+                    'text' => $text,
+                    'element' => $elementId,
+                    'element_label' => $elementLabel,
+                    'target_type' => $targetType,
+                    'target_label' => $targetLabel,
+                    'area' => $area,
+                    'duration' => $duration,
+                    'duration_label' => $durationLabel,
+                    'tooltip' => $tooltip,
+                ];
+            }
+        }
+
+        return [
+            'summary' => implode(' • ', $parts),
+            'chips' => $chips,
+        ];
+    }
+
+    /** Traduit duration 0 ou 1 en "Immédiat", sinon "X tour(s)". */
+    private function formatDurationLabel(?int $duration): string
+    {
+        if ($duration === null) {
+            return 'Immédiat';
+        }
+        if ($duration === 0 || $duration === 1) {
+            return 'Immédiat';
+        }
+        return $duration . ' tour' . ($duration > 1 ? 's' : '');
+    }
+
+    private function elementIdToLabel(int $id): string
+    {
+        return match ($id) {
+            1 => 'Terre',
+            2 => 'Feu',
+            3 => 'Air',
+            4 => 'Eau',
+            default => 'Neutre',
+        };
+    }
+
+    /** Remplace les slugs d'éléments par les libellés français. */
+    private function humanizeEffectText(string $text): string
+    {
+        $elementLabels = [
+            'water' => 'Eau',
+            'earth' => 'Terre',
+            'fire' => 'Feu',
+            'air' => 'Air',
+            'neutral' => 'Neutre',
+        ];
+        foreach ($elementLabels as $slug => $label) {
+            $text = preg_replace('/\b' . preg_quote($slug, '/') . '\b/i', $label, $text);
+        }
+        return $text;
     }
 
     public function index(Request $request): JsonResponse
@@ -52,7 +181,7 @@ class SpellTableController extends Controller
         }
 
         $query = Spell::query()
-            ->with(['createdBy', 'spellTypes'])
+            ->with(['createdBy', 'spellTypes', 'effectUsages.effect.effectSubEffects.subEffect'])
             ->withCount(['spellTypes', 'breeds', 'creatures', 'monsters']);
 
         if ($search !== '') {
@@ -150,6 +279,7 @@ class SpellTableController extends Controller
         if ($format === 'entities') {
             $entities = $rows->map(function (Spell $sp) {
                 $createdBy = $sp->createdBy;
+                $effectUsagesData = $this->buildEffectUsagesData($sp);
                 return [
                     'id' => $sp->id,
                     'official_id' => $sp->official_id,
@@ -157,6 +287,8 @@ class SpellTableController extends Controller
                     'name' => $sp->name,
                     'description' => $sp->description,
                     'effect' => $sp->effect,
+                    'effect_usages_summary' => $effectUsagesData['summary'],
+                    'effect_usages_chips' => $effectUsagesData['chips'],
                     'area' => $sp->area,
                     'level' => $sp->level,
                     'po' => $sp->po_display,

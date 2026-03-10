@@ -152,13 +152,7 @@
   {
     "name": "DynamicMenu",
     "description": "DynamicMenu Organism",
-    "props": [
-      {
-        "name": "currentRoute",
-        "type": "String",
-        "desc": "- Route actuelle (optionnel, pour déterminer l'item actif)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "section/DynamicMenu.vue"
   },

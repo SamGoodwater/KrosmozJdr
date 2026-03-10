@@ -485,7 +485,7 @@ final class IntegrationService
             'number_between_two_cast' => (string) (isset($data['number_between_two_cast']) ? $data['number_between_two_cast'] : '0'),
             'number_between_two_cast_editable' => (bool) (isset($data['number_between_two_cast_editable']) ? (int) $data['number_between_two_cast_editable'] : true),
             'element' => (int) ($data['element'] ?? 0),
-            'category' => (int) ($data['category'] ?? 0),
+            'category' => (int) ($options['spell_category_hint'] ?? $data['category'] ?? Spell::CATEGORY_CREATURE),
             'is_magic' => (bool) (isset($data['is_magic']) ? (int) $data['is_magic'] : true),
             'powerful' => (int) ($data['powerful'] ?? 0),
             'resolution_mode' => (string) ($data['resolution_mode'] ?? Spell::RESOLUTION_ATTACK_ROLL),
@@ -619,8 +619,11 @@ final class IntegrationService
                 $subEffectsRaw = [];
             }
 
+            $targetType = (string) ($effectRow['target_type'] ?? Effect::TARGET_DIRECT);
+            $area = isset($effectRow['area']) ? (string) $effectRow['area'] : null;
+
             $normalizedRows = $this->normalizeSubEffectsRowsForSignature($subEffectsRaw, $slugToId);
-            $signature = $normalizedRows !== [] ? $this->computeEffectConfigSignature($normalizedRows) : null;
+            $signature = $normalizedRows !== [] ? $this->computeEffectConfigSignature($normalizedRows, $targetType, $area) : null;
 
             $effect = null;
             if ($signature !== null) {
@@ -636,8 +639,8 @@ final class IntegrationService
                         'degree' => $degree,
                         'name' => $effectName,
                         'description' => $effectRow['description'] ?? null,
-                        'target_type' => (string) ($effectRow['target_type'] ?? \App\Models\Effect::TARGET_DIRECT),
-                        'area' => isset($effectRow['area']) ? (string) $effectRow['area'] : null,
+                        'target_type' => $targetType,
+                        'area' => $area,
                         'config_signature' => $signature,
                     ]);
                 } else {
@@ -647,8 +650,8 @@ final class IntegrationService
                         'name' => $effectName,
                         'slug' => $effectSlug,
                         'description' => $effectRow['description'] ?? null,
-                        'target_type' => (string) ($effectRow['target_type'] ?? \App\Models\Effect::TARGET_DIRECT),
-                        'area' => isset($effectRow['area']) ? (string) $effectRow['area'] : null,
+                        'target_type' => $targetType,
+                        'area' => $area,
                         'config_signature' => $signature,
                     ]);
                 }
@@ -731,7 +734,7 @@ final class IntegrationService
             $subEffectsCount = is_array($subEffectsRaw) ? count($subEffectsRaw) : 0;
 
             $normalizedRows = $this->normalizeSubEffectsRowsForSignature(is_array($subEffectsRaw) ? $subEffectsRaw : [], $slugToId);
-            $signature = $normalizedRows !== [] ? $this->computeEffectConfigSignature($normalizedRows) : null;
+            $signature = $normalizedRows !== [] ? $this->computeEffectConfigSignature($normalizedRows, $targetType, $area) : null;
 
             $action = 'create';
             $existingEffectId = null;
@@ -861,10 +864,11 @@ final class IntegrationService
 
     /**
      * Calcule une signature (hash) pour réutiliser un Effect existant.
+     * Inclut target_type et area pour éviter de fusionner des effets directs/piège/glyphe.
      *
      * @param list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value?: mixed, state_dofusdb_id?: mixed}> $normalizedRows
      */
-    private function computeEffectConfigSignature(array $normalizedRows): string
+    private function computeEffectConfigSignature(array $normalizedRows, string $targetType = Effect::TARGET_DIRECT, ?string $area = null): string
     {
         $parts = [];
         foreach ($normalizedRows as $r) {
@@ -879,8 +883,43 @@ final class IntegrationService
                 'state' => $r['state_dofusdb_id'] ?? null,
             ], JSON_UNESCAPED_UNICODE);
         }
+        $parts[] = 't:' . $targetType;
+        $parts[] = 'a:' . ($area ?? '');
 
         return hash('sha256', implode("\n", $parts));
+    }
+
+    /**
+     * Recalcule la config_signature d'un effet existant (inclut target_type et area).
+     * Utile pour le backfill après modification de l'algorithme de signature.
+     */
+    public function rebuildConfigSignatureForEffect(Effect $effect): ?string
+    {
+        $effect->loadMissing('effectSubEffects');
+        $rows = [];
+        foreach ($effect->effectSubEffects as $ese) {
+            $params = is_array($ese->params) ? $ese->params : [];
+            $rows[] = [
+                'order' => $ese->order,
+                'sub_effect_id' => $ese->sub_effect_id,
+                'crit_only' => (bool) $ese->crit_only,
+                'characteristic' => $params['characteristic'] ?? null,
+                'value_formula' => $params['value_formula'] ?? null,
+                'value_formula_crit' => $params['value_formula_crit'] ?? null,
+                'value' => $params['value'] ?? null,
+                'state_dofusdb_id' => $params['state_dofusdb_id'] ?? null,
+            ];
+        }
+        usort($rows, static fn (array $a, array $b) => $a['order'] <=> $b['order']);
+        if ($rows === []) {
+            return null;
+        }
+
+        return $this->computeEffectConfigSignature(
+            $rows,
+            $effect->target_type ?? Effect::TARGET_DIRECT,
+            $effect->area
+        );
     }
 
     /**

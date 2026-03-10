@@ -39,6 +39,8 @@ class EffectResource extends JsonResource
             'description' => $this->description,
             'effect_group_id' => $this->effect_group_id,
             'degree' => $this->degree,
+            'target_type' => $this->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+            'area' => $this->area,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
             'sub_effects' => $withPivot ?? SubEffectResource::collection($this->whenLoaded('subEffects')),

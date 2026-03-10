@@ -26,6 +26,8 @@ class UpdateEffectRequest extends FormRequest
             'description' => 'nullable|string|max:65535',
             'effect_group_id' => 'nullable|integer|exists:effect_groups,id',
             'degree' => 'nullable|integer|min:0|max:255',
+            'target_type' => 'nullable|string|in:direct,trap,glyph',
+            'area' => 'nullable|string|max:64',
         ];
     }
 

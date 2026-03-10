@@ -229,62 +229,37 @@
     "description": "GlassMenuItem Atom (Navigation Glass)",
     "props": [
       {
-        "name": "route",
-        "type": "String",
-        "desc": "- Nom de route Laravel/Inertia (optionnel)"
-      },
-      {
         "name": "href",
         "type": "String",
-        "desc": "- URL directe (optionnel)"
+        "desc": "- URL (optionnel)"
       },
       {
         "name": "icon",
         "type": "String",
-        "desc": "- Nom de l'icône FontAwesome (optionnel)"
-      },
-      {
-        "name": "iconAlt",
-        "type": "String",
-        "desc": "- Texte alternatif de l'icône"
-      },
-      {
-        "name": "iconPack",
-        "type": "String",
-        "desc": "- Pack FontAwesome (solid, regular, brands, duotone)"
+        "desc": "- Icône FontAwesome (optionnel)"
       },
       {
         "name": "active",
         "type": "Boolean",
-        "desc": "- Met en avant l'item actif"
+        "desc": "- Item actif"
       },
       {
         "name": "compact",
         "type": "Boolean",
-        "desc": "- Réduit la hauteur et les paddings"
+        "desc": "- Réduit hauteur et padding"
       },
       {
         "name": "danger",
         "type": "Boolean",
-        "desc": "- Variante visuelle danger"
+        "desc": "- Variante danger"
       },
       {
         "name": "disabled",
         "type": "Boolean",
-        "desc": "- Désactive l'item"
-      },
-      {
-        "name": "type",
-        "type": "String",
-        "desc": "- Type HTML pour le mode bouton"
+        "desc": "- Désactivé"
       }
     ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "- Label/contenu principal"
-      }
-    ],
+    "slots": [],
     "file": "navigation/GlassMenuItem.vue"
   },
   {

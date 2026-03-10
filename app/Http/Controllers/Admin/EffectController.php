@@ -9,6 +9,7 @@ use App\Http\Requests\Effect\StoreEffectRequest;
 use App\Http\Requests\Effect\UpdateEffectRequest;
 use App\Models\Effect;
 use App\Models\EffectGroup;
+use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Models\EffectSubEffect;
 use App\Models\Entity\Monster;
 use App\Models\SubEffect;
@@ -87,6 +88,8 @@ class EffectController extends Controller
             'description' => $effect->description,
             'effect_group_id' => $effect->effect_group_id,
             'degree' => $effect->degree,
+            'target_type' => $effect->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+            'area' => $effect->area,
             'sub_effects' => $effect->effectSubEffects->map(function (EffectSubEffect $p) {
                 $params = $p->params ?? [];
                 if (! isset($params['characteristic'])) {
@@ -129,7 +132,10 @@ class EffectController extends Controller
 
     public function update(UpdateEffectRequest $request, Effect $effect): RedirectResponse
     {
-        $effect->update($request->only(['name', 'slug', 'description', 'effect_group_id', 'degree']));
+        $effect->update($request->only([
+            'name', 'slug', 'description', 'effect_group_id', 'degree',
+            'target_type', 'area',
+        ]));
 
         // Normaliser params.monster_id (chaîne vide → null) pour la validation
         $subEffects = $request->input('effect_sub_effects', []);
@@ -197,6 +203,12 @@ class EffectController extends Controller
             ]);
         }
 
+        $effect->load('effectSubEffects');
+        $newSignature = app(IntegrationService::class)->rebuildConfigSignatureForEffect($effect);
+        if ($newSignature !== null) {
+            $effect->update(['config_signature' => $newSignature]);
+        }
+
         return redirect()->route('admin.effects.show', $effect)
             ->with('success', 'Effet enregistré.');
     }
@@ -218,6 +230,8 @@ class EffectController extends Controller
             'description' => $effect->description,
             'effect_group_id' => $effect->effect_group_id,
             'degree' => $effect->degree,
+            'target_type' => $effect->target_type ?? Effect::TARGET_DIRECT,
+            'area' => $effect->area,
         ]);
 
         foreach ($effect->effectSubEffects as $p) {
@@ -236,6 +250,11 @@ class EffectController extends Controller
                 'crit_only' => (bool) ($p->crit_only ?? false),
                 'params' => $p->params,
             ]);
+        }
+
+        $newSignature = app(IntegrationService::class)->rebuildConfigSignatureForEffect($newEffect->load('effectSubEffects'));
+        if ($newSignature !== null) {
+            $newEffect->update(['config_signature' => $newSignature]);
         }
 
         return redirect()->route('admin.effects.show', $newEffect)
@@ -274,6 +293,8 @@ class EffectController extends Controller
             'description' => $effect->description,
             'effect_group_id' => $effect->effect_group_id,
             'degree' => $newDegree,
+            'target_type' => $effect->target_type ?? Effect::TARGET_DIRECT,
+            'area' => $effect->area,
         ]);
         foreach ($effect->effectSubEffects as $p) {
             $newEffect->effectSubEffects()->create([
@@ -292,6 +313,12 @@ class EffectController extends Controller
                 'params' => $p->params,
             ]);
         }
+
+        $newSignature = app(IntegrationService::class)->rebuildConfigSignatureForEffect($newEffect->load('effectSubEffects'));
+        if ($newSignature !== null) {
+            $newEffect->update(['config_signature' => $newSignature]);
+        }
+
         return redirect()->route('admin.effects.show', $newEffect)
             ->with('success', 'Degré dupliqué. Ajustez les sous-effets si besoin.');
     }

@@ -6,36 +6,83 @@ defineOptions({ inheritAttrs: false });
  *
  * @description
  * Section repliable avec style titre (uppercase, gris, centré).
- * - Ressemble à GlassMenuSectionTitle, pas aux items du menu
- * - Flèche visible uniquement au survol
- * - Ouvert par défaut
+ * Si sectionId est fourni, l'état ouvert/fermé est persisté dans sessionStorage.
  *
  * @example
- * <GlassMenuCollapsibleSection :default-open="true">Règles</GlassMenuCollapsibleSection>
+ * <GlassMenuCollapsibleSection section-id="regles" :default-open="true">
  *   <GlassMenuItem href="/regles">Chapitre 1</GlassMenuItem>
  * </GlassMenuCollapsibleSection>
  *
- * @props {Boolean} defaultOpen - Ouvert par défaut
+ * @props {String} sectionId - Identifiant pour persistance (sessionStorage)
+ * @props {Boolean} defaultOpen - Ouvert par défaut (si pas de valeur persistée)
  * @props {Boolean} compact - Réduit la hauteur du titre
- * @slot default - Contenu repliable
  */
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+
+const STORAGE_KEY = 'dynamic-menu-sections';
+
+function getPersistedState(sectionId) {
+    try {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        return data[sectionId] ?? null;
+    } catch {
+        return null;
+    }
+}
+
+function setPersistedState(sectionId, isOpen) {
+    try {
+        const raw = sessionStorage.getItem(STORAGE_KEY) || '{}';
+        const data = { ...JSON.parse(raw), [sectionId]: isOpen };
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch {
+        // ignore
+    }
+}
 
 const props = defineProps({
     ...getCommonProps(),
+    sectionId: { type: String, default: '' },
     defaultOpen: { type: Boolean, default: true },
     compact: { type: Boolean, default: false },
 });
 
-const isOpen = ref(props.defaultOpen);
+const isOpen = ref(true); // valeur temporaire, corrigée dans onMounted
+
+function initState() {
+    if (props.sectionId) {
+        const stored = getPersistedState(props.sectionId);
+        if (stored !== null) {
+            isOpen.value = stored;
+            return;
+        }
+    }
+    isOpen.value = props.defaultOpen;
+}
+
+onMounted(initState);
+
+watch(
+    () => [props.sectionId, props.defaultOpen],
+    () => initState()
+);
 
 watch(
     () => props.defaultOpen,
     (open) => {
-        if (open) isOpen.value = true;
+        if (open && !props.sectionId) isOpen.value = true;
     }
 );
+
+function toggle() {
+    isOpen.value = !isOpen.value;
+    if (props.sectionId) {
+        setPersistedState(props.sectionId, isOpen.value);
+    }
+}
 
 const headerClasses = computed(() =>
     mergeClasses(
@@ -48,10 +95,6 @@ const headerClasses = computed(() =>
 );
 
 const attrs = computed(() => getCommonAttrs(props));
-
-function toggle() {
-    isOpen.value = !isOpen.value;
-}
 </script>
 
 <template>

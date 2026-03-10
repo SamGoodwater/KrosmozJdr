@@ -3,10 +3,11 @@
  * Admin Effects — Liste à gauche, panneau groupe + édition d'un degré à droite.
  * Gestion des sous-effets (ordre, scope, paramètres). Bouton « Ajouter un degré ».
  */
-import { watch } from 'vue';
+import { computed, watch } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import Main from '@/Pages/Layouts/Main.vue';
+import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
 import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
@@ -76,6 +77,12 @@ function characteristicLabelForRow(row) {
     return param?.label ?? 'Caractéristique';
 }
 
+const TARGET_TYPE_OPTIONS = [
+    { value: 'direct', label: 'Direct' },
+    { value: 'trap', label: 'Piège' },
+    { value: 'glyph', label: 'Glyphe' },
+];
+
 function buildFormData(selected) {
     if (!selected || selected === 'new') {
         return {
@@ -84,6 +91,8 @@ function buildFormData(selected) {
             description: '',
             effect_group_id: '',
             degree: '',
+            target_type: 'direct',
+            area: '',
             effect_sub_effects: [],
         };
     }
@@ -93,6 +102,8 @@ function buildFormData(selected) {
         description: selected.description ?? '',
         effect_group_id: selected.effect_group_id ?? '',
         degree: selected.degree ?? '',
+        target_type: selected.target_type ?? 'direct',
+        area: selected.area ?? '',
         effect_sub_effects: (selected.sub_effects || []).map((s) => ({
             sub_effect_id: s.id,
             order: s.order ?? 0,
@@ -126,6 +137,8 @@ watch(
         form.description = data.description;
         form.effect_group_id = data.effect_group_id;
         form.degree = data.degree;
+        form.target_type = data.target_type;
+        form.area = data.area;
         form.effect_sub_effects = data.effect_sub_effects;
     },
     { immediate: true }
@@ -181,6 +194,8 @@ function submit() {
             description: form.description || null,
             effect_group_id: form.effect_group_id ? Number(form.effect_group_id) : null,
             degree: form.degree !== '' && form.degree != null ? Number(form.degree) : null,
+            target_type: form.target_type || 'direct',
+            area: form.area || null,
         };
         form.transform(() => payload).post(route('admin.effects.store'));
         return;
@@ -192,6 +207,8 @@ function submit() {
             description: form.description || null,
             effect_group_id: form.effect_group_id ? Number(form.effect_group_id) : null,
             degree: form.degree !== '' && form.degree != null ? Number(form.degree) : null,
+            target_type: form.target_type || 'direct',
+            area: form.area || null,
             effect_sub_effects: form.effect_sub_effects.map((row, i) => ({
                 sub_effect_id: Number(row.sub_effect_id),
                 order: i,
@@ -232,38 +249,31 @@ function duplicateEffect() {
 <template>
     <Head title="Effets" />
     <div class="flex h-full min-h-0 w-full">
-        <aside class="flex w-64 shrink-0 flex-col border-r border-base-300 bg-base-200/50 overflow-y-auto">
-            <div class="p-3">
-                <div class="font-semibold text-base-content">Effets</div>
-                <p class="mt-1 text-xs text-base-content/70">
-                    Conteneurs de sous-effets. Les entrées listent les groupes d'effets (degrés).
-                </p>
-            </div>
-            <nav class="flex flex-col gap-0.5 p-2">
+        <SidebarNav
+            title="Effets"
+            description="Conteneurs de sous-effets. Les entrées listent les groupes d'effets (degrés)."
+            :items="groups"
+            :get-item-href="(g) => route('admin.effects.show', g.effects[0].id)"
+            :is-item-active="(g) => selected && g.effects.some((e) => e.id === selected.id)"
+            :get-item-label="(g) => g.label"
+            :get-item-label-secondary="(g) => (g.effects.length > 1 ? `${g.effects.length} degrés` : (g.effects[0]?.degree != null ? `d${g.effects[0].degree}` : null))"
+            :get-item-key="(g) => (g.id ? 'group-' + g.id : 'single-' + g.effects[0]?.id)"
+            searchable
+            search-placeholder="Filtrer par nom…"
+            :search-keys="['label']"
+        >
+            <template #nav-before>
                 <Link
                     :href="route('admin.effects.create')"
-                    class="rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-base-300 border-l-4 border-transparent"
-                    :class="selected === 'new' ? 'bg-primary text-primary-content' : ''"
+                    :class="[
+                        'sidebar-nav-item flex items-center gap-2 rounded-lg border-l-4 border-transparent px-3 py-2 text-left text-sm font-medium transition-colors',
+                        selected === 'new' && 'sidebar-nav-item-active'
+                    ]"
                 >
                     + Nouvel effet
                 </Link>
-                <Link
-                    v-for="g in groups"
-                    :key="g.id ? 'group-' + g.id : 'single-' + g.effects[0]?.id"
-                    :href="route('admin.effects.show', g.effects[0].id)"
-                    class="flex items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors border-l-4 border-transparent"
-                    :class="selected && g.effects.some((e) => e.id === selected.id) ? 'bg-primary text-primary-content' : 'hover:bg-base-300'"
-                >
-                    <span class="truncate">{{ g.label }}</span>
-                    <span v-if="g.effects.length > 1" class="text-xs opacity-70 shrink-0">
-                        {{ g.effects.length }} degrés
-                    </span>
-                    <span v-else-if="g.effects[0]?.degree != null" class="text-xs opacity-70 shrink-0">
-                        d{{ g.effects[0].degree }}
-                    </span>
-                </Link>
-            </nav>
-        </aside>
+            </template>
+        </SidebarNav>
 
         <main class="min-w-0 flex-1 overflow-y-auto p-6">
             <template v-if="selected">
@@ -291,6 +301,14 @@ function duplicateEffect() {
                                     :options="[{ value: '', label: '— Aucun —' }, ...(options.effect_groups || [])]"
                                 />
                                 <InputField v-model="form.degree" label="Degré" name="degree" type="number" helper="1, 2, 3… pour sorts." />
+                                <SelectFieldNative
+                                    v-model="form.target_type"
+                                    label="Type de cible"
+                                    name="target_type"
+                                    :options="TARGET_TYPE_OPTIONS"
+                                    helper="Direct, piège ou glyphe."
+                                />
+                                <InputField v-model="form.area" label="Zone" name="area" helper="ex: point, line-1x9, circle-0-2." />
                             </div>
                         </div>
                     </div>

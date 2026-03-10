@@ -32,6 +32,14 @@ class Kernel extends ConsoleKernel
         $schedule->job(new SendNotificationDigestsJob('weekly'))->weeklyOn(1, '00:10');
         $schedule->job(new SendNotificationDigestsJob('monthly'))->monthlyOn(1, '00:15');
 
+        // Mise à jour des entités avec auto_update=true (project:update)
+        // Activable via env: PROJECT_UPDATE_AUTO_ENABLED=true
+        // Fréquence via PROJECT_UPDATE_CRON (format cron, défaut: 1er du mois à 1h)
+        if ((bool) env('PROJECT_UPDATE_AUTO_ENABLED', false)) {
+            $cron = env('PROJECT_UPDATE_CRON', '0 1 1 * *');
+            $schedule->command('project:update')->cron($cron);
+        }
+
         // Sync automatique du catalogue de ressources depuis DofusDB
         // Activable via env: SCRAPPING_RESOURCES_AUTO_SYNC=true (par défaut: false)
         if ((bool) env('SCRAPPING_RESOURCES_AUTO_SYNC', false)) {

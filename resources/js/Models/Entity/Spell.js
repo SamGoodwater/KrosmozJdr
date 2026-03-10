@@ -11,7 +11,7 @@
 import { BaseModel } from '../BaseModel';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
-import { getElementLabel, ELEMENT_PRIMARY_ICONS } from '@/Utils/Entity/Elements';
+import { getElementLabel, getElementIcon, getElementColor, ELEMENT_PRIMARY_ICONS } from '@/Utils/Entity/Elements';
 
 export class Spell extends BaseModel {
     // ============================================
@@ -36,6 +36,16 @@ export class Spell extends BaseModel {
 
     get effect() {
         return this._data.effect || null;
+    }
+
+    /** Résumé des effect_usages (nom effet, degré, sous-effets) fourni par l'API table. */
+    get effectUsagesSummary() {
+        return this._data.effect_usages_summary ?? '';
+    }
+
+    /** Chips structurés (text, element, target_type, area, duration_label, tooltip) fournis par l'API table. */
+    get effectUsagesChips() {
+        return this._data.effect_usages_chips ?? [];
     }
 
     get area() {
@@ -223,7 +233,7 @@ export class Spell extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
-        const overrideFields = new Set(['pa', 'po', 'spell_summary_profile', 'effect']);
+        const overrideFields = new Set(['pa', 'po', 'spell_summary_profile', 'effect', 'effect_summary']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
         if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
@@ -269,6 +279,8 @@ export class Spell extends BaseModel {
                 return this._toSpellTypesCell(format, size, options);
             case 'spell_summary_profile':
                 return this._toSpellSummaryProfileCell(format, size, options);
+            case 'effect_summary':
+                return this._toEffectSummaryCell(format, size, options);
             case 'created_by':
             case 'createdBy':
                 return this._toCreatedByCell(format, size, options);
@@ -338,6 +350,41 @@ export class Spell extends BaseModel {
             size,
             chipsLayout: { maxRows: 3 },
         });
+    }
+
+    /**
+     * Génère une cellule chips pour les effets (icône élément + valeur + tooltip avec détails).
+     * Chaque chip affiche l'action avec valeur, target_type, area, duration dans le tooltip.
+     * @private
+     */
+    _toEffectSummaryCell(format, size, options) {
+        const chips = this.effectUsagesChips;
+        if (chips.length === 0) {
+            return {
+                type: 'text',
+                value: '—',
+                params: {
+                    sortValue: '',
+                    searchValue: this.effectUsagesSummary || '',
+                },
+            };
+        }
+        const items = chips.map((chip) => ({
+            icon: getElementIcon(chip.element ?? 0),
+            color: getElementColor(chip.element ?? 0),
+            value: chip.text ?? '',
+            tooltip: chip.tooltip ?? chip.text ?? '',
+        }));
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: this.effectUsagesSummary || '',
+                searchValue: this.effectUsagesSummary || '',
+                chipsLayout: { maxRows: 3 },
+            },
+        };
     }
 
     /**

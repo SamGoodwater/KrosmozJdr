@@ -95,6 +95,12 @@ return [
             'frequency_default' => 'instant',
             'roles' => ['admin', 'super_admin'],
         ],
+        'project_maintenance' => [
+            'label' => 'Résultat init/update projet (scrapping)',
+            'channels_default' => ['database'],
+            'frequency_default' => 'instant',
+            'roles' => ['admin', 'super_admin'],
+        ],
     ],
 
     /*

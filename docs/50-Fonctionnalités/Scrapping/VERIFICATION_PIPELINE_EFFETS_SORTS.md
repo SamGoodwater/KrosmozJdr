@@ -25,8 +25,9 @@ Ce document répond à trois points de contrôle du pipeline de scrapping des so
 
 ### Effect — **oui, déduplication par signature**
 
-- Avant de créer un nouvel **Effect**, le service calcule une **signature** (`config_signature`) à partir des sous-effets normalisés (ordre, sub_effect_id, crit_only, params : characteristic, value_formula, value_formula_crit, value).
+- Avant de créer un nouvel **Effect**, le service calcule une **signature** (`config_signature`) à partir des sous-effets normalisés (ordre, sub_effect_id, crit_only, params : characteristic, value_formula, value_formula_crit, value) **et** de `target_type` et `area`.
 - Si un `Effect` existe déjà avec cette même `config_signature`, on **ne crée pas** de nouvel effet : on crée uniquement un **EffectUsage** (lien sort → effet existant). Ainsi, deux sorts avec les mêmes sous-effets (même configuration) partagent le même Effect.
+- `target_type` (direct / trap / glyph) est déduit depuis les `triggers` DofusDB (P = piège, G = glyphe).
 
 ### EffectGroup — **oui, firstOrCreate**
 

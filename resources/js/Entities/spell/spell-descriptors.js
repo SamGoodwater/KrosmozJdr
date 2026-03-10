@@ -613,6 +613,26 @@ export function getSpellFieldDescriptors(ctx = {}) {
         },
       },
     },
+    effect_summary: {
+      key: "effect_summary",
+      label: "Effets",
+      icon: "fa-solid fa-wand-magic-sparkles",
+      table: {
+        type: "chips",
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "chips" },
+          sm: { mode: "chips" },
+          md: { mode: "chips" },
+          lg: { mode: "chips" },
+          xl: { mode: "chips" },
+        },
+      },
+    },
     spell_summary_profile: {
       key: "spell_summary_profile",
       label: "Profil",

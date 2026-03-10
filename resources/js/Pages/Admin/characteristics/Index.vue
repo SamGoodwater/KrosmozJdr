@@ -16,6 +16,7 @@ import FormulaOrTableField from '@/Pages/Molecules/data-input/FormulaOrTableFiel
 import FormulaOrTableFieldWithChart from '@/Pages/Organismes/data-input/FormulaOrTableFieldWithChart.vue';
 import ConversionChartBlock from '@/Pages/Admin/characteristics/ConversionChartBlock.vue';
 import MappingPanel from '@/Pages/Admin/characteristics/MappingPanel.vue';
+import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import axios from 'axios';
 
 const { setPageTitle } = usePageTitle();
@@ -752,68 +753,37 @@ function submitConvertToLinked() {
     <Head title="Caractéristiques" />
     <div class="flex h-full min-h-0 w-full">
         <!-- Liste à gauche (vue par caractéristique) -->
-        <aside class="flex w-64 shrink-0 flex-col border-r border-base-300 bg-base-200/50 overflow-y-auto">
-            <div class="p-3">
-                <div class="font-semibold text-base-content">Caractéristiques</div>
-                <p class="mt-1 text-xs text-base-content/70">
-                    Définitions, formules et bornes min/max par type d’entité (monstre, classe, objet). Cliquez pour éditer.
-                </p>
-            </div>
-            <nav class="flex flex-col gap-0.5 p-2">
-                <p v-if="Object.keys(characteristicsByGroup).every((g) => !(characteristicsByGroup[g] || []).length)" class="px-3 py-4 text-sm text-base-content/70">
-                    Aucune caractéristique. Exécutez le seeder ou ajoutez-en via un groupe ci-dessous (ou exportez après modification via l’interface) :
-                </p>
-                <div
-                    v-for="group in groups"
-                    :key="group"
-                    class="collapse collapse-arrow rounded-lg border border-base-300 bg-base-100"
+        <SidebarNav
+            title="Caractéristiques"
+            description="Définitions, formules et bornes min/max par type d'entité (monstre, classe, objet). Cliquez pour éditer."
+            :items-by-group="characteristicsByGroup"
+            :group-labels="groupLabels"
+            groups-mode="collapse"
+            searchable
+            search-placeholder="Filtrer par nom ou clé…"
+            :search-keys="['name', 'id', 'key']"
+            :get-item-href="(c) => route('admin.characteristics.show', c.id)"
+            :is-item-active="(c) => selected?.id === c.id"
+            :get-item-css-classes="(c) => (c.color && !String(c.color).startsWith('#') ? `color-${c.color}-500 box-shadow-glass-xs` : '')"
+            :get-item-color="(c) => (displayColor(c.color) && String(c.color || '').startsWith('#') ? displayColor(c.color) : null)"
+            :get-item-icon="(c) => c.icon || null"
+            :get-item-label="(c) => c.name || c.id"
+            :get-item-label-secondary="(c) => (c.id ? `[${c.id}]` : null)"
+            icon-base-path="/storage/images/icons/caracteristics"
+        >
+            <template #empty>
+                Aucune caractéristique. Exécutez le seeder ou ajoutez-en via un groupe ci-dessous (ou exportez après modification via l'interface) :
+            </template>
+            <template v-for="group in groups" :key="group" #[`group-${group}`]>
+                <Link
+                    :href="route('admin.characteristics.create') + '?group=' + group"
+                    class="btn btn-ghost btn-sm mt-1 justify-start gap-2 text-primary"
                 >
-                    <input type="checkbox" :checked="selected && selected.group === group" />
-                    <div class="collapse-title min-h-0 py-2 font-medium">
-                        {{ groupLabels[group] || group }}
-                    </div>
-                    <div class="collapse-content">
-                        <div class="flex flex-col gap-0.5 pb-2">
-                            <Link
-                                v-for="c in (characteristicsByGroup[group] || [])"
-                                :key="c.id"
-                                :href="route('admin.characteristics.show', c.id)"
-                                class="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors border-l-4 border-transparent"
-                                :class="selected?.id === c.id ? 'bg-primary text-primary-content' : 'hover:bg-base-300'"
-                                :style="displayColor(c.color) ? { borderLeftColor: displayColor(c.color) } : {}"
-                            >
-                                <span v-if="c.icon" class="flex h-6 w-6 shrink-0 items-center justify-center text-sm">
-                                    <i v-if="c.icon.startsWith('fa-')" :class="['fa', c.icon]" />
-                                    <img
-                                        v-else-if="isImageIcon(c.icon)"
-                                        :src="iconUrl(c.icon)"
-                                        :alt="c.name || c.id"
-                                        class="h-5 w-5 object-contain"
-                                        @error="($e) => ($e.target.style.display = 'none')"
-                                    />
-                                    <span v-else class="text-xs">{{ c.icon }}</span>
-                                </span>
-                                <span v-if="!c.icon && displayColor(c.color)" class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ backgroundColor: displayColor(c.color) }" />
-                                <span class="min-w-0 flex flex-col">
-                                    <span class="truncate">{{ c.name || c.id }}</span>
-                                    <span
-                                        class="truncate text-xs italic opacity-70"
-                                        :class="selected?.id === c.id ? 'text-primary-content/80' : 'text-base-content/60'"
-                                        :title="`Dans les formules : [${c.id}]`"
-                                    >[{{ c.id }}]</span>
-                                </span>
-                            </Link>
-                            <Link
-                                :href="route('admin.characteristics.create') + '?group=' + group"
-                                class="btn btn-ghost btn-sm mt-1 justify-start gap-2 text-primary"
-                            >
-                                <i class="fa fa-plus text-xs" />
-                                Ajouter une caractéristique
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-                <!-- Actions seeders (admin / super_admin uniquement, protégées côté serveur) -->
+                    <i class="fa fa-plus text-xs" />
+                    Ajouter une caractéristique
+                </Link>
+            </template>
+            <template #nav-after>
                 <div class="mt-4 border-t border-base-300 pt-3 px-2 space-y-2">
                     <button
                         type="button"
@@ -839,8 +809,8 @@ function submitConvertToLinked() {
                         {{ seederMessage.text }}
                     </p>
                 </div>
-            </nav>
-        </aside>
+            </template>
+        </SidebarNav>
 
         <!-- Panneau central -->
         <main class="min-w-0 flex-1 overflow-y-auto p-6">

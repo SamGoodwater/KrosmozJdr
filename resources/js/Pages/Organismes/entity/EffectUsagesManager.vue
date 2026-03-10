@@ -42,7 +42,11 @@ const errorMessage = ref('');
 
 const effectOptions = computed(() => [
     { value: '', label: '— Choisir un effet —' },
-    ...props.availableEffects.map((e) => ({ value: e.id, label: e.name || e.slug || 'Effet #' + e.id })),
+    ...props.availableEffects.map((e) => {
+        const base = e.name || e.slug || 'Effet #' + e.id;
+        const suffix = showTargetTypeBadge(e.target_type) ? ` (${targetTypeLabel(e.target_type)})` : '';
+        return { value: e.id, label: base + suffix };
+    }),
 ]);
 
 async function fetchPreview() {
@@ -166,6 +170,25 @@ function stateMeta(sub) {
 function stateDispellableText(sub) {
     return formatSpellStateDispellable(sub?.context?.dispellable);
 }
+
+/** Label pour target_type (direct, trap, glyph). */
+function targetTypeLabel(type) {
+    const m = { direct: 'Direct', trap: 'Piège', glyph: 'Glyphe' };
+    return m[String(type || 'direct')] || type;
+}
+
+/** Indique si l'effet est piège ou glyphe (à afficher). */
+function showTargetTypeBadge(type) {
+    return type === 'trap' || type === 'glyph';
+}
+
+/** Retourne le target_type de l'effet sélectionné (par id) depuis availableEffects ou usages. */
+function selectedEffectTargetType(effectId) {
+    const e = props.availableEffects.find((x) => x.id == effectId);
+    if (e?.target_type) return e.target_type;
+    const u = usages.value.find((x) => x.effect_id == effectId);
+    return u?.effect?.target_type ?? null;
+}
 </script>
 
 <template>
@@ -185,18 +208,27 @@ function stateDispellableText(sub) {
             >
                 <div class="min-w-[200px] flex-1">
                     <label class="label text-xs">Effet</label>
-                    <select
-                        v-model="u.effect_id"
-                        class="select select-bordered select-sm w-full"
-                    >
-                        <option
-                            v-for="opt in effectOptions"
-                            :key="opt.value || 'empty'"
-                            :value="opt.value"
+                    <div class="flex items-center gap-2">
+                        <select
+                            v-model="u.effect_id"
+                            class="select select-bordered select-sm flex-1"
                         >
-                            {{ opt.label }}
-                        </option>
-                    </select>
+                            <option
+                                v-for="opt in effectOptions"
+                                :key="opt.value || 'empty'"
+                                :value="opt.value"
+                            >
+                                {{ opt.label }}
+                            </option>
+                        </select>
+                        <span
+                            v-if="u.effect_id && showTargetTypeBadge(selectedEffectTargetType(u.effect_id))"
+                            class="badge badge-sm badge-outline badge-primary shrink-0"
+                            :title="'Type : ' + targetTypeLabel(selectedEffectTargetType(u.effect_id))"
+                        >
+                            {{ targetTypeLabel(selectedEffectTargetType(u.effect_id)) }}
+                        </span>
+                    </div>
                 </div>
                 <InputField v-model="u.level_min" label="Niveau min" type="number" class="w-24" />
                 <InputField v-model="u.level_max" label="Niveau max" type="number" class="w-24" />
@@ -252,8 +284,18 @@ function stateDispellableText(sub) {
                     :key="i"
                     class="rounded border border-base-300 bg-base-200/40 p-3"
                 >
-                    <div class="text-sm">
+                    <div class="text-sm flex flex-wrap items-center gap-2">
                         <span class="font-medium">{{ item.effect?.name || item.effect?.slug || 'Effet' }}</span>
+                        <span
+                            v-if="showTargetTypeBadge(item.effect?.target_type)"
+                            class="badge badge-sm badge-primary badge-outline"
+                            :title="'Type de cible : ' + targetTypeLabel(item.effect?.target_type)"
+                        >
+                            {{ targetTypeLabel(item.effect?.target_type) }}
+                        </span>
+                        <span v-if="item.effect?.area" class="text-base-content/50 text-xs font-mono" :title="'Zone : ' + item.effect.area">
+                            {{ item.effect.area }}
+                        </span>
                         <span class="text-base-content/70"> — {{ item.resolved_text || item.description || '—' }}</span>
                     </div>
 

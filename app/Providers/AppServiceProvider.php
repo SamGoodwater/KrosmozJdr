@@ -17,6 +17,7 @@ use App\Models\DofusdbEffectMapping;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -54,6 +55,15 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
         Model::unguard();
+
+        // Map court pour effect_usages : le scrapping stocke 'spell'/'item'/… au lieu du FQCN.
+        // morphMap (sans enforce) : ajoute les mappings sans imposer aux autres relations polymorphes (User, etc.)
+        Relation::morphMap([
+            'spell' => \App\Models\Entity\Spell::class,
+            'item' => \App\Models\Entity\Item::class,
+            'consumable' => \App\Models\Entity\Consumable::class,
+            'resource' => \App\Models\Entity\Resource::class,
+        ]);
 
         $this->configureRateLimiting();
         $this->registerConversionFunctions();

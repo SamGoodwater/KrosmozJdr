@@ -100,6 +100,7 @@ const groupedMenuItems = computed(() => {
             <template v-for="menuItem in groupedMenuItems.ungrouped" :key="menuItem.item.id">
                 <GlassMenuCollapsibleSection
                     v-if="menuItem.type === 'parent'"
+                    :section-id="`parent-${menuItem.item.id}`"
                     :default-open="menuItem.isOpen"
                     compact
                     class="main-menu-collapsible"
@@ -137,6 +138,7 @@ const groupedMenuItems = computed(() => {
                     ]"
                 >
                     <GlassMenuCollapsibleSection
+                        :section-id="`group-${group.title}`"
                         :default-open="group.isOpen"
                         compact
                         :class="[

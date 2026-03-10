@@ -73,6 +73,7 @@
 | Type (clé) | Description | Rôles destinataires | Canaux par défaut | Inscription | Digest possible |
 |------------|-------------|---------------------|-------------------|-------------|------------------|
 | `admin_digest_daily` | Récap quotidien admin (inscriptions, entités créées/modifiées/supprimées) | admin, super_admin | mail (ou in‑app) | Oui (choix récap vs instantané par sous-type) | — (c’est le digest) |
+| `project_maintenance` | Résultat project:init ou project:update (succès, durée, heure) | admin, super_admin | in‑app | Oui | Non |
 | `user_reported` *(optionnel)* | Un utilisateur ou un contenu a été signalé | admin, super_admin | in‑app + mail | Oui | Oui |
 | `role_changed` | Mon rôle a été modifié par un admin | Utilisateur concerné | in‑app + mail | Forcé (toujours notifier) | Non |
 
@@ -95,7 +96,7 @@
 | **user** | `profile_modified`, `email_verified`, `password_reset_requested`, `login_new_device`, `campaign_invitation`, `scenario_invitation`, `campaign_role_changed`, `scenario_role_changed`, `role_changed`, `maintenance_scheduled`, `announcement`. |
 | **player** | Idem user + `campaign_updated`, `scenario_updated`, `page_updated`, `section_updated` (pour campagnes/scénarios auxquels il participe). |
 | **game_master** | Idem player + `player_joined_campaign`, `player_joined_scenario`, `request_to_join_*`, et en tant que créateur : `entity_*` (modifié, supprimé, restauré). |
-| **admin** | Tous les types ci‑dessus selon contexte + `new_account_registered`, `entity_created`, `entity_modified_admin`, `entity_deleted_admin`, `entity_restored`, `entity_force_deleted`, `admin_digest_daily`, `user_reported`. |
+| **admin** | Tous les types ci‑dessus selon contexte + `new_account_registered`, `entity_created`, `entity_modified_admin`, `entity_deleted_admin`, `entity_restored`, `entity_force_deleted`, `admin_digest_daily`, `project_maintenance`, `user_reported`. |
 | **super_admin** | Idem admin (même liste, pas de distinction fonctionnelle pour les notifs). |
 
 ---

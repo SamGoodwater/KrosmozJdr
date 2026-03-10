@@ -25,6 +25,8 @@ class StoreEffectRequest extends FormRequest
             'description' => 'nullable|string|max:65535',
             'effect_group_id' => 'nullable|integer|exists:effect_groups,id',
             'degree' => 'nullable|integer|min:0|max:255',
+            'target_type' => 'nullable|string|in:direct,trap,glyph',
+            'area' => 'nullable|string|max:64',
         ];
     }
 
@@ -32,6 +34,9 @@ class StoreEffectRequest extends FormRequest
     {
         if ($this->filled('description')) {
             $this->merge(['description' => (new EffectTextSanitizer())->sanitize((string) $this->description)]);
+        }
+        if (!$this->filled('target_type')) {
+            $this->merge(['target_type' => \App\Models\Effect::TARGET_DIRECT]);
         }
     }
 }

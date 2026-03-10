@@ -3,12 +3,18 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\EffectController as AdminEffectController;
+use App\Http\Controllers\Admin\SubEffectController;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Administration des effects (système unifié).
- * Liste à gauche, panneau à droite ; duplication degré sur un effect.
+ * Administration des effects et sous-effets (système unifié).
+ * Effects : liste à gauche, panneau à droite ; duplication degré sur un effect.
+ * Sub-effects : vue dédiée en lecture du référentiel.
  */
+Route::get('admin/sub-effects', [SubEffectController::class, 'index'])
+    ->name('admin.sub-effects.index')
+    ->middleware(['auth', 'role:game_master']);
+
 Route::prefix('admin/effects')
     ->name('admin.effects.')
     ->middleware(['auth', 'role:game_master'])

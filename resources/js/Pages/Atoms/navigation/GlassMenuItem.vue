@@ -55,7 +55,7 @@ const itemClasses = computed(() =>
     mergeClasses(
         [
             "glass-menu-item",
-            "box-glass-xs-b",
+            "hover:box-glass-xs-b",
             props.active && "glass-menu-item-active",
             props.compact && "glass-menu-item-compact",
             props.danger && "glass-menu-item-danger",

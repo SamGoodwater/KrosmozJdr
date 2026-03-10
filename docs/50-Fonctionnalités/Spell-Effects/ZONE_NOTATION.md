@@ -71,6 +71,8 @@ Une zone est notée : **`forme[-paramètres]`**.
 
 La zone s’applique à l’effet (un bloc de sous-effets), pas au sort entier : un même sort peut avoir plusieurs effets (ex. par degré) avec des zones différentes.
 
+**Déduplication** : `target_type` et `area` sont inclus dans `config_signature` pour éviter de fusionner des effets aux sous-effets identiques mais avec un mode d'application différent (ex. direct vs piège).
+
 ---
 
 ## 5. Correspondance DofusDB → Krosmoz

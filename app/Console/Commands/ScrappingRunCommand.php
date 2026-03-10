@@ -39,6 +39,8 @@ class ScrappingRunCommand extends Command
         {--compare : Prévisualise et compare (raw/converted/existing)}
         {--include-relations=1 : Inclure relations (1/0) pour import/preview}
         {--replace-existing : Force mise à jour si l\'entité existe déjà}
+        {--update-mode= : ignore|draft_raw_auto_update|auto_update|force (prioritaire sur replace-existing)}
+        {--skip-existing : Ne pas appeler l\'API pour les entités déjà en base qu\'on n\'écraserait pas (défaut: false en init, true en update)}
         {--no-validate : Désactiver la validation}
         {--exclude-from-update= : Champs à ne pas écraser (ex: name,image,level)}
         {--ignore-unvalidated : Ignorer objets dont race/type non validé}
@@ -420,8 +422,24 @@ class ScrappingRunCommand extends Command
                         $importBar->start();
                     }
 
+                    $entityKey = $this->apiTypeToEntity($normalizedEntity);
                     foreach ($idsToImport as $idx => $id) {
                         $this->debugLine("Import {$normalizedEntity} id={$id} (" . ($idx + 1) . "/{$totalImport})…");
+                        if ($entityKey !== null) {
+                            $skipInfo = $orchestrator->resolveSkipForEntity($entityKey, (int) $id, $importOptions);
+                            if ($skipInfo !== null) {
+                                $entityResult['imported'][] = [
+                                    'success' => true,
+                                    'entity' => $normalizedEntity,
+                                    'id' => (int) $id,
+                                    'skipped' => true,
+                                ];
+                                if ($importBar !== null) {
+                                    $importBar->advance();
+                                }
+                                continue;
+                            }
+                        }
                         $oneResult = $this->importOne($orchestrator, $normalizedEntity, (int) $id, $importOptions);
                         $entityResult['imported'][] = $oneResult;
                         $ok = (bool) ($oneResult['success'] ?? false);
@@ -956,7 +974,7 @@ class ScrappingRunCommand extends Command
     }
 
     /**
-     * @return array{skip_cache?: bool, include_relations?: bool, force_update: bool, dry_run: bool, validate_only: bool, lang: string, exclude_from_update: list<string>, ignore_unvalidated: bool}
+     * @return array{skip_cache?: bool, include_relations?: bool, force_update: bool, dry_run: bool, validate_only: bool, lang: string, exclude_from_update: list<string>, ignore_unvalidated: bool, replace_mode?: string, respect_auto_update?: bool, skip_existing?: bool}
      */
     private function buildImportOptions(array $collectOptions): array
     {
@@ -966,17 +984,58 @@ class ScrappingRunCommand extends Command
             $excludeFromUpdate = array_values(array_filter(array_map('trim', explode(',', $excludeRaw))));
         }
 
+        $updateMode = (string) $this->option('update-mode');
+        $replaceMode = null;
+        $respectAutoUpdate = true;
+        $skipExisting = $this->option('skip-existing') !== null
+            ? (bool) $this->option('skip-existing')
+            : (! (bool) $this->option('replace-existing'));
+
+        if ($updateMode !== '' && in_array($updateMode, ['ignore', 'draft_raw_auto_update', 'auto_update', 'force'], true)) {
+            switch ($updateMode) {
+                case 'ignore':
+                    $replaceMode = 'never';
+                    $respectAutoUpdate = true;
+                    $skipExisting = true;
+                    break;
+                case 'draft_raw_auto_update':
+                    $replaceMode = 'draft_raw_only';
+                    $respectAutoUpdate = true;
+                    $skipExisting = true;
+                    break;
+                case 'auto_update':
+                    $replaceMode = 'always';
+                    $respectAutoUpdate = true;
+                    $skipExisting = true;
+                    break;
+                case 'force':
+                    $replaceMode = 'always';
+                    $respectAutoUpdate = false;
+                    $skipExisting = true;
+                    break;
+            }
+        } elseif ((bool) $this->option('replace-existing')) {
+            $replaceMode = 'always';
+            $respectAutoUpdate = false;
+            $skipExisting = false;
+        }
+
+        $forceUpdate = $replaceMode === 'always' || (bool) $this->option('replace-existing');
+
         return [
             'skip_cache' => (bool) ($collectOptions['skip_cache'] ?? false),
             'include_relations' => (bool) ((int) $this->option('include-relations')),
-            'force_update' => (bool) $this->option('replace-existing'),
+            'force_update' => $forceUpdate,
             'dry_run' => (bool) $this->option('simulate'),
-            'validate' => !(bool) $this->option('no-validate'),
+            'validate' => ! (bool) $this->option('no-validate'),
             'validate_only' => false,
             'lang' => (string) $this->option('lang', 'fr'),
             'exclude_from_update' => $excludeFromUpdate,
             'ignore_unvalidated' => (bool) $this->option('ignore-unvalidated'),
-            'download_images' => !(bool) $this->option('noimage'),
+            'download_images' => ! (bool) $this->option('noimage'),
+            'replace_mode' => $replaceMode,
+            'respect_auto_update' => $respectAutoUpdate,
+            'skip_existing' => $skipExisting,
         ];
     }
 
@@ -1177,7 +1236,7 @@ class ScrappingRunCommand extends Command
 
         $runOptions = [
             'validate' => ($options['validate'] ?? true) !== false,
-            'integrate' => !($options['dry_run'] ?? false) && !($options['validate_only'] ?? false),
+            'integrate' => ! ($options['dry_run'] ?? false) && ! ($options['validate_only'] ?? false),
             'dry_run' => (bool) ($options['dry_run'] ?? false),
             'force_update' => (bool) ($options['force_update'] ?? false),
             'skip_cache' => (bool) ($options['skip_cache'] ?? false),
@@ -1187,6 +1246,15 @@ class ScrappingRunCommand extends Command
             'include_relations' => (bool) ($options['include_relations'] ?? true),
             'download_images' => (bool) ($options['download_images'] ?? true),
         ];
+        if (array_key_exists('replace_mode', $options) && $options['replace_mode'] !== null) {
+            $runOptions['replace_mode'] = $options['replace_mode'];
+        }
+        if (array_key_exists('respect_auto_update', $options)) {
+            $runOptions['respect_auto_update'] = (bool) $options['respect_auto_update'];
+        }
+        if (array_key_exists('skip_existing', $options)) {
+            $runOptions['skip_existing'] = (bool) $options['skip_existing'];
+        }
         $result = $orchestrator->runOne('dofusdb', $entityKey, $id, $runOptions);
 
         $data = $result->getIntegrationResult()?->getData();

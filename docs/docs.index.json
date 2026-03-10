@@ -1515,6 +1515,11 @@
     "description": "**Contexte :** Idées issues des échanges sur l’affichage scrapping et l’enregistrement. Ce plan vise à **optimiser l’existant** sans refonte complète."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_COMMANDES_INIT_ET_UPDATE.md",
+    "title": "Plan : Commandes project:init et project:update",
+    "description": "Commandes Artisan pour initialiser le projet (migrations, seeders, scrapping complet, capabilities) et mettre à jour les entités en auto_update. Inclut extension scrapping:run (update-mode, skip-existing)."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/PLAN_REFONTE_SCRAPPING.md",
     "title": "Plan de refonte — Service de scrapping",
     "description": "**Date :** 2026-03-03"

@@ -108,16 +108,20 @@ class ItemController extends Controller
                 'name' => $u->effect->name,
                 'slug' => $u->effect->slug,
                 'degree' => $u->effect->degree,
+                'target_type' => $u->effect->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+                'area' => $u->effect->area,
             ] : null,
             'level_min' => $u->level_min,
             'level_max' => $u->level_max,
         ])->values()->all();
 
-        $availableEffects = Effect::orderBy('name')->get(['id', 'name', 'slug', 'degree'])->map(fn ($e) => [
+        $availableEffects = Effect::orderBy('name')->get(['id', 'name', 'slug', 'degree', 'target_type', 'area'])->map(fn ($e) => [
             'id' => $e->id,
             'name' => $e->name ?? $e->slug ?? 'Effet #' . $e->id,
             'slug' => $e->slug,
             'degree' => $e->degree,
+            'target_type' => $e->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+            'area' => $e->area,
         ])->values()->all();
 
         return Inertia::render('Pages/entity/item/Edit', [

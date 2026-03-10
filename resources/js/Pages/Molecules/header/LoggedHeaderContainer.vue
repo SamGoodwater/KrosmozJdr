@@ -587,6 +587,9 @@ const logout = () => {
                                 <GlassMenuItem v-if="canAccess('effectsAdmin')" route="admin.effects.index" icon="fa-bolt" icon-alt="Effets" hover3d>
                                     Effets
                                 </GlassMenuItem>
+                                <GlassMenuItem v-if="canAccess('effectsAdmin')" route="admin.sub-effects.index" icon="fa-wand-magic-sparkles" icon-alt="Sous-effets" hover3d>
+                                    Sous-effets
+                                </GlassMenuItem>
                                 <GlassMenuItem v-if="canAccess('adminPanel') && canAccess('scrapping')" route="scrapping.index" icon="fa-magnifying-glass" icon-alt="Scrapping" hover3d>
                                     Scrapping
                                 </GlassMenuItem>

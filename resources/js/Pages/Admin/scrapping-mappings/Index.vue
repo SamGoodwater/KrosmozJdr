@@ -9,6 +9,7 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import Main from '@/Pages/Layouts/Main.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
+import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
 import axios from 'axios';
 
@@ -214,27 +215,23 @@ onMounted(() => {
     <Head title="Mapping scrapping" />
     <div class="flex h-full min-h-0 w-full">
         <!-- Panneau gauche : liste des entités -->
-        <aside class="flex w-64 shrink-0 flex-col border-r border-base-300 bg-base-200/50 overflow-y-auto">
-            <div class="p-3">
-                <div class="font-semibold text-base-content">Mapping DofusDB → Krosmoz</div>
-                <p class="mt-1 text-xs text-base-content/70">
-                    Règles par entité. Sélectionnez une entité pour afficher ou modifier ses règles.
-                </p>
-            </div>
-            <nav class="flex flex-col gap-0.5 p-2">
-                <button
-                    v-for="e in entities"
-                    :key="e"
-                    type="button"
-                    class="flex w-full items-center justify-between rounded-lg border-l-4 border-transparent px-3 py-2 text-left text-sm transition-colors"
-                    :class="entity === e ? 'border-primary bg-primary text-primary-content' : 'hover:bg-base-300'"
-                    @click="selectEntity(e)"
-                >
-                    <span class="truncate">{{ e }}</span>
-                    <span v-if="entitiesWithMapping.includes(e)" class="badge badge-ghost badge-sm shrink-0">BDD</span>
-                </button>
-            </nav>
-        </aside>
+        <SidebarNav
+            title="Mapping DofusDB → Krosmoz"
+            description="Règles par entité. Sélectionnez une entité pour afficher ou modifier ses règles."
+            :items="entities"
+            searchable
+            search-placeholder="Rechercher une entité…"
+            :get-item-href="() => null"
+            :get-item-click="(e) => selectEntity(e)"
+            :get-item-label="(e) => e"
+            :get-item-key="(e) => e"
+            :is-item-active="(e) => entity === e"
+            :get-item-css-classes="(e) => (entity === e ? 'border-primary' : '')"
+        >
+            <template #item-suffix="{ item }">
+                <span v-if="entitiesWithMapping.includes(item)" class="badge badge-ghost badge-sm shrink-0">BDD</span>
+            </template>
+        </SidebarNav>
 
         <!-- Panneau droit : règles de l'entité sélectionnée -->
         <main class="min-w-0 flex-1 overflow-y-auto p-6">

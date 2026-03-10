@@ -9,6 +9,7 @@ use App\Notifications\EntityModifiedNotification;
 use App\Notifications\LastConnectionNotification;
 use App\Notifications\NewUserCreatedNotification;
 use App\Notifications\ProfileModifiedNotification;
+use App\Notifications\ProjectMaintenanceNotification;
 use App\Notifications\UserDeletedNotification;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
@@ -528,6 +529,39 @@ class NotificationService
             'message' => 'Connexion enregistrée le ' . $loggedAtIso . '.',
             'url' => url('/user'),
         ]);
+    }
+
+    /**
+     * Notifie tous les admin/super_admin du résultat de project:init ou project:update.
+     *
+     * @param string $command 'init'|'update'
+     * @param bool $success
+     * @param float $durationSeconds
+     * @param string $finishedAt Date/heure de fin formatée
+     * @param string|null $message Optionnel (ex: nombre d'erreurs)
+     */
+    public static function notifyProjectMaintenance(
+        string $command,
+        bool $success,
+        float $durationSeconds,
+        string $finishedAt,
+        ?string $message = null,
+    ): void {
+        $admins = User::whereIn('role', [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])->get();
+        foreach ($admins as $admin) {
+            if (! $admin->wantsNotificationForType('project_maintenance')) {
+                continue;
+            }
+            $channels = $admin->getChannelsForNotificationType('project_maintenance');
+            $admin->notify(new ProjectMaintenanceNotification(
+                $command,
+                $success,
+                $durationSeconds,
+                $finishedAt,
+                $message,
+                $channels,
+            ));
+        }
     }
 
     /**
