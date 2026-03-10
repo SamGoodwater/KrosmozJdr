@@ -35,6 +35,7 @@ const ENTITY_CONFIG = {
   attribute: { color: 'yellow', label: 'Attribut' },
   capitalize: { color: 'slate', label: 'Capital' },
   breed: { color: 'teal', label: 'Classe' },
+  capability: { color: 'fuchsia', label: 'Capacité' },
   consumable: { color: 'orange', label: 'Consommable' },
   scenario: { color: 'neutral', label: 'Scénario' },
   condition: { color: 'red', label: 'Condition' },
@@ -72,6 +73,19 @@ export function getEntityConfig(entityKey) {
  */
 export function getEntityIconUrl(entityKey) {
   return getEntityConfig(entityKey).iconUrl;
+}
+
+/**
+ * Retourne le chemin relatif de l'icône (pour ImageService : icons/entities/xxx.webp).
+ * @param {string} entityKey - Clé d'entité
+ * @returns {string}
+ */
+export function getEntityIconPath(entityKey) {
+  const key = typeof entityKey === 'string' ? entityKey.trim().toLowerCase() : '';
+  if (ENTITY_CONFIG[key]) {
+    return `icons/entities/${key}${ICON_EXT}`;
+  }
+  return '';
 }
 
 /**

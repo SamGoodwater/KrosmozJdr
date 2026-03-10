@@ -101,6 +101,11 @@ class PageService
             'url' => route('pages.show', $page->slug),
             'order' => $page->menu_order,
             'menu_group' => $page->menu_group,
+            'entity_key' => $page->entity_key,
+            'icon' => $page->icon,
+            'page_css_classes' => $page->page_css_classes,
+            'title_css_classes' => $page->title_css_classes,
+            'menu_item_css_classes' => $page->menu_item_css_classes,
             'children' => [],
         ];
 

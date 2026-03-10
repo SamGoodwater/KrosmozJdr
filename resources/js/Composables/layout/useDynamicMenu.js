@@ -63,21 +63,18 @@ const refresh = async () => {
 };
 
 /**
- * Vérifie si une page est active
+ * Vérifie si un item de menu est actif (page ou lien bibliothèque)
  */
 const isPageActive = (page, currentRoute) => {
     if (!currentRoute) return false;
-    
-    // Vérifier si la route actuelle correspond à la page
-    if (currentRoute.includes(`/pages/${page.slug}`)) {
-        return true;
-    }
-    
-    // Vérifier récursivement les enfants
+
+    if (page.url && currentRoute.startsWith(page.url)) return true;
+    if (page.slug && currentRoute.includes(`/pages/${page.slug}`)) return true;
+
     if (page.children && page.children.length > 0) {
         return page.children.some(child => isPageActive(child, currentRoute));
     }
-    
+
     return false;
 };
 
@@ -104,12 +101,11 @@ export function useDynamicMenu() {
         fetchMenuPages();
     });
 
-    // Rafraîchir le menu à chaque navigation vers une page /pages/* (ex. après création/édition)
-    // pour que la liste de gauche reflète bien les pages à afficher (in_menu, playable).
+    // Rafraîchir le menu à chaque navigation vers une page /pages/* ou /entities/* (ex. après création/édition)
     watch(
         () => page.url,
         (newUrl) => {
-            if (newUrl && newUrl.startsWith('/pages')) {
+            if (newUrl && (newUrl.startsWith('/pages') || newUrl.startsWith('/entities'))) {
                 fetchMenuPages();
             }
         },

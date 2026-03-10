@@ -8,16 +8,31 @@ use App\Services\Scrapping\Core\Conversion\UnknownCharacteristicRunTracker;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ProcessScrappingJob implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * Délai maximum d'exécution (secondes). Un monstre avec relations (sorts, drops)
+     * peut nécessiter de nombreux appels API et écritures BDD (pile d'import).
+     */
+    public $timeout = 600;
+
+    /** Tentatives avant abandon (transient: DB "gone away", API timeout). */
+    public $tries = 2;
+
+    /** Délai avant retry (secondes). */
+    public $backoff = 30;
+
     public function __construct(private string $scrappingJobId) {}
 
     public function handle(Orchestrator $orchestrator, CollectAliasResolver $aliasResolver): void
     {
+        DB::reconnect();
+
         $job = ScrappingJob::query()->find($this->scrappingJobId);
         if (! $job || $job->isTerminal()) {
             return;
@@ -74,8 +89,21 @@ class ProcessScrappingJob implements ShouldQueue
             }
 
             $resolved = $this->resolveEntityForImport($aliasResolver, $type);
-            try {
-                $result = $orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
+            $skipInfo = $orchestrator->resolveSkipForEntity($resolved['entity'], $id, $options);
+            if ($skipInfo !== null) {
+                $results[] = [
+                    'type' => $type,
+                    'id' => $id,
+                    'success' => true,
+                    'data' => ['skipped' => true, 'primary_id' => $skipInfo['primary_id'], 'table' => $skipInfo['table']],
+                    'error' => null,
+                    'validation_errors' => [],
+                    'relations' => [],
+                ];
+                $successCount++;
+            } else {
+                try {
+                    $result = $orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
                 $success = $result->isSuccess();
                 $results[] = [
                     'type' => $type,
@@ -91,7 +119,7 @@ class ProcessScrappingJob implements ShouldQueue
                 } else {
                     $errorCount++;
                 }
-            } catch (\Throwable $e) {
+                } catch (\Throwable $e) {
                 $results[] = [
                     'type' => $type,
                     'id' => $id,
@@ -102,9 +130,12 @@ class ProcessScrappingJob implements ShouldQueue
                 ];
                 $errorCount++;
             }
+            }
 
             $doneCount++;
-            $this->saveProgress($job, $doneCount, $results, $successCount, $errorCount);
+            if ($doneCount === 1 || $doneCount % 5 === 0 || $doneCount === count($entities)) {
+                $this->saveProgress($job, $doneCount, $results, $successCount, $errorCount);
+            }
         }
 
         $job->refresh();
@@ -139,6 +170,7 @@ class ProcessScrappingJob implements ShouldQueue
         Log::channel('scrapping')->error('scrapping.job.failed', [
             'job_id' => $job->id,
             'error' => $exception->getMessage(),
+            'trace' => $exception->getTraceAsString(),
         ]);
     }
 

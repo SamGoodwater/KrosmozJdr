@@ -41,6 +41,51 @@ class CriticalPagesSeeder extends Seeder
             $defaultCreatorId
         );
 
+        $etatsPage = $this->createOrRestoreBySlug([
+            'title' => 'États',
+            'slug' => 'etats',
+            'in_menu' => false,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'menu_order' => 0,
+            'menu_group' => null,
+            'parent_id' => null,
+            'created_by' => $defaultCreatorId,
+            'page_css_classes' => 'color-condition-500',
+        ], 'Page États');
+
+        $this->ensureTextSection(
+            $etatsPage,
+            'etats-intro',
+            'Les états',
+            '<p>Les états sont des effets temporaires applicables aux créatures. Consulte la section <strong>3.2.5. Traits et états</strong> des règles pour plus de détails.</p>',
+            1,
+            $defaultCreatorId
+        );
+
+        $legalesPage = $this->createOrRestoreBySlug([
+            'title' => 'Légales',
+            'slug' => 'legales',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'menu_order' => 950,
+            'menu_group' => 'Informations',
+            'parent_id' => null,
+            'created_by' => $defaultCreatorId,
+        ], 'Page Légales');
+
+        $this->ensureTextSection(
+            $legalesPage,
+            'legales-intro',
+            'Mentions légales',
+            '<p>Tu trouveras ici les documents juridiques du site.</p>',
+            0,
+            $defaultCreatorId
+        );
+
         $cguPage = $this->createOrRestoreBySlug([
             'title' => 'Conditions Générales d\'Utilisation',
             'slug' => 'cgu',
@@ -48,10 +93,11 @@ class CriticalPagesSeeder extends Seeder
             'state' => Page::STATE_PLAYABLE,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_ADMIN,
-            'menu_order' => 999,
+            'menu_order' => 0,
             'menu_group' => 'Informations',
-            'parent_id' => null,
+            'parent_id' => $legalesPage->id,
             'created_by' => $defaultCreatorId,
+            'menu_item_css_classes' => 'color-neutral-500 box-shadow-glass',
         ], 'Page CGU');
 
         $this->ensureLegalMarkdownSection(
@@ -70,10 +116,11 @@ class CriticalPagesSeeder extends Seeder
             'state' => Page::STATE_PLAYABLE,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_ADMIN,
-            'menu_order' => 1000,
+            'menu_order' => 1,
             'menu_group' => 'Informations',
-            'parent_id' => null,
+            'parent_id' => $legalesPage->id,
             'created_by' => $defaultCreatorId,
+            'menu_item_css_classes' => 'color-neutral-500 box-shadow-glass',
         ], 'Page Politique donnees');
 
         $this->ensureLegalMarkdownSection(

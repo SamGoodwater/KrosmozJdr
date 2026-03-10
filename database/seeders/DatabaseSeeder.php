@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             CriticalPagesSeeder::class,
+            NavMenuSeeder::class,
             PageSeeder::class,
             SectionSeeder::class,
             \Database\Seeders\Type\TypeSeeder::class,

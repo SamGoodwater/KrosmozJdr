@@ -66,14 +66,27 @@ final class IntegrationService
     }
 
     /**
-     * Calcule si on doit remplacer un enregistrement existant selon replace_mode ou force_update.
+     * Indique si on remplacerait une entité existante (public pour pré-vérification batch).
      *
      * @param bool $forceUpdate Valeur legacy force_update
      * @param string|null $replaceMode 'never' | 'draft_raw_only' | 'always'
-     * @param Creature|Item|Resource|Consumable|Spell|Breed|Panoply|null $existing Entité existante (avec state)
+     * @param Creature|Item|Resource|Consumable|Spell|Breed|Panoply|Monster|null $existing Entité existante (avec state)
+     * @param Creature|Item|Resource|Consumable|Spell|Breed|Monster|null $entityWithAutoUpdate Entité portant le champ auto_update (Monster pour Creature)
      */
-    private function shouldReplaceExisting(bool $forceUpdate, ?string $replaceMode, $existing): bool
-    {
+    public function wouldReplaceExisting(
+        bool $forceUpdate,
+        ?string $replaceMode,
+        $existing,
+        $entityWithAutoUpdate = null,
+        bool $respectAutoUpdate = true
+    ): bool {
+        $entityForAutoUpdate = $entityWithAutoUpdate ?? $existing;
+        if ($respectAutoUpdate && $entityForAutoUpdate !== null && isset($entityForAutoUpdate->auto_update)) {
+            if (! (bool) $entityForAutoUpdate->auto_update) {
+                return false;
+            }
+        }
+
         if ($replaceMode !== null && $replaceMode !== '') {
             if ($replaceMode === 'always') {
                 return true;
@@ -92,13 +105,14 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, ignore_unvalidated?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
+     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, ignore_unvalidated?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
      */
     private function integrateMonster(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
         $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
+        $respectAutoUpdate = (bool) ($options['respect_auto_update'] ?? true);
         $ignoreUnvalidated = (bool) ($options['ignore_unvalidated'] ?? false);
         /** @var list<string> $excludeFromUpdate */
         $excludeFromUpdate = $options['exclude_from_update'] ?? [];
@@ -140,7 +154,7 @@ final class IntegrationService
         }
         $existingCreature = $existingMonsterByDofus?->creature ?? Creature::where('name', (string) ($creatureData['name'] ?? ''))->first();
 
-        $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existingCreature);
+        $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existingCreature, $existingMonsterByDofus, $respectAutoUpdate);
         if ($existingMonsterByDofus && !$doReplace) {
             return IntegrationResult::ok(
                 $existingCreature?->id,
@@ -400,13 +414,14 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
+     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
      */
     private function integrateSpell(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
         $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
+        $respectAutoUpdate = (bool) ($options['respect_auto_update'] ?? true);
         $excludeFromUpdate = is_array($options['exclude_from_update'] ?? null) ? $options['exclude_from_update'] : [];
         $propertyWhitelist = is_array($options['property_whitelist'] ?? null) ? $options['property_whitelist'] : [];
 
@@ -425,10 +440,9 @@ final class IntegrationService
             $existingSpell = Spell::where('name', $data['name'])->first();
         }
 
-        $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existingSpell);
-        // Pour les sorts, un match dofusdb_id doit rester synchronisé à la source
-        // même sans force_update explicite.
-        if ($existingByDofusId) {
+        $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existingSpell, null, $respectAutoUpdate);
+        // Pour les sorts, un match dofusdb_id reste synchronisé à la source si auto_update le permet.
+        if ($existingByDofusId && (!$respectAutoUpdate || ($existingSpell !== null && (bool) $existingSpell->auto_update))) {
             $doReplace = true;
         }
         if ($existingSpell && !$doReplace) {
@@ -953,13 +967,14 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
+     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
      */
     private function integrateBreed(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
         $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
+        $respectAutoUpdate = (bool) ($options['respect_auto_update'] ?? true);
         $excludeFromUpdate = is_array($options['exclude_from_update'] ?? null) ? $options['exclude_from_update'] : [];
         $propertyWhitelist = is_array($options['property_whitelist'] ?? null) ? $options['property_whitelist'] : [];
 
@@ -976,7 +991,7 @@ final class IntegrationService
             $existingBreed = Breed::where('name', $data['name'])->first();
         }
 
-        $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existingBreed);
+        $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existingBreed, null, $respectAutoUpdate);
         if ($existingBreed && !$doReplace) {
             return IntegrationResult::okEntity(
                 $existingBreed->id,
@@ -1047,13 +1062,14 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, include_relations?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
+     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, include_relations?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
      */
     private function integrateItem(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
         $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
+        $respectAutoUpdate = (bool) ($options['respect_auto_update'] ?? true);
         $excludeFromUpdate = is_array($options['exclude_from_update'] ?? null) ? $options['exclude_from_update'] : [];
         $propertyWhitelist = is_array($options['property_whitelist'] ?? null) ? $options['property_whitelist'] : [];
 
@@ -1082,7 +1098,7 @@ final class IntegrationService
             };
         }
 
-        $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existing);
+        $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existing, null, $respectAutoUpdate);
         if ($existing && !$doReplace) {
             $id = $existing->id;
             return IntegrationResult::okEntity(
@@ -1289,13 +1305,14 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
+     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
      */
     private function integratePanoply(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
         $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
+        $respectAutoUpdate = (bool) ($options['respect_auto_update'] ?? true);
         $excludeFromUpdate = is_array($options['exclude_from_update'] ?? null) ? $options['exclude_from_update'] : [];
         $propertyWhitelist = is_array($options['property_whitelist'] ?? null) ? $options['property_whitelist'] : [];
 
@@ -1313,7 +1330,7 @@ final class IntegrationService
             $existingPanoply = Panoply::where('name', $data['name'])->first();
         }
 
-        $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existingPanoply);
+        $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existingPanoply, null, $respectAutoUpdate);
         if ($existingPanoply && !$doReplace) {
             return IntegrationResult::okEntity(
                 $existingPanoply->id,

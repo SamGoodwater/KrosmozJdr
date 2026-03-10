@@ -133,7 +133,9 @@ async function markAllAsRead() {
 
 function openNotification(item) {
     if (item.url) {
-        router.visit(item.url);
+        const url = new URL(item.url, window.location.origin);
+        if (item.is_scrapping_job) url.searchParams.set("resume", "1");
+        router.visit(url.pathname + url.search);
     }
     if (!item.read_at) markAsRead(item.id);
 }

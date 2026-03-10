@@ -683,6 +683,8 @@ erDiagram
     parent_id : bigint(20) unsigned
     menu_order : int(11)
     menu_group : varchar(255)
+    entity_key : varchar(50)
+    icon : varchar(255)
     created_by : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp

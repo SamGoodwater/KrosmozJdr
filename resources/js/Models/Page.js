@@ -56,6 +56,26 @@ export class Page extends BaseModel {
         return this._data.menu_group || null;
     }
 
+    get entityKey() {
+        return this._data.entity_key || null;
+    }
+
+    get icon() {
+        return this._data.icon || null;
+    }
+
+    get pageCssClasses() {
+        return this._data.page_css_classes || null;
+    }
+
+    get titleCssClasses() {
+        return this._data.title_css_classes || null;
+    }
+
+    get menuItemCssClasses() {
+        return this._data.menu_item_css_classes || null;
+    }
+
 
     // ============================================
     // RELATIONS
@@ -151,6 +171,11 @@ export class Page extends BaseModel {
             parent_id: this.parentId,
             menu_order: this.menuOrder,
             menu_group: this.menuGroup,
+            entity_key: this.entityKey,
+            icon: this.icon,
+            page_css_classes: this.pageCssClasses,
+            title_css_classes: this.titleCssClasses,
+            menu_item_css_classes: this.menuItemCssClasses,
         };
     }
 

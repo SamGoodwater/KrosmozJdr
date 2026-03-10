@@ -303,9 +303,68 @@ class PageController extends Controller
         $user = auth()->user();
         $pages = PageService::getMenuPages($user);
         $menuTree = PageService::buildMenuTree($pages);
-        
+
+        $tree = collect($menuTree);
+        $accueil = $tree->first(fn ($p) => ($p['slug'] ?? '') === 'accueil');
+        $reglesItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Règles')->sortBy('order')->values()->toArray();
+        $informationsItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Informations')->sortBy('order')->values()->toArray();
+
+        $bibliothequesItems = collect(config('nav_menu.bibliotheques', []))
+            ->sortBy('order')
+            ->map(fn (array $item) => [
+                'id' => 'bibliotheque-' . ($item['label'] ?? ''),
+                'title' => $item['label'],
+                'url' => isset($item['url'])
+                    ? $item['url']
+                    : route($item['route'], $item['route_params'] ?? []),
+                'entity_key' => $item['entity_key'] ?? null,
+                'order' => $item['order'] ?? 0,
+                'menu_item_css_classes' => $item['menu_item_css_classes']
+                    ?? (($item['entity_key'] ?? null) ? 'color-' . $item['entity_key'] . '-500 box-shadow-glass' : null),
+                'children' => [],
+            ])
+            ->values()
+            ->toArray();
+
+        $sorted = collect();
+        if ($accueil) {
+            $sorted->push($accueil);
+        }
+        $sorted->push([
+            'id' => 'regles',
+            'title' => 'Règles',
+            'menu_group' => 'Règles',
+            'order' => 1,
+            'icon' => 'fa-book',
+            'children' => $reglesItems,
+        ]);
+        $sorted->push([
+            'id' => 'bibliotheques',
+            'title' => 'Bibliothèques',
+            'menu_group' => 'Bibliothèques',
+            'order' => 2,
+            'icon' => 'fa-book-open-reader',
+            'children' => $bibliothequesItems,
+        ]);
+        $sorted->push([
+            'id' => 'outils',
+            'title' => 'Outils',
+            'menu_group' => 'Outils',
+            'order' => 3,
+            'icon' => 'fa-screwdriver-wrench',
+            'children' => [],
+        ]);
+        $sorted->push([
+            'id' => 'informations',
+            'title' => 'Informations',
+            'menu_group' => 'Informations',
+            'order' => 4,
+            'icon' => 'fa-circle-info',
+            'children' => $informationsItems,
+        ]);
+
         return response()->json([
-            'menu' => $menuTree,
+            'menu' => $sorted->values()->toArray(),
         ]);
     }
 

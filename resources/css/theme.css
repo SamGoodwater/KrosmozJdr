@@ -275,6 +275,17 @@
   --color-breed-800: var(--color-teal-800);
   --color-breed-900: var(--color-teal-900);
   --color-breed-950: var(--color-teal-950);
+  --color-capability-50: var(--color-fuchsia-50);
+  --color-capability-100: var(--color-fuchsia-100);
+  --color-capability-200: var(--color-fuchsia-200);
+  --color-capability-300: var(--color-fuchsia-300);
+  --color-capability-400: var(--color-fuchsia-400);
+  --color-capability-500: var(--color-fuchsia-500);
+  --color-capability-600: var(--color-fuchsia-600);
+  --color-capability-700: var(--color-fuchsia-700);
+  --color-capability-800: var(--color-fuchsia-800);
+  --color-capability-900: var(--color-fuchsia-900);
+  --color-capability-950: var(--color-fuchsia-950);
   --color-consumable-50: var(--color-orange-50);
   --color-consumable-100: var(--color-orange-100);
   --color-consumable-200: var(--color-orange-200);

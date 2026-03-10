@@ -451,6 +451,7 @@ final class CollectService
             return $params;
         }
 
+        $levelPath = (string) ($entityConfig['filters']['levelPath'] ?? 'level');
         $keyToFeathers = [
             'id' => 'id',
             'idMin' => 'id[$gte]',
@@ -459,8 +460,8 @@ final class CollectService
             'name' => 'name[$search]',
             'raceId' => 'raceId',
             'raceIds' => 'raceIds[]',
-            'levelMin' => 'level[$gte]',
-            'levelMax' => 'level[$lte]',
+            'levelMin' => $levelPath . '[$gte]',
+            'levelMax' => $levelPath . '[$lte]',
             'typeId' => 'typeId',
             'typeIds' => 'typeId[$in][]',
         ];
@@ -886,17 +887,19 @@ final class CollectService
                     break;
                 case 'levelMin':
                     if (is_int($value) || (is_string($value) && ctype_digit($value))) {
-                        $q['level'] = ($q['level'] ?? []);
-                        if (is_array($q['level'])) {
-                            $q['level']['$gte'] = (int) $value;
+                        $levelKey = (string) ($entityConfig['filters']['levelPath'] ?? 'level');
+                        $q[$levelKey] = ($q[$levelKey] ?? []);
+                        if (is_array($q[$levelKey])) {
+                            $q[$levelKey]['$gte'] = (int) $value;
                         }
                     }
                     break;
                 case 'levelMax':
                     if (is_int($value) || (is_string($value) && ctype_digit($value))) {
-                        $q['level'] = ($q['level'] ?? []);
-                        if (is_array($q['level'])) {
-                            $q['level']['$lte'] = (int) $value;
+                        $levelKey = (string) ($entityConfig['filters']['levelPath'] ?? 'level');
+                        $q[$levelKey] = ($q[$levelKey] ?? []);
+                        if (is_array($q[$levelKey])) {
+                            $q[$levelKey]['$lte'] = (int) $value;
                         }
                     }
                     break;

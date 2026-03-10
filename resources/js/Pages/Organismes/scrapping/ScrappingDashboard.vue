@@ -43,7 +43,7 @@ import {
     buildCsvFromErrorResults,
 } from "@/Composables/utils/useCsvDownload";
 import { RELATION_TYPE_LABELS } from "@/config/scrapping/relationConfig";
-import { getCsrfToken, getJson } from "@/utils/scrapping/api";
+import { getCsrfToken, getJson, postJson } from "@/utils/scrapping/api";
 import { useScrappingItemStatus } from "@/Composables/scrapping/useScrappingItemStatus";
 import { useScrappingSearch } from "@/Composables/scrapping/useScrappingSearch";
 import { useScrappingPreview } from "@/Composables/scrapping/useScrappingPreview";
@@ -58,6 +58,80 @@ const _pref = (k) => _initialScrapPrefs[k] ?? SCRAP_DEFAULTS[k];
 const notificationStore = useNotificationStore();
 const { success, error: showError, info } = notificationStore;
 const jobManager = useScrappingJobManager();
+
+const scrapJobsList = ref({ active: [], recent_finished: [] });
+const scrapJobsLoading = ref(false);
+const scrapJobsPollInterval = ref(null);
+const SCRAP_JOBS_POLL_MS = 2500;
+
+async function fetchScrapJobs() {
+    scrapJobsLoading.value = true;
+    try {
+        const result = await getJson("/api/scrapping/jobs");
+        if (result.ok && result.data?.success) {
+            scrapJobsList.value = result.data?.data ?? { active: [], recent_finished: [] };
+        }
+    } finally {
+        scrapJobsLoading.value = false;
+    }
+}
+
+function startScrapJobsPolling() {
+    if (scrapJobsPollInterval.value) return;
+    scrapJobsPollInterval.value = setInterval(() => {
+        if ((scrapJobsList.value?.active?.length ?? 0) > 0) {
+            fetchScrapJobs();
+        } else {
+            clearInterval(scrapJobsPollInterval.value);
+            scrapJobsPollInterval.value = null;
+        }
+    }, SCRAP_JOBS_POLL_MS);
+}
+
+function stopScrapJobsPolling() {
+    if (scrapJobsPollInterval.value) {
+        clearInterval(scrapJobsPollInterval.value);
+        scrapJobsPollInterval.value = null;
+    }
+}
+
+async function cancelScrapJob(jobId) {
+    const token = getCsrfToken();
+    if (!token) return;
+    try {
+        const res = await postJson(
+            `/api/scrapping/jobs/${encodeURIComponent(jobId)}/cancel`,
+            {},
+            { headers: { "X-CSRF-TOKEN": token } }
+        );
+        if (res.ok) {
+            success("Job annulé.");
+            await fetchScrapJobs();
+        } else {
+            showError(res.error || "Impossible d'annuler le job");
+        }
+    } catch (e) {
+        showError("Erreur : " + (e?.message ?? "annulation impossible"));
+    }
+}
+
+function scrapJobStatusLabel(status) {
+    const map = { queued: "En attente", running: "En cours", succeeded: "Terminé", failed: "Échec", cancelled: "Annulé" };
+    return map[status] ?? status;
+}
+
+function scrapJobStatusColor(status) {
+    if (status === "running" || status === "queued") return "info";
+    if (status === "succeeded") return "success";
+    if (status === "failed") return "error";
+    if (status === "cancelled") return "warning";
+    return "neutral";
+}
+
+const hasActiveScrapJobs = computed(() => (scrapJobsList.value?.active?.length ?? 0) > 0);
+const hasAnyScrapJobs = computed(
+    () => hasActiveScrapJobs.value || (scrapJobsList.value?.recent_finished?.length ?? 0) > 0
+);
 
 const loadingMeta = ref(true);
 const loadingConfig = ref(true);
@@ -118,6 +192,16 @@ const loadConfig = async () => {
 onMounted(async () => {
     await loadMeta();
     await loadConfig();
+    await fetchScrapJobs();
+    if (hasActiveScrapJobs.value) startScrapJobsPolling();
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("resume") === "1") {
+        await nextTick();
+        await runSearchAndPreview();
+        if (typeof history !== "undefined" && history.replaceState) {
+            history.replaceState(null, "", url.pathname);
+        }
+    }
 });
 
 // Gestion des types/races (modal)
@@ -228,10 +312,9 @@ const filterLevelMax = ref("");
 
 // Options d'import (UI) — valeur initiale depuis localStorage (déjà migré) ou défauts
 const optIncludeRelations = ref(_pref("optIncludeRelations"));
+const optUpdateMode = ref(_pref("optUpdateMode"));
 const optPropertyWhitelist = ref(_pref("optPropertyWhitelist"));
 const optPropertyBlacklist = ref(_pref("optPropertyBlacklist"));
-/** replace_mode: 'never' | 'draft_raw_only' | 'always' */
-const optReplaceMode = ref(_pref("optReplaceMode"));
 const optSkipCache = ref(_pref("optSkipCache"));
 const optForceUpdate = ref(_pref("optForceUpdate"));
 const optManualChoice = ref(_pref("optManualChoice"));
@@ -382,7 +465,7 @@ const perPage = ref(_pref("perPage"));
 const prefsRefs = {
     selectedEntityType,
     optIncludeRelations,
-    optReplaceMode,
+    optUpdateMode,
     optSkipCache,
     optForceUpdate,
     optManualChoice,
@@ -777,7 +860,7 @@ const batch = useScrappingBatch({
         if (tp != null && Number.isFinite(tp)) return Math.max(1, Math.floor(tp));
         return Math.max(1, Math.floor(Number(pageNumber.value) || 1));
     },
-    optReplaceMode,
+    optUpdateMode,
     optIncludeRelations,
     optPropertyWhitelist,
     optPropertyBlacklist,
@@ -806,6 +889,18 @@ const batch = useScrappingBatch({
         jobManager.setRunMeta(runId ?? null, unknownCharacteristics ?? null, jobId ?? null);
     },
 });
+
+watch(
+    () => batch.importing?.value === true,
+    (isImporting) => {
+        if (isImporting) {
+            fetchScrapJobs();
+            startScrapJobsPolling();
+        } else {
+            fetchScrapJobs();
+        }
+    }
+);
 
 const currentRunId = computed(() => jobManager.state.value.runId || batch.lastRunId?.value || preview.lastRunId?.value || lastRunId.value || null);
 const currentUnknownCharacteristics = computed(() => jobManager.state.value.unknownCharacteristics || batch.lastUnknownCharacteristics?.value || preview.lastUnknownCharacteristics?.value || null);
@@ -1035,6 +1130,8 @@ const handleLast = async () => {
 };
 
 async function runBatchAction(mode) {
+    if (batch.importing?.value === true) return;
+    batchAbortControllerRef.value?.abort();
     batchAbortControllerRef.value = new AbortController();
     const sig = batchAbortControllerRef.value.signal;
     const label = mode === "simulate" ? "Simulation" : "Import";
@@ -1069,6 +1166,7 @@ async function runBatchAction(mode) {
 onBeforeUnmount(() => {
     searchAbortControllerRef.value?.abort();
     batchAbortControllerRef.value?.abort();
+    stopScrapJobsPolling();
 });
 
 const exportBatchErrorsCsv = () => {
@@ -1389,12 +1487,78 @@ const onCompareImported = () => {
             @set-page-size="handleSetPageSize"
         />
 
+        <Card
+            v-if="hasAnyScrapJobs"
+            class="border border-base-300 bg-base-200/80"
+        >
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-2">
+                    <Icon source="fa-gears" pack="solid" size="sm" class="text-primary" />
+                    <span class="font-semibold">Jobs scrapping</span>
+                    <Badge v-if="hasActiveScrapJobs" :content="String(scrapJobsList?.active?.length ?? 0)" color="info" size="xs" />
+                </div>
+                <Btn
+                    v-if="hasActiveScrapJobs"
+                    variant="ghost"
+                    size="xs"
+                    :disabled="scrapJobsLoading"
+                    @click="fetchScrapJobs"
+                >
+                    <Loading v-if="scrapJobsLoading" class="mr-1" />
+                    Actualiser
+                </Btn>
+            </div>
+            <div class="space-y-2 text-sm">
+                <div
+                    v-for="job in scrapJobsList?.active ?? []"
+                    :key="job.job_id"
+                    class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-lg bg-base-300/50"
+                >
+                    <div class="flex flex-wrap items-center gap-2 min-w-0">
+                        <Badge :content="scrapJobStatusLabel(job.status)" :color="scrapJobStatusColor(job.status)" size="xs" />
+                        <span v-if="job.progress?.total > 0" class="text-base-content/70 tabular-nums">
+                            {{ job.progress?.done ?? 0 }}/{{ job.progress?.total }}
+                        </span>
+                        <span v-if="job.run_id" class="text-xs text-base-content/50 truncate">run_id={{ job.run_id }}</span>
+                    </div>
+                    <Btn
+                        v-if="job.status === 'queued' || job.status === 'running'"
+                        color="error"
+                        variant="outline"
+                        size="xs"
+                        @click="cancelScrapJob(job.job_id)"
+                    >
+                        Annuler
+                    </Btn>
+                </div>
+                <details v-if="(scrapJobsList?.recent_finished?.length ?? 0) > 0" class="mt-2">
+                    <summary class="cursor-pointer text-base-content/70 hover:text-base-content">
+                        Derniers terminés ({{ scrapJobsList?.recent_finished?.length ?? 0 }})
+                    </summary>
+                    <div class="mt-2 space-y-1 pl-2 border-l-2 border-base-300">
+                        <div
+                            v-for="job in scrapJobsList?.recent_finished ?? []"
+                            :key="job.job_id"
+                            class="flex items-center gap-2 py-1 text-xs"
+                        >
+                            <Badge :content="scrapJobStatusLabel(job.status)" :color="scrapJobStatusColor(job.status)" size="xs" />
+                            <span v-if="job.summary" class="text-base-content/60">
+                                {{ job.summary?.success ?? 0 }}/{{ job.summary?.total ?? 0 }}
+                                <template v-if="(job.summary?.errors ?? 0) > 0">({{ job.summary.errors }} erreur(s))</template>
+                            </span>
+                            <span v-if="job.run_id" class="text-base-content/40 truncate">run_id={{ job.run_id }}</span>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </Card>
+
         <ScrappingOptionsPanel
             v-model:open="showOptionsAndHistory"
             v-model:opt-include-relations="optIncludeRelations"
+            v-model:opt-update-mode="optUpdateMode"
             v-model:opt-property-whitelist="optPropertyWhitelist"
             v-model:opt-property-blacklist="optPropertyBlacklist"
-            v-model:opt-replace-mode="optReplaceMode"
             :history-lines="historyLines"
             :run-id="currentRunId"
             :unknown-characteristics="currentUnknownCharacteristics"

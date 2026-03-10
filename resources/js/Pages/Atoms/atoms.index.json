@@ -343,6 +343,29 @@
     "file": "navigation/GlassMenuDivider.vue"
   },
   {
+    "name": "GlassMenuCollapsibleSection",
+    "description": "GlassMenuCollapsibleSection Atom (Navigation Glass)",
+    "props": [
+      {
+        "name": "defaultOpen",
+        "type": "Boolean",
+        "desc": "- Ouvert par défaut"
+      },
+      {
+        "name": "compact",
+        "type": "Boolean",
+        "desc": "- Réduit la hauteur du titre"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu repliable"
+      }
+    ],
+    "file": "navigation/GlassMenuCollapsibleSection.vue"
+  },
+  {
     "name": "DockItem",
     "description": "DockItem Atom (DaisyUI + Custom Utility + Route)",
     "props": [

@@ -49,7 +49,7 @@ onMounted(() => {
             </section>
         </article>
     </main>
-</template>
+            </template>
 
 <style scoped>
 .home-article {

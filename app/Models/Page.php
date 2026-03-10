@@ -97,6 +97,11 @@ class Page extends Model
         'parent_id',
         'menu_order',
         'menu_group',
+        'entity_key',
+        'icon',
+        'page_css_classes',
+        'title_css_classes',
+        'menu_item_css_classes',
         'created_by',
     ];
 

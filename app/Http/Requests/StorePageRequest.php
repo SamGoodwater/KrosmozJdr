@@ -38,6 +38,11 @@ class StorePageRequest extends FormRequest
             'parent_id' => ['nullable', 'exists:pages,id'],
             'menu_order' => ['sometimes', 'integer'],
             'menu_group' => ['nullable', 'string', 'max:100'],
+            'entity_key' => ['nullable', 'string', 'max:50', Rule::in(config('entities.keys', []))],
+            'icon' => ['nullable', 'string', 'max:255'],
+            'page_css_classes' => ['nullable', 'string', 'max:500'],
+            'title_css_classes' => ['nullable', 'string', 'max:500'],
+            'menu_item_css_classes' => ['nullable', 'string', 'max:500'],
         ];
     }
 
@@ -68,6 +73,16 @@ class StorePageRequest extends FormRequest
         if (array_key_exists('menu_group', $data)) {
             $group = trim((string) $data['menu_group']);
             $this->merge(['menu_group' => $group === '' ? null : $group]);
+        }
+        if (array_key_exists('entity_key', $data)) {
+            $key = trim((string) $data['entity_key']);
+            $this->merge(['entity_key' => $key === '' ? null : $key]);
+        }
+        foreach (['page_css_classes', 'title_css_classes', 'menu_item_css_classes'] as $field) {
+            if (array_key_exists($field, $data)) {
+                $val = trim((string) $data[$field]);
+                $this->merge([$field => $val === '' ? null : $val]);
+            }
         }
     }
 }

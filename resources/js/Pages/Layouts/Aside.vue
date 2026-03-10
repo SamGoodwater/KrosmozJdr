@@ -23,57 +23,12 @@ import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import GlassMenuPanel from "@/Pages/Atoms/navigation/GlassMenuPanel.vue";
-import GlassMenuItem from "@/Pages/Atoms/navigation/GlassMenuItem.vue";
-import GlassMenuSectionTitle from "@/Pages/Atoms/navigation/GlassMenuSectionTitle.vue";
-import GlassMenuDivider from "@/Pages/Atoms/navigation/GlassMenuDivider.vue";
-import GlassMenuGroup from "@/Pages/Atoms/navigation/GlassMenuGroup.vue";
 import DynamicMenu from "@/Pages/Organismes/section/DynamicMenu.vue";
-import { ref, computed } from "vue";
-import { usePage } from "@inertiajs/vue3";
+import { ref } from "vue";
 
-const page = usePage();
 const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
 const appName = ref(import.meta.env.VITE_APP_NAME);
 const logoError = ref(false);
-
-// Configuration des entités avec leurs icônes et routes
-const entityItems = [
-    { key: 'attribute', label: 'Attributs', icon: 'fa-list', route: 'entities.attributes.index' },
-    { key: 'campaign', label: 'Campagnes', icon: 'fa-book', route: 'entities.campaigns.index' },
-    { key: 'capability', label: 'Capacités', icon: 'fa-star', route: 'entities.capabilities.index' },
-    { key: 'breed', label: 'Classes', icon: 'fa-user', route: 'entities.breeds.index' },
-    { key: 'consumable', label: 'Consommables', icon: 'fa-flask', route: 'entities.consumables.index' },
-    // Creature : pas d'entrée menu (classe mère pour NPC et Monster uniquement, pas d'accès direct)
-    { key: 'item', label: 'Objets', icon: 'fa-box', route: 'entities.items.index' },
-    { key: 'monster', label: 'Monstres', icon: 'fa-dragon', route: 'entities.monsters.index' },
-    { key: 'npc', label: 'NPCs', icon: 'fa-user-tie', route: 'entities.npcs.index' },
-    { key: 'panoply', label: 'Panoplies', icon: 'fa-layer-group', route: 'entities.panoplies.index' },
-    { key: 'resource', label: 'Ressources', icon: 'fa-gem', route: 'entities.resources.index' },
-    { key: 'scenario', label: 'Scénarios', icon: 'fa-scroll', route: 'entities.scenarios.index' },
-    { key: 'shop', label: 'hotels de vente', icon: 'fa-store', route: 'entities.shops.index' },
-    { key: 'specialization', label: 'Spécialisations', icon: 'fa-graduation-cap', route: 'entities.specializations.index' },
-    { key: 'spell', label: 'Sorts', icon: 'fa-wand-magic-sparkles', route: 'entities.spells.index' },
-];
-
-const navItems = [
-    {
-        route: "home",
-        label: "Accueil",
-        icon: "fa-house",
-        pack: "solid",
-        active: (page) => page.component.includes("Home"),
-    },
-];
-
-// Vérifier si une entité est active
-const isEntityActive = (entityKey) => {
-    return page.component.includes(`/entity/${entityKey}`);
-};
-
-// Vérifier si le menu Entités est ouvert (si une entité est active)
-const isEntitiesMenuOpen = computed(() => {
-    return entityItems.some(item => isEntityActive(item.key));
-});
 
 const footerItems = [
     {
@@ -104,7 +59,7 @@ const footerItems = [
 <template>
     <aside class="h-full min-h-full flex flex-col justify-between flex-nowrap border-glass-r-xs bd-blur-md">
         <div class="flex flex-col justify-start flex-nowrap items-center flex-1 min-h-0 overflow-hidden">
-            <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-5 shrink-0">
+            <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-3 shrink-0">
                 <template v-if="!logoError">
                     <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" size="md" class="mx-auto"
                         @error="logoError = true" />
@@ -115,45 +70,10 @@ const footerItems = [
                     </div>
                 </template>
             </Route>
-            <p class="m-2 text-subtitle/80 text-sm shrink-0">{{ appSlogan }}</p>
+            <p class="m-1.5 text-subtitle/80 text-sm shrink-0">{{ appSlogan }}</p>
             <div class="flex-1 min-h-0 w-full overflow-y-auto scrollbar-hide">
-                <GlassMenuPanel class="my-5 mx-2">
-                    <GlassMenuSectionTitle>Navigation</GlassMenuSectionTitle>
-                    <GlassMenuItem
-                        v-for="item in navItems"
-                        :key="item.label"
-                        :route="item.route"
-                        :icon="item.icon"
-                        :icon-pack="item.pack"
-                        :active="item.active($page)"
-                        hover3d
-                    >
-                        {{ item.label }}
-                    </GlassMenuItem>
-
-                    <GlassMenuDivider compact />
-
-                    <GlassMenuGroup :open="isEntitiesMenuOpen" icon="fa-database" icon-alt="Entités" compact>
-                        <template #title>Entités</template>
-                        <template #default>
-                            <GlassMenuItem
-                                v-for="entity in entityItems"
-                                :key="entity.key"
-                                :route="entity.route"
-                                :icon="entity.icon"
-                                icon-pack="solid"
-                                compact
-                                :active="isEntityActive(entity.key)"
-                                hover3d
-                            >
-                                {{ entity.label }}
-                            </GlassMenuItem>
-                        </template>
-                    </GlassMenuGroup>
-
-                    <GlassMenuDivider compact />
-
-                    <DynamicMenu :current-route="page.url" />
+                <GlassMenuPanel class="aside-menu-panel" compact>
+                    <DynamicMenu />
                 </GlassMenuPanel>
             </div>
         </div>
@@ -198,4 +118,8 @@ const footerItems = [
         display: none;  /* Chrome, Safari et Opera */
     }
 
+    /* Menu plus dense : marges et paddings réduits */
+    .aside-menu-panel {
+        margin: 0.5rem 0.25rem;
+    }
 </style>

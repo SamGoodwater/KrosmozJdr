@@ -52,6 +52,8 @@ Route::prefix('scrapping')->group(function () {
         ->name('scrapping.preview.batch');
     Route::post('/jobs', [App\Http\Controllers\Scrapping\ScrappingController::class, 'createJob'])
         ->name('scrapping.jobs.create');
+    Route::get('/jobs', [App\Http\Controllers\Scrapping\ScrappingController::class, 'listJobs'])
+        ->name('scrapping.jobs.list');
     Route::get('/jobs/{jobId}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'jobStatus'])
         ->name('scrapping.jobs.status');
     Route::post('/jobs/{jobId}/cancel', [App\Http\Controllers\Scrapping\ScrappingController::class, 'cancelJob'])

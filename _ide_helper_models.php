@@ -1630,11 +1630,15 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @mixin \Eloquent
+ * @property string|null $entity_key
+ * @property string|null $icon
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page forMenu(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page inMenu()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page ordered()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page playable()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page readableFor(?\App\Models\User $user = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereEntityKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereWriteLevel($value)
  */

@@ -1480,6 +1480,11 @@
     "description": "Cette page documente l’API interne utilisée par :"
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/PERF_IMPORT.md",
+    "title": "Performance de l'import scrapping",
+    "description": "Pour un import de **42 monstres avec relations** (sorts + drops), le pipeline exécute environ :"
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/PIPELINE_ET_MAPPING.md",
     "title": "Pipeline de scrapping et où modifier le mapping",
     "description": "**Objectif :** un seul endroit pour comprendre le flux et savoir où changer une règle de mapping."

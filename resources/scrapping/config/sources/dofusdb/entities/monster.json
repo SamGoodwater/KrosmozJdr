@@ -13,6 +13,7 @@
     "fetchMany": { "path": "/monsters", "method": "GET", "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 } }
   },
   "filters": {
+    "levelPath": "grades.0.level",
     "supported": [
       { "key": "id", "type": "number" },
       { "key": "idMin", "type": "number" },

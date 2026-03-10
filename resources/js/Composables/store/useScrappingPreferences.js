@@ -15,7 +15,7 @@ const STORAGE_KEY = "krosmoz_scrapping_prefs";
 export const DEFAULTS = {
     selectedEntityType: "monster",
     optIncludeRelations: true,
-    optReplaceMode: "draft_raw_only",
+    optUpdateMode: "draft_raw_auto_update",
     optSkipCache: false,
     optForceUpdate: false,
     optManualChoice: false,
@@ -28,7 +28,7 @@ export const DEFAULTS = {
 
 /**
  * Lit les préférences depuis localStorage.
- * Applique les migrations à la lecture : optIncludeRelations false → true, optReplaceMode never → draft_raw_only.
+ * Applique les migrations à la lecture : optIncludeRelations, optReplaceMode → optUpdateMode.
  * @returns {Object} Objet partiel (seules les clés valides sont retournées, valeurs déjà migrées).
  */
 export function loadScrappingPreferences() {
@@ -45,8 +45,11 @@ export function loadScrappingPreferences() {
             if (str != null) out.selectedEntityType = str;
         }
         if (typeof parsed.optIncludeRelations === "boolean") out.optIncludeRelations = true;
-        if (typeof parsed.optReplaceMode === "string" && ["never", "draft_raw_only", "always"].includes(parsed.optReplaceMode)) {
-            out.optReplaceMode = parsed.optReplaceMode === "never" ? "draft_raw_only" : parsed.optReplaceMode;
+        if (typeof parsed.optUpdateMode === "string" && ["ignore", "draft_raw_auto_update", "auto_update", "force"].includes(parsed.optUpdateMode)) {
+            out.optUpdateMode = parsed.optUpdateMode;
+        } else if (typeof parsed.optReplaceMode === "string") {
+            const rm = parsed.optReplaceMode;
+            out.optUpdateMode = rm === "never" ? "ignore" : (rm === "always" ? "force" : "draft_raw_auto_update");
         }
         if (typeof parsed.optSkipCache === "boolean") out.optSkipCache = parsed.optSkipCache;
         if (typeof parsed.optForceUpdate === "boolean") out.optForceUpdate = parsed.optForceUpdate;

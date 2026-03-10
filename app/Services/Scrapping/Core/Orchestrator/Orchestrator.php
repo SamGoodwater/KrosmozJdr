@@ -6,6 +6,7 @@ use App\Models\Entity\Breed;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
+use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Services\Characteristic\Limit\CharacteristicLimitService;
@@ -89,6 +90,8 @@ final class Orchestrator
             'dry_run' => (bool) ($options['dry_run'] ?? false),
             'force_update' => $forceUpdate,
             'replace_mode' => $replaceMode,
+            'respect_auto_update' => (bool) ($options['respect_auto_update'] ?? true),
+            'skip_existing' => (bool) ($options['skip_existing'] ?? true),
             'ignore_unvalidated' => (bool) ($options['ignore_unvalidated'] ?? false),
             'exclude_from_update' => $excludeList,
             'property_whitelist' => $propertyWhitelist,
@@ -590,6 +593,7 @@ final class Orchestrator
             'integrate' => true,
             'dry_run' => (bool) ($options['dry_run'] ?? false),
             'force_update' => (bool) ($options['force_update'] ?? false),
+            'respect_auto_update' => (bool) ($options['respect_auto_update'] ?? true),
             'validate' => ($options['validate'] ?? true) !== false,
             'skip_cache' => (bool) ($options['skip_cache'] ?? false),
         ];
@@ -838,9 +842,9 @@ final class Orchestrator
 
             $primaryId = null;
             $table = null;
-            // Pour item: on force un runOne afin de rejouer la descente relationnelle
-            // (panoply -> item -> resources, et cascades) même si l'entité existe déjà.
-            $existing = $entity === 'item' ? null : $this->resolveExistingRelationImportState($entity, $dofusdbId);
+            // Pour toutes les entités (y compris item), si déjà en BDD on évite runOne.
+            // Gains majeurs : 42 monstres partageant ~100 drops = 100 runOne évités si déjà importés.
+            $existing = $this->resolveExistingRelationImportState($entity, $dofusdbId);
             if ($existing !== null) {
                 $primaryId = $existing['primary_id'];
                 $table = $existing['table'];
@@ -889,7 +893,7 @@ final class Orchestrator
             return $monster !== null ? ['primary_id' => (int) $monster->id, 'table' => 'monsters'] : null;
         }
 
-        if ($entity === 'item') {
+        if ($entity === 'item' || $entity === 'resource' || $entity === 'consumable' || $entity === 'equipment') {
             $resource = Resource::query()->where('dofusdb_id', $dofusdbId)->first();
             if ($resource !== null) {
                 return ['primary_id' => (int) $resource->id, 'table' => 'resources'];
@@ -904,6 +908,110 @@ final class Orchestrator
             }
         }
 
+        if ($entity === 'panoply') {
+            $panoply = Panoply::query()->where('dofusdb_id', $dofusdbId)->first();
+            return $panoply !== null ? ['primary_id' => (int) $panoply->id, 'table' => 'panoplies'] : null;
+        }
+
         return null;
+    }
+
+    /**
+     * Si skip_existing est actif et que l'entité existe sans mise à jour prévue, retourne les infos pour skip.
+     * Évite fetch API + conversion + validation pour les entités déjà en BDD qu'on ne remplacerait pas.
+     *
+     * @param string $entity breed, monster, spell, item, resource, consumable, panoply
+     * @return array{primary_id: int, table: string}|null null = exécuter runOne, array = skip (entité déjà à jour)
+     */
+    public function resolveSkipForEntity(string $entity, int $dofusdbId, array $options): ?array
+    {
+        if (! (bool) ($options['skip_existing'] ?? true)) {
+            return null;
+        }
+
+        $dofusdbIdStr = (string) $dofusdbId;
+        if ($dofusdbIdStr === '' || $dofusdbId <= 0) {
+            return null;
+        }
+
+        $intOpts = $this->integrationOptions($options);
+        $forceUpdate = (bool) ($intOpts['force_update'] ?? false);
+        $replaceMode = isset($intOpts['replace_mode']) ? (string) $intOpts['replace_mode'] : null;
+        $respectAutoUpdate = (bool) ($intOpts['respect_auto_update'] ?? true);
+
+        $existing = null;
+        $entityWithAutoUpdate = null;
+        $primaryId = null;
+        $table = null;
+
+        if ($entity === 'spell') {
+            $spell = Spell::query()->where('dofusdb_id', $dofusdbIdStr)->first();
+            if ($spell !== null) {
+                $existing = $spell;
+                $primaryId = (int) $spell->id;
+                $table = 'spells';
+            }
+        } elseif ($entity === 'breed' || $entity === 'class') {
+            $breed = Breed::query()->where('dofusdb_id', $dofusdbIdStr)->first();
+            if ($breed !== null) {
+                $existing = $breed;
+                $primaryId = (int) $breed->id;
+                $table = 'breeds';
+            }
+        } elseif ($entity === 'monster') {
+            $monster = Monster::query()->where('dofusdb_id', $dofusdbIdStr)->first();
+            if ($monster !== null) {
+                $existing = $monster->creature;
+                $entityWithAutoUpdate = $monster;
+                $primaryId = (int) $monster->id;
+                $table = 'monsters';
+            }
+        } elseif ($entity === 'item' || $entity === 'resource' || $entity === 'consumable' || $entity === 'equipment') {
+            $resource = Resource::query()->where('dofusdb_id', $dofusdbIdStr)->first();
+            if ($resource !== null) {
+                $existing = $resource;
+                $primaryId = (int) $resource->id;
+                $table = 'resources';
+            } else {
+                $item = Item::query()->where('dofusdb_id', $dofusdbIdStr)->first();
+                if ($item !== null) {
+                    $existing = $item;
+                    $primaryId = (int) $item->id;
+                    $table = 'items';
+                } else {
+                    $consumable = Consumable::query()->where('dofusdb_id', $dofusdbIdStr)->first();
+                    if ($consumable !== null) {
+                        $existing = $consumable;
+                        $primaryId = (int) $consumable->id;
+                        $table = 'consumables';
+                    }
+                }
+            }
+        } elseif ($entity === 'panoply') {
+            $panoply = Panoply::query()->where('dofusdb_id', $dofusdbIdStr)->first();
+            if ($panoply !== null) {
+                $existing = $panoply;
+                $primaryId = (int) $panoply->id;
+                $table = 'panoplies';
+            }
+        }
+
+        if ($existing === null || $primaryId === null) {
+            return null;
+        }
+
+        $wouldReplace = $this->integrationService->wouldReplaceExisting(
+            $forceUpdate,
+            $replaceMode,
+            $existing,
+            $entityWithAutoUpdate,
+            $respectAutoUpdate
+        );
+
+        if ($wouldReplace) {
+            return null;
+        }
+
+        return ['primary_id' => $primaryId, 'table' => $table];
     }
 }

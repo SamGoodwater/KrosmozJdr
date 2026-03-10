@@ -128,13 +128,58 @@ class ScrappingController extends Controller
         return $this->entityMeta->getMaxIdForType($type);
     }
 
-    /** @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, replace_mode?: string, include_relations: bool, exclude_from_update: list<string>, property_whitelist: list<string>, download_images: bool, lang: string, run_id: string} */
+    /**
+     * Modes de mise à jour des entités existantes (un seul choix, pas de contradiction).
+     * ignore: ne jamais remplacer.
+     * draft_raw_auto_update: remplacer si (brouillon/raw) ET (auto_update=true).
+     * auto_update: remplacer si auto_update=true (peu importe le state).
+     * force: toujours remplacer.
+     *
+     * @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, replace_mode?: string, respect_auto_update: bool, skip_existing: bool, include_relations: bool, exclude_from_update: list<string>, property_whitelist: list<string>, download_images: bool, lang: string, run_id: string}
+     */
     private function optionsFromRequest(Request $request, ?string $runId = null): array
     {
         $effectiveRunId = $runId ?? $this->runIdFromRequest($request);
         UnknownCharacteristicRunTracker::reset($effectiveRunId);
-        $replaceMode = $request->input('replace_mode');
-        $replaceMode = is_string($replaceMode) && in_array($replaceMode, ['never', 'draft_raw_only', 'always'], true) ? $replaceMode : null;
+
+        $updateMode = $request->input('update_mode');
+        $replaceMode = null;
+        $respectAutoUpdate = true;
+        $skipExisting = true;
+
+        if (is_string($updateMode) && in_array($updateMode, ['ignore', 'draft_raw_auto_update', 'auto_update', 'force'], true)) {
+            switch ($updateMode) {
+                case 'ignore':
+                    $replaceMode = 'never';
+                    $respectAutoUpdate = true;
+                    $skipExisting = true;
+                    break;
+                case 'draft_raw_auto_update':
+                    $replaceMode = 'draft_raw_only';
+                    $respectAutoUpdate = true;
+                    $skipExisting = true;
+                    break;
+                case 'auto_update':
+                    $replaceMode = 'always';
+                    $respectAutoUpdate = true;
+                    $skipExisting = true;
+                    break;
+                case 'force':
+                    $replaceMode = 'always';
+                    $respectAutoUpdate = false;
+                    $skipExisting = true;
+                    break;
+            }
+        } else {
+            $replaceMode = $request->input('replace_mode');
+            $replaceMode = is_string($replaceMode) && in_array($replaceMode, ['never', 'draft_raw_only', 'always'], true) ? $replaceMode : null;
+            $respectAutoUpdate = $request->boolean('respect_auto_update', true);
+            $skipExisting = $request->boolean('skip_existing', true);
+        }
+
+        if ($replaceMode === null && $request->boolean('force_update', false)) {
+            $replaceMode = 'always';
+        }
 
         $excludeFromUpdate = $request->input('exclude_from_update');
         if (! is_array($excludeFromUpdate)) {
@@ -157,12 +202,7 @@ class ScrappingController extends Controller
                 : [];
         }
 
-        $forceUpdate = $request->boolean('force_update', false);
-        if ($replaceMode === 'always') {
-            $forceUpdate = true;
-        } elseif ($replaceMode === 'never') {
-            $forceUpdate = false;
-        }
+        $forceUpdate = $replaceMode === 'always' || $request->boolean('force_update', false);
 
         return [
             'convert' => true,
@@ -171,6 +211,8 @@ class ScrappingController extends Controller
             'dry_run' => $request->boolean('dry_run', false),
             'force_update' => $forceUpdate,
             'replace_mode' => $replaceMode,
+            'respect_auto_update' => $respectAutoUpdate,
+            'skip_existing' => $skipExisting,
             'include_relations' => $request->boolean('include_relations', true),
             'exclude_from_update' => $excludeFromUpdate,
             'property_whitelist' => $propertyWhitelist,
@@ -416,6 +458,20 @@ class ScrappingController extends Controller
                     $errorCount++;
                     continue;
                 }
+                $skipInfo = $orchestrator->resolveSkipForEntity($resolved['entity'], $id, $options);
+                if ($skipInfo !== null) {
+                    $results[] = [
+                        'type' => $type,
+                        'id' => $id,
+                        'success' => true,
+                        'data' => ['skipped' => true, 'primary_id' => $skipInfo['primary_id'], 'table' => $skipInfo['table']],
+                        'error' => null,
+                        'validation_errors' => [],
+                        'relations' => [],
+                    ];
+                    $successCount++;
+                    continue;
+                }
                 try {
                     $result = $orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
                     $results[] = [
@@ -534,6 +590,49 @@ class ScrappingController extends Controller
                 'timestamp' => now()->toISOString(),
             ], 500);
         }
+    }
+
+    /**
+     * Liste les jobs de scrapping actifs (queued, running) et les derniers terminés.
+     */
+    public function listJobs(Request $request): JsonResponse
+    {
+        $active = ScrappingJob::query()
+            ->whereIn('status', [ScrappingJob::STATUS_QUEUED, ScrappingJob::STATUS_RUNNING])
+            ->orderByDesc('created_at')
+            ->limit(20)
+            ->get();
+
+        $recentFinished = ScrappingJob::query()
+            ->whereIn('status', [ScrappingJob::STATUS_SUCCEEDED, ScrappingJob::STATUS_FAILED, ScrappingJob::STATUS_CANCELLED])
+            ->orderByDesc('finished_at')
+            ->limit(5)
+            ->get();
+
+        $toArray = fn (ScrappingJob $job) => [
+            'job_id' => $job->id,
+            'kind' => $job->kind,
+            'status' => $job->status,
+            'progress' => [
+                'done' => (int) $job->progress_done,
+                'total' => (int) $job->progress_total,
+            ],
+            'summary' => $job->summary,
+            'error' => $job->error,
+            'run_id' => $job->run_id,
+            'started_at' => $job->started_at?->toISOString(),
+            'finished_at' => $job->finished_at?->toISOString(),
+            'created_at' => $job->created_at?->toISOString(),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'active' => $active->map($toArray)->values()->all(),
+                'recent_finished' => $recentFinished->map($toArray)->values()->all(),
+            ],
+            'timestamp' => now()->toISOString(),
+        ]);
     }
 
     /**

@@ -9,6 +9,10 @@ import { getJson, postJson } from "@/utils/scrapping/api";
 import { parsePageRange } from "@/utils/scrapping/parsePageRange";
 
 const JOB_POLL_INTERVAL_MS = 1500;
+/** Timeout pour la création du job (si queue=sync, le POST bloque). Après ce délai, on bascule en fallback synchrone. */
+const CREATE_JOB_TIMEOUT_MS = 15000;
+/** Si le job reste "queued" plus longtemps (worker non lancé), on bascule en fallback synchrone. */
+const JOB_QUEUED_MAX_MS = 60000;
 
 function parseCommaList(str) {
     if (typeof str !== "string") return [];
@@ -17,6 +21,26 @@ function parseCommaList(str) {
 
 function abortError() {
     return new DOMException("Aborted", "AbortError");
+}
+
+/**
+ * Normalise la réponse du batch synchrone au format attendu par runBatch.
+ * @param {{ ok: boolean, data?: any, aborted?: boolean }} syncResult
+ * @param {number} entityCount
+ * @returns {{ ok: boolean, data?: object } | { ok: false, error?: string, aborted?: boolean }}
+ */
+function normalizeSyncBatchResult(syncResult, entityCount) {
+    if (syncResult.aborted) return { ok: false, aborted: true };
+    if (!syncResult.ok) return syncResult;
+    return {
+        ok: true,
+        data: {
+            run_id: syncResult.data?.run_id ?? null,
+            summary: syncResult.data?.summary ?? { total: entityCount, success: 0, errors: 0 },
+            results: Array.isArray(syncResult.data?.results) ? syncResult.data.results : [],
+            debug: syncResult.data?.debug ?? null,
+        },
+    };
 }
 
 function delay(ms, signal) {
@@ -48,6 +72,36 @@ function delay(ms, signal) {
 }
 
 /**
+ * Combine un signal utilisateur avec un timeout. Aborte dès que l'un des deux se déclenche.
+ * @param {AbortSignal | null} userSignal
+ * @param {number} timeoutMs
+ * @returns {{ signal: AbortSignal, cleanup: () => void }}
+ */
+function signalWithTimeout(userSignal, timeoutMs) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    const onAbort = () => {
+        clearTimeout(timer);
+        ctrl.abort();
+    };
+    if (userSignal) {
+        if (userSignal.aborted) {
+            clearTimeout(timer);
+            ctrl.abort();
+        } else {
+            userSignal.addEventListener("abort", onAbort, { once: true });
+        }
+    }
+    return {
+        signal: ctrl.signal,
+        cleanup: () => {
+            clearTimeout(timer);
+            userSignal?.removeEventListener?.("abort", onAbort);
+        },
+    };
+}
+
+/**
  * @param {{
  *   entityTypeRef: import('vue').Ref<string>,
  *   rawItemsRef: import('vue').Ref<Array<{ id?: number }>>,
@@ -57,7 +111,7 @@ function delay(ms, signal) {
  *   pageRangeRef: import('vue').Ref<string>,
  *   pageNumberRef: import('vue').Ref<number>,
  *   getTotalPages?: () => number - nombre total de pages pour scope "all"
- *   optReplaceMode: import('vue').Ref<string>,
+ *   optUpdateMode: import('vue').Ref<string>,
  *   optIncludeRelations: import('vue').Ref<boolean>,
  *   optPropertyWhitelist: import('vue').Ref<string>,
  *   optPropertyBlacklist: import('vue').Ref<string>,
@@ -87,7 +141,7 @@ export function useScrappingBatch(options) {
         pageRangeRef,
         pageNumberRef,
         getTotalPages = () => 1,
-        optReplaceMode,
+        optUpdateMode,
         optIncludeRelations,
         optPropertyWhitelist,
         optPropertyBlacklist,
@@ -135,32 +189,45 @@ export function useScrappingBatch(options) {
 
     async function executeBatchViaJob(payload, csrf, label, signal) {
         if (shouldStop(signal)) throw abortError();
-        const createResult = await postJson("/api/scrapping/jobs", {
-            kind: "import_batch",
-            entities: payload.entities,
-            skip_cache: payload.skip_cache,
-            dry_run: payload.dry_run,
-            validate_only: payload.validate_only,
-            include_relations: payload.include_relations,
-            replace_mode: payload.replace_mode,
-            exclude_from_update: payload.exclude_from_update,
-            property_whitelist: payload.property_whitelist,
-        }, {
-            headers: { "X-CSRF-TOKEN": csrf },
-            signal,
-        });
 
-        // Fallback robuste: si endpoint jobs indisponible, on repasse en mode synchrone.
+        const { signal: createSignal, cleanup: cleanupCreateSignal } = signalWithTimeout(signal, CREATE_JOB_TIMEOUT_MS);
+        let createResult;
+        try {
+            createResult = await postJson("/api/scrapping/jobs", {
+                kind: "import_batch",
+                entities: payload.entities,
+                skip_cache: payload.skip_cache,
+                dry_run: payload.dry_run,
+                validate_only: payload.validate_only,
+                include_relations: payload.include_relations,
+                update_mode: payload.update_mode,
+                exclude_from_update: payload.exclude_from_update,
+                property_whitelist: payload.property_whitelist,
+            }, {
+                headers: { "X-CSRF-TOKEN": csrf },
+                signal: createSignal,
+            });
+        } finally {
+            cleanupCreateSignal();
+        }
+
+        // Fallback robuste: si endpoint jobs indisponible ou timeout (queue=sync), on repasse en mode synchrone.
         if (!createResult.ok || !createResult.data?.data?.job_id) {
-            return await postJson("/api/scrapping/import/batch", payload, {
+            onProgress({ phase: "batch", done: 0, total: payload.entities.length, label: `${label} (mode synchrone, peut prendre plusieurs minutes)…` });
+            notifyInfo(`${label} en mode synchrone… L'import peut prendre plusieurs minutes pour les classes avec relations.`, { duration: 4000 });
+            const syncResult = await postJson("/api/scrapping/import/batch", payload, {
                 headers: { "X-CSRF-TOKEN": csrf },
                 signal,
             });
+            const normalized = normalizeSyncBatchResult(syncResult, payload.entities.length);
+            if (normalized.aborted) throw abortError();
+            return normalized;
         }
 
         const jobId = createResult.data.data.job_id;
         onRunMeta({ runId: createResult.data?.run_id ?? null, unknownCharacteristics: null, jobId });
         let statusResult = null;
+        let queuedSince = null;
         try {
             // Polling jusqu'à statut terminal.
             while (true) {
@@ -171,6 +238,7 @@ export function useScrappingBatch(options) {
                 }
 
                 const data = statusResult.data.data;
+                const status = String(data?.status ?? "");
                 const total = Number(data?.progress?.total ?? 0);
                 const done = Number(data?.progress?.done ?? 0);
                 onProgress({ phase: "job", done, total, label });
@@ -180,8 +248,30 @@ export function useScrappingBatch(options) {
                     jobId,
                 });
 
-                if (["succeeded", "failed", "cancelled"].includes(String(data.status || ""))) {
-                    if (data.status === "cancelled") {
+                if (status === "queued" || status === "running") {
+                    if (status === "queued") {
+                        queuedSince = queuedSince ?? Date.now();
+                        if (Date.now() - queuedSince > JOB_QUEUED_MAX_MS) {
+                            notifyInfo("Le worker de queue ne semble pas actif. Passage en mode synchrone…", { duration: 5000 });
+                            await postJson(`/api/scrapping/jobs/${encodeURIComponent(jobId)}/cancel`, {}, {
+                                headers: { "X-CSRF-TOKEN": csrf },
+                            });
+                            onProgress({ phase: "batch", done: 0, total: payload.entities.length, label: `${label} (mode synchrone)…` });
+                            const syncResult = await postJson("/api/scrapping/import/batch", payload, {
+                                headers: { "X-CSRF-TOKEN": csrf },
+                                signal,
+                            });
+                            const normalized = normalizeSyncBatchResult(syncResult, payload.entities.length);
+                            if (normalized.aborted) throw abortError();
+                            return normalized;
+                        }
+                    } else {
+                        queuedSince = null;
+                    }
+                }
+
+                if (["succeeded", "failed", "cancelled"].includes(status)) {
+                    if (status === "cancelled") {
                         throw abortError();
                     }
                     return {
@@ -228,9 +318,10 @@ export function useScrappingBatch(options) {
 
         const entities = ids.map((id) => ({ type: entityTypeRef.value, id }));
 
-        const replaceMode = optReplaceMode.value;
+        const updateMode = optUpdateMode.value;
         const excludeFromUpdate = parseCommaList(optPropertyBlacklist.value);
         const propertyWhitelist = parseCommaList(optPropertyWhitelist.value);
+        const validUpdateModes = ["ignore", "draft_raw_auto_update", "auto_update", "force"];
 
         return {
             entities,
@@ -238,7 +329,7 @@ export function useScrappingBatch(options) {
             dry_run: !!dryRun,
             validate_only: !!optManualChoice.value,
             include_relations: !!optIncludeRelations.value,
-            replace_mode: replaceMode && ["never", "draft_raw_only", "always"].includes(replaceMode) ? replaceMode : "draft_raw_only",
+            update_mode: validUpdateModes.includes(updateMode) ? updateMode : "draft_raw_auto_update",
             exclude_from_update: excludeFromUpdate,
             property_whitelist: propertyWhitelist,
         };
@@ -336,6 +427,7 @@ export function useScrappingBatch(options) {
             notifyError(`Erreur ${label.toLowerCase()} : ` + (e?.message ?? "erreur"));
             pushHistory(`→ ${label.toUpperCase()} ERREUR: ${e?.message}`);
             lastBatchResults.value = null;
+            throw e;
         } finally {
             importing.value = false;
         }
@@ -442,6 +534,7 @@ export function useScrappingBatch(options) {
             notifyError(`${label} par pages : ` + (e?.message ?? "erreur"));
             pushHistory(`→ ${label.toUpperCase()} PAR PAGES ERREUR: ${e?.message}`);
             lastBatchResults.value = null;
+            throw e;
         } finally {
             importing.value = false;
             importByPagesProgress.value = null;
@@ -549,6 +642,7 @@ export function useScrappingBatch(options) {
             notifyError(`${label} « Tous » : ` + (e?.message ?? "erreur"));
             pushHistory(`→ ${label.toUpperCase()} TOUS ERREUR: ${e?.message}`);
             lastBatchResults.value = null;
+            throw e;
         } finally {
             importing.value = false;
             importByPagesProgress.value = null;

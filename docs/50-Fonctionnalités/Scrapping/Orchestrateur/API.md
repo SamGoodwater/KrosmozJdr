@@ -107,6 +107,8 @@ Options (query ou body, selon usage UI) :
 - `with_images` (bool, défaut `true`)
 - `include_relations` (bool, défaut `true`) : si `true`, après intégration de l’entité principale (ex. monster), le service résout et importe les relations (sorts, drops, recettes, etc.) puis met à jour les tables de liaison. Si `false`, seul l’entité principale est importée.
 
+- `update_mode` (string) : mode unique de mise à jour des entités existantes — `ignore` (ne jamais remplacer), `draft_raw_auto_update` (si brouillon/raw ET auto_update), `auto_update` (si auto_update=true), `force` (toujours remplacer). Remplace l'ancienne combinaison replace_mode / respect_auto_update / skip_existing.
+
 ### Import batch (IDs)
 ```http
 POST /api/scrapping/import/batch

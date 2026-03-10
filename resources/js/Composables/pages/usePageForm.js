@@ -37,6 +37,11 @@ export function usePageForm(initialData = null, options = {}) {
     parent_id: null,
     menu_order: 0,
     menu_group: null,
+    entity_key: null,
+    icon: null,
+    page_css_classes: null,
+    title_css_classes: null,
+    menu_item_css_classes: null,
   };
   
   // Fusionner avec les données initiales si fournies

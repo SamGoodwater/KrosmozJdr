@@ -69,7 +69,7 @@ const isCriticalPage = computed(() => {
 });
 
 // Options pour les selects
-const { stateOptions, roleOptions, parentPageOptions } = usePageFormOptions(
+const { stateOptions, roleOptions, parentPageOptions, entityKeyOptions } = usePageFormOptions(
     () => props.pages,
     computed(() => pageModel.value?.id ?? null)
 );
@@ -102,6 +102,11 @@ const initializeForm = () => {
         parent_id: model.parentId || null,
         menu_order: model.menuOrder || 0,
         menu_group: model.menuGroup || null,
+        entity_key: model.entityKey || null,
+        icon: model.icon || null,
+        page_css_classes: model.pageCssClasses || null,
+        title_css_classes: model.titleCssClasses || null,
+        menu_item_css_classes: model.menuItemCssClasses || null,
     };
     
     // Créer le formulaire via le composable
@@ -380,6 +385,54 @@ const handleClose = () => {
                         type="text"
                         placeholder="Ex: Règles, Bibliothèque, Informations"
                         helper="Laisser vide pour afficher la page en tête sans titre de groupe (ex: Accueil)."
+                    />
+                </div>
+
+                <div class="form-field">
+                    <SelectField
+                        v-model="formInstance.entity_key"
+                        label="Entité associée"
+                        :options="entityKeyOptions"
+                        helper="Optionnel : icône affichée dans l'en-tête de la page"
+                    />
+                </div>
+
+                <div class="form-field">
+                    <SelectField
+                        v-model="formInstance.icon"
+                        label="Icône"
+                        :options="entityKeyOptions"
+                        helper="Optionnel : icône dans l'en-tête (si vide, utilise l'entité associée)"
+                    />
+                </div>
+
+                <div class="form-field form-field--full">
+                    <InputField
+                        v-model="formInstance.page_css_classes"
+                        label="Classes CSS (conteneur de page)"
+                        type="text"
+                        placeholder="Ex: color-breed-500 rounded-lg"
+                        helper="Classes Tailwind ou personnalisées (ex: color-condition-500 pour une couleur d'entité)"
+                    />
+                </div>
+
+                <div class="form-field form-field--full">
+                    <InputField
+                        v-model="formInstance.title_css_classes"
+                        label="Classes CSS (titre)"
+                        type="text"
+                        placeholder="Ex: text-spell-500"
+                        helper="Classes appliquées au titre H1 de la page"
+                    />
+                </div>
+
+                <div class="form-field form-field--full">
+                    <InputField
+                        v-model="formInstance.menu_item_css_classes"
+                        label="Classes CSS (item menu)"
+                        type="text"
+                        placeholder="Ex: color-condition-500 box-shadow-glass"
+                        helper="Classes appliquées à l'item du menu (ex: color-breed-500 box-shadow-glass pour une box-shadow colorée)"
                     />
                 </div>
             </div>

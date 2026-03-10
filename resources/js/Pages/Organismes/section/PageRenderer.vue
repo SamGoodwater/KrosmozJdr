@@ -25,6 +25,7 @@ import CreateSectionModal from './modals/CreateSectionModal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { Page } from '@/Models';
+import { getEntityIconPath } from '@/config/entities';
 
 const props = defineProps({
     page: {
@@ -236,14 +237,36 @@ const sortedSections = computed(() => {
         return (a.order || 0) - (b.order || 0);
     });
 });
+
+/** Chemin icône : page.icon ou page.entityKey */
+const pageIconSource = computed(() => {
+    const icon = pageModel.value?.icon;
+    const entityKey = pageModel.value?.entityKey;
+    if (icon) return getEntityIconPath(icon);
+    if (entityKey) return getEntityIconPath(entityKey);
+    return '';
+});
 </script>
 
 <template>
-    <Container class="page-renderer">
+    <Container
+        class="page-renderer"
+        :class="pageModel?.pageCssClasses"
+    >
         <!-- Titre de la page -->
         <header class="mb-8">
             <div class="flex items-center gap-3 mb-2">
-                <h1 class="text-4xl font-bold text-primary">
+                <Icon
+                    v-if="pageIconSource"
+                    :source="pageIconSource"
+                    alt="Icône de la page"
+                    size="xl"
+                    class="page-renderer__icon shrink-0"
+                />
+                <h1
+                    class="text-4xl font-bold text-primary"
+                    :class="pageModel?.titleCssClasses"
+                >
                     {{ pageModel?.title || props.page?.title || 'Page' }}
                 </h1>
                 <!-- Bouton pour modifier la page à côté du titre (seulement si droits d'écriture) -->
@@ -327,6 +350,10 @@ const sortedSections = computed(() => {
     max-width: 4xl;
     margin: 0 auto;
     padding: 2rem 1rem;
+}
+
+.page-renderer__icon {
+    opacity: 0.85;
 }
 
 .sections {
