@@ -13,12 +13,12 @@
     "fetchOne": {
       "pathTemplate": "/item-sets/{id}",
       "method": "GET",
-      "queryDefaults": { "lang": "fr" }
+      "queryDefaults": { "lang": "fr", "$populate": "items" }
     },
     "fetchMany": {
       "path": "item-sets",
       "method": "GET",
-      "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 }
+      "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0, "$populate": "items" }
     }
   },
   "filters": {

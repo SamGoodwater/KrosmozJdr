@@ -32,7 +32,9 @@ class ConfirmablePasswordController extends Controller
             ]);
         }
 
-        $request->session()->put('auth.password_confirmed_at', time());
+        $now = time();
+        $request->session()->put('auth.password_confirmed_at', $now);
+        $request->session()->put('auth.password_last_activity_at', $now);
 
         return redirect()->intended(route('user.privacy.index', absolute: false));
     }

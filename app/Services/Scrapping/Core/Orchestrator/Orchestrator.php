@@ -464,6 +464,19 @@ final class Orchestrator
     ): array {
         $raw = $this->enrichRawWithRecipe($source, $entity, $raw, $recipeCache);
 
+        // Breed : enrichir breedSpellsId avec spell-variants (44 sorts) pour affichage et relations
+        if ($entity === 'breed') {
+            $breedDofusdbId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
+            if ($breedDofusdbId > 0) {
+                $allSpellIds = $this->collectService->fetchSpellIdsFromSpellVariants($source, $breedDofusdbId, [
+                    'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+                ]);
+                if ($allSpellIds !== []) {
+                    $raw['breedSpellsId'] = $allSpellIds;
+                }
+            }
+        }
+
         if ($entity !== 'spell') {
             return $raw;
         }
@@ -485,6 +498,14 @@ final class Orchestrator
 
         $normalizer = $this->spellGlobalNormalizer ?? new SpellGlobalNormalizer();
         $raw['spell_global'] = $normalizer->build($raw);
+
+        // Extraire l'invocation (monstre) depuis les effets spell-levels (effectId 181 = Invoquer)
+        if (!isset($raw['summon']) && isset($raw['levels']) && is_array($raw['levels'])) {
+            $extracted = $this->extractSummonFromSpellLevels($raw['levels']);
+            if ($extracted !== null) {
+                $raw['summon'] = $extracted;
+            }
+        }
 
         return $raw;
     }
@@ -627,7 +648,8 @@ final class Orchestrator
                     $source,
                     $breedDofusdbId,
                     $relOptions,
-                    $stack
+                    $stack,
+                    $raw
                 );
             }
         } elseif ($entityType === 'spell' || $entity === 'spell') {
@@ -747,6 +769,42 @@ final class Orchestrator
         }
 
         return array_values(array_unique($ids));
+    }
+
+    /**
+     * Extrait l'invocation (monstre) depuis les effets des spell-levels.
+     * effectId 181 = Invoquer (CreateEntity), diceNum = ID du monstre DofusDB.
+     *
+     * @param list<array<string, mixed>> $levels
+     * @return array{id: int}|null
+     */
+    private function extractSummonFromSpellLevels(array $levels): ?array
+    {
+        $effectIdSummon = 181;
+
+        foreach ($levels as $level) {
+            if (!is_array($level)) {
+                continue;
+            }
+            $effects = $level['effects'] ?? [];
+            if (!is_array($effects)) {
+                continue;
+            }
+            foreach ($effects as $eff) {
+                if (!is_array($eff)) {
+                    continue;
+                }
+                $eid = (int) ($eff['effectId'] ?? $eff['effect_id'] ?? 0);
+                if ($eid === $effectIdSummon) {
+                    $diceNum = (int) ($eff['diceNum'] ?? $eff['dice_num'] ?? 0);
+                    if ($diceNum > 0) {
+                        return ['id' => $diceNum];
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

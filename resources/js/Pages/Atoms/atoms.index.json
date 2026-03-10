@@ -1882,6 +1882,29 @@
     "file": "data-display/Row.vue"
   },
   {
+    "name": "PropertyDisplay",
+    "description": "PropertyDisplay — affichage standardisé d'une propriété/caractéristique.",
+    "props": [
+      {
+        "name": "property",
+        "type": "Object",
+        "desc": "- { icon, label, tooltip, color, value }"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- 'badge' | 'icon' | 'inline'"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- 'xs' | 'sm' | 'md'"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/PropertyDisplay.vue"
+  },
+  {
     "name": "List",
     "description": "List Atom (DaisyUI)",
     "props": [
@@ -2149,6 +2172,39 @@
     "file": "data-display/EntityLabel.vue"
   },
   {
+    "name": "ElementDisplay",
+    "description": "ElementDisplay Atom",
+    "props": [
+      {
+        "name": "element",
+        "type": "Number",
+        "desc": "- Valeur élément 0-29"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille du badge (xs, sm, md, lg, xl)"
+      },
+      {
+        "name": "showIcon",
+        "type": "Boolean",
+        "desc": "- Afficher l'icône (défaut: true)"
+      },
+      {
+        "name": "showLabel",
+        "type": "Boolean",
+        "desc": "- Afficher le libellé (défaut: true)"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- Style (badge, chip, inline)"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/ElementDisplay.vue"
+  },
+  {
     "name": "Document",
     "description": "Document Atom (DaisyUI, Atomic Design)",
     "props": [],
@@ -2362,34 +2418,6 @@
     ],
     "slots": [],
     "file": "data-display/CharacteristicBadges.vue"
-  },
-  {
-    "name": "PropertyDisplay",
-    "description": "PropertyDisplay — affichage standardisé d'une propriété/caractéristique (icône, couleur, tooltip). Variants: badge, icon, inline.",
-    "props": [
-      {
-        "name": "property",
-        "type": "Object",
-        "desc": "- { icon, label, tooltip, color } — issu de resolveEntityFieldUi ou caractéristiques BDD"
-      },
-      {
-        "name": "value",
-        "type": "String|Number|Boolean",
-        "desc": "- Valeur à afficher"
-      },
-      {
-        "name": "variant",
-        "type": "String",
-        "desc": "- 'badge' | 'icon' | 'inline'"
-      },
-      {
-        "name": "size",
-        "type": "String",
-        "desc": "- 'xs' | 'sm' | 'md'"
-      }
-    ],
-    "slots": [],
-    "file": "data-display/PropertyDisplay.vue"
   },
   {
     "name": "CellSkeleton",

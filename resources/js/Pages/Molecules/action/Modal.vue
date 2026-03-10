@@ -384,12 +384,6 @@ function handleBackdropClick(e) {
     }
 }
 
-// Clic sur le form (backdrop) : ferme le modal car le form a @click.stop et ne remonte pas au dialog
-function handleFormBackdropClick() {
-    if (isResizing.value || isDragging.value) return;
-    if (props.closeOnOutsideClick) closeModal();
-}
-
 // Watch pour l'ouverture/fermeture
 watch(() => props.open, async (val) => {
     if (dialogRef.value) {
@@ -455,76 +449,85 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <dialog 
-        ref="dialogRef" 
-        :id="id" 
-        :class="moleculeClasses" 
-        v-bind="attrs"
-        @click="handleBackdropClick"
-    >
-        <div 
-            ref="modalBoxRef"
-            :class="modalBoxClasses"
+    <Teleport to="body">
+        <dialog 
+            ref="dialogRef" 
+            :id="id" 
+            :class="moleculeClasses" 
+            v-bind="attrs"
+            @click="handleBackdropClick"
         >
-            <header 
-                v-if="$slots.header || closeOnButton" 
-                ref="headerRef"
-                class="mb-2 relative"
-                :class="{ 
-                    'cursor-grab select-none': draggable && !isDragging,
-                    'cursor-grabbing select-none': draggable && isDragging
-                }"
-            >
-                <div class="flex items-start justify-between gap-2">
-                    <div class="flex-1">
-                        <slot name="header" />
-                    </div>
-                    <button
-                        v-if="closeOnButton"
-                        type="button"
-                        class="btn btn-sm btn-circle btn-ghost absolute top-0 right-0 -mt-2 -mr-2 z-10 cursor-pointer"
-                        @click="closeModal"
-                        aria-label="Fermer le modal"
-                    >
-                        <Icon 
-                            source="fa-xmark" 
-                            pack="solid"
-                            alt="Fermer"
-                            size="sm"
-                        />
-                    </button>
-                </div>
-            </header>
-            
-            <div class="cursor-default">
-                <slot />
-            </div>
-            
-            <footer v-if="$slots.actions" class="modal-action mt-4">
-                <slot name="actions" />
-            </footer>
-            
-            <!-- Handle de redimensionnement -->
             <div 
-                v-if="resizable"
-                ref="resizeHandleRef"
-                class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-base-300/50 hover:bg-base-300"
+                ref="modalBoxRef"
+                :class="modalBoxClasses"
             >
-                <div class="absolute bottom-1 right-1 w-2 h-2 border-r-2 border-b-2 border-base-content/50"></div>
+                <header 
+                    v-if="$slots.header || closeOnButton" 
+                    ref="headerRef"
+                    class="mb-2 relative"
+                    :class="{ 
+                        'cursor-grab select-none': draggable && !isDragging,
+                        'cursor-grabbing select-none': draggable && isDragging
+                    }"
+                >
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1">
+                            <slot name="header" />
+                        </div>
+                        <button
+                            v-if="closeOnButton"
+                            type="button"
+                            class="btn btn-sm btn-circle btn-ghost absolute top-0 right-0 -mt-2 -mr-2 z-10 cursor-pointer"
+                            @click="closeModal"
+                            aria-label="Fermer le modal"
+                        >
+                            <Icon 
+                                source="fa-xmark" 
+                                pack="solid"
+                                alt="Fermer"
+                                size="sm"
+                            />
+                        </button>
+                    </div>
+                </header>
+                
+                <div class="cursor-default">
+                    <slot />
+                </div>
+                
+                <footer v-if="$slots.actions" class="modal-action mt-4">
+                    <slot name="actions" />
+                </footer>
+                
+                <!-- Handle de redimensionnement -->
+                <div 
+                    v-if="resizable"
+                    ref="resizeHandleRef"
+                    class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-base-300/50 hover:bg-base-300"
+                >
+                    <div class="absolute bottom-1 right-1 w-2 h-2 border-r-2 border-b-2 border-base-content/50"></div>
+                </div>
             </div>
-        </div>
-        
-        <form 
-            v-if="overlay"
-            method="dialog" 
-            :class="[overlayClasses, { 'cursor-pointer': closeOnOutsideClick }]"
-            @click.stop="handleFormBackdropClick"
-        >
-            <slot name="backdrop">
-                <button type="submit" class="sr-only">close</button>
-            </slot>
-        </form>
-    </dialog>
+            
+            <form 
+                v-if="overlay && closeOnOutsideClick"
+                method="dialog"
+                :class="overlayClasses"
+            >
+                <button type="submit" class="absolute inset-0 w-full h-full cursor-pointer" aria-label="Fermer">
+                </button>
+            </form>
+            <form
+                v-else-if="overlay"
+                method="dialog"
+                :class="overlayClasses"
+            >
+                <slot name="backdrop">
+                    <button type="submit" class="sr-only">close</button>
+                </slot>
+            </form>
+        </dialog>
+    </Teleport>
 </template>
 
 <style scoped lang="scss">

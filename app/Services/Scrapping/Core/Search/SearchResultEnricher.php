@@ -36,9 +36,34 @@ final class SearchResultEnricher
      */
     public function enrich(string $entity, array $items): array
     {
+        $items = $this->stripUnwantedFields($entity, $items);
         $items = $this->withExistsFlag($entity, $items);
         $items = $this->withTypeLabelsAndRegistry($entity, $items);
         $items = $this->withMonsterRaceLabel($entity, $items);
+
+        return $items;
+    }
+
+    /**
+     * Supprime les champs inutiles en recherche (allège la réponse API).
+     * Pour les ressources : recipesThatUse (recettes qui utilisent la ressource) — on obtient
+     * les recettes à l'inverse via équipements/consommables → leurs ingrédients.
+     *
+     * @param array<int, array<string, mixed>> $items
+     * @return array<int, array<string, mixed>>
+     */
+    private function stripUnwantedFields(string $entity, array $items): array
+    {
+        if (strtolower($entity) !== 'resource') {
+            return $items;
+        }
+
+        foreach ($items as $i => $it) {
+            if (!is_array($it)) {
+                continue;
+            }
+            unset($items[$i]['recipesThatUse']);
+        }
 
         return $items;
     }

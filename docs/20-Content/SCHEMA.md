@@ -99,8 +99,8 @@ erDiagram
   CAPABILITIES {
     id : bigint(20) unsigned
     name : varchar(255)
-    description : varchar(255)
-    effect : varchar(255)
+    description : text
+    effect : text
     level : varchar(255)
     pa : varchar(255)
     po : varchar(255)
@@ -108,7 +108,7 @@ erDiagram
     time_before_use_again : varchar(255)
     casting_time : varchar(255)
     duration : varchar(255)
-    element : varchar(255)
+    element : tinyint(3) unsigned
     is_magic : tinyint(1)
     ritual_available : tinyint(1)
     powerful : varchar(255)

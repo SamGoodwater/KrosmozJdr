@@ -70,6 +70,14 @@ Les actions sensibles (export, téléchargement, suppression) sont protégées p
 - **Usage** : Ouvrir la modale avant l'action, sur confirmation exécuter l'action protégée (le middleware `password.confirm` accepte alors la requête)
 - **Réutilisable** : Peut être utilisé ailleurs (ex. actions admin, fonctionnalités sensibles)
 
+### Délai d'inactivité (2026-03)
+
+Le middleware `RequirePasswordWithInactivity` remplace le comportement par défaut de Laravel :
+
+- **Une confirmation** débloque l'accès aux fonctions sensibles
+- **Délai d'inactivité** : la sécurité se réactive si l'utilisateur n'accède à aucune fonction protégée pendant plus d'1 heure (config : `auth.password_inactivity_timeout`, défaut 3600 s)
+- **Props Inertia** : `auth.password_recently_confirmed` permet au frontend (ex. page Scrapping) de savoir si la confirmation est encore valide et d'éviter de redemander à chaque chargement de page
+
 ## Routes
 
 | Méthode | Route | Description |

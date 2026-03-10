@@ -242,6 +242,7 @@ const handleAction = async (actionKey, entity) => {
         :size="modalSize"
         placement="middle-center"
         close-on-esc
+        close-on-outside-click
         :close-on-button="false"
         @close="handleClose">
         

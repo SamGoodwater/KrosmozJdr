@@ -77,6 +77,12 @@ class ScrappingSearchController extends Controller
 
         $options = $this->extractOptions($request, $entity);
 
+        // Ressources : ne pas charger recipesThatUse (recettes qui utilisent cette ressource comme ingrédient)
+        // — on récupère les recettes à l'inverse (équipements/consommables → leurs ingrédients).
+        if (strtolower($entity) === 'resource') {
+            $options['query_overrides'] = array_merge($options['query_overrides'] ?? [], ['$populate' => false]);
+        }
+
         $result = $this->collectService->fetchManyResult('dofusdb', $collectEntity, $filters, $options);
         $items = $this->searchEnricher->enrich($entity, $result['items']);
 

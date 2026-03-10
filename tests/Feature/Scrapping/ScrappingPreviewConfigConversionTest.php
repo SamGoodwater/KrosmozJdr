@@ -17,7 +17,7 @@ class ScrappingPreviewConfigConversionTest extends TestCase
     {
         parent::setUp();
         $this->seedScrappingPipeline();
-        $this->withoutMiddleware(\Illuminate\Auth\Middleware\RequirePassword::class);
+        $this->withoutMiddleware('password.confirm');
     }
 
     public function test_preview_monster_uses_config_driven_conversion_shape(): void

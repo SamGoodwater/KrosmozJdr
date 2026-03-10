@@ -44,6 +44,13 @@ export const RELATION_EXTRACT_CONFIG = {
         { key: "recipeIds", relationType: "item", idFrom: (id) => Number(id) },
         { key: "recipe", relationType: "item", single: true, idFrom: recipeIdFrom },
     ],
+    panoply: [
+        {
+            key: "items",
+            relationType: "item",
+            idFrom: (x) => (typeof x === "object" && x != null ? Number(x?.id ?? 0) : Number(x)),
+        },
+    ],
 };
 
 export const RELATION_TYPE_LABELS = {

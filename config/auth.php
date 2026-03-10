@@ -112,4 +112,16 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Password Inactivity Timeout
+    |--------------------------------------------------------------------------
+    |
+    | Nombre de secondes d'inactivité avant de redemander la confirmation
+    | du mot de passe. Chaque accès à une route protégée réinitialise ce délai.
+    | Par défaut : 1 heure (3600 s).
+    |
+    */
+    'password_inactivity_timeout' => env('AUTH_PASSWORD_INACTIVITY_TIMEOUT', 3600),
+
 ];

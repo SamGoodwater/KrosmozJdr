@@ -27,9 +27,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/scrapping/*',
         ]);
 
-        // Enregistrer le middleware CheckRole avec l'alias 'role'
+        // Enregistrer les middlewares
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'password.confirm' => \App\Http\Middleware\RequirePasswordWithInactivity::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

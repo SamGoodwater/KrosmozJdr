@@ -19,7 +19,7 @@ class ScrappingJobsApiTest extends TestCase
     {
         parent::setUp();
         $this->admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $this->withoutMiddleware(\Illuminate\Auth\Middleware\RequirePassword::class);
+        $this->withoutMiddleware('password.confirm');
     }
 
     public function test_create_scrapping_job_dispatches_queue_job(): void

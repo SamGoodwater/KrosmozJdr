@@ -199,10 +199,11 @@ final class RelationResolutionService
     }
 
     /**
-     * Résout les sorts d'une classe (breed) : récupère les spell IDs via spell-levels, puis
-     * enregistre les dépendances sur la pile ou importe en inline.
+     * Résout les sorts d'une classe (breed) : utilise breedSpellsId de l'API si disponible
+     * (inclut les 2 variantes par niveau), sinon fallback sur spell-levels.
      *
      * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool} $options
+     * @param array<string, mixed>|null $rawBreed Données brutes du breed (breedSpellsId prioritaire)
      * @return array{synced: bool, pending_added?: list<string>}
      */
     public function resolveAndSyncBreedSpells(
@@ -210,12 +211,23 @@ final class RelationResolutionService
         string $source,
         int $breedDofusdbId,
         array $options = [],
-        ?RelationImportStack $stack = null
+        ?RelationImportStack $stack = null,
+        ?array $rawBreed = null
     ): array {
         $dryRun = (bool) ($options['dry_run'] ?? false);
-        $spellIds = $this->getCollectService()->fetchSpellIdsByBreedId($source, $breedDofusdbId, [
+        // Utiliser spell-variants (44 sorts : base + variantes) en priorité — source fiable et alignée avec Dofus
+        $spellIds = $this->getCollectService()->fetchSpellIdsFromSpellVariants($source, $breedDofusdbId, [
             'skip_cache' => (bool) ($options['skip_cache'] ?? false),
         ]);
+        if ($spellIds === []) {
+            // Fallback : breedSpellsId (22 base) + spell-levels
+            $spellIds = $this->extractBreedSpellIds($rawBreed);
+            if ($spellIds === []) {
+                $spellIds = $this->getCollectService()->fetchSpellIdsByBreedId($source, $breedDofusdbId, [
+                    'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+                ]);
+            }
+        }
 
         if ($stack !== null) {
             $pendingAdded = $stack->registerBreedSpellDependents($breedId, $spellIds, $dryRun);
@@ -252,6 +264,31 @@ final class RelationResolutionService
         }
 
         return ['synced' => true];
+    }
+
+    /**
+     * Extrait les IDs de sorts depuis les données brutes d'un breed (breedSpellsId).
+     *
+     * @param array<string, mixed>|null $raw
+     * @return list<int>
+     */
+    private function extractBreedSpellIds(?array $raw): array
+    {
+        if ($raw === null || !isset($raw['breedSpellsId']) || !is_array($raw['breedSpellsId'])) {
+            return [];
+        }
+        $ids = [];
+        foreach ($raw['breedSpellsId'] as $value) {
+            $id = is_array($value) ? ($value['id'] ?? null) : $value;
+            if (is_numeric($id)) {
+                $n = (int) $id;
+                if ($n > 0) {
+                    $ids[] = $n;
+                }
+            }
+        }
+
+        return array_values(array_unique($ids));
     }
 
     /**

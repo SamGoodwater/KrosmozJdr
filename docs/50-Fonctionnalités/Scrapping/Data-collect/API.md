@@ -79,6 +79,7 @@ Filtres courants :
 #### 3) Items (objets / ressources / consommables)
 - **Liste** : `GET /items?lang=fr&$limit=…&$skip=…`
 - **Unitaire** : `GET /items/{id}?lang=fr`
+- **Ressources (recherche)** : on utilise `$populate=false` et on supprime `recipesThatUse` côté serveur (`SearchResultEnricher`) — les recettes utilisant une ressource sont obtenues à l'inverse via équipements/consommables → leurs ingrédients.
 
 Filtres courants :
 - `name[$search]=...`
@@ -89,11 +90,13 @@ Filtres courants :
 > Dans KrosmozJDR, un item DofusDB peut finir en `items`, `resources` ou `consumables` selon notre mapping + registry `resource_types`.
 
 #### 4) Panoplies (Item sets)
-- **Liste** : `GET /item-sets?lang=fr&$limit=…&$skip=…`
+- **Liste** : `GET /item-sets?lang=fr&$limit=…&$skip=…&$populate=items`
 - **Unitaire** : `GET /item-sets/{id}?lang=fr`
+- **Note** : `$populate=items` sur la liste renvoie les IDs des équipements (relation panoplie–items) au lieu d’objets complets.
 
 #### 5) Sorts
 - **Liste** : `GET /spells?lang=fr&$limit=…&$skip=…`
+- **Variantes par classe** : `GET /spell-variants?breedId=X&lang=fr&$limit=…&$skip=…` — source fiable pour les 44 sorts (22 base + 22 variantes). Chaque ligne contient `spellIds: [baseId, variantId]` ; on agrège tous les IDs uniques.
 - **Note** : DofusDB ne fournit pas toujours un `GET /spells/{id}` fiable.
   - Notre collector sait **simuler** un fetchOne via une recherche (id + limit=1).
 

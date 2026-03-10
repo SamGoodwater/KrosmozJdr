@@ -154,6 +154,8 @@ final class FormatterApplicator
         foreach ($value as $item) {
             if (is_array($item) && isset($item['id'])) {
                 $ids[] = (int) $item['id'];
+            } elseif (is_numeric($item)) {
+                $ids[] = (int) $item;
             }
         }
 

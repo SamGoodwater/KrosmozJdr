@@ -563,8 +563,15 @@ const handleImport = () => {
                         variant="outline"
                         content="Invoc."
                     />
+                    <Badge
+                        v-if="previewData.raw.items?.length"
+                        color="info"
+                        size="sm"
+                        variant="outline"
+                        :content="`${previewData.raw.items.length} équipement(s)`"
+                    />
                     <span
-                        v-if="!previewData.raw.spells?.length && !previewData.raw.drops?.length && !previewData.raw.recipe?.length && !previewData.raw.summon"
+                        v-if="!previewData.raw.spells?.length && !previewData.raw.drops?.length && !previewData.raw.recipe?.length && !previewData.raw.summon && !previewData.raw.items?.length"
                         class="text-primary-400 text-sm italic"
                     >
                         Aucune relation

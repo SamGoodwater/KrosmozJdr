@@ -220,6 +220,69 @@ final class CollectService
     }
 
     /**
+     * Récupère tous les IDs de sorts d'une classe (base + variantes, 44 au total) via l'API /spell-variants.
+     * Chaque variante expose spellIds: [baseId, variantId] ; on agrège tous les IDs uniques.
+     * Source fiable : spell-variants est aligné avec breedSpellsId contrairement à /spells?typeId=.
+     *
+     * @return list<int>
+     */
+    public function fetchSpellIdsFromSpellVariants(string $source, int $breedDofusdbId, array $options = []): array
+    {
+        $sourceConfig = $this->configLoader->loadSource($source);
+        $baseUrl = rtrim((string) ($sourceConfig['baseUrl'] ?? 'https://api.dofusdb.fr'), '/');
+        $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
+        $spellIds = [];
+        $skip = 0;
+        // L'API spell-variants cap à 10 par page ; il faut skip=0, skip=10, skip=20 pour les 22 variantes
+        $pageSize = 10;
+
+        while (true) {
+            $query = http_build_query([
+                'breedId' => $breedDofusdbId,
+                'lang' => $lang,
+                '$limit' => $pageSize,
+                '$skip' => $skip,
+            ], '', '&', PHP_QUERY_RFC3986);
+            $url = $baseUrl . '/spell-variants?' . $query;
+            $response = $this->getJson($url, $options);
+            $data = $response['data'] ?? [];
+            if (!is_array($data)) {
+                $data = [];
+            }
+
+            foreach ($data as $row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+                $ids = $row['spellIds'] ?? $row['spell_ids'] ?? [];
+                if (!is_array($ids)) {
+                    continue;
+                }
+                foreach ($ids as $id) {
+                    if ($id !== null && (is_int($id) || ctype_digit((string) $id))) {
+                        $n = (int) $id;
+                        if ($n > 0) {
+                            $spellIds[] = $n;
+                        }
+                    }
+                }
+            }
+
+            $effectiveLimit = (int) ($response['limit'] ?? $pageSize);
+            if ($effectiveLimit <= 0 || count($data) < $effectiveLimit) {
+                break;
+            }
+
+            $skip += $effectiveLimit;
+            if ($skip > 500) {
+                break;
+            }
+        }
+
+        return array_values(array_unique($spellIds));
+    }
+
+    /**
      * Récupère une liste d'objets (pagination API en interne). limit=0 => tout, offset=0 par défaut.
      *
      * @param array<string, mixed> $filters Filtres (id, idMin, idMax, ids, name, raceId, levelMin, levelMax, etc.)
@@ -546,7 +609,12 @@ final class CollectService
                 break;
             }
             $requestLimit = ($limit > 0 && count($allItems) === 0) ? min($limit, $pageSize) : $pageSize;
-            $query = array_merge($defaults, ['$limit' => $requestLimit, '$skip' => $skip], $this->filtersToFeathersQuery($entityConfig, $filters));
+            $query = array_merge(
+                $defaults,
+                ['$limit' => $requestLimit, '$skip' => $skip],
+                $this->filtersToFeathersQuery($entityConfig, $filters),
+                $options['query_overrides'] ?? []
+            );
             $queryString = $this->buildFeathersQueryString($query);
             $url = $baseUrl . '/' . ltrim($path, '/') . '?' . $queryString;
             if ($isDebug) {

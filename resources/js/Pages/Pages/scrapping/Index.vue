@@ -7,7 +7,7 @@
  * Accès réservé aux admins, protégé par confirmation du mot de passe (ConfirmPasswordModal).
  */
 import { ref } from "vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { onMounted } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 
@@ -19,7 +19,8 @@ import ScrappingDashboard from "@/Pages/Organismes/scrapping/ScrappingDashboard.
 const { setPageTitle } = usePageTitle();
 onMounted(() => setPageTitle("Gestion du Scrapping"));
 
-const scrappingUnlocked = ref(false);
+const page = usePage();
+const scrappingUnlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
 const showConfirmModal = ref(false);
 
 function onPasswordConfirmed() {

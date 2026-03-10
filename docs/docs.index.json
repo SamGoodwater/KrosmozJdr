@@ -350,11 +350,6 @@
     "description": "```javascript"
   },
   {
-    "path": "30-UI/PROPERTY_DISPLAY_SYSTEM.md",
-    "title": "Système d'affichage des propriétés",
-    "description": "PropertyDisplay, flux caractéristiques BDD, icônes personnalisées, couleurs, tooltips. Groupes creature/object/spell, capability aligné sur spell."
-  },
-  {
     "path": "30-UI/CHARACTERISTICS_CARD_SCHEMA.md",
     "title": "Schéma UI — Carte de caractéristiques (Atomic Design)",
     "description": "**Objectif** : Définir l’architecture des composants d’affichage des **caractéristiques classiques** pour les entités (ressource, équipement, consommable, monstre, NPC, sort), en Atomic Design : atomes → groupes (molécules) → carte (organisme)."
@@ -498,6 +493,11 @@
     "path": "30-UI/PLAN_ENTITY_LABEL_COMPONENT.md",
     "title": "Plan : Composant Entity Label (icône + label entité)",
     "description": "**Contexte** : Ajout d’un composant d’UI pour afficher le type d’entité (icône fine + couleur de thème), avec plusieurs variantes d’affichage et un fond en trapèze aux bords diffus. Les entités et couleurs sont définies dans `resources/scss/themes/_theme-entities.scss` ; les icônes sont dans `storage/app/public/images/icons/entities/`."
+  },
+  {
+    "path": "30-UI/PROPERTY_DISPLAY_SYSTEM.md",
+    "title": "Système d'affichage des propriétés",
+    "description": "Affichage standardisé des propriétés/caractéristiques avec icônes personnalisées, couleurs et tooltips. Les caractéristiques proviennent des tables BDD (`characteristics`, `characteristic_creature`, `characteristic_object`, `characteristic_spell`)."
   },
   {
     "path": "30-UI/README.md",
@@ -1240,6 +1240,11 @@
     "description": "**Objectif** : utiliser `breed` dans le code et la documentation technique, tout en conservant **« Classe »** pour l’affichage utilisateur (menu, titres, libellés, règles du jeu)."
   },
   {
+    "path": "50-Fonctionnalités/Elements/PLAN_ELEMENTS_MULTIPLES.md",
+    "title": "Plan d'adaptation — Éléments multiples (Spell & Capability)",
+    "description": "> **Statut** : Implémenté (2026-03-08)"
+  },
+  {
     "path": "50-Fonctionnalités/EntityEditForm/README.md",
     "title": "EntityEditForm - Formulaire d'édition générique",
     "description": "`EntityEditForm` est un composant générique Vue 3 permettant de créer des formulaires d'édition pour n'importe quelle entité. Il supporte deux modes d'affichage (large et compact) et génère dynamiquement les champs selon une configuration."
@@ -1253,6 +1258,16 @@
     "path": "50-Fonctionnalités/EntityRelationsManager/README.md",
     "title": "EntityRelationsManager - Gestion des relations many-to-many",
     "description": "`EntityRelationsManager` est un composant générique Vue 3 permettant de gérer les relations many-to-many entre entités. Il supporte les relations simples (sans pivot) et les relations avec données pivot (quantité, prix, commentaire, etc.)."
+  },
+  {
+    "path": "50-Fonctionnalités/Import-Legacy/IMPORT_LEGACY_CAPABILITIES.md",
+    "title": "Import des capacités legacy",
+    "description": "Import des capacités depuis l'ancienne base (export JSON PHPMyAdmin) vers le nouveau système."
+  },
+  {
+    "path": "50-Fonctionnalités/Import-Legacy/README.md",
+    "title": "Import des données legacy",
+    "description": "Migration des données de l'ancienne base Krosmoz vers le nouveau système Laravel."
   },
   {
     "path": "50-Fonctionnalités/Medias/SPATIE_MEDIA_LIBRARY.md",
@@ -1293,16 +1308,6 @@
     "path": "50-Fonctionnalités/Privacy-RGPD/README.md",
     "title": "Données personnelles et RGPD — KrosmozJDR",
     "description": "**Date** : 2026-03-07"
-  },
-  {
-    "path": "50-Fonctionnalités/Import-Legacy/IMPORT_LEGACY_CAPABILITIES.md",
-    "title": "Import des capacités legacy (export PHPMyAdmin)",
-    "description": "Commande `capabilities:import-legacy` pour migrer les capacités depuis l'ancienne base JSON. Mapping ancien → nouveau, options --dry-run et --force-update."
-  },
-  {
-    "path": "50-Fonctionnalités/Elements/PLAN_ELEMENTS_MULTIPLES.md",
-    "title": "Plan — Éléments multiples (Spell & Capability)",
-    "description": "Audit et plan d'adaptation : éléments (Terre, Feu, Air, Eau, Neutre) avec combinaisons 0-29, couleurs/dégradés SCSS, composant Vue ElementDisplay, unification backend."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/ANALYSE_GLOBALE_REFONTE_SCRAPPING.md",

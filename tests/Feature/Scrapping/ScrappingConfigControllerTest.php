@@ -17,7 +17,7 @@ class ScrappingConfigControllerTest extends TestCase
         parent::setUp();
         $this->seedScrappingPipeline();
         // Routes scrapping protégées par password.confirm ; en tests on contourne pour éviter 423
-        $this->withoutMiddleware(\Illuminate\Auth\Middleware\RequirePassword::class);
+        $this->withoutMiddleware('password.confirm');
     }
 
     public function test_config_endpoint_returns_sources_and_entities(): void

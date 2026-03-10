@@ -108,7 +108,9 @@ class UserController extends Controller
             ], 422);
         }
 
-        $request->session()->put('auth.password_confirmed_at', time());
+        $now = time();
+        $request->session()->put('auth.password_confirmed_at', $now);
+        $request->session()->put('auth.password_last_activity_at', $now);
 
         return response()->json(['confirmed' => true]);
     }

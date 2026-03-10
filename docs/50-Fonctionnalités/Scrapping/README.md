@@ -41,6 +41,7 @@ KrosmozJDR
 ### Protection (accès et sécurité)
 - **Réservé aux admins** : toutes les routes scrapping (web et API) utilisent le middleware `role:admin`
 - **Confirmation mot de passe** : la page `/scrapping` affiche une porte d'accès (`ConfirmPasswordModal`) ; l'utilisateur doit confirmer son mot de passe avant d'accéder au dashboard. Les routes API utilisent le middleware `password.confirm`
+- **Délai d'inactivité** (2026-03) : une fois le mot de passe confirmé, l'accès reste débloqué tant que l'utilisateur utilise des fonctions protégées. Après 1 h sans action sensible, une nouvelle confirmation est requise. La prop `auth.password_recently_confirmed` évite de redemander le mot de passe à chaque rechargement si la session est encore valide.
 
 ### UI (admin)
 - Page : `/scrapping`

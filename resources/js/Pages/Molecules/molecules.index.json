@@ -90,6 +90,13 @@
     "file": "section/SectionHeader.vue"
   },
   {
+    "name": "PendingErasureBanner",
+    "description": "Bannière affichée quand l'utilisateur a une demande de suppression en cours. Propose d'annuler la demande pour récupérer le compte (tant qu'un admin ne l'a pas supprimé définitivement).",
+    "props": [],
+    "slots": [],
+    "file": "privacy/PendingErasureBanner.vue"
+  },
+  {
     "name": "Tab",
     "description": "Tab Molecule (DaisyUI + Custom Utility)",
     "props": [

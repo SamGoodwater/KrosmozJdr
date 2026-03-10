@@ -63,6 +63,22 @@ class HandleInertiaRequests extends Middleware
                     return (new UserLightResource($request->user()))->toArray($request);
                 },
                 'isLogged' => fn () => $request->user() !== null,
+                'password_recently_confirmed' => function () use ($request) {
+                    if (! $request->user()) {
+                        return false;
+                    }
+                    $session = $request->session();
+                    if (! $session->has('auth.password_confirmed_at')) {
+                        return false;
+                    }
+                    $lastActivity = $session->get(
+                        'auth.password_last_activity_at',
+                        $session->get('auth.password_confirmed_at', 0)
+                    );
+                    $timeout = (int) config('auth.password_inactivity_timeout', 3600);
+
+                    return (time() - $lastActivity) <= $timeout;
+                },
                 'notifications_unread_count' => function () use ($request) {
                     if (! $request->user()) {
                         return 0;
