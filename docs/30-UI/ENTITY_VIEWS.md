@@ -126,13 +126,26 @@ La **Vue Texte** est un format très compact, destiné aux listes d’entités l
 
 > En pratique, la Vue Texte sert souvent de “représentation compacte” et délègue l’information au hover.
 
+### Vue Line (5ᵉ format officiel)
+
+La **Vue Line** est un affichage dense en grille flex-wrap pour les listes d’entités.
+
+- **Usage** : listes de ressources, items, sorts, etc. — vue par défaut dans les tableaux.
+- **Implémentation** : vues Minimal en grille flex-wrap — une ligne remplie puis passage à la suivante (cartes ~280px, gap 3).
+- **Responsive** : cartes en 1, 2, 3+ colonnes selon la largeur.
+- **Toggle** : boutons « Ligne » | « Minimal » | « Colonne » à côté de la densité.
+- **Tri** : dropdown « Trier par » (indispensable en vue Line, pas d’en-têtes cliquables).
+
+> **Ligne** : ResourceLineRow (ressources) ou *ViewMinimal en colonne. **Minimal** : grille flex-wrap *ViewMinimal.
+
 ### Quand utiliser quelle vue ? (guide rapide)
 
 | Vue | Usage principal | Densité | Interactions | Lien avec les autres vues |
 |---|---|---:|---|---|
 | **Texte** | Représentation “inline” (ex: entités liées, listes compactes) | Très faible | Hover | **Hover → Minimal** |
 | **Minimal** | Aperçu rapide / cartes petites / hover card | Faible | Hover (si compacted) | Peut servir de détail pour **Texte** |
-| **Compact** | Card standard quand on a un peu de place | Moyenne | Actions + lecture rapide | Souvent “par défaut” en liste |
+| **Line** | Liste dense verticale (tableau) | Moyenne–haute | Tri dropdown + clic | Avec **Minimal** (grille) et **Colonne** |
+| **Compact** | Card standard quand on a un peu de place | Moyenne | Actions + lecture rapide | Souvent “par défaut” en modal |
 | **Large** | Lecture détaillée / contexte confortable (modal/page) | Élevée | Actions + détails | Référence la plus explicite (labels) |
 
 ### Où placer un champ ? (decision tree)

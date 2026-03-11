@@ -441,8 +441,8 @@ final class IntegrationService
         }
 
         $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existingSpell, null, $respectAutoUpdate);
-        // Pour les sorts, un match dofusdb_id reste synchronisé à la source si auto_update le permet.
-        if ($existingByDofusId && (!$respectAutoUpdate || ($existingSpell !== null && (bool) $existingSpell->auto_update))) {
+        // Pour les sorts, un match dofusdb_id reste synchronisé à la source si auto_update le permet (sauf replace_mode=never).
+        if ($replaceMode !== 'never' && $existingByDofusId && (!$respectAutoUpdate || ($existingSpell !== null && (bool) $existingSpell->auto_update))) {
             $doReplace = true;
         }
         if ($existingSpell && !$doReplace) {

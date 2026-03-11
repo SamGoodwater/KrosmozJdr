@@ -36,6 +36,8 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
     const visibleColumns = ref(isV2 ? (saved?.visibleColumns || {}) : (defaults.visibleColumns || {}));
     const touchedColumns = ref(isV2 ? (saved?.touchedColumns || []) : []);
     const pageSize = ref(saved?.pageSize || defaults.pageSize || null);
+    /** displayMode: 'table' | 'line' | 'minimal'. Défaut: 'line'. */
+    const displayMode = ref(saved?.displayMode ?? defaults.displayMode ?? "line");
 
     const persist = () => {
         if (typeof window === "undefined") return;
@@ -45,6 +47,7 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
                 visibleColumns: visibleColumns.value,
                 touchedColumns: touchedColumns.value,
                 pageSize: pageSize.value,
+                displayMode: displayMode.value,
             }));
         } catch {
             // ignore
@@ -54,6 +57,7 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
     watch(visibleColumns, persist, { deep: true });
     watch(touchedColumns, persist, { deep: true });
     watch(pageSize, persist);
+    watch(displayMode, persist);
 
     const setColumnVisible = (columnId, isVisible) => {
         const id = String(columnId || "");
@@ -79,6 +83,12 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         touchedColumns.value = [];
     };
 
+    const setDisplayMode = (mode) => {
+        if (mode === "table" || mode === "line" || mode === "minimal") {
+            displayMode.value = mode;
+        }
+    };
+
     return {
         visibleColumns,
         touchedColumns,
@@ -86,6 +96,8 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         pageSize,
         setPageSize,
         resetColumns,
+        displayMode,
+        setDisplayMode,
     };
 }
 

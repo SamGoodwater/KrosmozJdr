@@ -17,6 +17,7 @@
 
 import { computed, ref, watch } from "vue";
 import TanStackTable from "@/Pages/Organismes/table/TanStackTable.vue";
+import ResourceLineRow from "@/Pages/Molecules/entity/resource/ResourceLineRow.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useTableServerParams } from "@/Composables/table/useTableServerParams";
 
@@ -150,6 +151,23 @@ const isColumnAllowed = (col) => {
         }
     }
 
+    // visibleIf : règle conditionnelle (lecture, écriture, etc.)
+    const visibleIfFn = rule?.visibleIf;
+    if (visibleIfFn && typeof visibleIfFn === "function") {
+        try {
+            const ctx = {
+                permissions,
+                entityType: props.entityType,
+                capabilities: serverMeta.value?.capabilities || null,
+                meta: { capabilities: serverMeta.value?.capabilities || null },
+            };
+            return Boolean(visibleIfFn(ctx));
+        } catch (e) {
+            console.warn("[EntityTanStackTable] column visibleIf failed", e);
+            return false;
+        }
+    }
+
     // Shorthand: { ability: 'manageAny' } OR { abilities: ['viewAny','manageAny'] }
     const ability = rule?.ability;
     const abilities = Array.isArray(rule?.abilities) ? rule.abilities : null;
@@ -162,6 +180,12 @@ const isColumnAllowed = (col) => {
 
     return true;
 };
+
+const lineRowComponent = computed(() => {
+    const t = String(props.entityType || "").toLowerCase();
+    if (t === "resources") return ResourceLineRow;
+    return null;
+});
 
 const resolvedConfig = computed(() => {
     const cfg = props.config || {};
@@ -288,6 +312,7 @@ const handleRefresh = async () => {
     <TanStackTable
         v-else
         :config="resolvedConfig"
+        :line-row-component="lineRowComponent"
         :rows="activeRows"
         :loading="loading"
         :filter-options="activeFilterOptions"

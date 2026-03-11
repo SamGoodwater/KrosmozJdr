@@ -55,6 +55,8 @@ export class TableColumnConfig {
 
     // Permissions
     this.permission = null;
+    /** @type {((ctx: any) => boolean)|null} Règle de visibilité conditionnelle (évaluée à l'exécution) */
+    this.visibleIf = null;
 
     // Affichage responsive
     this.defaultVisible = {
@@ -91,6 +93,17 @@ export class TableColumnConfig {
    */
   withPermission(permission) {
     this.permission = permission;
+    return this;
+  }
+
+  /**
+   * Configure la visibilité conditionnelle (permission) — évaluée à l'exécution par EntityTanStackTable.
+   *
+   * @param {(ctx: any) => boolean} fn - Fonction (ctx) => visible
+   * @returns {TableColumnConfig} Instance pour chaînage
+   */
+  withVisibleIf(fn) {
+    this.visibleIf = typeof fn === "function" ? fn : null;
     return this;
   }
 
@@ -237,7 +250,12 @@ export class TableColumnConfig {
 
     if (this.icon) config.icon = this.icon;
     if (this.tooltip) config.tooltip = this.tooltip;
-    if (this.permission) config.permissions = { ability: this.permission };
+    if (this.permission || this.visibleIf) {
+      config.permissions = {
+        ...(this.permission && { ability: this.permission }),
+        ...(this.visibleIf && { visibleIf: this.visibleIf }),
+      };
+    }
     if (this.isMain) config.isMain = true;
     if (this.hideable !== undefined) config.hideable = this.hideable;
     if (this.group) config.group = this.group;

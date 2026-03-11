@@ -30,8 +30,28 @@ import { useTableVirtualizer } from "@/Composables/table/useTableVirtualizer";
 import { useUxFeedback } from "@/Composables/utils/useUxFeedback";
 import { resolveEntityRouteHref } from "@/Composables/entity/entityRouteRegistry";
 import { BREAKPOINTS } from "@/Utils/Entity/Constants.js";
-import { getEntityConfig } from "@/Entities/entity-registry.js";
+import { getEntityConfig, normalizeEntityType } from "@/Entities/entity-registry.js";
+import { resolveEntityViewComponentSync } from "@/Utils/entity/resolveEntityViewComponent.js";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+
+/** Mappe entityType → nom de prop attendu par les *ViewMinimal */
+const ENTITY_PROP_MAP = {
+    "resources": "resource",
+    "items": "item",
+    "consumables": "consumable",
+    "spells": "spell",
+    "monsters": "monster",
+    "npcs": "npc",
+    "breeds": "breed",
+    "campaigns": "campaign",
+    "scenarios": "scenario",
+    "attributes": "attribute",
+    "panoplies": "panoply",
+    "capabilities": "capability",
+    "specializations": "specialization",
+    "resource-types": "resourceType",
+    "shops": "shop",
+};
 
 const props = defineProps({
     /**
@@ -72,6 +92,12 @@ const props = defineProps({
      * Params actuels pour le mode serveur (sync depuis le parent).
      */
     serverParams: { type: Object, default: null },
+    /**
+     * Composant pour la vue Ligne (liste dense verticale).
+     * Si fourni et displayMode=line, affiche ResourceLineRow ou équivalent.
+     * Sinon, fallback sur Minimal en colonne unique.
+     */
+    lineRowComponent: { type: Object, default: null },
 });
 
 const emit = defineEmits([
@@ -290,11 +316,45 @@ const rowSelectedBgClass = computed(() => {
     return "bg-base-200/50";
 });
 
-// Préférences (colonnes visibles + pageSize)
+// Préférences (colonnes visibles + pageSize + displayMode)
 const prefs = useTanStackTablePreferences(props.config?.id, {
     visibleColumns: {},
     pageSize: props.config?.features?.pagination?.perPage?.default ?? 25,
+    displayMode: "line",
 });
+
+/** Composant Minimal pour la vue grille (flex-wrap) */
+const minimalViewComponent = computed(() => {
+    const et = String(props.entityType || "").trim();
+    if (!et) return null;
+    return resolveEntityViewComponentSync(et, "minimal");
+});
+
+/** Afficher la grille Minimal (mode minimal + entityType + composant dispo) */
+const showMinimalGrid = computed(() => prefs.displayMode.value === "minimal" && minimalViewComponent.value && props.entityType);
+
+/** Afficher la vue Ligne (liste dense verticale) */
+const showLineView = computed(() => prefs.displayMode.value === "line" && (props.lineRowComponent || (minimalViewComponent.value && props.entityType)));
+
+/** Récupère l'entité depuis une row (rowParams.entity ou fallback via Model) */
+function getEntityFromRow(row, entityType) {
+    const entity = row?.rowParams?.entity;
+    if (entity) return entity;
+    const et = normalizeEntityType(entityType);
+    const cfg = getEntityConfig(et);
+    const Model = cfg?.model;
+    if (!Model) return null;
+    const data = { id: row?.id ?? row?.original?.id };
+    Object.assign(data, row?.original || {}, row?.rowParams || {});
+    delete data.entity;
+    return new Model(data);
+}
+
+/** Nom de prop pour le composant Minimal (resource, item, spell, etc.) */
+function getEntityPropName(entityType) {
+    const et = normalizeEntityType(entityType);
+    return ENTITY_PROP_MAP[et] ?? "entity";
+}
 
 const filterPresets = ref([]);
 const selectedPresetId = ref("");
@@ -728,6 +788,13 @@ const visibleColumnsFromTable = computed(() => {
 const columnsWithoutActions = computed(() => {
     return (columnsConfig.value || []).filter((col) => col.id !== 'actions');
 });
+
+/** Colonnes triables (pour dropdown « Trier par ») */
+const sortableColumns = computed(() =>
+    (columnsWithoutActions.value || []).filter((col) => Boolean(col?.sort?.enabled))
+);
+
+const sortEnabled = computed(() => sortableColumns.value.length > 0);
 
 // Search + Filters (client-first)
 const searchEnabled = computed(() => Boolean(props.config?.features?.search?.enabled));
@@ -1400,6 +1467,19 @@ const handleSort = (col) => {
     }
 };
 
+/**
+ * Applique le tri depuis le dropdown « Trier par » (utile en vue single-column / line).
+ * @param {{ columnId: string, order: 'asc'|'desc' }} payload
+ */
+const handleSortFromDropdown = (payload) => {
+    const { columnId, order } = payload || {};
+    if (!columnId || !sortableColumns.value.some((c) => c.id === columnId)) {
+        table.setSorting([]);
+        return;
+    }
+    table.setSorting([{ id: columnId, desc: order === "desc" }]);
+};
+
 const skeletonRows = computed(() => Number(props.config?.ui?.skeletonRows ?? 8));
 
 // Pagination config
@@ -1627,29 +1707,69 @@ const handleExport = () => {
                 :ui-color="uiColor"
                 :column-visibility-enabled="Boolean(props.config?.features?.columnVisibility?.enabled)"
                 :columns="columnsConfig"
-                    :visible-columns="effectiveVisibleColumns"
+                :visible-columns="effectiveVisibleColumns"
+                :sort-enabled="sortEnabled"
+                :sortable-columns="sortableColumns"
+                :sort-by="sortingState.length > 0 ? sortingState[0].id : ''"
+                :sort-order="sortingState.length > 0 && sortingState[0].desc ? 'desc' : 'asc'"
                 :export-enabled="exportEnabled"
                 :refresh-enabled="true"
                 :selection-count="selectedCount"
                 @update:search="handleSearchInput"
                 @toggle-column="toggleColumnVisibility"
                 @reset-columns="resetColumnsToDefaults"
+                @sort="handleSortFromDropdown"
                 @export="handleExport"
                 @refresh="handleRefresh"
                 @clear-selection="clearSelection"
             />
-            <div class="mt-2 flex items-center justify-end gap-2">
-                <span class="text-xs text-base-content/70">Densité</span>
-                <Btn
-                    v-for="option in densityOptions"
-                    :key="option.value"
-                    size="xs"
-                    :variant="densityMode === option.value ? 'glass' : 'ghost'"
-                    :color="uiColor"
-                    @click="setDensityMode(option.value)"
-                >
-                    {{ option.label }}
-                </Btn>
+            <div class="mt-2 flex flex-wrap items-center justify-end gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-base-content/70">Vue</span>
+                    <Btn
+                        size="xs"
+                        :variant="prefs.displayMode.value === 'line' ? 'glass' : 'ghost'"
+                        :color="uiColor"
+                        title="Vue ligne (liste dense verticale)"
+                        @click="prefs.setDisplayMode('line')"
+                    >
+                        <i class="fa-solid fa-list-ul mr-1" aria-hidden></i>
+                        Ligne
+                    </Btn>
+                    <Btn
+                        size="xs"
+                        :variant="prefs.displayMode.value === 'minimal' ? 'glass' : 'ghost'"
+                        :color="uiColor"
+                        title="Vue minimal (grille de cartes)"
+                        @click="prefs.setDisplayMode('minimal')"
+                    >
+                        <i class="fa-solid fa-grip mr-1" aria-hidden></i>
+                        Minimal
+                    </Btn>
+                    <Btn
+                        size="xs"
+                        :variant="prefs.displayMode.value === 'table' ? 'glass' : 'ghost'"
+                        :color="uiColor"
+                        title="Vue tableau (colonnes)"
+                        @click="prefs.setDisplayMode('table')"
+                    >
+                        <i class="fa-solid fa-table-columns mr-1" aria-hidden></i>
+                        Colonne
+                    </Btn>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-base-content/70">Densité</span>
+                    <Btn
+                        v-for="option in densityOptions"
+                        :key="option.value"
+                        size="xs"
+                        :variant="densityMode === option.value ? 'glass' : 'ghost'"
+                        :color="uiColor"
+                        @click="setDensityMode(option.value)"
+                    >
+                        {{ option.label }}
+                    </Btn>
+                </div>
             </div>
         </div>
 
@@ -1823,8 +1943,178 @@ const handleExport = () => {
             </div>
         </div>
 
-        <!-- Table -->
-        <div class="relative overflow-hidden p-1 w-full" :class="[bgClass]">
+        <!-- Vue Ligne (liste dense verticale : ResourceLineRow ou Minimal en colonne unique) -->
+        <div
+            v-if="showLineView"
+            class="relative overflow-hidden p-1 w-full"
+            :class="[bgClass]"
+        >
+            <div ref="tableContainerEl" class="w-full overflow-y-auto max-h-[70vh]">
+                <TanStackTableSkeletonBody
+                    v-if="loading"
+                    :columns="columnsWithoutActions.slice(0, 1)"
+                    :rows-count="skeletonRows"
+                    :show-selection="false"
+                    :show-actions-column="false"
+                />
+                <template v-else-if="rowsToRender.length">
+                    <div class="space-y-2 p-2" :class="lineRowComponent ? '' : 'flex flex-col gap-3'">
+                        <template v-if="lineRowComponent">
+                            <component
+                                v-for="row in rowsToRender"
+                                :key="row.id"
+                                :is="lineRowComponent"
+                                :row="row"
+                                :get-cell-for="getCellFor"
+                                :columns="columnsWithoutActions"
+                                :table-meta="config?._metadata?.context || {}"
+                                :show-selection="showSelectionCheckboxes"
+                                :is-selected="isSelected(row)"
+                                :show-actions="showActionsColumn"
+                                :ui-color="uiColor"
+                                @row-click="handleRowClick"
+                                @toggle-select="(r, checked) => toggleRow(r, checked)"
+                                @action="(actionKey, entity) => emit('action', actionKey, entity, row)"
+                            />
+                        </template>
+                        <template v-else>
+                            <div
+                                v-for="row in rowsToRender"
+                                :key="row.id"
+                                class="relative w-full"
+                                :class="{ 'ring-2 ring-primary/50 rounded-lg': isSelected(row) }"
+                            >
+                                <div
+                                    v-if="showSelectionCheckboxes"
+                                    class="absolute top-2 left-2 z-10"
+                                    @click.stop="toggleRow(row, !isSelected(row))"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        class="checkbox checkbox-sm checkbox-primary"
+                                        :checked="isSelected(row)"
+                                        :aria-label="`Sélectionner la ligne ${row.id}`"
+                                    />
+                                </div>
+                                <div
+                                    class="cursor-pointer w-full"
+                                    @click="handleRowClick(row)"
+                                    @dblclick="emit('row-dblclick', row)"
+                                >
+                                    <component
+                                        v-if="getEntityFromRow(row, entityType)"
+                                        :is="minimalViewComponent"
+                                        :[getEntityPropName(entityType)]="getEntityFromRow(row, entityType)"
+                                        :show-actions="showActionsColumn"
+                                        display-mode="extended"
+                                        :table-meta="config?._metadata?.context || {}"
+                                        @action="(actionKey, entity) => emit('action', actionKey, entity, row)"
+                                    />
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <div
+                    v-else
+                    class="text-center py-8 text-base-content/60 rounded-lg border border-dashed border-base-300"
+                >
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="font-medium text-base-content/80">{{ emptyState.title }}</div>
+                        <div class="text-sm text-base-content/60">{{ emptyState.description }}</div>
+                        <Btn
+                            v-if="emptyState.canReset"
+                            size="xs"
+                            variant="outline"
+                            :color="uiColor"
+                            @click="clearAllQueryState"
+                        >
+                            Réinitialiser filtres et recherche
+                        </Btn>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vue grille Minimal (flex-wrap : une ligne remplie puis passage à la suivante) -->
+        <div
+            v-else-if="showMinimalGrid"
+            class="relative overflow-hidden p-1 w-full"
+            :class="[bgClass]"
+        >
+            <div ref="tableContainerEl" class="w-full overflow-y-auto max-h-[70vh]">
+                <TanStackTableSkeletonBody
+                    v-if="loading"
+                    :columns="columnsWithoutActions.slice(0, 1)"
+                    :rows-count="skeletonRows"
+                    :show-selection="false"
+                    :show-actions-column="false"
+                />
+                <template v-else-if="rowsToRender.length">
+                    <div class="flex flex-wrap gap-3 p-2">
+                        <div
+                            v-for="row in rowsToRender"
+                            :key="row.id"
+                            class="relative flex-[1_1_280px] min-w-[280px] max-w-full"
+                            :class="{ 'ring-2 ring-primary/50 rounded-lg': isSelected(row) }"
+                        >
+                            <div
+                                v-if="showSelectionCheckboxes"
+                                class="absolute top-2 left-2 z-10"
+                                @click.stop="toggleRow(row, !isSelected(row))"
+                            >
+                                <input
+                                    type="checkbox"
+                                    class="checkbox checkbox-sm checkbox-primary"
+                                    :checked="isSelected(row)"
+                                    :aria-label="`Sélectionner la ligne ${row.id}`"
+                                />
+                            </div>
+                            <div
+                                class="cursor-pointer h-full"
+                                @click="handleRowClick(row)"
+                                @dblclick="emit('row-dblclick', row)"
+                            >
+                                <component
+                                    v-if="getEntityFromRow(row, entityType)"
+                                    :is="minimalViewComponent"
+                                    :[getEntityPropName(entityType)]="getEntityFromRow(row, entityType)"
+                                    :show-actions="showActionsColumn"
+                                    display-mode="extended"
+                                    :table-meta="config?._metadata?.context || {}"
+                                    @action="(actionKey, entity) => emit('action', actionKey, entity, row)"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <div
+                    v-else
+                    class="text-center py-8 text-base-content/60 rounded-lg border border-dashed border-base-300"
+                >
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="font-medium text-base-content/80">{{ emptyState.title }}</div>
+                        <div class="text-sm text-base-content/60">{{ emptyState.description }}</div>
+                        <Btn
+                            v-if="emptyState.canReset"
+                            size="xs"
+                            variant="outline"
+                            :color="uiColor"
+                            @click="clearAllQueryState"
+                        >
+                            Réinitialiser filtres et recherche
+                        </Btn>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table (vue colonnes) -->
+        <div
+            v-else
+            class="relative overflow-hidden p-1 w-full"
+            :class="[bgClass]"
+        >
             <div
                 ref="tableContainerEl"
                 class="w-full overflow-x-auto"

@@ -55,4 +55,10 @@ Le scrapping enregistre automatiquement les nouveaux `typeId` DofusDB détectés
 - filtrer le scrapping sur des **types connus** (par nom) dans l’UI.
 
 ### Types et races — source de vérité en BDD
-Les **types d’objets** (item-types, super-types) et les **races de monstres** sont gérés en base de données (`resource_types`, `consumable_types`, `item_types`, `monster_races`). Les catalogues DofusDB sont exposés via des services dédiés (`DofusDbItemTypesCatalogService`, `DofusDbMonsterRacesCatalogService`) qui construisent les URLs d’API en dur (sans config d’entité). Les anciens fichiers de config d’entité **catalog-only** (`item-type.json`, `item-super-type.json`, `monster-race.json`) ont été supprimés : ils ne servaient qu’à les faire apparaître dans la liste d’entités de l’API config, sans être utilisés par la recherche, l’import ou les services de catalogue.
+Les **types d’objets** (item-types, super-types) et les **races de monstres** sont gérés en base de données (`resource_types`, `consumable_types`, `item_types`, `monster_races`). Les catalogues DofusDB sont exposés via des services dédiés (`DofusDbItemTypesCatalogService`, `DofusDbMonsterRacesCatalogService`) qui construisent les URLs d’API en dur (sans config d’entité). Les anciens fichiers de config d’entité **catalog-only** (`item-type.json`, `item-super-type.json`, `monster-race.json`) ont été supprimés : ils ne servaient qu'à les faire apparaître dans la liste d'entités de l'API config, sans être utilisés par la recherche, l'import ou les services de catalogue.
+
+### Progression CLI (scrapping:run) — 2026-03
+- **ID courant** : la barre affiche `Import spell (id=12345)` pour indiquer l'entité en cours.
+- **Heartbeat** : toutes les 100 entités, une ligne horodatée confirme la progression.
+- **Relations** : pendant le drain des dépendances (invocations, drops), les lignes `[relations] entity id=X` indiquent que le traitement continue (un sort avec invocation importe le monstre invoqué ; la barre reste sur le même sort).
+- **DB reconnect** : toutes les 500 entités pour éviter « MySQL server has gone away » sur les runs longs.

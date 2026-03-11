@@ -34,6 +34,7 @@ class ProjectInitCommand extends Command
         {--skip-cache : Ignorer le cache HTTP pour le scrapping}
         {--entity= : Limiter à une entité (class,spell,monster,resource,consumable,item,panoply)}
         {--max-items=0 : Limite par entité (0=illimité)}
+        {--update-mode=ignore : Mode remplacement existants: ignore|draft_raw_auto_update|auto_update|force (ignore=ne rien remplacer, reprise rapide)}
         {--simulate : Ne pas écrire en base (validation seule)}
         {--init-scheduler : Afficher la ligne cron pour le scheduler Laravel}
         {--skip-clear-queue : Ne pas vider la queue avant le scrapping}
@@ -214,6 +215,8 @@ class ProjectInitCommand extends Command
             '--max-items' => $maxItems,
             '--limit' => 100,
             '--max-pages' => 0,
+            '--update-mode' => (string) $this->option('update-mode'),
+            '--skip-existing' => true,
         ];
         if ($noImage) {
             $scrapArgs['--noimage'] = true;
@@ -239,19 +242,17 @@ class ProjectInitCommand extends Command
             }
             if ($entity === 'resource') {
                 $this->line("  → scrapping:run --entity=resource --resource-types=allowed");
-                $code = Artisan::call('scrapping:run', array_merge($scrapArgs, [
+                $code = $this->call('scrapping:run', array_merge($scrapArgs, [
                     '--entity' => 'resource',
                     '--resource-types' => 'allowed',
                     '--max-pages' => 0,
                 ]));
             } else {
                 $this->line("  → scrapping:run --entity={$entity}");
-                $code = Artisan::call('scrapping:run', array_merge($scrapArgs, [
+                $code = $this->call('scrapping:run', array_merge($scrapArgs, [
                     '--entity' => $entity,
                 ]));
             }
-
-            $this->output->write(Artisan::output());
             if ($code !== 0) {
                 $this->warn("  Avertissement : scrapping {$entity} a échoué.");
             }
@@ -268,12 +269,11 @@ class ProjectInitCommand extends Command
         for ($min = 1; $min <= $maxLevel; $min += $chunk) {
             $max = min($min + $chunk - 1, $maxLevel);
             $this->line("  → scrapping:run --entity=monster --levelMin={$min} --levelMax={$max}");
-            $code = Artisan::call('scrapping:run', array_merge($baseArgs, [
+            $code = $this->call('scrapping:run', array_merge($baseArgs, [
                 '--entity' => 'monster',
                 '--levelMin' => (string) $min,
                 '--levelMax' => (string) $max,
             ]));
-            $this->output->write(Artisan::output());
             if ($code !== 0) {
                 $this->warn("  Avertissement : scrapping monster niveau {$min}-{$max} a échoué.");
             }

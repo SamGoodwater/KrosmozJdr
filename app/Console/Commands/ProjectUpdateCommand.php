@@ -137,8 +137,7 @@ class ProjectUpdateCommand extends Command
                     $scrapArgs['--simulate'] = true;
                 }
 
-                $code = Artisan::call('scrapping:run', $scrapArgs);
-                $this->output->write(Artisan::output());
+                $code = $this->call('scrapping:run', $scrapArgs);
                 if ($code !== 0) {
                     $errors++;
                     $this->warn("  Avertissement : chunk " . ($i + 1) . " de {$entity} a échoué.");

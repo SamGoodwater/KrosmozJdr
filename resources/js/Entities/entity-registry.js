@@ -92,6 +92,7 @@ export function getEntityConfig(entityType) {
     case "resources":
       return {
         key,
+        model: Resource,
         getDescriptors: getResourceFieldDescriptors,
         // viewFields supprimé : utiliser descriptors._quickeditConfig.fields directement
         responseAdapter: createEntityAdapter(Resource, ResourceMapper),
@@ -100,6 +101,7 @@ export function getEntityConfig(entityType) {
     case "resource-types":
       return {
         key,
+        model: ResourceType,
         getDescriptors: getResourceTypeFieldDescriptors,
         responseAdapter: createEntityAdapter(ResourceType),
         defaults: { minimalImportantFields: ["decision", "resources_count", "dofusdb_type_id"] },
@@ -107,6 +109,7 @@ export function getEntityConfig(entityType) {
     case "items":
       return {
         key,
+        model: Item,
         getDescriptors: getItemFieldDescriptors,
         responseAdapter: createEntityAdapter(Item),
         defaults: { minimalImportantFields: ["level", "item_type", "rarity"] },
@@ -114,6 +117,7 @@ export function getEntityConfig(entityType) {
     case "spells":
       return {
         key,
+        model: Spell,
         getDescriptors: getSpellFieldDescriptors,
         responseAdapter: createEntityAdapter(Spell),
         defaults: { minimalImportantFields: ["level", "pa", "po", "element", "category"] },
@@ -121,6 +125,7 @@ export function getEntityConfig(entityType) {
     case "monsters":
       return {
         key,
+        model: Monster,
         getDescriptors: getMonsterFieldDescriptors,
         responseAdapter: createEntityAdapter(Monster),
         defaults: { minimalImportantFields: ["creature_name", "monster_race", "size", "is_boss"] },
@@ -131,6 +136,7 @@ export function getEntityConfig(entityType) {
     case "npcs":
       return {
         key,
+        model: Npc,
         getDescriptors: getNpcFieldDescriptors,
         responseAdapter: createEntityAdapter(Npc),
         defaults: { minimalImportantFields: ["creature_name", "breed", "specialization"] },
@@ -138,6 +144,7 @@ export function getEntityConfig(entityType) {
     case "breeds":
       return {
         key,
+        model: Breed,
         getDescriptors: getBreedFieldDescriptors,
         responseAdapter: createEntityAdapter(Breed),
         defaults: { minimalImportantFields: ["name", "life", "life_dice"] },
@@ -145,6 +152,7 @@ export function getEntityConfig(entityType) {
     case "consumables":
       return {
         key,
+        model: Consumable,
         getDescriptors: getConsumableFieldDescriptors,
         responseAdapter: createEntityAdapter(Consumable),
         defaults: { minimalImportantFields: ["level", "consumable_type", "rarity"] },
@@ -152,6 +160,7 @@ export function getEntityConfig(entityType) {
     case "campaigns":
       return {
         key,
+        model: Campaign,
         getDescriptors: getCampaignFieldDescriptors,
         responseAdapter: createEntityAdapter(Campaign),
         defaults: { minimalImportantFields: ["name", "state", "is_public"] },
@@ -159,6 +168,7 @@ export function getEntityConfig(entityType) {
     case "scenarios":
       return {
         key,
+        model: Scenario,
         getDescriptors: getScenarioFieldDescriptors,
         responseAdapter: createEntityAdapter(Scenario),
         defaults: { minimalImportantFields: ["name", "state", "is_public"] },
@@ -166,6 +176,7 @@ export function getEntityConfig(entityType) {
     case "attributes":
       return {
         key,
+        model: Attribute,
         getDescriptors: getAttributeFieldDescriptors,
         responseAdapter: createEntityAdapter(Attribute),
         defaults: { minimalImportantFields: ["name", "state", "read_level"] },
@@ -173,6 +184,7 @@ export function getEntityConfig(entityType) {
     case "panoplies":
       return {
         key,
+        model: Panoply,
         getDescriptors: getPanoplyFieldDescriptors,
         responseAdapter: createEntityAdapter(Panoply),
         defaults: { minimalImportantFields: ["name", "bonus", "items_count"] },
@@ -180,6 +192,7 @@ export function getEntityConfig(entityType) {
     case "capabilities":
       return {
         key,
+        model: Capability,
         getDescriptors: getCapabilityFieldDescriptors,
         responseAdapter: createEntityAdapter(Capability),
         defaults: { minimalImportantFields: ["name", "level", "pa", "po", "element"] },
@@ -187,6 +200,7 @@ export function getEntityConfig(entityType) {
     case "specializations":
       return {
         key,
+        model: Specialization,
         getDescriptors: getSpecializationFieldDescriptors,
         responseAdapter: createEntityAdapter(Specialization),
         defaults: { minimalImportantFields: ["name", "description", "capabilities_count"] },
@@ -194,6 +208,7 @@ export function getEntityConfig(entityType) {
     case "shops":
       return {
         key,
+        model: Shop,
         getDescriptors: getShopFieldDescriptors,
         responseAdapter: createEntityAdapter(Shop),
         defaults: { minimalImportantFields: ["name", "location", "npc_name", "items_count"] },

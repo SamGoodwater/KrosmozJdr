@@ -828,6 +828,8 @@ final class Orchestrator
             'integrate' => ($options['integrate'] ?? true) && !$dryRun,
         ]);
 
+        $drainCallback = $options['drain_progress_callback'] ?? null;
+
         while ($stack->hasPending()) {
             $next = $stack->popPending();
             if ($next === null) {
@@ -838,6 +840,10 @@ final class Orchestrator
             $dofusdbId = (string) ($next['dofusdb_id'] ?? '');
             if ($dofusdbId === '') {
                 continue;
+            }
+
+            if ($drainCallback instanceof \Closure) {
+                $drainCallback($entity, $dofusdbId);
             }
 
             $primaryId = null;

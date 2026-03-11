@@ -113,6 +113,7 @@ export function buildCharacteristicEffectCell({
                 icon: def?.icon || "fa-solid fa-circle-info",
                 color: def?.color || null,
                 value: renderedValue,
+                label,
                 tooltip: `${label}: ${renderedValue}`,
             };
         });

@@ -54,6 +54,8 @@ Les entités ont des dépendances implicites :
 - `--noimage` : désactiver les images (plus rapide, rattrapage possible plus tard)
 - `--skip-cache` : forcer la fraîcheur des données
 - `--max-items=0` : tout importer (ou une limite pour tester)
+- `--update-mode=ignore` : **(défaut)** ne rien remplacer — entités déjà en base ignorées, reprise rapide après arrêt. Autres valeurs : `draft_raw_auto_update`, `auto_update`, `force`
+- `--skip-existing` : activé par défaut en init — pas d'appel API pour les entités qu'on n'écraserait pas
 - `--simulate` : optionnel, pour valider sans écrire (dry-run partiel)
 
 ### Gestion des tranches de niveau (monstres)

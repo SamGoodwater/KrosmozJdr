@@ -603,6 +603,8 @@ final class CollectService
 
         $debugCb = $options['debug_callback'] ?? null;
         $isDebug = is_callable($debugCb);
+        $progressCb = $options['collect_progress_callback'] ?? null;
+        $isProgress = is_callable($progressCb);
 
         while (true) {
             $page++;
@@ -639,8 +641,11 @@ final class CollectService
                 $effectiveLimit = $apiLimit;
             }
             $pageCount = is_array($dataList) ? count($dataList) : 0;
+            $cumul = count($allItems) + $pageCount;
+            if ($isProgress && ($page === 1 || $page % 5 === 0 || $page <= 3)) {
+                $progressCb($page, $cumul, $total);
+            }
             if ($isDebug) {
-                $cumul = count($allItems) + $pageCount;
                 $debugCb("  page {$page} : +{$pageCount} items, cumul={$cumul}" . ($total > 0 ? ", total API={$total}" : ""));
             }
             foreach ($dataList as $item) {

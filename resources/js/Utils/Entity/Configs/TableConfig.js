@@ -178,11 +178,13 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
   const tableVisibleIf = tableConfigDesc.visibleIf;
   const permissionsVisibleIf = permissions.visibleIf || descriptor.visibleIf;
   const visibleIf = tableVisibleIf || permissionsVisibleIf;
-  
-  if (visibleIf && typeof visibleIf === 'function') {
+
+  if (visibleIf && typeof visibleIf === "function") {
+    // Propager visibleIf pour filtrage runtime (EntityTanStackTable isColumnAllowed)
+    column.withVisibleIf(visibleIf);
     const isVisible = visibleIf(ctx);
     if (!isVisible) {
-      // Si la fonction retourne false, masquer la colonne par défaut
+      // Si la fonction retourne false au build, masquer la colonne par défaut
       column.withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false });
     }
   }

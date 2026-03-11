@@ -33,6 +33,15 @@ const props = defineProps({
     columns: { type: Array, default: () => [] },
     visibleColumns: { type: Object, default: () => ({}) },
 
+    /**
+     * Colonnes triables (avec sort.enabled). Utilisé pour le dropdown « Trier par ».
+     * Indispensable en vue single-column (line) où les en-têtes de colonnes ne sont pas cliquables.
+     */
+    sortEnabled: { type: Boolean, default: false },
+    sortableColumns: { type: Array, default: () => [] },
+    sortBy: { type: String, default: "" },
+    sortOrder: { type: String, default: "asc" },
+
     exportEnabled: { type: Boolean, default: false },
     refreshEnabled: { type: Boolean, default: false },
 
@@ -43,6 +52,7 @@ const emit = defineEmits([
     "update:search",
     "toggle-column",
     "reset-columns",
+    "sort",
     "export",
     "refresh",
     "clear-selection",
@@ -83,6 +93,18 @@ const onSearchInput = (e) => {
     const v = String(e?.target?.value ?? "");
     searchInputValue.value = v;
     emit("update:search", v);
+};
+
+const onSortChange = (e) => {
+    const val = String(e?.target?.value ?? "").trim();
+    if (!val) {
+        emit("sort", { columnId: "", order: "asc" });
+        return;
+    }
+    const [columnId, order] = val.split("::");
+    if (columnId && (order === "asc" || order === "desc")) {
+        emit("sort", { columnId, order });
+    }
 };
 </script>
 
@@ -134,6 +156,31 @@ const onSearchInput = (e) => {
                 @click="emit('refresh')"
                 title="Actualiser les données"
             />
+
+            <select
+                v-if="sortEnabled && sortableColumns.length > 0"
+                :class="['select select-bordered', inputSizeClass]"
+                :value="sortBy ? `${sortBy}::${sortOrder}` : ''"
+                aria-label="Trier par"
+                title="Choisir le tri"
+                @change="onSortChange"
+            >
+                <option value="">Trier par…</option>
+                <option
+                    v-for="col in sortableColumns"
+                    :key="`${col.id}-asc`"
+                    :value="`${col.id}::asc`"
+                >
+                    {{ col.label }} (A→Z)
+                </option>
+                <option
+                    v-for="col in sortableColumns"
+                    :key="`${col.id}-desc`"
+                    :value="`${col.id}::desc`"
+                >
+                    {{ col.label }} (Z→A)
+                </option>
+            </select>
 
             <Dropdown
                 v-if="columnVisibilityEnabled"

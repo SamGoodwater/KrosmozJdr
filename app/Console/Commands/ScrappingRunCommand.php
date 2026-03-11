@@ -137,6 +137,13 @@ class ScrappingRunCommand extends Command
                 $this->debugLine($msg, true);
             };
         }
+        $outputVerboseForCollect = !(bool) $this->option('json');
+        if ($outputVerboseForCollect) {
+            $options['collect_progress_callback'] = function (int $page, int $collected, int $totalApi): void {
+                $totalStr = $totalApi > 0 ? "/{$totalApi}" : '';
+                $this->line("  <comment>[" . now()->format('H:i:s') . "]</comment> Collecte… page {$page}, {$collected}{$totalStr} items");
+            };
+        }
 
         $results = [
             'mode' => [
@@ -242,6 +249,7 @@ class ScrappingRunCommand extends Command
                     }
                 } else {
                     $this->debugLine("Début collecte {$collectorEntity} (filtres: " . json_encode($filters) . ", page_size=" . ($options['page_size'] ?? $options['limit'] ?? '?') . ", max_pages=" . ($options['max_pages'] ?? '?') . ", max_items=" . ($options['max_items'] ?? '?') . "). Pour tout récupérer : --max-items=0.");
+                    $this->line("  Collecte {$collectorEntity} en cours…");
                     $search = $collectService->fetchManyResult('dofusdb', $collectorEntity, $filters, $options);
                     $items = $search['items'] ?? [];
                     $entityResult['items'] = $items;
@@ -412,6 +420,11 @@ class ScrappingRunCommand extends Command
 
                 if ($doSave) {
                     $importOptions = $this->buildImportOptions($options);
+                    if ($outputVerbose && !$outputAsJson) {
+                        $importOptions['drain_progress_callback'] = function (string $entity, string $dofusdbId): void {
+                            $this->line("  <comment>[relations " . now()->format('H:i:s') . "]</comment> {$entity} id={$dofusdbId}");
+                        };
+                    }
                     $idsToImport = $entityResult['ids'];
                     $totalImport = count($idsToImport);
                     $this->debugLine("Début import {$normalizedEntity} : {$totalImport} id(s) à traiter");
@@ -423,7 +436,19 @@ class ScrappingRunCommand extends Command
                     }
 
                     $entityKey = $this->apiTypeToEntity($normalizedEntity);
+                    $reconnectInterval = 500;
+                    $heartbeatInterval = 100;
                     foreach ($idsToImport as $idx => $id) {
+                        if ($importBar !== null) {
+                            $importBar->setMessage("  Import {$normalizedEntity} (id={$id})");
+                            $importBar->display();
+                        }
+                        if ($idx > 0 && ($idx + 1) % $heartbeatInterval === 0) {
+                            $this->line("  <comment>[" . now()->format('H:i:s') . "]</comment> {$normalizedEntity} " . ($idx + 1) . "/{$totalImport}");
+                        }
+                        if (($idx + 1) % $reconnectInterval === 0) {
+                            \Illuminate\Support\Facades\DB::reconnect();
+                        }
                         $this->debugLine("Import {$normalizedEntity} id={$id} (" . ($idx + 1) . "/{$totalImport})…");
                         if ($entityKey !== null) {
                             $skipInfo = $orchestrator->resolveSkipForEntity($entityKey, (int) $id, $importOptions);
@@ -1254,6 +1279,9 @@ class ScrappingRunCommand extends Command
         }
         if (array_key_exists('skip_existing', $options)) {
             $runOptions['skip_existing'] = (bool) $options['skip_existing'];
+        }
+        if (array_key_exists('drain_progress_callback', $options) && $options['drain_progress_callback'] instanceof \Closure) {
+            $runOptions['drain_progress_callback'] = $options['drain_progress_callback'];
         }
         $result = $orchestrator->runOne('dofusdb', $entityKey, $id, $runOptions);
 
