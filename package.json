@@ -63,6 +63,7 @@
         "@tailwindcss/postcss": "^4.1.18",
         "@tanstack/table-core": "^8.21.3",
         "@tanstack/vue-table": "^8.21.3",
+        "@tanstack/vue-virtual": "^3.13.21",
         "@tiptap/extension-character-count": "^2.27.2",
         "@tiptap/extension-color": "^2.27.2",
         "@tiptap/extension-dropcursor": "^2.27.2",

@@ -171,6 +171,7 @@ Le skeleton peut être configuré via `config.ui` :
   - selection: `{ enabled, checkboxMode: "none"|"always"|"auto", clickToSelect: boolean }`
   - columnVisibility: `{ enabled }`
   - export: `{ csv?: boolean, filename?: string }`
+  - virtualization: `{ enabled?: boolean, minRows?: number, rowHeight?: number }` — virtualisation des lignes en mode client (500+ lignes par défaut)
 - **`columns[]`**: `ColumnConfig[]`
 
 ### `ColumnConfig`

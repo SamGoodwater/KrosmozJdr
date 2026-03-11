@@ -134,10 +134,11 @@ export function useTableQueryState(initial = {}, { serverSide, onParamsChange })
 | Phase | Action | Effort | Risque | Statut |
 |-------|--------|--------|--------|--------|
 | 1 | Input contrôlé pour la recherche (Option D) | Faible | Faible | ✅ 2026-03-10 |
-| 2 | Nettoyage code mort + simplification emits | Faible | Faible |
-| 3 | Montée de l’état en mode serveur (Option A) | Moyen | Moyen |
-| 4 | Tests E2E sur sorts + une autre entité | Moyen | - |
-| 5 | Documentation TANSTACK_TABLE.md | Faible | - |
+| 2 | Nettoyage code mort + simplification emits | Faible | Faible | ✅ 2026-03-10 |
+| 3 | useTableServerParams + useTableSearch (Option A) | Moyen | Moyen | ✅ 2026-03-10 |
+| 4 | Virtualisation pour gros tableaux client | Moyen | Moyen | ✅ 2026-03-10 |
+| 5 | Tests E2E sur sorts + une autre entité | Moyen | - | |
+| 6 | Documentation TANSTACK_TABLE.md | Faible | - | ✅ |
 
 ---
 

@@ -360,56 +360,8 @@ const clearAllActiveFilters = () => {
 
 <template>
     <div class="flex flex-col gap-3">
-        <div class="flex flex-wrap items-center justify-between gap-2 md:flex-nowrap">
-            <div class="text-sm font-semibold">Filtres</div>
-            <div class="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
-                <Btn
-                    v-if="presetsEnabled"
-                    size="xs"
-                    variant="ghost"
-                    :color="uiColor"
-                    :title="showPresetPanel ? 'Masquer les presets' : 'Afficher les presets'"
-                    :aria-label="showPresetPanel ? 'Masquer les presets' : 'Afficher les presets'"
-                    class="relative"
-                    @click="emit('toggle-presets')"
-                >
-                    <i class="fa-solid fa-bookmark"></i>
-                    <span
-                        v-if="isActivePresetDirty"
-                        class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-warning ring-1 ring-base-100"
-                    ></span>
-                </Btn>
-                <Btn
-                    size="xs"
-                    variant="outline"
-                    :color="uiColor"
-                    opacity="lg"
-                    type="button"
-                    title="Appliquer les filtres"
-                    @click="emit('apply')"
-                >
-                    <Icon source="fa-solid fa-check" alt="Appliquer" size="sm" />
-                    <span class="hidden md:inline">Appliquer</span>
-                </Btn>
+        <div class="text-sm font-semibold">Filtres</div>
 
-                <Btn size="xs" variant="ghost" type="button" @click="emit('reset')">
-                    Réinitialiser
-                </Btn>
-            </div>
-        </div>
-
-        <div v-if="extraFilterColumns().length" class="flex justify-end">
-            <Btn
-                size="xs"
-                variant="ghost"
-                type="button"
-                :title="showExtraFilters ? 'Masquer les filtres avancés' : `Afficher ${extraFilterColumns().length} filtre(s) de plus`"
-                @click="toggleExtraFilters"
-            >
-                <Icon :source="showExtraFilters ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" alt="" size="xs" />
-                <span>{{ showExtraFilters ? 'Masquer les filtres avancés' : `+ ${extraFilterColumns().length} filtre(s)` }}</span>
-            </Btn>
-        </div>
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             <div v-for="col in visibleFilterColumns()" :key="col.id" class="space-y-1">
                 <div class="text-xs opacity-70">{{ getFilterLabel(col) }}</div>
@@ -729,6 +681,56 @@ const clearAllActiveFilters = () => {
                 <div v-else class="text-xs opacity-50">
                     Filtre non supporté ({{ col.filter.type }})
                 </div>
+            </div>
+        </div>
+
+        <!-- Barre d'actions : + filtres + presets à gauche, Appliquer + Réinitialiser à droite -->
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <Btn
+                    v-if="extraFilterColumns().length"
+                    size="xs"
+                    variant="ghost"
+                    type="button"
+                    :title="showExtraFilters ? 'Masquer les filtres avancés' : `Afficher ${extraFilterColumns().length} filtre(s) de plus`"
+                    @click="toggleExtraFilters"
+                >
+                    <Icon :source="showExtraFilters ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" alt="" size="xs" />
+                    <span>{{ showExtraFilters ? 'Masquer les filtres avancés' : `+ ${extraFilterColumns().length} filtre(s)` }}</span>
+                </Btn>
+                <Btn
+                    v-if="presetsEnabled"
+                    size="xs"
+                    variant="ghost"
+                    :color="uiColor"
+                    :title="showPresetPanel ? 'Masquer les presets' : 'Afficher les presets'"
+                    :aria-label="showPresetPanel ? 'Masquer les presets' : 'Afficher les presets'"
+                    class="relative"
+                    @click="emit('toggle-presets')"
+                >
+                    <i class="fa-solid fa-bookmark"></i>
+                    <span
+                        v-if="isActivePresetDirty"
+                        class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-warning ring-1 ring-base-100"
+                    ></span>
+                </Btn>
+            </div>
+            <div class="flex items-center gap-2">
+                <Btn
+                    size="xs"
+                    variant="outline"
+                    :color="uiColor"
+                    opacity="lg"
+                    type="button"
+                    title="Appliquer les filtres"
+                    @click="emit('apply')"
+                >
+                    <Icon source="fa-solid fa-check" alt="Appliquer" size="sm" />
+                    <span class="hidden md:inline">Appliquer</span>
+                </Btn>
+                <Btn size="xs" variant="ghost" type="button" @click="emit('reset')">
+                    Réinitialiser
+                </Btn>
             </div>
         </div>
 

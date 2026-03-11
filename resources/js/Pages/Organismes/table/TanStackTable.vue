@@ -25,6 +25,8 @@ import TanStackTableFilters from "@/Pages/Molecules/table/TanStackTableFilters.v
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
 import { useTanStackTablePreferences } from "@/Composables/table/useTanStackTablePreferences";
 import { useTableFilterPresets } from "@/Composables/table/useTableFilterPresets";
+import { useTableSearch } from "@/Composables/table/useTableSearch";
+import { useTableVirtualizer } from "@/Composables/table/useTableVirtualizer";
 import { useUxFeedback } from "@/Composables/utils/useUxFeedback";
 import { resolveEntityRouteHref } from "@/Composables/entity/entityRouteRegistry";
 import { BREAKPOINTS } from "@/Utils/Entity/Constants.js";
@@ -349,9 +351,7 @@ const isActivePresetDirty = computed(() => {
         searchText: String(activePreset.value.searchText || ""),
         filters: normalizeForPresetComparison(activePreset.value.filters || {}),
     };
-    const currentSearch = props.serverSide
-        ? String(searchDisplayValue.value || "").trim()
-        : String(searchText.value || "").trim();
+    const currentSearch = getCurrentSearch();
     const currentSnapshot = {
         searchText: currentSearch,
         filters: normalizeForPresetComparison(activeFilters.value || {}),
@@ -422,21 +422,6 @@ const reloadPresetsFromApi = async () => {
         filterPresets.value = [];
     } finally {
         presetsLoading.value = false;
-    }
-};
-
-const applySearchValue = (value) => {
-    const next = String(value ?? "");
-    if (props.serverSide) {
-        searchDisplayValue.value = next;
-        emit("update:serverParams", {
-            search: next.trim(),
-            filters: { ...(activeFilters.value || {}) },
-            page: 1,
-        });
-    } else {
-        searchText.value = next;
-        handleSearchInput(next);
     }
 };
 
@@ -807,6 +792,23 @@ const resolvedFilterOptions = computed(() => {
     return out;
 });
 const activeFilters = ref({});
+
+const tableSearch = useTableSearch({
+    serverSide: computed(() => props.serverSide),
+    activeFilters,
+    debounceMs: searchDebounceMs,
+    onServerParamsChange: (params) => emit("update:serverParams", params),
+});
+
+const {
+    searchText,
+    effectiveSearchDisplayValue,
+    handleSearchInput,
+    applySearchValue,
+    clearSearch,
+    getCurrentSearch,
+} = tableSearch;
+
 const hasActiveFilters = computed(() => {
     const filters = activeFilters.value || {};
     return Object.values(filters).some((value) => {
@@ -848,46 +850,6 @@ watch(
 );
 
 
-let _searchTimeout = null;
-const searchText = ref("");
-
-/**
- * Valeur affichée dans l'input. En mode serveur : ref locale mise à jour immédiatement
- * à la saisie (aucun watch qui pourrait l'écraser).
- */
-const searchDisplayValue = ref("");
-
-const effectiveSearchDisplayValue = computed(() =>
-    props.serverSide ? searchDisplayValue.value : searchText.value,
-);
-
-/**
- * Handler direct pour la recherche : met à jour l'affichage immédiatement,
- * puis debounce l'émission serveur.
- */
-const handleSearchInput = (value) => {
-    const v = String(value ?? "");
-    if (props.serverSide) {
-        searchDisplayValue.value = v;
-    } else {
-        searchText.value = v;
-    }
-    if (_searchTimeout) clearTimeout(_searchTimeout);
-    _searchTimeout = setTimeout(() => {
-        if (props.serverSide) {
-            emit("update:serverParams", {
-                search: v.trim(),
-                filters: { ...(activeFilters.value || {}) },
-                page: 1,
-            });
-        } else {
-            searchText.value = v;
-        }
-    }, Math.max(0, searchDebounceMs.value));
-};
-const clearSearch = () => {
-    applySearchValue("");
-};
 const clearAllQueryState = () => {
     resetFilters();
     clearSearch();
@@ -1178,7 +1140,7 @@ const filteredRows = computed(() => {
 });
 const emptyState = computed(() => {
     const totalRows = Array.isArray(props.rows) ? props.rows.length : 0;
-    const hasSearch = String(searchText.value || "").trim().length > 0;
+    const hasSearch = getCurrentSearch().length > 0;
     const hasFilters = hasActiveFilters.value;
 
     if (totalRows === 0) {
@@ -1205,13 +1167,8 @@ const emptyState = computed(() => {
 // État de tri : utiliser directement le format TanStack Table
 const sortingState = ref([]);
 
-const getCellObject = (row, col) => {
-    // Alias pour l'usage sort/filter/search
-    return getCellFor(row, col);
-};
-
 const getSortValue = (row, col) => {
-    const cell = getCellObject(row, col);
+    const cell = getCellFor(row, col);
     const v = cell?.params?.sortValue;
     if (typeof v !== "undefined") return v;
     return cell?.value ?? null;
@@ -1291,26 +1248,6 @@ watch(
             paginationState.value = { ...paginationState.value, pageIndex: 0 };
         }
     },
-);
-
-// En mode serveur : émettre quand la recherche change (après debounce côté handleSearchInput)
-// immediate: false évite un emit redondant au montage (les valeurs par défaut sont déjà correctes)
-// On inclut les filtres pour que "réinitialiser" envoie bien search="" + filters={}
-// En mode serveur, searchText n'est plus utilisé (input contrôlé par serverParams).
-// Ce watch émet uniquement quand searchText change (client ou cas edge).
-watch(
-    () => searchText.value,
-    (newVal) => {
-        if (props.serverSide) {
-            paginationState.value = { ...paginationState.value, pageIndex: 0 };
-            emit("update:serverParams", {
-                search: String(newVal || "").trim(),
-                filters: { ...(activeFilters.value || {}) },
-                page: 1,
-            });
-        }
-    },
-    { immediate: false },
 );
 
 // En mode serveur : garder paginationState en sync avec serverParams.
@@ -1427,6 +1364,26 @@ const table = useVueTable({
 
 const rowsToRender = computed(() => {
     return table.getRowModel().rows.map((r) => r.original);
+});
+
+// Virtualisation (optionnel, pour tableaux client avec 500+ lignes)
+const virtualizationConfig = computed(() => props.config?.features?.virtualization ?? {});
+const virtualizationEnabled = computed(
+    () => Boolean(virtualizationConfig.value?.enabled) && !props.serverSide,
+);
+const virtualizationMinRows = computed(
+    () => Number(virtualizationConfig.value?.minRows ?? 500) || 500,
+);
+const shouldVirtualize = computed(
+    () => virtualizationEnabled.value && rowsToRender.value.length >= virtualizationMinRows.value,
+);
+
+// tableContainerEl sert de scroll parent pour la virtualisation
+const { virtualItems, totalSize, isEnabled: virtualizationActive } = useTableVirtualizer({
+    parentRef: tableContainerEl,
+    rowCount: computed(() => rowsToRender.value.length),
+    rowHeight: Number(virtualizationConfig.value?.rowHeight ?? 48) || 48,
+    enabled: shouldVirtualize,
 });
 
 const handleSort = (col) => {
@@ -1868,7 +1825,11 @@ const handleExport = () => {
 
         <!-- Table -->
         <div class="relative overflow-hidden p-1 w-full" :class="[bgClass]">
-            <div ref="tableContainerEl" class="overflow-x-auto w-full">
+            <div
+                ref="tableContainerEl"
+                class="w-full overflow-x-auto"
+                :class="{ 'overflow-y-auto max-h-[70vh]': shouldVirtualize }"
+            >
                 <table
                     :key="columnsKey"
                     class="table w-full tanstack-table-force-full"
@@ -1898,23 +1859,58 @@ const handleExport = () => {
                 />
 
                 <tbody v-else-if="rowsToRender.length">
-                    <TanStackTableRow
-                        v-for="row in rowsToRender"
-                        :key="row.id"
-                        :row="row"
-                        :columns="visibleColumnsFromTable"
-                        :show-selection="showSelectionCheckboxes"
-                        :is-selected="isSelected(row)"
-                        :selected-bg-class="rowSelectedBgClass"
-                        :ui-color="uiColor"
-                        :entity-type="entityType"
-                        :show-actions-column="showActionsColumn"
-                        :get-cell-for="getCellFor"
-                        @toggle-select="(r, checked) => toggleRow(r, checked)"
-                        @row-click="handleRowClick"
-                        @row-dblclick="(r) => emit('row-dblclick', r)"
-                        @action="(actionKey, entity, row) => emit('action', actionKey, entity, row)"
-                    />
+                    <!-- Virtualisation : spacers + lignes visibles uniquement -->
+                    <template v-if="virtualizationActive && virtualItems.length">
+                        <tr v-if="virtualItems[0]?.start > 0" role="presentation">
+                            <td
+                                :colspan="visibleColumnsFromTable.length + (showSelectionCheckboxes ? 1 : 0) + (showActionsColumn ? 1 : 0)"
+                                :style="{ height: virtualItems[0].start + 'px' }"
+                            />
+                        </tr>
+                        <TanStackTableRow
+                            v-for="vi in virtualItems"
+                            :key="rowsToRender[vi.index]?.id ?? vi.key"
+                            :row="rowsToRender[vi.index]"
+                            :columns="visibleColumnsFromTable"
+                            :show-selection="showSelectionCheckboxes"
+                            :is-selected="isSelected(rowsToRender[vi.index])"
+                            :selected-bg-class="rowSelectedBgClass"
+                            :ui-color="uiColor"
+                            :entity-type="entityType"
+                            :show-actions-column="showActionsColumn"
+                            :get-cell-for="getCellFor"
+                            @toggle-select="(r, checked) => toggleRow(r, checked)"
+                            @row-click="handleRowClick"
+                            @row-dblclick="(r) => emit('row-dblclick', r)"
+                            @action="(actionKey, entity, row) => emit('action', actionKey, entity, row)"
+                        />
+                        <tr v-if="totalSize > (virtualItems[virtualItems.length - 1]?.end ?? 0)" role="presentation">
+                            <td
+                                :colspan="visibleColumnsFromTable.length + (showSelectionCheckboxes ? 1 : 0) + (showActionsColumn ? 1 : 0)"
+                                :style="{ height: (totalSize - (virtualItems[virtualItems.length - 1]?.end ?? 0)) + 'px' }"
+                            />
+                        </tr>
+                    </template>
+                    <!-- Rendu normal (sans virtualisation) -->
+                    <template v-else>
+                        <TanStackTableRow
+                            v-for="row in rowsToRender"
+                            :key="row.id"
+                            :row="row"
+                            :columns="visibleColumnsFromTable"
+                            :show-selection="showSelectionCheckboxes"
+                            :is-selected="isSelected(row)"
+                            :selected-bg-class="rowSelectedBgClass"
+                            :ui-color="uiColor"
+                            :entity-type="entityType"
+                            :show-actions-column="showActionsColumn"
+                            :get-cell-for="getCellFor"
+                            @toggle-select="(r, checked) => toggleRow(r, checked)"
+                            @row-click="handleRowClick"
+                            @row-dblclick="(r) => emit('row-dblclick', r)"
+                            @action="(actionKey, entity, row) => emit('action', actionKey, entity, row)"
+                        />
+                    </template>
                 </tbody>
 
                 <tbody v-else>

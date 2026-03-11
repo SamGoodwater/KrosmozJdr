@@ -18,6 +18,7 @@
 import { computed, ref, watch } from "vue";
 import TanStackTable from "@/Pages/Organismes/table/TanStackTable.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { useTableServerParams } from "@/Composables/table/useTableServerParams";
 
 const props = defineProps({
     entityType: { type: String, required: true },
@@ -79,45 +80,14 @@ const isServerEnabled = computed(() => {
     return Boolean(String(props.serverUrl || "").trim());
 });
 
-/** Params pour le fetch serveur (page, filters, sort, search). Pilotés par TanStackTable en mode serverSide. */
-const serverParams = ref({
-    page: 1,
-    pageSize: 25,
-    filters: {},
-    search: "",
-    sort: "id",
-    order: "desc",
-});
+/** Params serveur (source de vérité en mode serverSide). */
+const { serverParams, mergeParams, buildFetchUrl } = useTableServerParams();
 
-/** URL de fetch : statique (serverUrl) ou construite dynamiquement (serverBaseUrl + serverParams). */
+/** URL de fetch : statique (serverUrl) ou construite via useTableServerParams. */
 const effectiveServerUrl = computed(() => {
     if (!isServerEnabled.value) return "";
     if (props.serverSide && props.serverBaseUrl) {
-        const base = String(props.serverBaseUrl).trim();
-        const params = new URLSearchParams();
-        params.set("format", "entities");
-        params.set("limit", String(serverParams.value.pageSize || 25));
-        params.set("page", String(serverParams.value.page || 1));
-        params.set("sort", String(serverParams.value.sort || "id"));
-        params.set("order", String(serverParams.value.order || "desc"));
-        if (String(serverParams.value.search || "").trim()) {
-            params.set("search", String(serverParams.value.search).trim());
-        }
-        const filters = serverParams.value.filters || {};
-        for (const [key, value] of Object.entries(filters)) {
-            if (value === null || typeof value === "undefined" || value === "") continue;
-            const normalized = Array.isArray(value)
-                ? value.map((v) => String(v)).filter(Boolean).join(",")
-                : typeof value === "boolean"
-                    ? (value ? "1" : "0")
-                    : String(value);
-            params.set(`filters[${key}]`, normalized);
-        }
-        const token = props.refreshToken;
-        if (token !== null && token !== undefined && token !== 0 && token !== "0") {
-            params.set("_t", String(token));
-        }
-        return `${base}?${params.toString()}`;
+        return buildFetchUrl(serverParams.value, props.serverBaseUrl, props.refreshToken);
     }
     return String(props.serverUrl || "").trim();
 });
@@ -229,11 +199,11 @@ const resolvedConfig = computed(() => {
             ...(cfg.features || {}),
             selection: {
                 ...((cfg.features || {}).selection || {}),
-                enabled: Boolean((cfg.features || {}).selection?.enabled) ? Boolean(canUpdateAny.value) : false,
+                enabled: (cfg.features || {}).selection?.enabled ? canUpdateAny.value : false,
             },
             export: {
                 ...((cfg.features || {}).export || {}),
-                csv: Boolean((cfg.features || {}).export?.csv) ? Boolean(canViewAny.value) : false,
+                csv: (cfg.features || {}).export?.csv ? canViewAny.value : false,
             },
         },
         _metadata: {
@@ -288,7 +258,7 @@ watch(
 
 const handleServerParamsChange = (params) => {
     if (!props.serverSide || !params) return;
-    serverParams.value = { ...serverParams.value, ...params };
+    mergeParams(params);
 };
 
 const handleRowClick = (row) => {
@@ -327,8 +297,7 @@ const handleRefresh = async () => {
         :server-side="serverSide"
         :server-pagination-meta="serverPaginationMeta"
         :server-params="serverParams"
-        @update:serverParams="handleServerParamsChange"
-        @update:selectedIds="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
+        @update:server-params="handleServerParamsChange"
         @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
         @row-click="handleRowClick"
         @row-dblclick="(row) => emit('row-dblclick', row)"
