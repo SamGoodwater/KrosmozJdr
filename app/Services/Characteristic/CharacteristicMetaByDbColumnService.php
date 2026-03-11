@@ -79,6 +79,38 @@ final class CharacteristicMetaByDbColumnService
     }
 
     /**
+     * Mapping dofusdb_characteristic_id → définition pour une entité objet.
+     * Permet de résoudre les effets items dont les clés sont des IDs DofusDB (ex. 11, 48, 85).
+     *
+     * @param string $entity Une des constantes CharacteristicObject::ENTITY_*
+     * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
+     */
+    public function buildObjectByDofusdbId(string $entity): array
+    {
+        $out = [];
+        try {
+            $charRows = CharacteristicObject::query()
+                ->whereIn('entity', [CharacteristicObject::ENTITY_ALL, $entity])
+                ->whereNotNull('dofusdb_characteristic_id')
+                ->with(['characteristic.masterCharacteristic'])
+                ->get();
+
+            $sorted = $charRows->sortBy(fn (CharacteristicObject $r) => $r->entity === CharacteristicObject::ENTITY_ALL ? 0 : 1)->values();
+
+            foreach ($sorted as $row) {
+                $idKey = (string) $row->dofusdb_characteristic_id;
+                $entry = $this->rowToDefinition($row->db_column ?? $idKey, $row->characteristic);
+                if ($entry !== null && $idKey !== '') {
+                    $out[$idKey] = $entry;
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return $out;
+    }
+
+    /**
      * Mapping db_column → définition pour l'entité spell.
      *
      * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>

@@ -233,6 +233,7 @@ class ResourceTableController extends Controller
                     'characteristics' => [
                         'resource' => [
                             'byDbColumn' => $resourceCharacteristicsByDbColumn,
+                            'byDofusdbId' => $this->characteristicMeta->buildObjectByDofusdbId(\App\Models\CharacteristicObject::ENTITY_RESOURCE),
                         ],
                     ],
                     'format' => 'entities',

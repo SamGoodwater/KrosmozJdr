@@ -36,8 +36,8 @@ const getColorStyle = (item) => {
     if (!c || typeof c !== "string") return undefined;
     const t = c.trim();
     if (t.startsWith("#")) return { color: t };
-    if (t.includes("-")) return { color: `var(--color-${t})` };
-    return undefined;
+    if (t.includes("/")) return undefined;
+    return { color: `var(--color-${t})` };
 };
 </script>
 

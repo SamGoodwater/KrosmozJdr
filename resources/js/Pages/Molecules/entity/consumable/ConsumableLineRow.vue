@@ -1,10 +1,10 @@
 <script setup>
 /**
- * ResourceLineRow — Une ligne de la vue Line pour Resource
+ * ConsumableLineRow — Une ligne de la vue Line pour Consumable
  *
  * @description
- * Affichage dense : State • Image • Level • Nom • Type • Rareté • Prix • Poids • Description • Effets
- * Structure conforme au schéma ENTITY_VIEWS_LINE.
+ * Même structure que ResourceLineRow : State • Image • Level • Nom • Type • Rareté • Prix • Description • Effets
+ * Pas de poids.
  */
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
@@ -46,10 +46,9 @@ const levelValue = computed(() => entity.value?.level ?? entity.value?._data?.le
 
 const nameCell = computed(() => getCell("name"));
 const imageCell = computed(() => getCell("image"));
-const typeCell = computed(() => getCell("resource_type"));
+const typeCell = computed(() => getCell("consumable_type"));
 const priceCell = computed(() => getCell("price"));
-const weightCell = computed(() => getCell("weight"));
-/** Description brute (non tronquée) : on lit sur l'entité, pas sur getCell qui tronque à 30-50 car. */
+/** Description brute (non tronquée) */
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
 
 const effectItems = computed(() => {
@@ -60,7 +59,7 @@ const effectItems = computed(() => {
     const cell = buildCharacteristicEffectCell({
         rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
         options: { ctx },
-        sourceGroups: ["resource", "item"],
+        sourceGroups: ["consumable", "item"],
         size: "md",
     });
     return cell?.type === "chips" ? cell.params?.items || [] : [];
@@ -73,10 +72,9 @@ const rarityConfig = computed(() => {
 });
 
 const byDbColumn = computed(
-    () => props.tableMeta?.characteristics?.resource?.byDbColumn || props.tableMeta?.characteristics?.item?.byDbColumn || {}
+    () => props.tableMeta?.characteristics?.consumable?.byDbColumn || props.tableMeta?.characteristics?.resource?.byDbColumn || {}
 );
 const priceMeta = computed(() => byDbColumn.value?.price || byDbColumn.value?.kamas || null);
-const weightMeta = computed(() => byDbColumn.value?.weight || byDbColumn.value?.pods || null);
 
 const handleRowClick = () => emit("row-click", props.row);
 </script>
@@ -127,7 +125,7 @@ const handleRowClick = () => emit("row-click", props.row);
                 </div>
                 <div v-if="showActions" class="shrink-0" @click.stop>
                     <EntityActions
-                        entity-type="resources"
+                        entity-type="consumables"
                         :entity="entity || row"
                         format="dropdown"
                         :available="['view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh']"
@@ -145,7 +143,7 @@ const handleRowClick = () => emit("row-click", props.row);
                     @click.stop
                 />
             </div>
-            <!-- Ligne 2 : Type • Rareté • Prix • Poids -->
+            <!-- Ligne 2 : Type • Rareté • Prix -->
             <div class="flex flex-wrap items-center gap-2 text-sm">
                 <Badge v-if="typeCell?.value" color="neutral" variant="soft" size="xs">
                     {{ typeCell.value }}
@@ -167,17 +165,6 @@ const handleRowClick = () => emit("row-click", props.row);
                             :style="priceMeta?.color ? { color: `var(--color-${priceMeta.color})` } : undefined"
                         />
                         <span>{{ priceCell.value }}</span>
-                    </span>
-                </Tooltip>
-                <Tooltip v-if="weightCell?.value != null && weightCell?.value !== '—'" :content="`Poids: ${weightCell.value}`">
-                    <span class="inline-flex items-center gap-1">
-                        <Icon
-                            :source="weightMeta?.icon || 'fa-solid fa-weight-hanging'"
-                            alt="Poids"
-                            size="xs"
-                            :style="weightMeta?.color ? { color: `var(--color-${weightMeta.color})` } : undefined"
-                        />
-                        <span>{{ weightCell.value }}</span>
                     </span>
                 </Tooltip>
             </div>

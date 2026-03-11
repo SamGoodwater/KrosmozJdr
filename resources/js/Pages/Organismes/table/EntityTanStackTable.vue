@@ -18,6 +18,8 @@
 import { computed, ref, watch } from "vue";
 import TanStackTable from "@/Pages/Organismes/table/TanStackTable.vue";
 import ResourceLineRow from "@/Pages/Molecules/entity/resource/ResourceLineRow.vue";
+import ItemLineRow from "@/Pages/Molecules/entity/item/ItemLineRow.vue";
+import ConsumableLineRow from "@/Pages/Molecules/entity/consumable/ConsumableLineRow.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useTableServerParams } from "@/Composables/table/useTableServerParams";
 
@@ -184,6 +186,8 @@ const isColumnAllowed = (col) => {
 const lineRowComponent = computed(() => {
     const t = String(props.entityType || "").toLowerCase();
     if (t === "resources") return ResourceLineRow;
+    if (t === "items") return ItemLineRow;
+    if (t === "consumables") return ConsumableLineRow;
     return null;
 });
 

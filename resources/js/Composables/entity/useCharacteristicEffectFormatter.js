@@ -3,7 +3,7 @@
  *
  * @description
  * - Parse des payloads JSON (objet/array) provenant de `effect` / `bonus`
- * - Résolution des caractéristiques via `options.ctx.characteristics.<group>.byDbColumn`
+ * - Résolution des caractéristiques via `options.ctx.characteristics.<group>.byDbColumn` et `byDofusdbId`
  * - Génération d'une cellule `chips` (icon + color) avec fallback texte
  *
  * @example
@@ -61,6 +61,7 @@ function extractEffectEntries(payload) {
 }
 
 /**
+ * Collecte byDbColumn depuis characteristics.<group>.byDbColumn
  * @param {Object} options
  * @param {string[]} sourceGroups
  * @returns {Record<string, any>}
@@ -72,6 +73,24 @@ function collectCharacteristicsByDb(options = {}, sourceGroups = []) {
         const byDb = ctx?.characteristics?.[group]?.byDbColumn;
         if (byDb && typeof byDb === "object") {
             Object.assign(out, byDb);
+        }
+    }
+    return out;
+}
+
+/**
+ * Collecte byDofusdbId depuis characteristics.<group>.byDofusdbId (résolution IDs DofusDB → définition)
+ * @param {Object} options
+ * @param {string[]} sourceGroups
+ * @returns {Record<string, any>}
+ */
+function collectCharacteristicsByDofusdbId(options = {}, sourceGroups = []) {
+    const ctx = options?.ctx || {};
+    const out = {};
+    for (const group of sourceGroups) {
+        const byId = ctx?.characteristics?.[group]?.byDofusdbId;
+        if (byId && typeof byId === "object") {
+            Object.assign(out, byId);
         }
     }
     return out;
@@ -103,10 +122,15 @@ export function buildCharacteristicEffectCell({
         .flatMap((v) => extractEffectEntries(parseJsonPayload(v)));
 
     const byDb = collectCharacteristicsByDb(options, sourceGroups);
+    const byDofusdbId = collectCharacteristicsByDofusdbId(options, sourceGroups);
 
     if (parsedEntries.length > 0) {
         const items = parsedEntries.map(({ key, value }) => {
-            const def = byDb?.[key] || byDb?.[key.replace(/_object$/, "")];
+            const def =
+                byDb?.[key] ||
+                byDb?.[key.replace(/_object$/, "")] ||
+                byDofusdbId?.[key] ||
+                (key && /^\d+$/.test(String(key)) ? byDofusdbId?.[String(Number(key))] : null);
             const renderedValue = String(value);
             const label = def?.short_name || def?.name || key;
             return {
