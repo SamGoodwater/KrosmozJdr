@@ -65,8 +65,8 @@ export class TableColumnConfig {
       xl: true,
     };
 
-    // Ordre et organisation
-    this.order = 0;
+    // Ordre et organisation (999 = non spécifié, tri en dernier)
+    this.order = 999;
     this.isMain = false;
     this.hideable = true;
     this.group = null;
@@ -244,6 +244,9 @@ export class TableColumnConfig {
 
     // Visibilité par défaut (pour la logique responsive)
     config.defaultVisible = { ...this.defaultVisible };
+
+    // Ordre (pour le tri des colonnes)
+    config.order = this.order ?? 999;
 
     // Formatage responsive
     if (Object.keys(this.format).length > 0) {

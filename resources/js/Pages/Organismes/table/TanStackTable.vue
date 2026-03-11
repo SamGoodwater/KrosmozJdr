@@ -1967,7 +1967,8 @@ const handleExport = () => {
 
 <style scoped lang="scss">
 .tanstack-table-force-full {
-    width: 100% !important;
     min-width: 100%;
+    width: fit-content;
+    table-layout: auto;
 }
 </style>

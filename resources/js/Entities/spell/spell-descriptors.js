@@ -111,6 +111,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Nom",
       icon: "fa-solid fa-font",
       table: {
+        order: 10,
         sortable: true,
         searchable: true,
         defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
@@ -168,9 +169,10 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Niveau",
       icon: "fa-solid fa-level-up-alt",
       table: {
+        order: 200,
         sortable: true,
         filterable: { id: "level", type: "multi", defaultVisible: true },
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -198,6 +200,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "PA",
       icon: "fa-solid fa-bolt",
       table: {
+        order: 150,
         sortable: true,
         filterable: { id: "pa", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -228,6 +231,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "PO",
       icon: "fa-solid fa-crosshairs",
       table: {
+        order: 151,
         sortable: true,
         filterable: { id: "po", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -275,12 +279,13 @@ export function getSpellFieldDescriptors(ctx = {}) {
     },
     area: {
       key: "area",
-      label: "Zone",
+      label: "Zone d'effet",
       icon: "fa-solid fa-shapes",
       table: {
+        order: 152,
         sortable: true,
         filterable: { id: "area", type: "multi", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
       display: {
@@ -307,9 +312,10 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Élément",
       icon: "fa-solid fa-fire",
       table: {
+        order: 153,
         sortable: true,
         filterable: { id: "element", type: "multi", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -621,6 +627,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Effets",
       icon: "fa-solid fa-wand-magic-sparkles",
       table: {
+        order: 30,
         type: "chips",
         searchable: true,
         filterable: { id: "sub_effect", type: "multi", defaultVisible: false, label: "Action (sous-effet)" },
@@ -642,6 +649,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Profil",
       icon: "fa-solid fa-layer-group",
       table: {
+        order: 20,
         type: "chips",
         searchable: true,
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },

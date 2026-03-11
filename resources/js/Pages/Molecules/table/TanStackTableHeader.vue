@@ -9,6 +9,9 @@
 
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 
+/** Colonnes à contenu riche : max-width aligné avec les cellules */
+const RICH_CONTENT_COLUMNS = new Set(["spell_summary_profile", "effect_summary"]);
+
 const props = defineProps({
     columns: { type: Array, required: true },
     sortBy: { type: String, default: "" },
@@ -56,7 +59,7 @@ const getAriaSort = (col) => {
                 :key="col.id"
                 scope="col"
                 class="select-none"
-                :class="{ 'min-w-0 max-w-2xl': col.id === 'effect_summary' }"
+                :class="{ 'max-w-md': RICH_CONTENT_COLUMNS.has(col.id) }"
                 :aria-sort="getAriaSort(col)"
             >
                 <button

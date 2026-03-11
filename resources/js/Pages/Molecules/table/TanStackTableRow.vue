@@ -13,6 +13,9 @@ import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
+/** Colonnes à contenu riche : max-width pour forcer le wrap et éviter scroll cellule */
+const RICH_CONTENT_COLUMNS = new Set(["spell_summary_profile", "effect_summary"]);
+
 const props = defineProps({
     row: { type: Object, required: true },
     columns: { type: Array, required: true },
@@ -292,9 +295,11 @@ const handleAction = (actionKey, entity) => {
         <td
             v-for="(col, idx) in columns"
             :key="col.id"
-            :class="{ 'min-w-0 max-w-2xl': col.id === 'effect_summary' }"
+            :class="{
+              'max-w-md': RICH_CONTENT_COLUMNS.has(col.id),
+            }"
         >
-            <div class="relative min-w-0 max-w-full">
+            <div class="relative min-w-0 max-w-full break-words">
                 <Tooltip v-if="!showSelection && !showActionsColumn && idx === 0 && hasState && dotTooltip" :content="dotTooltip" placement="right" :color="dotColor" responsive="md">
                     <span
                         data-no-row-select
@@ -302,7 +307,7 @@ const handleAction = (actionKey, entity) => {
                         :class="[dotBgClass]"
                     />
                 </Tooltip>
-                <CellRenderer :cell="getCell(col)" :ui-color="uiColor" :entity="rowEntity" :chips-default-max-rows="3" />
+                <CellRenderer :cell="getCell(col)" :ui-color="uiColor" :entity="rowEntity" />
             </div>
         </td>
     </tr>

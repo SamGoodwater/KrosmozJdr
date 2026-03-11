@@ -696,7 +696,8 @@ export class Spell extends BaseModel {
     }
 
     /**
-     * Génère une cellule résumé (type chips) pour le profil global d'un sort.
+     * Génère une cellule Profil (PO, PA, zone d'effet, élément, niveau).
+     * Regroupe les infos clés du sort pour un affichage compact.
      * @private
      */
     _toSpellSummaryProfileCell(format, size, options) {
@@ -704,12 +705,8 @@ export class Spell extends BaseModel {
         const poValue = this.po ? String(this.po) : null;
         const areaValue = this.area != null ? String(this.area) : null;
         const elementValue = this.element != null ? getElementLabel(Number(this.element)) : null;
-        const categoryValue = this.category ? String(this.category) : null;
-        const typeCount = this.spellTypesCount;
-        const typesValue = typeCount > 0 ? `${typeCount} type${typeCount > 1 ? 's' : ''}` : null;
-        const breedsValue = this.breedsCount > 0 ? `${this.breedsCount} classe${this.breedsCount > 1 ? 's' : ''}` : null;
-        const creaturesValue = this.creaturesCount > 0 ? `${this.creaturesCount} créature${this.creaturesCount > 1 ? 's' : ''}` : null;
-        const monstersValue = this.monstersCount > 0 ? `${this.monstersCount} invocation${this.monstersCount > 1 ? 's' : ''}` : null;
+        const levelValue = this.level != null ? String(this.level) : null;
+
         const paDef = this._getCharacteristicDef(options, ['pa']);
         const poDef = this._getCharacteristicDef(options, ['po', 'po_max', 'po_min']);
         const paLabel = paDef?.short_name || paDef?.name || 'PA';
@@ -728,13 +725,21 @@ export class Spell extends BaseModel {
                 value: poValue,
                 tooltip: poValue ? `${poLabel}: ${poValue}` : '',
             },
-            { icon: getAreaIcon(this.area), value: areaValue, tooltip: areaValue ? `Zone: ${areaValue}` : '' },
-            { icon: ELEMENT_PRIMARY_ICONS[Number(this.element)] ?? ELEMENT_PRIMARY_ICONS[0], value: elementValue, tooltip: elementValue ? `Élément: ${elementValue}` : '' },
-            { icon: 'fa-solid fa-tag', value: categoryValue, tooltip: categoryValue ? `Catégorie: ${categoryValue}` : '' },
-            { icon: 'fa-solid fa-hat-wizard', value: breedsValue, tooltip: breedsValue ? `Classes: ${this.breedsCount}` : '' },
-            { icon: 'fa-solid fa-dragon', value: creaturesValue, tooltip: creaturesValue ? `Créatures: ${this.creaturesCount}` : '' },
-            { icon: 'fa-solid fa-ghost', value: monstersValue, tooltip: monstersValue ? `Invocations: ${this.monstersCount}` : '' },
-            { icon: 'fa-solid fa-tags', value: typesValue, tooltip: typesValue ? `Types: ${typesValue}` : '' },
+            {
+                icon: getAreaIcon(this.area),
+                value: areaValue,
+                tooltip: areaValue ? `Zone d'effet: ${areaValue}` : '',
+            },
+            {
+                icon: ELEMENT_PRIMARY_ICONS[Number(this.element)] ?? ELEMENT_PRIMARY_ICONS[0],
+                value: elementValue,
+                tooltip: elementValue ? `Élément: ${elementValue}` : '',
+            },
+            {
+                icon: 'fa-solid fa-level-up-alt',
+                value: levelValue,
+                tooltip: levelValue ? `Niveau: ${levelValue}` : '',
+            },
         ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
 
         const searchValue = items.map((it) => String(it.value)).join(' ');
