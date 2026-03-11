@@ -354,8 +354,7 @@ export class Spell extends BaseModel {
     }
 
     /**
-     * Génère une cellule chips pour les effets (icône élément + valeur + tooltip avec détails).
-     * Chaque chip affiche l'action avec valeur, target_type, area, duration dans le tooltip.
+     * Génère une cellule pour les effets (type spell_effects pour SpellEffectChips).
      * @private
      */
     _toEffectSummaryCell(format, size, options) {
@@ -375,17 +374,17 @@ export class Spell extends BaseModel {
             color: getElementColor(chip.element ?? 0),
             value: chip.text ?? '',
             tooltip: chip.tooltip ?? chip.text ?? '',
+            degree: chip.degree ?? null,
         }));
         const subEffectSlugs = this._data.effect_sub_effect_slugs ?? [];
         return {
-            type: 'chips',
+            type: 'spell_effects',
             value: '',
             params: {
                 items,
                 sortValue: this.effectUsagesSummary || '',
                 searchValue: this.effectUsagesSummary || '',
                 filterValue: subEffectSlugs,
-                // Pas de maxRows : flex-wrap pour que les chips s'enroulent dans la largeur dispo, éviter scroll horizontal
             },
         };
     }

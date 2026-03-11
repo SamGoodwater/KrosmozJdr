@@ -47,7 +47,7 @@ class SpellTableController extends Controller
     /**
      * Construit le résumé texte (pour recherche/tri) et les chips structurés (pour affichage).
      *
-     * @return array{summary: string, chips: list<array{text: string, element: int, element_label: string, target_type: string, target_label: string, area: string|null, duration: int|null, duration_label: string, tooltip: string}>}
+     * @return array{summary: string, chips: list<array{text: string, degree: int|null, element: int, element_label: string, target_type: string, target_label: string, area: string|null, duration: int|null, duration_label: string, tooltip: string}>}
      */
     private function buildEffectUsagesData(Spell $spell): array
     {
@@ -66,6 +66,8 @@ class SpellTableController extends Controller
             if (! $effect) {
                 continue;
             }
+            $degree = $effect->degree;
+            $degreePrefix = $degree !== null ? 'D' . $degree . ' ' : '';
             $targetType = $effect->target_type ?? 'direct';
             $targetLabel = self::TARGET_TYPE_LABELS[$targetType] ?? 'Direct';
             $area = $effect->area;
@@ -77,7 +79,7 @@ class SpellTableController extends Controller
                     continue;
                 }
                 $text = $this->humanizeEffectText($text);
-                $parts[] = $text;
+                $parts[] = $degreePrefix . $text;
 
                 $charSlug = strtolower((string) ($sub['characteristic'] ?? ''));
                 $elementId = self::ELEMENT_SLUG_TO_ID[$charSlug] ?? 0;
@@ -87,6 +89,9 @@ class SpellTableController extends Controller
                 $durationLabel = $this->formatDurationLabel($duration);
 
                 $details = [];
+                if ($degree !== null) {
+                    $details[] = 'Degré ' . $degree;
+                }
                 if ($targetType !== 'direct') {
                     $details[] = $targetLabel;
                 }
@@ -94,10 +99,12 @@ class SpellTableController extends Controller
                     $details[] = "zone {$area}";
                 }
                 $details[] = $durationLabel;
-                $tooltip = $text . (\count($details) > 0 ? ' — ' . implode(', ', $details) : '');
+                $displayText = $degreePrefix . $text;
+                $tooltip = $displayText . (\count($details) > 0 ? ' — ' . implode(', ', $details) : '');
 
                 $chips[] = [
-                    'text' => $text,
+                    'text' => $displayText,
+                    'degree' => $degree,
                     'element' => $elementId,
                     'element_label' => $elementLabel,
                     'target_type' => $targetType,

@@ -28,6 +28,7 @@ import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CharacteristicInlineGroup from "@/Pages/Molecules/data-display/CharacteristicInlineGroup.vue";
+import SpellEffectChips from "@/Pages/Molecules/entity/spell/SpellEffectChips.vue";
 import { getTruncateClass } from "@/Utils/entity/text-truncate";
 import { warnDev } from "@/Utils/dev-logger";
 
@@ -298,6 +299,12 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
         v-else-if="type === 'element'"
         :element="params.element ?? value ?? 0"
         size="sm"
+    />
+
+    <!-- spell_effects : effet avec filtre degré D1 / D2+ (Sort) -->
+    <SpellEffectChips
+        v-else-if="type === 'spell_effects'"
+        :items="params.items || []"
     />
 
     <!-- chips : colonnes résumées (icône + valeur avec tooltip par item) -->
