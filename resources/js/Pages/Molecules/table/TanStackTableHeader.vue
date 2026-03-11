@@ -56,6 +56,7 @@ const getAriaSort = (col) => {
                 :key="col.id"
                 scope="col"
                 class="select-none"
+                :class="{ 'min-w-0 max-w-2xl': col.id === 'effect_summary' }"
                 :aria-sort="getAriaSort(col)"
             >
                 <button

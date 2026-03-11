@@ -292,8 +292,9 @@ const handleAction = (actionKey, entity) => {
         <td
             v-for="(col, idx) in columns"
             :key="col.id"
+            :class="{ 'min-w-0 max-w-2xl': col.id === 'effect_summary' }"
         >
-            <div class="relative">
+            <div class="relative min-w-0 max-w-full">
                 <Tooltip v-if="!showSelection && !showActionsColumn && idx === 0 && hasState && dotTooltip" :content="dotTooltip" placement="right" :color="dotColor" responsive="md">
                     <span
                         data-no-row-select

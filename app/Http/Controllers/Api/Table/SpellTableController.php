@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Spell;
+use App\Models\SubEffect;
+use App\Models\Type\SpellType;
 use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
+use App\Support\AreaConstants;
 use App\Services\Effect\EffectResolutionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -125,6 +128,35 @@ class SpellTableController extends Controller
         return $duration . ' tour' . ($duration > 1 ? 's' : '');
     }
 
+    /** Construit la cellule area (chips avec icône) pour le format cells. */
+    private function buildAreaCell(?string $area): array
+    {
+        if ($area === null || trim($area) === '') {
+            return [
+                'type' => 'text',
+                'value' => '—',
+                'params' => ['sortValue' => '', 'searchValue' => ''],
+            ];
+        }
+        $value = (string) $area;
+
+        return [
+            'type' => 'chips',
+            'value' => '',
+            'params' => [
+                'items' => [
+                    [
+                        'icon' => AreaConstants::getIconPath($area),
+                        'value' => $value,
+                        'tooltip' => 'Zone: ' . $value,
+                    ],
+                ],
+                'sortValue' => $value,
+                'searchValue' => $value,
+            ],
+        ];
+    }
+
     private function elementIdToLabel(int $id): string
     {
         return match ($id) {
@@ -171,8 +203,11 @@ class SpellTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-        $limit = (int) $request->integer('limit', 5000);
+        $limit = (int) $request->integer('limit', $request->has('page') ? 25 : 5000);
         $limit = max(1, min($limit, 20000));
+
+        $page = max(1, (int) $request->integer('page', 1));
+        $offset = ($page - 1) * $limit;
 
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
@@ -216,14 +251,16 @@ class SpellTableController extends Controller
             $query->where('state', (string) $filters['state']);
         }
 
-        $allowedSort = ['id', 'name', 'level', 'pa', 'po', 'area', 'dofusdb_id', 'created_at', 'updated_at', 'state'];
+        $allowedSort = ['id', 'name', 'level', 'pa', 'po', 'area', 'element', 'category', 'dofusdb_id', 'created_at', 'updated_at', 'state'];
         if (in_array($sort, $allowedSort, true)) {
             $query->orderBy($sort, $order);
         } else {
             $query->latest();
         }
 
-        $rows = $query->limit($limit)->get();
+        $total = $query->count();
+        $lastPage = (int) max(1, ceil($total / $limit));
+        $rows = $query->skip($offset)->limit($limit)->get();
 
         $capabilities = [
             'viewAny' => Gate::allows('viewAny', Spell::class),
@@ -241,14 +278,32 @@ class SpellTableController extends Controller
                 ['value' => '150', 'label' => '150'],
                 ['value' => '200', 'label' => '200'],
             ],
+            'area' => collect(AreaConstants::SHAPES)
+                ->map(fn (string $shape) => ['value' => $shape, 'label' => AreaConstants::getShapeLabel($shape)])
+                ->values()->all(),
+            'types' => SpellType::query()->orderBy('name')->get(['id', 'name'])
+                ->map(fn (SpellType $t) => ['value' => (string) $t->id, 'label' => $t->name])
+                ->values()->all(),
             'pa' => [
                 ['value' => '1', 'label' => '1'],
                 ['value' => '2', 'label' => '2'],
                 ['value' => '3', 'label' => '3'],
                 ['value' => '4', 'label' => '4'],
                 ['value' => '5', 'label' => '5'],
+                ['value' => '6', 'label' => '6'],
+            ],
+            'po' => [
+                ['value' => '0', 'label' => '0 (soi)'],
+                ['value' => '1', 'label' => '1 (CAC)'],
+                ['value' => '2', 'label' => '2'],
+                ['value' => '3', 'label' => '3'],
+                ['value' => '4', 'label' => '4'],
+                ['value' => '5', 'label' => '5'],
                 ['value' => '6', 'label' => '6+'],
             ],
+            'sub_effect' => SubEffect::query()->orderBy('type_slug')->orderBy('slug')->get(['id', 'slug', 'type_slug'])
+                ->map(fn (SubEffect $s) => ['value' => $s->slug, 'label' => $s->slug])
+                ->values()->all(),
             'category' => [
                 ['value' => '0', 'label' => 'Sort de classe'],
                 ['value' => '1', 'label' => 'Sort de créature'],
@@ -280,6 +335,13 @@ class SpellTableController extends Controller
             $entities = $rows->map(function (Spell $sp) {
                 $createdBy = $sp->createdBy;
                 $effectUsagesData = $this->buildEffectUsagesData($sp);
+                $effectSubEffectSlugs = $sp->effectUsages
+                    ->flatMap(fn ($u) => $u->effect?->effectSubEffects ?? collect())
+                    ->map(fn ($ese) => $ese->subEffect?->slug)
+                    ->filter()
+                    ->unique()
+                    ->values()
+                    ->all();
                 return [
                     'id' => $sp->id,
                     'official_id' => $sp->official_id,
@@ -289,6 +351,7 @@ class SpellTableController extends Controller
                     'effect' => $sp->effect,
                     'effect_usages_summary' => $effectUsagesData['summary'],
                     'effect_usages_chips' => $effectUsagesData['chips'],
+                    'effect_sub_effect_slugs' => $effectSubEffectSlugs,
                     'area' => $sp->area,
                     'level' => $sp->level,
                     'po' => $sp->po_display,
@@ -332,6 +395,13 @@ class SpellTableController extends Controller
                         'sort' => $sort,
                         'order' => $order,
                         'limit' => $limit,
+                        'page' => $page,
+                    ],
+                    'pagination' => [
+                        'total' => $total,
+                        'perPage' => $limit,
+                        'currentPage' => $page,
+                        'lastPage' => $lastPage,
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
@@ -397,13 +467,7 @@ class SpellTableController extends Controller
                             'sortValue' => (string) ($sp->po_display ?? ''),
                         ],
                     ],
-                    'area' => [
-                        'type' => 'text',
-                        'value' => $sp->area ?? '-',
-                        'params' => [
-                            'sortValue' => (string) ($sp->area ?? ''),
-                        ],
-                    ],
+                    'area' => $this->buildAreaCell($sp->area),
                     'spell_types' => [
                         'type' => 'text',
                         'value' => $typesLabel,
@@ -498,6 +562,13 @@ class SpellTableController extends Controller
                     'sort' => $sort,
                     'order' => $order,
                     'limit' => $limit,
+                    'page' => $page,
+                ],
+                'pagination' => [
+                    'total' => $total,
+                    'perPage' => $limit,
+                    'currentPage' => $page,
+                    'lastPage' => $lastPage,
                 ],
                 'capabilities' => $capabilities,
                 'filterOptions' => $filterOptions,

@@ -91,3 +91,11 @@ Mapping côté conversion (`zoneDescrToNotation`) :
 | autre | p1 | p2 | `shape-{id}-{p1}-{p2}` |
 
 Les shapes non listés sont renvoyés en `shape-{id}` (et `-param1-param2` si présents) pour traçabilité.
+
+---
+
+## 6. Icônes et constantes
+
+- **Icônes** : `storage/app/public/images/icons/areas/` — point.svg, line.svg, cross.svg, circle.svg, rect.svg.
+- **Backend** : `App\Support\AreaConstants` — `extractShapeFromNotation()`, `getIconPath()`, `SHAPE_ID_MAP`, `SHAPE_LABELS`.
+- **Frontend** : `@/Utils/Entity/Areas.js` — `getAreaShape()`, `getAreaIcon()`, `AREA_SHAPE_ICONS`.

@@ -67,6 +67,22 @@ Le trait `HasMediaCustomNaming` fournit `getMediaFileNameForCollection($collecti
 
 Le téléchargement d’images depuis des URLs externes (ex. DofusDB) est géré par **IntegrationService::attachImageFromUrl()** : après création/mise à jour de l'entité, si `download_images` est activé et l'URL autorisée (`scrapping.images.allowed_hosts`), le média est attaché via `addMediaFromUrl()->toMediaCollection('images')` et la colonne `image` est mise à jour.
 
+## ModelAwarePathGenerator et morphMap
+
+Le `ModelAwarePathGenerator` résout les alias du morphMap (ex. `spell` → `App\Models\Entity\Spell`) pour déterminer le MEDIA_PATH correct. Les fichiers sont stockés sous `{MEDIA_PATH}/{id}/` (ex. `images/entity/spells/123/`). Pour migrer les médias déjà à la racine : `php artisan media:fix-storage-paths` (`--dry-run`, `--force`).
+
+## EnsureDirectoryMediaFilesystem
+
+Un Filesystem personnalisé (`EnsureDirectoryMediaFilesystem`) crée explicitement le répertoire de destination avant chaque écriture. Cela évite les échecs lorsque les dossiers MEDIA_PATH n'existent pas encore (par ex. lors du scrapping). Le binding est fait dans `AppServiceProvider`.
+
+### Dépannage : images scrapping mal placées
+
+Si les images restent à la racine (`{id}/`) au lieu de `{MEDIA_PATH}/{id}/` lors du scrapping :
+
+1. **Config cache** : `php artisan config:clear` (en production avec `config:cache`, penser à regénérer après déploiement).
+2. **Queue workers** : si le scrapping passe par des jobs (`ProcessScrappingJob`), redémarrer les workers : `php artisan queue:restart`.
+3. **Vérifier le chemin** : `php artisan tinker` puis `Media::first(); PathGeneratorFactory::create($m)->getPath($m)` pour contrôler le chemin généré.
+
 ## Références
 
 - [Spatie Media Library v11 — Introduction](https://spatie.be/docs/laravel-medialibrary/v11/introduction)

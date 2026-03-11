@@ -199,7 +199,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-bolt",
       table: {
         sortable: true,
-        filterable: { id: "pa", type: "text", defaultVisible: false },
+        filterable: { id: "pa", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -229,7 +229,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-crosshairs",
       table: {
         sortable: true,
-        filterable: { id: "po", type: "text", defaultVisible: false },
+        filterable: { id: "po", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -276,19 +276,20 @@ export function getSpellFieldDescriptors(ctx = {}) {
     area: {
       key: "area",
       label: "Zone",
-      icon: "fa-solid fa-expand",
+      icon: "fa-solid fa-shapes",
       table: {
         sortable: true,
+        filterable: { id: "area", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
-        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
       display: {
         sizes: {
-          xs: { mode: "text" },
-          sm: { mode: "text" },
-          md: { mode: "text" },
-          lg: { mode: "text" },
-          xl: { mode: "text" },
+          xs: { mode: "chips" },
+          sm: { mode: "chips" },
+          md: { mode: "chips" },
+          lg: { mode: "chips" },
+          xl: { mode: "chips" },
         },
       },
       edit: {
@@ -306,6 +307,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Élément",
       icon: "fa-solid fa-fire",
       table: {
+        sortable: true,
         filterable: { id: "element", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -335,6 +337,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Catégorie",
       icon: "fa-solid fa-tag",
       table: {
+        sortable: true,
         filterable: { id: "category", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -500,7 +503,6 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-eye",
       table: {
         sortable: true,
-        filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -531,7 +533,6 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-pen-to-square",
       table: {
         sortable: true,
-        filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -589,6 +590,8 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Types",
       icon: "fa-solid fa-tags",
       table: {
+        sortable: true,
+        filterable: { id: "types", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -620,6 +623,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       table: {
         type: "chips",
         searchable: true,
+        filterable: { id: "sub_effect", type: "multi", defaultVisible: false, label: "Action (sous-effet)" },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },

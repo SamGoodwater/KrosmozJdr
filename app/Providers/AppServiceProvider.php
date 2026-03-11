@@ -14,6 +14,7 @@ use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Models\DofusdbEffectMapping;
+use App\Services\Media\EnsureDirectoryMediaFilesystem;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Spatie\MediaLibrary\MediaCollections\Filesystem as MediaLibraryFilesystem;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -49,6 +51,9 @@ class AppServiceProvider extends ServiceProvider
             return new DofusdbEffectMappingService($app->make(DofusdbEffectMapping::class));
         });
         $this->app->singleton(Orchestrator::class, static fn () => Orchestrator::default());
+
+        // Filesystem Media Library : crée les dossiers avant écriture (scrapping, etc.)
+        $this->app->singleton(MediaLibraryFilesystem::class, EnsureDirectoryMediaFilesystem::class);
     }
 
     public function boot(): void

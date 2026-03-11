@@ -322,9 +322,14 @@
     "description": "GlassMenuCollapsibleSection Atom (Navigation Glass)",
     "props": [
       {
+        "name": "sectionId",
+        "type": "String",
+        "desc": "- Identifiant pour persistance (sessionStorage)"
+      },
+      {
         "name": "defaultOpen",
         "type": "Boolean",
-        "desc": "- Ouvert par défaut"
+        "desc": "- Ouvert par défaut (si pas de valeur persistée)"
       },
       {
         "name": "compact",
@@ -332,12 +337,7 @@
         "desc": "- Réduit la hauteur du titre"
       }
     ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "- Contenu repliable"
-      }
-    ],
+    "slots": [],
     "file": "navigation/GlassMenuCollapsibleSection.vue"
   },
   {

@@ -31,8 +31,24 @@ const props = defineProps({
     rows: { type: Array, default: () => [] },
     /**
      * Option A: URL complète (avec params). Si fournie -> active le fetch serveur.
+     * Ignorée si serverSide=true (on utilise serverBaseUrl à la place).
      */
     serverUrl: { type: String, default: "" },
+    /**
+     * Mode pagination/filtres/tri côté serveur.
+     * Si true : serverBaseUrl requis, les params (page, filters, sort, search) sont envoyés à l'API.
+     */
+    serverSide: { type: Boolean, default: false },
+    /**
+     * URL de base de l'API (sans query string). Requis quand serverSide=true.
+     * Ex: route('api.tables.spells')
+     */
+    serverBaseUrl: { type: String, default: "" },
+    /**
+     * Clé pour forcer un refetch (ex: incrémentée après bulk edit).
+     * Incluse dans l'URL comme _t pour éviter le cache.
+     */
+    refreshToken: { type: [Number, String], default: 0 },
     /**
      * Adapter optionnel : transforme la réponse fetch en { meta, rows } (TableResponse).
      */
@@ -56,14 +72,64 @@ const emit = defineEmits([
 
 const permissions = usePermissions();
 
-const isServerEnabled = computed(() => Boolean(String(props.serverUrl || "").trim()));
+const isServerEnabled = computed(() => {
+    if (props.serverSide) {
+        return Boolean(String(props.serverBaseUrl || "").trim());
+    }
+    return Boolean(String(props.serverUrl || "").trim());
+});
+
+/** Params pour le fetch serveur (page, filters, sort, search). Pilotés par TanStackTable en mode serverSide. */
+const serverParams = ref({
+    page: 1,
+    pageSize: 25,
+    filters: {},
+    search: "",
+    sort: "id",
+    order: "desc",
+});
+
+/** URL de fetch : statique (serverUrl) ou construite dynamiquement (serverBaseUrl + serverParams). */
+const effectiveServerUrl = computed(() => {
+    if (!isServerEnabled.value) return "";
+    if (props.serverSide && props.serverBaseUrl) {
+        const base = String(props.serverBaseUrl).trim();
+        const params = new URLSearchParams();
+        params.set("format", "entities");
+        params.set("limit", String(serverParams.value.pageSize || 25));
+        params.set("page", String(serverParams.value.page || 1));
+        params.set("sort", String(serverParams.value.sort || "id"));
+        params.set("order", String(serverParams.value.order || "desc"));
+        if (String(serverParams.value.search || "").trim()) {
+            params.set("search", String(serverParams.value.search).trim());
+        }
+        const filters = serverParams.value.filters || {};
+        for (const [key, value] of Object.entries(filters)) {
+            if (value === null || typeof value === "undefined" || value === "") continue;
+            const normalized = Array.isArray(value)
+                ? value.map((v) => String(v)).filter(Boolean).join(",")
+                : typeof value === "boolean"
+                    ? (value ? "1" : "0")
+                    : String(value);
+            params.set(`filters[${key}]`, normalized);
+        }
+        const token = props.refreshToken;
+        if (token !== null && token !== undefined && token !== 0 && token !== "0") {
+            params.set("_t", String(token));
+        }
+        return `${base}?${params.toString()}`;
+    }
+    return String(props.serverUrl || "").trim();
+});
 
 const loading = ref(false);
 const serverRows = ref([]);
 const serverMeta = ref({ filterOptions: null, capabilities: null });
+let fetchAbortController = null;
 
 const activeRows = computed(() => (isServerEnabled.value ? serverRows.value : props.rows));
 const activeFilterOptions = computed(() => serverMeta.value?.filterOptions || null);
+const serverPaginationMeta = computed(() => serverMeta.value?.pagination || null);
 
 const normalizeAbility = (ability) => {
     const a = String(ability || "").trim();
@@ -179,8 +245,11 @@ const resolvedConfig = computed(() => {
 
 async function fetchServer() {
     if (!isServerEnabled.value) return;
-    const url = String(props.serverUrl || "").trim();
+    const url = effectiveServerUrl.value;
     if (!url) return;
+
+    fetchAbortController?.abort();
+    fetchAbortController = new AbortController();
 
     loading.value = true;
     try {
@@ -188,6 +257,7 @@ async function fetchServer() {
             method: "GET",
             headers: { Accept: "application/json" },
             credentials: "same-origin",
+            signal: fetchAbortController.signal,
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const payload = await res.json();
@@ -200,6 +270,7 @@ async function fetchServer() {
         
         emit("loaded", { rows: serverRows.value, meta: serverMeta.value });
     } catch (e) {
+        if (e?.name === "AbortError") return;
         console.error("[EntityTanStackTable] fetch failed", e);
         serverRows.value = [];
         serverMeta.value = {};
@@ -210,10 +281,15 @@ async function fetchServer() {
 }
 
 watch(
-    () => props.serverUrl,
+    () => (props.serverSide ? effectiveServerUrl.value : props.serverUrl),
     () => fetchServer(),
     { immediate: true },
 );
+
+const handleServerParamsChange = (params) => {
+    if (!props.serverSide || !params) return;
+    serverParams.value = { ...serverParams.value, ...params };
+};
 
 const handleRowClick = (row) => {
     // Le comportement par défaut est volontairement neutre :
@@ -248,6 +324,10 @@ const handleRefresh = async () => {
         :selected-ids="selectedIds"
         :entity-type="entityType"
         :show-actions-column="true"
+        :server-side="serverSide"
+        :server-pagination-meta="serverPaginationMeta"
+        :server-params="serverParams"
+        @update:serverParams="handleServerParamsChange"
         @update:selectedIds="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
         @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
         @row-click="handleRowClick"

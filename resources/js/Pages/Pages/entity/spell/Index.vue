@@ -93,7 +93,8 @@ const tableConfig = computed(() => {
     const config = TableConfig.fromDescriptors(descriptors, ctx);
     return config.build(ctx);
 });
-const serverUrl = computed(() => `${route('api.tables.spells')}?format=entities&limit=5000&_t=${refreshToken.value}`);
+// Pagination côté serveur pour les gros volumes (10k+ sorts)
+const serverBaseUrl = route('api.tables.spells');
 
 watch(
     () => canModify.value,
@@ -293,7 +294,9 @@ const handleQuickEditSubmit = () => {
                 <EntityTanStackTable
                     entity-type="spells"
                     :config="tableConfig"
-                    :server-url="serverUrl"
+                    server-side
+                    :server-base-url="serverBaseUrl"
+                    :refresh-token="refreshToken"
                     :response-adapter="getEntityResponseAdapter('spells')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"

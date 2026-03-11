@@ -1490,6 +1490,11 @@
     "description": "**Objectif :** un seul endroit pour comprendre le flux et savoir où changer une règle de mapping."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_COMMANDES_INIT_ET_UPDATE.md",
+    "title": "Plan : Commandes d’initialisation et de mise à jour du projet",
+    "description": "Créer deux commandes Artisan :"
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/PLAN_FINALISATION_SCRAPPING.md",
     "title": "Plan de finalisation du service de scrapping",
     "description": "Ce document décrit les **tâches restantes** pour considérer le service de scrapping comme terminé (backend), dans l’ordre de priorité recommandé. Contexte : [ETAT_AVANCEMENT.md](./Architecture/ETAT_AVANCEMENT.md), [RESTE_A_FAIRE_SCRAPPING.md](./RESTE_A_FAIRE_SCRAPPING.md)."
@@ -1513,11 +1518,6 @@
     "path": "50-Fonctionnalités/Scrapping/PLAN_OPTIMISATION_SCRAPPING_UI.md",
     "title": "Plan d’optimisation — UI Scrapping (existant)",
     "description": "**Contexte :** Idées issues des échanges sur l’affichage scrapping et l’enregistrement. Ce plan vise à **optimiser l’existant** sans refonte complète."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/PLAN_COMMANDES_INIT_ET_UPDATE.md",
-    "title": "Plan : Commandes project:init et project:update",
-    "description": "Commandes Artisan pour initialiser le projet (migrations, seeders, scrapping complet, capabilities) et mettre à jour les entités en auto_update. Inclut extension scrapping:run (update-mode, skip-existing)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/PLAN_REFONTE_SCRAPPING.md",

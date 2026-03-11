@@ -16,6 +16,7 @@ use App\Models\EffectUsage;
 use App\Models\SpellState;
 use App\Models\SpellEffect;
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Support\AreaConstants;
 use App\Support\ElementConstants;
 use Spatie\MediaLibrary\HasMedia;
 
@@ -125,6 +126,9 @@ class Spell extends Model implements HasMedia
     public const RESOLUTION_ATTACK_ROLL = 'attack_roll';
     public const RESOLUTION_SAVING_THROW = 'saving_throw';
     public const RESOLUTION_AUTO_SUCCESS = 'auto_success';
+
+    /** @deprecated Utiliser AreaConstants::SHAPE_ID_MAP */
+    public const AREAS_SHAPE = AreaConstants::SHAPE_ID_MAP;
 
     /** Répertoire Media Library pour ce modèle. */
     public const MEDIA_PATH = 'images/entity/spells';

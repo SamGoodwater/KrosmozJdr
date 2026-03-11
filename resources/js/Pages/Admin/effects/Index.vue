@@ -11,6 +11,8 @@ import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
 import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import { getAreaIcon } from '@/Utils/Entity/Areas';
 
 const { setPageTitle } = usePageTitle();
 
@@ -308,7 +310,16 @@ function duplicateEffect() {
                                     :options="TARGET_TYPE_OPTIONS"
                                     helper="Direct, piège ou glyphe."
                                 />
-                                <InputField v-model="form.area" label="Zone" name="area" helper="ex: point, line-1x9, circle-0-2." />
+                                <div class="flex items-end gap-2">
+                                    <InputField v-model="form.area" label="Zone" name="area" helper="ex: point, line-1x9, circle-0-2." class="flex-1" />
+                                    <Icon
+                                        v-if="form.area?.trim()"
+                                        :source="getAreaIcon(form.area)"
+                                        :alt="form.area"
+                                        size="sm"
+                                        class="shrink-0 mb-1 opacity-70"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

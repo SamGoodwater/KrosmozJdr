@@ -448,6 +448,13 @@
     "file": "scrapping/CompareModal.vue"
   },
   {
+    "name": "SidebarNav",
+    "description": "SidebarNav Organism",
+    "props": [],
+    "slots": [],
+    "file": "layout/SidebarNav.vue"
+  },
+  {
     "name": "NotificationContainer",
     "description": "NotificationContainer Organism",
     "props": [],

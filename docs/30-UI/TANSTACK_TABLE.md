@@ -44,6 +44,12 @@ Responsabilités :
   - charger un dataset initial,
   - ou des pages qui veulent des tableaux “personnalisés” en fournissant une URL paramétrée.
 
+## Mode serveur (pagination / filtres / tri côté API)
+
+Pour les tableaux avec **beaucoup de données** (10k+ lignes), le mode client devient lent. Le mode serveur déporte filtres, tri et pagination sur l'API.
+
+**Activation** : `server-side` + `server-base-url` sur `EntityTanStackTable`. L'API doit accepter `page`, `limit`, `sort`, `order`, `search`, `filters[key]` et renvoyer `meta.pagination: { total, perPage, currentPage, lastPage }`. Flux : changement params → refetch → affichage de la page courante.
+
 ## Debug panel (diagnostic)
 
 Le composant `TanStackTable` embarque un **debug panel** (opt-in) pour diagnostiquer rapidement :

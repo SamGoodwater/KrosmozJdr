@@ -57,6 +57,19 @@ const props = defineProps({
      * Afficher la colonne Actions.
      */
     showActionsColumn: { type: Boolean, default: false },
+    /**
+     * Mode serveur : filtres, tri et pagination gérés côté API.
+     * Les rows reçues sont déjà filtrées/triées/paginées.
+     */
+    serverSide: { type: Boolean, default: false },
+    /**
+     * Meta pagination du serveur (total, perPage, currentPage, lastPage).
+     */
+    serverPaginationMeta: { type: Object, default: null },
+    /**
+     * Params actuels pour le mode serveur (sync depuis le parent).
+     */
+    serverParams: { type: Object, default: null },
 });
 
 const emit = defineEmits([
@@ -67,6 +80,7 @@ const emit = defineEmits([
     // Compat: selon les listeners (template) on peut avoir besoin de la forme kebab-case
     "update:selectedIds",
     "update:selected-ids",
+    "update:serverParams",
     "action", // Émis pour chaque action d'entité
 ]);
 const { notifySuccess, notifyError, notifyInfo } = useUxFeedback();
@@ -335,8 +349,11 @@ const isActivePresetDirty = computed(() => {
         searchText: String(activePreset.value.searchText || ""),
         filters: normalizeForPresetComparison(activePreset.value.filters || {}),
     };
+    const currentSearch = props.serverSide
+        ? String(searchDisplayValue.value || "").trim()
+        : String(searchText.value || "").trim();
     const currentSnapshot = {
-        searchText: String(searchText.value || ""),
+        searchText: currentSearch,
         filters: normalizeForPresetComparison(activeFilters.value || {}),
     };
     return JSON.stringify(presetSnapshot) !== JSON.stringify(currentSnapshot);
@@ -394,7 +411,9 @@ const reloadPresetsFromApi = async () => {
             selectedPresetId.value = "";
         }
 
-        if (!hasSelected && defaultPreset.value) {
+        // Ne pas appliquer le preset par défaut en mode serveur : l'utilisateur a pu
+        // déjà taper dans la recherche ; l'auto-apply effacerait son input.
+        if (!hasSelected && defaultPreset.value && !props.serverSide) {
             applyPresetById(defaultPreset.value.id);
             notifyInfo(`Preset par défaut appliqué : "${defaultPreset.value.name}".`);
         }
@@ -408,8 +427,17 @@ const reloadPresetsFromApi = async () => {
 
 const applySearchValue = (value) => {
     const next = String(value ?? "");
-    searchText.value = next;
-    updateSearch(next);
+    if (props.serverSide) {
+        searchDisplayValue.value = next;
+        emit("update:serverParams", {
+            search: next.trim(),
+            filters: { ...(activeFilters.value || {}) },
+            page: 1,
+        });
+    } else {
+        searchText.value = next;
+        handleSearchInput(next);
+    }
 };
 
 const applyPresetById = (presetId) => {
@@ -822,19 +850,47 @@ watch(
 
 let _searchTimeout = null;
 const searchText = ref("");
-const updateSearch = (value) => {
+
+/**
+ * Valeur affichée dans l'input. En mode serveur : ref locale mise à jour immédiatement
+ * à la saisie (aucun watch qui pourrait l'écraser).
+ */
+const searchDisplayValue = ref("");
+
+const effectiveSearchDisplayValue = computed(() =>
+    props.serverSide ? searchDisplayValue.value : searchText.value,
+);
+
+/**
+ * Handler direct pour la recherche : met à jour l'affichage immédiatement,
+ * puis debounce l'émission serveur.
+ */
+const handleSearchInput = (value) => {
     const v = String(value ?? "");
+    if (props.serverSide) {
+        searchDisplayValue.value = v;
+    } else {
+        searchText.value = v;
+    }
     if (_searchTimeout) clearTimeout(_searchTimeout);
     _searchTimeout = setTimeout(() => {
-        searchText.value = v;
+        if (props.serverSide) {
+            emit("update:serverParams", {
+                search: v.trim(),
+                filters: { ...(activeFilters.value || {}) },
+                page: 1,
+            });
+        } else {
+            searchText.value = v;
+        }
     }, Math.max(0, searchDebounceMs.value));
 };
 const clearSearch = () => {
     applySearchValue("");
 };
 const clearAllQueryState = () => {
-    clearSearch();
     resetFilters();
+    clearSearch();
 };
 
 const normalize = (s) => {
@@ -1070,6 +1126,10 @@ const passesFilter = (row, col) => {
     if (Array.isArray(raw)) {
         const selected = new Set(raw.map((v) => toComparable(v)).filter((s) => s !== ""));
         if (selected.size === 0) return true;
+        if (Array.isArray(rowValue)) {
+            const rowSet = new Set(rowValue.map((v) => toComparable(v)));
+            return [...selected].some((s) => rowSet.has(s));
+        }
         return selected.has(toComparable(rowValue));
     }
 
@@ -1091,6 +1151,9 @@ const getSearchValueFor = (row, col) => {
 };
 
 const filteredRows = computed(() => {
+    if (props.serverSide) {
+        return props.rows || [];
+    }
     const rows = props.rows || [];
     const search = normalize(searchText.value);
 
@@ -1202,6 +1265,12 @@ const resetFilters = () => {
 };
 const applyFilters = () => {
     paginationState.value = { ...paginationState.value, pageIndex: 0 };
+    if (props.serverSide) {
+        emit("update:serverParams", {
+            filters: { ...(activeFilters.value || {}) },
+            page: 1,
+        });
+    }
 };
 
 const paginationState = ref({
@@ -1217,9 +1286,46 @@ watch(
 watch(
     () => [searchText.value, JSON.stringify(activeFilters.value), columnsWithoutActions.value.map((c) => c.id).join(",")].join("|"),
     () => {
-        // Reset page quand le dataset change
-        paginationState.value = { ...paginationState.value, pageIndex: 0 };
+        if (!props.serverSide) {
+            // Reset page quand le dataset change (client-side uniquement)
+            paginationState.value = { ...paginationState.value, pageIndex: 0 };
+        }
     },
+);
+
+// En mode serveur : émettre quand la recherche change (après debounce côté handleSearchInput)
+// immediate: false évite un emit redondant au montage (les valeurs par défaut sont déjà correctes)
+// On inclut les filtres pour que "réinitialiser" envoie bien search="" + filters={}
+// En mode serveur, searchText n'est plus utilisé (input contrôlé par serverParams).
+// Ce watch émet uniquement quand searchText change (client ou cas edge).
+watch(
+    () => searchText.value,
+    (newVal) => {
+        if (props.serverSide) {
+            paginationState.value = { ...paginationState.value, pageIndex: 0 };
+            emit("update:serverParams", {
+                search: String(newVal || "").trim(),
+                filters: { ...(activeFilters.value || {}) },
+                page: 1,
+            });
+        }
+    },
+    { immediate: false },
+);
+
+// En mode serveur : garder paginationState en sync avec serverParams.
+// La recherche est contrôlée via effectiveSearchDisplayValue (serverParams.search), plus de sync searchText.
+watch(
+    () => [props.serverSide, props.serverParams?.page, props.serverParams?.pageSize],
+    () => {
+        if (props.serverSide && props.serverParams) {
+            const p = props.serverParams;
+            const page = Math.max(1, p?.page ?? 1);
+            const pageSize = Number(p?.pageSize ?? 25) || 25;
+            paginationState.value = { pageIndex: page - 1, pageSize };
+        }
+    },
+    { immediate: true },
 );
 
 // Clé réactive pour forcer le re-render du tableau quand les colonnes changent
@@ -1267,8 +1373,10 @@ const table = useVueTable({
         return tanstackColumnsRef.value;
     },
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    ...(props.serverSide ? {} : { getSortedRowModel: getSortedRowModel(), getPaginationRowModel: getPaginationRowModel() }),
+    manualPagination: props.serverSide,
+    manualSorting: props.serverSide,
+    pageCount: props.serverSide ? (props.serverPaginationMeta?.lastPage ?? 1) : undefined,
     state: {
         get sorting() {
             return sortingState.value;
@@ -1283,7 +1391,14 @@ const table = useVueTable({
     onSortingChange: (updater) => {
         const next = typeof updater === "function" ? updater(sortingState.value) : updater;
         sortingState.value = next;
-        // Émettre l'événement pour compatibilité
+        if (props.serverSide) {
+            const firstSort = Array.isArray(next) && next.length > 0 ? next[0] : null;
+            emit("update:serverParams", {
+                sort: firstSort?.id || "id",
+                order: firstSort?.desc ? "desc" : "asc",
+                page: 1,
+            });
+        }
         const firstSort = Array.isArray(next) && next.length > 0 ? next[0] : null;
         if (firstSort) {
             emit("sort-change", { sortBy: firstSort.id, sortOrder: firstSort.desc ? "desc" : "asc" });
@@ -1294,6 +1409,12 @@ const table = useVueTable({
     onPaginationChange: (updater) => {
         const next = typeof updater === "function" ? updater(paginationState.value) : updater;
         paginationState.value = next;
+        if (props.serverSide) {
+            emit("update:serverParams", {
+                page: (next?.pageIndex ?? 0) + 1,
+                pageSize: next?.pageSize ?? 25,
+            });
+        }
     },
     onColumnVisibilityChange: (updater) => {
         const next = typeof updater === "function" ? updater(columnVisibilityState.value) : updater;
@@ -1327,6 +1448,36 @@ const skeletonRows = computed(() => Number(props.config?.ui?.skeletonRows ?? 8))
 // Pagination config
 const paginationEnabled = computed(() => Boolean(props.config?.features?.pagination?.enabled));
 const perPageOptions = computed(() => props.config?.features?.pagination?.perPage?.options || [10, 25, 50, 100]);
+
+// En mode serveur, utiliser la meta pagination pour l'UI
+// (pageCount n'est pas réactif dans TanStack Table Vue, donc on ne peut pas se fier à getCanNextPage etc.)
+const paginationPageCount = computed(() => {
+    if (props.serverSide && props.serverPaginationMeta?.lastPage != null) {
+        return Number(props.serverPaginationMeta.lastPage) || 1;
+    }
+    return table?.getPageCount?.() ?? 1;
+});
+const paginationTotalRows = computed(() => {
+    if (props.serverSide && props.serverPaginationMeta?.total != null) {
+        return Number(props.serverPaginationMeta.total) || 0;
+    }
+    return filteredRows.value.length;
+});
+const paginationCanPrev = computed(() => {
+    if (props.serverSide) {
+        const page = Math.max(1, props.serverParams?.page ?? 1);
+        return page > 1;
+    }
+    return table?.getCanPreviousPage?.() ?? false;
+});
+const paginationCanNext = computed(() => {
+    if (props.serverSide) {
+        const page = Math.max(1, props.serverParams?.page ?? 1);
+        const lastPage = paginationPageCount.value;
+        return page < lastPage;
+    }
+    return table?.getCanNextPage?.() ?? false;
+});
 
 // Selection (Phase 1: local Set)
 const selectionEnabled = computed(() => Boolean(props.config?.features?.selection?.enabled));
@@ -1513,7 +1664,7 @@ const handleExport = () => {
         <div class="relative px-3 py-2" :class="[bgClass]">
             <TanStackTableToolbar
                 :search-enabled="searchEnabled"
-                :search-value="searchText"
+                :search-value="effectiveSearchDisplayValue"
                 :search-placeholder="searchPlaceholder"
                 :ui-size="uiSize"
                 :ui-color="uiColor"
@@ -1523,7 +1674,7 @@ const handleExport = () => {
                 :export-enabled="exportEnabled"
                 :refresh-enabled="true"
                 :selection-count="selectedCount"
-                @update:search="updateSearch"
+                @update:search="handleSearchInput"
                 @toggle-column="toggleColumnVisibility"
                 @reset-columns="resetColumnsToDefaults"
                 @export="handleExport"
@@ -1796,20 +1947,20 @@ const handleExport = () => {
         <!-- Pagination -->
         <div v-if="paginationEnabled" class="relative px-2 py-1 " :class="[bgClass]">
             <TanStackTablePagination
-                :page-index="paginationState.pageIndex"
-                :page-count="table.getPageCount()"
+                :page-index="serverSide ? Math.max(0, (serverParams?.page ?? 1) - 1) : paginationState.pageIndex"
+                :page-count="paginationPageCount"
                 :page-size="paginationState.pageSize"
-                :total-rows="filteredRows.length"
+                :total-rows="paginationTotalRows"
                 :per-page-options="perPageOptions"
-                :can-prev="table.getCanPreviousPage()"
-                :can-next="table.getCanNextPage()"
+                :can-prev="paginationCanPrev"
+                :can-next="paginationCanNext"
                 :ui-size="uiSize"
                 :ui-color="uiColor"
-                @first="() => table.setPageIndex(0)"
-                @prev="() => table.previousPage()"
-                @go="(i) => table.setPageIndex(Number(i))"
-                @next="() => table.nextPage()"
-                @last="() => table.setPageIndex(Math.max(0, table.getPageCount() - 1))"
+                @first="() => (serverSide ? emit('update:serverParams', { page: 1 }) : table.setPageIndex(0))"
+                @prev="() => (serverSide ? emit('update:serverParams', { page: Math.max(1, (serverParams?.page ?? 1) - 1) }) : table.previousPage())"
+                @go="(i) => (serverSide ? emit('update:serverParams', { page: Number(i) + 1 }) : table.setPageIndex(Number(i)))"
+                @next="() => (serverSide ? emit('update:serverParams', { page: Math.min(paginationPageCount, (serverParams?.page ?? 1) + 1) }) : table.nextPage())"
+                @last="() => (serverSide ? emit('update:serverParams', { page: paginationPageCount }) : table.setPageIndex(Math.max(0, table.getPageCount() - 1)))"
                 @set-page-size="(n) => table.setPageSize(Number(n))"
             />
         </div>

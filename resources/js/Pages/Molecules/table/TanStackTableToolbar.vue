@@ -6,12 +6,11 @@
  * Barre d'outils générique : recherche + colonnes visibles + export + actions de sélection.
  */
 
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import ResponsiveActionButton from "@/Pages/Atoms/action/ResponsiveActionButton.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { shiftUiSize } from "@/Utils/atomic-design";
 
@@ -70,21 +69,34 @@ const btnSize = computed(() => {
  * on prend la taille UI du tableau et on applique SIZE - 1 (clampé).
  */
 const actionBtnSize = computed(() => shiftUiSize(props.uiSize, -1));
+
+/** Valeur locale : feedback immédiat à la saisie, sync avec le parent (preset, clear). */
+const searchInputValue = ref(props.searchValue);
+watch(
+    () => props.searchValue,
+    (v) => {
+        searchInputValue.value = String(v ?? "");
+    },
+    { immediate: true },
+);
+const onSearchInput = (e) => {
+    const v = String(e?.target?.value ?? "");
+    searchInputValue.value = v;
+    emit("update:search", v);
+};
 </script>
 
 <template>
     <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div class="flex-1">
-            <InputCore
+            <input
                 v-if="searchEnabled"
                 type="search"
-                class="w-full"
-                variant="glass"
-                :color="uiColor"
-                :size="uiSize"
+                class="input input-bordered w-full"
+                :class="inputSizeClass"
                 :placeholder="searchPlaceholder"
-                :model-value="searchValue"
-                @update:model-value="(v) => emit('update:search', String(v ?? ''))"
+                :value="searchInputValue"
+                @input="onSearchInput"
             />
         </div>
 

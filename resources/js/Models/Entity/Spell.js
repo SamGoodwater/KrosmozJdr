@@ -12,6 +12,7 @@ import { BaseModel } from '../BaseModel';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import { getElementLabel, getElementIcon, getElementColor, ELEMENT_PRIMARY_ICONS } from '@/Utils/Entity/Elements';
+import { getAreaIcon, getAreaShape } from '@/Utils/Entity/Areas';
 
 export class Spell extends BaseModel {
     // ============================================
@@ -375,6 +376,7 @@ export class Spell extends BaseModel {
             value: chip.text ?? '',
             tooltip: chip.tooltip ?? chip.text ?? '',
         }));
+        const subEffectSlugs = this._data.effect_sub_effect_slugs ?? [];
         return {
             type: 'chips',
             value: '',
@@ -382,25 +384,41 @@ export class Spell extends BaseModel {
                 items,
                 sortValue: this.effectUsagesSummary || '',
                 searchValue: this.effectUsagesSummary || '',
-                chipsLayout: { maxRows: 3 },
+                filterValue: subEffectSlugs,
+                // Pas de maxRows : flex-wrap pour que les chips s'enroulent dans la largeur dispo, éviter scroll horizontal
             },
         };
     }
 
     /**
-     * Génère une cellule pour la zone (area)
+     * Génère une cellule pour la zone (area) avec icône de forme.
      * @private
      */
     _toAreaCell(format, size, options) {
         const area = this.area ?? null;
-        const value = area !== null ? String(area) : '-';
-        
+        if (area === null || String(area).trim() === '') {
+            return {
+                type: 'text',
+                value: '—',
+                params: { sortValue: '', searchValue: '' },
+            };
+        }
+        const value = String(area);
+        const shape = getAreaShape(area);
         return {
-            type: 'text',
-            value,
+            type: 'chips',
+            value: '',
             params: {
-                sortValue: area ?? 0,
-                searchValue: value === '-' ? '' : value,
+                items: [
+                    {
+                        icon: getAreaIcon(area),
+                        value,
+                        tooltip: `Zone: ${value}`,
+                    },
+                ],
+                sortValue: value,
+                searchValue: value,
+                filterValue: shape || value,
             },
         };
     }
@@ -415,6 +433,7 @@ export class Spell extends BaseModel {
         const poLabel = poDef?.short_name || poDef?.name || 'PO';
 
         if (poDef && po !== '-') {
+            const poFilterValue = this._parsePoForFilter(po);
             return {
                 type: 'chips',
                 value: '',
@@ -429,19 +448,40 @@ export class Spell extends BaseModel {
                     ],
                     sortValue: String(po),
                     searchValue: String(po),
-                    filterValue: String(po),
+                    filterValue: poFilterValue,
                 },
             };
         }
 
+        const poFilterValue = po !== '-' ? this._parsePoForFilter(po) : [];
         return {
             type: 'text',
             value: po,
             params: {
                 sortValue: po === '-' ? '' : po,
                 searchValue: po === '-' ? '' : po,
+                filterValue: poFilterValue,
             },
         };
+    }
+
+    /**
+     * Parse la portée pour le filtre (ex: "2-6" → ["2","3","4","5","6"])
+     * @private
+     */
+    _parsePoForFilter(po) {
+        if (!po || String(po).trim() === '') return [];
+        const s = String(po).trim();
+        const m = s.match(/^(\d+)-(\d+)$/);
+        if (m) {
+            const lo = parseInt(m[1], 10);
+            const hi = parseInt(m[2], 10);
+            if (Number.isFinite(lo) && Number.isFinite(hi) && lo <= hi) {
+                return Array.from({ length: hi - lo + 1 }, (_, i) => String(lo + i));
+            }
+        }
+        const single = parseInt(s, 10);
+        return Number.isFinite(single) ? [String(single)] : [s];
     }
 
     /**
@@ -495,6 +535,7 @@ export class Spell extends BaseModel {
             params: {
                 sortValue: pa === '-' ? '' : pa,
                 searchValue: pa === '-' ? '' : pa,
+                filterValue: pa === '-' ? null : String(pa),
             },
         };
     }
@@ -633,6 +674,7 @@ export class Spell extends BaseModel {
                 params: {
                     sortValue: '',
                     searchValue: '',
+                    filterValue: [],
                 },
             };
         }
@@ -640,6 +682,7 @@ export class Spell extends BaseModel {
         const typeNames = spellTypes.map(t => t.name || t.label || '-').filter(n => n !== '-');
         const displayValue = typeNames.join(', ') || '-';
         
+        const typeIds = spellTypes.map((t) => String(t.id ?? t.value ?? ''));
         return {
             type: 'text',
             value: displayValue,
@@ -647,6 +690,7 @@ export class Spell extends BaseModel {
                 tooltip: displayValue === '-' ? '' : displayValue,
                 sortValue: displayValue,
                 searchValue: displayValue === '-' ? '' : displayValue,
+                filterValue: typeIds,
             },
         };
     }
@@ -684,7 +728,7 @@ export class Spell extends BaseModel {
                 value: poValue,
                 tooltip: poValue ? `${poLabel}: ${poValue}` : '',
             },
-            { icon: 'fa-solid fa-expand', value: areaValue, tooltip: areaValue ? `Zone: ${areaValue}` : '' },
+            { icon: getAreaIcon(this.area), value: areaValue, tooltip: areaValue ? `Zone: ${areaValue}` : '' },
             { icon: ELEMENT_PRIMARY_ICONS[Number(this.element)] ?? ELEMENT_PRIMARY_ICONS[0], value: elementValue, tooltip: elementValue ? `Élément: ${elementValue}` : '' },
             { icon: 'fa-solid fa-tag', value: categoryValue, tooltip: categoryValue ? `Catégorie: ${categoryValue}` : '' },
             { icon: 'fa-solid fa-hat-wizard', value: breedsValue, tooltip: breedsValue ? `Classes: ${this.breedsCount}` : '' },
