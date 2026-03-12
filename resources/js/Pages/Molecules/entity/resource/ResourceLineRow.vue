@@ -83,7 +83,7 @@ const handleRowClick = () => emit("row-click", props.row);
 
 <template>
     <div
-        class="relative rounded-lg border border-base-300 bg-base-100/50 p-3 flex gap-3 transition-colors hover:bg-glass-sm"
+        class="relative rounded-lg border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         role="button"
         tabindex="0"
@@ -94,6 +94,8 @@ const handleRowClick = () => emit("row-click", props.row);
         <div class="absolute top-2 left-2 z-10" @click.stop>
             <EntityUsableDot :state="stateValue" />
         </div>
+        <!-- Bloc Image + titre + propriétés -->
+        <div class="flex gap-3">
         <!-- Image : pleine hauteur à gauche -->
         <div
             class="w-20 shrink-0 self-stretch min-h-20 rounded overflow-hidden bg-base-200 flex items-center justify-center"
@@ -189,8 +191,14 @@ const handleRowClick = () => emit("row-click", props.row);
             >
                 {{ descriptionFull }}
             </p>
-            <!-- Ligne 4 : Effets (grille responsive) -->
-            <CharacteristicEffectsGrid v-if="effectItems.length > 0" :items="effectItems" />
+        </div>
+        </div>
+        <!-- Effets : pleine largeur sous le bloc Image/titre/propriétés -->
+        <div
+            v-if="effectItems.length > 0"
+            class="w-full pt-2 mt-1 border-t border-base-300"
+        >
+            <CharacteristicEffectsGrid :items="effectItems" />
         </div>
     </div>
 </template>

@@ -772,6 +772,13 @@
     "file": "entity/spell/SpellViewCompact.vue"
   },
   {
+    "name": "SpellEffectChips",
+    "description": "SpellEffectChips — Affichage des effets d'un sort avec filtre par degré.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellEffectChips.vue"
+  },
+  {
     "name": "SpecializationViewText",
     "description": "SpecializationViewText — Vue Texte pour Specialization",
     "props": [
@@ -1207,6 +1214,13 @@
     "file": "entity/resource/ResourceViewCompact.vue"
   },
   {
+    "name": "ResourceLineRow",
+    "description": "ResourceLineRow — Une ligne de la vue Line pour Resource",
+    "props": [],
+    "slots": [],
+    "file": "entity/resource/ResourceLineRow.vue"
+  },
+  {
     "name": "ResourceEditLarge",
     "description": "ResourceEditLarge — Vue d'édition Large pour Resource",
     "props": [
@@ -1531,6 +1545,13 @@
     "file": "entity/item/ItemViewCompact.vue"
   },
   {
+    "name": "ItemLineRow",
+    "description": "ItemLineRow — Une ligne de la vue Line pour Item",
+    "props": [],
+    "slots": [],
+    "file": "entity/item/ItemLineRow.vue"
+  },
+  {
     "name": "ConsumableViewText",
     "description": "ConsumableViewText — Vue Texte pour Consumable",
     "props": [
@@ -1596,6 +1617,13 @@
     ],
     "slots": [],
     "file": "entity/consumable/ConsumableViewCompact.vue"
+  },
+  {
+    "name": "ConsumableLineRow",
+    "description": "ConsumableLineRow — Une ligne de la vue Line pour Consumable",
+    "props": [],
+    "slots": [],
+    "file": "entity/consumable/ConsumableLineRow.vue"
   },
   {
     "name": "CapabilityViewText",
@@ -2079,6 +2107,19 @@
     ],
     "slots": [],
     "file": "data-display/CharacteristicGroup.vue"
+  },
+  {
+    "name": "CharacteristicEffectsGrid",
+    "description": "CharacteristicEffectsGrid — Grille d'effets/caractéristiques responsive.",
+    "props": [
+      {
+        "name": "items",
+        "type": "Array",
+        "desc": "- [{ icon, color, label, value, tooltip }]"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/CharacteristicEffectsGrid.vue"
   },
   {
     "name": "AvatarGroup",

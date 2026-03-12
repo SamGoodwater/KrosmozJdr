@@ -1660,6 +1660,11 @@
     "description": "Les zones d’impact des sorts, pièges et glyphes sont décrites par la propriété **`area`** sur le modèle **Effect**. La notation reprend le système **triple paramètre** de DofusDB : **forme (shape) + taille min (param1) + taille max (param2)**."
   },
   {
+    "path": "50-Fonctionnalités/Table/REFONTE_TANSTACK_TABLE.md",
+    "title": "Refonte TanStack Table — Analyse et plan",
+    "description": "**Date :** 2026-03-10"
+  },
+  {
     "path": "50-Fonctionnalités/VISION_UI_ADMIN_MAPPING_ET_CARACTERISTIQUES.md",
     "title": "Vision : UI admin Mapping DofusDB → KrosmozJDR et caractéristiques",
     "description": "Ce document fixe l’**objectif global** et la **spécification de l’interface admin** pour gérer le flux **Scrapping (récupération) → Mapping → Conversion / validation** entièrement depuis la base de données et l’UI."
