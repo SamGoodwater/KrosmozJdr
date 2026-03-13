@@ -7,15 +7,65 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
-import Tab from '@/Pages/Molecules/navigation/Tab.vue';
-import TabItem from '@/Pages/Atoms/navigation/TabItem.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 
 const page = usePage();
 const { success, error } = useNotificationStore();
 
 const TAB_NOTIFICATIONS = 'notifications';
+const TAB_CONNECTIONS = 'connections';
 const activeTab = ref(TAB_NOTIFICATIONS);
+
+const oauthProviders = computed(() => page.props.oauthProviders ?? []);
+const linkedProviders = computed(() => {
+    const accounts = user.value?.oauth_accounts || [];
+    return accounts.map((a) => a.provider);
+});
+const hasPassword = computed(() => user.value?.has_password ?? true);
+
+const formConvert = useForm({
+    password: '',
+    password_confirmation: '',
+});
+
+function isProviderLinked(provider) {
+    return linkedProviders.value.includes(provider);
+}
+
+function canUnlink(provider) {
+    return hasPassword.value || linkedProviders.value.length > 1;
+}
+
+function providerLabel(provider) {
+    const labels = { github: 'GitHub', discord: 'Discord', steam: 'Steam' };
+    return labels[provider] ?? provider;
+}
+
+function providerIcon(provider) {
+    const icons = { github: 'fa-brands fa-github', discord: 'fa-brands fa-discord', steam: 'fa-brands fa-steam' };
+    return icons[provider] ?? 'fa-solid fa-link';
+}
+
+function submitConvert() {
+    formConvert.post(route('user.oauth.convert'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            success('Compte converti. Tu peux maintenant te connecter avec ton email et ton mot de passe.');
+            formConvert.reset();
+        },
+        onError: () => error('Erreur lors de la conversion.'),
+    });
+}
+
+function unlinkProvider(provider) {
+    if (!canUnlink(provider)) return;
+    router.delete(route('user.oauth.unlink', { provider }), {
+        preserveScroll: true,
+        onSuccess: () => success('Compte délié.'),
+        onError: () => error('Impossible de délier ce compte.'),
+    });
+}
 
 const user = computed(() => {
     const userData = page.props.user || {};
@@ -82,15 +132,15 @@ function saveNotifications() {
 
 function setActiveTabFromHash() {
     const hash = window.location.hash?.replace('#', '') || TAB_NOTIFICATIONS;
-    if (hash === TAB_NOTIFICATIONS) activeTab.value = TAB_NOTIFICATIONS;
+    if (hash === TAB_CONNECTIONS) activeTab.value = TAB_CONNECTIONS;
+    else activeTab.value = TAB_NOTIFICATIONS;
 }
 
 function syncHashToTab() {
-    if (activeTab.value === TAB_NOTIFICATIONS) {
-        const url = new URL(window.location.href);
-        url.hash = TAB_NOTIFICATIONS;
-        window.history.replaceState(null, '', url.toString());
-    }
+    const hash = activeTab.value === TAB_CONNECTIONS ? TAB_CONNECTIONS : TAB_NOTIFICATIONS;
+    const url = new URL(window.location.href);
+    url.hash = hash;
+    window.history.replaceState(null, '', url.toString());
 }
 
 watch(user, (newUser) => {
@@ -140,15 +190,28 @@ function goBackToProfile() {
             </div>
         </div>
 
-        <Tab variant="lift" size="md" class="mb-4">
-            <TabItem
-                :id="TAB_NOTIFICATIONS"
-                :active="activeTab === TAB_NOTIFICATIONS"
-                label="Notifications"
-                icon="fa-bell"
-                @click.prevent="activeTab = TAB_NOTIFICATIONS"
-            />
-        </Tab>
+        <div role="tablist" class="tabs tabs-lift tabs-md tabs-top bg-base-100 shadow-sm mb-4">
+            <button
+                type="button"
+                role="tab"
+                :aria-selected="activeTab === TAB_NOTIFICATIONS"
+                :class="['tab', activeTab === TAB_NOTIFICATIONS && 'tab-active']"
+                @click="activeTab = TAB_NOTIFICATIONS"
+            >
+                <i class="fa-solid fa-bell mr-2" aria-hidden="true"></i>
+                Notifications
+            </button>
+            <button
+                type="button"
+                role="tab"
+                :aria-selected="activeTab === TAB_CONNECTIONS"
+                :class="['tab', activeTab === TAB_CONNECTIONS && 'tab-active']"
+                @click="activeTab = TAB_CONNECTIONS"
+            >
+                <i class="fa-solid fa-link mr-2" aria-hidden="true"></i>
+                Connexions
+            </button>
+        </div>
 
         <div
             :id="TAB_NOTIFICATIONS"
@@ -202,6 +265,113 @@ function goBackToProfile() {
                         Annuler
                     </Btn>
                 </div>
+            </div>
+        </div>
+
+        <div
+            :id="TAB_CONNECTIONS"
+            v-show="activeTab === TAB_CONNECTIONS"
+            class="space-y-4"
+        >
+            <div class="rounded-lg border border-base-300 bg-base-200/30 p-4">
+                <h2 class="text-lg font-medium text-content-300">Connexions OAuth</h2>
+                <p class="mt-1 text-sm text-content-600">
+                    Lie ou délie GitHub, Discord ou Steam pour te connecter avec plusieurs méthodes. Tu peux te connecter avec n'importe quel compte lié.
+                </p>
+                <p v-if="oauthProviders.length === 0" class="mt-4 text-sm text-content-500">
+                    Aucun provider OAuth configuré (GitHub, Discord ou Steam).
+                </p>
+                <div v-else class="mt-4 space-y-4">
+                    <p class="text-sm text-content-600">
+                        Clique sur <strong>Lier</strong> pour ajouter une connexion, ou <strong>Délier</strong> pour la retirer (tu dois garder au moins une méthode de connexion).
+                    </p>
+                    <div
+                        v-for="provider in oauthProviders"
+                        :key="provider"
+                        class="flex flex-wrap items-center justify-between gap-4 py-4 px-3 rounded-lg bg-base-100/50 border border-base-300/50"
+                    >
+                        <label class="flex items-center gap-3 text-sm font-medium text-content-200">
+                            <i :class="providerIcon(provider)" class="text-2xl text-content-400"></i>
+                            {{ providerLabel(provider) }}
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <span
+                                v-if="isProviderLinked(provider)"
+                                class="badge badge-success badge-sm"
+                            >
+                                Lié
+                            </span>
+                            <a
+                                v-if="!isProviderLinked(provider)"
+                                :href="route('user.oauth.link', { provider })"
+                                class="btn btn-outline btn-primary btn-sm gap-1"
+                            >
+                                <i class="fa-solid fa-link text-xs"></i>
+                                Lier
+                            </a>
+                            <Btn
+                                v-else-if="canUnlink(provider)"
+                                color="error"
+                                variant="outline"
+                                size="sm"
+                                class="gap-1"
+                                @click="unlinkProvider(provider)"
+                            >
+                                <i class="fa-solid fa-unlink text-xs"></i>
+                                Délier
+                            </Btn>
+                            <span
+                                v-else-if="isProviderLinked(provider) && !canUnlink(provider)"
+                                class="text-xs text-content-500"
+                            >
+                                (Délier impossible : garde au moins une méthode de connexion)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                v-if="!hasPassword"
+                class="rounded-lg border border-base-300 bg-base-200/30 p-4"
+            >
+                <h2 class="text-lg font-medium text-content-300">Définir un mot de passe</h2>
+                <p class="mt-1 text-sm text-content-600">
+                    Tu t'es inscrit avec GitHub, Discord ou Steam. Ajoute un mot de passe pour pouvoir te connecter aussi avec ton email et ton mot de passe.
+                </p>
+                <form class="mt-4 space-y-4 max-w-md" @submit.prevent="submitConvert">
+                    <div class="space-y-1">
+                        <InputField
+                            v-model="formConvert.password"
+                            type="password"
+                            name="password"
+                            label="Mot de passe"
+                            placeholder="Nouveau mot de passe"
+                            autocomplete="new-password"
+                            :validation="formConvert.errors.password ? { state: 'error', message: formConvert.errors.password } : null"
+                            :parent-control="false"
+                        />
+                    </div>
+                    <div class="space-y-1">
+                        <InputField
+                            v-model="formConvert.password_confirmation"
+                            type="password"
+                            name="password_confirmation"
+                            label="Confirmer le mot de passe"
+                            placeholder="Confirmer"
+                            autocomplete="new-password"
+                            :validation="formConvert.errors.password_confirmation ? { state: 'error', message: formConvert.errors.password_confirmation } : null"
+                            :parent-control="false"
+                        />
+                    </div>
+                    <Btn
+                        type="submit"
+                        color="primary"
+                        :disabled="formConvert.processing"
+                    >
+                        Convertir
+                    </Btn>
+                </form>
             </div>
         </div>
     </div>

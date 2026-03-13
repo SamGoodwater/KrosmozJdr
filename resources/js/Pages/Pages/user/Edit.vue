@@ -235,6 +235,9 @@ const isSelfUpdate = computed(() => {
     return userId && userId === currentUserId;
 });
 
+// Utilisateur OAuth-only (sans mot de passe) : peut définir un mdp sans ancien
+const hasPassword = computed(() => user.value?.has_password ?? true);
+
 // `isAdmin` est centralisé dans usePermissions()
 
 const updatePassword = () => {
@@ -367,14 +370,22 @@ const confirmForceDelete = () => {
             <p class="mt-1 text-sm text-content-600">
                 Mettez à jour les informations principales et les accès de ce compte.
             </p>
-            <Route
-                v-if="isSelfUpdate"
-                :href="route('user.settings')"
-                class="link link-primary text-sm mt-2 inline-flex items-center gap-1"
-            >
-                <i class="fa-solid fa-cog" aria-hidden="true"></i>
-                Paramètres du compte
-            </Route>
+            <div v-if="isSelfUpdate" class="flex flex-wrap gap-4 mt-2">
+                <Route
+                    :href="route('user.settings')"
+                    class="link link-primary text-sm inline-flex items-center gap-1"
+                >
+                    <i class="fa-solid fa-cog" aria-hidden="true"></i>
+                    Paramètres du compte
+                </Route>
+                <Route
+                    :href="route('user.settings') + '#connections'"
+                    class="link link-secondary text-sm inline-flex items-center gap-1"
+                >
+                    <i class="fa-solid fa-link" aria-hidden="true"></i>
+                    Gérer les connexions (GitHub, Discord, Steam)
+                </Route>
+            </div>
         </header>
         <form @submit.prevent class="mt-6 space-y-6" autocomplete="off">
             <div class="flex flex-row gap-4">
@@ -477,53 +488,60 @@ const confirmForceDelete = () => {
                 <hr class="border-gray-300 dark:border-gray-700 my-4" />
                 <div class="mt-6">
                     <h3 class="text-lg font-medium text-content-300">
-                        {{ isSuperAdmin && !isSelfUpdate ? 'Actions super administrateur - Mot de passe' : 'Modifier le mot de passe' }}
+                        {{ isSuperAdmin && !isSelfUpdate ? 'Actions super administrateur - Mot de passe' : (hasPassword ? 'Modifier le mot de passe' : 'Définir un mot de passe') }}
                     </h3>
                     <p class="mt-1 text-sm text-content-600">
-                        {{ isSuperAdmin && !isSelfUpdate ? 'Définis un nouveau mot de passe pour ce compte.' : 'Mets à jour ton mot de passe.' }}
+                        {{ isSuperAdmin && !isSelfUpdate ? 'Définis un nouveau mot de passe pour ce compte.' : (hasPassword ? 'Mets à jour ton mot de passe.' : 'Tu t\'es connecté avec GitHub, Discord ou Steam. Ajoute un mot de passe pour pouvoir te connecter aussi avec ton email.') }}
                     </p>
                 </div>
-                <div class="mt-6 space-y-4">
-                    <!-- Champ current_password seulement si l'utilisateur modifie son propre mot de passe -->
+                <div class="mt-6 space-y-5">
+                    <!-- Champ current_password seulement si l'utilisateur a déjà un mot de passe -->
                     <Tooltip
-                        v-if="isSelfUpdate" 
+                        v-if="isSelfUpdate && hasPassword" 
                         content="Entre ton mot de passe actuel" 
                         placement="top"
+                        class="block"
                     >
-                        <InputField
-                            v-model="formPassword.current_password"
-                            type="password"
-                            variant="glass"
-                            color="primary"
-                            label="Mot de passe actuel"
-                            autocomplete="current-password"
-                            :validation="currentPasswordValidation"
-                            @keyup.enter="updatePassword"
-                        />
+                        <div class="space-y-1">
+                            <InputField
+                                v-model="formPassword.current_password"
+                                type="password"
+                                variant="glass"
+                                color="primary"
+                                label="Mot de passe actuel"
+                                autocomplete="current-password"
+                                :validation="currentPasswordValidation"
+                                @keyup.enter="updatePassword"
+                            />
+                        </div>
                     </Tooltip>
-                    <Tooltip v-if="isSelfUpdate || isSuperAdmin" content="Entre ton nouveau mot de passe" placement="top">
-                        <InputField
-                            v-model="formPassword.password"
-                            type="password"
-                            variant="glass"
-                            color="primary"
-                            label="Nouveau mot de passe"
-                            autocomplete="new-password"
-                            :validation="passwordValidation"
-                            @keyup.enter="updatePassword"
-                        />
+                    <Tooltip v-if="isSelfUpdate || isSuperAdmin" content="Entre ton nouveau mot de passe" placement="top" class="block">
+                        <div class="space-y-1">
+                            <InputField
+                                v-model="formPassword.password"
+                                type="password"
+                                variant="glass"
+                                color="primary"
+                                label="Nouveau mot de passe"
+                                autocomplete="new-password"
+                                :validation="passwordValidation"
+                                @keyup.enter="updatePassword"
+                            />
+                        </div>
                     </Tooltip>
-                    <Tooltip v-if="isSelfUpdate || isSuperAdmin" content="Confirme ton nouveau mot de passe" placement="top">
-                        <InputField
-                            v-model="formPassword.password_confirmation"
-                            type="password"
-                            variant="glass"
-                            color="primary"
-                            label="Confirmation du mot de passe"
-                            autocomplete="new-password"
-                            :validation="passwordConfirmationValidation"
-                            @keyup.enter="updatePassword"
-                        />
+                    <Tooltip v-if="isSelfUpdate || isSuperAdmin" content="Confirme ton nouveau mot de passe" placement="top" class="block">
+                        <div class="space-y-1">
+                            <InputField
+                                v-model="formPassword.password_confirmation"
+                                type="password"
+                                variant="glass"
+                                color="primary"
+                                label="Confirmation du mot de passe"
+                                autocomplete="new-password"
+                                :validation="passwordConfirmationValidation"
+                                @keyup.enter="updatePassword"
+                            />
+                        </div>
                     </Tooltip>
                     <div v-if="isSelfUpdate || isSuperAdmin" class="flex items-center gap-4">
                         <Tooltip content="Mettre à jour le mot de passe" placement="top">

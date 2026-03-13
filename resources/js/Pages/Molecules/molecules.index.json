@@ -1013,6 +1013,66 @@
     "file": "entity/shared/EntityViewHeader.vue"
   },
   {
+    "name": "EntityMinimalTooltip",
+    "description": "EntityMinimalTooltip — Hover card affichant la vue Minimal (style Wikipédia).",
+    "props": [
+      {
+        "name": "entityType",
+        "type": "string",
+        "desc": "- Type d'entité (resources, items, consumables)"
+      },
+      {
+        "name": "entityId",
+        "type": "number|string",
+        "desc": "- ID de l'entité à afficher"
+      },
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Entité complète (évite le fetch si fournie)"
+      },
+      {
+        "name": "tableMeta",
+        "type": "Object",
+        "desc": "- Meta du tableau (characteristics) pour les effets"
+      },
+      {
+        "name": "placement",
+        "type": "string",
+        "desc": "- Placement du popover (top, bottom, left, right)"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Élément déclencheur (lien, span, etc.)"
+      }
+    ],
+    "file": "entity/shared/EntityMinimalTooltip.vue"
+  },
+  {
+    "name": "EntityMinimalCard",
+    "description": "EntityMinimalCard — Composant de base pour les cartes Minimal.",
+    "props": [
+      {
+        "name": "displayMode",
+        "type": "",
+        "desc": "- 'hover' : expansion au survol | 'extended' : toujours étendu | 'compact' : jamais étendu"
+      }
+    ],
+    "slots": [
+      {
+        "name": "compact",
+        "desc": "- Contenu toujours visible, définit la taille du slot dans la grille"
+      },
+      {
+        "name": "expanded",
+        "desc": "- Contenu affiché au hover (ou toujours si display-mode=\"extended\")"
+      }
+    ],
+    "file": "entity/shared/EntityMinimalCard.vue"
+  },
+  {
     "name": "ScenarioViewText",
     "description": "ScenarioViewText — Vue Texte pour Scenario",
     "props": [
@@ -1162,18 +1222,7 @@
   {
     "name": "ResourceViewMinimal",
     "description": "ResourceViewMinimal — Vue Minimal pour Resource",
-    "props": [
-      {
-        "name": "resource",
-        "type": "Resource",
-        "desc": "- Instance du modèle Resource"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/resource/ResourceViewMinimal.vue"
   },
@@ -1493,18 +1542,7 @@
   {
     "name": "ItemViewMinimal",
     "description": "ItemViewMinimal — Vue Minimal pour Item",
-    "props": [
-      {
-        "name": "item",
-        "type": "Item",
-        "desc": "- Instance du modèle Item"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/item/ItemViewMinimal.vue"
   },
@@ -1567,18 +1605,7 @@
   {
     "name": "ConsumableViewMinimal",
     "description": "ConsumableViewMinimal — Vue Minimal pour Consumable",
-    "props": [
-      {
-        "name": "consumable",
-        "type": "Consumable",
-        "desc": "- Instance du modèle Consumable"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/consumable/ConsumableViewMinimal.vue"
   },
@@ -2065,6 +2092,19 @@
     "file": "data-input/CheckboxField.vue"
   },
   {
+    "name": "ResourceIngredientsList",
+    "description": "ResourceIngredientsList — Liste d'ingrédients (ressources) avec icône + nom.",
+    "props": [
+      {
+        "name": "ingredients",
+        "type": "Array",
+        "desc": "- Liste {id, name, image?, pivot?: {quantity}}}"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/ResourceIngredientsList.vue"
+  },
+  {
     "name": "LevelBadge",
     "description": "LevelBadge Molecule",
     "props": [],
@@ -2081,7 +2121,13 @@
   {
     "name": "CharacteristicInlineGroup",
     "description": "CharacteristicInlineGroup — molécule d'affichage inline de caractéristiques.",
-    "props": [],
+    "props": [
+      {
+        "name": "labelMode",
+        "type": "String",
+        "desc": "- 'full' | 'short' | 'icon-only' — transmis à CharacteristicChip"
+      }
+    ],
     "slots": [],
     "file": "data-display/CharacteristicInlineGroup.vue"
   },
@@ -2115,7 +2161,12 @@
       {
         "name": "items",
         "type": "Array",
-        "desc": "- [{ icon, color, label, value, tooltip }]"
+        "desc": "- [{ icon, color, name, shortLabel, value, tooltip }]"
+      },
+      {
+        "name": "labelMode",
+        "type": "String",
+        "desc": "- 'full' | 'short' | 'icon-only' — full: nom complet, short: abrégé, icon-only: icône + valeur sans label (Line/Large=full, Compact=short, Minimal=icon-only)"
       }
     ],
     "slots": [],

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use PDOException;
+use Symfony\Component\Process\Process;
 
 class Run extends Command
 {
@@ -285,9 +286,16 @@ class Run extends Command
     protected function optimiseIde() {
         $this->info('Génération des fichiers IDE Helper...');
         $this->call('ide-helper:models', ['--nowrite' => true]);
-        $this->call('ide-helper:generate');
-        $this->call('ide-helper:eloquent');
-        $this->call('ide-helper:meta');
+        $php = defined('PHP_BINARY') ? PHP_BINARY : 'php';
+        $artisan = base_path('artisan');
+        $commands = ['ide-helper:generate', 'ide-helper:eloquent', 'ide-helper:meta'];
+        foreach ($commands as $cmd) {
+            $process = new Process([$php, $artisan, $cmd], base_path());
+            $process->run();
+            if (!$process->isSuccessful()) {
+                $this->warn("{$cmd} a échoué (incompatibilité connue avec Socialite 5.x).");
+            }
+        }
     }
     protected function optimiseLaravel() {
         $this->info('Nettoyage des optimisations Laravel (config/routes/views)...');

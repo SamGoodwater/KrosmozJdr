@@ -1,11 +1,20 @@
 <script setup>
 import { computed, ref, watch, nextTick, onMounted } from 'vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Checkbox from '@/Pages/Molecules/data-input/CheckboxField.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
+
+const page = usePage();
+const oauthEnabledProviders = computed(() => page.props.oauth_enabled_providers ?? []);
+
+const oauthButtonConfig = {
+    github: { label: 'Se connecter avec GitHub', icon: 'fa-brands fa-github', class: 'btn-outline btn-primary' },
+    discord: { label: 'Se connecter avec Discord', icon: 'fa-brands fa-discord', class: 'btn-outline btn-secondary' },
+    steam: { label: 'Se connecter avec Steam', icon: 'fa-brands fa-steam', class: 'btn-outline btn-neutral' },
+};
 
 defineProps({
     canResetPassword: {
@@ -238,6 +247,20 @@ onMounted(() => {
             <div class="mb-4 text-sm text-gray-600">
                 {{ status }}
             </div>
+
+            <div v-if="oauthEnabledProviders.length > 0" class="flex flex-col gap-3 mb-6">
+                <a
+                    v-for="provider in oauthEnabledProviders"
+                    :key="provider"
+                    :href="route('oauth.redirect', { provider })"
+                    :class="['btn gap-2', oauthButtonConfig[provider]?.class ?? 'btn-outline btn-neutral']"
+                >
+                    <i :class="oauthButtonConfig[provider]?.icon ?? 'fa-solid fa-link'"></i>
+                    {{ oauthButtonConfig[provider]?.label ?? `Se connecter avec ${provider}` }}
+                </a>
+            </div>
+
+            <div v-if="oauthEnabledProviders.length > 0" class="divider text-sm text-base-content/70">ou</div>
 
             <form @submit.prevent="submit">
                 <div class="flex flex-col gap-8">

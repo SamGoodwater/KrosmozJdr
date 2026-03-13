@@ -1575,6 +1575,31 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Compte OAuth lié à un utilisateur (GitHub, Discord).
+ * 
+ * Stocke les identifiants externes et permet la liaison/déliaison des fournisseurs.
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $provider
+ * @property string $provider_id
+ * @property string|null $provider_email
+ * @property string|null $provider_name
+ * @property string|null $avatar_url
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount forUser(int $userId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount provider(string $provider)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount query()
+ */
+	class OAuthAccount extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * Modèle Eloquent Page
  * 
  * Représente une page dynamique du site (menu, arborescence, sections, droits, etc.).
@@ -2488,6 +2513,8 @@ namespace App\Models{
  * @property array<array-key, mixed>|null $notification_preferences
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OAuthAccount> $oauthAccounts
+ * @property-read int|null $oauth_accounts_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsSystem($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastLoginAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNotificationPreferences($value)

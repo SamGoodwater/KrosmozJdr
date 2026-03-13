@@ -45,6 +45,12 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
     - Build frontend et backend
     - Déploiement automatisé (optionnel)
 
+## Authentification
+
+- **Laravel Breeze** : inscription et connexion classiques (email + mot de passe)
+- **Laravel Socialite** : OAuth pour GitHub et Discord (connexion/inscription sociale)
+- Voir [OAUTH_AUTHENTICATION.md](OAUTH_AUTHENTICATION.md) pour la configuration et les flux OAuth.
+
 ## Dépendances majeures
 
 - Voir les fichiers `composer.json` (backend) et `package.json` (frontend) à la racine du projet ou dans le dossier `project/`.

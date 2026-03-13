@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserPrivacyController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,12 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::post('/avatar', [UserController::class, 'updateAvatar'])->name('updateAvatar');
     Route::delete('/avatar', [UserController::class, 'deleteAvatar'])->name('deleteAvatar');
     Route::delete('/', [UserController::class, 'delete'])->name('delete');
+
+    Route::prefix('/oauth')->name('oauth.')->middleware('throttle:10,1')->group(function () {
+        Route::post('/convert', [UserController::class, 'convertToClassicAccount'])->name('convert');
+        Route::get('/link/{provider}', [OAuthController::class, 'redirectLink'])->name('link');
+        Route::delete('/unlink/{provider}', [UserController::class, 'unlinkOAuthProvider'])->name('unlink');
+    });
 
     Route::prefix('/privacy')->name('privacy.')->group(function () {
         Route::get('/', [UserPrivacyController::class, 'index'])->name('index');

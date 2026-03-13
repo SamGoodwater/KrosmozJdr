@@ -1,8 +1,18 @@
 <script setup>
-import { useForm } from "@inertiajs/vue3";
+import { computed } from "vue";
+import { useForm, usePage } from "@inertiajs/vue3";
 import { onMounted } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
+
+const page = usePage();
+const oauthEnabledProviders = computed(() => page.props.oauth_enabled_providers ?? []);
+
+const oauthButtonConfig = {
+    github: { label: "S'inscrire avec GitHub", icon: 'fa-brands fa-github', class: 'btn-outline btn-primary' },
+    discord: { label: "S'inscrire avec Discord", icon: 'fa-brands fa-discord', class: 'btn-outline btn-secondary' },
+    steam: { label: "S'inscrire avec Steam", icon: 'fa-brands fa-steam', class: 'btn-outline btn-neutral' },
+};
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
@@ -143,6 +153,20 @@ onMounted(() => {
     <div class="flex flex-col items-center justify-center h-full w-full">
 
         <h2 class="text-title py-8">Inscription</h2>
+
+        <div v-if="oauthEnabledProviders.length > 0" class="flex flex-col gap-3 mb-6 w-full max-w-md">
+            <a
+                v-for="provider in oauthEnabledProviders"
+                :key="provider"
+                :href="route('oauth.redirect', { provider })"
+                :class="['btn gap-2', oauthButtonConfig[provider]?.class ?? 'btn-outline btn-neutral']"
+            >
+                <i :class="oauthButtonConfig[provider]?.icon ?? 'fa-solid fa-link'"></i>
+                {{ oauthButtonConfig[provider]?.label ?? `S'inscrire avec ${provider}` }}
+            </a>
+        </div>
+
+        <div v-if="oauthEnabledProviders.length > 0" class="divider text-sm text-base-content/70">ou</div>
 
     <form @submit.prevent="submit">
         <InputField

@@ -2361,8 +2361,14 @@
   },
   {
     "name": "CharacteristicChip",
-    "description": "CharacteristicChip — atome d'affichage d'une caractéristique (icône + valeur).",
-    "props": [],
+    "description": "CharacteristicChip — atome d'affichage d'une caractéristique (icône + label + valeur).",
+    "props": [
+      {
+        "name": "labelMode",
+        "type": "String",
+        "desc": "- 'full' | 'short' | 'icon-only' — full: nom complet, short: abrégé, icon-only: icône seule"
+      }
+    ],
     "slots": [],
     "file": "data-display/CharacteristicChip.vue"
   },

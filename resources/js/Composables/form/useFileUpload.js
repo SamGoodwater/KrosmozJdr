@@ -77,14 +77,25 @@ export default function useFileUpload({
       return 'file'
     }
     
-    // Si c'est une URL string, utiliser l'extension
+    // Si c'est une URL string, utiliser l'extension ou les patterns connus
     if (typeof file === 'string') {
       const url = file.toLowerCase()
       const imageExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp']
       const videoExts = ['.mp4', '.webm', '.ogg', '.avi', '.mov', '.wmv']
       const audioExts = ['.mp3', '.wav', '.ogg', '.aac', '.flac', '.m4a']
+      // URLs d'avatars OAuth sans extension (GitHub, Discord, Steam, etc.)
+      const avatarUrlPatterns = [
+        'avatars.githubusercontent.com',
+        'cdn.discordapp.com/avatars',
+        'cdn.discordapp.com/embed/avatars',
+        'steamcdn-a.akamaihd.net',
+        'avatars.steamstatic.com',
+        'gravatar.com',
+        'lh3.googleusercontent.com'
+      ]
       
       if (imageExts.some(ext => url.includes(ext))) return 'image'
+      if (avatarUrlPatterns.some(pattern => url.includes(pattern))) return 'image'
       if (videoExts.some(ext => url.includes(ext))) return 'video'
       if (audioExts.some(ext => url.includes(ext))) return 'audio'
       return 'file'

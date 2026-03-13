@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Support\OAuthConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -199,9 +200,10 @@ class UserController extends Controller
     {
         $user = Auth::user();
         $this->authorize('update', $user);
-        $user->load([]);
+        $user->load(['oauthAccounts']);
         return Inertia::render('Pages/user/Settings', [
             'user' => new UserResource($user),
+            'oauthProviders' => OAuthConfig::enabledProviders(),
             'notificationTypes' => config('notifications.types', []),
             'notificationChannelsLabels' => config('notifications.channels', []),
             'notificationFrequencies' => config('notifications.frequencies', []),
@@ -433,8 +435,8 @@ class UserController extends Controller
             'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
         ];
 
-        // En mise à jour de son propre mot de passe, le mot de passe courant est toujours requis.
-        if ($isSelfUpdate) {
+        // En mise à jour de son propre mot de passe : current_password requis sauf si compte OAuth-only (pas de mdp).
+        if ($isSelfUpdate && $user->hasPassword()) {
             $rules['current_password'] = ['required', 'current_password'];
         }
 
@@ -445,5 +447,55 @@ class UserController extends Controller
         ]);
 
         return back()->with('success', 'Mot de passe mis à jour.');
+    }
+
+    /**
+     * Convertit un compte OAuth-only en compte classique (ajout d'un mot de passe).
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function convertToClassicAccount(\Illuminate\Http\Request $request)
+    {
+        $user = Auth::user();
+        $this->authorize('update', $user);
+
+        if ($user->hasPassword()) {
+            return back()->with('info', 'Ton compte possède déjà un mot de passe.');
+        }
+
+        $validated = $request->validate([
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return redirect()->route('user.settings')->with('success', 'Compte converti. Tu peux maintenant te connecter avec ton email et ton mot de passe.');
+    }
+
+    /**
+     * Délie un provider OAuth du compte (si au moins une autre méthode de connexion reste).
+     *
+     * @param string $provider
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function unlinkOAuthProvider(string $provider)
+    {
+        $user = Auth::user();
+        $this->authorize('update', $user);
+
+        if (! OAuthConfig::isProviderEnabled($provider) || ! in_array($provider, \App\Models\OAuthAccount::PROVIDERS, true)) {
+            return back()->withErrors(['provider' => 'Provider invalide ou non configuré.']);
+        }
+
+        if (! $user->canUnlinkProvider($provider)) {
+            return back()->with('error', 'Impossible de délier ce compte : tu dois conserver au moins une méthode de connexion (mot de passe ou autre provider).');
+        }
+
+        $user->oauthAccounts()->provider($provider)->delete();
+
+        return back()->with('success', 'Compte ' . $provider . ' délié.');
     }
 }

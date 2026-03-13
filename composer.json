@@ -17,8 +17,11 @@
         "laravel-lang/common": "^6.4",
         "laravel/framework": "^12.00",
         "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^5.25",
         "laravel/tinker": "^2.9",
         "mews/purifier": "^3.4",
+        "socialiteproviders/discord": "^4.2",
+        "socialiteproviders/steam": "^4.3",
         "spatie/laravel-medialibrary": "^11.17",
         "tightenco/ziggy": "^2.0"
     },

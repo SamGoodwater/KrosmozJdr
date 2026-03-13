@@ -40,6 +40,8 @@ class UserLightResource extends JsonResource
             'avatar' => $user->avatarPath(),
             'notifications_enabled' => $user->notifications_enabled,
             'notification_channels' => $user->notification_channels,
+            'oauth_providers' => $user->oauthAccounts->pluck('provider')->values()->all(),
+            'has_password' => $user->hasPassword(),
         ];
     }
 }

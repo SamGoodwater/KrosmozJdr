@@ -668,6 +668,17 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  OAUTH_ACCOUNTS {
+    id : bigint(20) unsigned
+    user_id : bigint(20) unsigned
+    provider : varchar(32)
+    provider_id : varchar(255)
+    provider_email : varchar(255)
+    provider_name : varchar(255)
+    avatar_url : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+  }
   PAGE_USER {
     page_id : bigint(20) unsigned
     user_id : bigint(20) unsigned
@@ -1215,6 +1226,7 @@ erDiagram
   NPCS }o--|| BREEDS : "FK breed_id"
   NPCS }o--|| CREATURES : "FK creature_id"
   NPCS }o--|| SPECIALIZATIONS : "FK specialization_id"
+  OAUTH_ACCOUNTS }o--|| USERS : "FK user_id"
   PAGE_USER }o--|| PAGES : "FK page_id"
   PAGE_USER }o--|| USERS : "FK user_id"
   PAGES }o--|| USERS : "FK created_by"

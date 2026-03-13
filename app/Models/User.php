@@ -350,12 +350,54 @@ class User extends Authenticatable implements HasMedia
             return $url;
         }
         if ($this->avatar) {
+            if (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
+                return $this->avatar;
+            }
             if (str_starts_with($this->avatar, 'storage/')) {
                 return asset($this->avatar);
             }
             return Storage::url($this->avatar);
         }
         return asset(self::DEFAULT_AVATAR);
+    }
+
+    /**
+     * Relation vers les comptes OAuth liés.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<OAuthAccount>
+     */
+    public function oauthAccounts()
+    {
+        return $this->hasMany(OAuthAccount::class);
+    }
+
+    /**
+     * Indique si l'utilisateur a un mot de passe défini (compte classique).
+     */
+    public function hasPassword(): bool
+    {
+        return $this->password !== null && $this->password !== '';
+    }
+
+    /**
+     * Indique si l'utilisateur a lié un provider OAuth donné.
+     */
+    public function hasOAuthProvider(string $provider): bool
+    {
+        return $this->oauthAccounts()->provider($provider)->exists();
+    }
+
+    /**
+     * Indique si l'utilisateur peut délier ce provider (au moins une autre méthode de connexion restante).
+     */
+    public function canUnlinkProvider(string $provider): bool
+    {
+        if (!$this->hasOAuthProvider($provider)) {
+            return false;
+        }
+        $hasPassword = $this->hasPassword();
+        $oauthCount = $this->oauthAccounts()->count();
+        return $hasPassword || $oauthCount > 1;
     }
 
     /**

@@ -35,4 +35,25 @@ return [
         ],
     ],
 
+    'github' => [
+        'client_id' => env('GITHUB_CLIENT_ID'),
+        'client_secret' => env('GITHUB_CLIENT_SECRET'),
+        'redirect' => env('GITHUB_REDIRECT_URI', env('APP_URL') . '/auth/github/callback'),
+    ],
+
+    'discord' => [
+        'client_id' => env('DISCORD_CLIENT_ID'),
+        'client_secret' => env('DISCORD_CLIENT_SECRET'),
+        'redirect' => env('DISCORD_REDIRECT_URI', env('APP_URL') . '/auth/discord/callback'),
+        'allow_gif_avatars' => (bool) env('DISCORD_AVATAR_GIF', true),
+        'avatar_default_extension' => env('DISCORD_EXTENSION_DEFAULT', 'png'),
+    ],
+
+    'steam' => [
+        'client_id' => null,
+        'client_secret' => env('STEAM_CLIENT_SECRET'),
+        'redirect' => env('STEAM_REDIRECT_URI', env('APP_URL') . '/auth/steam/callback'),
+        'allowed_hosts' => array_filter(array_map('trim', explode(',', env('STEAM_ALLOWED_HOSTS') ?? (parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST) ?: 'localhost')))),
+    ],
+
 ];

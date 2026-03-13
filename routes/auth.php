@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -13,6 +14,23 @@ use App\Http\Controllers\UserController;
 use Inertia\Inertia;
 use App\Rules\FileRules;
 use Illuminate\Support\Facades\Storage;
+
+Route::middleware('web')->group(function () {
+    Route::get('auth/{provider}', [OAuthController::class, 'redirect'])
+        ->middleware('throttle:10,1')
+        ->name('oauth.redirect');
+    Route::get('auth/{provider}/callback', [OAuthController::class, 'callback'])
+        ->middleware('throttle:10,1')
+        ->name('oauth.callback');
+    Route::get('auth/oauth/confirm-link', [OAuthController::class, 'showConfirmLink'])
+        ->middleware('throttle:10,1')
+        ->name('oauth.confirm-link');
+    Route::post('auth/oauth/confirm-link', [OAuthController::class, 'confirmLink'])
+        ->middleware('throttle:10,1')
+        ->name('oauth.confirm-link.post');
+    Route::get('auth/oauth/cancel-link', [OAuthController::class, 'cancelLink'])
+        ->name('oauth.cancel-link');
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
