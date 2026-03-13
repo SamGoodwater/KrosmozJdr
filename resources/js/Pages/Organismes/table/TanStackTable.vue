@@ -2006,7 +2006,7 @@ const handleExport = () => {
                                         :is="minimalViewComponent"
                                         :[getEntityPropName(entityType)]="getEntityFromRow(row, entityType)"
                                         :show-actions="showActionsColumn"
-                                        display-mode="extended"
+                                        display-mode="hover"
                                         :table-meta="config?._metadata?.context || {}"
                                         @action="(actionKey, entity) => emit('action', actionKey, entity, row)"
                                     />
@@ -2080,7 +2080,7 @@ const handleExport = () => {
                                     :is="minimalViewComponent"
                                     :[getEntityPropName(entityType)]="getEntityFromRow(row, entityType)"
                                     :show-actions="showActionsColumn"
-                                    display-mode="extended"
+                                    display-mode="hover"
                                     :table-meta="config?._metadata?.context || {}"
                                     @action="(actionKey, entity) => emit('action', actionKey, entity, row)"
                                 />

@@ -312,6 +312,7 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
         v-else-if="type === 'chips'"
         :items="params.items || []"
         :max-rows="chipsUseColumnFlow ? chipsMaxRows : null"
+        :label-mode="params.chipsLayout?.labelMode || 'full'"
     />
 
     <!-- custom: sera géré plus tard (Phase 1: fallback text) -->

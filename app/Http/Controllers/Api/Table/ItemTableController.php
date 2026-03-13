@@ -191,6 +191,7 @@ class ItemTableController extends Controller
                         'item' => [
                             'byDbColumn' => $this->characteristicMeta->buildObjectByDbColumn(\App\Models\CharacteristicObject::ENTITY_ITEM),
                             'byDofusdbId' => $this->characteristicMeta->buildObjectByDofusdbId(\App\Models\CharacteristicObject::ENTITY_ITEM),
+                            'byCharacteristicKey' => $this->characteristicMeta->buildObjectByCharacteristicKey(\App\Models\CharacteristicObject::ENTITY_ITEM),
                         ],
                     ],
                     'format' => 'entities',

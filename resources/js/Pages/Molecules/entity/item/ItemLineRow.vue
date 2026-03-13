@@ -57,7 +57,7 @@ const effectItems = computed(() => {
         characteristics: props.tableMeta?.characteristics || {},
     };
     const cell = buildCharacteristicEffectCell({
-        rawValues: [entity.value?.effect ?? entity.value?._data?.effect, entity.value?.bonus ?? entity.value?._data?.bonus],
+        rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
         options: { ctx },
         sourceGroups: ["item", "panoply"],
         size: "md",

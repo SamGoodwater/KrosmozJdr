@@ -159,6 +159,7 @@ class ConsumableTableController extends Controller
                         'consumable' => [
                             'byDbColumn' => $this->characteristicMeta->buildObjectByDbColumn(\App\Models\CharacteristicObject::ENTITY_CONSUMABLE),
                             'byDofusdbId' => $this->characteristicMeta->buildObjectByDofusdbId(\App\Models\CharacteristicObject::ENTITY_CONSUMABLE),
+                            'byCharacteristicKey' => $this->characteristicMeta->buildObjectByCharacteristicKey(\App\Models\CharacteristicObject::ENTITY_CONSUMABLE),
                         ],
                     ],
                     'format' => 'entities',

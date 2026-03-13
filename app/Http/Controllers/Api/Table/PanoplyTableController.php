@@ -109,6 +109,7 @@ class PanoplyTableController extends Controller
                         'panoply' => [
                             'byDbColumn' => $panoplyCharacteristicsByDbColumn,
                             'byDofusdbId' => $this->characteristicMeta->buildObjectByDofusdbId(\App\Models\CharacteristicObject::ENTITY_PANOPLY),
+                            'byCharacteristicKey' => $this->characteristicMeta->buildObjectByCharacteristicKey(CharacteristicObject::ENTITY_PANOPLY),
                         ],
                     ],
                     'format' => 'entities',

@@ -4,6 +4,7 @@
  *
  * @description
  * Gère le layout "chips" avec option `maxRows` (flow en colonnes).
+ * @props {String} labelMode - 'full' | 'short' | 'icon-only' — transmis à CharacteristicChip
  */
 import { computed } from "vue";
 import CharacteristicChip from "@/Pages/Atoms/data-display/CharacteristicChip.vue";
@@ -16,6 +17,11 @@ const props = defineProps({
     maxRows: {
         type: Number,
         default: null,
+    },
+    labelMode: {
+        type: String,
+        default: "full",
+        validator: (v) => ["full", "short", "icon-only"].includes(v),
     },
 });
 
@@ -51,6 +57,7 @@ const containerStyle = computed(() => {
             v-for="(item, idx) in chipItems"
             :key="idx"
             :item="item"
+            :label-mode="props.labelMode"
         />
         <span v-if="!chipItems.length" class="text-base-content/40">—</span>
     </span>

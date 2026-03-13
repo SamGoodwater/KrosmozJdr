@@ -10,7 +10,8 @@
  * - lg+ : 4 colonnes
  * Réutilisable pour effets Resource, Item, Spell, etc.
  *
- * @props {Array} items - [{ icon, color, label, value, tooltip }]
+ * @props {Array} items - [{ icon, color, name, shortLabel, value, tooltip }]
+ * @props {String} labelMode - 'full' | 'short' | 'icon-only' — full: nom complet, short: abrégé, icon-only: icône + valeur sans label (Line/Large=full, Compact=short, Minimal=icon-only)
  */
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
@@ -20,6 +21,11 @@ const props = defineProps({
     items: {
         type: Array,
         default: () => [],
+    },
+    labelMode: {
+        type: String,
+        default: "full",
+        validator: (v) => ["full", "short", "icon-only"].includes(v),
     },
 });
 
@@ -39,6 +45,15 @@ const getColorStyle = (item) => {
     if (t.includes("/")) return undefined;
     return { color: `var(--color-${t})` };
 };
+
+const displayLabel = (item) => {
+    if (props.labelMode === "full") return item?.name ?? item?.label ?? "";
+    if (props.labelMode === "short") return item?.shortLabel ?? item?.name ?? item?.label ?? "";
+    return "";
+};
+
+/** icon-only : icône + valeur (sans label). full/short : icône + label + valeur */
+const showLabel = computed(() => props.labelMode !== "icon-only");
 </script>
 
 <template>
@@ -46,21 +61,23 @@ const getColorStyle = (item) => {
         <Tooltip
             v-for="(item, idx) in chipItems"
             :key="idx"
-            :content="item.tooltip || `${item.label || ''}: ${item.value}`"
+            :content="item.tooltip || `${item.name || item.label || ''}: ${item.value}`"
             placement="top"
             class="inline-flex items-center gap-1.5 min-w-0"
         >
             <Icon
                 v-if="item.icon"
                 :source="item.icon"
-                :alt="item.label || ''"
+                :alt="item.name || item.label || ''"
                 size="xs"
                 class="shrink-0 opacity-80"
                 :style="getColorStyle(item)"
             />
-            <span v-if="item.label" class="text-xs truncate shrink min-w-0" :style="getColorStyle(item)">
-                {{ item.label }}:
-            </span>
+            <template v-if="showLabel">
+                <span v-if="displayLabel(item)" class="text-xs truncate shrink min-w-0" :style="getColorStyle(item)">
+                    {{ displayLabel(item) }}:
+                </span>
+            </template>
             <span class="text-xs font-medium truncate min-w-0" :style="getColorStyle(item)">
                 {{ item.value }}
             </span>

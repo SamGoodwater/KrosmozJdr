@@ -79,6 +79,47 @@ final class CharacteristicMetaByDbColumnService
     }
 
     /**
+     * Mapping characteristic_key (et forme courte) → définition pour une entité objet.
+     * Permet de résoudre les effets items dont les clés sont "vitality", "agility", "critical_hit"
+     * (sortie de mapDofusdbEffectsToKrosmozBonuses qui utilise les clés courtes = key sans suffixe _object).
+     *
+     * @param string $entity Une des constantes CharacteristicObject::ENTITY_*
+     * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
+     */
+    public function buildObjectByCharacteristicKey(string $entity): array
+    {
+        $out = [];
+        try {
+            $charRows = CharacteristicObject::query()
+                ->whereIn('entity', [CharacteristicObject::ENTITY_ALL, $entity])
+                ->with(['characteristic.masterCharacteristic'])
+                ->get();
+
+            $sorted = $charRows->sortBy(fn (CharacteristicObject $r) => $r->entity === CharacteristicObject::ENTITY_ALL ? 0 : 1)->values();
+
+            foreach ($sorted as $row) {
+                if ($row->characteristic === null) {
+                    continue;
+                }
+                $entry = $this->rowToDefinitionFromCharacteristic($row->characteristic);
+                if ($entry !== null) {
+                    $key = $entry['key'];
+                    $out[$key] = $entry;
+                    if (str_ends_with($key, '_object')) {
+                        $shortKey = substr($key, 0, -7);
+                        if ($shortKey !== '') {
+                            $out[$shortKey] = $entry;
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return $out;
+    }
+
+    /**
      * Mapping dofusdb_characteristic_id → définition pour une entité objet.
      * Permet de résoudre les effets items dont les clés sont des IDs DofusDB (ex. 11, 48, 85).
      *
@@ -137,6 +178,38 @@ final class CharacteristicMetaByDbColumnService
         }
 
         return $out;
+    }
+
+    /**
+     * Construit une entrée à partir de la caractéristique seule (pour byCharacteristicKey).
+     *
+     * @return array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}|null
+     */
+    private function rowToDefinitionFromCharacteristic(Characteristic $characteristic): ?array
+    {
+        $c = $characteristic->effectiveCharacteristic();
+        $key = $c->key ?? '';
+        if ($key === '') {
+            return null;
+        }
+
+        $icon = $c->icon;
+        if (is_string($icon) && $icon !== '' && ! str_starts_with($icon, 'fa-') && ! str_contains($icon, '/')) {
+            $icon = 'icons/caracteristics/' . $icon;
+        }
+
+        return [
+            'key' => $key,
+            'db_column' => $key,
+            'name' => $c->name,
+            'short_name' => $c->short_name,
+            'helper' => $c->helper,
+            'descriptions' => $c->descriptions,
+            'icon' => $icon,
+            'color' => $c->color,
+            'unit' => $c->unit,
+            'type' => $c->type,
+        ];
     }
 
     /**

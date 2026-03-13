@@ -228,7 +228,7 @@ export class Item extends BaseModel {
      */
     _toEffectCell(format, size, options) {
         return buildCharacteristicEffectCell({
-            rawValues: [this.effect, this.bonus],
+            rawValues: [this.effect],
             options,
             sourceGroups: ['item', 'panoply'],
             format,

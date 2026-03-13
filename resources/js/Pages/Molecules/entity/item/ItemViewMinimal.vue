@@ -1,273 +1,297 @@
 <script setup>
 /**
  * ItemViewMinimal — Vue Minimal pour Item
- * 
+ *
  * @description
- * Petite carte qui s'étend au survol.
- * Utilisée dans des grilles, petites modals ou hovers.
- * 
- * @props {Item} item - Instance du modèle Item
- * @props {Boolean} showActions - Afficher les actions (défaut: true)
+ * Même structure que ItemLineRow mais condensée : State • Image • Level • Nom • Type • Rareté • Prix • Description • Effets (icône + valeur).
+ * Affiche uniquement les propriétés métier (pas read_level, write_level, auto_update, id, created_by, etc.).
  */
-import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
+import { computed } from "vue";
+import { router } from "@inertiajs/vue3";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
-import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
-import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
+import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
+import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
+import Route from "@/Pages/Atoms/action/Route.vue";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
+import { getRarityConfig } from "@/Utils/Entity/SharedConstants";
+import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 
 const props = defineProps({
     item: {
         type: Object,
-        required: true
+        required: true,
     },
     showActions: {
         type: Boolean,
-        default: true
+        default: true,
     },
     displayMode: {
         type: String,
-        default: 'hover',
-        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+        default: "extended",
+        validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
     tableMeta: {
         type: Object,
-        default: () => ({})
-    }
+        default: () => ({}),
+    },
 });
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits(["edit", "view", "delete", "action"]);
 
-const isHovered = ref(props.displayMode === 'extended');
-const canHoverExpand = computed(() => props.displayMode === 'hover');
-const permissions = usePermissions();
+const entity = computed(() => props.item);
 
-const ctx = computed(() => {
-    const capabilities = {
-        viewAny: permissions.can('items', 'viewAny'),
-        createAny: permissions.can('items', 'createAny'),
-        updateAny: permissions.can('items', 'updateAny'),
-        deleteAny: permissions.can('items', 'deleteAny'),
-        manageAny: permissions.can('items', 'manageAny'),
+const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
+const levelValue = computed(() => entity.value?.level ?? entity.value?._data?.level ?? null);
+
+const typeName = computed(
+    () => entity.value?.itemType?.name ?? entity.value?.item_type ?? entity.value?._data?.itemType?.name ?? "—"
+);
+const priceValue = computed(() => entity.value?.price ?? entity.value?._data?.price ?? null);
+const descriptionFull = computed(
+    () => entity.value?.description ?? entity.value?._data?.description ?? ""
+);
+
+const effectItems = computed(() => {
+    const ctx = {
+        ...props.tableMeta,
+        characteristics: props.tableMeta?.characteristics || {},
     };
-    return { capabilities, meta: { capabilities } };
+    const cell = buildCharacteristicEffectCell({
+        rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
+        options: { ctx },
+        sourceGroups: ["item", "panoply"],
+        size: "sm",
+    });
+    return cell?.type === "chips" ? cell.params?.items || [] : [];
 });
 
-const descriptors = computed(() => getItemFieldDescriptors(ctx.value));
-
-const stateValue = computed(() => props.item?.state ?? props.item?._data?.state ?? null);
-
-const canShowField = (fieldKey) => {
-    const desc = descriptors.value?.[fieldKey];
-    if (!desc) return false;
-    const visibleIf = desc?.permissions?.visibleIf;
-    if (typeof visibleIf === 'function') {
-        try {
-            return Boolean(visibleIf(ctx.value));
-        } catch (e) {
-            console.warn('[ItemViewMinimal] visibleIf failed for', fieldKey, e);
-            return false;
-        }
-    }
-    return true;
-};
-
-// Champs importants à afficher
-const importantFields = computed(() => ['item_type', 'level', 'rarity', 'state', 'read_level'].filter(canShowField));
-
-const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
-const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
-const sortExtendedFields = (fields) => {
-    return [...fields].sort((a, b) => {
-        const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
-        const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
-
-        if (rankA === -1 && rankB === -1) return 0;
-        if (rankA === -1) return -1;
-        if (rankB === -1) return 1;
-        return rankA - rankB;
-    });
-};
-
-// En mode étendu, afficher toutes les propriétés visibles non principales.
-const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image']);
-    const fields = Object.keys(descriptors.value || {}).filter((key) => {
-        return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
-    });
-    return sortExtendedFields(fields);
+const rarityConfig = computed(() => {
+    const v = entity.value?.rarity ?? entity.value?._data?.rarity;
+    const n = v != null ? Number(v) : null;
+    return Number.isFinite(n) ? getRarityConfig(n) : null;
 });
 
-const getFieldIcon = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'item',
-    }).icon;
-};
+const byDbColumn = computed(
+    () =>
+        props.tableMeta?.characteristics?.item?.byDbColumn ||
+        props.tableMeta?.characteristics?.resource?.byDbColumn ||
+        {}
+);
+const priceMeta = computed(() => byDbColumn.value?.price || byDbColumn.value?.kamas || null);
 
-const getCell = (fieldKey) => {
-    return props.item.toCell(fieldKey, {
-        size: 'sm',
-        context: 'minimal',
-    });
-};
-
-const getFieldLabel = (fieldKey) => resolveEntityFieldUi({
-    fieldKey,
-    descriptors: descriptors.value,
-    tableMeta: props.tableMeta,
-    entityType: 'item',
-}).label;
-const getFieldTooltip = (fieldKey) => resolveEntityFieldUi({
-    fieldKey,
-    descriptors: descriptors.value,
-    tableMeta: props.tableMeta,
-    entityType: 'item',
-}).tooltip;
-
-const getFieldIconStyle = (fieldKey) => {
-    const color = resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'item',
-    }).color;
-    return color ? { color } : undefined;
-};
-
-const tooltipForField = (fieldKey, cell) => {
-    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
-    if (shouldOmitLabelInMeta(fieldKey)) return String(value);
-    const shortLabel = getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey));
-    return `${shortLabel} : ${value}`;
-};
+const imageUrl = computed(() => entity.value?.image ?? entity.value?._data?.image ?? null);
+const showHref = computed(() =>
+    entity.value?.id ? route("entities.items.show", { item: entity.value.id }) : null
+);
 
 const handleAction = async (actionKey) => {
-    const itemId = props.item.id;
+    const itemId = entity.value?.id;
     if (!itemId) return;
 
     switch (actionKey) {
-        case 'view':
-            router.visit(route('entities.items.show', { item: itemId }));
-            emit('view', props.item);
+        case "view":
+            router.visit(route("entities.items.show", { item: itemId }));
+            emit("view", props.item);
             break;
-        case 'edit':
-            router.visit(route('entities.items.edit', { item: itemId }));
-            emit('edit', props.item);
+        case "edit":
+            router.visit(route("entities.items.edit", { item: itemId }));
+            emit("edit", props.item);
             break;
-        case 'delete':
-            emit('delete', props.item);
+        case "delete":
+            emit("delete", props.item);
             break;
+        default:
+            emit("action", actionKey, props.item);
     }
 };
 </script>
 
 <template>
-    <div
-        data-cy="entity-minimal-card"
-        class="relative rounded-lg border border-base-300 transition-all duration-300 overflow-hidden"
-        :class="{ 
-            'bg-base-200 shadow-lg': isHovered,
-            'bg-base-100': !isHovered
-        }"
-        :style="{ 
-            width: isHovered ? 'auto' : '150px',
-            minWidth: '150px',
-            maxWidth: isHovered ? '300px' : '200px',
-            height: isHovered ? 'auto' : '100px',
-            minHeight: '80px',
-            borderRadius: 'var(--radius-box, 0.1rem)'
-        }"
-        @mouseenter="canHoverExpand && (isHovered = true)"
-        @mouseleave="canHoverExpand && (isHovered = false)">
-        
-        <div class="p-3">
-            <EntityViewHeader mode="minimal">
-                <template #dot>
-                    <EntityUsableDot :state="stateValue" />
-                </template>
-                <template #media>
-                    <div class="w-8 h-8">
-                        <CellRenderer :cell="getCell('image')" ui-color="primary" class="w-full h-full" />
-                    </div>
-                </template>
-
-                <template #title>
-                    <Tooltip :content="item.name" placement="top">
-                        <span class="font-semibold text-primary-100 text-sm truncate block">{{ item.name }}</span>
-                    </Tooltip>
-                </template>
-
-                <template #mainInfosRight>
-                    <div class="flex items-center gap-2">
-                        <template v-for="field in importantFields" :key="field">
-                            <Tooltip :content="tooltipForField(field, getCell(field))" placement="top">
-                                <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" :style="getFieldIconStyle(field)" />
-                            </Tooltip>
-                        </template>
-                    </div>
-                </template>
-
-                <template #actions>
-                    <div v-if="showActions">
-                        <EntityActions
-                            entity-type="item"
-                            :entity="item"
-                            format="dropdown"
-                            display="icon-only"
-                            size="xs"
-                            color="primary"
-                            :context="{ inPanel: false }"
-                            @action="handleAction"
-                        />
-                    </div>
-                </template>
-            </EntityViewHeader>
-
-            <!-- Contenu supplémentaire au hover -->
+    <EntityMinimalCard :display-mode="displayMode">
+        <template #compact>
             <div
-                v-if="isHovered"
-                data-cy="entity-minimal-expanded"
-                class="mt-2 pt-2 border-t border-base-300 space-y-1 text-xs text-primary-300 animate-fade-in">
-                <div
-                    v-for="key in expandedFields"
-                    :key="key"
-                    :data-field-key="key"
-                    class="flex items-start gap-2"
-                >
-                    <Tooltip
-                        :content="getFieldTooltip(key) || tooltipForField(key, getCell(key))"
-                        placement="left"
+                data-cy="entity-minimal-card-compact"
+                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+            >
+                <div class="absolute top-1.5 left-1.5 z-10">
+                    <EntityUsableDot :state="stateValue" />
+                </div>
+                <div class="flex gap-2">
+                    <div
+                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
                     >
-                        <div class="flex items-start gap-2 w-full">
-                            <Icon
-                                :source="getFieldIcon(key)"
-                                size="xs"
-                                class="text-primary-400 shrink-0 mt-0.5"
-                                :style="getFieldIconStyle(key)"
-                            />
-                            <div class="flex-1 min-w-0">
-                                <div class="font-semibold text-primary-400">
-                                    {{ descriptors?.[key]?.general?.label || key }}:
-                                </div>
-                                <div class="text-primary-200 truncate">
-                                    <CellRenderer
-                                        :cell="getCell(key)"
-                                        ui-color="primary"
-                                    />
-                                </div>
+                        <img
+                            v-if="imageUrl"
+                            :src="imageUrl"
+                            :alt="entity?.name ?? 'Image'"
+                            class="h-full w-full object-contain"
+                            loading="lazy"
+                        />
+                        <Icon v-else source="fa-solid fa-image" alt="" size="xs" class="text-base-content/40" />
+                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <div class="min-w-0 flex-1">
+                                <Route
+                                    v-if="showHref"
+                                    :href="showHref"
+                                    color="neutral"
+                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
+                                >
+                                    {{ entity?.name ?? "—" }}
+                                </Route>
+                                <span v-else class="font-semibold truncate block text-sm">
+                                    {{ entity?.name ?? "—" }}
+                                </span>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="items"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :available="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    @action="(k, e) => handleAction(k)"
+                                />
                             </div>
                         </div>
-                    </Tooltip>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <Badge v-if="typeName && typeName !== '—'" color="neutral" variant="soft" size="xs">
+                                {{ typeName }}
+                            </Badge>
+                            <Badge
+                                v-if="rarityConfig"
+                                :color="rarityConfig.daisyColor || rarityConfig.color || 'neutral'"
+                                variant="soft"
+                                size="xs"
+                            >
+                                {{ rarityConfig.label }}
+                            </Badge>
+                            <Tooltip
+                                v-if="priceValue != null && priceValue !== ''"
+                                :content="`Prix: ${priceValue}`"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center gap-1">
+                                    <Icon
+                                        :source="priceMeta?.icon || 'fa-solid fa-coins'"
+                                        alt="Prix"
+                                        size="xs"
+                                        :style="priceMeta?.color ? { color: `var(--color-${priceMeta.color})` } : undefined"
+                                    />
+                                    <span>{{ priceValue }}</span>
+                                </span>
+                            </Tooltip>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    v-if="effectItems.length > 0"
+                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+                >
+                    <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
                 </div>
             </div>
-        </div>
-    </div>
+        </template>
+        <template #expanded>
+            <div
+                data-cy="entity-minimal-card-expanded"
+                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+            >
+                <div class="absolute top-1.5 left-1.5 z-10">
+                    <EntityUsableDot :state="stateValue" />
+                </div>
+                <div class="flex gap-2">
+                    <div
+                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
+                    >
+                        <img
+                            v-if="imageUrl"
+                            :src="imageUrl"
+                            :alt="entity?.name ?? 'Image'"
+                            class="h-full w-full object-contain"
+                            loading="lazy"
+                        />
+                        <Icon v-else source="fa-solid fa-image" alt="" size="xs" class="text-base-content/40" />
+                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <div class="min-w-0 flex-1">
+                                <Route
+                                    v-if="showHref"
+                                    :href="showHref"
+                                    color="neutral"
+                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
+                                >
+                                    {{ entity?.name ?? "—" }}
+                                </Route>
+                                <span v-else class="font-semibold truncate block text-sm">
+                                    {{ entity?.name ?? "—" }}
+                                </span>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="items"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :available="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    @action="(k, e) => handleAction(k)"
+                                />
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <Badge v-if="typeName && typeName !== '—'" color="neutral" variant="soft" size="xs">
+                                {{ typeName }}
+                            </Badge>
+                            <Badge
+                                v-if="rarityConfig"
+                                :color="rarityConfig.daisyColor || rarityConfig.color || 'neutral'"
+                                variant="soft"
+                                size="xs"
+                            >
+                                {{ rarityConfig.label }}
+                            </Badge>
+                            <Tooltip
+                                v-if="priceValue != null && priceValue !== ''"
+                                :content="`Prix: ${priceValue}`"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center gap-1">
+                                    <Icon
+                                        :source="priceMeta?.icon || 'fa-solid fa-coins'"
+                                        alt="Prix"
+                                        size="xs"
+                                        :style="priceMeta?.color ? { color: `var(--color-${priceMeta.color})` } : undefined"
+                                    />
+                                    <span>{{ priceValue }}</span>
+                                </span>
+                            </Tooltip>
+                        </div>
+                        <p
+                            v-if="descriptionFull"
+                            class="text-xs text-base-content/80 line-clamp-2"
+                            :title="descriptionFull"
+                        >
+                            {{ descriptionFull }}
+                        </p>
+                    </div>
+                </div>
+                <div
+                    v-if="effectItems.length > 0"
+                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+                >
+                    <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
+                </div>
+            </div>
+        </template>
+    </EntityMinimalCard>
 </template>

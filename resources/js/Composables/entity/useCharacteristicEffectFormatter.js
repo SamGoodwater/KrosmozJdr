@@ -3,12 +3,13 @@
  *
  * @description
  * - Parse des payloads JSON (objet/array) provenant de `effect` / `bonus`
- * - Résolution des caractéristiques via `options.ctx.characteristics.<group>.byDbColumn` et `byDofusdbId`
+ * - Résolution des caractéristiques via `options.ctx.characteristics.<group>.byDbColumn`, `byCharacteristicKey` et `byDofusdbId`
  * - Génération d'une cellule `chips` (icon + color) avec fallback texte
  *
  * @example
+ * // Pour Item/Consumable/Resource : n'utiliser que effect (bonus = format brut DofusDB, doublon)
  * const cell = buildCharacteristicEffectCell({
- *   rawValues: [entity.effect, entity.bonus],
+ *   rawValues: [entity.effect],
  *   options,
  *   sourceGroups: ["item", "panoply"],
  *   format,
@@ -79,6 +80,24 @@ function collectCharacteristicsByDb(options = {}, sourceGroups = []) {
 }
 
 /**
+ * Collecte byCharacteristicKey depuis characteristics.<group>.byCharacteristicKey (clés courtes : vitality, agility, etc.)
+ * @param {Object} options
+ * @param {string[]} sourceGroups
+ * @returns {Record<string, any>}
+ */
+function collectCharacteristicsByCharacteristicKey(options = {}, sourceGroups = []) {
+    const ctx = options?.ctx || {};
+    const out = {};
+    for (const group of sourceGroups) {
+        const byKey = ctx?.characteristics?.[group]?.byCharacteristicKey;
+        if (byKey && typeof byKey === "object") {
+            Object.assign(out, byKey);
+        }
+    }
+    return out;
+}
+
+/**
  * Collecte byDofusdbId depuis characteristics.<group>.byDofusdbId (résolution IDs DofusDB → définition)
  * @param {Object} options
  * @param {string[]} sourceGroups
@@ -114,6 +133,12 @@ export function buildCharacteristicEffectCell({
     size = "md",
     chipsLayout = {},
 } = {}) {
+    const context = options?.context || "table";
+    const labelMode =
+        context === "minimal" ? "icon-only" :
+        context === "compact" ? "short" :
+        "full";
+
     const rawTextParts = rawValues
         .map((v) => (v == null ? "" : String(v).trim()))
         .filter(Boolean);
@@ -122,25 +147,36 @@ export function buildCharacteristicEffectCell({
         .flatMap((v) => extractEffectEntries(parseJsonPayload(v)));
 
     const byDb = collectCharacteristicsByDb(options, sourceGroups);
+    const byCharacteristicKey = collectCharacteristicsByCharacteristicKey(options, sourceGroups);
     const byDofusdbId = collectCharacteristicsByDofusdbId(options, sourceGroups);
 
     if (parsedEntries.length > 0) {
-        const items = parsedEntries.map(({ key, value }) => {
+        const seenCanonicalKeys = new Set();
+        const items = [];
+        for (const { key, value } of parsedEntries) {
             const def =
                 byDb?.[key] ||
                 byDb?.[key.replace(/_object$/, "")] ||
+                byCharacteristicKey?.[key] ||
+                byCharacteristicKey?.[key.replace(/_object$/, "") + "_object"] ||
                 byDofusdbId?.[key] ||
                 (key && /^\d+$/.test(String(key)) ? byDofusdbId?.[String(Number(key))] : null);
+            const canonicalKey = def?.db_column || def?.key || key;
+            if (seenCanonicalKeys.has(canonicalKey)) continue;
+            seenCanonicalKeys.add(canonicalKey);
             const renderedValue = String(value);
-            const label = def?.short_name || def?.name || key;
-            return {
+            const name = def?.name || key;
+            const shortLabel = def?.short_name || name;
+            items.push({
                 icon: def?.icon || "fa-solid fa-circle-info",
                 color: def?.color || null,
                 value: renderedValue,
-                label,
-                tooltip: `${label}: ${renderedValue}`,
-            };
-        });
+                name,
+                shortLabel,
+                label: name,
+                tooltip: `${name}: ${renderedValue}`,
+            });
+        }
 
         const searchValue = items.map((it) => `${it.tooltip} ${it.value}`).join(" ").trim();
         const mergedText = [...rawTextParts, searchValue].filter(Boolean).join(" ").trim();
@@ -153,7 +189,7 @@ export function buildCharacteristicEffectCell({
                 sortValue: mergedText,
                 searchValue: mergedText,
                 filterValue: mergedText,
-                chipsLayout,
+                chipsLayout: { ...chipsLayout, labelMode },
             },
         };
     }
