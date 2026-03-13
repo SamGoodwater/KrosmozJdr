@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -132,10 +132,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $role_name
  * @mixin \Eloquent
  */
-class User extends Authenticatable implements HasMedia
+class User extends Authenticatable implements HasMedia, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, InteractsWithMedia, HasMediaCustomNaming;
+    use \Illuminate\Auth\MustVerifyEmail;
 
     const ROLES = [
         0 => 'guest', // Visiteur non connecté
@@ -369,6 +370,29 @@ class User extends Authenticatable implements HasMedia
     public function oauthAccounts()
     {
         return $this->hasMany(OAuthAccount::class);
+    }
+
+    /**
+     * Indique si l'email est vérifié.
+     * Retourne true si email_verified_at est défini OU si un provider OAuth est lié
+     * (GitHub, Discord, Steam considèrent l'identité comme vérifiée).
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        if ($this->email_verified_at !== null) {
+            return true;
+        }
+
+        return $this->oauthAccounts()->exists();
+    }
+
+    /**
+     * Envoie la notification de vérification d'email (comptes classiques).
+     * Utilise notre Mailable personnalisé et le layout emails.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new \App\Notifications\VerifyEmailNotification);
     }
 
     /**

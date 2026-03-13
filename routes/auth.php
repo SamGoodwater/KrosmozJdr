@@ -30,6 +30,15 @@ Route::middleware('web')->group(function () {
         ->name('oauth.confirm-link.post');
     Route::get('auth/oauth/cancel-link', [OAuthController::class, 'cancelLink'])
         ->name('oauth.cancel-link');
+    Route::get('auth/oauth/transfer-offer', [OAuthController::class, 'showTransferOffer'])
+        ->middleware('auth')
+        ->name('oauth.transfer-offer');
+    Route::post('auth/oauth/transfer', [OAuthController::class, 'confirmTransfer'])
+        ->middleware(['auth', 'throttle:5,1'])
+        ->name('oauth.transfer');
+    Route::get('auth/oauth/cancel-transfer', [OAuthController::class, 'cancelTransfer'])
+        ->middleware('auth')
+        ->name('oauth.cancel-transfer');
 });
 
 Route::middleware('guest')->group(function () {

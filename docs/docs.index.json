@@ -10,6 +10,11 @@
     "description": "**Date** : 2026-03"
   },
   {
+    "path": "00-Project/EMAIL_SYSTEM.md",
+    "title": "Système d'emails — templates, Mailables, vérification",
+    "description": "Documentation du système d'envoi d'emails : layout, templates, Mailables, configuration."
+  },
+  {
     "path": "00-Project/GLOBAL_DESCRIPTION.md",
     "title": "",
     "description": "Ce projet est un site web. Il est responsive et utilise les dernières recommandations concernant la sécurité informatique. Le développeur du projet communique en français."

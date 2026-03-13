@@ -17,7 +17,7 @@ const TAB_NOTIFICATIONS = 'notifications';
 const TAB_CONNECTIONS = 'connections';
 const activeTab = ref(TAB_NOTIFICATIONS);
 
-const oauthProviders = computed(() => page.props.oauthProviders ?? []);
+const oauthProviders = computed(() => page.props.oauthProviders ?? page.props.oauth_enabled_providers ?? []);
 const linkedProviders = computed(() => {
     const accounts = user.value?.oauth_accounts || [];
     return accounts.map((a) => a.provider);
@@ -31,6 +31,16 @@ const formConvert = useForm({
 
 function isProviderLinked(provider) {
     return linkedProviders.value.includes(provider);
+}
+
+/**
+ * Retourne le compte OAuth lié pour un provider donné (avatar, pseudo).
+ * @param {string} provider - Nom du provider (github, discord, steam)
+ * @returns {{ provider: string, provider_name?: string, avatar_url?: string } | null}
+ */
+function getLinkedAccount(provider) {
+    const accounts = user.value?.oauth_accounts || [];
+    return accounts.find((a) => a.provider === provider) ?? null;
 }
 
 function canUnlink(provider) {
@@ -67,12 +77,28 @@ function unlinkProvider(provider) {
     });
 }
 
+/**
+ * Données utilisateur pour Settings.
+ * Combine page.props.user (controller) et auth.user (partagé) pour garantir
+ * oauth_accounts disponible (état des connexions OAuth liées).
+ */
 const user = computed(() => {
-    const userData = page.props.user || {};
-    if (userData.data && typeof userData.data === 'object' && userData.data.id) {
-        return userData.data;
-    }
-    return userData;
+    const pageUser = page.props.user;
+    const pageUnwrapped = pageUser?.data?.id ? pageUser.data : pageUser;
+    const authUser = page.props.auth?.user ?? {};
+
+    const primary = pageUnwrapped?.id ? pageUnwrapped : authUser;
+    if (!primary) return {};
+
+    // Fallback sur auth.user si page.user n'a pas oauth_accounts (ex. wrapping JsonResource)
+    const oauthAccounts =
+        (primary.oauth_accounts?.length ? primary.oauth_accounts : null)
+        ?? (authUser.oauth_accounts?.length ? authUser.oauth_accounts : null)
+        ?? [];
+    return {
+        ...primary,
+        oauth_accounts: Array.isArray(oauthAccounts) ? oauthAccounts : [],
+    };
 });
 
 const formNotifications = useForm({
@@ -290,42 +316,64 @@ function goBackToProfile() {
                         :key="provider"
                         class="flex flex-wrap items-center justify-between gap-4 py-4 px-3 rounded-lg bg-base-100/50 border border-base-300/50"
                     >
-                        <label class="flex items-center gap-3 text-sm font-medium text-content-200">
-                            <i :class="providerIcon(provider)" class="text-2xl text-content-400"></i>
-                            {{ providerLabel(provider) }}
-                        </label>
-                        <div class="flex items-center gap-3">
-                            <span
-                                v-if="isProviderLinked(provider)"
-                                class="badge badge-success badge-sm"
-                            >
-                                Lié
-                            </span>
-                            <a
-                                v-if="!isProviderLinked(provider)"
-                                :href="route('user.oauth.link', { provider })"
-                                class="btn btn-outline btn-primary btn-sm gap-1"
-                            >
-                                <i class="fa-solid fa-link text-xs"></i>
-                                Lier
-                            </a>
-                            <Btn
-                                v-else-if="canUnlink(provider)"
-                                color="error"
-                                variant="outline"
-                                size="sm"
-                                class="gap-1"
-                                @click="unlinkProvider(provider)"
-                            >
-                                <i class="fa-solid fa-unlink text-xs"></i>
-                                Délier
-                            </Btn>
-                            <span
-                                v-else-if="isProviderLinked(provider) && !canUnlink(provider)"
-                                class="text-xs text-content-500"
-                            >
-                                (Délier impossible : garde au moins une méthode de connexion)
-                            </span>
+                        <div class="flex items-center gap-3 min-w-0">
+                            <i :class="providerIcon(provider)" class="text-2xl text-content-400 shrink-0"></i>
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-sm font-medium text-content-200">{{ providerLabel(provider) }}</span>
+                                <!-- Compte lié : avatar + pseudo -->
+                                <div
+                                    v-if="isProviderLinked(provider) && getLinkedAccount(provider)"
+                                    class="flex items-center gap-2 mt-2"
+                                >
+                                    <img
+                                        v-if="getLinkedAccount(provider)?.avatar_url"
+                                        :src="getLinkedAccount(provider).avatar_url"
+                                        :alt="getLinkedAccount(provider).provider_name || provider"
+                                        class="size-8 rounded-full object-cover shrink-0"
+                                        referrerpolicy="no-referrer"
+                                    />
+                                    <div
+                                        v-else
+                                        class="size-8 rounded-full bg-base-300 flex items-center justify-center shrink-0"
+                                    >
+                                        <i :class="providerIcon(provider)" class="text-content-600 text-sm"></i>
+                                    </div>
+                                    <span class="text-sm text-content-500 truncate">
+                                        {{ getLinkedAccount(provider).provider_name || 'Compte lié' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <template v-if="!isProviderLinked(provider)">
+                                <a
+                                    :href="route('user.oauth.link', { provider })"
+                                    class="btn btn-outline btn-primary btn-sm gap-1"
+                                >
+                                    <i class="fa-solid fa-link text-xs"></i>
+                                    Lier
+                                </a>
+                            </template>
+                            <template v-else>
+                                <span class="badge badge-success badge-sm">Lié</span>
+                                <Btn
+                                    v-if="canUnlink(provider)"
+                                    color="error"
+                                    variant="outline"
+                                    size="sm"
+                                    class="gap-1"
+                                    @click="unlinkProvider(provider)"
+                                >
+                                    <i class="fa-solid fa-unlink text-xs"></i>
+                                    Délier
+                                </Btn>
+                                <span
+                                    v-else
+                                    class="text-xs text-content-500"
+                                >
+                                    (Délier impossible : garde au moins une méthode de connexion)
+                                </span>
+                            </template>
                         </div>
                     </div>
                 </div>

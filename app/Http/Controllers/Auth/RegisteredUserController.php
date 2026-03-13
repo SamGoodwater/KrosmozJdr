@@ -47,7 +47,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Rediriger vers la page initialement demandée (si elle existe), sinon profil
-        return redirect()->intended(route('user.show', absolute: false));
+        return redirect()->intended(route('verification.notice', absolute: false));
     }
 }

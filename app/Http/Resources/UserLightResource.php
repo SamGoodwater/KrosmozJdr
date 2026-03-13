@@ -41,6 +41,11 @@ class UserLightResource extends JsonResource
             'notifications_enabled' => $user->notifications_enabled,
             'notification_channels' => $user->notification_channels,
             'oauth_providers' => $user->oauthAccounts->pluck('provider')->values()->all(),
+            'oauth_accounts' => $user->oauthAccounts->map(fn ($a) => [
+                'provider' => $a->provider,
+                'provider_name' => $a->provider_name,
+                'avatar_url' => $a->avatar_url,
+            ])->values()->all(),
             'has_password' => $user->hasPassword(),
         ];
     }

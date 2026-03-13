@@ -53,7 +53,11 @@ class UserResource extends JsonResource
             'campaigns' => $this->whenLoaded('campaigns'),
             'pages' => $this->whenLoaded('pages'),
             'sections' => $this->whenLoaded('sections'),
-            'oauth_accounts' => $this->whenLoaded('oauthAccounts', fn () => $this->oauthAccounts->map(fn ($a) => ['provider' => $a->provider])->values()),
+            'oauth_accounts' => $this->whenLoaded('oauthAccounts', fn () => $this->oauthAccounts->map(fn ($a) => [
+                'provider' => $a->provider,
+                'provider_name' => $a->provider_name,
+                'avatar_url' => $a->avatar_url,
+            ])->values()->all()),
 
             // Attributs calculés
             'is_verified' => $this->hasVerifiedEmail(),

@@ -202,7 +202,7 @@ class UserController extends Controller
         $this->authorize('update', $user);
         $user->load(['oauthAccounts']);
         return Inertia::render('Pages/user/Settings', [
-            'user' => new UserResource($user),
+            'user' => (new UserResource($user))->toArray(request()),
             'oauthProviders' => OAuthConfig::enabledProviders(),
             'notificationTypes' => config('notifications.types', []),
             'notificationChannelsLabels' => config('notifications.channels', []),

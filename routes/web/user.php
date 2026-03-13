@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
+Route::prefix('user')->name('user.')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/password/confirm', [UserController::class, 'confirmPassword'])
         ->middleware('throttle:privacy-actions')
         ->name('password.confirm');

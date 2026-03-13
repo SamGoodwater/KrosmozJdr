@@ -78,8 +78,18 @@ class OAuthController extends Controller
         if ($oauthAccount) {
             $user = $oauthAccount->user;
             if ($intendedLink && $user->id !== Auth::id()) {
-                return redirect()->route('user.settings')
-                    ->with('error', 'Ce compte ' . $provider . ' est déjà lié à un autre utilisateur.');
+                // Compte OAuth déjà lié à un autre utilisateur : proposer le transfert
+                $request->session()->put('oauth.transfer_pending', [
+                    'provider' => $provider,
+                    'provider_id' => $providerId,
+                    'provider_email' => $providerEmail,
+                    'provider_name' => $providerName,
+                    'avatar_url' => $avatarUrl,
+                    'other_user_id' => $user->id,
+                    'other_user_name' => $user->name,
+                ]);
+
+                return redirect()->route('oauth.transfer-offer');
             }
             if ($intendedLink && $user->id === Auth::id()) {
                 return redirect()->route('user.settings')
@@ -98,6 +108,7 @@ class OAuthController extends Controller
 
         if ($intendedLink && Auth::check()) {
             $user = Auth::user();
+            $user->update(['email_verified_at' => now()]);
             OAuthAccount::create([
                 'user_id' => $user->id,
                 'provider' => $provider,
@@ -107,7 +118,7 @@ class OAuthController extends Controller
                 'avatar_url' => $avatarUrl,
             ]);
             $this->maybeUpdateUserFromOAuth($user, $providerName, $providerEmail, $avatarUrl);
-            return redirect()->route('user.settings')
+            return redirect()->to(route('user.settings') . '#connections')
                 ->with('success', 'Compte ' . $provider . ' lié avec succès.');
         }
 
@@ -129,6 +140,7 @@ class OAuthController extends Controller
         }
 
         $user = $this->createUserFromOAuth($provider, $providerId, $providerEmail, $providerName, $avatarUrl);
+        $user->update(['email_verified_at' => now()]);
         OAuthAccount::create([
             'user_id' => $user->id,
             'provider' => $provider,
@@ -250,6 +262,7 @@ class OAuthController extends Controller
             'provider_name' => $pending['provider_name'] ?? '',
             'avatar_url' => $pending['avatar_url'] ?? null,
         ]);
+        $user->update(['email_verified_at' => now()]);
         $this->maybeUpdateUserFromOAuth($user, $pending['provider_name'] ?? '', $pending['provider_email'] ?? null, $pending['avatar_url'] ?? null);
         Auth::login($user, true);
         $user->update(['last_login_at' => now()]);
@@ -259,7 +272,7 @@ class OAuthController extends Controller
             report($e);
         }
 
-        return redirect()->intended(route('user.show', absolute: false))
+        return redirect()->to(route('user.settings') . '#connections')
             ->with('success', 'Compte ' . ($pending['provider'] ?? '') . ' lié avec succès. Tu es connecté.');
     }
 
@@ -271,5 +284,69 @@ class OAuthController extends Controller
         $request->session()->forget('oauth.pending_link');
 
         return redirect()->route('login')->with('info', 'Connexion annulée.');
+    }
+
+    /**
+     * Affiche la page proposant de transférer une liaison OAuth d'un autre compte vers le compte actuel.
+     */
+    public function showTransferOffer(Request $request): RedirectResponse|\Inertia\Response
+    {
+        $pending = $request->session()->get('oauth.transfer_pending');
+        if (! $pending || ! isset($pending['provider'], $pending['other_user_id'], $pending['other_user_name'])) {
+            return redirect()->route('user.settings')->with('error', 'Session expirée. Réessaie de lier ton compte.');
+        }
+
+        $providerLabels = ['github' => 'GitHub', 'discord' => 'Discord', 'steam' => 'Steam'];
+
+        return Inertia::render('Pages/auth/OAuthTransferOffer', [
+            'provider' => $pending['provider'],
+            'providerLabel' => $providerLabels[$pending['provider']] ?? $pending['provider'],
+            'otherUserName' => $pending['other_user_name'],
+        ]);
+    }
+
+    /**
+     * Confirme le transfert : délie le provider de l'autre utilisateur et le lie au compte actuel.
+     */
+    public function confirmTransfer(Request $request): RedirectResponse
+    {
+        $pending = $request->session()->pull('oauth.transfer_pending');
+        if (! $pending || ! isset($pending['provider'], $pending['provider_id'], $pending['other_user_id'])) {
+            return redirect()->route('user.settings')->with('error', 'Session expirée. Réessaie de lier ton compte.');
+        }
+
+        $oauthAccount = OAuthAccount::query()
+            ->where('provider', $pending['provider'])
+            ->where('provider_id', $pending['provider_id'])
+            ->where('user_id', $pending['other_user_id'])
+            ->first();
+
+        if (! $oauthAccount) {
+            return redirect()->route('user.settings')->with('error', 'Ce compte n\'est plus lié à l\'autre utilisateur.');
+        }
+
+        $currentUser = Auth::user();
+        $oauthAccount->update(['user_id' => $currentUser->id]);
+        $currentUser->update(['email_verified_at' => now()]);
+        $this->maybeUpdateUserFromOAuth(
+            $currentUser,
+            $pending['provider_name'] ?? '',
+            $pending['provider_email'] ?? null,
+            $pending['avatar_url'] ?? null
+        );
+
+        return redirect()->to(route('user.settings') . '#connections')
+            ->with('success', 'Compte ' . $pending['provider'] . ' transféré et lié avec succès.');
+    }
+
+    /**
+     * Annule le transfert OAuth en cours et redirige vers les paramètres.
+     */
+    public function cancelTransfer(Request $request): RedirectResponse
+    {
+        $request->session()->forget('oauth.transfer_pending');
+
+        return redirect()->to(route('user.settings') . '#connections')
+            ->with('info', 'Transfert annulé.');
     }
 }
