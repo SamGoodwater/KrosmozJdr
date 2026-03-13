@@ -24,6 +24,7 @@ import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
+import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
@@ -165,6 +166,10 @@ const getBadgeColor = (fieldKey) => {
         localColorMap: colorMap,
     }).color;
 };
+
+const ingredients = computed(
+    () => props.item?.resources ?? props.item?._data?.resources ?? []
+);
 
 const getBadgeAutoParams = (fieldKey) => {
     const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
@@ -339,6 +344,12 @@ const handleAction = async (actionKey) => {
                 </div>
             </div>
         </div>
+
+        <ResourceIngredientsList
+            v-if="ingredients.length > 0"
+            :ingredients="ingredients"
+            class="pt-3 border-t border-base-300"
+        />
     </div>
 </template>
 

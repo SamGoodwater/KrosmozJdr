@@ -25,6 +25,7 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
+import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
@@ -116,6 +117,10 @@ const bodyFields = computed(() => ([
     'bonus',
     'recipe',
 ].filter(canShowField)));
+
+const ingredients = computed(
+    () => props.item?.resources ?? props.item?._data?.resources ?? []
+);
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
@@ -408,6 +413,13 @@ const handleAction = async (actionKey) => {
                 </div>
             </div>
         </div>
+
+        <!-- Ingrédients (ressources de recette) -->
+        <ResourceIngredientsList
+            v-if="ingredients.length > 0"
+            :ingredients="ingredients"
+            class="mt-4"
+        />
     </div>
 </template>
 

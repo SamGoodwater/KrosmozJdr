@@ -85,6 +85,9 @@ export class ResourceMapper {
       items: payload.items ?? [],
       scenarios: payload.scenarios ?? [],
       campaigns: payload.campaigns ?? [],
+
+      // Ingrédients de recette (ressources pour fabriquer cette ressource)
+      recipe_ingredients: payload.recipe_ingredients ?? payload.recipeIngredients ?? [],
     });
   }
 

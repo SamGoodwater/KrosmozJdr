@@ -53,7 +53,7 @@ class ConsumableTableController extends Controller
         }
 
         $query = Consumable::query()
-            ->with(['createdBy', 'consumableType'])
+            ->with(['createdBy', 'consumableType', 'resources'])
             ->withCount(['resources', 'creatures', 'campaigns', 'scenarios', 'shops']);
 
         if ($search !== '') {
@@ -118,7 +118,17 @@ class ConsumableTableController extends Controller
         if ($format === 'entities') {
             $entities = $rows->map(function (Consumable $c) {
                 $createdBy = $c->createdBy;
+                $resources = $c->relationLoaded('resources')
+                    ? $c->resources->map(fn ($res) => [
+                        'id' => $res->id,
+                        'name' => $res->name,
+                        'image' => $res->image ?? null,
+                        'pivot' => ['quantity' => $res->pivot?->quantity ?? 1],
+                    ])->values()->all()
+                    : [];
+
                 return $c->toArray() + [
+                    'resources' => $resources,
                     'consumableType' => $c->consumableType ? [
                         'id' => $c->consumableType->id,
                         'name' => $c->consumableType->name,

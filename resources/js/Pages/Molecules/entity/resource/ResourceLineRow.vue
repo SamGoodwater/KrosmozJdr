@@ -12,6 +12,7 @@ import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
+import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
@@ -77,6 +78,11 @@ const byDbColumn = computed(
 );
 const priceMeta = computed(() => byDbColumn.value?.price || byDbColumn.value?.kamas || null);
 const weightMeta = computed(() => byDbColumn.value?.weight || byDbColumn.value?.pods || null);
+
+/** Ingrédients (ressources) de recette */
+const ingredients = computed(
+    () => entity.value?.recipe_ingredients ?? entity.value?._data?.recipe_ingredients ?? []
+);
 
 const handleRowClick = () => emit("row-click", props.row);
 </script>
@@ -199,6 +205,13 @@ const handleRowClick = () => emit("row-click", props.row);
             class="w-full pt-2 mt-1 border-t border-base-300"
         >
             <CharacteristicEffectsGrid :items="effectItems" />
+        </div>
+        <!-- Ingrédients (ressources) : icône + nom, sous les effets -->
+        <div
+            v-if="ingredients.length > 0"
+            class="w-full pt-2 mt-1 border-t border-base-300"
+        >
+            <ResourceIngredientsList :ingredients="ingredients" />
         </div>
     </div>
 </template>

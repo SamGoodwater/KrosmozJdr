@@ -23,6 +23,7 @@ import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
+import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 
@@ -174,6 +175,10 @@ const getBadgeColor = (fieldKey) => {
 };
 
 // Obtenir les paramètres auto-color pour les badges
+const ingredients = computed(
+    () => props.resource?.recipe_ingredients ?? props.resource?._data?.recipe_ingredients ?? []
+);
+
 const getBadgeAutoParams = (fieldKey) => {
     const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
         fieldKey,
@@ -349,6 +354,12 @@ const handleAction = async (actionKey) => {
                 </div>
             </div>
         </div>
+
+        <ResourceIngredientsList
+            v-if="ingredients.length > 0"
+            :ingredients="ingredients"
+            class="pt-3 border-t border-base-300"
+        />
     </div>
 </template>
 

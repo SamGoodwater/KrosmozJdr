@@ -121,6 +121,11 @@ export class Resource extends BaseModel {
         return Number(this._data.recipe_ingredients_count ?? this._data.recipeIngredientsCount ?? 0);
     }
 
+    /** Ingrédients de recette (ressources craftables) */
+    get recipe_ingredients() {
+        return this._data.recipe_ingredients ?? this._data.recipeIngredients ?? [];
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================

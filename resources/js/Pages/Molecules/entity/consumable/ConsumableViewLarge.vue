@@ -21,6 +21,7 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entit
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
 import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
+import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 
 const props = defineProps({
     consumable: {
@@ -90,6 +91,11 @@ const extendedFields = computed(() => {
     ];
     ['created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
     return fields.filter(canShowField);
+});
+
+const ingredients = computed(() => {
+    const raw = props.consumable?.resources ?? props.consumable?._data?.resources ?? [];
+    return Array.isArray(raw) ? raw : [];
 });
 
 const getFieldUi = (fieldKey) =>
@@ -218,6 +224,13 @@ const handleAction = async (actionKey) => {
                 </div>
             </div>
         </div>
+
+        <!-- Ingrédients (ressources de recette) -->
+        <ResourceIngredientsList
+            v-if="ingredients.length > 0"
+            :ingredients="ingredients"
+            class="mt-4"
+        />
     </div>
 </template>
 

@@ -53,7 +53,7 @@ class ItemTableController extends Controller
         }
 
         $query = Item::query()
-            ->with(['createdBy', 'itemType'])
+            ->with(['createdBy', 'itemType', 'resources'])
             ->withCount(['resources', 'panoplies', 'shops', 'campaigns', 'scenarios']);
 
         if ($search !== '') {
@@ -160,6 +160,12 @@ class ItemTableController extends Controller
                         'id' => $itemType->id,
                         'name' => $itemType->name,
                     ] : null,
+                    'resources' => $it->resources->map(fn ($res) => [
+                        'id' => $res->id,
+                        'name' => $res->name,
+                        'image' => $res->image ?? null,
+                        'pivot' => ['quantity' => $res->pivot?->quantity ?? 1],
+                    ])->values()->all(),
                     'resources_count' => (int) ($it->resources_count ?? 0),
                     'panoplies_count' => (int) ($it->panoplies_count ?? 0),
                     'shops_count' => (int) ($it->shops_count ?? 0),

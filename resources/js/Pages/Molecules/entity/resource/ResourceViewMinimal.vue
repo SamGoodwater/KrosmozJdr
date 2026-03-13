@@ -19,6 +19,7 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
 import { getRarityConfig } from "@/Utils/Entity/SharedConstants";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 
 const props = defineProps({
     resource: {
@@ -90,6 +91,8 @@ const priceMeta = computed(() => byDbColumn.value?.price || byDbColumn.value?.ka
 const weightMeta = computed(() => byDbColumn.value?.weight || byDbColumn.value?.pods || null);
 
 const imageUrl = computed(() => entity.value?.image ?? entity.value?._data?.image ?? null);
+
+const ingredients = computed(() => entity.value?.recipe_ingredients ?? entity.value?.recipeIngredients ?? entity.value?._data?.recipe_ingredients ?? entity.value?._data?.recipeIngredients ?? []);
 const showHref = computed(() =>
     entity.value?.id ? route("entities.resources.show", { resource: entity.value.id }) : null
 );
@@ -327,6 +330,11 @@ const handleAction = async (actionKey) => {
                 >
                     <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
                 </div>
+                <ResourceIngredientsList
+                    v-if="ingredients.length > 0"
+                    :ingredients="ingredients"
+                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+                />
             </div>
         </template>
     </EntityMinimalCard>

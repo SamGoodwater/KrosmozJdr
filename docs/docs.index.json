@@ -410,6 +410,11 @@
     "description": "**Date** : 2026-01-06"
   },
   {
+    "path": "30-UI/ENTITY_HOVER_CARD.md",
+    "title": "Entity Hover Card — Aperçu d'entité au survol (style Wikipédia)",
+    "description": "Le système **Entity Hover Card** affiche un aperçu minimal d'une entité au survol d'une référence (lien, nom) — un peu comme les tooltips de Wikipédia lorsqu'une page référence une autre. Conçu pour être réutilisable partout où une entité est citée dans du texte ou une liste."
+  },
+  {
     "path": "30-UI/ENTITY_VIEWS.md",
     "title": "Vues d’entités (Large / Compact / Minimal / Texte)",
     "description": "Standardiser l’affichage des entités (ressources, items, monstres, sorts, etc.) afin d’obtenir des “cards” cohérentes dans les modales et les listes, et limiter la duplication de logique."

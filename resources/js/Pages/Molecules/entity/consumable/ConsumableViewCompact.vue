@@ -18,6 +18,7 @@ import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
+import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 
 const props = defineProps({
     consumable: {
@@ -123,6 +124,10 @@ const handleAction = async (actionKey) => {
             break;
     }
 };
+
+const ingredients = computed(
+    () => props.consumable?.resources ?? props.consumable?._data?.resources ?? []
+);
 </script>
 
 <template>
@@ -175,6 +180,12 @@ const handleAction = async (actionKey) => {
                 </div>
             </div>
         </div>
+
+        <ResourceIngredientsList
+            v-if="ingredients.length > 0"
+            :ingredients="ingredients"
+            class="pt-3 border-t border-base-300"
+        />
     </div>
 </template>
 

@@ -30,6 +30,7 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entit
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
+import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 
 const props = defineProps({
     resource: {
@@ -82,6 +83,11 @@ const stateValue = computed(() => props.resource?.state ?? props.resource?._data
 const autoUpdateValue = computed(() => {
     const v = props.resource?.auto_update ?? props.resource?._data?.auto_update;
     return typeof v === 'boolean' ? v : null;
+});
+
+const ingredients = computed(() => {
+    const raw = props.resource?.recipe_ingredients ?? props.resource?._data?.recipe_ingredients ?? [];
+    return Array.isArray(raw) ? raw : [];
 });
 
 // Champs à afficher dans la vue large sous forme de badges (principaux)
@@ -439,6 +445,13 @@ const getBadgeAutoParams = (fieldKey) => {
             </div>
             </div>
         </div>
+
+        <!-- Ingrédients (recette) -->
+        <ResourceIngredientsList
+            v-if="ingredients.length > 0"
+            :ingredients="ingredients"
+            class="mt-4"
+        />
     </div>
 </template>
 

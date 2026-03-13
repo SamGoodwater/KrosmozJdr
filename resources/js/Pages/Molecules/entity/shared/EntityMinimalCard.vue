@@ -50,7 +50,7 @@ function onLeave() {
     >
         <!-- Compact : définit la taille du slot, ne bouge pas -->
         <div
-            class="entity-minimal-card__compact rounded-lg border border-base-300 overflow-hidden"
+            class="entity-minimal-card__compact border border-base-300 overflow-hidden"
             :class="{ 'opacity-0 pointer-events-none': showExpanded && canHover }"
         >
             <slot name="compact" />
@@ -97,9 +97,9 @@ function onLeave() {
     max-height: 80vh;
     z-index: 1;
     /* Sous les tooltips (typiquement 9999) */
-    border-radius: var(--rounded-box, 0.5rem);
+    border-radius: var(--rounded-box, 0.1rem);
     border: 1px solid var(--color-base-300, oklch(var(--b3)));
-    background: oklch(var(--b1) / 0.85);
+    background: oklch(var(--b1) / 0.95);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     box-shadow: 0 8px 24px oklch(0 0 0 / 0.15);
