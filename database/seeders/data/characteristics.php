@@ -2302,8 +2302,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  // —— Capability / Spell : temps d'incantation, durée, relance, rituel ——
-  153 =>
+  153 => 
   array (
     'key' => 'casting_time_spell',
     'name' => 'Temps d\'incantation',
@@ -2318,7 +2317,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  154 =>
+  154 => 
   array (
     'key' => 'duration_spell',
     'name' => 'Durée',
@@ -2333,7 +2332,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  155 =>
+  155 => 
   array (
     'key' => 'time_before_use_again_spell',
     'name' => 'Temps avant réutilisation',
@@ -2348,7 +2347,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  156 =>
+  156 => 
   array (
     'key' => 'ritual_available_spell',
     'name' => 'Rituel disponible',

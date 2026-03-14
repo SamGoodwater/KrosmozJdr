@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
+use App\Mail\NotificationMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**

@@ -15,6 +15,11 @@
     "description": "Documentation du système d’envoi d’emails : templates, Mailables, configuration."
   },
   {
+    "path": "00-Project/FEEDBACK_SYSTEM.md",
+    "title": "Système de retour utilisateur (feedback) — Krosmoz-JDR",
+    "description": "Documentation du système permettant aux visiteurs et utilisateurs de remonter aux admins des signalements (bug, erreur, suggestion, autre)."
+  },
+  {
     "path": "00-Project/GLOBAL_DESCRIPTION.md",
     "title": "",
     "description": "Ce projet est un site web. Il est responsive et utilise les dernières recommandations concernant la sécurité informatique. Le développeur du projet communique en français."

@@ -4,9 +4,8 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Mail\NotificationMail;
 use App\Services\NotificationService;
 
 /**
@@ -57,13 +56,9 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $mail = (new MailMessage)
-            ->subject('Ton profil a été modifié')
-            ->greeting('Bonjour !')
-            ->line("Ton profil a été modifié par {$this->modifier->name}.");
-
+        $lines = ["Ton profil a été modifié par {$this->modifier->name}."];
         if (!empty($this->changes)) {
-            $mail->line('Changements principaux :');
+            $lines[] = 'Changements principaux :';
             $displayed = 0;
             foreach ($this->changes as $field => $change) {
                 if ($displayed >= 3) break;
@@ -73,17 +68,22 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
                 if (!empty($change['image_url'])) {
                     $line .= " (voir l'image : " . $change['image_url'] . ")";
                 }
-                $mail->line($line);
+                $lines[] = $line;
                 $displayed++;
             }
             if (count($this->changes) > 3) {
-                $mail->line('...et d\'autres changements.');
+                $lines[] = '...et d\'autres changements.';
             }
         }
-
-        $mail->action('Voir mon profil', url("/users/{$this->modifiedUser->id}"))
-            ->line('Si tu n\'es pas à l\'origine de cette modification, contacte un administrateur.');
-        return $mail;
+        $url = url("/users/{$this->modifiedUser->id}");
+        return new NotificationMail(
+            subject: 'Ton profil a été modifié',
+            greeting: 'Bonjour !',
+            lines: $lines,
+            actionUrl: $url,
+            actionText: 'Voir mon profil',
+            footer: 'Si tu n\'es pas à l\'origine de cette modification, contacte un administrateur.',
+        );
     }
 
     /**

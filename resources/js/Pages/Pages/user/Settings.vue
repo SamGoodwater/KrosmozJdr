@@ -130,10 +130,31 @@ function setNotificationPreference(typeKey, channels) {
     formNotifications.notification_preferences[typeKey] = Array.isArray(channels) ? [...channels].sort() : [];
 }
 
+/** Extrait les canaux depuis le format backend { channels: [...], frequency } ou tableau direct. */
+function channelsFromPref(val) {
+    if (Array.isArray(val)) return val;
+    if (val && typeof val === 'object' && Array.isArray(val.channels)) return val.channels;
+    return [];
+}
+
 function preferenceChannelsValue(typeKey) {
-    const ch = formNotifications.notification_preferences?.[typeKey];
-    if (!Array.isArray(ch)) return '[]';
+    const ch = channelsFromPref(formNotifications.notification_preferences?.[typeKey]);
     return JSON.stringify([...ch].sort());
+}
+
+/** Normalise les préférences backend (format { type: { channels, frequency } }) en format formulaire (type: [...]). */
+function normalizePrefsChannels(prefs) {
+    const result = {};
+    for (const [key, val] of Object.entries(prefs)) {
+        if (Array.isArray(val)) {
+            result[key] = val;
+        } else if (val && typeof val === 'object' && Array.isArray(val.channels)) {
+            result[key] = val.channels;
+        } else {
+            result[key] = [];
+        }
+    }
+    return result;
 }
 
 function initNotificationForm() {
@@ -144,7 +165,8 @@ function initNotificationForm() {
     const defaultPrefs = Object.fromEntries(
         Object.keys(types).map((k) => [k, types[k].channels_default || ['database']])
     );
-    formNotifications.notification_preferences = { ...defaultPrefs, ...prefs };
+    const normalizedPrefs = normalizePrefsChannels(prefs);
+    formNotifications.notification_preferences = { ...defaultPrefs, ...normalizedPrefs };
 }
 
 function saveNotifications() {

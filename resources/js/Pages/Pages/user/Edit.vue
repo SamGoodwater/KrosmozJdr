@@ -77,7 +77,13 @@ const initializeForms = (userData) => {
     const defaultPrefs = Object.fromEntries(
         Object.keys(types).map((k) => [k, types[k].channels_default || ['database']])
     );
-    formProfile.notification_preferences = { ...defaultPrefs, ...prefs };
+    const normalizedPrefs = Object.fromEntries(
+        Object.entries(prefs).map(([key, val]) => [
+            key,
+            Array.isArray(val) ? val : (val?.channels ?? [])
+        ])
+    );
+    formProfile.notification_preferences = { ...defaultPrefs, ...normalizedPrefs };
 };
 
 // Surveiller le computed user pour initialiser les formulaires dès que les données sont disponibles

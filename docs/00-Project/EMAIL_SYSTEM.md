@@ -13,18 +13,23 @@ Documentation du système d’envoi d’emails : templates, Mailables, configura
 
 ```
 resources/views/emails/
-├── layout.blade.php         # Layout de base (header, content, footer)
-├── verify-email.blade.php   # Template vérification email (HTML)
-├── verify-email-text.blade.php # Version texte brut (URL avec & pour copie depuis logs)
-└── components/              # Composants réutilisables (futur)
+├── layout.blade.php          # Layout de base (header, content, footer)
+├── verify-email.blade.php    # Template vérification email (HTML)
+├── verify-email-text.blade.php # Version texte brut vérification (URL avec & pour copie depuis logs)
+├── notification.blade.php    # Template générique notifications (HTML)
+├── notification-text.blade.php # Version texte brut notifications
+├── feedback.blade.php        # Retour utilisateur (HTML)
+├── feedback-text.blade.php   # Version texte brut feedback
+└── components/               # Composants réutilisables (futur)
 ```
 
 Le layout expose `@yield('title')`, `@yield('content')`, `@yield('footer')`.
 
 ## 3. Mailables
 
-- **`App\Mail\BaseMailable`** : Mailable de base (layout, conventions)
 - **`App\Mail\VerifyEmailMail`** : Email de vérification (lien signé, 60 min par défaut)
+- **`App\Mail\NotificationMail`** : Mailable générique pour les notifications métier (entités, profil, digest, etc.). Utilise le layout emails commun. Utilisé par les notifications Laravel (ProfileModifiedNotification, EntityModifiedNotification, NewUserCreatedNotification, etc.)
+- **`App\Mail\FeedbackMail`** : Retour utilisateur (bug, erreur, suggestion, autre) envoyé aux admins. Voir [FEEDBACK_SYSTEM.md](FEEDBACK_SYSTEM.md).
 
 Pour créer un nouvel email : créer une Mailable dans `app/Mail/`, utiliser une vue dans `resources/views/emails/`.
 

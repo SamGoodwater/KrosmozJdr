@@ -462,6 +462,13 @@
     "file": "feedback/NotificationContainer.vue"
   },
   {
+    "name": "FeedbackFab",
+    "description": "FeedbackFab Organism",
+    "props": [],
+    "slots": [],
+    "file": "feedback/FeedbackFab.vue"
+  },
+  {
     "name": "EntityRelationsManager",
     "description": "EntityRelationsManager Organism",
     "props": [

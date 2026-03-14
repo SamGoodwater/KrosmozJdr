@@ -4,9 +4,8 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Mail\NotificationMail;
 use App\Services\NotificationService;
 
 /**
@@ -77,13 +76,10 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $mail = (new MailMessage)
-            ->subject('Modification d\'une entité')
-            ->greeting('Bonjour !')
-            ->line("L'entité {$this->entityType} : '{$this->entityName}' (ID: {$this->entityId}) a été modifiée par {$this->modifier->name}.");
-
+        $linkUrl = $this->url ?? url("/{$this->entityType}/{$this->entityId}");
+        $lines = ["L'entité {$this->entityType} : '{$this->entityName}' (ID: {$this->entityId}) a été modifiée par {$this->modifier->name}."];
         if (!empty($this->changes)) {
-            $mail->line('Changements principaux :');
+            $lines[] = 'Changements principaux :';
             $displayed = 0;
             foreach ($this->changes as $field => $change) {
                 if ($displayed >= 3) break;
@@ -93,18 +89,21 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
                 if (!empty($change['image_url'])) {
                     $line .= " (voir l'image : " . $change['image_url'] . ")";
                 }
-                $mail->line($line);
+                $lines[] = $line;
                 $displayed++;
             }
             if (count($this->changes) > 3) {
-                $mail->line('...et d\'autres changements.');
+                $lines[] = '...et d\'autres changements.';
             }
         }
-
-        $linkUrl = $this->url ?? url("/{$this->entityType}/{$this->entityId}");
-        $mail->action('Voir l\'entité', $linkUrl)
-            ->line('Merci d\'utiliser Krosmoz JDR.');
-        return $mail;
+        return new NotificationMail(
+            subject: 'Modification d\'une entité',
+            greeting: 'Bonjour !',
+            lines: $lines,
+            actionUrl: $linkUrl,
+            actionText: 'Voir l\'entité',
+            footer: 'Merci d\'utiliser Krosmoz JDR.',
+        );
     }
 
     /**

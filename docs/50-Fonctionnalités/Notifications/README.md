@@ -37,6 +37,17 @@ L’historique temporaire (onglet « Temporaires » du centre) reçoit aussi les
 - **NotificationService** : chaque envoi utilise le type (ex. `entity_modified`, `entity_created`, `profile_modified`) et n’envoie que si l’utilisateur a activé au moins un canal pour ce type.
 - **NotificationService** : envoi immédiat si fréquence `instant`, sinon enregistrement en `notification_digest_queue` ; respect des canaux et du type (entity / page_section / profile / admin).
 - **Paramétrage utilisateur** : page « Mon compte » → « Modifier » ; section « Notifications » avec par type : canaux (Aucune / Sur le site / Par email / Les deux) et fréquence (Au fur et à mesure / Quotidienne / Hebdomadaire / Mensuelle). Données : `notificationTypes`, `notificationChannelsLabels`, `notificationFrequencies`.
+- **Mapping frontend/backend** : le formulaire envoie `notification_preferences[typeKey] = ['database'|'mail']` ; le `UserController` normalise en `{ channels: [...], frequency }` ; `initNotificationForm` (Settings, Edit) extrait les canaux depuis le format backend via `normalizePrefsChannels` / `channelsFromPref`.
+
+## Emails de notification (canal mail)
+
+Lorsqu’un utilisateur a activé le canal **mail** pour un type de notification, le contenu est envoyé par email via les templates personnalisés (layout commun avec VerifyEmail).
+
+- **Mailable** : `App\Mail\NotificationMail` — sujet, salutation, lignes de contenu, bouton d’action (optionnel).
+- **Templates** : `emails/notification.blade.php` (HTML), `emails/notification-text.blade.php` (texte brut, URL avec `&` pour copie depuis logs).
+- **Notifications migrées** : `ProfileModifiedNotification`, `EntityModifiedNotification`, `NewUserCreatedNotification`, `UserDeletedNotification`, `LastConnectionNotification`, `DigestNotification`, `ProjectMaintenanceNotification`.
+- **Pipeline** : `NotificationService` → `getChannelsForNotificationType()` / `wantsNotificationForType()` → `via()` inclut `'mail'` si activé → `toMail()` retourne `NotificationMail`.
+- **Voir** : [docs/00-Project/EMAIL_SYSTEM.md](../../00-Project/EMAIL_SYSTEM.md).
 
 ## Types métier (backend)
 

@@ -17,6 +17,7 @@ require __DIR__ . '/web/statics.php';
 require __DIR__ . '/web/notifications.php';
 require __DIR__ . '/web/user.php';
 require __DIR__ . '/web/file.php';
+require __DIR__ . '/web/feedback.php';
 require __DIR__ . '/web/page.php';
 
 require __DIR__ . '/admin/characteristics.php';

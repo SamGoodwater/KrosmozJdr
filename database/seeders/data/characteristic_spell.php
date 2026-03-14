@@ -726,8 +726,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  // —— Capability : temps d'incantation, durée, relance, rituel ——
-  44 =>
+  44 => 
   array (
     'characteristic_key' => 'casting_time_spell',
     'entity' => '*',
@@ -742,7 +741,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  45 =>
+  45 => 
   array (
     'characteristic_key' => 'duration_spell',
     'entity' => '*',
@@ -757,7 +756,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  46 =>
+  46 => 
   array (
     'characteristic_key' => 'time_before_use_again_spell',
     'entity' => '*',
@@ -772,7 +771,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  47 =>
+  47 => 
   array (
     'characteristic_key' => 'ritual_available_spell',
     'entity' => '*',

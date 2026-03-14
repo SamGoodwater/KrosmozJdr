@@ -30,6 +30,7 @@ import { useNotificationProvider } from "@/Composables/providers/useNotification
 import { useFlashNotifications } from "@/Composables/notifications/useFlashNotifications";
 import CookieConsentBanner from "@/Pages/Molecules/privacy/CookieConsentBanner.vue";
 import PendingErasureBanner from "@/Pages/Molecules/privacy/PendingErasureBanner.vue";
+import FeedbackFab from "@/Pages/Organismes/feedback/FeedbackFab.vue";
 
 // Centralisation des classes Tailwind pour le layout
 const ASIDE_WIDTH_CLASS = 'w-64'      // 16rem = 256px
@@ -239,6 +240,7 @@ onUnmounted(() => {
 
         <!-- Notifications -->
         <NotificationContainer />
+        <FeedbackFab />
         <CookieConsentBanner />
     </div>
 </template>
