@@ -13,12 +13,21 @@ class EmailVerificationNotificationController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('user.show', $request->user(), absolute: false));
+        $user = $request->user();
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->intended(route('user.show', $user, absolute: false));
         }
 
-        $request->user()->sendEmailVerificationNotification();
+        if (empty(trim((string) ($user->getEmailForVerification() ?? '')))) {
+            return redirect()->route('verification.notice')
+                ->with('error', 'Impossible d\'envoyer l\'email : aucune adresse associée à ce compte.');
+        }
 
-        return back()->with('status', 'verification-link-sent');
+        $user->sendEmailVerificationNotification();
+
+        return redirect()
+            ->route('verification.notice')
+            ->with('status', 'verification-link-sent')
+            ->with('success', 'Un nouveau lien de vérification a été envoyé à ton adresse email.');
     }
 }

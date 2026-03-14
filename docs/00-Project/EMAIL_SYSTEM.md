@@ -6,16 +6,17 @@ Documentation du système d’envoi d’emails : templates, Mailables, configura
 
 - **Fichier** : `config/mail.php`
 - **Variables .env** : `MAIL_MAILER`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`
-- **En développement** : mailer par défaut `log` — les mails sont écrits dans `storage/logs/laravel.log`
+- **En développement** : mailer par défaut `log` — les mails sont écrits dans `storage/logs/laravel.log`. Pour les liens signés (ex. vérification email), copier l’URL depuis la partie `text/plain` du log (URL avec `&` brut), pas depuis le HTML (`&amp;` invalide la signature). Préférer [Mailpit](https://github.com/axllent/mailpit) ou [MailHog](https://github.com/mailhog/MailHog) pour tester les liens par clic.
 - **Production** : configurer SMTP, Resend, Postmark ou un autre driver dans `.env`
 
 ## 2. Structure des templates
 
 ```
 resources/views/emails/
-├── layout.blade.php       # Layout de base (header, content, footer)
-├── verify-email.blade.php # Template vérification email
-└── components/            # Composants réutilisables (futur)
+├── layout.blade.php         # Layout de base (header, content, footer)
+├── verify-email.blade.php   # Template vérification email (HTML)
+├── verify-email-text.blade.php # Version texte brut (URL avec & pour copie depuis logs)
+└── components/              # Composants réutilisables (futur)
 ```
 
 Le layout expose `@yield('title')`, `@yield('content')`, `@yield('footer')`.
@@ -45,6 +46,7 @@ public function toMail($notifiable)
 - **Logic** : `User::hasVerifiedEmail()` retourne `true` si `email_verified_at` OU si un compte OAuth est lié
 - **Notification** : `App\Notifications\VerifyEmailNotification` utilise `VerifyEmailMail`
 - **Config expiration** : `config/auth.php` → `verification.expire` (minutes, variable `EMAIL_VERIFICATION_EXPIRE`)
+- **MAIL_MAILER=log** : les emails sont écrits dans `storage/logs/laravel.log`. Pour copier le lien de vérification, utilise la partie **texte brut** (Content-Type: text/plain) du log — l’URL y contient les bons caractères `&`. Si tu copies depuis la partie HTML, remplace `&amp;` par `&` dans l’URL. Alternative : [Mailpit](https://github.com/axllent/mailpit) ou [MailHog](https://github.com/mailhog/MailHog) pour prévisualiser les emails en local.
 
 ## 6. Utilisation ailleurs
 

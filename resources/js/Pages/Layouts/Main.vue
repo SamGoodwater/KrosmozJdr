@@ -43,9 +43,10 @@ const { isMobile, isTablet, isDesktop } = useDevice();
 const { isSidebarOpen, toggleSidebar, closeSidebar } = useSidebar();
 
 // Provider de notifications pour toute l'application
-useNotificationProvider();
+const notificationStore = useNotificationProvider();
 // Affiche les messages flash Laravel (success, error, warning, info) en toasts
-useFlashNotifications();
+// On passe le store explicitement car le composant qui provide() ne peut pas s'injecter ses propres valeurs
+useFlashNotifications(notificationStore);
 
 // Computed pour déterminer le comportement responsive
 const isDesktopMode = computed(() => isDesktop.value);

@@ -1,24 +1,30 @@
 <script setup>
 import { computed } from "vue";
-// import GuestLayout from '@/Layouts/GuestLayout.vue';
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, useForm, usePage } from "@inertiajs/vue3";
 import Route from "@/Pages/Atoms/action/Route.vue";
 
 const props = defineProps({
     status: {
         type: String,
+        default: null,
     },
 });
 
+const page = usePage();
 const form = useForm({});
 
 const submit = () => {
-    form.post(route("verification.send"));
+    form.post(route("verification.send"), {
+        preserveState: false,
+    });
 };
 
+/** Status depuis la prop ou le flash Inertia (après redirect). */
 const verificationLinkSent = computed(
-    () => props.status === "verification-link-sent",
+    () =>
+        props.status === "verification-link-sent" ||
+        page.props.flash?.status === "verification-link-sent",
 );
 </script>
 
@@ -40,24 +46,23 @@ const verificationLinkSent = computed(
         as fournie lors de l'inscription.
     </div>
 
-    <form @submit.prevent="submit">
-        <div class="mt-4 flex items-center justify-between">
+    <div class="mt-4 flex flex-wrap items-center gap-3">
+        <form @submit.prevent="submit" class="contents">
             <Btn
+                type="submit"
                 :disabled="form.processing"
                 :class="{ 'opacity-25': form.processing }"
             >
                 Renvoyer l'email de vérification
             </Btn>
-
-            <Route
-                route="logout"
-                method="post"
-                as="button"
-                color="neutral"
-                variant="ghost"
-            >
-                Se déconnecter
-            </Route>
-        </div>
-    </form>
+        </form>
+        <Route
+            route="logout"
+            method="post"
+            color="neutral"
+            variant="ghost"
+        >
+            Se déconnecter
+        </Route>
+    </div>
 </template>

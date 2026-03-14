@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Mail\VerifyEmailMail;
 use Illuminate\Auth\Notifications\VerifyEmail as VerifyEmailBase;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
@@ -15,11 +14,11 @@ use Illuminate\Support\Facades\URL;
  * Notification de vérification d'email pour les comptes classiques.
  *
  * Remplace la notification Laravel par défaut pour utiliser notre Mailable
- * et layout emails.
+ * et layout emails. Envoi synchrone pour que l'utilisateur voie l'email immédiatement.
  *
  * @see docs/00-Project/EMAIL_SYSTEM.md
  */
-class VerifyEmailNotification extends VerifyEmailBase implements ShouldQueue
+class VerifyEmailNotification extends VerifyEmailBase
 {
     use Queueable;
 

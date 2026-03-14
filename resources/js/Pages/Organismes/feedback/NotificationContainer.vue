@@ -22,39 +22,48 @@ import NotificationToast from '@/Pages/Molecules/feedback/NotificationToast.vue'
 
 const { notificationsByPlacement, removeNotification } = useNotificationStore();
 
-// Les 4 placements supportés
+// Placements supportés (top-center utilisé par Login, Register, etc.)
 const placements = [
     'top-left',
-    'top-right', 
+    'top-center',
+    'top-right',
     'bottom-left',
     'bottom-right',
 ];
 
 // Fonctions utilitaires pour le placement
 const getVertical = (placement) => placement.includes('top') ? 'top' : 'bottom';
-const getHorizontal = (placement) => placement.includes('right') ? 'right' : 'left';
+const getHorizontal = (placement) => {
+    if (placement.includes('center')) return 'center';
+    return placement.includes('right') ? 'right' : 'left';
+};
 
 // Classes CSS pour le positionnement
 const getPositionClasses = (placement) => {
     const vertical = getVertical(placement);
     const horizontal = getHorizontal(placement);
+    const isCenter = horizontal === 'center';
+    
+    const containerClasses = [
+        'fixed z-50 pointer-events-none',
+        vertical === 'top' ? 'top-4' : 'bottom-4',
+        'flex flex-col gap-2',
+    ];
+    if (isCenter) {
+        containerClasses.push('left-1/2 -translate-x-1/2');
+    } else {
+        containerClasses.push(horizontal === 'right' ? 'right-4' : 'left-4');
+    }
     
     return {
-        container: [
-            'fixed z-50 pointer-events-none',
-            vertical === 'top' ? 'top-4' : 'bottom-4',
-            horizontal === 'right' ? 'right-4' : 'left-4',
-            'flex flex-col gap-2',
-        ],
+        container: containerClasses,
         scrollContainer: [
             'max-h-[calc(100vh-2rem)]',
             'overflow-y-auto',
             'scrollbar-thin scrollbar-thumb-base-300 scrollbar-track-transparent',
             'pointer-events-auto',
-            // Utiliser grid pour contrôler l'alignement des notifications contractées
             'grid grid-cols-1 gap-2',
-            // Justification selon le placement
-            horizontal === 'right' ? 'justify-items-end' : 'justify-items-start',
+            isCenter ? 'justify-items-center' : (horizontal === 'right' ? 'justify-items-end' : 'justify-items-start'),
         ]
     };
 };

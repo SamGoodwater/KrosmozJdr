@@ -92,6 +92,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => session('error'),
                 'warning' => fn () => session('warning'),
                 'info' => fn () => session('info'),
+                'status' => fn () => session('status'),
             ],
             /**
              * Permissions globales (par entité) exposées au frontend.

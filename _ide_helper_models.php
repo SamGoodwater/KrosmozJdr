@@ -1594,6 +1594,15 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount provider(string $provider)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereAvatarUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereProvider($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereProviderEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereProviderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereProviderName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereUserId($value)
  */
 	class OAuthAccount extends \Eloquent {}
 }
@@ -2519,6 +2528,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastLoginAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNotificationPreferences($value)
  */
-	class User extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
+	class User extends \Eloquent implements \Spatie\MediaLibrary\HasMedia, \Illuminate\Contracts\Auth\MustVerifyEmail {}
 }
 
