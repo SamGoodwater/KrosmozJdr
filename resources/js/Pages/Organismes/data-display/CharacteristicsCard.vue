@@ -27,8 +27,8 @@ const emit = defineEmits(["update:levelEffective"]);
 
 const cardClass = computed(() =>
     props.dense
-        ? "characteristics-card rounded-lg border border-base-300 bg-base-100 p-2 shadow-sm"
-        : "characteristics-card rounded-xl border border-base-300 bg-base-100 p-4 shadow-sm",
+        ? "characteristics-card rounded-box border border-base-300 bg-base-100 p-2 shadow-sm"
+        : "characteristics-card rounded-box border border-base-300 bg-base-100 p-4 shadow-sm",
 );
 const spaceClass = computed(() => (props.dense ? "space-y-2" : "space-y-4"));
 

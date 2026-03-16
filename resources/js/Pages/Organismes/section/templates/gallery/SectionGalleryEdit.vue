@@ -206,7 +206,7 @@ const addSectionFileToGallery = (file) => {
         <div
           v-for="file in sectionFiles"
           :key="file.id"
-          class="rounded-lg border border-base-300 p-2 flex items-center justify-between gap-2"
+          class="rounded-box border border-base-300 p-2 flex items-center justify-between gap-2"
         >
           <div class="min-w-0">
             <p class="text-xs font-medium truncate">{{ file.title || file.url || file.file }}</p>
@@ -234,7 +234,7 @@ const addSectionFileToGallery = (file) => {
     <div
       v-for="(image, index) in localImages"
       :key="index"
-      class="rounded-lg border border-base-300 p-3 space-y-2"
+      class="rounded-box border border-base-300 p-3 space-y-2"
     >
       <div class="flex items-center justify-between">
         <span class="text-xs font-semibold text-base-content/70">Image {{ index + 1 }}</span>

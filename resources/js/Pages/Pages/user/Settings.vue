@@ -266,7 +266,7 @@ function goBackToProfile() {
             v-show="activeTab === TAB_NOTIFICATIONS"
             class="space-y-4"
         >
-            <div class="rounded-lg border border-base-300 bg-base-200/30 p-4">
+            <div class="rounded-box border border-base-300 bg-base-200/30 p-4">
                 <h2 class="text-lg font-medium text-content-300">Préférences de notification</h2>
                 <p class="mt-1 text-sm text-content-600">
                     Choisissez quelles notifications recevoir et comment (sur le site, par email, ou les deux).
@@ -321,7 +321,7 @@ function goBackToProfile() {
             v-show="activeTab === TAB_CONNECTIONS"
             class="space-y-4"
         >
-            <div class="rounded-lg border border-base-300 bg-base-200/30 p-4">
+            <div class="rounded-box border border-base-300 bg-base-200/30 p-4">
                 <h2 class="text-lg font-medium text-content-300">Connexions OAuth</h2>
                 <p class="mt-1 text-sm text-content-600">
                     Lie ou délie GitHub, Discord ou Steam pour te connecter avec plusieurs méthodes. Tu peux te connecter avec n'importe quel compte lié.
@@ -336,7 +336,7 @@ function goBackToProfile() {
                     <div
                         v-for="provider in oauthProviders"
                         :key="provider"
-                        class="flex flex-wrap items-center justify-between gap-4 py-4 px-3 rounded-lg bg-base-100/50 border border-base-300/50"
+                        class="flex flex-wrap items-center justify-between gap-4 py-4 px-3 rounded-box bg-base-100/50 border border-base-300/50"
                     >
                         <div class="flex items-center gap-3 min-w-0">
                             <i :class="providerIcon(provider)" class="text-2xl text-content-400 shrink-0"></i>
@@ -403,7 +403,7 @@ function goBackToProfile() {
 
             <div
                 v-if="!hasPassword"
-                class="rounded-lg border border-base-300 bg-base-200/30 p-4"
+                class="rounded-box border border-base-300 bg-base-200/30 p-4"
             >
                 <h2 class="text-lg font-medium text-content-300">Définir un mot de passe</h2>
                 <p class="mt-1 text-sm text-content-600">

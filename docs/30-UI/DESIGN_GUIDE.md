@@ -211,9 +211,9 @@ color-scheme: "dark";
 --color-warning-content: "#161202";
 --color-error: "#f87171";
 --color-error-content: "#150404";
---radius-selector: 1rem;
---radius-field: 0.5rem;
---radius-box: 1rem;
+--radius-selector: 0.125rem;
+--radius-field: 0.125rem;
+--radius-box: 0.125rem;
 --size-selector: 0.25rem;
 --size-field: 0.25rem;
 --border: 1px;
@@ -246,9 +246,9 @@ color-scheme: "light";
 --color-warning-content: "#161202";
 --color-error: "#f87171";
 --color-error-content: "#150404";
---radius-selector: 1rem;
---radius-field: 0.5rem;
---radius-box: 1rem;
+--radius-selector: 0.125rem;
+--radius-field: 0.125rem;
+--radius-box: 0.125rem;
 --size-selector: 0.25rem;
 --size-field: 0.25rem;
 --border: 1px;
@@ -257,6 +257,8 @@ color-scheme: "light";
 ```
 
 ## 4. Style général
+
+Le projet adopte un style **glass, carré et sombre** : thème dark par défaut, border-radius réduits (0.125rem) pour un rendu plutôt carré que rond, effet glassmorphism sur cartes et panels, animations discrètes (transitions 200–300ms, scale léger au hover).
 
 - Icônes FontAwesome et icônes Dofus spécifiques (stockées dans Laravel storage).
 - Images compressées et converties en webp si possible.

@@ -67,6 +67,7 @@ class UserSeeder extends Seeder
             'role' => User::ROLE_SUPER_ADMIN, // super_admin = 5
             'password' => Hash::make('0000'),
             'avatar' => User::DEFAULT_AVATAR,
+            'email_verified_at' => now(),
             'notifications_enabled' => true,
             'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
             'is_system' => false,
@@ -80,6 +81,7 @@ class UserSeeder extends Seeder
             'role' => User::ROLE_USER, // user = 1
             'password' => Hash::make('password'),
             'avatar' => User::DEFAULT_AVATAR,
+            'email_verified_at' => now(),
             'notifications_enabled' => true,
             'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
             'is_system' => false,
@@ -92,6 +94,7 @@ class UserSeeder extends Seeder
             'role' => User::ROLE_ADMIN, // admin = 4
             'password' => Hash::make('password'),
             'avatar' => User::DEFAULT_AVATAR,
+            'email_verified_at' => now(),
             'notifications_enabled' => true,
             'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
             'is_system' => false,
@@ -104,6 +107,7 @@ class UserSeeder extends Seeder
             'role' => User::ROLE_GAME_MASTER, // game_master = 3
             'password' => Hash::make('password'),
             'avatar' => User::DEFAULT_AVATAR,
+            'email_verified_at' => now(),
             'notifications_enabled' => true,
             'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
             'is_system' => false,
@@ -116,6 +120,7 @@ class UserSeeder extends Seeder
             'role' => User::ROLE_PLAYER, // player = 2
             'password' => Hash::make('password'),
             'avatar' => User::DEFAULT_AVATAR,
+            'email_verified_at' => now(),
             'notifications_enabled' => true,
             'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
             'is_system' => false,

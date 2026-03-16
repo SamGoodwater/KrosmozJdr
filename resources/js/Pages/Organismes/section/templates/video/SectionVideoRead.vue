@@ -114,7 +114,7 @@ onUnmounted(() => {
     <div v-if="canRenderEmbed" class="aspect-video">
       <iframe
         :src="resolvedEmbedUrl"
-        class="w-full h-full rounded-lg"
+        class="w-full h-full rounded-box"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowfullscreen
@@ -122,7 +122,7 @@ onUnmounted(() => {
     </div>
     <div
       v-else-if="resolvedEmbedUrl && needsThirdPartyCookies"
-      class="text-center text-base-content/75 py-8 border border-base-300 rounded-lg space-y-3"
+      class="text-center text-base-content/75 py-8 border border-base-300 rounded-box space-y-3"
     >
       <div class="inline-flex items-center gap-2 badge badge-soft badge-neutral">
         <i class="fa-solid fa-cookie-bite"></i>
@@ -135,7 +135,7 @@ onUnmounted(() => {
         </button>
       </div>
     </div>
-    <div v-else-if="shouldForceDirectDownload" class="text-center text-base-content/70 py-8 border border-base-300 rounded-lg space-y-3">
+    <div v-else-if="shouldForceDirectDownload" class="text-center text-base-content/70 py-8 border border-base-300 rounded-box space-y-3">
       <div class="inline-flex items-center gap-2 badge badge-soft badge-neutral">
         <i class="fa-solid fa-file-arrow-down"></i>
         <span>Vidéo directe</span>
@@ -150,7 +150,7 @@ onUnmounted(() => {
     <div v-else-if="resolvedDirectUrl" class="aspect-video">
       <video
         :src="resolvedDirectUrl"
-        class="w-full h-full rounded-lg"
+        class="w-full h-full rounded-box"
         :autoplay="autoplay"
         :controls="controls"
       >

@@ -214,12 +214,12 @@ defineExpose({
     <Transition name="drag-overlay">
       <div 
         v-if="isDragging" 
-        class="drag-overlay absolute inset-0 z-[100] flex items-center justify-center rounded-lg"
+        class="drag-overlay absolute inset-0 z-[100] flex items-center justify-center rounded-box"
         @dragenter.prevent
         @dragover.prevent
         @drop.prevent
       >
-        <div class="drag-overlay-content text-center p-8 rounded-xl">
+        <div class="drag-overlay-content text-center p-8 rounded-box">
           <div class="mb-4">
             <i class="fa-solid fa-cloud-arrow-up text-6xl text-primary animate-bounce"></i>
           </div>

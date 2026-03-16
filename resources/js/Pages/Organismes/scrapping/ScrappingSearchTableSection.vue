@@ -408,7 +408,7 @@ const exportBatchPreviewCsv = () => {
             </div>
 
             <!-- Résultat prévisualisation batch (ID | Nom | Statut | Message) -->
-            <div v-if="batchPreviewResults.length > 0" class="mt-4 overflow-hidden rounded-lg border border-base-300 bg-base-100">
+            <div v-if="batchPreviewResults.length > 0" class="mt-4 overflow-hidden rounded-box border border-base-300 bg-base-100">
                 <div class="flex flex-wrap items-center justify-between gap-2 border-b border-base-300 px-3 py-2">
                     <span class="font-semibold text-primary-100 text-sm">Résultat prévisualisation ({{ batchPreviewResults.length }} ligne(s))</span>
                     <div class="flex items-center gap-2">
@@ -445,7 +445,7 @@ const exportBatchPreviewCsv = () => {
             </div>
 
             <!-- Détail des erreurs du dernier import batch -->
-            <div v-if="lastBatchErrorResults.length > 0" class="mt-4 overflow-hidden rounded-lg border border-error/30 bg-error/5">
+            <div v-if="lastBatchErrorResults.length > 0" class="mt-4 overflow-hidden rounded-box border border-error/30 bg-error/5">
                 <div class="flex flex-wrap items-center justify-between gap-2 border-b border-error/20 bg-error/10 px-3 py-2">
                     <div class="flex items-center gap-2">
                         <Icon source="fa-solid fa-triangle-exclamation" alt="" pack="solid" class="text-error text-sm" />

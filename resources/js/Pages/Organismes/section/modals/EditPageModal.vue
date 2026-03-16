@@ -411,7 +411,7 @@ const handleClose = () => {
                         v-model="formInstance.page_css_classes"
                         label="Classes CSS (conteneur de page)"
                         type="text"
-                        placeholder="Ex: color-breed-500 rounded-lg"
+                        placeholder="Ex: color-breed-500 rounded-box"
                         helper="Classes Tailwind ou personnalisées (ex: color-condition-500 pour une couleur d'entité)"
                     />
                 </div>

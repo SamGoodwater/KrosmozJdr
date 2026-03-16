@@ -268,7 +268,7 @@ function duplicateEffect() {
                 <Link
                     :href="route('admin.effects.create')"
                     :class="[
-                        'sidebar-nav-item flex items-center gap-2 rounded-lg border-l-4 border-transparent px-3 py-2 text-left text-sm font-medium transition-colors',
+                        'sidebar-nav-item flex items-center gap-2 rounded-box border-l-4 border-transparent px-3 py-2 text-left text-sm font-medium transition-colors',
                         selected === 'new' && 'sidebar-nav-item-active'
                     ]"
                 >
@@ -339,7 +339,7 @@ function duplicateEffect() {
                                 <div
                                     v-for="(row, index) in form.effect_sub_effects"
                                     :key="index"
-                                    class="rounded-lg border border-base-300 bg-base-200/30 p-3 space-y-3"
+                                    class="rounded-box border border-base-300 bg-base-200/30 p-3 space-y-3"
                                 >
                                     <div class="flex flex-wrap items-end gap-3">
                                         <div class="min-w-[160px]">

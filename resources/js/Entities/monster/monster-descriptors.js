@@ -346,6 +346,26 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
     },
+    creature_critical_hit: {
+      key: 'creature_critical_hit',
+      general: { label: 'Bonus critique', icon: 'fa-solid fa-crosshairs', tooltip: 'Seuil de critique (0=nat 20, 3=dès 17)' },
+      table: {
+        sortable: true,
+        filterable: { id: 'creature_critical_hit', type: 'text', defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
+      },
+    },
+    creature_heal_bonus: {
+      key: 'creature_heal_bonus',
+      general: { label: 'Bonus soins', icon: 'fa-solid fa-hand-holding-medical', tooltip: 'Bonus ajouté à chaque soin' },
+      table: {
+        sortable: true,
+        filterable: { id: 'creature_heal_bonus', type: 'text', defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
+      },
+    },
     creature_state: {
       key: 'creature_state',
       general: { label: 'État', icon: 'fa-solid fa-circle-info', tooltip: 'État du cycle de vie de la créature' },

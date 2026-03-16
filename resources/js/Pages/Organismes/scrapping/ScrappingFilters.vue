@@ -138,7 +138,7 @@ const coverageColor = computed(() => {
         <template v-else>
             <div
                 v-if="selectedEntityConfigError"
-                class="rounded-lg border border-warning/40 bg-warning/10 p-3 text-xs text-warning-content"
+                class="rounded-box border border-warning/40 bg-warning/10 p-3 text-xs text-warning-content"
             >
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <p class="font-semibold">Configuration mapping incomplete pour cette entite</p>
@@ -158,7 +158,7 @@ const coverageColor = computed(() => {
 
             <div
                 v-if="mappingDiagnostics"
-                class="rounded-lg border border-base-300 bg-base-200/30 p-3 space-y-2"
+                class="rounded-box border border-base-300 bg-base-200/30 p-3 space-y-2"
             >
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-sm font-semibold text-primary-100">Santé du mapping</span>

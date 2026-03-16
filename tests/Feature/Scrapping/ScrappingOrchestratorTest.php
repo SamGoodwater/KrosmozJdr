@@ -328,10 +328,21 @@ class ScrappingOrchestratorTest extends TestCase
             'data' => []
         ];
 
-        Http::fake(function ($request) use ($classData, $spellLevelsData, $spellData, $levelsList) {
+        $spellVariantsData = [
+            'data' => [
+                ['spellIds' => [201]],
+            ],
+            'limit' => 10,
+            'skip' => 0,
+        ];
+
+        Http::fake(function ($request) use ($classData, $spellLevelsData, $spellData, $spellVariantsData) {
             $url = $request->url();
             if (str_contains($url, '/breeds/1')) {
                 return Http::response($classData, 200);
+            }
+            if (str_contains($url, '/spell-variants')) {
+                return Http::response($spellVariantsData, 200);
             }
             if (str_contains($url, '/spell-levels')) {
                 return Http::response($spellLevelsData, 200);

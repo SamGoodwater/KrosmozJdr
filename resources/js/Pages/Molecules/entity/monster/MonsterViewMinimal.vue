@@ -186,7 +186,7 @@ const handleAction = async (actionKey) => {
 <template>
     <div
         data-cy="entity-minimal-card"
-        class="relative rounded-lg border border-base-300 transition-all duration-300 overflow-hidden"
+        class="relative rounded-box border border-base-300 transition-all duration-300 overflow-hidden"
         :class="{ 
             'bg-base-200 shadow-lg': isHovered,
             'bg-base-100': !isHovered

@@ -33,7 +33,9 @@ class NotificationPreferencesControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->patch(route('user.update') . '?redirect=settings', [
+            ->patchJson(route('user.update') . '?redirect=settings', [
+                'name' => $user->name,
+                'email' => $user->email,
                 'notification_preferences' => [
                     'entity_modified' => ['database'],
                     'profile_modified' => ['database', 'mail'],
@@ -41,9 +43,9 @@ class NotificationPreferencesControllerTest extends TestCase
                 ],
             ]);
 
+        // Le contrôleur redirige avec 302 et success
         $response->assertRedirect();
         $response->assertSessionHas('success');
-
         $user->refresh();
         $this->assertIsArray($user->notification_preferences);
 
@@ -64,7 +66,10 @@ class NotificationPreferencesControllerTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)
+            ->from(route('user.edit'))
             ->patch(route('user.update'), [
+                'name' => $user->name,
+                'email' => $user->email,
                 'notification_preferences' => [
                     'entity_modified' => ['mail'], // Format legacy : tableau direct
                 ],
@@ -84,7 +89,10 @@ class NotificationPreferencesControllerTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)
+            ->from(route('user.edit'))
             ->patch(route('user.update'), [
+                'name' => $user->name,
+                'email' => $user->email,
                 'notification_preferences' => [
                     'entity_modified' => ['mail'],
                     'unknown_type' => ['database'], // Type non présent dans config
@@ -107,7 +115,10 @@ class NotificationPreferencesControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
+            ->from(route('user.edit'))
             ->patch(route('user.update'), [
+                'name' => $user->name,
+                'email' => $user->email,
                 'notification_preferences' => [
                     'entity_modified' => [],
                 ],

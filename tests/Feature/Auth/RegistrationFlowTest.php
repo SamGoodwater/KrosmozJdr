@@ -58,7 +58,7 @@ class RegistrationFlowTest extends TestCase
         $response = $this->from(route('register'))
             ->post(route('register'), $userData);
 
-        $response->assertRedirect(route('user.show'));
+        $response->assertRedirect(route('verification.notice'));
         $this->assertDatabaseHas('users', [
             'name' => 'Test User',
             'email' => 'test@example.com',

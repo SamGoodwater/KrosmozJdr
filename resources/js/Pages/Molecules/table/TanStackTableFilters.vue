@@ -369,7 +369,7 @@ const clearAllActiveFilters = () => {
                 <!-- toggle (switch ON=actif, OFF=pas de filtre) -->
                 <div
                     v-if="col.filter.type === 'toggle'"
-                    class="flex items-center justify-between gap-3 w-full rounded-lg border border-base-300 px-2 py-1"
+                    class="flex items-center justify-between gap-3 w-full rounded-box border border-base-300 px-2 py-1"
                 >
                     <div class="flex items-center gap-3">
                         <div class="w-12 flex items-center justify-center shrink-0">
@@ -402,7 +402,7 @@ const clearAllActiveFilters = () => {
                 <!-- boolean (switch) -->
                 <div
                     v-else-if="col.filter.type === 'boolean'"
-                    class="flex items-center justify-between gap-3 w-full rounded-lg border border-base-300 px-2 py-1"
+                    class="flex items-center justify-between gap-3 w-full rounded-box border border-base-300 px-2 py-1"
                 >
                     <div class="flex items-center gap-3">
                         <!-- wrapper fixe pour éviter tout micro-shift de layout -->
@@ -442,7 +442,7 @@ const clearAllActiveFilters = () => {
                 <!-- select => dropdown single -->
                 <div
                     v-else-if="col.filter.type === 'select' && !isBooleanSelect(col)"
-                    class="flex items-center justify-between gap-2 w-full rounded-lg border border-base-300 px-2 py-1"
+                    class="flex items-center justify-between gap-2 w-full rounded-box border border-base-300 px-2 py-1"
                 >
                     <Dropdown placement="bottom-start" :close-on-content-click="false">
                         <template #trigger>
@@ -536,7 +536,7 @@ const clearAllActiveFilters = () => {
                 <!-- select(2 choix booléen) => toggle -->
                 <div
                     v-else-if="col.filter.type === 'select' && isBooleanSelect(col)"
-                    class="flex items-center justify-between gap-3 w-full rounded-lg border border-base-300 px-2 py-1"
+                    class="flex items-center justify-between gap-3 w-full rounded-box border border-base-300 px-2 py-1"
                 >
                     <div class="flex items-center gap-3">
                         <div class="w-12 flex items-center justify-center shrink-0">
@@ -575,7 +575,7 @@ const clearAllActiveFilters = () => {
                 <!-- multi (dropdown + checkboxes) -->
                 <div
                     v-else-if="col.filter.type === 'multi'"
-                    class="flex items-center justify-between gap-2 w-full rounded-lg border border-base-300 px-2 py-1"
+                    class="flex items-center justify-between gap-2 w-full rounded-box border border-base-300 px-2 py-1"
                 >
                     <Dropdown
                         placement="bottom-start"
@@ -757,7 +757,7 @@ const clearAllActiveFilters = () => {
                 </Btn>
             </div>
 
-            <div class="rounded-lg border border-base-300 bg-base-200/30 p-2 flex flex-wrap items-center gap-2">
+            <div class="rounded-box border border-base-300 bg-base-200/30 p-2 flex flex-wrap items-center gap-2">
                 <div
                     v-for="b in activeBadges"
                     :key="b.key"

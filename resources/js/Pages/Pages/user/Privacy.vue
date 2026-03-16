@@ -68,7 +68,7 @@ function onDownloadConfirmed() {
             <span>Ces actions sont sensibles et protégées. Une confirmation de mot de passe récente est requise.</span>
         </div>
 
-        <section class="rounded-lg border border-base-300 bg-base-200/30 p-4 space-y-3">
+        <section class="rounded-box border border-base-300 bg-base-200/30 p-4 space-y-3">
             <h2 class="text-lg font-semibold">Exporter mes données (RGPD)</h2>
             <p class="text-sm text-content-500">
                 Tu peux demander une archive contenant les données liées à ton compte.
@@ -78,7 +78,7 @@ function onDownloadConfirmed() {
             </Btn>
         </section>
 
-        <section class="rounded-lg border border-error/40 bg-error/10 p-4 space-y-3">
+        <section class="rounded-box border border-error/40 bg-error/10 p-4 space-y-3">
             <h2 class="text-lg font-semibold text-error">Supprimer mon compte</h2>
             <p class="text-sm text-content-500">
                 Cette action supprime ton compte et anonymise tes données. Confirme avec ton mot de passe.
@@ -89,7 +89,7 @@ function onDownloadConfirmed() {
             </Btn>
         </section>
 
-        <section class="rounded-lg border border-base-300 bg-base-200/30 p-4 space-y-3">
+        <section class="rounded-box border border-base-300 bg-base-200/30 p-4 space-y-3">
             <h2 class="text-lg font-semibold">Exports disponibles</h2>
             <div v-if="exportsList.length === 0" class="text-sm text-content-500">
                 Aucun export disponible.
@@ -128,7 +128,7 @@ function onDownloadConfirmed() {
             </div>
         </section>
 
-        <section class="rounded-lg border border-base-300 bg-base-200/30 p-4 space-y-3">
+        <section class="rounded-box border border-base-300 bg-base-200/30 p-4 space-y-3">
             <h2 class="text-lg font-semibold">Historique des exports</h2>
             <div v-if="requests.length === 0" class="text-sm text-content-500">
                 Aucune demande.

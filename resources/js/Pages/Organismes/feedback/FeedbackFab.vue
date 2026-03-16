@@ -167,7 +167,7 @@ function submit() {
                         <label
                             v-for="opt in TYPE_OPTIONS"
                             :key="opt.value"
-                            class="label cursor-pointer gap-2 border rounded-lg px-4 py-2 has-[:checked]:border-primary has-[:checked]:bg-primary/10"
+                            class="label cursor-pointer gap-2 border rounded-box px-4 py-2 has-[:checked]:border-primary has-[:checked]:bg-primary/10"
                         >
                             <input
                                 v-model="form.type"

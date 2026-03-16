@@ -1927,7 +1927,7 @@ const handleExport = () => {
 
         <div
             v-if="selectedCount > 0"
-            class="sticky bottom-2 z-20 rounded-lg border border-base-300 px-3 py-2 shadow-md flex items-center justify-between gap-2"
+            class="sticky bottom-2 z-20 rounded-box border border-base-300 px-3 py-2 shadow-md flex items-center justify-between gap-2"
             :class="[bgClass]"
         >
             <div class="text-sm font-medium">
@@ -1982,7 +1982,7 @@ const handleExport = () => {
                                 v-for="row in rowsToRender"
                                 :key="row.id"
                                 class="relative w-full"
-                                :class="{ 'ring-2 ring-primary/50 rounded-lg': isSelected(row) }"
+                                :class="{ 'ring-2 ring-primary/50 rounded-box': isSelected(row) }"
                             >
                                 <div
                                     v-if="showSelectionCheckboxes"
@@ -2017,7 +2017,7 @@ const handleExport = () => {
                 </template>
                 <div
                     v-else
-                    class="text-center py-8 text-base-content/60 rounded-lg border border-dashed border-base-300"
+                    class="text-center py-8 text-base-content/60 rounded-box border border-dashed border-base-300"
                 >
                     <div class="flex flex-col items-center gap-2">
                         <div class="font-medium text-base-content/80">{{ emptyState.title }}</div>
@@ -2056,7 +2056,7 @@ const handleExport = () => {
                             v-for="row in rowsToRender"
                             :key="row.id"
                             class="relative flex-[1_1_280px] min-w-[280px] max-w-full"
-                            :class="{ 'ring-2 ring-primary/50 rounded-lg': isSelected(row) }"
+                            :class="{ 'ring-2 ring-primary/50 rounded-box': isSelected(row) }"
                         >
                             <div
                                 v-if="showSelectionCheckboxes"
@@ -2090,7 +2090,7 @@ const handleExport = () => {
                 </template>
                 <div
                     v-else
-                    class="text-center py-8 text-base-content/60 rounded-lg border border-dashed border-base-300"
+                    class="text-center py-8 text-base-content/60 rounded-box border border-dashed border-base-300"
                 >
                     <div class="flex flex-col items-center gap-2">
                         <div class="font-medium text-base-content/80">{{ emptyState.title }}</div>

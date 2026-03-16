@@ -384,7 +384,7 @@ const displayField = (item, field) => {
             <div
                 v-for="entry in relationEntries"
                 :key="entry.item.id"
-                class="p-3 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
+                class="p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors"
             >
                 <div class="flex items-start justify-between gap-4">
                     <div class="flex-1 min-w-0">
@@ -488,7 +488,7 @@ const displayField = (item, field) => {
                 <!-- Résultats de recherche -->
                 <div
                     v-if="searchQuery && filteredAvailableItems.length > 0"
-                    class="max-h-60 overflow-y-auto border border-base-300 rounded-lg bg-base-100 shadow-lg z-10"
+                    class="max-h-60 overflow-y-auto border border-base-300 rounded-box bg-base-100 shadow-lg z-10"
                 >
                     <div
                         v-for="item in filteredAvailableItems.slice(0, 10)"
@@ -518,7 +518,7 @@ const displayField = (item, field) => {
                 </div>
                 <div
                     v-else-if="searchQuery && filteredAvailableItems.length === 0"
-                    class="p-4 text-center text-base-content/50 text-sm border border-base-300 rounded-lg"
+                    class="p-4 text-center text-base-content/50 text-sm border border-base-300 rounded-box"
                 >
                     Aucun {{ config.itemLabel }} trouvé ou tous les {{ config.itemLabelPlural }} sont déjà liés
                 </div>

@@ -205,7 +205,7 @@ function selectedEffectTargetType(effectId) {
             <div
                 v-for="(u, index) in usages"
                 :key="u.id || 'new-' + index"
-                class="flex flex-wrap items-end gap-3 rounded-lg border border-base-300 bg-base-200/30 p-3"
+                class="flex flex-wrap items-end gap-3 rounded-box border border-base-300 bg-base-200/30 p-3"
             >
                 <div class="min-w-[200px] flex-1">
                     <label class="label text-xs">Effet</label>
@@ -283,7 +283,7 @@ function selectedEffectTargetType(effectId) {
                 <div
                     v-for="(item, i) in previewData"
                     :key="i"
-                    class="rounded border border-base-300 bg-base-200/40 p-3"
+                    class="rounded-box border border-base-300 bg-base-200/40 p-3"
                 >
                     <div class="text-sm flex flex-wrap items-center gap-2">
                         <span class="font-medium">{{ item.effect?.name || item.effect?.slug || 'Effet' }}</span>

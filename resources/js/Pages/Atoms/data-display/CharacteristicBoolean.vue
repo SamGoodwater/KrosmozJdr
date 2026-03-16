@@ -56,7 +56,7 @@ const containerStyle = computed(() => {
 <template>
     <div
         class="characteristic-boolean inline-flex min-w-0 transition-shadow"
-        :class="compact ? 'items-center rounded px-1 py-0.5' : 'flex-col items-center rounded-lg border border-base-300 px-2 py-1.5 backdrop-blur-sm'"
+        :class="compact ? 'items-center rounded px-1 py-0.5' : 'flex-col items-center rounded-box border border-base-300 px-2 py-1.5 backdrop-blur-sm'"
         :style="compact ? {} : containerStyle"
     >
         <Tooltip v-if="description && compact" :content="description" placement="top">

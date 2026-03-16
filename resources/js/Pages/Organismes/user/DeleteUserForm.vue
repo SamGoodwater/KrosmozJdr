@@ -72,9 +72,9 @@ const passwordValidation = computed(() => {
 </script>
 
 <template>
-    <Container class="max-w-xl mx-auto p-4 md:p-8 bg-base-100 rounded-lg shadow-md">
+    <Container class="max-w-xl mx-auto p-4 md:p-8 bg-base-100 rounded-box shadow-md">
         <section class="space-y-6 transition-all duration-200">
-            <header class="mb-6 p-4 rounded-lg bg-error-900/20 backdrop-blur-sm">
+            <header class="mb-6 p-4 rounded-box bg-error-900/20 backdrop-blur-sm">
                 <h2 class="text-lg font-medium text-error-100">
                     Supprimer le compte
                 </h2>
@@ -95,7 +95,7 @@ const passwordValidation = computed(() => {
                 close-on-esc
                 @close="closeModal"
             >
-                <Container class="p-6 space-y-6 bg-base-100 rounded-lg shadow-lg">
+                <Container class="p-6 space-y-6 bg-base-100 rounded-box shadow-lg">
                     <h2 class="text-lg font-medium text-error-100">
                         Es-tu sûr de vouloir supprimer ton compte ?
                     </h2>

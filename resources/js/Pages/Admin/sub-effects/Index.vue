@@ -37,7 +37,7 @@ defineOptions({ layout: Main });
             </Link>
         </div>
 
-        <div class="overflow-x-auto rounded-lg border border-base-300 bg-base-100">
+        <div class="overflow-x-auto rounded-box border border-base-300 bg-base-100">
             <table class="table table-zebra table-pin-rows">
                 <thead>
                     <tr class="bg-base-300/70 text-primary-200">

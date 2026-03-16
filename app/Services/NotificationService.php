@@ -566,16 +566,21 @@ class NotificationService
 
     /**
      * Tronque et nettoie une valeur potentiellement longue ou HTML.
+     * Supprime les balises et leur contenu dangereux (script, style, etc.).
+     *
      * @param mixed $value
      * @return string
      */
     public static function truncateAndSanitize($value): string
     {
-        $str = is_scalar($value) ? (string)$value : json_encode($value);
+        $str = is_scalar($value) ? (string) $value : json_encode($value);
+        // Retirer entièrement les balises dangereuses et leur contenu (script, style, etc.)
+        $str = preg_replace('/<script\b[^>]*>[\s\S]*?<\/script>/iu', '', $str);
+        $str = preg_replace('/<style\b[^>]*>[\s\S]*?<\/style>/iu', '', $str);
         $str = strip_tags($str);
         if (mb_strlen($str) > 120) {
             $str = mb_substr($str, 0, 117) . '...';
         }
-        return $str;
+        return trim($str);
     }
 }

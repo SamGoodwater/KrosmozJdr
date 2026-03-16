@@ -106,7 +106,7 @@ function onRefresh() {
 
 <template>
     <div class="flex flex-col gap-3 lg:flex-row lg:items-stretch">
-        <div class="min-h-0 min-w-0 flex-1 rounded-lg border border-base-300 bg-base-200/30 p-3 border-glass-sm relative overflow-hidden">
+        <div class="min-h-0 min-w-0 flex-1 rounded-box border border-base-300 bg-base-200/30 p-3 border-glass-sm relative overflow-hidden">
             <div class="mb-2 flex items-center justify-between">
                 <span class="text-sm font-medium">Aperçu ({{ chartXLabel }} → {{ chartYLabel }})</span>
                 <div class="flex items-center gap-2">
@@ -145,7 +145,7 @@ function onRefresh() {
         </div>
         <div
             v-show="showOptions"
-            class="flex flex-col gap-2 rounded-lg border border-base-300 bg-base-200/50 p-3 lg:w-48 lg:shrink-0 border-glass-sm relative overflow-hidden"
+            class="flex flex-col gap-2 rounded-box border border-base-300 bg-base-200/50 p-3 lg:w-48 lg:shrink-0 border-glass-sm relative overflow-hidden"
         >
             <span class="text-xs font-medium text-base-content/70">Bornes affichage (non enregistrées)</span>
             <div class="grid grid-cols-2 gap-2 text-xs lg:grid-cols-1">

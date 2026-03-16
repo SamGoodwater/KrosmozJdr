@@ -58,6 +58,7 @@ export const ratioMap = {
 
 export const roundedMap = {
     none: "",
+    box: "rounded-box",
     sm: "rounded-sm",
     md: "rounded-md",
     lg: "rounded-lg",

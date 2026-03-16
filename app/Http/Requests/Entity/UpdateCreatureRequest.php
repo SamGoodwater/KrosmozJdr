@@ -45,6 +45,8 @@ class UpdateCreatureRequest extends FormRequest
             'dodge_pm' => ['nullable', 'string', 'max:255'],
             'fuite' => ['nullable', 'string', 'max:255'],
             'tacle' => ['nullable', 'string', 'max:255'],
+            'critical_hit' => ['nullable', 'integer', 'min:0', 'max:3'],
+            'heal_bonus' => ['nullable', 'integer', 'min:0', 'max:7'],
             'vitality' => ['nullable', 'string', 'max:255'],
             'sagesse' => ['nullable', 'string', 'max:255'],
             'strong' => ['nullable', 'string', 'max:255'],

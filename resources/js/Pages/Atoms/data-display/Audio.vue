@@ -54,7 +54,7 @@ const handleDelete = () => {
 
 <template>
   <div class="file-preview-item relative group">
-    <div class="relative p-4 bg-base-200 rounded-lg border border-base-300">
+    <div class="relative p-4 bg-base-200 rounded-box border border-base-300">
       <div class="flex items-center gap-4">
         <div class="flex-shrink-0">
           <i class="fa-solid fa-music text-3xl text-primary"></i>

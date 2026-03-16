@@ -131,7 +131,7 @@ const hasPoints = computed(() => Array.isArray(points.value) && points.value.len
         <!-- Graph : à droite sur desktop, en bas sur mobile -->
         <div
             v-if="showChart"
-            class="flex min-h-32 flex-1 flex-col rounded-lg border border-base-300 bg-base-200/30 p-3 lg:min-w-[280px]"
+            class="flex min-h-32 flex-1 flex-col rounded-box border border-base-300 bg-base-200/30 p-3 lg:min-w-[280px]"
         >
             <div class="mb-2 flex items-center justify-between">
                 <span class="text-sm font-medium">Aperçu (variable : {{ xLabel }})</span>

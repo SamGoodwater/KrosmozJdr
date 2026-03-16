@@ -89,7 +89,7 @@ const handleRowClick = () => emit("row-click", props.row);
 
 <template>
     <div
-        class="relative rounded-lg border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
+        class="relative rounded-box border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         role="button"
         tabindex="0"

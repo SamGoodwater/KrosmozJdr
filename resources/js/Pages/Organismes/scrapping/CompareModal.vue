@@ -318,7 +318,7 @@ watch(
 
                 <div
                     v-if="entityType === 'spell' && previewSpellStates.length > 0"
-                    class="rounded-lg border border-secondary/30 bg-base-200/40 p-3"
+                    class="rounded-box border border-secondary/30 bg-base-200/40 p-3"
                 >
                     <div class="flex items-center gap-2 mb-2">
                         <Icon source="fa-solid fa-wand-magic-sparkles" alt="" pack="solid" class="text-secondary text-sm" />
@@ -362,7 +362,7 @@ watch(
                     </div>
                 </div>
 
-                <div class="overflow-x-auto rounded-lg border border-base-300">
+                <div class="overflow-x-auto rounded-box border border-base-300">
                     <table class="table table-zebra text-xs w-full">
                         <thead>
                             <tr class="text-primary-200 bg-base-200">

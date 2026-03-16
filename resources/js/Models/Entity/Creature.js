@@ -85,6 +85,14 @@ export class Creature extends BaseModel {
         return this._data.tacle || null;
     }
 
+    get criticalHit() {
+        return this._data.critical_hit ?? null;
+    }
+
+    get healBonus() {
+        return this._data.heal_bonus ?? null;
+    }
+
     get vitality() {
         return this._data.vitality || null;
     }
@@ -175,6 +183,8 @@ export class Creature extends BaseModel {
             'dodge_pm',
             'fuite',
             'tacle',
+            'critical_hit',
+            'heal_bonus',
             'vitality',
             'sagesse',
             'strong',
@@ -216,6 +226,8 @@ export class Creature extends BaseModel {
             case 'dodge_pm':
             case 'fuite':
             case 'tacle':
+            case 'critical_hit':
+            case 'heal_bonus':
             case 'vitality':
             case 'sagesse':
             case 'strong':
@@ -508,6 +520,8 @@ export class Creature extends BaseModel {
             dodge_pm: this.dodgePm,
             fuite: this.fuite,
             tacle: this.tacle,
+            critical_hit: this.criticalHit,
+            heal_bonus: this.healBonus,
             vitality: this.vitality,
             sagesse: this.sagesse,
             strong: this.strong,

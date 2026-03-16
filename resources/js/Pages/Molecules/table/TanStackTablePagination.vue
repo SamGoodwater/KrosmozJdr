@@ -89,7 +89,7 @@ const pageNumbers = computed(() => {
                     <template #trigger>
                         <button
                             type="button"
-                            class="flex items-center justify-between gap-2 rounded-lg border border-base-300 bg-base-200/90 px-3 py-2 text-left text-base-content backdrop-blur-sm min-w-[4.5rem] hover:bg-base-300/90 focus:outline focus:ring-2 focus:ring-primary/50"
+                            class="flex items-center justify-between gap-2 rounded-box border border-base-300 bg-base-200/90 px-3 py-2 text-left text-base-content backdrop-blur-sm min-w-[4.5rem] hover:bg-base-300/90 focus:outline focus:ring-2 focus:ring-primary/50"
                             :class="uiSize === 'xs' ? 'text-xs py-1.5' : uiSize === 'lg' ? 'text-base py-2.5' : 'text-sm'"
                             title="Lignes par page"
                             aria-haspopup="listbox"
@@ -101,7 +101,7 @@ const pageNumbers = computed(() => {
                     </template>
                     <template #content>
                         <div
-                            class="bg-base-100 text-base-content rounded-lg border border-base-300 shadow-lg py-1 min-w-[4.5rem]"
+                            class="bg-base-100 text-base-content rounded-box border border-base-300 shadow-lg py-1 min-w-[4.5rem]"
                             role="listbox"
                         >
                             <button

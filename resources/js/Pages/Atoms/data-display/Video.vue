@@ -58,7 +58,7 @@ const handleDelete = () => {
       <video
         :src="src"
         controls
-        class="max-w-full h-auto rounded-lg border border-base-300 max-h-64"
+        class="max-w-full h-auto rounded-box border border-base-300 max-h-64"
       >
         Ton navigateur ne supporte pas la lecture de vidéos.
       </video>

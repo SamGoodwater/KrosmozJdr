@@ -12,30 +12,24 @@ class PasswordResetTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_placeholder(): void
-    {
-        // Placeholder pour éviter un warning PHPUnit "No tests found".
-        $this->assertTrue(true);
-    }
-
-    // Tests temporairement désactivés car les composants peuvent ne pas exister
-    /*
     public function test_forgot_password_page_can_be_rendered(): void
     {
         $response = $this->get('/forgot-password');
 
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
-            ->component('auth/ForgotPassword')
-            ->has('errors')
+            ->component('Pages/auth/ForgotPassword')
+            ->has('status')
         );
     }
 
-    public function test_reset_password_link_can_be_requested(): void
+    public function test_reset_password_link_can_be_requested_for_user_with_password(): void
     {
         Notification::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'password' => bcrypt('password'),
+        ]);
 
         $response = $this->post('/forgot-password', [
             'email' => $user->email,
@@ -43,6 +37,24 @@ class PasswordResetTest extends TestCase
 
         $response->assertSessionHasNoErrors();
         Notification::assertSentTo($user, ResetPassword::class);
+    }
+
+    public function test_reset_password_link_not_sent_for_oauth_only_user(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create([
+            'password' => null,
+        ]);
+
+        $response = $this->post('/forgot-password', [
+            'email' => $user->email,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        Notification::assertNotSentTo($user, ResetPassword::class);
+        $response->assertSessionHas('status');
+        $response->assertSessionHas('statusType', 'info');
     }
 
     public function test_reset_password_link_requires_valid_email(): void
@@ -58,7 +70,9 @@ class PasswordResetTest extends TestCase
     {
         Notification::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'password' => bcrypt('old-password'),
+        ]);
 
         $response = $this->post('/forgot-password', [
             'email' => $user->email,
@@ -79,5 +93,4 @@ class PasswordResetTest extends TestCase
 
         $response->assertSessionHasNoErrors();
     }
-    */
 } 

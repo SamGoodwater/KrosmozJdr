@@ -26,6 +26,8 @@
     "bonusCharacteristics.bonusEarthDamage": "do_fixe_terre_creature",
     "bonusCharacteristics.bonusFireDamage": "do_fixe_feu_creature",
     "bonusCharacteristics.bonusWaterDamage": "do_fixe_eau_creature",
-    "bonusCharacteristics.bonusAirDamage": "do_fixe_air_creature"
+    "bonusCharacteristics.bonusAirDamage": "do_fixe_air_creature",
+    "bonusCharacteristics.criticalHit": "critical_hit_creature",
+    "bonusCharacteristics.healBonus": "heal_bonus_creature"
   }
 }

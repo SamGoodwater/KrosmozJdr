@@ -18,10 +18,16 @@ export function buildCreatureCharacteristicGroups(creature, byDbColumn = {}) {
         const def = getDef(dbColumn);
         const value = creature[dbColumn];
         if (value === null || value === undefined || value === "") return null;
+        // Affichage spécial : bonus critique 0-3 → seuil (0=Nat 20, 1=Dès 19, 2=Dès 18, 3=Dès 17)
+        let displayValue = String(value);
+        if (dbColumn === "critical_hit") {
+            const v = parseInt(value, 10);
+            displayValue = v === 0 ? "Nat 20" : `Dès ${20 - v}`;
+        }
         return {
             type: "formula",
             def: { ...def, key: def.key || dbColumn },
-            value: String(value),
+            value: displayValue,
             formulaResolved: "",
             formulaRaw: "",
         };
@@ -84,8 +90,8 @@ export function buildCreatureCharacteristicGroups(creature, byDbColumn = {}) {
         groups.push({ title: "Dommages", characteristics: dmgItems });
     }
 
-    // Contrôle : CA, esquive PA/PM, fuite, tacle
-    const ctrlItems = addFormulas(["ca", "dodge_pa", "dodge_pm", "fuite", "tacle"]);
+    // Contrôle : CA, esquive PA/PM, fuite, tacle, bonus critique, bonus soin
+    const ctrlItems = addFormulas(["ca", "dodge_pa", "dodge_pm", "fuite", "tacle", "critical_hit", "heal_bonus"]);
     if (ctrlItems.length > 0) {
         groups.push({ title: "Contrôle", characteristics: ctrlItems });
     }

@@ -32,7 +32,7 @@ function recoverAccount() {
 <template>
     <aside
         v-if="pendingErasure"
-        class="sticky top-2 z-20 mx-auto mb-4 max-w-4xl rounded-lg border border-warning/50 bg-warning/10 p-4 backdrop-blur"
+        class="sticky top-2 z-20 mx-auto mb-4 max-w-4xl rounded-box border border-warning/50 bg-warning/10 p-4 backdrop-blur"
         aria-live="polite"
         role="alert"
     >

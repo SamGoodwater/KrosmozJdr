@@ -38,7 +38,7 @@ class LoginDeletedUserTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors([
-            'identifier' => 'Ce compte a été supprimé. Contactez un administrateur pour le restaurer.',
+            'identifier' => 'Ce compte a été supprimé. Un administrateur peut le récupérer tant qu\'il n\'a pas été supprimé définitivement. Contacte un admin pour demander la restauration.',
         ]);
         $this->assertGuest();
     }

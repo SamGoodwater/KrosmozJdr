@@ -1512,7 +1512,7 @@ const onCompareImported = () => {
                 <div
                     v-for="job in scrapJobsList?.active ?? []"
                     :key="job.job_id"
-                    class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-lg bg-base-300/50"
+                    class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-box bg-base-300/50"
                 >
                     <div class="flex flex-wrap items-center gap-2 min-w-0">
                         <Badge :content="scrapJobStatusLabel(job.status)" :color="scrapJobStatusColor(job.status)" size="xs" />
@@ -1825,7 +1825,7 @@ const onCompareImported = () => {
                 Aucun effet “unmapped” (ou format d’effets non reconnu).
             </div>
 
-            <div v-else class="overflow-x-auto rounded-lg border border-base-300">
+            <div v-else class="overflow-x-auto rounded-box border border-base-300">
                 <table class="table w-full">
                     <thead>
                         <tr>

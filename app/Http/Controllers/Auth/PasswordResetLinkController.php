@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
@@ -12,17 +13,19 @@ use Inertia\Response;
 class PasswordResetLinkController extends Controller
 {
     /**
-     * Show the password reset link request page.
+     * Affiche la page de demande de lien de réinitialisation de mot de passe.
      */
     public function create(Request $request): Response
     {
-        return Inertia::render('auth/ForgotPassword', [
+        return Inertia::render('Pages/auth/ForgotPassword', [
             'status' => $request->session()->get('status'),
+            'statusType' => $request->session()->get('statusType', 'success'),
         ]);
     }
 
     /**
-     * Handle an incoming password reset link request.
+     * Traite une demande de lien de réinitialisation.
+     * N'envoie pas de lien si le compte est OAuth-only (Discord, Steam, GitHub).
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -32,10 +35,21 @@ class PasswordResetLinkController extends Controller
             'email' => 'required|email',
         ]);
 
-        Password::sendResetLink(
-            $request->only('email')
-        );
+        $email = $request->email;
+        $user = User::where('email', $email)->first();
 
-        return back()->with('status', __('A reset link will be sent if the account exists.'));
+        if ($user && ! $user->hasPassword()) {
+            return back()->with([
+                'status' => __('Ce compte utilise une connexion via Discord, Steam ou GitHub. Connecte-toi avec l’un de ces services.'),
+                'statusType' => 'info',
+            ]);
+        }
+
+        Password::sendResetLink($request->only('email'));
+
+        return back()->with([
+            'status' => __('Si un compte existe avec cet email, un lien de réinitialisation t’a été envoyé.'),
+            'statusType' => 'success',
+        ]);
     }
 }

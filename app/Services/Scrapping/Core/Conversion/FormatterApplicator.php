@@ -65,6 +65,7 @@ final class FormatterApplicator
             'toInt' => fn (mixed $v): int => is_numeric($v) ? (int) $v : 0,
             'nullableInt' => fn (mixed $v): ?int => $v === null ? null : (is_numeric($v) ? (int) $v : null),
             'clampInt' => fn (mixed $v, array $a): int => $this->clampInt($v, (int) ($a['min'] ?? 0), (int) ($a['max'] ?? 0)),
+            'criticalHitFromDofus' => fn (mixed $v): int => $this->criticalHitFromDofus($v),
             'clampToCharacteristic' => function (mixed $v, array $a, array $r, array $c): int {
                 return $this->clampToCharacteristic($v, (string) ($a['characteristicId'] ?? ''), (string) ($c['entityType'] ?? 'monster'));
             },
@@ -288,6 +289,21 @@ final class FormatterApplicator
         }
 
         return max($min, min($max, $v));
+    }
+
+    /**
+     * Convertit la valeur critique Dofus vers Krosmoz (0–3).
+     * Krosmoz : 0 = nat 20, 1 = dès 19, 2 = dès 18, 3 = dès 17.
+     * Dofus peut envoyer -3 à 0 (soustrait au seuil) ou 0 à 3.
+     */
+    private function criticalHitFromDofus(mixed $value): int
+    {
+        $v = is_numeric($value) ? (int) $value : 0;
+        if ($v >= -3 && $v <= 0) {
+            return -$v;
+        }
+
+        return max(0, min(3, $v));
     }
 
     /**

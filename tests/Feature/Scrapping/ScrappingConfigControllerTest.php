@@ -17,13 +17,13 @@ class ScrappingConfigControllerTest extends TestCase
         parent::setUp();
         $this->seedScrappingPipeline();
         // Routes scrapping protégées par password.confirm ; en tests on contourne pour éviter 423
-        $this->withoutMiddleware('password.confirm');
+        $this->withoutMiddleware(\App\Http\Middleware\RequirePasswordWithInactivity::class);
     }
 
     public function test_config_endpoint_returns_sources_and_entities(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $response = $this->actingAs($admin)->getJson('/api/scrapping/config');
+        $response = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/scrapping/config');
 
         $response->assertStatus(200)
             ->assertJson([
@@ -60,7 +60,7 @@ class ScrappingConfigControllerTest extends TestCase
             ->delete();
 
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $response = $this->actingAs($admin)->getJson('/api/scrapping/config');
+        $response = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/scrapping/config');
 
         $response->assertStatus(200)->assertJson(['success' => true]);
 

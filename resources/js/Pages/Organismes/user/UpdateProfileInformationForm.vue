@@ -74,9 +74,9 @@ const emailValidation = computed(() => {
 </script>
 
 <template>
-    <Container class="max-w-xl mx-auto p-4 md:p-8 bg-base-100 rounded-lg shadow-md">
+    <Container class="max-w-xl mx-auto p-4 md:p-8 bg-base-100 rounded-box shadow-md">
         <section class="space-y-6 transition-all duration-200">
-            <header class="mb-6 p-4 rounded-lg bg-primary-900/20 backdrop-blur-sm">
+            <header class="mb-6 p-4 rounded-box bg-primary-900/20 backdrop-blur-sm">
                 <h2 class="text-lg font-medium text-primary-100">
                     Informations du profil
                 </h2>
@@ -107,7 +107,7 @@ const emailValidation = computed(() => {
                 </div>
 
                 <div v-if="mustVerifyEmail && user.email_verified_at === null"
-                    class="p-4 rounded-lg bg-warning-900/20 backdrop-blur-sm">
+                    class="p-4 rounded-box bg-warning-900/20 backdrop-blur-sm">
                     <p class="text-sm text-warning-100">
                         Ton adresse email n'est pas vérifiée.
                         <Tooltip content="Renvoyer l'email de vérification" placement="top">

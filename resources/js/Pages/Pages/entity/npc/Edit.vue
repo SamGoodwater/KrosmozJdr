@@ -89,7 +89,7 @@ setPageTitle(`Modifier le PNJ : ${npcName.value}`);
             </Btn>
         </Route>
 
-        <div class="p-4 bg-base-200 rounded-lg">
+        <div class="p-4 bg-base-200 rounded-box">
             <p class="text-sm text-base-content/70">
                 <strong>Note :</strong> Le nom du PNJ est géré via la relation Creature. 
                 Pour modifier le nom, éditez la créature associée.

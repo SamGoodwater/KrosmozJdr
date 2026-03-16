@@ -203,7 +203,7 @@ const handleClose = () => {
                         :key="type.value"
                         @click="handleSelectType(type)"
                         :class="[
-                            'p-4 rounded-lg border-2 transition-all text-left',
+                            'p-4 rounded-box border-2 transition-all text-left',
                             form.template === type.value
                                 ? 'border-primary bg-primary/10'
                                 : 'border-base-300 hover:border-primary/50 hover:bg-base-200'

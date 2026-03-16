@@ -533,7 +533,7 @@ onMounted(async () => {
             <span>Chargement…</span>
         </div>
 
-        <div v-else class="overflow-x-auto rounded-lg border border-base-300">
+        <div v-else class="overflow-x-auto rounded-box border border-base-300">
             <table class="table w-full">
                 <thead>
                     <tr>

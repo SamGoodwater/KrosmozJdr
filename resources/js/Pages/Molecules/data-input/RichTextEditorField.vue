@@ -1189,7 +1189,7 @@ const sanitizedPreviewHtml = computed(() => {
 
         <div
           v-if="showSlashMenu && slashCommands.length"
-          class="mb-2 rounded-lg border border-base-300 bg-base-100 p-2 shadow"
+          class="mb-2 rounded-box border border-base-300 bg-base-100 p-2 shadow"
         >
           <div class="mb-1 text-[11px] text-base-content/60">
             Commandes slash (`↑`/`↓`, `Tab`, `Entrée`, `Esc`)
@@ -1210,7 +1210,7 @@ const sanitizedPreviewHtml = computed(() => {
 
         <div
           v-if="showTocPanel && tocItems.length"
-          class="mb-2 rounded-lg border border-base-300 bg-base-100/80 p-2"
+          class="mb-2 rounded-box border border-base-300 bg-base-100/80 p-2"
         >
           <div class="mb-2 text-xs font-semibold uppercase tracking-wide text-base-content/70">Table des matieres</div>
           <div class="max-h-40 space-y-1 overflow-auto pr-1">
@@ -1338,7 +1338,7 @@ const sanitizedPreviewHtml = computed(() => {
           :class="isPreviewSplit ? 'grid-cols-1 xl:grid-cols-2' : 'grid-cols-1'"
         >
           <div
-            class="section-rich-editor w-full rounded-lg border border-base-300 bg-base-100 px-3 py-2 prose prose-sm max-w-none focus-within:border-primary transition-colors"
+            class="section-rich-editor w-full rounded-box border border-base-300 bg-base-100 px-3 py-2 prose prose-sm max-w-none focus-within:border-primary transition-colors"
             :class="[
               height,
               isFullscreen ? 'min-h-[calc(100vh-8rem)]' : '',
@@ -1349,7 +1349,7 @@ const sanitizedPreviewHtml = computed(() => {
           </div>
           <div
             v-if="isPreviewSplit"
-            class="section-rich-editor-preview w-full rounded-lg border border-base-300 bg-base-100 px-3 py-2"
+            class="section-rich-editor-preview w-full rounded-box border border-base-300 bg-base-100 px-3 py-2"
             :class="[
               height,
               isFullscreen ? 'min-h-[calc(100vh-8rem)]' : '',

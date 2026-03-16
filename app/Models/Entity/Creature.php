@@ -264,6 +264,8 @@ class Creature extends Model implements HasMedia
         'dodge_pm',
         'fuite',
         'tacle',
+        'critical_hit',
+        'heal_bonus',
         'vitality',
         'sagesse',
         'strong',

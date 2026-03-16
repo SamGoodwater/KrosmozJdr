@@ -560,6 +560,11 @@
     "description": "Le projet utilise un **utilisateur système** pour attribuer (tracer) les opérations automatiques, notamment les imports du scrapping."
   },
   {
+    "path": "400- Jeu/410- Ressources/PROPOSITIONS_FORMULES_ET_PROPRIETES.md",
+    "title": "Propositions de modifications — Formules et propriétés",
+    "description": "Ce document propose des modifications pour aligner les seeders et les caractéristiques sur les règles du jeu (docs 400) et les références PDF : **Equipements et forgemagie.pdf** et **CaractéristiquesAvecLien avec Dofus.pdf**."
+  },
+  {
     "path": "400- Jeu/420- Règles/1-Introduction/1.1-presentation-du-jeu/1.1.1-concept-general.md",
     "title": "1.1.1. Concept général",
     "description": "**Description** : Présenter la fusion entre D&D et Dofus, les objectifs du système, ce qu'il conserve ou adapte."

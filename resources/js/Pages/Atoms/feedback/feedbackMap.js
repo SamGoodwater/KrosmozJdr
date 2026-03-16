@@ -42,14 +42,14 @@ export const sizeSkeletonMap = {
     md: { h: "h-4", w: "w-32", rounded: "rounded" },
     lg: { h: "h-6", w: "w-48", rounded: "rounded" },
     xl: { h: "h-8", w: "w-64", rounded: "rounded" },
-    "2xl": { h: "h-12", w: "w-80", rounded: "rounded-lg" },
-    "3xl": { h: "h-16", w: "w-96", rounded: "rounded-lg" },
-    "4xl": { h: "h-24", w: "w-128", rounded: "rounded-xl" },
+    "2xl": { h: "h-12", w: "w-80", rounded: "rounded-box" },
+    "3xl": { h: "h-16", w: "w-96", rounded: "rounded-box" },
+    "4xl": { h: "h-24", w: "w-128", rounded: "rounded-box" },
 };
 
 export const elementSkeletonMap = {
     avatar: { h: "h-12", w: "w-12", rounded: "rounded-full" },
-    image: { h: "h-32", w: "w-32", rounded: "rounded-lg" },
+    image: { h: "h-32", w: "w-32", rounded: "rounded-box" },
     text: { h: "h-4", w: "w-20", rounded: "rounded" },
     smalltext: { h: "h-3", w: "w-16", rounded: "rounded" },
     longtext: { h: "h-4", w: "w-full", rounded: "rounded" },

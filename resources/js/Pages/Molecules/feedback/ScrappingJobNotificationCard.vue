@@ -63,7 +63,7 @@ function cancelItem(e) {
 
 <template>
     <div
-        class="relative rounded-lg border border-base-content/15 bg-base-200/90 backdrop-blur-sm p-3 shadow-sm"
+        class="relative rounded-box border border-base-content/15 bg-base-200/90 backdrop-blur-sm p-3 shadow-sm"
         :class="[compact ? 'text-sm' : '', lockPulse ? 'ring-2 ring-warning/70 border-warning/60' : '']"
     >
         <button

@@ -1,9 +1,9 @@
 <script setup>
-// import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Head, useForm } from "@inertiajs/vue3";
 import { computed } from "vue";
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 
 const props = defineProps({
     email: {
@@ -59,10 +59,15 @@ const submit = () => {
 </script>
 
 <template>
+    <Head title="Réinitialiser le mot de passe" />
 
-    <Head title="Reset Password" />
+    <div class="flex flex-col justify-start items-center pt-6 sm:pt-0">
+        <div class="w-full sm:max-w-md mt-6 px-6 py-4 sm:rounded-box">
+            <h2 class="text-center text-2xl font-bold mb-6">
+                Nouveau mot de passe
+            </h2>
 
-    <form @submit.prevent="submit">
+            <form @submit.prevent="submit">
         <InputField 
             id="email" 
             type="email" 
@@ -101,10 +106,24 @@ const submit = () => {
             />
         </div>
 
-        <div class="mt-4 flex items-center justify-end">
-            <Btn :disabled="form.processing" :class="{ 'opacity-25': form.processing }">
-                Réinitialiser le mot de passe
+        <div class="mt-6 flex flex-col gap-4 justify-center items-center">
+            <Btn
+                type="submit"
+                :disabled="form.processing"
+                color="primary"
+                :class="{ 'opacity-25': form.processing }"
+            >
+                <i class="fa-solid fa-key mr-2"></i>
+                {{ form.processing ? 'Réinitialisation...' : 'Réinitialiser le mot de passe' }}
+            </Btn>
+            <Btn type="button" color="neutral" size="md" variant="link">
+                <Route route="login">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    Retour à la connexion
+                </Route>
             </Btn>
         </div>
     </form>
+        </div>
+    </div>
 </template>

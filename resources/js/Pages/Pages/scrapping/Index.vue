@@ -63,7 +63,7 @@ if (import.meta?.hot) {
         <!-- Porte d'accès : confirmation mot de passe requise -->
         <div
             v-if="!scrappingUnlocked"
-            class="rounded-lg border border-warning/40 bg-warning/10 p-6 text-center space-y-4"
+            class="rounded-box border border-warning/40 bg-warning/10 p-6 text-center space-y-4"
         >
             <p class="text-warning-content">
                 Cette section est réservée aux administrateurs et protégée. Confirme ton mot de passe pour accéder au scrapping.

@@ -179,7 +179,7 @@ onMounted(() => {
 
             <div
                 v-if="filteredMappings.length === 0"
-                class="rounded-lg border border-base-300 bg-base-200/30 p-8 text-center text-base-content/70"
+                class="rounded-box border border-base-300 bg-base-200/30 p-8 text-center text-base-content/70"
             >
                 <template v-if="mappings.length === 0">
                     Aucun mapping en base. Exécutez le seeder
@@ -195,7 +195,7 @@ onMounted(() => {
                 </button>
             </div>
 
-            <div v-else class="overflow-x-auto rounded-lg border border-base-300">
+            <div v-else class="overflow-x-auto rounded-box border border-base-300">
                 <table class="table table-zebra">
                     <thead>
                         <tr>

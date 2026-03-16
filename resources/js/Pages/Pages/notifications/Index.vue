@@ -295,7 +295,7 @@ onMounted(() => { fetchMessages(); });
                     <li
                         v-for="item in messages"
                         :key="item.id"
-                        class="relative border border-base-300 rounded-lg p-3 flex flex-col gap-2"
+                        class="relative border border-base-300 rounded-box p-3 flex flex-col gap-2"
                         :class="{ 'bg-primary/5': !item.read_at }"
                     >
                         <template v-if="item.is_scrapping_job">
@@ -461,7 +461,7 @@ onMounted(() => { fetchMessages(); });
                     <li
                         v-for="t in temporaryHistory"
                         :key="t.id"
-                        class="relative border border-base-300 rounded-lg p-3 flex items-center justify-between gap-2"
+                        class="relative border border-base-300 rounded-box p-3 flex items-center justify-between gap-2"
                     >
                         <Btn
                             variant="ghost"

@@ -1013,7 +1013,7 @@ function submitConvertToLinked() {
                             <div
                                 v-for="ent in form.entities"
                                 :key="ent.entity"
-                                class="collapse collapse-arrow border border-base-300 bg-base-200/30 rounded-lg mb-3"
+                                class="collapse collapse-arrow border border-base-300 bg-base-200/30 rounded-box mb-3"
                             >
                                 <input type="checkbox" />
                                 <div class="collapse-title font-medium">
@@ -1153,7 +1153,7 @@ function submitConvertToLinked() {
                         <h2 class="text-xl font-semibold text-base-content">Général</h2>
                     <!-- Définition -->
                     <div class="card shadow border-glass-sm relative overflow-hidden">
-                        <div class="card-body bg-base-100 rounded-lg">
+                        <div class="card-body bg-base-100 rounded-box">
                             <h3 class="card-title text-lg">Définition</h3>
                             <p class="text-sm text-base-content/70">
                                 Nom, affichage (icône, couleur), type de donnée et règles (unité, entités concernées). Forgemagie et prix sont dans la section Équipement.
@@ -1170,7 +1170,7 @@ function submitConvertToLinked() {
                                 <div class="sm:col-span-2">
                                     <label class="label"><span class="label-text">Icône</span></label>
                                     <div class="flex flex-wrap items-center gap-3">
-                                        <div v-if="form.icon" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-base-200">
+                                        <div v-if="form.icon" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-box bg-base-200">
                                             <i v-if="form.icon.startsWith('fa-')" :class="['fa text-xl', form.icon]" />
                                             <img
                                                 v-else-if="isImageIcon(form.icon)"
@@ -1247,7 +1247,7 @@ function submitConvertToLinked() {
                         <h2 class="text-xl font-semibold text-base-content border-b border-base-300 pb-2">Panneau 1 — Limite et valeur</h2>
                         <div class="space-y-4 pt-2">
                     <div v-for="ent in (generalEntityRow() ? [generalEntityRow()] : [])" :key="ent.entity" class="card shadow border border-base-200 border-glass-sm relative overflow-hidden">
-                        <div class="card-body bg-base-200 rounded-lg">
+                        <div class="card-body bg-base-200 rounded-box">
                             <h3 class="card-title text-lg">Limite et défaut</h3>
                             <p class="text-sm text-base-content/70">
                                 Bornes min/max et formule de calcul pour ce type d’entité. Le graphique montre l’évolution en fonction du niveau.
@@ -1342,12 +1342,12 @@ function submitConvertToLinked() {
                     <section v-if="generalEntityRow()" class="space-y-4">
                         <h2 class="text-xl font-semibold text-base-content border-b border-base-300 pb-2">Panneau 2 — Conversion</h2>
                     <div class="card shadow border-glass-sm relative overflow-hidden">
-                        <div class="card-body bg-base-100 rounded-lg bg-color-neutral-100">
+                        <div class="card-body bg-base-100 rounded-box bg-color-neutral-100">
                             <h3 class="card-title text-lg">Formule de conversion</h3>
                             <p class="text-sm text-base-content/70">
                                 Formules utilisées lors du scrapping pour convertir les valeurs DofusDB en valeurs JDR. Variable <code class="rounded bg-base-300 px-1">[d]</code> = valeur Dofus, <code class="rounded bg-base-300 px-1">[level]</code> = niveau JDR (pour la vie). Une formule différente par type d’entité (monstre, classe, équipement).
                             </p>
-                            <div v-if="generalEntityRow()" class="space-y-4 rounded-lg border border-base-300 bg-base-200/30 p-4">
+                            <div v-if="generalEntityRow()" class="space-y-4 rounded-box border border-base-300 bg-base-200/30 p-4">
                                 <!-- Formule affichée (lecture seule, au-dessus du champ) -->
                                 <div>
                                     <span class="label-text text-base-content/70">Formule affichée</span>
@@ -1414,7 +1414,7 @@ function submitConvertToLinked() {
                                 />
 
                                 <!-- Fonctions disponibles (masqué par défaut) -->
-                                <div class="collapse collapse-arrow rounded-lg border border-base-300 bg-base-200/50">
+                                <div class="collapse collapse-arrow rounded-box border border-base-300 bg-base-200/50">
                                     <input type="checkbox" />
                                     <div class="collapse-title min-h-0 py-2 text-sm font-semibold text-base-content/80">
                                         Fonctions disponibles (Table, Linéaire, Carré, etc.)
@@ -1447,7 +1447,7 @@ function submitConvertToLinked() {
                                         <p class="mt-1 text-xs text-base-content/60">Les formules générées sont enveloppées dans floor() pour le graphique et des entiers.</p>
                                         <p v-if="conversionSuggestionLoading && conversionSuggestionForEntity === '*'" class="mt-2 text-sm text-info">Calcul en cours…</p>
                                         <p v-else-if="conversionSuggestionError && conversionSuggestionForEntity === '*'" class="mt-2 text-sm text-error">{{ conversionSuggestionError }}</p>
-                                        <div v-else-if="conversionSuggestionFormula && conversionSuggestionForEntity === '*'" class="mt-3 p-3 rounded-lg bg-base-300 border border-base-content/10">
+                                        <div v-else-if="conversionSuggestionFormula && conversionSuggestionForEntity === '*'" class="mt-3 p-3 rounded-box bg-base-300 border border-base-content/10">
                                             <p class="text-sm font-medium text-base-content/80 mb-1">Proposition :</p>
                                             <code class="block text-xs break-all mb-2">{{ conversionSuggestionFormula }}</code>
                                             <p v-if="conversionSuggestionR2 != null" class="text-xs text-base-content/70 mb-2">R² = {{ conversionSuggestionR2 }}</p>
@@ -1460,7 +1460,7 @@ function submitConvertToLinked() {
                                 </div>
 
                                 <!-- Échantillonnage (masqué par défaut) -->
-                                <div class="collapse collapse-arrow rounded-lg border border-base-300 bg-base-200/50">
+                                <div class="collapse collapse-arrow rounded-box border border-base-300 bg-base-200/50">
                                     <input type="checkbox" />
                                     <div class="collapse-title min-h-0 py-2 text-sm font-semibold text-base-content/80">
                                         Échantillons (automatisation des formules)
@@ -1547,7 +1547,7 @@ function submitConvertToLinked() {
 
                     <!-- Panneaux entité spécifique (sous Conversion) -->
                     <div v-for="entityKey in selectedEntityOverrides" :key="entityKey" class="card shadow border border-base-200 mt-4 border-glass-sm relative overflow-hidden" :class="entityBgClasses[entityKey]">
-                        <div class="card-body bg-base-100 rounded-lg" v-if="entityRow(entityKey)">
+                        <div class="card-body bg-base-100 rounded-box" v-if="entityRow(entityKey)">
                             <div class="flex justify-between items-center flex-wrap gap-2">
                                 <h2 class="card-title text-lg">{{ entityLabels[entityKey] || entityKey }}</h2>
                                 <button type="button" class="btn btn-ghost btn-sm btn-error" @click="removeEntityOverride(entityKey)">
@@ -1669,7 +1669,7 @@ function submitConvertToLinked() {
                                 />
 
                                 <!-- Fonctions disponibles (masqué par défaut) -->
-                                <div class="collapse collapse-arrow rounded-lg border border-base-300 bg-base-200/50">
+                                <div class="collapse collapse-arrow rounded-box border border-base-300 bg-base-200/50">
                                     <input type="checkbox" />
                                     <div class="collapse-title min-h-0 py-2 text-sm font-semibold text-base-content/80">
                                         Fonctions disponibles (Table, Linéaire, Carré, etc.)
@@ -1702,7 +1702,7 @@ function submitConvertToLinked() {
                                         <p class="mt-1 text-xs text-base-content/60">Formules générées avec floor() pour le graphique et des entiers.</p>
                                         <p v-if="conversionSuggestionLoading && conversionSuggestionForEntity === entityKey" class="mt-2 text-sm text-info">Calcul en cours…</p>
                                         <p v-else-if="conversionSuggestionError && conversionSuggestionForEntity === entityKey" class="mt-2 text-sm text-error">{{ conversionSuggestionError }}</p>
-                                        <div v-else-if="conversionSuggestionFormula && conversionSuggestionForEntity === entityKey" class="mt-3 p-3 rounded-lg bg-base-300 border border-base-content/10">
+                                        <div v-else-if="conversionSuggestionFormula && conversionSuggestionForEntity === entityKey" class="mt-3 p-3 rounded-box bg-base-300 border border-base-content/10">
                                             <p class="text-sm font-medium text-base-content/80 mb-1">Proposition :</p>
                                             <code class="block text-xs break-all mb-2">{{ conversionSuggestionFormula }}</code>
                                             <p v-if="conversionSuggestionR2 != null" class="text-xs text-base-content/70 mb-2">R² = {{ conversionSuggestionR2 }}</p>
@@ -1715,7 +1715,7 @@ function submitConvertToLinked() {
                                 </div>
 
                                 <!-- Échantillonnage (masqué par défaut) -->
-                                <div class="collapse collapse-arrow rounded-lg border border-base-300 bg-base-200/50">
+                                <div class="collapse collapse-arrow rounded-box border border-base-300 bg-base-200/50">
                                     <input type="checkbox" />
                                     <div class="collapse-title min-h-0 py-2 text-sm font-semibold text-base-content/80">
                                         Échantillons (automatisation pour cette entité)
@@ -1830,7 +1830,7 @@ function submitConvertToLinked() {
 /* Fond très discret pour la zone formulaire */
 .has-characteristic-color.characteristic-theme {
     background-color: color-mix(in srgb, var(--color) 5%, transparent);
-    border-radius: var(--radius-box, 0.5rem);
+    border-radius: var(--radius-box, 0.125rem);
     padding: 0.25rem;
 }
 </style>

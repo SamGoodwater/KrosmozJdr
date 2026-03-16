@@ -71,7 +71,7 @@ function selectedHas(id) {
 </script>
 
 <template>
-    <div class="overflow-x-auto rounded-lg border border-base-300">
+    <div class="overflow-x-auto rounded-box border border-base-300">
         <table class="table w-full">
             <thead>
                 <tr>

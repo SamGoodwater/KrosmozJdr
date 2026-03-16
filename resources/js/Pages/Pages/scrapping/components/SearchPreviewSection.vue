@@ -439,7 +439,7 @@ const handleImport = () => {
                         :disabled="lockInputs"
                     />
                 </div>
-                <div v-if="isValidRange" class="rounded-lg border border-base-300 bg-base-200/40 p-3 text-sm text-primary-200">
+                <div v-if="isValidRange" class="rounded-box border border-base-300 bg-base-200/40 p-3 text-sm text-primary-200">
                     {{ rangeCount }} entité(s) seront importées
                 </div>
                 <div class="flex gap-2">
@@ -608,7 +608,7 @@ const handleImport = () => {
             </p>
             <div class="grid gap-4 xl:grid-cols-2">
                 <div
-                    class="rounded-lg overflow-hidden transition-colors"
+                    class="rounded-box overflow-hidden transition-colors"
                     :class="previewData.success === false ? 'border border-warning/50 bg-warning/5' : 'border border-primary/20 bg-base-300/30'"
                 >
                     <div class="flex items-center gap-2 border-b border-base-300 bg-base-300/50 px-3 py-2">
@@ -636,7 +636,7 @@ const handleImport = () => {
                         </div>
                     </div>
                 </div>
-                <div class="rounded-lg border border-base-300 overflow-hidden">
+                <div class="rounded-box border border-base-300 overflow-hidden">
                     <div class="flex items-center gap-2 border-b border-base-300 bg-base-300/50 px-3 py-2">
                         <Icon source="fa-solid fa-server" alt="" pack="solid" class="text-primary-300 text-sm" />
                         <h4 class="font-semibold text-primary-100 text-sm">Version actuelle (Krosmoz)</h4>
@@ -666,7 +666,7 @@ const handleImport = () => {
             </div>
 
             <!-- Comparaison : propriétés (Brut / Converti / Krosmoz existant) -->
-            <div class="rounded-lg border border-base-300 overflow-hidden">
+            <div class="rounded-box border border-base-300 overflow-hidden">
                 <div class="flex items-center gap-2 border-b border-base-300 bg-base-300/50 px-3 py-2">
                     <Icon source="fa-solid fa-code-compare" alt="" pack="solid" class="text-primary-300 text-sm" />
                     <h4 class="font-semibold text-primary-100 text-sm">Propriétés : Brut / Converti / Krosmoz</h4>
@@ -686,7 +686,7 @@ const handleImport = () => {
             <!-- Simulation des effets (sorts uniquement) : ce qui sera créé / réutilisé sans écriture en base -->
             <div
                 v-if="entityType === 'spell' && previewData.converted?.spell_effects"
-                class="rounded-lg border border-primary/30 overflow-hidden bg-base-300/20"
+                class="rounded-box border border-primary/30 overflow-hidden bg-base-300/20"
             >
                 <div class="flex items-center gap-2 border-b border-base-300 bg-base-300/50 px-3 py-2">
                     <Icon source="fa-solid fa-wand-magic-sparkles" alt="" pack="solid" class="text-primary-300 text-sm" />
@@ -708,7 +708,7 @@ const handleImport = () => {
                     <div
                         v-for="(sim, idx) in previewData.spell_effects_simulation"
                         :key="idx"
-                        class="rounded-lg border border-base-300 bg-base-200/50 p-3 text-xs space-y-2"
+                        class="rounded-box border border-base-300 bg-base-200/50 p-3 text-xs space-y-2"
                     >
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="font-semibold text-primary-100">Degré {{ sim.degree }}</span>

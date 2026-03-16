@@ -176,7 +176,7 @@ function isFaIcon(item) {
                         :href="getItemClick && !resolveHref(item) ? undefined : resolveHref(item)"
                         :type="getItemClick && !resolveHref(item) ? 'button' : undefined"
                         :class="[
-                            'sidebar-nav-item flex items-center gap-2 rounded-lg border-l-4 border-transparent px-3 py-2 text-left text-sm transition-colors w-full',
+                            'sidebar-nav-item flex items-center gap-2 rounded-box border-l-4 border-transparent px-3 py-2 text-left text-sm transition-colors w-full',
                             resolveCssClasses(item),
                             isItemActive(item) && 'sidebar-nav-item-active'
                         ]"
@@ -231,7 +231,7 @@ function isFaIcon(item) {
                         v-show="(filteredItemsByGroup[groupKey] || []).length > 0"
                         :class="[
                             'sidebar-nav-group',
-                            groupsMode === 'collapse' && 'collapse collapse-arrow rounded-lg border border-base-300 bg-base-100'
+                            groupsMode === 'collapse' && 'collapse collapse-arrow rounded-box border border-base-300 bg-base-100'
                         ]"
                     >
                         <template v-if="groupsMode === 'collapse'">
@@ -252,7 +252,7 @@ function isFaIcon(item) {
                                         :href="getItemClick && !resolveHref(item) ? undefined : resolveHref(item)"
                                         :type="getItemClick && !resolveHref(item) ? 'button' : undefined"
                                         :class="[
-                                            'flex items-center gap-2 rounded-lg border-l-4 border-transparent px-3 py-2 text-left text-sm transition-colors w-full',
+                                            'flex items-center gap-2 rounded-box border-l-4 border-transparent px-3 py-2 text-left text-sm transition-colors w-full',
                                             resolveCssClasses(item),
                                             isItemActive(item) && 'sidebar-nav-item-active'
                                         ]"
@@ -306,7 +306,7 @@ function isFaIcon(item) {
                                     :href="getItemClick && !resolveHref(item) ? undefined : resolveHref(item)"
                                     :type="getItemClick && !resolveHref(item) ? 'button' : undefined"
                                     :class="[
-                                        'flex items-center gap-2 rounded-lg border-l-4 border-transparent px-3 py-2 text-left text-sm transition-colors w-full',
+                                        'flex items-center gap-2 rounded-box border-l-4 border-transparent px-3 py-2 text-left text-sm transition-colors w-full',
                                         resolveCssClasses(item),
                                         isItemActive(item) && 'sidebar-nav-item-active'
                                     ]"

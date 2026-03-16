@@ -67,6 +67,12 @@ STEAM_ALLOWED_HOSTS=example.com,www.example.com
 
 - Un provider peut être délié uniquement si l'utilisateur conserve au moins une autre méthode de connexion (mot de passe ou autre provider).
 
+### Mot de passe oublié
+
+- La réinitialisation de mot de passe est disponible **uniquement pour les comptes ayant un mot de passe** (inscription classique ou compte OAuth ayant défini un mot de passe).
+- Pour les comptes **OAuth-only** (Discord, Steam ou GitHub uniquement), aucun email de réinitialisation n’est envoyé : un message invite l’utilisateur à se connecter via son provider habituel.
+- Lien « Mot de passe oublié ? » visible sur la page de connexion.
+
 ### Définir un mot de passe (comptes OAuth-only)
 
 - Un utilisateur inscrit uniquement via OAuth (sans mot de passe) peut définir un mot de passe :

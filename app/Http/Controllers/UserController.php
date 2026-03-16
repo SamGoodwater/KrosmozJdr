@@ -236,9 +236,10 @@ class UserController extends Controller
             $data['avatar'] = $media->getUrl();
         }
         // Normalisation des préférences de notifications : forme { channels: [], frequency: 'instant'|... }
-        if (array_key_exists('notification_preferences', $data)) {
+        // Utiliser input() car validated() peut exclure des clés imbriquées avec règles sometimes
+        if ($request->has('notification_preferences')) {
             $allowedTypes = array_keys(config('notifications.types', []));
-            $prefs = $data['notification_preferences'];
+            $prefs = $request->input('notification_preferences', []);
             if (is_array($prefs)) {
                 $data['notification_preferences'] = [];
                 foreach (array_intersect_key($prefs, array_flip($allowedTypes)) as $type => $val) {

@@ -154,7 +154,7 @@ function entityLabel(entity) {
     <section class="space-y-4">
         <h2 class="text-xl font-semibold text-base-content border-b border-base-300 pb-2">Panneau 3 — Mapping</h2>
         <div class="card shadow border border-base-200 border-glass-sm">
-            <div class="card-body bg-base-100 rounded-lg">
+            <div class="card-body bg-base-100 rounded-box">
                 <p class="text-sm text-base-content/70 mb-4">
                     Lien entre une propriété DofusDB et cette caractéristique. Cliquez sur <strong>Lier</strong> pour choisir l’objet (à gauche) puis la propriété (à droite).
                 </p>
@@ -233,7 +233,7 @@ function entityLabel(entity) {
                 <template v-else>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4">
                         <!-- Gauche : choix de l'objet -->
-                        <div class="border border-base-200 rounded-lg p-3 bg-base-200/30">
+                        <div class="border border-base-200 rounded-box p-3 bg-base-200/30">
                             <p class="label-text font-medium mb-2">Objet DofusDB</p>
                             <div class="flex flex-col gap-1">
                                 <label
@@ -254,7 +254,7 @@ function entityLabel(entity) {
                         </div>
 
                         <!-- Droite : propriétés (chemins) + recherche -->
-                        <div class="border border-base-200 rounded-lg p-3 flex flex-col min-h-0">
+                        <div class="border border-base-200 rounded-box p-3 flex flex-col min-h-0">
                             <p class="label-text font-medium mb-2">Propriété (chemin)</p>
                             <input
                                 v-model="pathSearch"

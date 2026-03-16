@@ -260,7 +260,7 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <div v-if="filteredMappings.length === 0" class="rounded-lg border border-base-300 bg-base-200/30 p-8 text-center text-base-content/70">
+                <div v-if="filteredMappings.length === 0" class="rounded-box border border-base-300 bg-base-200/30 p-8 text-center text-base-content/70">
                     <template v-if="mappings.length === 0">
                         Aucune règle en base pour cette entité. Ajoutez des règles pour que le pipeline puisse convertir les données.
                     </template>
@@ -273,7 +273,7 @@ onMounted(() => {
                     </button>
                 </div>
 
-                <div v-else class="overflow-x-auto rounded-lg border border-base-300">
+                <div v-else class="overflow-x-auto rounded-box border border-base-300">
                     <table class="table table-zebra">
                         <thead>
                             <tr>

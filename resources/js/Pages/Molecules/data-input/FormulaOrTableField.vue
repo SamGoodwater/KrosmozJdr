@@ -174,7 +174,7 @@ const canRemoveRow = computed(() => tableEntries.value.length > 1);
             </button>
         </div>
         <!-- Mode table (2+ lignes) : référence + lignes (à partir de / valeur) + [-] et [+] -->
-        <div v-else class="space-y-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
+        <div v-else class="space-y-3 rounded-box border border-base-300 bg-base-200/30 p-3">
             <div>
                 <label class="label label-text text-xs">Caractéristique de référence</label>
                 <select

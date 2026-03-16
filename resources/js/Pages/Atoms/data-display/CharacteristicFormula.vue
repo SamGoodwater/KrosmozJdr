@@ -76,7 +76,7 @@ const containerStyle = computed(() => {
 <template>
     <div
         class="characteristic-formula relative inline-block min-w-0 transition-shadow"
-        :class="compact ? 'rounded px-1 py-0.5' : 'rounded-lg border border-base-300 px-2.5 py-2 backdrop-blur-sm'"
+        :class="compact ? 'rounded px-1 py-0.5' : 'rounded-box border border-base-300 px-2.5 py-2 backdrop-blur-sm'"
         :style="compact ? {} : containerStyle"
         @mouseenter="isHovered = true"
         @mouseleave="isHovered = false"
@@ -113,7 +113,7 @@ const containerStyle = computed(() => {
         <!-- Panneau étendu (hover) -->
         <div
             v-show="isHovered"
-            class="characteristic-formula-expanded absolute left-0 top-full z-50 mt-1 min-w-[180px] max-w-[320px] rounded-lg border border-base-300 bg-base-100 p-3 shadow-xl"
+            class="characteristic-formula-expanded absolute left-0 top-full z-50 mt-1 min-w-[180px] max-w-[320px] rounded-box border border-base-300 bg-base-100 p-3 shadow-xl"
         >
             <div class="space-y-2">
                 <div class="flex items-center gap-2">

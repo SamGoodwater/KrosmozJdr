@@ -66,7 +66,7 @@ const containerStyle = computed(() => {
 <template>
     <div
         class="characteristic-badges flex flex-wrap"
-        :class="compact ? 'gap-1 px-1 py-0.5' : 'gap-1.5 rounded-lg border border-base-300 px-2 py-1.5 backdrop-blur-sm'"
+        :class="compact ? 'gap-1 px-1 py-0.5' : 'gap-1.5 rounded-box border border-base-300 px-2 py-1.5 backdrop-blur-sm'"
         :style="compact ? {} : containerStyle"
     >
         <Badge

@@ -52,7 +52,7 @@ const attrs = computed(() => getCommonAttrs(props));
     flex-direction: column;
     gap: 0.35rem;
     padding: 0.25rem;
-    border-radius: var(--radius-box, 1rem);
+    border-radius: var(--radius-box, 0.125rem);
     overflow: hidden;
 }
 

@@ -40,7 +40,7 @@ class CapabilityFactory extends Factory
             'time_before_use_again' => (string) fake()->numberBetween(0, 10),
             'casting_time' => (string) fake()->numberBetween(0, 5),
             'duration' => (string) fake()->numberBetween(1, 10),
-            'element' => fake()->randomElement(['Neutre', 'Terre', 'Feu', 'Air', 'Eau']),
+            'element' => fake()->randomElement(\App\Support\ElementConstants::PRIMARIES),
             'is_magic' => fake()->boolean(),
             'ritual_available' => fake()->boolean(),
             'powerful' => fake()->optional()->sentence(),

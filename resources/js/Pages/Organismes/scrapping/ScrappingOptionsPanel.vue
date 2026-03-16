@@ -173,7 +173,7 @@ const emit = defineEmits(["update:open", "update:optIncludeRelations", "update:o
                         <span class="font-medium">{{ batchErrorResults.length }} entité(s) en échec</span>
                         <span class="text-primary-200"> sur le dernier import. Détail ci-dessous.</span>
                     </Alert>
-                    <div class="overflow-x-auto rounded-lg border border-base-300 bg-base-100 max-h-56 overflow-y-auto">
+                    <div class="overflow-x-auto rounded-box border border-base-300 bg-base-100 max-h-56 overflow-y-auto">
                         <table class="table table-zebra table-pin-rows table-xs">
                             <thead>
                                 <tr class="bg-base-300/70 text-primary-200">
