@@ -49,6 +49,53 @@ final class CharacteristicMetaByDbColumnService
     }
 
     /**
+     * Mapping characteristic_key → définition pour les caractéristiques calculées (sans db_column).
+     * Inclut les modificateurs (modifier_*_creature) et sauvegardes (save_*_creature).
+     * Utilisé pour l'affichage des créatures (monstres, PNJ).
+     *
+     * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
+     */
+    public function buildCreatureComputedByKey(): array
+    {
+        $out = [];
+        try {
+            $charRows = CharacteristicCreature::query()
+                ->whereIn('entity', [CharacteristicCreature::ENTITY_ALL, CharacteristicCreature::ENTITY_MONSTER])
+                ->whereNull('db_column')
+                ->whereHas('characteristic', fn ($q) => $q->whereIn('key', [
+                    'modifier_vitality_creature',
+                    'modifier_wisdom_creature',
+                    'modifier_strength_creature',
+                    'modifier_intelligence_creature',
+                    'modifier_chance_creature',
+                    'modifier_agility_creature',
+                    'save_vitality_creature',
+                    'save_wisdom_creature',
+                    'save_strength_creature',
+                    'save_intelligence_creature',
+                    'save_chance_creature',
+                    'save_agility_creature',
+                ]))
+                ->with(['characteristic.masterCharacteristic'])
+                ->get();
+
+            foreach ($charRows as $row) {
+                if ($row->characteristic === null) {
+                    continue;
+                }
+                $entry = $this->rowToDefinitionFromCharacteristic($row->characteristic);
+                if ($entry !== null && $entry['key'] !== '') {
+                    $out[$entry['key']] = $entry;
+                }
+            }
+        } catch (\Throwable $e) {
+            // Ne pas bloquer en cas d'erreur
+        }
+
+        return $out;
+    }
+
+    /**
      * Mapping db_column → définition pour une entité objet (item, consumable, resource, panoply).
      *
      * @param string $entity Une des constantes CharacteristicObject::ENTITY_*

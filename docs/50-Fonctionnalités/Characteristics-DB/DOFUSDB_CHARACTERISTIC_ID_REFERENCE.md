@@ -27,7 +27,7 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 13 | chance | Chance | chance_object |
 | 14 | agility | Agilité | agi_object |
 | 15 | intelligence | Intelligence | intel_object |
-| 16 | allDamageBonus | Dommages | all_damage_bonus_object |
+| 16 | allDamageBonus | Dommages | — |
 | 17 | damageFactor | *(visible: false)* | — |
 | 18 | criticalHit | Critique | critical_hit_object |
 | 19 | range | Portée | po_object |
@@ -36,7 +36,7 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 22 | experienceBoost | Boost : expérience | — |
 | 23 | movementPoints | PM | pm_object |
 | 24 | invisibility | Invisibilité | — |
-| 25 | damagePercent | Puissance | power_object |
+| 25 | damagePercent | Puissance | — |
 | 26 | maxSummonedCreaturesBoost | Invocation | invocation_object |
 | 27 | DodgeApLostProbability | Esquive PA | esquive_pa_object |
 | 28 | DodgeMpLostProbability | Esquive PM | esquive_pm_object |
@@ -58,9 +58,9 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 45 | shopPercentReduction | Pourcentage de remise en magasin | — |
 | 46 | alignementRank | Rang d'alignement | — |
 | 47 | maxEnergyPoints | Maximum de points d'énergie | — |
-| 48 | magicFind | Prospection | magic_find_object |
+| 48 | magicFind | Prospection | — |
 | 49 | healBonus | Soins | heal_bonus_object |
-| 50 | reflectDamage | Renvoi | reflect_damage_object |
+| 50 | reflectDamage | Renvoi | — |
 | 51 | energyLoose | Perte d'énergie | — |
 | 52 | honourPoints | Points d'honneur | — |
 | 53 | disgracePoints | Points de déshonneur | — |
@@ -82,12 +82,12 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 79 | tackleBlock | Tacle | tacle_object |
 | 80 | allianceAutoAgressRange | Rayon d'auto aggression JcJ | — |
 | 81 | allianceAutoAgressResist | Esquive auto aggression JcJ | — |
-| 82 | apReduction | Retrait PA | ap_reduction_object |
-| 83 | mpReduction | Retrait PM | mp_reduction_object |
-| 84 | pushDamageBonus | Poussée | push_damage_bonus_object |
-| 85 | pushDamageReduction | Poussée (fixe) | push_damage_reduction_object |
-| 86 | criticalDamageBonus | Critiques | critical_damage_bonus_object |
-| 87 | criticalDamageReduction | Critiques (fixe) | critical_damage_reduction_object |
+| 82 | apReduction | Retrait PA | — (non utilisé) |
+| 83 | mpReduction | Retrait PM | — (non utilisé) |
+| 84 | pushDamageBonus | Poussée | — |
+| 85 | pushDamageReduction | Poussée (fixe) | — |
+| 86 | criticalDamageBonus | Critiques | — |
+| 87 | criticalDamageReduction | Critiques (fixe) | — |
 | 88 | earthDamageBonus | Terre (dommages) | do_fixe_terre_object |
 | 89 | fireDamageBonus | Feu (dommages) | do_fixe_feu_object |
 | 90 | waterDamageBonus | Eau (dommages) | do_fixe_eau_object |
@@ -112,7 +112,7 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 109 | hunter | *(visible: false)* | — |
 | 110 | runePower | Bonus de puissance pour les runes | — |
 | 120 | dealtDamageMultiplierDistance | Distance (%) | — |
-| 121 | receivedDamageMultiplierDistance | Distance (%) (résistance) | received_damage_multiplier_distance_object |
+| 121 | receivedDamageMultiplierDistance | Distance (%) (résistance) | — |
 | 122 | dealtDamageMultiplierWeapon | Armes (%) | — |
 | 123 | dealtDamageMultiplierSpells | Sorts (%) | — |
 | 124 | receivedDamageMultiplierMelee | Mêlée (%) (résistance) | — |

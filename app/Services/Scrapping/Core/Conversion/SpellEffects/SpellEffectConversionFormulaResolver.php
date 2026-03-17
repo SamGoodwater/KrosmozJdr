@@ -12,12 +12,12 @@ namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
  */
 final class SpellEffectConversionFormulaResolver
 {
-    /** Actions avec une seule règle de conversion (dommages/soin/bouclier) → power_spell. */
-    private const SINGLE_RULE_SLUGS = [
-        'frapper',
-        'soigner',
-        'voler-vie',
-        'protéger',
+    /** Mapping action (sub_effect_slug) → characteristic_key pour les Type 2 action (dommages, soin, vol de vie, bouclier). */
+    private const ACTION_TO_CHARACTERISTIC = [
+        'frapper' => 'dommages_spell',
+        'soigner' => 'soin_spell',
+        'voler-vie' => 'vol_vie_spell',
+        'protéger' => 'bouclier_spell',
     ];
 
     /** Actions avec conversion par caractéristique (booster, retirer, voler-caracteristiques). */
@@ -27,11 +27,14 @@ final class SpellEffectConversionFormulaResolver
         'voler-caracteristiques',
     ];
 
-    /** Clé utilisée pour les actions à une règle (ex. dommages/soins) — existe en characteristic_spell. */
-    private const SINGLE_RULE_CHARACTERISTIC_KEY = 'power_spell';
-
     /** Entité pour toutes les conversions d'effets de sort. */
     public const ENTITY_SPELL = 'spell';
+
+    /** Clés courtes désactivées (caractéristiques retirées du groupe spell). */
+    private const IGNORED_KEYS = [
+        'echec_critique',
+        'prospection',
+    ];
 
     /**
      * Retourne la characteristic_key (groupe spell) pour appliquer la conversion, ou null si pas de conversion.
@@ -42,13 +45,17 @@ final class SpellEffectConversionFormulaResolver
      */
     public function resolveCharacteristicKeyForConversion(string $subEffectSlug, array $params): ?string
     {
-        if (in_array($subEffectSlug, self::SINGLE_RULE_SLUGS, true)) {
-            return self::SINGLE_RULE_CHARACTERISTIC_KEY;
+        if (isset(self::ACTION_TO_CHARACTERISTIC[$subEffectSlug])) {
+            return self::ACTION_TO_CHARACTERISTIC[$subEffectSlug];
         }
 
         if (in_array($subEffectSlug, self::PER_CHARACTERISTIC_SLUGS, true)) {
             $char = $params['characteristic'] ?? null;
             if (is_string($char) && $char !== '') {
+                $char = trim($char);
+                if (in_array($char, self::IGNORED_KEYS, true)) {
+                    return null;
+                }
                 return $this->normalizeSpellKey($char);
             }
             return null;
@@ -57,17 +64,19 @@ final class SpellEffectConversionFormulaResolver
         return null;
     }
 
+    /** characteristic_keys désactivées (retirées du groupe spell : echec_critique, prospection). */
+    private const IGNORED_CHARACTERISTIC_KEYS = [
+        'echec_critique_spell',
+        'magic_find_spell',
+    ];
+
     /** Mapping clés courtes (mapping DofusDB) → characteristic_key du groupe spell en BDD. */
     private const SPELL_KEY_ALIASES = [
         'pa' => 'action_points_spell',
         'po' => 'range_spell',
-        'pm' => 'pm_spell',
+        'pm' => 'movement_points_spell',
         'range' => 'range_spell',
         'movement_points' => 'movement_points_spell',
-        'retrait_pa' => 'ap_reduction_spell',
-        'retrait_pm' => 'mp_reduction_spell',
-        'ap_reduction' => 'ap_reduction_spell',
-        'mp_reduction' => 'mp_reduction_spell',
         'fuite' => 'dodge_spell',
         'tacle' => 'tackle_spell',
         'dodge' => 'dodge_spell',
@@ -79,7 +88,6 @@ final class SpellEffectConversionFormulaResolver
         'agi' => 'agi_spell',
         'intel' => 'intel_spell',
         'critical' => 'critical_spell',
-        'echec_critique' => 'echec_critique_spell',
         'res_terre' => 'res_terre_spell',
         'res_feu' => 'res_feu_spell',
         'res_eau' => 'res_eau_spell',
@@ -91,12 +99,35 @@ final class SpellEffectConversionFormulaResolver
         'poussée' => 'push_damage_reduction_spell',
         'poussee' => 'push_damage_reduction_spell',
         'critiques' => 'critical_damage_reduction_spell',
-        'prospection' => 'magic_find_spell',
         'res_fixe_terre' => 'fixed_resistance_terre_spell',
         'res_fixe_feu' => 'fixed_resistance_feu_spell',
         'res_fixe_eau' => 'fixed_resistance_eau_spell',
         'res_fixe_air' => 'fixed_resistance_air_spell',
         'res_fixe_neutre' => 'fixed_resistance_neutre_spell',
+        // —— Type 2 creature (équivalents spell des caractéristiques creature) ——
+        'ini' => 'initiative_spell',
+        'initiative' => 'initiative_spell',
+        'ca' => 'armor_class_spell',
+        'armor_class' => 'armor_class_spell',
+        'touch' => 'hit_bonus_spell',
+        'hit_bonus' => 'hit_bonus_spell',
+        'invocation' => 'summoning_spell',
+        'invocations' => 'summoning_spell',
+        'summoning' => 'summoning_spell',
+        'heal_bonus' => 'heal_bonus_spell',
+        'do_neutre' => 'fixed_damage_neutral_spell',
+        'do_terre' => 'fixed_damage_earth_spell',
+        'do_feu' => 'fixed_damage_fire_spell',
+        'do_air' => 'fixed_damage_air_spell',
+        'do_eau' => 'fixed_damage_water_spell',
+        'save_vitality' => 'save_vitality_spell',
+        'save_wisdom' => 'save_wisdom_spell',
+        'save_strength' => 'save_strength_spell',
+        'save_intelligence' => 'save_intelligence_spell',
+        'save_chance' => 'save_chance_spell',
+        'save_agility' => 'save_agility_spell',
+        'wakfu_reserve' => 'wakfu_reserve_spell',
+        'mastery_bonus' => 'mastery_bonus_spell',
     ];
 
     /**

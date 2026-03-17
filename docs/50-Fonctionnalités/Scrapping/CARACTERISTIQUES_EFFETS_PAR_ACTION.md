@@ -146,8 +146,8 @@ Liste des caractéristiques **convertibles** à prendre en charge en premier pou
 
 | DofusDB id | keyword | Nom | characteristic_key |
 |------------|---------|-----|--------------------|
-| 82 | apReduction | Retrait PA | retrait_pa ou équivalent |
-| 83 | mpReduction | Retrait PM | retrait_pm ou équivalent |
+| 82 | apReduction | Retrait PA | — (non utilisé) |
+| 83 | mpReduction | Retrait PM | — (non utilisé) |
 
 ### 3.6 Ressources de combat (PA, PM, PO, initiative, invocations)
 

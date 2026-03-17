@@ -96,6 +96,18 @@ use Spatie\MediaLibrary\HasMedia;
  * @property int $persuasion_mastery
  * @property int $representation_mastery
  * @property int $supercherie_mastery
+ * @property int $save_vitality_bonus
+ * @property int $save_wisdom_bonus
+ * @property int $save_strength_bonus
+ * @property int $save_intelligence_bonus
+ * @property int $save_chance_bonus
+ * @property int $save_agility_bonus
+ * @property int $save_vitality_mastery
+ * @property int $save_wisdom_mastery
+ * @property int $save_strength_mastery
+ * @property int $save_intelligence_mastery
+ * @property int $save_chance_mastery
+ * @property int $save_agility_mastery
  * @property string|null $kamas
  * @property string|null $drop_
  * @property string|null $other_item
@@ -323,6 +335,18 @@ class Creature extends Model implements HasMedia
         'persuasion_mastery',
         'representation_mastery',
         'supercherie_mastery',
+        'save_vitality_bonus',
+        'save_wisdom_bonus',
+        'save_strength_bonus',
+        'save_intelligence_bonus',
+        'save_chance_bonus',
+        'save_agility_bonus',
+        'save_vitality_mastery',
+        'save_wisdom_mastery',
+        'save_strength_mastery',
+        'save_intelligence_mastery',
+        'save_chance_mastery',
+        'save_agility_mastery',
         'kamas',
         'drop_',
         'other_item',

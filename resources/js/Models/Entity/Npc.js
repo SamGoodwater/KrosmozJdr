@@ -308,8 +308,9 @@ export class Npc extends BaseModel {
     _toCreatureCharacteristicsCell(_options) {
         const ctx = _options?.ctx ?? _options?.context ?? null;
         const byDb = ctx?.characteristics?.creature?.byDbColumn ?? {};
+        const byComp = ctx?.characteristics?.creature?.byComputedKey ?? {};
         const creatureData = this._getCreatureData();
-        const groups = buildCreatureCharacteristicGroups(creatureData, byDb);
+        const groups = buildCreatureCharacteristicGroups(creatureData, byDb, byComp);
         const c = creatureData;
         const elements = ['neutre', 'terre', 'feu', 'air', 'eau'];
         const filterParts = [];
@@ -418,8 +419,9 @@ export class Npc extends BaseModel {
     _toSummaryGroupCell(_options, groupTitle, dbColumnsForFilter) {
         const ctx = _options?.ctx ?? _options?.context ?? null;
         const byDb = ctx?.characteristics?.creature?.byDbColumn ?? {};
+        const byComp = ctx?.characteristics?.creature?.byComputedKey ?? {};
         const creatureData = this._getCreatureData();
-        const allGroups = buildCreatureCharacteristicGroups(creatureData, byDb);
+        const allGroups = buildCreatureCharacteristicGroups(creatureData, byDb, byComp);
         const groups = allGroups.filter((g) => g.title === groupTitle);
         const c = creatureData;
         const filterParts = [];

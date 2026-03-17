@@ -126,11 +126,10 @@ class ItemEffectsToBonusConverterTest extends TestCase
         $this->assertSame(10, $decoded['3']['strength'] ?? null);
     }
 
-    public function test_convert_supports_newly_mapped_heal_and_power_characteristics(): void
+    public function test_convert_supports_heal_bonus_characteristic(): void
     {
         $effects = [
-            ['characteristic' => 49, 'value' => 20], // healBonus
-            ['characteristic' => 25, 'value' => 30], // damagePercent
+            ['characteristic' => 49, 'value' => 20], // healBonus (KrosmozJDR)
         ];
 
         $result = $this->converter->convert($effects, [], ['entityType' => 'panoply']);
@@ -139,23 +138,18 @@ class ItemEffectsToBonusConverterTest extends TestCase
         $decoded = json_decode($result, true);
         $this->assertIsArray($decoded);
         $this->assertArrayHasKey('heal_bonus', $decoded);
-        $this->assertArrayHasKey('power', $decoded);
+        $this->assertSame(20, $decoded['heal_bonus']);
     }
 
-    public function test_convert_supports_push_and_ap_reduction_characteristics(): void
+    public function test_convert_ignores_deprecated_characteristics_push(): void
     {
         $effects = [
-            ['characteristic' => 84, 'value' => 25], // pushDamageBonus
-            ['characteristic' => 82, 'value' => 12], // apReduction
+            ['characteristic' => 84, 'value' => 25], // pushDamageBonus (non utilisé KrosmozJDR)
         ];
 
         $result = $this->converter->convert($effects, [], ['entityType' => 'panoply']);
 
-        $this->assertIsString($result);
-        $decoded = json_decode($result, true);
-        $this->assertIsArray($decoded);
-        $this->assertArrayHasKey('push_damage_bonus', $decoded);
-        $this->assertArrayHasKey('ap_reduction', $decoded);
+        $this->assertNull($result);
     }
 
     public function test_convert_logs_id_38_as_unknown_without_polluting_bonus(): void

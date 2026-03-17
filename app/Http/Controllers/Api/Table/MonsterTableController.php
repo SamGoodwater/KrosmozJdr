@@ -254,6 +254,20 @@ class MonsterTableController extends Controller
                         'res_feu' => $c->res_feu,
                         'res_air' => $c->res_air,
                         'res_eau' => $c->res_eau,
+                        'critical_hit' => $c->critical_hit ?? 0,
+                        'heal_bonus' => $c->heal_bonus ?? 0,
+                        'save_vitality_bonus' => $c->save_vitality_bonus ?? 0,
+                        'save_wisdom_bonus' => $c->save_wisdom_bonus ?? 0,
+                        'save_strength_bonus' => $c->save_strength_bonus ?? 0,
+                        'save_intelligence_bonus' => $c->save_intelligence_bonus ?? 0,
+                        'save_chance_bonus' => $c->save_chance_bonus ?? 0,
+                        'save_agility_bonus' => $c->save_agility_bonus ?? 0,
+                        'save_vitality_mastery' => $c->save_vitality_mastery ?? 0,
+                        'save_wisdom_mastery' => $c->save_wisdom_mastery ?? 0,
+                        'save_strength_mastery' => $c->save_strength_mastery ?? 0,
+                        'save_intelligence_mastery' => $c->save_intelligence_mastery ?? 0,
+                        'save_chance_mastery' => $c->save_chance_mastery ?? 0,
+                        'save_agility_mastery' => $c->save_agility_mastery ?? 0,
                     ];
                 }
 
@@ -299,6 +313,7 @@ class MonsterTableController extends Controller
                     'characteristics' => [
                         'creature' => [
                             'byDbColumn' => $creatureCharacteristicsByDbColumn,
+                            'byComputedKey' => $this->characteristicMeta->buildCreatureComputedByKey(),
                         ],
                     ],
                     'format' => 'entities',

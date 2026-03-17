@@ -53,6 +53,18 @@ class UpdateCreatureRequest extends FormRequest
             'intel' => ['nullable', 'string', 'max:255'],
             'agi' => ['nullable', 'string', 'max:255'],
             'chance' => ['nullable', 'string', 'max:255'],
+            'save_vitality_bonus' => ['nullable', 'integer', 'min:0', 'max:3'],
+            'save_wisdom_bonus' => ['nullable', 'integer', 'min:0', 'max:3'],
+            'save_strength_bonus' => ['nullable', 'integer', 'min:0', 'max:3'],
+            'save_intelligence_bonus' => ['nullable', 'integer', 'min:0', 'max:3'],
+            'save_chance_bonus' => ['nullable', 'integer', 'min:0', 'max:3'],
+            'save_agility_bonus' => ['nullable', 'integer', 'min:0', 'max:3'],
+            'save_vitality_mastery' => ['nullable', 'integer', 'min:0', 'max:1'],
+            'save_wisdom_mastery' => ['nullable', 'integer', 'min:0', 'max:1'],
+            'save_strength_mastery' => ['nullable', 'integer', 'min:0', 'max:1'],
+            'save_intelligence_mastery' => ['nullable', 'integer', 'min:0', 'max:1'],
+            'save_chance_mastery' => ['nullable', 'integer', 'min:0', 'max:1'],
+            'save_agility_mastery' => ['nullable', 'integer', 'min:0', 'max:1'],
             'kamas' => ['nullable', 'string', 'max:255'],
         ];
     }

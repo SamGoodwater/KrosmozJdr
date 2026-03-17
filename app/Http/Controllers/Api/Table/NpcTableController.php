@@ -254,6 +254,7 @@ class NpcTableController extends Controller
                     'characteristics' => [
                         'creature' => [
                             'byDbColumn' => $this->characteristicMeta->buildCreatureByDbColumn(),
+                            'byComputedKey' => $this->characteristicMeta->buildCreatureComputedByKey(),
                         ],
                     ],
                     'format' => 'entities',

@@ -23,25 +23,25 @@ class SpellEffectConversionFormulaResolverTest extends TestCase
         $this->resolver = new SpellEffectConversionFormulaResolver();
     }
 
-    public function test_frapper_returns_power_spell(): void
+    public function test_frapper_returns_dommages_spell(): void
     {
         $key = $this->resolver->resolveCharacteristicKeyForConversion('frapper', []);
-        $this->assertSame('power_spell', $key);
+        $this->assertSame('dommages_spell', $key);
     }
 
-    public function test_soigner_returns_power_spell(): void
+    public function test_soigner_returns_soin_spell(): void
     {
-        $this->assertSame('power_spell', $this->resolver->resolveCharacteristicKeyForConversion('soigner', []));
+        $this->assertSame('soin_spell', $this->resolver->resolveCharacteristicKeyForConversion('soigner', []));
     }
 
-    public function test_voler_vie_returns_power_spell(): void
+    public function test_voler_vie_returns_vol_vie_spell(): void
     {
-        $this->assertSame('power_spell', $this->resolver->resolveCharacteristicKeyForConversion('voler-vie', []));
+        $this->assertSame('vol_vie_spell', $this->resolver->resolveCharacteristicKeyForConversion('voler-vie', []));
     }
 
-    public function test_proteger_returns_power_spell(): void
+    public function test_proteger_returns_bouclier_spell(): void
     {
-        $this->assertSame('power_spell', $this->resolver->resolveCharacteristicKeyForConversion('protéger', []));
+        $this->assertSame('bouclier_spell', $this->resolver->resolveCharacteristicKeyForConversion('protéger', []));
     }
 
     public function test_booster_with_pa_returns_action_points_spell(): void
@@ -71,9 +71,9 @@ class SpellEffectConversionFormulaResolverTest extends TestCase
         $this->assertSame('action_points_spell', $this->resolver->resolveCharacteristicKeyForConversion('retirer', ['characteristic' => 'pa']));
     }
 
-    public function test_voler_caracteristiques_with_pm_returns_pm_spell(): void
+    public function test_voler_caracteristiques_with_pm_returns_movement_points_spell(): void
     {
-        $this->assertSame('pm_spell', $this->resolver->resolveCharacteristicKeyForConversion('voler-caracteristiques', ['characteristic' => 'pm']));
+        $this->assertSame('movement_points_spell', $this->resolver->resolveCharacteristicKeyForConversion('voler-caracteristiques', ['characteristic' => 'pm']));
     }
 
     public function test_deplacer_returns_null(): void

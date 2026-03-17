@@ -809,10 +809,6 @@ final class SpellEffectsConversionService
         }
 
         $needles = [
-            'retrait_pa',
-            'retrait_pm',
-            'ap_reduction',
-            'mp_reduction',
             'dodge_action_points',
             'dodge_movement_points',
             'dodge_spell',
@@ -834,9 +830,6 @@ final class SpellEffectsConversionService
             return null;
         }
 
-        if (str_contains($key, 'retrait_pa') || str_contains($key, 'retrait_pm') || str_contains($key, 'ap_reduction') || str_contains($key, 'mp_reduction')) {
-            return 'sagesse';
-        }
         if (str_contains($key, 'fuite') || str_contains($key, 'tacle') || str_contains($key, 'agi')) {
             return 'agi';
         }
@@ -848,7 +841,7 @@ final class SpellEffectsConversionService
     {
         $text = $this->normalizeDecisionText($otherText);
 
-        if (preg_match('/\b(pa|pm|retrait pa|retrait pm)\b/u', $text) === 1) {
+        if (preg_match('/\b(pa|pm|esquive pa|esquive pm)\b/u', $text) === 1) {
             return 'sagesse';
         }
         if (preg_match('/\b(fuite|tacle|agilite)\b/u', $text) === 1) {

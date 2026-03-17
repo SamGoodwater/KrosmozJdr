@@ -90,6 +90,26 @@ round(min(30, max(1, 3 + 19 * pow(max(1,[d])/200, 0.5))))
 
 ---
 
+### 3.6 Type 2 creature (booster, retirer, voler-caracteristiques)
+
+Les caractéristiques ciblées par ces actions sont des **effets temporaires** (boost/retrait). Les valeurs Krosmoz sont donc **plus faibles** que les valeurs de base créature (règles 2.2.2). Dofus envoie des valeurs souvent 10–200+ ; on compresse vers les plafonds équipement/forgemagie.
+
+| characteristic_key | Règles (plafond) | Formule | max |
+|-------------------|------------------|---------|-----|
+| initiative_spell | Forgemagie +3 | `round(min(5,max(0,0.4*[d])))` | 5 |
+| armor_class_spell | Équip +5 | `round(min(5,max(0,0.25*[d])))` | 5 |
+| hit_bonus_spell | Équip +5 | `round(min(5,max(0,0.25*[d])))` | 5 |
+| summoning_spell | Équip +5, effet typ. +1 à +3 | `round(min(3,max(0,0.5*[d])))` | 3 |
+| heal_bonus_spell | Max 7 | `round(min(7,max(0,0.3*[d])))` | 7 |
+| fixed_damage_*_spell | Créature 0–10, sort ≈ moitié | `round(min(5,max(0,0.2*[d])))` | 5 |
+| save_*_spell | Bonus équip +3 max | `round(min(5,max(0,0.35*[d])))` | 5 |
+| wakfu_reserve_spell | 6 + 3 équip, effet temporaire | `round(min(3,max(0,0.4*[d])))` | 3 |
+| mastery_bonus_spell | 1–6, non modifiable, rare en sort | `round(min(2,max(0,0.15*[d])))` | 2 |
+
+**Samples** : `conversion_dofus_sample` et `conversion_krosmoz_sample` renseignés pour initiative, armor_class, hit_bonus, summoning, heal_bonus (alignés sur object_krosmoz_samples.json et retours scrapping).
+
+---
+
 ## 4. Synthèse des formules à mettre en BDD
 
 | characteristic_key | conversion_formula | min | max | Note |

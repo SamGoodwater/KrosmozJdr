@@ -49,7 +49,7 @@ return [
     118 => ['booster', 'characteristic', 'strong'], // 118 — #1{{~1~2 à }}#2 Force ; carac DofusDB id=10
     119 => ['booster', 'characteristic', 'agi'], // 119 — #1{{~1~2 à }}#2 Agilité ; carac DofusDB id=14
     121 => ['frapper', 'element', null], // 121 — #1{{~1~2 à }}#2 Dommages
-    122 => ['booster', 'characteristic', 'echec_critique'], // 122 — #1{{~1~2 à }}#2 Échecs Critiques ; carac DofusDB id=39
+    // 122 — Échecs Critiques (DofusDB id=39) : non pertinent pour Krosmoz JDR, non mappé
     123 => ['booster', 'characteristic', 'chance'], // 123 — #1{{~1~2 à }}#2 Chance ; carac DofusDB id=13
     124 => ['booster', 'characteristic', 'sagesse'], // 124 — #1{{~1~2 à }}#2 Sagesse ; carac DofusDB id=12
     125 => ['booster', 'characteristic', 'vitality'], // 125 — #1{{~1~2 à }}#2 Vitalité ; carac DofusDB id=11
@@ -154,10 +154,10 @@ return [
     405 => ['invoquer', 'none', null], // 405 — Tue la cible et remplace par l'invocation : #1
     406 => ['retirer', 'characteristic', null], // 406 — Enlève les effets du sort #2
     407 => ['soigner', 'element', null], // 407 — #1{{~1~2 à }}#2 Soins (fixes)
-    410 => ['booster', 'characteristic', 'retrait_pa'], // 410 — #1{{~1~2 à }}#2 Retrait PA ; carac DofusDB id=82
-    411 => ['booster', 'characteristic', 'retrait_pa'], // 411 — -#1{{~1~2 à -}}#2 Retrait PA ; carac DofusDB id=82
-    412 => ['booster', 'characteristic', 'retrait_pm'], // 412 — #1{{~1~2 à }}#2 Retrait PM ; carac DofusDB id=83
-    413 => ['booster', 'characteristic', 'retrait_pm'], // 413 — -#1{{~1~2 à -}}#2 Retrait PM ; carac DofusDB id=83
+    410 => ['booster', 'characteristic', null], // 410 — #1{{~1~2 à }}#2 Retrait PA ; carac DofusDB id=82 (non utilisé)
+    411 => ['booster', 'characteristic', null], // 411 — -#1{{~1~2 à -}}#2 Retrait PA ; carac DofusDB id=82 (non utilisé)
+    412 => ['booster', 'characteristic', null], // 412 — #1{{~1~2 à }}#2 Retrait PM ; carac DofusDB id=83 (non utilisé)
+    413 => ['booster', 'characteristic', null], // 413 — -#1{{~1~2 à -}}#2 Retrait PM ; carac DofusDB id=83 (non utilisé)
     414 => ['frapper', 'element', null], // 414 — #1{{~1~2 à }}#2 Dommage{{~ps}}{{~zs}} Poussée
     415 => ['frapper', 'element', null], // 415 — -#1{{~1~2 à -}}#2 Dommage{{~ps}}{{~zs}} Poussée
     416 => ['booster', 'characteristic', null], // 416 — #1{{~1~2 à }}#2 Résistance{{~ps}}{{~zs}} Poussée ; carac DofusDB id=85

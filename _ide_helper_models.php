@@ -967,8 +967,12 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withoutTrashed()
  * @mixin \Eloquent
+ * @property string $critical_hit
+ * @property string $heal_bonus
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereCriticalHit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereHealBonus($value)
  */
 	class Creature extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }

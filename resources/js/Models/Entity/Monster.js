@@ -276,7 +276,8 @@ export class Monster extends BaseModel {
     _toCreatureCharacteristicsCell(_options) {
         const ctx = _options?.ctx || _options?.context || null;
         const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
-        const groups = buildCreatureCharacteristicGroups(this.creature, byDb);
+        const byComp = ctx?.characteristics?.creature?.byComputedKey || {};
+        const groups = buildCreatureCharacteristicGroups(this.creature, byDb, byComp);
 
         const c = this.creature;
         const elements = ["neutre", "terre", "feu", "air", "eau"];
@@ -422,7 +423,8 @@ export class Monster extends BaseModel {
     _toSummaryGroupCell(_options, groupTitle, dbColumnsForFilter) {
         const ctx = _options?.ctx || _options?.context || null;
         const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
-        const allGroups = buildCreatureCharacteristicGroups(this.creature, byDb);
+        const byComp = ctx?.characteristics?.creature?.byComputedKey || {};
+        const allGroups = buildCreatureCharacteristicGroups(this.creature, byDb, byComp);
         const groups = allGroups.filter((g) => g.title === groupTitle);
 
         const c = this.creature;

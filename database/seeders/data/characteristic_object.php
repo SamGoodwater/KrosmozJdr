@@ -887,7 +887,7 @@ return array (
     array (
     ),
   ),
-  28 => 
+  30 => 
   array (
     'characteristic_key' => 'summoning_object',
     'entity' => '*',
@@ -925,7 +925,7 @@ return array (
     array (
     ),
   ),
-  29 => 
+  31 => 
   array (
     'characteristic_key' => 'range_object',
     'entity' => '*',
@@ -947,7 +947,7 @@ return array (
     array (
     ),
   ),
-  30 => 
+  32 => 
   array (
     'characteristic_key' => 'tackle_object',
     'entity' => '*',
@@ -985,7 +985,7 @@ return array (
     array (
     ),
   ),
-  31 => 
+  33 => 
   array (
     'characteristic_key' => 'dodge_object',
     'entity' => '*',
@@ -1007,7 +1007,7 @@ return array (
     array (
     ),
   ),
-  32 => 
+  34 => 
   array (
     'characteristic_key' => 'wakfu_recharge_object',
     'entity' => '*',
@@ -1029,7 +1029,7 @@ return array (
     array (
     ),
   ),
-  33 => 
+  35 => 
   array (
     'characteristic_key' => 'armor_class_object',
     'entity' => '*',
@@ -1051,7 +1051,7 @@ return array (
     array (
     ),
   ),
-  34 => 
+  36 => 
   array (
     'characteristic_key' => 'fixed_resistance_neutral_object',
     'entity' => '*',
@@ -1089,7 +1089,7 @@ return array (
     array (
     ),
   ),
-  35 => 
+  37 => 
   array (
     'characteristic_key' => 'fixed_resistance_earth_object',
     'entity' => '*',
@@ -1127,7 +1127,7 @@ return array (
     array (
     ),
   ),
-  36 => 
+  38 => 
   array (
     'characteristic_key' => 'fixed_resistance_fire_object',
     'entity' => '*',
@@ -1165,7 +1165,7 @@ return array (
     array (
     ),
   ),
-  37 => 
+  39 => 
   array (
     'characteristic_key' => 'fixed_resistance_air_object',
     'entity' => '*',
@@ -1203,7 +1203,7 @@ return array (
     array (
     ),
   ),
-  38 => 
+  40 => 
   array (
     'characteristic_key' => 'fixed_resistance_water_object',
     'entity' => '*',
@@ -1241,7 +1241,7 @@ return array (
     array (
     ),
   ),
-  39 => 
+  41 => 
   array (
     'characteristic_key' => 'resistance_50_percent_object',
     'entity' => '*',
@@ -1279,29 +1279,7 @@ return array (
     array (
     ),
   ),
-  40 => 
-  array (
-    'characteristic_key' => 'all_damage_bonus_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '6',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '900.00',
-    'rune_price_per_unit' => '1800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  41 => 
+  42 => 
   array (
     'characteristic_key' => 'invulnerability_100_percent_object',
     'entity' => '*',
@@ -1323,7 +1301,7 @@ return array (
     array (
     ),
   ),
-  42 => 
+  43 => 
   array (
     'characteristic_key' => 'critical_hit_object',
     'entity' => '*',
@@ -1345,57 +1323,13 @@ return array (
     array (
     ),
   ),
-  43 => 
-  array (
-    'characteristic_key' => 'power_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(0.0408 * pow([d], 0.9412))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '700.00',
-    'rune_price_per_unit' => '1400.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
   44 => 
-  array (
-    'characteristic_key' => 'magic_find_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(0.0408 * pow([d], 0.9412))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '500.00',
-    'rune_price_per_unit' => '1000.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  45 => 
   array (
     'characteristic_key' => 'heal_bonus_object',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '0',
-    'max' => '6',
+    'max' => '7',
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
@@ -1406,182 +1340,6 @@ return array (
     'forgemagie_max' => 2,
     'base_price_per_unit' => '700.00',
     'rune_price_per_unit' => '1400.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  46 => 
-  array (
-    'characteristic_key' => 'reflect_damage_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '4',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(0.1202 * [d] + 0.5109)',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '800.00',
-    'rune_price_per_unit' => '1600.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  47 => 
-  array (
-    'characteristic_key' => 'ap_reduction_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '3',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(0.1202 * [d] + 0.5109)',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '700.00',
-    'rune_price_per_unit' => '1400.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  48 => 
-  array (
-    'characteristic_key' => 'mp_reduction_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '3',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(0.1202 * [d] + 0.5109)',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '700.00',
-    'rune_price_per_unit' => '1400.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  49 => 
-  array (
-    'characteristic_key' => 'push_damage_bonus_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '6',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '800.00',
-    'rune_price_per_unit' => '1600.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  50 => 
-  array (
-    'characteristic_key' => 'push_damage_reduction_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '6',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '800.00',
-    'rune_price_per_unit' => '1600.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  51 => 
-  array (
-    'characteristic_key' => 'critical_damage_bonus_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '6',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '1000.00',
-    'rune_price_per_unit' => '2000.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  52 => 
-  array (
-    'characteristic_key' => 'critical_damage_reduction_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '6',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '1000.00',
-    'rune_price_per_unit' => '2000.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  53 => 
-  array (
-    'characteristic_key' => 'received_damage_multiplier_distance_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '3',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(0.1202 * [d] + 0.5109)',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 1,
-    'base_price_per_unit' => '900.00',
-    'rune_price_per_unit' => '1800.00',
     'value_available' => NULL,
     'item_type_ids' => 
     array (

@@ -315,6 +315,8 @@ erDiagram
     dodge_pm : varchar(255)
     fuite : varchar(255)
     tacle : varchar(255)
+    critical_hit : varchar(16)
+    heal_bonus : varchar(16)
     vitality : varchar(255)
     sagesse : varchar(255)
     strong : varchar(255)

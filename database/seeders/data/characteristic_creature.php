@@ -67,76 +67,6 @@ return array (
       20 => 20,
     ),
   ),
-  2 => 
-  array (
-    'characteristic_key' => 'name_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-  ),
-  3 => 
-  array (
-    'characteristic_key' => 'object_save_agility_creature',
-    'entity' => '*',
-    'db_column' => 'sav_agi',
-    'min' => '0',
-    'max' => '3',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-  ),
-  4 => 
-  array (
-    'characteristic_key' => 'object_save_chance_creature',
-    'entity' => '*',
-    'db_column' => 'sav_chance',
-    'min' => '0',
-    'max' => '3',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-  ),
-  5 => 
-  array (
-    'characteristic_key' => 'object_save_intelligence_object',
-    'entity' => '*',
-    'db_column' => 'sav_intel',
-    'min' => '0',
-    'max' => '3',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-  ),
-  6 => 
-  array (
-    'characteristic_key' => 'object_save_wisdom_object',
-    'entity' => '*',
-    'db_column' => 'sav_sagesse',
-    'min' => '0',
-    'max' => '3',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-  ),
   7 => 
   array (
     'characteristic_key' => 'life_points_creature',
@@ -645,7 +575,7 @@ return array (
       20 => 15,
     ),
   ),
-  25 => 
+  27 => 
   array (
     'characteristic_key' => 'fixed_resistance_neutral_creature',
     'entity' => '*',
@@ -675,7 +605,7 @@ return array (
       20 => 10,
     ),
   ),
-  26 => 
+  28 => 
   array (
     'characteristic_key' => 'fixed_resistance_earth_creature',
     'entity' => '*',
@@ -705,7 +635,7 @@ return array (
       20 => 10,
     ),
   ),
-  27 => 
+  29 => 
   array (
     'characteristic_key' => 'fixed_resistance_fire_creature',
     'entity' => '*',
@@ -735,7 +665,7 @@ return array (
       20 => 10,
     ),
   ),
-  28 => 
+  30 => 
   array (
     'characteristic_key' => 'fixed_resistance_air_creature',
     'entity' => '*',
@@ -765,7 +695,7 @@ return array (
       20 => 10,
     ),
   ),
-  29 => 
+  31 => 
   array (
     'characteristic_key' => 'fixed_resistance_water_creature',
     'entity' => '*',
@@ -795,7 +725,7 @@ return array (
       20 => 10,
     ),
   ),
-  30 => 
+  32 => 
   array (
     'characteristic_key' => 'fixed_damage_neutral_creature',
     'entity' => '*',
@@ -817,7 +747,7 @@ return array (
       20 => 8,
     ),
   ),
-  31 => 
+  33 => 
   array (
     'characteristic_key' => 'fixed_damage_earth_creature',
     'entity' => '*',
@@ -847,7 +777,7 @@ return array (
       20 => 8,
     ),
   ),
-  32 => 
+  34 => 
   array (
     'characteristic_key' => 'fixed_damage_fire_creature',
     'entity' => '*',
@@ -877,7 +807,7 @@ return array (
       20 => 8,
     ),
   ),
-  33 => 
+  35 => 
   array (
     'characteristic_key' => 'fixed_damage_air_creature',
     'entity' => '*',
@@ -907,7 +837,7 @@ return array (
       20 => 8,
     ),
   ),
-  34 => 
+  36 => 
   array (
     'characteristic_key' => 'fixed_damage_water_creature',
     'entity' => '*',
@@ -1274,8 +1204,8 @@ return array (
     'db_column' => NULL,
     'min' => '-1',
     'max' => '16',
-    'formula' => '[modifier_vitality_creature]',
-    'formula_display' => '1d20 + mod. carac. (+ bonus maîtrise si maîtrisé) (2.2.1.3)',
+    'formula' => '[modifier_vitality_creature]+[mastery_bonus_creature]*[save_vitality_mastery]+[save_vitality_bonus]',
+    'formula_display' => '1d20 + mod. + maîtrise (si maîtrisé) + équip. (2.2.2)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
@@ -1296,8 +1226,8 @@ return array (
     'db_column' => NULL,
     'min' => '-1',
     'max' => '16',
-    'formula' => '[modifier_wisdom_creature]',
-    'formula_display' => '1d20 + mod. carac. (+ bonus maîtrise si maîtrisé) (2.2.1.3)',
+    'formula' => '[modifier_wisdom_creature]+[mastery_bonus_creature]*[save_wisdom_mastery]+[save_wisdom_bonus]',
+    'formula_display' => '1d20 + mod. + maîtrise (si maîtrisé) + équip. (2.2.2)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
@@ -1318,8 +1248,8 @@ return array (
     'db_column' => NULL,
     'min' => '-1',
     'max' => '16',
-    'formula' => '[modifier_strength_creature]',
-    'formula_display' => '1d20 + mod. carac. (+ bonus maîtrise si maîtrisé) (2.2.1.3)',
+    'formula' => '[modifier_strength_creature]+[mastery_bonus_creature]*[save_strength_mastery]+[save_strength_bonus]',
+    'formula_display' => '1d20 + mod. + maîtrise (si maîtrisé) + équip. (2.2.2)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
@@ -1340,8 +1270,8 @@ return array (
     'db_column' => NULL,
     'min' => '-1',
     'max' => '16',
-    'formula' => '[modifier_intelligence_creature]',
-    'formula_display' => '1d20 + mod. carac. (+ bonus maîtrise si maîtrisé) (2.2.1.3)',
+    'formula' => '[modifier_intelligence_creature]+[mastery_bonus_creature]*[save_intelligence_mastery]+[save_intelligence_bonus]',
+    'formula_display' => '1d20 + mod. + maîtrise (si maîtrisé) + équip. (2.2.2)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
@@ -1362,8 +1292,8 @@ return array (
     'db_column' => NULL,
     'min' => '-1',
     'max' => '7',
-    'formula' => '[modifier_chance_creature]',
-    'formula_display' => '1d20 + mod. carac. (+ bonus maîtrise si maîtrisé) (2.2.1.3)',
+    'formula' => '[modifier_chance_creature]+[mastery_bonus_creature]*[save_chance_mastery]+[save_chance_bonus]',
+    'formula_display' => '1d20 + mod. + maîtrise (si maîtrisé) + équip. (2.2.2)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
@@ -1384,8 +1314,8 @@ return array (
     'db_column' => NULL,
     'min' => '-1',
     'max' => '16',
-    'formula' => '[modifier_agility_creature]',
-    'formula_display' => '1d20 + mod. carac. (+ bonus maîtrise si maîtrisé) (2.2.1.3)',
+    'formula' => '[modifier_agility_creature]+[mastery_bonus_creature]*[save_agility_mastery]+[save_agility_bonus]',
+    'formula_display' => '1d20 + mod. + maîtrise (si maîtrisé) + équip. (2.2.2)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
