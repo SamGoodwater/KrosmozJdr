@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Resource;
 use App\Models\Type\ConsumableType;
-use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -20,11 +19,6 @@ use Illuminate\Support\Facades\Gate;
  */
 class ConsumableTableController extends Controller
 {
-    public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
-    ) {
-    }
-
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Consumable::class);
@@ -164,13 +158,6 @@ class ConsumableTableController extends Controller
                             'label' => (string) $label,
                         ])->values()->all(),
                         'consumable_type_id' => $consumableTypeOptions,
-                    ],
-                    'characteristics' => [
-                        'consumable' => [
-                            'byDbColumn' => $this->characteristicMeta->buildObjectByDbColumn(\App\Models\CharacteristicObject::ENTITY_CONSUMABLE),
-                            'byDofusdbId' => $this->characteristicMeta->buildObjectByDofusdbId(\App\Models\CharacteristicObject::ENTITY_CONSUMABLE),
-                            'byCharacteristicKey' => $this->characteristicMeta->buildObjectByCharacteristicKey(\App\Models\CharacteristicObject::ENTITY_CONSUMABLE),
-                        ],
                     ],
                     'format' => 'entities',
                 ],

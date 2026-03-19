@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Table;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Resource;
 use App\Models\Type\ResourceType;
-use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -27,11 +26,6 @@ use Illuminate\Support\Facades\Gate;
  */
 class ResourceTableController extends Controller
 {
-    public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
-    ) {
-    }
-
     private const STATE_COLORS = [
         'raw' => 'neutral',
         'draft' => 'warning',
@@ -177,7 +171,6 @@ class ResourceTableController extends Controller
 
         // Option B: renvoyer des entités brutes (le front génère `cells`).
         if ($format === 'entities') {
-            $resourceCharacteristicsByDbColumn = $this->characteristicMeta->buildObjectByDbColumn(\App\Models\CharacteristicObject::ENTITY_RESOURCE);
             $entities = $rows->map(function (Resource $r) {
                 $createdBy = $r->createdBy;
                 $resourceType = $r->resourceType;
@@ -238,13 +231,6 @@ class ResourceTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
-                    'characteristics' => [
-                        'resource' => [
-                            'byDbColumn' => $resourceCharacteristicsByDbColumn,
-                            'byDofusdbId' => $this->characteristicMeta->buildObjectByDofusdbId(\App\Models\CharacteristicObject::ENTITY_RESOURCE),
-                            'byCharacteristicKey' => $this->characteristicMeta->buildObjectByCharacteristicKey(\App\Models\CharacteristicObject::ENTITY_RESOURCE),
-                        ],
-                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,

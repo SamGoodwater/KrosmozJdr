@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Table;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Item;
 use App\Models\Type\ItemType;
-use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -19,11 +18,6 @@ use Illuminate\Support\Facades\Gate;
  */
 class ItemTableController extends Controller
 {
-    public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
-    ) {
-    }
-
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Item::class);
@@ -193,13 +187,6 @@ class ItemTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
-                    'characteristics' => [
-                        'item' => [
-                            'byDbColumn' => $this->characteristicMeta->buildObjectByDbColumn(\App\Models\CharacteristicObject::ENTITY_ITEM),
-                            'byDofusdbId' => $this->characteristicMeta->buildObjectByDofusdbId(\App\Models\CharacteristicObject::ENTITY_ITEM),
-                            'byCharacteristicKey' => $this->characteristicMeta->buildObjectByCharacteristicKey(\App\Models\CharacteristicObject::ENTITY_ITEM),
-                        ],
-                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,

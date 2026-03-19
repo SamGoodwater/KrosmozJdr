@@ -16,6 +16,7 @@
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { getCharacteristicColorStyle } from "@/Composables/entity/useCharacteristicDisplay";
 
 const props = defineProps({
     items: {
@@ -37,14 +38,7 @@ const gridClass = computed(() =>
     "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-1.5 items-center"
 );
 
-const getColorStyle = (item) => {
-    const c = item?.color;
-    if (!c || typeof c !== "string") return undefined;
-    const t = c.trim();
-    if (t.startsWith("#")) return { color: t };
-    if (t.includes("/")) return undefined;
-    return { color: `var(--color-${t})` };
-};
+const getColorStyle = (item) => getCharacteristicColorStyle(item?.color);
 
 const displayLabel = (item) => {
     if (props.labelMode === "full") return item?.name ?? item?.label ?? "";

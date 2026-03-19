@@ -7,7 +7,6 @@ use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Specialization;
-use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -21,11 +20,6 @@ use Illuminate\Support\Facades\Gate;
  */
 class NpcTableController extends Controller
 {
-    public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
-    ) {
-    }
-
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Npc::class);
@@ -251,12 +245,6 @@ class NpcTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
-                    'characteristics' => [
-                        'creature' => [
-                            'byDbColumn' => $this->characteristicMeta->buildCreatureByDbColumn(),
-                            'byComputedKey' => $this->characteristicMeta->buildCreatureComputedByKey(),
-                        ],
-                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,

@@ -374,6 +374,18 @@ erDiagram
     persuasion_mastery : tinyint(4)
     representation_mastery : tinyint(4)
     supercherie_mastery : tinyint(4)
+    save_vitality_bonus : tinyint(3) unsigned
+    save_wisdom_bonus : tinyint(3) unsigned
+    save_strength_bonus : tinyint(3) unsigned
+    save_intelligence_bonus : tinyint(3) unsigned
+    save_chance_bonus : tinyint(3) unsigned
+    save_agility_bonus : tinyint(3) unsigned
+    save_vitality_mastery : tinyint(3) unsigned
+    save_wisdom_mastery : tinyint(3) unsigned
+    save_strength_mastery : tinyint(3) unsigned
+    save_intelligence_mastery : tinyint(3) unsigned
+    save_chance_mastery : tinyint(3) unsigned
+    save_agility_mastery : tinyint(3) unsigned
     kamas : varchar(255)
     drop_ : varchar(255)
     other_item : varchar(255)

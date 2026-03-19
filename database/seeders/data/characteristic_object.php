@@ -525,37 +525,37 @@ return array (
   ),
   18 => 
   array (
-    'characteristic_key' => 'initiative_object',
+    'characteristic_key' => 'intelligence_object',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '0',
-    'max' => '3',
-    'formula' => '{"1":"0","3":"1","7":"2","13":"3","characteristic":"level"}',
+    'max' => '8',
+    'formula' => '{"1":"0","3":"1","5":"2","7":"3","9":"4","11":"5","13":"6","15":"7","17":"8","characteristic":"level"}',
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => 'floor(0.1973 * pow([d], 0.4519))',
+    'conversion_formula' => 'floor(0.0408 * pow([d], 0.9412))',
     'conversion_dofus_sample' => 
     array (
-      1 => 10,
-      40 => 50,
-      80 => 100,
-      120 => 200,
-      160 => 350,
-      200 => 500,
+      1 => 7,
+      40 => 15,
+      80 => 29,
+      120 => 38,
+      160 => 40,
+      200 => 44,
     ),
     'conversion_krosmoz_sample' => 
     array (
       1 => 0,
       4 => 1,
       8 => 2,
-      12 => 2,
-      16 => 3,
-      20 => 3,
+      12 => 3,
+      16 => 4,
+      20 => 4,
     ),
     'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '100.00',
-    'rune_price_per_unit' => '200.00',
+    'forgemagie_max' => 2,
+    'base_price_per_unit' => '500.00',
+    'rune_price_per_unit' => '1000.00',
     'value_available' => NULL,
     'item_type_ids' => 
     array (
@@ -601,44 +601,6 @@ return array (
   ),
   20 => 
   array (
-    'characteristic_key' => 'intelligence_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => '{"1":"0","3":"1","5":"2","7":"3","9":"4","11":"5","13":"6","15":"7","17":"8","characteristic":"level"}',
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => 'floor(0.0408 * pow([d], 0.9412))',
-    'conversion_dofus_sample' => 
-    array (
-      1 => 7,
-      40 => 15,
-      80 => 29,
-      120 => 38,
-      160 => 40,
-      200 => 44,
-    ),
-    'conversion_krosmoz_sample' => 
-    array (
-      1 => 0,
-      4 => 1,
-      8 => 2,
-      12 => 3,
-      16 => 4,
-      20 => 4,
-    ),
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 2,
-    'base_price_per_unit' => '500.00',
-    'rune_price_per_unit' => '1000.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  21 => 
-  array (
     'characteristic_key' => 'chance_object',
     'entity' => '*',
     'db_column' => NULL,
@@ -675,7 +637,7 @@ return array (
     array (
     ),
   ),
-  22 => 
+  21 => 
   array (
     'characteristic_key' => 'agility_object',
     'entity' => '*',
@@ -713,7 +675,7 @@ return array (
     array (
     ),
   ),
-  23 => 
+  22 => 
   array (
     'characteristic_key' => 'save_strength_intelligence_chance_agility_object',
     'entity' => '*',
@@ -735,7 +697,7 @@ return array (
     array (
     ),
   ),
-  24 => 
+  23 => 
   array (
     'characteristic_key' => 'action_points_object',
     'entity' => '*',
@@ -773,7 +735,7 @@ return array (
     array (
     ),
   ),
-  25 => 
+  24 => 
   array (
     'characteristic_key' => 'dodge_action_points_object',
     'entity' => '*',
@@ -811,7 +773,7 @@ return array (
     array (
     ),
   ),
-  26 => 
+  25 => 
   array (
     'characteristic_key' => 'movement_points_object',
     'entity' => '*',
@@ -849,7 +811,7 @@ return array (
     array (
     ),
   ),
-  27 => 
+  26 => 
   array (
     'characteristic_key' => 'dodge_movement_points_object',
     'entity' => '*',
@@ -887,7 +849,7 @@ return array (
     array (
     ),
   ),
-  30 => 
+  27 => 
   array (
     'characteristic_key' => 'summoning_object',
     'entity' => '*',
@@ -925,7 +887,7 @@ return array (
     array (
     ),
   ),
-  31 => 
+  28 => 
   array (
     'characteristic_key' => 'range_object',
     'entity' => '*',
@@ -947,7 +909,7 @@ return array (
     array (
     ),
   ),
-  32 => 
+  29 => 
   array (
     'characteristic_key' => 'tackle_object',
     'entity' => '*',
@@ -985,7 +947,7 @@ return array (
     array (
     ),
   ),
-  33 => 
+  30 => 
   array (
     'characteristic_key' => 'dodge_object',
     'entity' => '*',
@@ -1007,7 +969,7 @@ return array (
     array (
     ),
   ),
-  34 => 
+  31 => 
   array (
     'characteristic_key' => 'wakfu_recharge_object',
     'entity' => '*',
@@ -1029,7 +991,7 @@ return array (
     array (
     ),
   ),
-  35 => 
+  32 => 
   array (
     'characteristic_key' => 'armor_class_object',
     'entity' => '*',
@@ -1051,7 +1013,7 @@ return array (
     array (
     ),
   ),
-  36 => 
+  33 => 
   array (
     'characteristic_key' => 'fixed_resistance_neutral_object',
     'entity' => '*',
@@ -1089,7 +1051,7 @@ return array (
     array (
     ),
   ),
-  37 => 
+  34 => 
   array (
     'characteristic_key' => 'fixed_resistance_earth_object',
     'entity' => '*',
@@ -1127,7 +1089,7 @@ return array (
     array (
     ),
   ),
-  38 => 
+  35 => 
   array (
     'characteristic_key' => 'fixed_resistance_fire_object',
     'entity' => '*',
@@ -1165,7 +1127,7 @@ return array (
     array (
     ),
   ),
-  39 => 
+  36 => 
   array (
     'characteristic_key' => 'fixed_resistance_air_object',
     'entity' => '*',
@@ -1203,7 +1165,7 @@ return array (
     array (
     ),
   ),
-  40 => 
+  37 => 
   array (
     'characteristic_key' => 'fixed_resistance_water_object',
     'entity' => '*',
@@ -1241,7 +1203,7 @@ return array (
     array (
     ),
   ),
-  41 => 
+  38 => 
   array (
     'characteristic_key' => 'resistance_50_percent_object',
     'entity' => '*',
@@ -1279,7 +1241,7 @@ return array (
     array (
     ),
   ),
-  42 => 
+  39 => 
   array (
     'characteristic_key' => 'invulnerability_100_percent_object',
     'entity' => '*',
@@ -1301,7 +1263,7 @@ return array (
     array (
     ),
   ),
-  43 => 
+  40 => 
   array (
     'characteristic_key' => 'critical_hit_object',
     'entity' => '*',
@@ -1323,7 +1285,7 @@ return array (
     array (
     ),
   ),
-  44 => 
+  41 => 
   array (
     'characteristic_key' => 'heal_bonus_object',
     'entity' => '*',

@@ -18,6 +18,7 @@ import { computed } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { getCharacteristicColorStyle } from '@/Composables/entity/useCharacteristicDisplay';
 
 const props = defineProps({
   property: {
@@ -59,14 +60,7 @@ const effectiveColor = computed(() => {
   return c.trim();
 });
 
-const iconColorStyle = computed(() => {
-  const c = props.property?.color;
-  if (!c || typeof c !== 'string') return undefined;
-  const t = c.trim();
-  if (t.startsWith('#')) return { color: t };
-  if (t.includes('-')) return { color: `var(--color-${t})` };
-  return undefined;
-});
+const iconColorStyle = computed(() => getCharacteristicColorStyle(props.property?.color));
 
 const badgeSize = computed(() => {
   const map = { xs: 'xs', sm: 'sm', md: 'md' };

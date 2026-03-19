@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
-use App\Models\CharacteristicObject;
 use App\Models\Entity\Panoply;
-use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -19,11 +17,6 @@ use Illuminate\Support\Facades\Gate;
  */
 class PanoplyTableController extends Controller
 {
-    public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
-    ) {
-    }
-
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Panoply::class);
@@ -75,7 +68,6 @@ class PanoplyTableController extends Controller
 
         // Mode "entities" : retourner les entités brutes
         if ($format === 'entities') {
-            $panoplyCharacteristicsByDbColumn = $this->characteristicMeta->buildObjectByDbColumn(CharacteristicObject::ENTITY_PANOPLY);
             $entities = $rows->map(function (Panoply $p) {
                 $createdBy = $p->createdBy;
                 return $p->toArray() + [
@@ -105,13 +97,6 @@ class PanoplyTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => [],
-                    'characteristics' => [
-                        'panoply' => [
-                            'byDbColumn' => $panoplyCharacteristicsByDbColumn,
-                            'byDofusdbId' => $this->characteristicMeta->buildObjectByDofusdbId(\App\Models\CharacteristicObject::ENTITY_PANOPLY),
-                            'byCharacteristicKey' => $this->characteristicMeta->buildObjectByCharacteristicKey(CharacteristicObject::ENTITY_PANOPLY),
-                        ],
-                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,

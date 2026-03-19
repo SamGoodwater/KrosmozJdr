@@ -9,6 +9,34 @@ declare(strict_types=1);
 return array (
   0 => 
   array (
+    'characteristic_key' => 'critical_hit_creature',
+    'entity' => '*',
+    'db_column' => 'critical_hit',
+    'min' => '0',
+    'max' => '3',
+    'formula' => NULL,
+    'formula_display' => 'Critique si d20 >= 20 - bonus (0 = nat 20, 3 = dès 17)',
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+  ),
+  1 => 
+  array (
+    'characteristic_key' => 'heal_bonus_creature',
+    'entity' => '*',
+    'db_column' => 'heal_bonus',
+    'min' => '0',
+    'max' => '7',
+    'formula' => NULL,
+    'formula_display' => 'Ajouté à chaque soin',
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+  ),
+  2 => 
+  array (
     'characteristic_key' => 'level_creature',
     'entity' => '*',
     'db_column' => 'level',
@@ -37,7 +65,7 @@ return array (
       20 => 20,
     ),
   ),
-  1 => 
+  3 => 
   array (
     'characteristic_key' => 'level_creature',
     'entity' => 'monster',
@@ -67,7 +95,51 @@ return array (
       20 => 20,
     ),
   ),
-  7 => 
+  4 => 
+  array (
+    'characteristic_key' => 'save_agility_creature',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '-1',
+    'max' => '16',
+    'formula' => '[modifier_agility_creature]+[mastery_bonus_creature]*[save_agility_mastery]+[save_agility_bonus]',
+    'formula_display' => '1d20 + mod. + maîtrise (si maîtrisé) + équip. (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
+  ),
+  5 => 
+  array (
+    'characteristic_key' => 'save_chance_creature',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '-1',
+    'max' => '7',
+    'formula' => '[modifier_chance_creature]+[mastery_bonus_creature]*[save_chance_mastery]+[save_chance_bonus]',
+    'formula_display' => '1d20 + mod. + maîtrise (si maîtrisé) + équip. (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
+  ),
+  6 => 
   array (
     'characteristic_key' => 'life_points_creature',
     'entity' => '*',
@@ -97,7 +169,7 @@ return array (
       20 => 140,
     ),
   ),
-  8 => 
+  7 => 
   array (
     'characteristic_key' => 'action_points_creature',
     'entity' => '*',
@@ -127,7 +199,7 @@ return array (
       20 => 12,
     ),
   ),
-  9 => 
+  8 => 
   array (
     'characteristic_key' => 'movement_points_creature',
     'entity' => '*',
@@ -157,7 +229,7 @@ return array (
       20 => 6,
     ),
   ),
-  10 => 
+  9 => 
   array (
     'characteristic_key' => 'range_creature',
     'entity' => '*',
@@ -187,7 +259,7 @@ return array (
       20 => 6,
     ),
   ),
-  11 => 
+  10 => 
   array (
     'characteristic_key' => 'initiative_creature',
     'entity' => '*',
@@ -209,7 +281,7 @@ return array (
       20 => 50,
     ),
   ),
-  12 => 
+  11 => 
   array (
     'characteristic_key' => 'armor_class_creature',
     'entity' => '*',
@@ -231,7 +303,7 @@ return array (
       20 => 18,
     ),
   ),
-  13 => 
+  12 => 
   array (
     'characteristic_key' => 'vitality_creature',
     'entity' => '*',
@@ -261,7 +333,7 @@ return array (
       20 => 31,
     ),
   ),
-  14 => 
+  13 => 
   array (
     'characteristic_key' => 'strength_creature',
     'entity' => '*',
@@ -291,7 +363,7 @@ return array (
       20 => 31,
     ),
   ),
-  15 => 
+  14 => 
   array (
     'characteristic_key' => 'agility_creature',
     'entity' => '*',
@@ -321,7 +393,7 @@ return array (
       20 => 31,
     ),
   ),
-  16 => 
+  15 => 
   array (
     'characteristic_key' => 'intelligence_creature',
     'entity' => '*',
@@ -351,7 +423,7 @@ return array (
       20 => 31,
     ),
   ),
-  17 => 
+  16 => 
   array (
     'characteristic_key' => 'wisdom_creature',
     'entity' => '*',
@@ -381,7 +453,7 @@ return array (
       20 => 31,
     ),
   ),
-  18 => 
+  17 => 
   array (
     'characteristic_key' => 'chance_creature',
     'entity' => '*',
@@ -411,7 +483,7 @@ return array (
       20 => 31,
     ),
   ),
-  19 => 
+  18 => 
   array (
     'characteristic_key' => 'hit_bonus_creature',
     'entity' => '*',
@@ -433,7 +505,7 @@ return array (
       20 => 16,
     ),
   ),
-  20 => 
+  19 => 
   array (
     'characteristic_key' => 'summoning_creature',
     'entity' => '*',
@@ -455,7 +527,7 @@ return array (
       20 => 6,
     ),
   ),
-  21 => 
+  20 => 
   array (
     'characteristic_key' => 'dodge_action_points_creature',
     'entity' => '*',
@@ -485,7 +557,7 @@ return array (
       20 => 13,
     ),
   ),
-  22 => 
+  21 => 
   array (
     'characteristic_key' => 'dodge_movement_points_creature',
     'entity' => '*',
@@ -515,7 +587,7 @@ return array (
       20 => 13,
     ),
   ),
-  23 => 
+  22 => 
   array (
     'characteristic_key' => 'dodge_creature',
     'entity' => '*',
@@ -545,7 +617,7 @@ return array (
       20 => 15,
     ),
   ),
-  24 => 
+  23 => 
   array (
     'characteristic_key' => 'tackle_creature',
     'entity' => '*',
@@ -575,7 +647,7 @@ return array (
       20 => 15,
     ),
   ),
-  27 => 
+  24 => 
   array (
     'characteristic_key' => 'fixed_resistance_neutral_creature',
     'entity' => '*',
@@ -605,7 +677,7 @@ return array (
       20 => 10,
     ),
   ),
-  28 => 
+  25 => 
   array (
     'characteristic_key' => 'fixed_resistance_earth_creature',
     'entity' => '*',
@@ -635,7 +707,7 @@ return array (
       20 => 10,
     ),
   ),
-  29 => 
+  26 => 
   array (
     'characteristic_key' => 'fixed_resistance_fire_creature',
     'entity' => '*',
@@ -665,7 +737,7 @@ return array (
       20 => 10,
     ),
   ),
-  30 => 
+  27 => 
   array (
     'characteristic_key' => 'fixed_resistance_air_creature',
     'entity' => '*',
@@ -695,7 +767,7 @@ return array (
       20 => 10,
     ),
   ),
-  31 => 
+  28 => 
   array (
     'characteristic_key' => 'fixed_resistance_water_creature',
     'entity' => '*',
@@ -725,7 +797,7 @@ return array (
       20 => 10,
     ),
   ),
-  32 => 
+  29 => 
   array (
     'characteristic_key' => 'fixed_damage_neutral_creature',
     'entity' => '*',
@@ -747,7 +819,7 @@ return array (
       20 => 8,
     ),
   ),
-  33 => 
+  30 => 
   array (
     'characteristic_key' => 'fixed_damage_earth_creature',
     'entity' => '*',
@@ -777,7 +849,7 @@ return array (
       20 => 8,
     ),
   ),
-  34 => 
+  31 => 
   array (
     'characteristic_key' => 'fixed_damage_fire_creature',
     'entity' => '*',
@@ -807,67 +879,7 @@ return array (
       20 => 8,
     ),
   ),
-  35 => 
-  array (
-    'characteristic_key' => 'fixed_damage_air_creature',
-    'entity' => '*',
-    'db_column' => 'do_fixe_air',
-    'min' => '0',
-    'max' => '10',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => 
-    array (
-      1 => 4,
-      40 => 0,
-      80 => 0,
-      120 => 0,
-      160 => 0,
-      200 => 0,
-    ),
-    'conversion_krosmoz_sample' => 
-    array (
-      1 => 0,
-      4 => 1,
-      8 => 2,
-      12 => 4,
-      16 => 6,
-      20 => 8,
-    ),
-  ),
-  36 => 
-  array (
-    'characteristic_key' => 'fixed_damage_water_creature',
-    'entity' => '*',
-    'db_column' => 'do_fixe_eau',
-    'min' => '0',
-    'max' => '10',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => 
-    array (
-      1 => 4,
-      40 => 0,
-      80 => 0,
-      120 => 0,
-      160 => 0,
-      200 => 0,
-    ),
-    'conversion_krosmoz_sample' => 
-    array (
-      1 => 0,
-      4 => 1,
-      8 => 2,
-      12 => 4,
-      16 => 6,
-      20 => 8,
-    ),
-  ),
-  35 => 
+  32 => 
   array (
     'characteristic_key' => 'resistance_neutral_creature',
     'entity' => '*',
@@ -889,7 +901,7 @@ return array (
       20 => 0,
     ),
   ),
-  36 => 
+  33 => 
   array (
     'characteristic_key' => 'resistance_earth_creature',
     'entity' => '*',
@@ -911,7 +923,7 @@ return array (
       20 => 0,
     ),
   ),
-  37 => 
+  34 => 
   array (
     'characteristic_key' => 'resistance_fire_creature',
     'entity' => '*',
@@ -933,7 +945,7 @@ return array (
       20 => 0,
     ),
   ),
-  38 => 
+  35 => 
   array (
     'characteristic_key' => 'resistance_air_creature',
     'entity' => '*',
@@ -955,7 +967,7 @@ return array (
       20 => 0,
     ),
   ),
-  39 => 
+  36 => 
   array (
     'characteristic_key' => 'resistance_water_creature',
     'entity' => '*',
@@ -977,7 +989,7 @@ return array (
       20 => 0,
     ),
   ),
-  40 => 
+  37 => 
   array (
     'characteristic_key' => 'fixed_damage_multiple_creature',
     'entity' => '*',
@@ -999,29 +1011,7 @@ return array (
       20 => 5,
     ),
   ),
-  41 => 
-  array (
-    'characteristic_key' => 'hit_dice_creature',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '4',
-    'max' => '20',
-    'formula' => '8',
-    'formula_display' => 'floor(niveau/2), max 10 (2.2.2.4)',
-    'default_value' => '8',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => 
-    array (
-      1 => 0,
-      4 => 2,
-      8 => 4,
-      12 => 6,
-      16 => 8,
-      20 => 10,
-    ),
-  ),
-  42 => 
+  38 => 
   array (
     'characteristic_key' => 'wakfu_reserve_creature',
     'entity' => '*',
@@ -1043,7 +1033,7 @@ return array (
       20 => 6,
     ),
   ),
-  43 => 
+  39 => 
   array (
     'characteristic_key' => 'mastery_bonus_creature',
     'entity' => '*',
@@ -1065,7 +1055,7 @@ return array (
       20 => 6,
     ),
   ),
-  44 => 
+  40 => 
   array (
     'characteristic_key' => 'modifier_vitality_creature',
     'entity' => '*',
@@ -1087,7 +1077,7 @@ return array (
       20 => 0,
     ),
   ),
-  45 => 
+  41 => 
   array (
     'characteristic_key' => 'modifier_wisdom_creature',
     'entity' => '*',
@@ -1109,7 +1099,7 @@ return array (
       20 => 0,
     ),
   ),
-  46 => 
+  42 => 
   array (
     'characteristic_key' => 'modifier_strength_creature',
     'entity' => '*',
@@ -1131,7 +1121,7 @@ return array (
       20 => 0,
     ),
   ),
-  47 => 
+  43 => 
   array (
     'characteristic_key' => 'modifier_intelligence_creature',
     'entity' => '*',
@@ -1153,7 +1143,7 @@ return array (
       20 => 0,
     ),
   ),
-  48 => 
+  44 => 
   array (
     'characteristic_key' => 'modifier_chance_creature',
     'entity' => '*',
@@ -1175,7 +1165,7 @@ return array (
       20 => 0,
     ),
   ),
-  49 => 
+  45 => 
   array (
     'characteristic_key' => 'modifier_agility_creature',
     'entity' => '*',
@@ -1197,7 +1187,7 @@ return array (
       20 => 0,
     ),
   ),
-  50 => 
+  46 => 
   array (
     'characteristic_key' => 'save_vitality_creature',
     'entity' => '*',
@@ -1219,7 +1209,7 @@ return array (
       20 => 0,
     ),
   ),
-  51 => 
+  47 => 
   array (
     'characteristic_key' => 'save_wisdom_creature',
     'entity' => '*',
@@ -1241,7 +1231,7 @@ return array (
       20 => 0,
     ),
   ),
-  52 => 
+  48 => 
   array (
     'characteristic_key' => 'save_strength_creature',
     'entity' => '*',
@@ -1263,7 +1253,7 @@ return array (
       20 => 0,
     ),
   ),
-  53 => 
+  49 => 
   array (
     'characteristic_key' => 'save_intelligence_creature',
     'entity' => '*',
@@ -1284,77 +1274,5 @@ return array (
       16 => 0,
       20 => 0,
     ),
-  ),
-  54 => 
-  array (
-    'characteristic_key' => 'save_chance_creature',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '-1',
-    'max' => '7',
-    'formula' => '[modifier_chance_creature]+[mastery_bonus_creature]*[save_chance_mastery]+[save_chance_bonus]',
-    'formula_display' => '1d20 + mod. + maîtrise (si maîtrisé) + équip. (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => 
-    array (
-      1 => 0,
-      4 => 0,
-      8 => 0,
-      12 => 0,
-      16 => 0,
-      20 => 0,
-    ),
-  ),
-  55 => 
-  array (
-    'characteristic_key' => 'save_agility_creature',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '-1',
-    'max' => '16',
-    'formula' => '[modifier_agility_creature]+[mastery_bonus_creature]*[save_agility_mastery]+[save_agility_bonus]',
-    'formula_display' => '1d20 + mod. + maîtrise (si maîtrisé) + équip. (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => 
-    array (
-      1 => 0,
-      4 => 0,
-      8 => 0,
-      12 => 0,
-      16 => 0,
-      20 => 0,
-    ),
-  ),
-  56 => 
-  array (
-    'characteristic_key' => 'critical_hit_creature',
-    'entity' => '*',
-    'db_column' => 'critical_hit',
-    'min' => '0',
-    'max' => '3',
-    'formula' => NULL,
-    'formula_display' => 'Critique si d20 >= 20 - bonus (0 = nat 20, 3 = dès 17)',
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-  ),
-  57 => 
-  array (
-    'characteristic_key' => 'heal_bonus_creature',
-    'entity' => '*',
-    'db_column' => 'heal_bonus',
-    'min' => '0',
-    'max' => '7',
-    'formula' => NULL,
-    'formula_display' => 'Ajouté à chaque soin',
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
   ),
 );

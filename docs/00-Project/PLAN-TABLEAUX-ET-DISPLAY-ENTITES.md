@@ -16,7 +16,7 @@
 | **Vues** | Large, Compact, Minimal : prop `tableMeta`, section « Caractéristiques » avec `CharacteristicsCard` (dense en Compact/Minimal, étendu en Large) |
 | **Modèle** | `Monster.toCell()` avec cas dédiés (creature_*, colonnes résumé, `_toSummaryGroupCell` → `CharacteristicsCard`) |
 | **Descriptors** | Colonnes résumé (Combat, Résistances, Stats, Dommages, Contrôle) visibles par défaut ; propriétés unitaires masquées |
-| **API Table** | Renvoie `meta.characteristics.creature.byDbColumn` pour les libellés/icônes/couleurs |
+| **Caractéristiques** | Chargées au démarrage via Inertia share ; `useCharacteristicsStore` pour la résolution (libellés/icônes/couleurs) |
 
 ### 1.2 Ce qui est en place pour Resource
 

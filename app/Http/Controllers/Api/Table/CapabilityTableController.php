@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Capability;
-use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use App\Support\ElementConstants;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,11 +18,6 @@ use Illuminate\Support\Facades\Gate;
  */
 class CapabilityTableController extends Controller
 {
-    public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
-    ) {
-    }
-
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Capability::class);
@@ -109,9 +103,6 @@ class CapabilityTableController extends Controller
 
         // Mode "entities" : retourner les entités brutes
         if ($format === 'entities') {
-            // Capability ne possède pas encore son propre groupe de caractéristiques.
-            // On réutilise le référentiel "spell" (pa/po/element, etc.) comme meilleure approximation.
-            $capabilityCharacteristicsByDbColumn = $this->characteristicMeta->buildSpellByDbColumn();
             $entities = $rows->map(function (Capability $c) {
                 $createdBy = $c->createdBy;
                 return [
@@ -159,11 +150,6 @@ class CapabilityTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
-                    'characteristics' => [
-                        'capability' => [
-                            'byDbColumn' => $capabilityCharacteristicsByDbColumn,
-                        ],
-                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,

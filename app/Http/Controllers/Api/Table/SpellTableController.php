@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Entity\Spell;
 use App\Models\SubEffect;
 use App\Models\Type\SpellType;
-use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use App\Support\AreaConstants;
 use App\Services\Effect\EffectResolutionService;
 use Illuminate\Http\JsonResponse;
@@ -23,7 +22,6 @@ use Illuminate\Support\Facades\Gate;
 class SpellTableController extends Controller
 {
     public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta,
         private readonly EffectResolutionService $effectResolutionService
     ) {
     }
@@ -412,11 +410,6 @@ class SpellTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
-                    'characteristics' => [
-                        'spell' => [
-                            'byDbColumn' => $this->characteristicMeta->buildSpellByDbColumn(),
-                        ],
-                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,

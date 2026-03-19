@@ -10,6 +10,7 @@
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { getCharacteristicColorStyle } from "@/Composables/entity/useCharacteristicDisplay";
 
 const props = defineProps({
     item: {
@@ -23,15 +24,7 @@ const props = defineProps({
     },
 });
 
-/** Style couleur : hex direct, token Tailwind → var(--color-xxx) */
-const colorStyle = computed(() => {
-    const c = props.item?.color;
-    if (!c || typeof c !== "string") return undefined;
-    const t = c.trim();
-    if (t.startsWith("#")) return { color: t };
-    if (t.includes("-")) return { color: `var(--color-${t})` };
-    return undefined;
-});
+const colorStyle = computed(() => getCharacteristicColorStyle(props.item?.color));
 
 /** Tooltip: toujours le nom complet (item.tooltip contient "nom: valeur") */
 const tooltipContent = computed(() =>

@@ -144,18 +144,12 @@ const getFieldIconStyle = (fieldKey) => {
     return color ? { color } : undefined;
 };
 
-const characteristicsByDbColumn = computed(() =>
-    props.tableMeta?.characteristics?.creature?.byDbColumn || {}
-);
-const characteristicsByComputedKey = computed(() =>
-    props.tableMeta?.characteristics?.creature?.byComputedKey || {}
-);
 const creatureData = computed(() => {
     const m = props.monster;
     return m?.creature ?? m?.data?.creature ?? null;
 });
 const creatureCharacteristicsGroups = computed(() =>
-    buildCreatureCharacteristicGroups(creatureData.value, characteristicsByDbColumn.value, characteristicsByComputedKey.value)
+    buildCreatureCharacteristicGroups(creatureData.value)
 );
 const hasCreatureCharacteristics = computed(() => !!creatureData.value);
 

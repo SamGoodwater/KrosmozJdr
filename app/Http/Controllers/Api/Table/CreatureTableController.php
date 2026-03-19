@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Table;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
-use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -19,11 +18,6 @@ use Illuminate\Support\Facades\Gate;
  */
 class CreatureTableController extends Controller
 {
-    public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
-    ) {
-    }
-
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Creature::class);
@@ -110,12 +104,6 @@ class CreatureTableController extends Controller
                             'value' => (string) $value,
                             'label' => (string) $label,
                         ])->values()->all(),
-                    ],
-                    'characteristics' => [
-                        'creature' => [
-                            'byDbColumn' => $this->characteristicMeta->buildCreatureByDbColumn(),
-                            'byComputedKey' => $this->characteristicMeta->buildCreatureComputedByKey(),
-                        ],
                     ],
                     'format' => 'entities',
                 ],

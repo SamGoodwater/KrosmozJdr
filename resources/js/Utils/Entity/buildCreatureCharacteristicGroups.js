@@ -1,19 +1,31 @@
+import { getByDbColumnMap, getByComputedKeyMap } from "@/Composables/store/useCharacteristicsStore";
+import {
+    getDisplayValue,
+    isPoCac,
+    PO_CAC_ICON,
+} from "@/Composables/entity/useCharacteristicDisplay";
+
 /**
- * Construit les groupes de caractéristiques pour CharacteristicsCard à partir d'une créature
- * et des mappings meta (byDbColumn, byComputedKey).
+ * Construit les groupes de caractéristiques pour CharacteristicsCard à partir d'une créature.
+ * Utilise le store (Inertia share) pour byDbColumn et byComputedKey.
  *
  * @param {Object|null} creature - Données de la créature (life, pa, pm, strong, etc.)
- * @param {Object} byDbColumn - Map db_column → { key, name, short_name, icon, color, unit, type, descriptions, ... }
- * @param {Object} [byComputedKey] - Map characteristic_key → définition (modificateurs, sauvegardes calculés)
+ * @param {Object} [options] - { byDbColumn?, byComputedKey? } Override pour tests
  * @returns {Array<{ title: string, characteristics: Array }>} Groupes au format attendu par CharacteristicsCard
  */
-export function buildCreatureCharacteristicGroups(creature, byDbColumn = {}, byComputedKey = {}) {
+export function buildCreatureCharacteristicGroups(creature, options = {}) {
     if (!creature || typeof creature !== "object") {
         return [];
     }
 
-    const byDb = byDbColumn && typeof byDbColumn === "object" ? byDbColumn : {};
-    const byComp = byComputedKey && typeof byComputedKey === "object" ? byComputedKey : {};
+    const byDb =
+        options?.byDbColumn && typeof options.byDbColumn === "object"
+            ? options.byDbColumn
+            : getByDbColumnMap("creature");
+    const byComp =
+        options?.byComputedKey && typeof options.byComputedKey === "object"
+            ? options.byComputedKey
+            : getByComputedKeyMap("creature");
     const getDef = (dbColumn) => byDb[dbColumn] || { key: dbColumn, name: dbColumn, short_name: dbColumn };
     const getCompDef = (key) => byComp[key] || { key, name: key, short_name: key };
 
@@ -21,16 +33,15 @@ export function buildCreatureCharacteristicGroups(creature, byDbColumn = {}, byC
         const def = getDef(dbColumn);
         const value = creature[dbColumn];
         if (value === null || value === undefined || value === "") return null;
-        // Affichage spécial : bonus critique 0-3 → seuil (0=Nat 20, 1=Dès 19, 2=Dès 18, 3=Dès 17)
-        let displayValue = String(value);
-        if (dbColumn === "critical_hit") {
-            const v = parseInt(value, 10);
-            displayValue = v === 0 ? "Nat 20" : `Dès ${20 - v}`;
-        }
+        const displayValue = getDisplayValue(dbColumn, value, def);
+        const poCac = dbColumn === "po" && isPoCac(value);
+        const resolvedDef = poCac
+            ? { ...def, key: def.key || dbColumn, icon: PO_CAC_ICON, helper: "Corps à corps" }
+            : { ...def, key: def.key || dbColumn };
         return {
             type: "formula",
-            def: { ...def, key: def.key || dbColumn },
-            value: displayValue,
+            def: resolvedDef,
+            value: poCac ? "" : displayValue,
             formulaResolved: "",
             formulaRaw: "",
         };

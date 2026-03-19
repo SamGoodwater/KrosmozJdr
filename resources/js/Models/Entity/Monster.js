@@ -11,6 +11,7 @@
 import { BaseModel } from '../BaseModel';
 import CharacteristicsCard from '@/Pages/Organismes/data-display/CharacteristicsCard.vue';
 import { buildCreatureCharacteristicGroups } from '@/Utils/Entity/buildCreatureCharacteristicGroups';
+import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
 
 export class Monster extends BaseModel {
     // ============================================
@@ -103,10 +104,12 @@ export class Monster extends BaseModel {
 
     /**
      * Retourne la map des caractéristiques créature indexées par db_column.
-     * Source: meta API injectée dans `options.ctx.characteristics.creature.byDbColumn`.
+     * Source: store (Inertia share) ; fallback ctx pour compat.
      * @private
      */
     _getCreatureCharacteristicsByColumn(options = {}) {
+        const fromStore = getByDbColumnMap('creature');
+        if (fromStore && Object.keys(fromStore).length > 0) return fromStore;
         return options?.ctx?.characteristics?.creature?.byDbColumn || {};
     }
 
@@ -274,10 +277,7 @@ export class Monster extends BaseModel {
      * @private
      */
     _toCreatureCharacteristicsCell(_options) {
-        const ctx = _options?.ctx || _options?.context || null;
-        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
-        const byComp = ctx?.characteristics?.creature?.byComputedKey || {};
-        const groups = buildCreatureCharacteristicGroups(this.creature, byDb, byComp);
+        const groups = buildCreatureCharacteristicGroups(this.creature);
 
         const c = this.creature;
         const elements = ["neutre", "terre", "feu", "air", "eau"];
@@ -421,10 +421,7 @@ export class Monster extends BaseModel {
      * @param {string[]} dbColumnsForFilter - Clés creature pour construire filterValue (recherche)
      */
     _toSummaryGroupCell(_options, groupTitle, dbColumnsForFilter) {
-        const ctx = _options?.ctx || _options?.context || null;
-        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
-        const byComp = ctx?.characteristics?.creature?.byComputedKey || {};
-        const allGroups = buildCreatureCharacteristicGroups(this.creature, byDb, byComp);
+        const allGroups = buildCreatureCharacteristicGroups(this.creature);
         const groups = allGroups.filter((g) => g.title === groupTitle);
 
         const c = this.creature;

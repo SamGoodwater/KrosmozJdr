@@ -840,6 +840,18 @@ namespace App\Models\Entity{
  * @property int $persuasion_mastery
  * @property int $representation_mastery
  * @property int $supercherie_mastery
+ * @property int $save_vitality_bonus
+ * @property int $save_wisdom_bonus
+ * @property int $save_strength_bonus
+ * @property int $save_intelligence_bonus
+ * @property int $save_chance_bonus
+ * @property int $save_agility_bonus
+ * @property int $save_vitality_mastery
+ * @property int $save_wisdom_mastery
+ * @property int $save_strength_mastery
+ * @property int $save_intelligence_mastery
+ * @property int $save_chance_mastery
+ * @property int $save_agility_mastery
  * @property string|null $kamas
  * @property string|null $drop_
  * @property string|null $other_item
@@ -973,6 +985,18 @@ namespace App\Models\Entity{
  * @property-read int|null $media_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereCriticalHit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereHealBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveAgilityBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveAgilityMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveChanceBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveChanceMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveIntelligenceBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveIntelligenceMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveStrengthBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveStrengthMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveVitalityBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveVitalityMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomMastery($value)
  */
 	class Creature extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }

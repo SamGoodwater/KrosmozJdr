@@ -2,6 +2,8 @@
 
 ## Vue d'ensemble
 
+> **Refactorisation** : Voir [AUDIT_SERVICE_AFFICHAGE_CARACTERISTIQUES.md](../50-Fonctionnalités/Characteristics-DB/AUDIT_SERVICE_AFFICHAGE_CARACTERISTIQUES.md) pour l'audit des duplications et le plan de centralisation dans un service universel.
+
 Affichage standardisé des propriétés/caractéristiques avec icônes personnalisées, couleurs et tooltips. Les caractéristiques proviennent des tables BDD (`characteristics`, `characteristic_creature`, `characteristic_object`, `characteristic_spell`).
 
 **Groupes** : creature (monster, class, npc), object (item, consumable, resource, panoply), spell (spell, **capability**).
@@ -28,9 +30,9 @@ Affichage icon + valeur pour les listes (CharacteristicInlineGroup). Utilisé po
 
 ### Flux des données
 
-1. **Backend** : `CharacteristicMetaByDbColumnService` → `buildSpellByDbColumn()`, `buildCreatureByDbColumn()`, `buildObjectByDbColumn()`
-2. **API Table** : expose `meta.characteristics.<groupe>.byDbColumn`
-3. **Frontend** : `resolveEntityFieldUi({ fieldKey, tableMeta, descriptors, entityType })` → priorise caractéristiques BDD (icône, couleur, tooltip) puis descriptors
+1. **Backend** : `CharacteristicMetaByDbColumnService::buildAllForFrontend()` → Inertia share `characteristics` au démarrage
+2. **Frontend** : `useCharacteristicsStore` lit `usePage().props.characteristics` ; `getEntityCharacteristicsByDbColumn` (entity-view-ui) priorise le store puis tableMeta (fallback)
+3. **Résolution** : `resolveEntityFieldUi({ fieldKey, tableMeta, descriptors, entityType })` → priorise store (icône, couleur, tooltip) puis descriptors
 4. **Composant** : `PropertyDisplay` ou `CharacteristicChip` avec la config résolue
 
 ## Icônes
@@ -67,8 +69,8 @@ Les vues suivantes utilisent désormais `PropertyDisplay` et `resolveEntityField
 
 ## Tableaux (TanStack Table)
 
-- **EntityTanStackTable** : fusionne `serverMeta` (characteristics, filterOptions) dans `_metadata.context` de manière réactive.
+- **EntityTanStackTable** : fusionne `serverMeta` (filterOptions) dans `_metadata.context` ; les caractéristiques ne sont plus dans meta (chargées au démarrage via Inertia share).
 - **CellRenderer** : type `chips` → `CharacteristicInlineGroup` → **CharacteristicChip** (icône + valeur + tooltip, couleurs hex ou token Tailwind).
-- **Models** : `toCell()` reçoit `options.ctx` avec `characteristics.<groupe>.byDbColumn` pour enrichir les chips (icon, color, tooltip).
+- **Models** : `toCell()` et `buildCharacteristicEffectCell` lisent le store `useCharacteristicsStore` pour enrichir les chips (icon, color, tooltip).
 
 Voir `SpellViewLarge.vue` et `CapabilityViewLarge.vue` pour l'intégration.

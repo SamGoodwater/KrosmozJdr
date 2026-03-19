@@ -8,6 +8,7 @@ use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Construit les métadonnées "byDbColumn" pour les caractéristiques (creature, object, spell).
@@ -99,7 +100,7 @@ final class CharacteristicMetaByDbColumnService
      * Mapping db_column → définition pour une entité objet (item, consumable, resource, panoply).
      *
      * @param string $entity Une des constantes CharacteristicObject::ENTITY_*
-     * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
+     * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null, value_available: array|null}>
      */
     public function buildObjectByDbColumn(string $entity): array
     {
@@ -114,7 +115,7 @@ final class CharacteristicMetaByDbColumnService
             $sorted = $charRows->sortBy(fn (CharacteristicObject $r) => $r->entity === CharacteristicObject::ENTITY_ALL ? 0 : 1)->values();
 
             foreach ($sorted as $row) {
-                $entry = $this->rowToDefinition($row->db_column, $row->characteristic);
+                $entry = $this->rowToDefinition($row->db_column, $row->characteristic, ['value_available' => $row->value_available]);
                 if ($entry !== null) {
                     $out[$entry['db_column']] = $entry;
                 }
@@ -148,7 +149,7 @@ final class CharacteristicMetaByDbColumnService
                 if ($row->characteristic === null) {
                     continue;
                 }
-                $entry = $this->rowToDefinitionFromCharacteristic($row->characteristic);
+                $entry = $this->rowToDefinitionFromCharacteristic($row->characteristic, ['value_available' => $row->value_available]);
                 if ($entry !== null) {
                     $key = $entry['key'];
                     $out[$key] = $entry;
@@ -216,7 +217,7 @@ final class CharacteristicMetaByDbColumnService
             $sorted = $charRows->sortBy(fn (CharacteristicSpell $r) => $r->entity === CharacteristicSpell::ENTITY_ALL ? 0 : 1)->values();
 
             foreach ($sorted as $row) {
-                $entry = $this->rowToDefinition($row->db_column, $row->characteristic);
+                $entry = $this->rowToDefinition($row->db_column, $row->characteristic, ['value_available' => $row->value_available]);
                 if ($entry !== null) {
                     $out[$entry['db_column']] = $entry;
                 }
@@ -228,11 +229,56 @@ final class CharacteristicMetaByDbColumnService
     }
 
     /**
+     * Agrège toutes les caractéristiques pour le frontend (chargement au démarrage).
+     * Structure compatible avec meta.characteristics actuelle.
+     *
+     * @return array<string, array{byDbColumn: array, byComputedKey?: array, byCharacteristicKey?: array, byDofusdbId?: array}>
+     */
+    public function buildAllForFrontend(): array
+    {
+        return Cache::remember('characteristics:frontend', 300, function () {
+            return [
+                'creature' => [
+                    'byDbColumn' => $this->buildCreatureByDbColumn(),
+                    'byComputedKey' => $this->buildCreatureComputedByKey(),
+                ],
+                'spell' => [
+                    'byDbColumn' => $this->buildSpellByDbColumn(),
+                ],
+                'capability' => [
+                    'byDbColumn' => $this->buildSpellByDbColumn(),
+                ],
+                'item' => [
+                    'byDbColumn' => $this->buildObjectByDbColumn(CharacteristicObject::ENTITY_ITEM),
+                    'byCharacteristicKey' => $this->buildObjectByCharacteristicKey(CharacteristicObject::ENTITY_ITEM),
+                    'byDofusdbId' => $this->buildObjectByDofusdbId(CharacteristicObject::ENTITY_ITEM),
+                ],
+                'consumable' => [
+                    'byDbColumn' => $this->buildObjectByDbColumn(CharacteristicObject::ENTITY_CONSUMABLE),
+                    'byCharacteristicKey' => $this->buildObjectByCharacteristicKey(CharacteristicObject::ENTITY_CONSUMABLE),
+                    'byDofusdbId' => $this->buildObjectByDofusdbId(CharacteristicObject::ENTITY_CONSUMABLE),
+                ],
+                'resource' => [
+                    'byDbColumn' => $this->buildObjectByDbColumn(CharacteristicObject::ENTITY_RESOURCE),
+                    'byCharacteristicKey' => $this->buildObjectByCharacteristicKey(CharacteristicObject::ENTITY_RESOURCE),
+                    'byDofusdbId' => $this->buildObjectByDofusdbId(CharacteristicObject::ENTITY_RESOURCE),
+                ],
+                'panoply' => [
+                    'byDbColumn' => $this->buildObjectByDbColumn(CharacteristicObject::ENTITY_PANOPLY),
+                    'byCharacteristicKey' => $this->buildObjectByCharacteristicKey(CharacteristicObject::ENTITY_PANOPLY),
+                    'byDofusdbId' => $this->buildObjectByDofusdbId(CharacteristicObject::ENTITY_PANOPLY),
+                ],
+            ];
+        });
+    }
+
+    /**
      * Construit une entrée à partir de la caractéristique seule (pour byCharacteristicKey).
      *
-     * @return array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}|null
+     * @param  array<string, mixed>  $extra  Champs additionnels (ex. value_available)
+     * @return array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null, value_available?: array|null}|null
      */
-    private function rowToDefinitionFromCharacteristic(Characteristic $characteristic): ?array
+    private function rowToDefinitionFromCharacteristic(Characteristic $characteristic, array $extra = []): ?array
     {
         $c = $characteristic->effectiveCharacteristic();
         $key = $c->key ?? '';
@@ -245,7 +291,7 @@ final class CharacteristicMetaByDbColumnService
             $icon = 'icons/caracteristics/' . $icon;
         }
 
-        return [
+        return array_merge([
             'key' => $key,
             'db_column' => $key,
             'name' => $c->name,
@@ -256,13 +302,14 @@ final class CharacteristicMetaByDbColumnService
             'color' => $c->color,
             'unit' => $c->unit,
             'type' => $c->type,
-        ];
+        ], array_filter($extra, fn ($v) => $v !== null));
     }
 
     /**
-     * @return array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}|null
+     * @param  array<string, mixed>  $extra  Champs additionnels (ex. value_available)
+     * @return array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null, value_available?: array|null}|null
      */
-    private function rowToDefinition(mixed $dbColumn, ?Characteristic $characteristic): ?array
+    private function rowToDefinition(mixed $dbColumn, ?Characteristic $characteristic, array $extra = []): ?array
     {
         $dbColumn = is_string($dbColumn) ? trim($dbColumn) : '';
         if ($dbColumn === '') {
@@ -278,7 +325,7 @@ final class CharacteristicMetaByDbColumnService
             $icon = 'icons/caracteristics/' . $icon;
         }
 
-        return [
+        return array_merge([
             'key' => $c->key,
             'db_column' => $dbColumn,
             'name' => $c->name,
@@ -289,6 +336,6 @@ final class CharacteristicMetaByDbColumnService
             'color' => $c->color,
             'unit' => $c->unit,
             'type' => $c->type,
-        ];
+        ], array_filter($extra, fn ($v) => $v !== null));
     }
 }

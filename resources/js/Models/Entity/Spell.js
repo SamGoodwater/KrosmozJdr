@@ -11,6 +11,8 @@
 import { BaseModel } from '../BaseModel';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
+import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
+import { isPoCac, PO_CAC_ICON, PO_CAC_LABEL } from '@/Composables/entity/useCharacteristicDisplay';
 import { getElementLabel, getElementIcon, getElementColor, ELEMENT_PRIMARY_ICONS } from '@/Utils/Entity/Elements';
 import { getAreaIcon, getAreaShape } from '@/Utils/Entity/Areas';
 
@@ -201,10 +203,12 @@ export class Spell extends BaseModel {
 
     /**
      * Retourne la map des caractéristiques spell indexées par db_column.
-     * Source: meta API injectée dans `options.ctx.characteristics.spell.byDbColumn`.
+     * Source: store (Inertia share) ; fallback ctx pour compat.
      * @private
      */
     _getSpellCharacteristicsByColumn(options = {}) {
+        const fromStore = getByDbColumnMap('spell');
+        if (fromStore && Object.keys(fromStore).length > 0) return fromStore;
         return options?.ctx?.characteristics?.spell?.byDbColumn || {};
     }
 
@@ -433,16 +437,17 @@ export class Spell extends BaseModel {
 
         if (poDef && po !== '-') {
             const poFilterValue = this._parsePoForFilter(po);
+            const cac = isPoCac(po);
             return {
                 type: 'chips',
                 value: '',
                 params: {
                     items: [
                         {
-                            icon: poDef.icon || 'fa-solid fa-crosshairs',
+                            icon: cac ? PO_CAC_ICON : (poDef.icon || 'fa-solid fa-crosshairs'),
                             color: poDef.color || null,
-                            value: String(po),
-                            tooltip: `${poLabel}: ${po}`,
+                            value: cac ? '' : String(po),
+                            tooltip: cac ? PO_CAC_LABEL : `${poLabel}: ${po}`,
                         },
                     ],
                     sortValue: String(po),
@@ -711,6 +716,7 @@ export class Spell extends BaseModel {
         const paLabel = paDef?.short_name || paDef?.name || 'PA';
         const poLabel = poDef?.short_name || poDef?.name || 'PO';
 
+        const poCac = poValue && isPoCac(poValue);
         const items = [
             {
                 icon: paDef?.icon || 'fa-solid fa-bolt',
@@ -719,10 +725,10 @@ export class Spell extends BaseModel {
                 tooltip: paValue ? `${paLabel}: ${paValue}` : '',
             },
             {
-                icon: poDef?.icon || 'fa-solid fa-crosshairs',
+                icon: poCac ? PO_CAC_ICON : (poDef?.icon || 'fa-solid fa-crosshairs'),
                 color: poDef?.color || null,
-                value: poValue,
-                tooltip: poValue ? `${poLabel}: ${poValue}` : '',
+                value: poCac ? '' : poValue,
+                tooltip: poCac ? PO_CAC_LABEL : (poValue ? `${poLabel}: ${poValue}` : ''),
             },
             {
                 icon: getAreaIcon(this.area),
@@ -739,7 +745,7 @@ export class Spell extends BaseModel {
                 value: levelValue,
                 tooltip: levelValue ? `Niveau: ${levelValue}` : '',
             },
-        ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
+        ].filter((it) => it.value !== null && it.value !== undefined && (String(it.value) !== '' || (it.icon && it.tooltip)));
 
         const searchValue = items.map((it) => String(it.value)).join(' ');
 

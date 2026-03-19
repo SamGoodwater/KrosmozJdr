@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Type\MonsterRace;
-use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -37,11 +36,6 @@ use Illuminate\Support\Facades\Gate;
  */
 class MonsterTableController extends Controller
 {
-    public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
-    ) {
-    }
-
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Monster::class);
@@ -195,10 +189,6 @@ class MonsterTableController extends Controller
             'creature_state' => $creatureStateOptions,
         ];
 
-        // Caractéristiques (BDD) pour enrichir l'UI (icônes/couleurs/tooltips) des champs créature côté frontend.
-        // On expose un mapping par db_column pour l'entité "monster" (fallback sur entity='*').
-        $creatureCharacteristicsByDbColumn = $this->characteristicMeta->buildCreatureByDbColumn();
-
         // Mode "entities" : retourner les entités brutes (monstre + créature complète pour le tableau)
         if ($format === 'entities') {
             $entities = $rows->map(function (Monster $m) {
@@ -310,12 +300,6 @@ class MonsterTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
-                    'characteristics' => [
-                        'creature' => [
-                            'byDbColumn' => $creatureCharacteristicsByDbColumn,
-                            'byComputedKey' => $this->characteristicMeta->buildCreatureComputedByKey(),
-                        ],
-                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,

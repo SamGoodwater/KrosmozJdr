@@ -58,6 +58,69 @@ export function isValidColor(color, format = null) {
 }
 
 /**
+ * Convertit une couleur hex en rgba.
+ * Utilisé pour les fonds teintés et ombres des cartes caractéristiques.
+ *
+ * @param {string} hex - Couleur hex (#fff, #ffffff)
+ * @param {number} a - Alpha (0–1)
+ * @returns {string|null} - rgba(r,g,b,a) ou null
+ *
+ * @example
+ * hexToRgba('#e93323', 0.08) // => 'rgba(233,51,35,0.08)'
+ */
+export function hexToRgba(hex, a) {
+  if (!hex || typeof hex !== 'string') return null;
+  let h = hex.replace(/^#/, '');
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  if (h.length !== 6) return null;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/**
+ * Style inline pour texte/icône à partir d'une couleur caractéristique.
+ * Supporte hex (#xxx) et tokens Tailwind (ex. blue-600 → var(--color-blue-600)).
+ *
+ * @param {string} color - Hex ou token DaisyUI/Tailwind
+ * @returns {Object|undefined} - { color } pour :style ou undefined
+ *
+ * @example
+ * getCharacteristicColorStyle('#e93323') // => { color: '#e93323' }
+ * getCharacteristicColorStyle('blue-600') // => { color: 'var(--color-blue-600)' }
+ */
+export function getCharacteristicColorStyle(color) {
+  if (!color || typeof color !== 'string') return undefined;
+  const t = color.trim();
+  if (t.startsWith('#')) return { color: t };
+  if (t.includes('-')) return { color: `var(--color-${t})` };
+  return undefined;
+}
+
+/**
+ * Style pour carte caractéristique (fond teinté, ombre, bordure).
+ * Utilisé par CharacteristicFormula, CharacteristicBoolean, CharacteristicBadges.
+ *
+ * @param {string} hex - Couleur hex (ex. #e93323)
+ * @returns {Object} - Objet style pour :style
+ *
+ * @example
+ * getCharacteristicContainerStyle('#e93323') // => { backgroundColor, boxShadow, borderColor? }
+ */
+export function getCharacteristicContainerStyle(hex) {
+  if (!hex || typeof hex !== 'string') return {};
+  const rgba = hexToRgba(hex, 0.08);
+  const shadowRgba = hexToRgba(hex, 0.15);
+  if (!rgba || !shadowRgba) return {};
+  return {
+    backgroundColor: rgba,
+    boxShadow: `0 1px 3px ${shadowRgba}`,
+    ...(hexToRgba(hex, 0.2) ? { borderColor: hexToRgba(hex, 0.2) } : {}),
+  };
+}
+
+/**
  * Génère une couleur à partir d'une chaîne de caractères
  * 
  * @param {string} input - La chaîne d'entrée

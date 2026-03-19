@@ -96,66 +96,6 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  '3a' => 
-  array (
-    'characteristic_key' => 'dommages_spell',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '30',
-    'formula' => NULL,
-    'formula_display' => 'Dégâts infligés par un sous-effet frapper. Conversion Dofus → Krosmoz.',
-    'default_value' => '0',
-    'conversion_formula' => 'round(min(30, max(0, 2 + 14 * pow(max(1,[d])/250, 0.5))))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
-  '3b' => 
-  array (
-    'characteristic_key' => 'soin_spell',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '30',
-    'formula' => NULL,
-    'formula_display' => 'Soins appliqués par un sous-effet soigner. Conversion Dofus → Krosmoz.',
-    'default_value' => '0',
-    'conversion_formula' => 'round(min(30, max(0, 2 + 14 * pow(max(1,[d])/250, 0.5))))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
-  '3c' => 
-  array (
-    'characteristic_key' => 'vol_vie_spell',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '30',
-    'formula' => NULL,
-    'formula_display' => 'PV volés par un sous-effet voler-vie. Conversion Dofus → Krosmoz.',
-    'default_value' => '0',
-    'conversion_formula' => 'round(min(30, max(0, 2 + 14 * pow(max(1,[d])/250, 0.5))))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
-  '3d' => 
-  array (
-    'characteristic_key' => 'bouclier_spell',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '30',
-    'formula' => NULL,
-    'formula_display' => 'Absorption/bouclier appliqué par un sous-effet protéger. Conversion Dofus → Krosmoz.',
-    'default_value' => '0',
-    'conversion_formula' => 'round(min(30, max(0, 2 + 14 * pow(max(1,[d])/250, 0.5))))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
   4 => 
   array (
     'characteristic_key' => 'cast_per_turn_spell',
@@ -282,7 +222,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  14 => 
+  12 => 
   array (
     'characteristic_key' => 'dodge_spell',
     'entity' => '*',
@@ -303,7 +243,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  15 => 
+  13 => 
   array (
     'characteristic_key' => 'tackle_spell',
     'entity' => '*',
@@ -324,7 +264,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  16 => 
+  14 => 
   array (
     'characteristic_key' => 'agi_spell',
     'entity' => '*',
@@ -339,7 +279,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  17 => 
+  15 => 
   array (
     'characteristic_key' => 'chance_spell',
     'entity' => '*',
@@ -354,7 +294,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  18 => 
+  16 => 
   array (
     'characteristic_key' => 'intel_spell',
     'entity' => '*',
@@ -369,7 +309,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  19 => 
+  17 => 
   array (
     'characteristic_key' => 'sagesse_spell',
     'entity' => '*',
@@ -384,7 +324,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  20 => 
+  18 => 
   array (
     'characteristic_key' => 'strong_spell',
     'entity' => '*',
@@ -399,7 +339,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  21 => 
+  19 => 
   array (
     'characteristic_key' => 'vitality_spell',
     'entity' => '*',
@@ -414,7 +354,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  22 => 
+  20 => 
   array (
     'characteristic_key' => 'critical_spell',
     'entity' => '*',
@@ -429,7 +369,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  24 => 
+  21 => 
   array (
     'characteristic_key' => 'res_air_spell',
     'entity' => '*',
@@ -444,7 +384,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  25 => 
+  22 => 
   array (
     'characteristic_key' => 'res_eau_spell',
     'entity' => '*',
@@ -459,7 +399,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  26 => 
+  23 => 
   array (
     'characteristic_key' => 'res_feu_spell',
     'entity' => '*',
@@ -474,7 +414,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  27 => 
+  24 => 
   array (
     'characteristic_key' => 'res_neutre_spell',
     'entity' => '*',
@@ -489,7 +429,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  28 => 
+  25 => 
   array (
     'characteristic_key' => 'res_terre_spell',
     'entity' => '*',
@@ -504,7 +444,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  29 => 
+  26 => 
   array (
     'characteristic_key' => 'do_fixe_multiple_spell',
     'entity' => '*',
@@ -519,7 +459,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  30 => 
+  27 => 
   array (
     'characteristic_key' => 'dodge_action_points_spell',
     'entity' => '*',
@@ -534,7 +474,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  31 => 
+  28 => 
   array (
     'characteristic_key' => 'dodge_movement_points_spell',
     'entity' => '*',
@@ -549,7 +489,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  32 => 
+  29 => 
   array (
     'characteristic_key' => 'critical_damage_reduction_spell',
     'entity' => '*',
@@ -564,7 +504,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  34 => 
+  30 => 
   array (
     'characteristic_key' => 'push_damage_reduction_spell',
     'entity' => '*',
@@ -579,7 +519,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  35 => 
+  31 => 
   array (
     'characteristic_key' => 'fixed_resistance_air_spell',
     'entity' => '*',
@@ -594,7 +534,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  36 => 
+  32 => 
   array (
     'characteristic_key' => 'fixed_resistance_eau_spell',
     'entity' => '*',
@@ -609,7 +549,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  37 => 
+  33 => 
   array (
     'characteristic_key' => 'fixed_resistance_feu_spell',
     'entity' => '*',
@@ -624,7 +564,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  38 => 
+  34 => 
   array (
     'characteristic_key' => 'fixed_resistance_neutre_spell',
     'entity' => '*',
@@ -639,7 +579,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  39 => 
+  35 => 
   array (
     'characteristic_key' => 'fixed_resistance_terre_spell',
     'entity' => '*',
@@ -654,7 +594,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  40 => 
+  36 => 
   array (
     'characteristic_key' => 'range_editable_spell',
     'entity' => '*',
@@ -669,7 +609,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  41 => 
+  37 => 
   array (
     'characteristic_key' => 'number_between_two_cast_editable_spell',
     'entity' => '*',
@@ -684,7 +624,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  42 => 
+  38 => 
   array (
     'characteristic_key' => 'spell_range_min_spell',
     'entity' => '*',
@@ -699,7 +639,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  43 => 
+  39 => 
   array (
     'characteristic_key' => 'spell_range_max_spell',
     'entity' => '*',
@@ -714,7 +654,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  44 => 
+  40 => 
   array (
     'characteristic_key' => 'casting_time_spell',
     'entity' => '*',
@@ -729,7 +669,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  45 => 
+  41 => 
   array (
     'characteristic_key' => 'duration_spell',
     'entity' => '*',
@@ -744,7 +684,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  46 => 
+  42 => 
   array (
     'characteristic_key' => 'time_before_use_again_spell',
     'entity' => '*',
@@ -759,7 +699,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  47 => 
+  43 => 
   array (
     'characteristic_key' => 'ritual_available_spell',
     'entity' => '*',
@@ -774,7 +714,67 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '48' => 
+  44 => 
+  array (
+    'characteristic_key' => 'dommages_spell',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '30',
+    'formula' => NULL,
+    'formula_display' => 'Dégâts infligés par un sous-effet frapper. Conversion Dofus → Krosmoz.',
+    'default_value' => '0',
+    'conversion_formula' => 'round(min(30, max(0, 2 + 14 * pow(max(1,[d])/250, 0.5))))',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'value_available' => NULL,
+  ),
+  45 => 
+  array (
+    'characteristic_key' => 'soin_spell',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '30',
+    'formula' => NULL,
+    'formula_display' => 'Soins appliqués par un sous-effet soigner. Conversion Dofus → Krosmoz.',
+    'default_value' => '0',
+    'conversion_formula' => 'round(min(30, max(0, 2 + 14 * pow(max(1,[d])/250, 0.5))))',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'value_available' => NULL,
+  ),
+  46 => 
+  array (
+    'characteristic_key' => 'vol_vie_spell',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '30',
+    'formula' => NULL,
+    'formula_display' => 'PV volés par un sous-effet voler-vie. Conversion Dofus → Krosmoz.',
+    'default_value' => '0',
+    'conversion_formula' => 'round(min(30, max(0, 2 + 14 * pow(max(1,[d])/250, 0.5))))',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'value_available' => NULL,
+  ),
+  47 => 
+  array (
+    'characteristic_key' => 'bouclier_spell',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '30',
+    'formula' => NULL,
+    'formula_display' => 'Absorption/bouclier appliqué par un sous-effet protéger. Conversion Dofus → Krosmoz.',
+    'default_value' => '0',
+    'conversion_formula' => 'round(min(30, max(0, 2 + 14 * pow(max(1,[d])/250, 0.5))))',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'value_available' => NULL,
+  ),
+  48 => 
   array (
     'characteristic_key' => 'initiative_spell',
     'entity' => '*',
@@ -803,7 +803,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  '49' => 
+  49 => 
   array (
     'characteristic_key' => 'armor_class_spell',
     'entity' => '*',
@@ -831,7 +831,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  '50' => 
+  50 => 
   array (
     'characteristic_key' => 'hit_bonus_spell',
     'entity' => '*',
@@ -859,7 +859,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  '51' => 
+  51 => 
   array (
     'characteristic_key' => 'summoning_spell',
     'entity' => '*',
@@ -888,7 +888,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  '52' => 
+  52 => 
   array (
     'characteristic_key' => 'heal_bonus_spell',
     'entity' => '*',
@@ -917,7 +917,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  '53' => 
+  53 => 
   array (
     'characteristic_key' => 'fixed_damage_neutral_spell',
     'entity' => '*',
@@ -932,7 +932,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '54' => 
+  54 => 
   array (
     'characteristic_key' => 'fixed_damage_earth_spell',
     'entity' => '*',
@@ -947,7 +947,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '55' => 
+  55 => 
   array (
     'characteristic_key' => 'fixed_damage_fire_spell',
     'entity' => '*',
@@ -962,7 +962,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '56' => 
+  56 => 
   array (
     'characteristic_key' => 'fixed_damage_air_spell',
     'entity' => '*',
@@ -977,7 +977,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '57' => 
+  57 => 
   array (
     'characteristic_key' => 'fixed_damage_water_spell',
     'entity' => '*',
@@ -992,7 +992,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '58' => 
+  58 => 
   array (
     'characteristic_key' => 'save_vitality_spell',
     'entity' => '*',
@@ -1007,7 +1007,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '59' => 
+  59 => 
   array (
     'characteristic_key' => 'save_wisdom_spell',
     'entity' => '*',
@@ -1022,7 +1022,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '60' => 
+  60 => 
   array (
     'characteristic_key' => 'save_strength_spell',
     'entity' => '*',
@@ -1037,7 +1037,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '61' => 
+  61 => 
   array (
     'characteristic_key' => 'save_intelligence_spell',
     'entity' => '*',
@@ -1052,7 +1052,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '62' => 
+  62 => 
   array (
     'characteristic_key' => 'save_chance_spell',
     'entity' => '*',
@@ -1067,7 +1067,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '63' => 
+  63 => 
   array (
     'characteristic_key' => 'save_agility_spell',
     'entity' => '*',
@@ -1082,7 +1082,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '64' => 
+  64 => 
   array (
     'characteristic_key' => 'wakfu_reserve_spell',
     'entity' => '*',
@@ -1097,7 +1097,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  '65' => 
+  65 => 
   array (
     'characteristic_key' => 'mastery_bonus_spell',
     'entity' => '*',

@@ -13,6 +13,8 @@
  * const label = getEntityFieldShortLabel("level", "Niveau"); // "nvx"
  */
 
+import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
+
 /**
  * Retourne le tooltip le plus pertinent pour un champ.
  *
@@ -67,7 +69,7 @@ export function shouldOmitLabelInMeta(fieldKey) {
 }
 
 /**
- * Mapping des aliases de groupes de caractéristiques dans `tableMeta.characteristics`.
+ * Mapping des aliases de groupes de caractéristiques (store ou tableMeta).
  * Permet de gérer les différences de nommage entre entité UI et payload API.
  *
  * @param {string} entityType
@@ -90,15 +92,22 @@ export function getCharacteristicsEntityAliases(entityType) {
 }
 
 /**
- * Retourne le mapping `byDbColumn` correspondant à l'entité depuis `tableMeta`.
+ * Retourne le mapping `byDbColumn` correspondant à l'entité.
+ * Priorité: store (Inertia share) puis tableMeta pour compat.
  *
- * @param {Object} tableMeta
+ * @param {Object} [tableMeta]
  * @param {string} entityType
  * @returns {Record<string, any>}
  */
 export function getEntityCharacteristicsByDbColumn(tableMeta, entityType) {
-  const characteristics = tableMeta?.characteristics || {};
   const aliases = getCharacteristicsEntityAliases(entityType);
+  for (const alias of aliases) {
+    const byDbColumn = getByDbColumnMap(alias);
+    if (byDbColumn && Object.keys(byDbColumn).length > 0) {
+      return byDbColumn;
+    }
+  }
+  const characteristics = tableMeta?.characteristics || {};
   for (const alias of aliases) {
     const byDbColumn = characteristics?.[alias]?.byDbColumn;
     if (byDbColumn && typeof byDbColumn === "object") {
@@ -110,7 +119,7 @@ export function getEntityCharacteristicsByDbColumn(tableMeta, entityType) {
 
 /**
  * Résout les métadonnées UI d'un champ en priorisant:
- * 1) caractéristiques BDD (tableMeta.characteristics)
+ * 1) caractéristiques store (Inertia share)
  * 2) descriptors frontend
  * 3) fallback brut
  *

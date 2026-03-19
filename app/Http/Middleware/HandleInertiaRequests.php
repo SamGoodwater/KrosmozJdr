@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use App\Support\OAuthConfig;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -11,6 +12,11 @@ use App\Support\EntityPermissions\EntityPermissionService;
 
 class HandleInertiaRequests extends Middleware
 {
+    public function __construct(
+        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
+    ) {
+    }
+
     /**
      * The root template that is loaded on the first page visit.
      *
@@ -112,6 +118,8 @@ class HandleInertiaRequests extends Middleware
             ],
             /** Providers OAuth activés (credentials configurés dans .env). */
             'oauth_enabled_providers' => fn () => OAuthConfig::enabledProviders(),
+            /** Métadonnées caractéristiques (icon, color, name, etc.) pour résolution frontend. */
+            'characteristics' => fn () => $this->characteristicMeta->buildAllForFrontend(),
         ];
     }
 }

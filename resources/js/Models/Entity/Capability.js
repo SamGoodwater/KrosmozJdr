@@ -10,6 +10,8 @@
  */
 import { BaseModel } from '../BaseModel';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
+import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
+import { isPoCac, PO_CAC_ICON, PO_CAC_LABEL } from '@/Composables/entity/useCharacteristicDisplay';
 import { getFormatter } from '@/Utils/Formatters/FormatterRegistry.js';
 
 export class Capability extends BaseModel {
@@ -103,10 +105,12 @@ export class Capability extends BaseModel {
 
     /**
      * Retourne la map des caractéristiques capability indexées par db_column.
-     * Source: meta API injectée dans `options.ctx.characteristics.capability.byDbColumn`.
+     * Source: store (Inertia share) ; fallback ctx pour compat.
      * @private
      */
     _getCapabilityCharacteristicsByColumn(options = {}) {
+        const fromStore = getByDbColumnMap('capability');
+        if (fromStore && Object.keys(fromStore).length > 0) return fromStore;
         return options?.ctx?.characteristics?.capability?.byDbColumn || {};
     }
 
@@ -312,16 +316,17 @@ export class Capability extends BaseModel {
         const poLabel = poDef?.short_name || poDef?.name || 'PO';
 
         if (poDef && po !== '-') {
+            const cac = isPoCac(po);
             return {
                 type: 'chips',
                 value: '',
                 params: {
                     items: [
                         {
-                            icon: poDef.icon || 'fa-solid fa-crosshairs',
+                            icon: cac ? PO_CAC_ICON : (poDef.icon || 'fa-solid fa-crosshairs'),
                             color: poDef.color || null,
-                            value: String(po),
-                            tooltip: `${poLabel}: ${po}`,
+                            value: cac ? '' : String(po),
+                            tooltip: cac ? PO_CAC_LABEL : `${poLabel}: ${po}`,
                         },
                     ],
                     sortValue: Number(po) || String(po),
@@ -432,7 +437,7 @@ export class Capability extends BaseModel {
             { icon: castDef?.icon || 'fa-solid fa-hourglass', color: castDef?.color || null, value: castValue, tooltip: castValue ? `${castLabel}: ${castValue}` : '' },
             { icon: durationDef?.icon || 'fa-solid fa-stopwatch', color: durationDef?.color || null, value: durationValue, tooltip: durationValue ? `${durationLabel}: ${durationValue}` : '' },
             { icon: cooldownDef?.icon || 'fa-solid fa-clock', color: cooldownDef?.color || null, value: cooldownValue, tooltip: cooldownValue ? `${cooldownLabel}: ${cooldownValue}` : '' },
-        ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
+        ].filter((it) => it.value !== null && it.value !== undefined && (String(it.value) !== '' || (it.icon && it.tooltip)));
 
         const searchValue = items.map((it) => String(it.value)).join(' ');
 
@@ -465,6 +470,7 @@ export class Capability extends BaseModel {
         const paLabel = paDef?.short_name || paDef?.name || 'PA';
         const poLabel = poDef?.short_name || poDef?.name || 'PO';
 
+        const poCac = poValue && isPoCac(poValue);
         const items = [
             {
                 icon: paDef?.icon || 'fa-solid fa-bolt',
@@ -473,10 +479,10 @@ export class Capability extends BaseModel {
                 tooltip: paValue ? `${paLabel}: ${paValue}` : '',
             },
             {
-                icon: poDef?.icon || 'fa-solid fa-crosshairs',
+                icon: poCac ? PO_CAC_ICON : (poDef?.icon || 'fa-solid fa-crosshairs'),
                 color: poDef?.color || null,
-                value: poValue,
-                tooltip: poValue ? `${poLabel}: ${poValue}` : '',
+                value: poCac ? '' : poValue,
+                tooltip: poCac ? PO_CAC_LABEL : (poValue ? `${poLabel}: ${poValue}` : ''),
             },
             {
                 icon: isMagicDef?.icon || 'fa-solid fa-wand-magic',
@@ -492,7 +498,7 @@ export class Capability extends BaseModel {
                     tooltip: 'Rituel disponible',
                 }]
                 : []),
-        ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
+        ].filter((it) => it.value !== null && it.value !== undefined && (String(it.value) !== '' || (it.icon && it.tooltip)));
 
         const searchValue = items.map((it) => String(it.value)).join(' ');
 

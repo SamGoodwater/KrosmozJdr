@@ -18,6 +18,7 @@ import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
 import { getRarityConfig } from "@/Utils/Entity/SharedConstants";
+import { getEntityCharacteristicsByDbColumn } from "@/Utils/Entity/entity-view-ui";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 
@@ -61,13 +62,9 @@ const descriptionFull = computed(
 );
 
 const effectItems = computed(() => {
-    const ctx = {
-        ...props.tableMeta,
-        characteristics: props.tableMeta?.characteristics || {},
-    };
     const cell = buildCharacteristicEffectCell({
         rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
-        options: { ctx },
+        options: {},
         sourceGroups: ["consumable", "item"],
         size: "sm",
     });
@@ -81,10 +78,7 @@ const rarityConfig = computed(() => {
 });
 
 const byDbColumn = computed(
-    () =>
-        props.tableMeta?.characteristics?.consumable?.byDbColumn ||
-        props.tableMeta?.characteristics?.resource?.byDbColumn ||
-        {}
+    () => getEntityCharacteristicsByDbColumn(props.tableMeta, "consumable")
 );
 const priceMeta = computed(() => byDbColumn.value?.price || byDbColumn.value?.kamas || null);
 

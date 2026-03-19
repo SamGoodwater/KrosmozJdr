@@ -3,7 +3,7 @@
  *
  * @description
  * - Parse des payloads JSON (objet/array) provenant de `effect` / `bonus`
- * - Résolution des caractéristiques via `options.ctx.characteristics.<group>.byDbColumn`, `byCharacteristicKey` et `byDofusdbId`
+ * - Résolution des caractéristiques via useCharacteristicsStore (Inertia share)
  * - Génération d'une cellule `chips` (icon + color) avec fallback texte
  *
  * @example
@@ -61,17 +61,21 @@ function extractEffectEntries(payload) {
     return [];
 }
 
+import {
+    getByDbColumnMap,
+    getByCharacteristicKeyMap,
+    getByDofusdbIdMap,
+} from "@/Composables/store/useCharacteristicsStore";
+
 /**
- * Collecte byDbColumn depuis characteristics.<group>.byDbColumn
- * @param {Object} options
+ * Collecte byDbColumn depuis le store (Inertia share).
  * @param {string[]} sourceGroups
  * @returns {Record<string, any>}
  */
-function collectCharacteristicsByDb(options = {}, sourceGroups = []) {
-    const ctx = options?.ctx || {};
+function collectCharacteristicsByDb(sourceGroups = []) {
     const out = {};
     for (const group of sourceGroups) {
-        const byDb = ctx?.characteristics?.[group]?.byDbColumn;
+        const byDb = getByDbColumnMap(group);
         if (byDb && typeof byDb === "object") {
             Object.assign(out, byDb);
         }
@@ -80,16 +84,14 @@ function collectCharacteristicsByDb(options = {}, sourceGroups = []) {
 }
 
 /**
- * Collecte byCharacteristicKey depuis characteristics.<group>.byCharacteristicKey (clés courtes : vitality, agility, etc.)
- * @param {Object} options
+ * Collecte byCharacteristicKey depuis le store.
  * @param {string[]} sourceGroups
  * @returns {Record<string, any>}
  */
-function collectCharacteristicsByCharacteristicKey(options = {}, sourceGroups = []) {
-    const ctx = options?.ctx || {};
+function collectCharacteristicsByCharacteristicKey(sourceGroups = []) {
     const out = {};
     for (const group of sourceGroups) {
-        const byKey = ctx?.characteristics?.[group]?.byCharacteristicKey;
+        const byKey = getByCharacteristicKeyMap(group);
         if (byKey && typeof byKey === "object") {
             Object.assign(out, byKey);
         }
@@ -98,16 +100,14 @@ function collectCharacteristicsByCharacteristicKey(options = {}, sourceGroups = 
 }
 
 /**
- * Collecte byDofusdbId depuis characteristics.<group>.byDofusdbId (résolution IDs DofusDB → définition)
- * @param {Object} options
+ * Collecte byDofusdbId depuis le store.
  * @param {string[]} sourceGroups
  * @returns {Record<string, any>}
  */
-function collectCharacteristicsByDofusdbId(options = {}, sourceGroups = []) {
-    const ctx = options?.ctx || {};
+function collectCharacteristicsByDofusdbId(sourceGroups = []) {
     const out = {};
     for (const group of sourceGroups) {
-        const byId = ctx?.characteristics?.[group]?.byDofusdbId;
+        const byId = getByDofusdbIdMap(group);
         if (byId && typeof byId === "object") {
             Object.assign(out, byId);
         }
@@ -146,9 +146,9 @@ export function buildCharacteristicEffectCell({
     const parsedEntries = rawValues
         .flatMap((v) => extractEffectEntries(parseJsonPayload(v)));
 
-    const byDb = collectCharacteristicsByDb(options, sourceGroups);
-    const byCharacteristicKey = collectCharacteristicsByCharacteristicKey(options, sourceGroups);
-    const byDofusdbId = collectCharacteristicsByDofusdbId(options, sourceGroups);
+    const byDb = collectCharacteristicsByDb(sourceGroups);
+    const byCharacteristicKey = collectCharacteristicsByCharacteristicKey(sourceGroups);
+    const byDofusdbId = collectCharacteristicsByDofusdbId(sourceGroups);
 
     if (parsedEntries.length > 0) {
         const seenCanonicalKeys = new Set();

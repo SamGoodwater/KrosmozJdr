@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 require __DIR__ . '/api/auth.php';
+require __DIR__ . '/api/characteristics.php';
 require __DIR__ . '/api/scrapping.php';
 require __DIR__ . '/api/types.php';
 require __DIR__ . '/api/entity-table.php';

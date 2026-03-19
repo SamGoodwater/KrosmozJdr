@@ -12,6 +12,7 @@
  */
 import { computed } from "vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
+import { getCharacteristicContainerStyle } from "@/Composables/entity/useCharacteristicDisplay";
 
 const props = defineProps({
     def: { type: Object, default: null },
@@ -38,29 +39,9 @@ const badges = computed(() => {
     return vals.map((v) => ({ label: String(v) }));
 });
 
-function hexToRgba(hex, a) {
-    if (!hex || typeof hex !== "string") return null;
-    let h = hex.replace(/^#/, "");
-    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-    if (h.length !== 6) return null;
-    const r = parseInt(h.slice(0, 2), 16);
-    const g = parseInt(h.slice(2, 4), 16);
-    const b = parseInt(h.slice(4, 6), 16);
-    return `rgba(${r},${g},${b},${a})`;
-}
-
-const containerStyle = computed(() => {
-    const c = props.def?.color;
-    if (!c || props.compact) return {};
-    const rgba = hexToRgba(c, 0.08);
-    const shadowRgba = hexToRgba(c, 0.15);
-    if (!rgba || !shadowRgba) return {};
-    return {
-        backgroundColor: rgba,
-        boxShadow: `0 1px 3px ${shadowRgba}`,
-        ...(hexToRgba(c, 0.2) ? { borderColor: hexToRgba(c, 0.2) } : {}),
-    };
-});
+const containerStyle = computed(() =>
+    props.compact ? {} : getCharacteristicContainerStyle(props.def?.color),
+);
 </script>
 
 <template>

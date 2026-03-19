@@ -18,7 +18,7 @@ return array (
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 0,
+    'sort_order' => 9,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
@@ -33,7 +33,7 @@ return array (
     'color' => '#e83425',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 0,
+    'sort_order' => 9,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
@@ -63,7 +63,7 @@ return array (
     'color' => '#616179',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 0,
+    'sort_order' => 20,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
@@ -78,7 +78,7 @@ return array (
     'color' => '#616179',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 0,  // Type 1: propriété spell
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => 'level_creature',
   ),
@@ -93,71 +93,11 @@ return array (
     'color' => '#616161',
     'unit' => NULL,
     'type' => 'string',
-    'sort_order' => 0,
+    'sort_order' => 20,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
   6 => 
-  array (
-    'key' => 'save_agility_creature',
-    'name' => 'Bonus sauvegarde Agilité',
-    'short_name' => 'sav Agi',
-    'helper' => NULL,
-    'descriptions' => NULL,
-    'icon' => 'air.webp',
-    'color' => '#96c270',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 0,
-    'group' => 'creature',
-    'linked_to_key' => NULL,
-  ),
-  7 => 
-  array (
-    'key' => 'save_chance_creature',
-    'name' => 'Bonus Sauvegarde Chance',
-    'short_name' => 'Sav Chance',
-    'helper' => NULL,
-    'descriptions' => NULL,
-    'icon' => 'water.webp',
-    'color' => '#92cefa',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 0,
-    'group' => 'creature',
-    'linked_to_key' => NULL,
-  ),
-  6 => 
-  array (
-    'key' => 'save_agility_creature',
-    'name' => 'Bonus sauvegarde Agilité',
-    'short_name' => 'sav Agi',
-    'helper' => NULL,
-    'descriptions' => NULL,
-    'icon' => 'air.webp',
-    'color' => '#96c270',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 0,
-    'group' => 'creature',
-    'linked_to_key' => NULL,
-  ),
-  7 => 
-  array (
-    'key' => 'save_chance_creature',
-    'name' => 'Bonus Sauvegarde Chance',
-    'short_name' => 'Sav Chance',
-    'helper' => NULL,
-    'descriptions' => NULL,
-    'icon' => 'water.webp',
-    'color' => '#92cefa',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 0,
-    'group' => 'creature',
-    'linked_to_key' => NULL,
-  ),
-  10 => 
   array (
     'key' => 'action_points_spell',
     'name' => 'Coût en PA',
@@ -168,11 +108,11 @@ return array (
     'color' => '#6cc0e7',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 1,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  11 => 
+  7 => 
   array (
     'key' => 'life_points_creature',
     'name' => 'Points de vie',
@@ -187,7 +127,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  12 => 
+  8 => 
   array (
     'key' => 'rarity_object',
     'name' => 'Rareté',
@@ -198,11 +138,11 @@ return array (
     'color' => '#e83323',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 1,
+    'sort_order' => 21,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  13 => 
+  9 => 
   array (
     'key' => 'action_points_creature',
     'name' => 'Points d\'action',
@@ -213,11 +153,11 @@ return array (
     'color' => '#1a73e8',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 2,
+    'sort_order' => 1,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  14 => 
+  10 => 
   array (
     'key' => 'price_object',
     'name' => 'Prix',
@@ -228,11 +168,11 @@ return array (
     'color' => '#f1ca45',
     'unit' => 'kamas',
     'type' => 'int',
-    'sort_order' => 2,
+    'sort_order' => 21,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  15 => 
+  11 => 
   array (
     'key' => 'area_spell',
     'name' => 'Zone',
@@ -243,11 +183,11 @@ return array (
     'color' => '#3a9283',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 3,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  16 => 
+  12 => 
   array (
     'key' => 'movement_points_creature',
     'name' => 'Points de mouvement',
@@ -258,11 +198,11 @@ return array (
     'color' => '#0d904f',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 3,
+    'sort_order' => 1,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  17 => 
+  13 => 
   array (
     'key' => 'weight_object',
     'name' => 'Poids',
@@ -273,11 +213,11 @@ return array (
     'color' => '#4d4f51',
     'unit' => 'pods',
     'type' => 'int',
-    'sort_order' => 3,
+    'sort_order' => 21,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  18 => 
+  14 => 
   array (
     'key' => 'element_spell',
     'name' => 'Élément',
@@ -288,11 +228,11 @@ return array (
     'color' => '#353940',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 4,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  19 => 
+  15 => 
   array (
     'key' => 'range_creature',
     'name' => 'Portée',
@@ -303,11 +243,11 @@ return array (
     'color' => '#469482',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 4,
+    'sort_order' => 1,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  20 => 
+  16 => 
   array (
     'key' => 'initiative_creature',
     'name' => 'Initiative',
@@ -318,11 +258,11 @@ return array (
     'color' => '#983db7',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 5,
+    'sort_order' => 1,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  21 => 
+  17 => 
   array (
     'key' => 'power_spell',
     'name' => 'Puissance',
@@ -333,11 +273,11 @@ return array (
     'color' => '#e0c54f',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 5,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  22 => 
+  18 => 
   array (
     'key' => 'armor_class_creature',
     'name' => 'Classe d\'armure',
@@ -348,11 +288,11 @@ return array (
     'color' => '#212a38',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 6,
+    'sort_order' => 2,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  23 => 
+  19 => 
   array (
     'key' => 'cast_per_turn_spell',
     'name' => 'Lancers par tour',
@@ -363,11 +303,11 @@ return array (
     'color' => '#603151',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 6,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  24 => 
+  20 => 
   array (
     'key' => 'cast_per_target_spell',
     'name' => 'Lancers par cible',
@@ -378,11 +318,11 @@ return array (
     'color' => '#2e4c3a',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 7,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  25 => 
+  21 => 
   array (
     'key' => 'sight_line_spell',
     'name' => 'Ligne de vue',
@@ -393,41 +333,41 @@ return array (
     'color' => '#326078',
     'unit' => NULL,
     'type' => 'bool',
-    'sort_order' => 8,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  26 => 
+  22 => 
   array (
     'key' => 'number_between_two_cast_spell',
     'name' => 'Délai entre deux lancers',
     'short_name' => 'Délai',
     'helper' => 'Nombre de tours minimum entre deux lancers du même sort.',
     'descriptions' => 'Nombre de tours minimum entre deux lancers du même sort.',
-    'icon' => 'timeBeforeUseAgain.webp',
-    'color' => '#757575',
+    'icon' => 'numberBetweenTowCast.webp',
+    'color' => '#4d1e80',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 9,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  27 => 
+  23 => 
   array (
     'key' => 'category_spell',
     'name' => 'Catégorie',
     'short_name' => 'Cat.',
     'helper' => 'Catégorie du sort (offensif, soin, etc.).',
     'descriptions' => 'Catégorie du sort (offensif, soin, etc.).',
-    'icon' => 'heal.webp',
-    'color' => '#00bcd4',
+    'icon' => NULL,
+    'color' => '#858585',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 10,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  28 => 
+  24 => 
   array (
     'key' => 'hit_bonus_object',
     'name' => 'Bonus de touche',
@@ -438,11 +378,11 @@ return array (
     'color' => '#4f4a4a',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 10,
+    'sort_order' => 22,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  29 => 
+  25 => 
   array (
     'key' => 'vitality_creature',
     'name' => 'Vitalité',
@@ -453,11 +393,11 @@ return array (
     'color' => '#d88d3e',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 10,
+    'sort_order' => 3,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  30 => 
+  26 => 
   array (
     'key' => 'fixed_damage_neutral_object',
     'name' => 'Dommage fixe Neutre',
@@ -468,11 +408,11 @@ return array (
     'color' => '#94a6bf',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 11,
+    'sort_order' => 25,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  31 => 
+  27 => 
   array (
     'key' => 'is_magic_spell',
     'name' => 'Sort magique',
@@ -483,11 +423,11 @@ return array (
     'color' => '#7e57c2',
     'unit' => NULL,
     'type' => 'bool',
-    'sort_order' => 11,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  32 => 
+  28 => 
   array (
     'key' => 'strength_creature',
     'name' => 'Force',
@@ -498,11 +438,11 @@ return array (
     'color' => '#8c7448',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 11,
+    'sort_order' => 3,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  33 => 
+  29 => 
   array (
     'key' => 'agility_creature',
     'name' => 'Agilité',
@@ -513,11 +453,11 @@ return array (
     'color' => '#96c270',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 12,
+    'sort_order' => 3,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  34 => 
+  30 => 
   array (
     'key' => 'fixed_damage_earth_object',
     'name' => 'Dommage fixe Terre',
@@ -528,11 +468,11 @@ return array (
     'color' => '#96743c',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 12,
+    'sort_order' => 25,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  35 => 
+  31 => 
   array (
     'key' => 'movement_points_spell',
     'name' => 'PM (effets)',
@@ -543,11 +483,11 @@ return array (
     'color' => '#0d904f',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 12,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  36 => 
+  32 => 
   array (
     'key' => 'range_spell',
     'name' => 'Portée (effets)',
@@ -558,11 +498,11 @@ return array (
     'color' => '#5c6bc0',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 12,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  38 => 
+  33 => 
   array (
     'key' => 'fixed_damage_fire_object',
     'name' => 'Dommage fixe Feu',
@@ -573,11 +513,11 @@ return array (
     'color' => '#f2a963',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 13,
+    'sort_order' => 25,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  39 => 
+  34 => 
   array (
     'key' => 'intelligence_creature',
     'name' => 'Intelligence',
@@ -588,11 +528,11 @@ return array (
     'color' => '#e4732d',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 13,
+    'sort_order' => 3,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  41 => 
+  35 => 
   array (
     'key' => 'dodge_spell',
     'name' => 'Fuite (effets)',
@@ -603,11 +543,11 @@ return array (
     'color' => '#26c6da',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 14,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  42 => 
+  36 => 
   array (
     'key' => 'fixed_damage_air_object',
     'name' => 'Dommage fixe Air',
@@ -618,11 +558,11 @@ return array (
     'color' => '#96c270',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 14,
+    'sort_order' => 25,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  43 => 
+  37 => 
   array (
     'key' => 'tackle_spell',
     'name' => 'Tacle (effets)',
@@ -633,11 +573,11 @@ return array (
     'color' => '#29b6f6',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 14,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  44 => 
+  38 => 
   array (
     'key' => 'wisdom_creature',
     'name' => 'Sagesse',
@@ -648,11 +588,11 @@ return array (
     'color' => '#6b57d1',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 14,
+    'sort_order' => 3,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  45 => 
+  39 => 
   array (
     'key' => 'agi_spell',
     'name' => 'Agilité (effets)',
@@ -663,11 +603,11 @@ return array (
     'color' => '#26c6da',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 15,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  46 => 
+  40 => 
   array (
     'key' => 'chance_creature',
     'name' => 'Chance',
@@ -678,11 +618,11 @@ return array (
     'color' => '#92cefa',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 15,
+    'sort_order' => 3,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  47 => 
+  41 => 
   array (
     'key' => 'chance_spell',
     'name' => 'Chance (effets)',
@@ -693,11 +633,11 @@ return array (
     'color' => '#29b6f6',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 15,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  48 => 
+  42 => 
   array (
     'key' => 'fixed_damage_water_object',
     'name' => 'Dommage fixe Eau',
@@ -708,11 +648,11 @@ return array (
     'color' => '#a4dcfc',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 15,
+    'sort_order' => 25,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  49 => 
+  43 => 
   array (
     'key' => 'intel_spell',
     'name' => 'Intelligence (effets)',
@@ -723,11 +663,11 @@ return array (
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 15,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  50 => 
+  44 => 
   array (
     'key' => 'sagesse_spell',
     'name' => 'Sagesse (effets)',
@@ -738,11 +678,11 @@ return array (
     'color' => '#ffb74d',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 15,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  51 => 
+  45 => 
   array (
     'key' => 'strong_spell',
     'name' => 'Force (effets)',
@@ -753,11 +693,11 @@ return array (
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 15,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  52 => 
+  46 => 
   array (
     'key' => 'vitality_spell',
     'name' => 'Vitalité (effets)',
@@ -768,11 +708,11 @@ return array (
     'color' => '#66bb6a',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 15,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  53 => 
+  47 => 
   array (
     'key' => 'critical_spell',
     'name' => 'Critiques (effets)',
@@ -783,11 +723,11 @@ return array (
     'color' => '#fbc02d',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 16,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  55 => 
+  48 => 
   array (
     'key' => 'fixed_damage_multiple_object',
     'name' => 'Dommage fixe multiple',
@@ -798,11 +738,11 @@ return array (
     'color' => '#6a788a',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 16,
+    'sort_order' => 25,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  56 => 
+  49 => 
   array (
     'key' => 'res_air_spell',
     'name' => 'Résistance Air (effets)',
@@ -813,11 +753,11 @@ return array (
     'color' => '#26c6da',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 16,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  57 => 
+  50 => 
   array (
     'key' => 'res_eau_spell',
     'name' => 'Résistance Eau (effets)',
@@ -828,11 +768,11 @@ return array (
     'color' => '#29b6f6',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 16,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  58 => 
+  51 => 
   array (
     'key' => 'res_feu_spell',
     'name' => 'Résistance Feu (effets)',
@@ -843,11 +783,11 @@ return array (
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 16,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  59 => 
+  52 => 
   array (
     'key' => 'res_neutre_spell',
     'name' => 'Résistance Neutre (effets)',
@@ -858,11 +798,11 @@ return array (
     'color' => '#9e9e9e',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 16,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  60 => 
+  53 => 
   array (
     'key' => 'res_terre_spell',
     'name' => 'Résistance Terre (effets)',
@@ -873,11 +813,11 @@ return array (
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 16,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  61 => 
+  54 => 
   array (
     'key' => 'do_fixe_multiple_spell',
     'name' => 'Dommages fixes multi (effets)',
@@ -888,11 +828,11 @@ return array (
     'color' => '#5c6bc0',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 17,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  62 => 
+  55 => 
   array (
     'key' => 'dodge_action_points_spell',
     'name' => 'Esquive PA (effets)',
@@ -903,11 +843,11 @@ return array (
     'color' => '#ffb74d',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 17,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  63 => 
+  56 => 
   array (
     'key' => 'dodge_movement_points_spell',
     'name' => 'Esquive PM (effets)',
@@ -918,11 +858,11 @@ return array (
     'color' => '#ffb74d',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 17,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  64 => 
+  57 => 
   array (
     'key' => 'critical_damage_reduction_spell',
     'name' => 'Résistance critiques (effets)',
@@ -933,11 +873,11 @@ return array (
     'color' => '#c0a000',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 18,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  66 => 
+  58 => 
   array (
     'key' => 'push_damage_reduction_spell',
     'name' => 'Résistance poussée (effets)',
@@ -948,11 +888,11 @@ return array (
     'color' => '#7cb342',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 18,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  67 => 
+  59 => 
   array (
     'key' => 'fixed_resistance_air_spell',
     'name' => 'Résistance fixe Air (effets)',
@@ -963,11 +903,11 @@ return array (
     'color' => '#26c6da',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 19,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  68 => 
+  60 => 
   array (
     'key' => 'fixed_resistance_eau_spell',
     'name' => 'Résistance fixe Eau (effets)',
@@ -978,11 +918,11 @@ return array (
     'color' => '#29b6f6',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 19,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  69 => 
+  61 => 
   array (
     'key' => 'fixed_resistance_feu_spell',
     'name' => 'Résistance fixe Feu (effets)',
@@ -993,11 +933,11 @@ return array (
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 19,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  70 => 
+  62 => 
   array (
     'key' => 'fixed_resistance_neutre_spell',
     'name' => 'Résistance fixe Neutre (effets)',
@@ -1008,11 +948,11 @@ return array (
     'color' => '#9e9e9e',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 19,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  71 => 
+  63 => 
   array (
     'key' => 'fixed_resistance_terre_spell',
     'name' => 'Résistance fixe Terre (effets)',
@@ -1023,11 +963,11 @@ return array (
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 19,
+    'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  72 => 
+  64 => 
   array (
     'key' => 'hit_bonus_creature',
     'name' => 'Bonus de touche',
@@ -1038,11 +978,11 @@ return array (
     'color' => '#909194',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 20,
+    'sort_order' => 2,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  73 => 
+  65 => 
   array (
     'key' => 'life_points_max_object',
     'name' => 'Points de vie',
@@ -1053,11 +993,11 @@ return array (
     'color' => '#d23946',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 20,
+    'sort_order' => 24,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  74 => 
+  66 => 
   array (
     'key' => 'summoning_creature',
     'name' => 'Nombre d\'invocations',
@@ -1068,11 +1008,11 @@ return array (
     'color' => '#a25b30',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 21,
+    'sort_order' => 1,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  75 => 
+  67 => 
   array (
     'key' => 'vitality_object',
     'name' => 'Vitalité',
@@ -1083,11 +1023,11 @@ return array (
     'color' => '#d58d3b',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 21,
+    'sort_order' => 23,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  76 => 
+  68 => 
   array (
     'key' => 'dodge_action_points_creature',
     'name' => 'Esquive PA',
@@ -1098,11 +1038,26 @@ return array (
     'color' => '#6cc0e8',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 22,
+    'sort_order' => 5,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  77 => 
+  69 => 
+  array (
+    'key' => 'vol_vie_spell',
+    'name' => 'Vol de vie (effet)',
+    'short_name' => 'Vol PV',
+    'helper' => 'Montant de PV volés par un sous-effet voler-vie. Conversion Dofus → Krosmoz.',
+    'descriptions' => 'Valeur du vol de vie d\'un sous-effet voler-vie (convertie depuis DofusDB).',
+    'icon' => 'life.webp',
+    'color' => '#9c27b0',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 71,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  70 => 
   array (
     'key' => 'wisdom_object',
     'name' => 'Sagesse',
@@ -1113,11 +1068,26 @@ return array (
     'color' => '#551779',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 22,
+    'sort_order' => 23,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  78 => 
+  71 => 
+  array (
+    'key' => 'bouclier_spell',
+    'name' => 'Bouclier (effet)',
+    'short_name' => 'Bouclier',
+    'helper' => 'Absorption ou PV temporaires d\'un sous-effet protéger. Conversion Dofus → Krosmoz.',
+    'descriptions' => 'Valeur de protection d\'un sous-effet protéger (convertie depuis DofusDB).',
+    'icon' => 'shield.webp',
+    'color' => '#3f51b5',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 71,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  72 => 
   array (
     'key' => 'dodge_movement_points_creature',
     'name' => 'Esquive PM',
@@ -1128,11 +1098,11 @@ return array (
     'color' => '#78b562',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 23,
+    'sort_order' => 5,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  79 => 
+  73 => 
   array (
     'key' => 'save_vitality_wisdom_object',
     'name' => 'Bonus sauvegarde Vitalité',
@@ -1143,11 +1113,26 @@ return array (
     'color' => '#d78b3d',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 23,
+    'sort_order' => 24,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  80 => 
+  74 => 
+  array (
+    'key' => 'armor_class_spell',
+    'name' => 'CA (effets)',
+    'short_name' => 'CA',
+    'helper' => 'Classe d\'armure appliquée par les sous-effets de sort.',
+    'descriptions' => 'Bonus/malus de CA appliqué par les sous-effets de sort (booster, retirer).',
+    'icon' => 'shield.webp',
+    'color' => '#3f51b5',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  75 => 
   array (
     'key' => 'dodge_creature',
     'name' => 'Fuite',
@@ -1158,11 +1143,56 @@ return array (
     'color' => '#8ebd61',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 24,
+    'sort_order' => 5,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  81 => 
+  76 => 
+  array (
+    'key' => 'heal_bonus_spell',
+    'name' => 'Bonus de soin (effets)',
+    'short_name' => 'Soin',
+    'helper' => 'Bonus de soin appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus ajouté aux soins appliqués par les sous-effets de sort (booster, retirer).',
+    'icon' => 'heal.webp',
+    'color' => '#e83425',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  77 => 
+  array (
+    'key' => 'hit_bonus_spell',
+    'name' => 'Bonus de touche (effets)',
+    'short_name' => 'Touche',
+    'helper' => 'Bonus de touche appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus/malus de touche appliqué par les sous-effets de sort (booster, retirer).',
+    'icon' => 'touch.webp',
+    'color' => '#ff9800',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  78 => 
+  array (
+    'key' => 'initiative_spell',
+    'name' => 'Initiative (effets)',
+    'short_name' => 'Ini.',
+    'helper' => 'Initiative appliquée par les sous-effets de sort.',
+    'descriptions' => 'Bonus/malus d\'initiative appliqué par les sous-effets de sort (booster, retirer).',
+    'icon' => 'initiative.webp',
+    'color' => '#ff9800',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  79 => 
   array (
     'key' => 'skills_object',
     'name' => 'Compétences',
@@ -1177,7 +1207,97 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
+  80 => 
+  array (
+    'key' => 'summoning_spell',
+    'name' => 'Invocations (effets)',
+    'short_name' => 'Invoc.',
+    'helper' => 'Nombre d\'invocations appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus/malus au nombre de créatures invoquées simultanément (booster, retirer).',
+    'icon' => 'summoning.webp',
+    'color' => '#9c27b0',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  81 => 
+  array (
+    'key' => 'fixed_damage_air_spell',
+    'name' => 'Dégâts fixe Air (effets)',
+    'short_name' => 'Do A',
+    'helper' => 'Bonus dégâts Air appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus dégâts fixe Air appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'air.webp',
+    'color' => '#26c6da',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
   82 => 
+  array (
+    'key' => 'fixed_damage_earth_spell',
+    'name' => 'Dégâts fixe Terre (effets)',
+    'short_name' => 'Do T',
+    'helper' => 'Bonus dégâts Terre appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus dégâts fixe Terre appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'earth.webp',
+    'color' => '#8d6e63',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  83 => 
+  array (
+    'key' => 'fixed_damage_fire_spell',
+    'name' => 'Dégâts fixe Feu (effets)',
+    'short_name' => 'Do F',
+    'helper' => 'Bonus dégâts Feu appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus dégâts fixe Feu appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'fire.webp',
+    'color' => '#e93323',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  84 => 
+  array (
+    'key' => 'fixed_damage_neutral_spell',
+    'name' => 'Dégâts fixe Neutre (effets)',
+    'short_name' => 'Do N',
+    'helper' => 'Bonus dégâts Neutre appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus dégâts fixe Neutre appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'dmgNeutral.webp',
+    'color' => '#99acc3',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  85 => 
+  array (
+    'key' => 'fixed_damage_water_spell',
+    'name' => 'Dégâts fixe Eau (effets)',
+    'short_name' => 'Do E',
+    'helper' => 'Bonus dégâts Eau appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus dégâts fixe Eau appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'water.webp',
+    'color' => '#29b6f6',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  86 => 
   array (
     'key' => 'passive_skills_object',
     'name' => 'Compétences passives',
@@ -1188,11 +1308,11 @@ return array (
     'color' => '#858585',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 25,
+    'sort_order' => 24,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  83 => 
+  87 => 
   array (
     'key' => 'tackle_creature',
     'name' => 'Tacle',
@@ -1203,26 +1323,116 @@ return array (
     'color' => '#29b6f6',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 25,
+    'sort_order' => 5,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  86 => 
+  88 => 
   array (
-    'key' => 'initiative_object',
-    'name' => 'Initiative',
-    'short_name' => 'Ini',
-    'helper' => 'Bonus Initiative (capes). Max 3, forgemagie +3.',
-    'descriptions' => 'Bonus Initiative (capes). Max 3, forgemagie +3.',
-    'icon' => 'initiative.webp',
-    'color' => '#743d8a',
+    'key' => 'save_agility_spell',
+    'name' => 'Sauvegarde Agilité (effets)',
+    'short_name' => 'Sav Agi',
+    'helper' => 'Bonus jet sauvegarde Agilité appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus au jet de sauvegarde Agilité appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'saveAgi.webp',
+    'color' => '#26c6da',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 26,
-    'group' => 'object',
+    'sort_order' => 72,
+    'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  85 => 
+  89 => 
+  array (
+    'key' => 'save_chance_spell',
+    'name' => 'Sauvegarde Chance (effets)',
+    'short_name' => 'Sav Cha',
+    'helper' => 'Bonus jet sauvegarde Chance appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus au jet de sauvegarde Chance appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'saveLuck.webp',
+    'color' => '#29b6f6',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  90 => 
+  array (
+    'key' => 'save_intelligence_spell',
+    'name' => 'Sauvegarde Intelligence (effets)',
+    'short_name' => 'Sav Int',
+    'helper' => 'Bonus jet sauvegarde Intelligence appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus au jet de sauvegarde Intelligence appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'saveIntel.webp',
+    'color' => '#e93323',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  91 => 
+  array (
+    'key' => 'save_strength_spell',
+    'name' => 'Sauvegarde Force (effets)',
+    'short_name' => 'Sav For',
+    'helper' => 'Bonus jet sauvegarde Force appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus au jet de sauvegarde Force appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'saveStrenght.webp',
+    'color' => '#8d6e63',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  92 => 
+  array (
+    'key' => 'save_vitality_spell',
+    'name' => 'Sauvegarde Vitalité (effets)',
+    'short_name' => 'Sav Vit',
+    'helper' => 'Bonus jet sauvegarde Vitalité appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus au jet de sauvegarde Vitalité appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'saveVitality.webp',
+    'color' => '#66bb6a',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  93 => 
+  array (
+    'key' => 'save_wisdom_spell',
+    'name' => 'Sauvegarde Sagesse (effets)',
+    'short_name' => 'Sav Sag',
+    'helper' => 'Bonus jet sauvegarde Sagesse appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus au jet de sauvegarde Sagesse appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'saveWisdom.webp',
+    'color' => '#ffb74d',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  94 => 
+  array (
+    'key' => 'mastery_bonus_spell',
+    'name' => 'Bonus maîtrise (effets)',
+    'short_name' => 'Bonus maîtrise',
+    'helper' => 'Bonus de maîtrise appliqué par les sous-effets de sort.',
+    'descriptions' => 'Bonus de maîtrise appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'masterBonus.webp',
+    'color' => '#9c27b0',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  95 => 
   array (
     'key' => 'strength_object',
     'name' => 'Force',
@@ -1233,11 +1443,26 @@ return array (
     'color' => '#695223',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 27,
+    'sort_order' => 23,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  86 => 
+  96 => 
+  array (
+    'key' => 'wakfu_reserve_spell',
+    'name' => 'Réserve Wakfu (effets)',
+    'short_name' => 'Réserve Wakfu',
+    'helper' => 'Réserve de Wakfu appliquée par les sous-effets de sort.',
+    'descriptions' => 'Bonus/malus à la réserve de Wakfu appliqué par les sous-effets (booster, retirer).',
+    'icon' => 'wakfu.webp',
+    'color' => '#7e57c2',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 72,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  97 => 
   array (
     'key' => 'intelligence_object',
     'name' => 'Intelligence',
@@ -1248,11 +1473,11 @@ return array (
     'color' => '#ed762f',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 28,
+    'sort_order' => 23,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  87 => 
+  98 => 
   array (
     'key' => 'chance_object',
     'name' => 'Chance',
@@ -1263,11 +1488,11 @@ return array (
     'color' => '#29b6f6',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 29,
+    'sort_order' => 23,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  88 => 
+  99 => 
   array (
     'key' => 'agility_object',
     'name' => 'Agilité',
@@ -1278,11 +1503,11 @@ return array (
     'color' => '#47872d',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 30,
+    'sort_order' => 23,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  89 => 
+  100 => 
   array (
     'key' => 'fixed_resistance_neutral_creature',
     'name' => 'Résistance fixe Neutre',
@@ -1293,11 +1518,11 @@ return array (
     'color' => '#9e9e9e',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 30,
+    'sort_order' => 7,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  90 => 
+  101 => 
   array (
     'key' => 'fixed_resistance_earth_creature',
     'name' => 'Résistance fixe Terre',
@@ -1308,11 +1533,11 @@ return array (
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 31,
+    'sort_order' => 7,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  91 => 
+  102 => 
   array (
     'key' => 'save_strength_intelligence_chance_agility_object',
     'name' => 'Bonus sauvegarde Force',
@@ -1323,11 +1548,11 @@ return array (
     'color' => '#95743c',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 31,
+    'sort_order' => 24,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  92 => 
+  103 => 
   array (
     'key' => 'action_points_object',
     'name' => 'PA',
@@ -1338,11 +1563,11 @@ return array (
     'color' => '#1a73e8',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 32,
+    'sort_order' => 22,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  93 => 
+  104 => 
   array (
     'key' => 'fixed_resistance_fire_creature',
     'name' => 'Résistance fixe Feu',
@@ -1353,11 +1578,11 @@ return array (
     'color' => '#e9873d',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 32,
+    'sort_order' => 7,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  94 => 
+  105 => 
   array (
     'key' => 'dodge_action_points_object',
     'name' => 'Esquive PA',
@@ -1368,11 +1593,11 @@ return array (
     'color' => '#6cc0e8',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 33,
+    'sort_order' => 22,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  95 => 
+  106 => 
   array (
     'key' => 'fixed_resistance_air_creature',
     'name' => 'Résistance fixe Air',
@@ -1383,11 +1608,11 @@ return array (
     'color' => '#8fb169',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 33,
+    'sort_order' => 7,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  96 => 
+  107 => 
   array (
     'key' => 'fixed_resistance_water_creature',
     'name' => 'Résistance fixe Eau',
@@ -1398,11 +1623,11 @@ return array (
     'color' => '#92cefa',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 34,
+    'sort_order' => 7,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  97 => 
+  108 => 
   array (
     'key' => 'movement_points_object',
     'name' => 'PM',
@@ -1413,11 +1638,11 @@ return array (
     'color' => '#0d904f',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 34,
+    'sort_order' => 22,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  98 => 
+  109 => 
   array (
     'key' => 'dodge_movement_points_object',
     'name' => 'Esquive PM',
@@ -1428,11 +1653,11 @@ return array (
     'color' => '#5aa367',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 35,
+    'sort_order' => 22,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  99 => 
+  110 => 
   array (
     'key' => 'summoning_object',
     'name' => 'Nombre d\'invocations',
@@ -1443,11 +1668,11 @@ return array (
     'color' => '#bc6634',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 36,
+    'sort_order' => 22,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  100 => 
+  111 => 
   array (
     'key' => 'range_object',
     'name' => 'PO',
@@ -1458,11 +1683,11 @@ return array (
     'color' => '#469381',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 37,
+    'sort_order' => 22,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  101 => 
+  112 => 
   array (
     'key' => 'tackle_object',
     'name' => 'Tacle',
@@ -1473,11 +1698,11 @@ return array (
     'color' => '#b8cd46',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 38,
+    'sort_order' => 22,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  102 => 
+  113 => 
   array (
     'key' => 'dodge_object',
     'name' => 'Fuite',
@@ -1488,11 +1713,11 @@ return array (
     'color' => '#699144',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 39,
+    'sort_order' => 22,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  103 => 
+  114 => 
   array (
     'key' => 'fixed_damage_neutral_creature',
     'name' => 'Dommage fixe Neutre',
@@ -1503,11 +1728,11 @@ return array (
     'color' => '#99acc3',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 40,
+    'sort_order' => 6,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  104 => 
+  115 => 
   array (
     'key' => 'wakfu_recharge_object',
     'name' => 'Recharge réserve Wakfu',
@@ -1518,11 +1743,11 @@ return array (
     'color' => '#72e2d4',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 40,
+    'sort_order' => 27,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  105 => 
+  116 => 
   array (
     'key' => 'armor_class_object',
     'name' => 'Classe d\'armure',
@@ -1533,11 +1758,11 @@ return array (
     'color' => '#474747',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 41,
+    'sort_order' => 22,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  106 => 
+  117 => 
   array (
     'key' => 'fixed_damage_earth_creature',
     'name' => 'Dommage fixe Terre',
@@ -1548,11 +1773,11 @@ return array (
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 41,
+    'sort_order' => 6,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  107 => 
+  118 => 
   array (
     'key' => 'fixed_damage_fire_creature',
     'name' => 'Dommage fixe Feu',
@@ -1563,11 +1788,11 @@ return array (
     'color' => '#ed752e',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 42,
+    'sort_order' => 6,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  108 => 
+  119 => 
   array (
     'key' => 'fixed_resistance_neutral_object',
     'name' => 'Résistance fixe Neutre',
@@ -1578,11 +1803,11 @@ return array (
     'color' => '#9e9e9e',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 42,
+    'sort_order' => 26,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  109 => 
+  120 => 
   array (
     'key' => 'fixed_damage_air_creature',
     'name' => 'Dommage fixe Air',
@@ -1593,11 +1818,11 @@ return array (
     'color' => '#96c270',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 43,
+    'sort_order' => 6,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  110 => 
+  121 => 
   array (
     'key' => 'fixed_resistance_earth_object',
     'name' => 'Résistance fixe Terre',
@@ -1608,11 +1833,11 @@ return array (
     'color' => '#957541',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 43,
+    'sort_order' => 26,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  111 => 
+  122 => 
   array (
     'key' => 'fixed_damage_water_creature',
     'name' => 'Dommage fixe Eau',
@@ -1623,11 +1848,11 @@ return array (
     'color' => '#92cefa',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 44,
+    'sort_order' => 6,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  112 => 
+  123 => 
   array (
     'key' => 'fixed_resistance_fire_object',
     'name' => 'Résistance fixe Feu',
@@ -1638,11 +1863,11 @@ return array (
     'color' => '#f2a861',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 44,
+    'sort_order' => 26,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  113 => 
+  124 => 
   array (
     'key' => 'fixed_resistance_air_object',
     'name' => 'Résistance fixe Air',
@@ -1653,11 +1878,11 @@ return array (
     'color' => '#99c572',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 45,
+    'sort_order' => 26,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  114 => 
+  125 => 
   array (
     'key' => 'fixed_resistance_water_object',
     'name' => 'Résistance fixe Eau',
@@ -1668,11 +1893,11 @@ return array (
     'color' => '#7db2d5',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 46,
+    'sort_order' => 26,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  115 => 
+  126 => 
   array (
     'key' => 'resistance_50_percent_object',
     'name' => 'Résistance 50%',
@@ -1683,11 +1908,11 @@ return array (
     'color' => '#514f54',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 47,
+    'sort_order' => 26,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  117 => 
+  127 => 
   array (
     'key' => 'invulnerability_100_percent_object',
     'name' => 'Invulnérabilité 100%',
@@ -1698,11 +1923,11 @@ return array (
     'color' => '#353338',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 48,
+    'sort_order' => 26,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  118 => 
+  128 => 
   array (
     'key' => 'critical_hit_object',
     'name' => 'Critique',
@@ -1713,11 +1938,11 @@ return array (
     'color' => '#ea3424',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 49,
+    'sort_order' => 27,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  119 => 
+  129 => 
   array (
     'key' => 'resistance_neutral_creature',
     'name' => 'Résistance Neutre %',
@@ -1728,11 +1953,11 @@ return array (
     'color' => '#9e9e9e',
     'unit' => '%',
     'type' => 'int',
-    'sort_order' => 49,
+    'sort_order' => 7,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  121 => 
+  130 => 
   array (
     'key' => 'resistance_earth_creature',
     'name' => 'Résistance Terre %',
@@ -1743,11 +1968,11 @@ return array (
     'color' => '#8d6e63',
     'unit' => '%',
     'type' => 'int',
-    'sort_order' => 50,
+    'sort_order' => 7,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  123 => 
+  131 => 
   array (
     'key' => 'resistance_fire_creature',
     'name' => 'Résistance Feu %',
@@ -1758,11 +1983,11 @@ return array (
     'color' => '#e8752e',
     'unit' => '%',
     'type' => 'int',
-    'sort_order' => 51,
+    'sort_order' => 7,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  124 => 
+  132 => 
   array (
     'key' => 'heal_bonus_object',
     'name' => 'Soins',
@@ -1773,11 +1998,11 @@ return array (
     'color' => '#e83323',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 52,
+    'sort_order' => 27,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  125 => 
+  133 => 
   array (
     'key' => 'resistance_air_creature',
     'name' => 'Résistance Air %',
@@ -1788,11 +2013,11 @@ return array (
     'color' => '#96c271',
     'unit' => '%',
     'type' => 'int',
-    'sort_order' => 52,
+    'sort_order' => 7,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  127 => 
+  134 => 
   array (
     'key' => 'resistance_water_creature',
     'name' => 'Résistance Eau %',
@@ -1803,11 +2028,11 @@ return array (
     'color' => '#92cefa',
     'unit' => '%',
     'type' => 'int',
-    'sort_order' => 53,
+    'sort_order' => 7,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  130 => 
+  135 => 
   array (
     'key' => 'fixed_damage_multiple_creature',
     'name' => 'Dommage fixe Multiples',
@@ -1818,26 +2043,11 @@ return array (
     'color' => '#909fb8',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 54,
+    'sort_order' => 6,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  131 => 
-  array (
-    'key' => 'hit_dice_creature',
-    'name' => 'Dés de vie',
-    'short_name' => 'Dés PV',
-    'helper' => '[niveau / 2] – 10. Spécifique Krosmoz JDR.',
-    'descriptions' => 'Nombre de dés utilisés pour calculer les points de vie supplémentaires.',
-    'icon' => 'dice.webp',
-    'color' => '#2f2f2f',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 55,
-    'group' => 'creature',
-    'linked_to_key' => NULL,
-  ),
-  131 => 
+  136 => 
   array (
     'key' => 'wakfu_reserve_creature',
     'name' => 'Réserve de Wakfu',
@@ -1848,11 +2058,11 @@ return array (
     'color' => '#68daab',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 56,
+    'sort_order' => 10,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  132 => 
+  137 => 
   array (
     'key' => 'mastery_bonus_creature',
     'name' => 'Bonus de maîtrise',
@@ -1863,11 +2073,11 @@ return array (
     'color' => '#896c54',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 57,
+    'sort_order' => 10,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  133 => 
+  138 => 
   array (
     'key' => 'modifier_vitality_creature',
     'name' => 'Modificateur de Vitalité',
@@ -1878,11 +2088,11 @@ return array (
     'color' => '#d88c3c',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 58,
+    'sort_order' => 4,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  134 => 
+  139 => 
   array (
     'key' => 'modifier_wisdom_creature',
     'name' => 'Modificateur de Sagesse',
@@ -1893,11 +2103,11 @@ return array (
     'color' => '#715bdf',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 59,
+    'sort_order' => 4,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  135 => 
+  140 => 
   array (
     'key' => 'modifier_strength_creature',
     'name' => 'Modificateur de Force',
@@ -1908,11 +2118,11 @@ return array (
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 60,
+    'sort_order' => 4,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  136 => 
+  141 => 
   array (
     'key' => 'modifier_intelligence_creature',
     'name' => 'Modificateur d\'Intelligence',
@@ -1923,11 +2133,11 @@ return array (
     'color' => '#ce6728',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 61,
+    'sort_order' => 4,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  137 => 
+  142 => 
   array (
     'key' => 'modifier_chance_creature',
     'name' => 'Modificateur de Chance',
@@ -1938,11 +2148,11 @@ return array (
     'color' => '#92cefa',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 62,
+    'sort_order' => 4,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  138 => 
+  143 => 
   array (
     'key' => 'modifier_agility_creature',
     'name' => 'Modificateur d\'Agilité',
@@ -1953,11 +2163,11 @@ return array (
     'color' => '#94bf6d',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 63,
+    'sort_order' => 4,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  139 => 
+  144 => 
   array (
     'key' => 'save_vitality_creature',
     'name' => 'Bonus jet de sauvegarde Vitalité',
@@ -1968,11 +2178,11 @@ return array (
     'color' => '#d88d3d',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 64,
+    'sort_order' => 8,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  146 => 
+  145 => 
   array (
     'key' => 'save_wisdom_creature',
     'name' => 'Bonus jet de sauvegarde Sagesse',
@@ -1983,11 +2193,11 @@ return array (
     'color' => '#7d64f5',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 65,
+    'sort_order' => 8,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  147 => 
+  146 => 
   array (
     'key' => 'save_strength_creature',
     'name' => 'Bonus jet de sauvegarde Force',
@@ -1998,11 +2208,11 @@ return array (
     'color' => '#8b6c38',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 66,
+    'sort_order' => 8,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  148 => 
+  147 => 
   array (
     'key' => 'save_intelligence_creature',
     'name' => 'Bonus jet de sauvegarde Intelligence',
@@ -2013,11 +2223,11 @@ return array (
     'color' => '#c16024',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 67,
+    'sort_order' => 8,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  149 => 
+  148 => 
   array (
     'key' => 'save_chance_creature',
     'name' => 'Bonus jet de sauvegarde Chance',
@@ -2028,11 +2238,11 @@ return array (
     'color' => '#92cefa',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 68,
+    'sort_order' => 8,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  150 => 
+  149 => 
   array (
     'key' => 'save_agility_creature',
     'name' => 'Bonus jet de sauvegarde Agilité',
@@ -2043,11 +2253,11 @@ return array (
     'color' => '#96c270',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 69,
+    'sort_order' => 8,
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  151 => 
+  150 => 
   array (
     'key' => 'range_editable_spell',
     'name' => 'Portée modifiable',
@@ -2062,7 +2272,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  152 => 
+  151 => 
   array (
     'key' => 'number_between_two_cast_editable_spell',
     'name' => 'Délai entre lancers modifiable',
@@ -2073,11 +2283,11 @@ return array (
     'color' => '#757575',
     'unit' => NULL,
     'type' => 'bool',
-    'sort_order' => 71,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  153 => 
+  152 => 
   array (
     'key' => 'spell_range_min_spell',
     'name' => 'Portée min',
@@ -2088,11 +2298,11 @@ return array (
     'color' => '#469582',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 72,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  154 => 
+  153 => 
   array (
     'key' => 'spell_range_max_spell',
     'name' => 'Portée max',
@@ -2103,11 +2313,11 @@ return array (
     'color' => '#469482',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 73,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  155 => 
+  154 => 
   array (
     'key' => 'casting_time_spell',
     'name' => 'Temps d\'incantation',
@@ -2118,26 +2328,26 @@ return array (
     'color' => '#ff9800',
     'unit' => NULL,
     'type' => 'string',
-    'sort_order' => 74,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  156 => 
+  155 => 
   array (
     'key' => 'duration_spell',
     'name' => 'Durée',
     'short_name' => 'Durée',
     'helper' => 'Durée pendant laquelle l\'effet reste actif.',
     'descriptions' => 'Durée de l\'effet : combien de temps l\'effet du sort ou de la capacité reste actif (ex. 24h, 3 tours).',
-    'icon' => 'timeBeforeUseAgain.webp',
+    'icon' => 'duration.webp',
     'color' => '#00acc1',
     'unit' => NULL,
     'type' => 'string',
-    'sort_order' => 75,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  157 => 
+  156 => 
   array (
     'key' => 'time_before_use_again_spell',
     'name' => 'Temps avant réutilisation',
@@ -2148,11 +2358,11 @@ return array (
     'color' => '#757575',
     'unit' => NULL,
     'type' => 'string',
-    'sort_order' => 76,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  158 => 
+  157 => 
   array (
     'key' => 'ritual_available_spell',
     'name' => 'Rituel disponible',
@@ -2163,11 +2373,11 @@ return array (
     'color' => '#5c6bc0',
     'unit' => NULL,
     'type' => 'bool',
-    'sort_order' => 77,
+    'sort_order' => 70,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  159 => 
+  158 => 
   array (
     'key' => 'dommages_spell',
     'name' => 'Dommages (effet)',
@@ -2178,17 +2388,13 @@ return array (
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 78,
+    'sort_order' => 71,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  160 => 
+  159 => 
   array (
     'key' => 'soin_spell',
-    'name' => 'Soin (effet)',
-    'short_name' => 'Soin',
-    'helper' => 'Montant de soins appliqués par un sous-effet soigner. Conversion Dofus → Krosmoz.',
-    'descriptions' => 'Valeur des soins d\'un sous-effet soigner (convertie depuis DofusDB).',
     'name' => 'Soin (effet)',
     'short_name' => 'Soin',
     'helper' => 'Montant de soins appliqués par un sous-effet soigner. Conversion Dofus → Krosmoz.',
@@ -2197,307 +2403,7 @@ return array (
     'color' => '#66bb6a',
     'unit' => NULL,
     'type' => 'int',
-    'sort_order' => 78,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  161 => 
-  array (
-    'key' => 'vol_vie_spell',
-    'name' => 'Vol de vie (effet)',
-    'short_name' => 'Vol PV',
-    'helper' => 'Montant de PV volés par un sous-effet voler-vie. Conversion Dofus → Krosmoz.',
-    'descriptions' => 'Valeur du vol de vie d\'un sous-effet voler-vie (convertie depuis DofusDB).',
-    'icon' => 'life.webp',
-    'color' => '#9c27b0',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 22,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  162 => 
-  array (
-    'key' => 'bouclier_spell',
-    'name' => 'Bouclier (effet)',
-    'short_name' => 'Bouclier',
-    'helper' => 'Absorption ou PV temporaires d\'un sous-effet protéger. Conversion Dofus → Krosmoz.',
-    'descriptions' => 'Valeur de protection d\'un sous-effet protéger (convertie depuis DofusDB).',
-    'icon' => 'shield.webp',
-    'color' => '#3f51b5',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 23,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  163 => 
-  array (
-    'key' => 'initiative_spell',
-    'name' => 'Initiative (effets)',
-    'short_name' => 'Ini.',
-    'helper' => 'Initiative appliquée par les sous-effets de sort.',
-    'descriptions' => 'Bonus/malus d\'initiative appliqué par les sous-effets de sort (booster, retirer).',
-    'icon' => 'initiative.webp',
-    'color' => '#ff9800',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 24,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  164 => 
-  array (
-    'key' => 'armor_class_spell',
-    'name' => 'CA (effets)',
-    'short_name' => 'CA',
-    'helper' => 'Classe d\'armure appliquée par les sous-effets de sort.',
-    'descriptions' => 'Bonus/malus de CA appliqué par les sous-effets de sort (booster, retirer).',
-    'icon' => 'armorClass.webp',
-    'color' => '#3f51b5',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 24,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  165 => 
-  array (
-    'key' => 'hit_bonus_spell',
-    'name' => 'Bonus de touche (effets)',
-    'short_name' => 'Touche',
-    'helper' => 'Bonus de touche appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus/malus de touche appliqué par les sous-effets de sort (booster, retirer).',
-    'icon' => 'touch.webp',
-    'color' => '#909194',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 24,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  166 => 
-  array (
-    'key' => 'summoning_spell',
-    'name' => 'Invocations (effets)',
-    'short_name' => 'Invoc.',
-    'helper' => 'Nombre d\'invocations appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus/malus au nombre de créatures invoquées simultanément (booster, retirer).',
-    'icon' => 'summoning.webp',
-    'color' => '#9c27b0',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 24,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  167 => 
-  array (
-    'key' => 'heal_bonus_spell',
-    'name' => 'Bonus de soin (effets)',
-    'short_name' => 'Soin',
-    'helper' => 'Bonus de soin appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus ajouté aux soins appliqués par les sous-effets de sort (booster, retirer).',
-    'icon' => 'heal.webp',
-    'color' => '#e83425',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 24,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  168 => 
-  array (
-    'key' => 'fixed_damage_neutral_spell',
-    'name' => 'Dégâts fixe Neutre (effets)',
-    'short_name' => 'Do N',
-    'helper' => 'Bonus dégâts Neutre appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus dégâts fixe Neutre appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'dmgNeutral.webp',
-    'color' => '#99acc3',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 25,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  169 => 
-  array (
-    'key' => 'fixed_damage_earth_spell',
-    'name' => 'Dégâts fixe Terre (effets)',
-    'short_name' => 'Do T',
-    'helper' => 'Bonus dégâts Terre appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus dégâts fixe Terre appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'earth.webp',
-    'color' => '#8d6e63',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 25,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  170 => 
-  array (
-    'key' => 'fixed_damage_fire_spell',
-    'name' => 'Dégâts fixe Feu (effets)',
-    'short_name' => 'Do F',
-    'helper' => 'Bonus dégâts Feu appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus dégâts fixe Feu appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'fire.webp',
-    'color' => '#e93323',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 25,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  171 => 
-  array (
-    'key' => 'fixed_damage_air_spell',
-    'name' => 'Dégâts fixe Air (effets)',
-    'short_name' => 'Do A',
-    'helper' => 'Bonus dégâts Air appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus dégâts fixe Air appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'air.webp',
-    'color' => '#26c6da',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 25,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  172 => 
-  array (
-    'key' => 'fixed_damage_water_spell',
-    'name' => 'Dégâts fixe Eau (effets)',
-    'short_name' => 'Do E',
-    'helper' => 'Bonus dégâts Eau appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus dégâts fixe Eau appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'water.webp',
-    'color' => '#29b6f6',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 25,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  173 => 
-  array (
-    'key' => 'save_vitality_spell',
-    'name' => 'Sauvegarde Vitalité (effets)',
-    'short_name' => 'Sav Vit',
-    'helper' => 'Bonus jet sauvegarde Vitalité appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus au jet de sauvegarde Vitalité appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'saveVitality.webp',
-    'color' => '#d88d3d',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 26,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  174 => 
-  array (
-    'key' => 'save_wisdom_spell',
-    'name' => 'Sauvegarde Sagesse (effets)',
-    'short_name' => 'Sav Sag',
-    'helper' => 'Bonus jet sauvegarde Sagesse appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus au jet de sauvegarde Sagesse appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'saveWisdom.webp',
-    'color' => '#ffb74d',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 26,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  175 => 
-  array (
-    'key' => 'save_strength_spell',
-    'name' => 'Sauvegarde Force (effets)',
-    'short_name' => 'Sav For',
-    'helper' => 'Bonus jet sauvegarde Force appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus au jet de sauvegarde Force appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'saveStrenght.webp',
-    'color' => '#8d6e63',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 26,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  176 => 
-  array (
-    'key' => 'save_intelligence_spell',
-    'name' => 'Sauvegarde Intelligence (effets)',
-    'short_name' => 'Sav Int',
-    'helper' => 'Bonus jet sauvegarde Intelligence appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus au jet de sauvegarde Intelligence appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'saveIntel.webp',
-    'color' => '#e93323',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 26,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  177 => 
-  array (
-    'key' => 'save_chance_spell',
-    'name' => 'Sauvegarde Chance (effets)',
-    'short_name' => 'Sav Cha',
-    'helper' => 'Bonus jet sauvegarde Chance appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus au jet de sauvegarde Chance appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'saveLuck.webp',
-    'color' => '#29b6f6',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 26,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  178 => 
-  array (
-    'key' => 'save_agility_spell',
-    'name' => 'Sauvegarde Agilité (effets)',
-    'short_name' => 'Sav Agi',
-    'helper' => 'Bonus jet sauvegarde Agilité appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus au jet de sauvegarde Agilité appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'saveAgi.webp',
-    'color' => '#26c6da',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 26,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  179 => 
-  array (
-    'key' => 'wakfu_reserve_spell',
-    'name' => 'Réserve Wakfu (effets)',
-    'short_name' => 'Réserve Wakfu',
-    'helper' => 'Réserve de Wakfu appliquée par les sous-effets de sort.',
-    'descriptions' => 'Bonus/malus à la réserve de Wakfu appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'wakfu.webp',
-    'color' => '#68daab',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 27,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  180 => 
-  array (
-    'key' => 'mastery_bonus_spell',
-    'name' => 'Bonus maîtrise (effets)',
-    'short_name' => 'Bonus maîtrise',
-    'helper' => 'Bonus de maîtrise appliqué par les sous-effets de sort.',
-    'descriptions' => 'Bonus de maîtrise appliqué par les sous-effets (booster, retirer).',
-    'icon' => 'masterBonus.webp',
-    'color' => '#896c54',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 27,
+    'sort_order' => 71,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),

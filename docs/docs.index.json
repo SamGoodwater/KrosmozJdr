@@ -517,7 +517,7 @@
   {
     "path": "30-UI/PROPERTY_DISPLAY_SYSTEM.md",
     "title": "Système d'affichage des propriétés",
-    "description": "Affichage standardisé des propriétés/caractéristiques avec icônes personnalisées, couleurs et tooltips. Les caractéristiques proviennent des tables BDD (`characteristics`, `characteristic_creature`, `characteristic_object`, `characteristic_spell`)."
+    "description": "> **Refactorisation** : Voir [AUDIT_SERVICE_AFFICHAGE_CARACTERISTIQUES.md](../50-Fonctionnalités/Characteristics-DB/AUDIT_SERVICE_AFFICHAGE_CARACTERISTIQUES.md) pour l'audit des duplications et le plan de centralisation dans un service universel."
   },
   {
     "path": "30-UI/README.md",
@@ -1195,6 +1195,16 @@
     "description": "Cette table des matières présente la structure complète du livre de règles KrosmozJDR."
   },
   {
+    "path": "410- Ressources/AUDIT_CARACTERISTIQUES_SEEDERS.md",
+    "title": "Audit caractéristiques — Seeders objet et créature",
+    "description": "Audit réalisé pour aligner les seeders avec les règles KrosmozJDR (2.2.2, 2.6.1, 4.2.2). Les caractéristiques non utilisées dans le JDR mais envoyées par l'API DofusDB doivent être retirées."
+  },
+  {
+    "path": "410- Ressources/VERIFICATION_CARACTERISTIQUES_PDF.md",
+    "title": "Vérification caractéristiques — Conformité aux PDF",
+    "description": "Audit réalisé en comparant les seeders `characteristic_creature` et `characteristic_object` avec les PDF de référence."
+  },
+  {
     "path": "50-Fonctionnalités/ARCHITECTURE_SCRAPPING_MAPPING_CARACTERISTIQUES.md",
     "title": "Architecture cible : Scrapping → Mapping → Conversion → Caractéristiques",
     "description": "Ce document résume **comment les services doivent être composés et architecturés** (Scrapping, Mappings, Conversion, Caractéristiques, UI admin), puis **compare avec l’existant**."
@@ -1210,6 +1220,11 @@
     "description": "Ce document compare le contenu des documents **Caractéristiques.pdf** et **Equipements et forgemagie.pdf** (règles Krosmoz JDR α 0.1.3.0) avec l’architecture du service de caractéristiques documentée dans ce dossier. Objectif : vérifier que l’architecture proposée permet de décrire l’ensemble des caractéristiques et des règles liées aux équipements et à la forgemagie."
   },
   {
+    "path": "50-Fonctionnalités/Characteristics-DB/ARCHITECTURE_CARACTERISTIQUES_SPELL.md",
+    "title": "Architecture des caractéristiques spell — Type 1 et Type 2",
+    "description": "Document de référence pour comprendre et faire évoluer les caractéristiques du groupe **spell**."
+  },
+  {
     "path": "50-Fonctionnalités/Characteristics-DB/ARCHITECTURE_SOUS_SERVICES.md",
     "title": "Architecture : les 4 sous-services de caractéristiques",
     "description": "Ce document décrit les **quatre sous-services** qui permettent d’utiliser et de manipuler les données des caractéristiques. Ils s’appuient sur les tables centrales (`characteristics`, `characteristic_creature`, `characteristic_object`, `characteristic_spell`) et constituent le cœur technique du système."
@@ -1223,6 +1238,11 @@
     "path": "50-Fonctionnalités/Characteristics-DB/AUDIT_CODE_CARACTERISTIQUES.md",
     "title": "Audit code : caractéristiques (doublons, obsolète, à optimiser)",
     "description": "Ce document recense les écarts et points d’attention repérés dans le code du service de caractéristiques après plusieurs évolutions. À traiter pour aligner le code sur la documentation et supprimer les doublons ou parties obsolètes."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/AUDIT_SERVICE_AFFICHAGE_CARACTERISTIQUES.md",
+    "title": "Audit — Service universel d'affichage des caractéristiques",
+    "description": "**Date** : 2026-03"
   },
   {
     "path": "50-Fonctionnalités/Characteristics-DB/BILAN_SERVICE_CARACTERISTIQUES.md",
