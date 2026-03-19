@@ -15,7 +15,7 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
-import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
+import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
@@ -279,34 +279,18 @@ const handleAction = async (actionKey) => {
 
             <template #mainInfos>
                 <div v-if="displayMetaFields.length > 0" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                    <template v-for="fieldKey in displayMetaFields" :key="fieldKey">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="flex items-start justify-between gap-2 min-w-0">
-                                <div class="flex items-center gap-2 min-w-0">
-                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                                    <span
-                                        v-if="!shouldOmitLabelInMeta(fieldKey)"
-                                        class="text-xs uppercase font-semibold text-primary-300 truncate"
-                                    >
-                                        {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
-                                    </span>
-                                </div>
-                                <ElementDisplay
-                                    v-if="fieldKey === 'element'"
-                                    :element="spell?.element ?? 0"
-                                    size="sm"
-                                />
-                                <PropertyDisplay
-                                    v-else
-                                    :property="getFieldUi(fieldKey)"
-                                    :value="getCell(fieldKey)?.value"
-                                    variant="badge"
-                                    size="sm"
-                                    class="max-w-[18rem] whitespace-normal break-words"
-                                />
-                            </div>
-                        </Tooltip>
-                    </template>
+                    <EntityPropertyDisplay
+                        v-for="fieldKey in displayMetaFields"
+                        :key="fieldKey"
+                        :field-key="fieldKey"
+                        :entity="spell"
+                        entity-type="spell"
+                        display-mode="extended"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                        size="sm"
+                        class="max-w-[18rem] whitespace-normal break-words"
+                    />
                 </div>
             </template>
 

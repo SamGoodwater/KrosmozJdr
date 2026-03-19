@@ -12,6 +12,7 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Resource } from '@/Models/Entity/Resource';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import EntityViewLargeWrapper from '@/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue';
 import ResourceViewLarge from '@/Pages/Molecules/entity/resource/ResourceViewLarge.vue';
 
 const page = usePage();
@@ -38,19 +39,26 @@ const goEdit = () => {
     <Head :title="`Ressource : ${resource?.name || '-'}`" />
 
     <Container class="space-y-6 pb-8">
-        <div class="flex items-center justify-between gap-3">
-            <div>
-                <h1 class="text-3xl font-bold text-primary-100">{{ resource.name }}</h1>
-                <p class="text-primary-300 mt-1">
-                    {{ resource.resourceType?.name || '—' }}
-                </p>
-            </div>
-            <Btn v-if="resource?.can?.update" color="primary" @click="goEdit">
-                <i class="fa-solid fa-pen mr-2"></i>
-                Modifier
-            </Btn>
-        </div>
+        <EntityViewLargeWrapper
+            :show-back-button="true"
+            back-route="entities.resources.index"
+        >
+            <div class="space-y-6">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-3xl font-bold text-primary-100">{{ resource.name }}</h1>
+                        <p class="text-primary-300 mt-1">
+                            {{ resource.resourceType?.name || '—' }}
+                        </p>
+                    </div>
+                    <Btn v-if="resource?.can?.update" color="primary" @click="goEdit">
+                        <i class="fa-solid fa-pen mr-2"></i>
+                        Modifier
+                    </Btn>
+                </div>
 
-        <ResourceViewLarge :resource="resource" :show-actions="true" />
+                <ResourceViewLarge :resource="resource" :show-actions="true" />
+            </div>
+        </EntityViewLargeWrapper>
     </Container>
 </template>

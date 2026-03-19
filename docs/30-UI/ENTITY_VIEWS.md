@@ -128,15 +128,21 @@ La **Vue Texte** est un format très compact, destiné aux listes d’entités l
 
 ### Vue Line (5ᵉ format officiel)
 
-La **Vue Line** est un affichage dense en grille flex-wrap pour les listes d’entités.
+La **Vue Line** est un affichage **liste dense verticale** : une ligne par entité, **tout le contenu visible directement** (sans hover). Elle se situe entre Compact et Minimal en densité. d’entités.
 
-- **Usage** : listes de ressources, items, sorts, etc. — vue par défaut dans les tableaux.
-- **Implémentation** : vues Minimal en grille flex-wrap — une ligne remplie puis passage à la suivante (cartes ~280px, gap 3).
-- **Responsive** : cartes en 1, 2, 3+ colonnes selon la largeur.
+- **Usage** : mode « Ligne » des tableaux (TanStackTable `displayMode: "line"`).
+- **Comportement** : ressemble à Minimal mais sans partie masquée — description, effets, ingrédients affichés par défaut.
+- **Relation avec Texte** : même contenu que Minimal/Line ; la Vue Texte affiche une Minimal au hover.
+
+#### Implémentation par type d'entité
+
+| Type | Composant | Description |
+|------|-----------|-------------|
+| **Resource, Item, Consumable** | `ResourceLineRow`, `ItemLineRow`, `ConsumableLineRow` | Ligne dédiée : image 80px, titre, metas, description, effets, ingrédients. Layout horizontal dense. |
+| **Autres types** (Spell, Monster, etc.) | `*ViewMinimal` en fallback | `displayMode: "extended"` pour afficher tout le contenu (équivalent « tout visible »). |
 - **Toggle** : boutons « Ligne » | « Minimal » | « Colonne » à côté de la densité.
 - **Tri** : dropdown « Trier par » (indispensable en vue Line, pas d’en-têtes cliquables).
 
-> **Ligne** : ResourceLineRow (ressources) ou *ViewMinimal en colonne. **Minimal** : grille flex-wrap *ViewMinimal.
 
 ### Quand utiliser quelle vue ? (guide rapide)
 
@@ -192,6 +198,29 @@ Utilise ces règles dans l’ordre :
 - **Main infos** : 1–2 lignes max
 - **Body** : masqué, visible au hover (extended)
 - **Footer** : masqué (même extended)
+
+### Bouton « Retour » sur les pages Show
+
+Quand une vue **Large** ou **Compact** est affichée sur une **page entière** (ex. `resource/Show.vue`), la page doit inclure un bouton « Retour à la liste » en cohérence avec les pages Edit.
+
+**Composants dédiés** : `EntityViewLargeWrapper` et `EntityViewCompactWrapper` encapsulent ce comportement :
+
+```vue
+<EntityViewLargeWrapper :show-back-button="true" back-route="entities.resources.index">
+  <div class="space-y-6">
+    <div class="flex items-center justify-between gap-3">
+      <h1>{{ resource.name }}</h1>
+      <Btn @click="goEdit">Modifier</Btn>
+    </div>
+    <ResourceViewLarge :resource="resource" :show-actions="true" />
+  </div>
+</EntityViewLargeWrapper>
+```
+
+- **EntityViewLargeWrapper** : `resources/js/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue`
+- **EntityViewCompactWrapper** : `resources/js/Pages/Molecules/entity/shared/EntityViewCompactWrapper.vue`
+- **Props** : `showBackButton`, `backRoute`, `backLabel`
+- **EntityModal** : n'utilise pas ces wrappers (affichage en modal, pas de bouton retour).
 
 ### Liens entre vues (navigation UI)
 

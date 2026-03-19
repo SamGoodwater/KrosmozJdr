@@ -8,7 +8,30 @@ Affichage standardisé des propriétés/caractéristiques avec icônes personnal
 
 **Groupes** : creature (monster, class, npc), object (item, consumable, resource, panoply), spell (spell, **capability**).
 
+## Modes d'affichage des propriétés (PROPERTY_DISPLAY_MODES)
+
+Constantes : `resources/js/Utils/Entity/Constants.js`
+
+| Mode | Rendu | Composant |
+|------|-------|-----------|
+| **minimal** | icône + valeur + unité | CharacteristicChip, CharacteristicEffectsGrid (`labelMode="icon-only"`) |
+| **compact** | icône + label abrégé + valeur + unité | `labelMode="short"` |
+| **extended** | icône + label complet + valeur + unité | `labelMode="full"` |
+| **detailed** | extended + détails (formules, valeurs par niveau) ; partie visible + partie au hover | CharacteristicFormula (`displayMode="detailed"`) |
+
+**Mapping vue entité → mode propriété** : Minimal/Line → minimal ; Compact → compact ; Large → extended ou detailed (si formule).
+
 ## Composants
+
+### EntityPropertyDisplay (Molecule)
+
+`resources/js/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue`
+
+Affichage unifié des propriétés d'entité selon le mode (`minimal`, `compact`, `extended`, `detailed`). Utilise le composable `useEntityPropertyDisplay` pour résoudre les métadonnées (icône, label, unité, couleur) et la valeur.
+
+**Props** : `fieldKey`, `entity`, `entityType`, `displayMode`, `descriptors`, `tableMeta`, `size`, `formulaResolved`, `formulaRaw`, `levelTable`.
+
+**Composable** : `resources/js/Composables/entity/useEntityPropertyDisplay.js` — attend un objet réactif (ex. `computed`) pour rester à jour.
 
 ### PropertyDisplay (Atom)
 
@@ -26,7 +49,26 @@ Affichage d'une propriété avec variants :
 
 ### CharacteristicChip (Atom)
 
-Affichage icon + valeur pour les listes (CharacteristicInlineGroup). Utilisé pour les cellules `chips` des tableaux.
+Affichage icon + valeur + unité pour les listes (CharacteristicInlineGroup). Utilisé pour les cellules `chips` des tableaux.
+
+**Props** : `item` (icon, color, name, shortLabel, value, unit, tooltip), `labelMode` (`full` | `short` | `icon-only`).
+
+### CharacteristicEffectsGrid (Molecule)
+
+Grille responsive d'effets/caractéristiques. Affiche l'unité (`item.unit`) après la valeur quand disponible.
+
+**Props** : `items`, `labelMode` (`full` | `short` | `icon-only`).
+
+### CharacteristicFormula (Atom)
+
+Caractéristique à formule (valeur + unité). Aligné sur `PROPERTY_DISPLAY_MODES` (voir ci-dessous).
+
+**Props** : `def`, `value`, `formulaResolved`, `formulaRaw`, `levelTable`, `unit`, `displayMode` (`minimal` | `compact` | `extended` | `detailed`), `compact` (legacy).
+
+- **minimal** : icône + valeur + unité
+- **compact** : icône + label abrégé + valeur + unité
+- **extended** : icône + label complet + valeur + unité (carte)
+- **detailed** : extended + panneau hover (formule, tableau par niveau)
 
 ### Flux des données
 
@@ -60,10 +102,16 @@ Affichage icon + valeur pour les listes (CharacteristicInlineGroup). Utilisé po
 
 ## Vues d'entités mises à jour
 
-Les vues suivantes utilisent désormais `PropertyDisplay` et `resolveEntityFieldUi` pour les metas :
+### EntityPropertyDisplay (composant unifié)
 
-- **Large** : Spell, Capability, Monster, Resource, Item
-- **Compact** : Spell, Capability, Monster, Resource, Item
+Les vues suivantes utilisent **EntityPropertyDisplay** pour les champs de propriétés :
+
+- **Large** : Spell, Resource, Attribute (migration complète)
+- **À migrer** : Monster, Item, Consumable, Capability, Npc, Panoply (utilisent encore PropertyDisplay + resolveEntityFieldUi manuel)
+
+### PropertyDisplay (legacy)
+
+- **Compact** : Spell, Capability, Monster, Resource utilisent encore `PropertyDisplay` + `resolveEntityFieldUi` pour les metas
 - **Consumable, Panoply, NPC** : `resolveEntityFieldUi` pour icônes/labels (grilles de champs)
 - **Minimal** : déjà basées sur `resolveEntityFieldUi` (icônes avec tooltips)
 

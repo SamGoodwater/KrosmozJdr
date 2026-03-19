@@ -29,6 +29,7 @@ import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getRarityConfig, getRoleConfig, getEntityStateOptions } from '@/Utils/Entity/SharedConstants';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
+import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 
 const props = defineProps({
@@ -298,20 +299,26 @@ const handleAction = async (actionKey) => {
                             </Badge>
                         </template>
                         <template v-if="canShowField('weight')">
-                            <Tooltip :content="getFieldTooltip('weight')" placement="top">
-                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('weight')">
-                                    <Icon :source="getFieldIcon('weight')" :alt="getFieldLabel('weight')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('weight') }}</span><span> {{ resource.weight ?? '-' }}{{ getFieldUnit('weight') ? ` ${getFieldUnit('weight')}` : '' }}</span>
-                                </span>
-                            </Tooltip>
+                            <EntityPropertyDisplay
+                                field-key="weight"
+                                :entity="resource"
+                                entity-type="resource"
+                                display-mode="extended"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="sm"
+                            />
                         </template>
                         <template v-if="canShowField('price')">
-                            <Tooltip :content="getFieldTooltip('price')" placement="top">
-                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('price')">
-                                    <Icon :source="getFieldIcon('price')" :alt="getFieldLabel('price')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ resource.price ?? '-' }}{{ getFieldUnit('price') ? ` ${getFieldUnit('price')}` : '' }}</span>
-                                </span>
-                            </Tooltip>
+                            <EntityPropertyDisplay
+                                field-key="price"
+                                :entity="resource"
+                                entity-type="resource"
+                                display-mode="extended"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="sm"
+                            />
                         </template>
                     </div>
                 </div>

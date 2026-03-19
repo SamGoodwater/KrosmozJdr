@@ -53,6 +53,14 @@ const props = defineProps({
         default: null,
     },
     /**
+     * Si fourni pour une cellule type=route, le clic appelle ce handler au lieu de naviguer.
+     * Utile pour ouvrir un modal au clic sur le nom dans un tableau d'entités.
+     */
+    onRouteClick: {
+        type: Function,
+        default: null,
+    },
+    /**
      * Nombre de lignes max par défaut pour les cellules `chips`.
      * Peut être surchargé par cellule via `cell.params.chipsLayout.maxRows`.
      */
@@ -255,8 +263,31 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
     </span>
 
     <span v-else-if="type === 'route'">
+        <!-- Clic personnalisé : span cliquable au lieu de lien (ex: ouvrir modal) -->
         <Tooltip
-            v-if="params.href && (params.tooltip || effectiveTruncateClass)"
+            v-if="onRouteClick && params.href"
+            class="inline-block align-middle cursor-pointer"
+            :content="String(params.tooltip || text)"
+            placement="top"
+        >
+            <span
+                :class="['link link-' + (uiColor || 'primary') + ' link-hover', effectiveTruncateClass]"
+                @click.prevent="onRouteClick($event)"
+            >
+                {{ text }}
+            </span>
+        </Tooltip>
+
+        <span
+            v-else-if="onRouteClick"
+            :class="['link link-' + (uiColor || 'primary') + ' link-hover cursor-pointer', effectiveTruncateClass]"
+            @click.prevent="onRouteClick($event)"
+        >
+            {{ text }}
+        </span>
+
+        <Tooltip
+            v-else-if="params.href && (params.tooltip || effectiveTruncateClass)"
             class="inline-block align-middle"
             :content="String(params.tooltip || text)"
             placement="top"

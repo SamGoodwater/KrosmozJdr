@@ -1,46 +1,39 @@
 <script setup>
 /**
- * ItemViewLarge — Vue Large pour Item
- * 
+ * ItemViewLarge — Vue Large pour Item (équipement)
+ *
  * @description
- * Vue complète d'un item avec toutes les informations affichées.
- * Utilisée dans les grandes modals ou directement dans le main.
- * 
+ * Vue complète d'un équipement avec toutes les informations affichées.
+ * Layout aligné sur Resource : image + 3 lignes (nom+niveau+type / rareté+poids+prix / description),
+ * puis effet, bonus, ingrédients, bloc admin (write permission).
+ *
  * @props {Item} item - Instance du modèle Item
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import CellRenderer from '@/Pages/Atoms/data-display/CellRenderer.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
-import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
+import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
+import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
+import EntityUsableDot from '@/Pages/Atoms/data-display/EntityUsableDot.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
-import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
-import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
-import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
+import { getItemFieldDescriptors } from '@/Entities/item/item-descriptors';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
+import { getRarityConfig, getRoleConfig, getEntityStateOptions } from '@/Utils/Entity/SharedConstants';
+import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
+import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
+import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 
 const props = defineProps({
-    item: {
-        type: Object,
-        required: true
-    },
-    showActions: {
-        type: Boolean,
-        default: true
-    },
-    tableMeta: {
-        type: Object,
-        default: () => ({})
-    }
+    item: { type: Object, required: true },
+    showActions: { type: Boolean, default: true },
+    tableMeta: { type: Object, default: () => ({}) },
 });
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
@@ -49,25 +42,30 @@ const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('item');
 const permissions = usePermissions();
 
-const ctx = computed(() => {
-    const capabilities = {
+const ctx = computed(() => ({
+    capabilities: {
         viewAny: permissions.can('items', 'viewAny'),
         createAny: permissions.can('items', 'createAny'),
         updateAny: permissions.can('items', 'updateAny'),
         deleteAny: permissions.can('items', 'deleteAny'),
         manageAny: permissions.can('items', 'manageAny'),
-    };
-    return { capabilities, meta: { capabilities } };
-});
+    },
+    meta: { capabilities: {} },
+}));
 
 const descriptors = computed(() => getItemFieldDescriptors(ctx.value));
-
 const stateValue = computed(() => props.item?.state ?? props.item?._data?.state ?? null);
-
 const autoUpdateValue = computed(() => {
     const v = props.item?.auto_update ?? props.item?._data?.auto_update;
     return typeof v === 'boolean' ? v : null;
 });
+
+const ingredients = computed(() => {
+    const raw = props.item?.resources ?? props.item?._data?.resources ?? [];
+    return Array.isArray(raw) ? raw : [];
+});
+
+const userCanEdit = computed(() => ctx.value.capabilities.updateAny ?? props.item?.can?.update ?? false);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -76,136 +74,91 @@ const canShowField = (fieldKey) => {
     if (typeof visibleIf === 'function') {
         try {
             return Boolean(visibleIf(ctx.value));
-        } catch (e) {
-            console.warn('[ItemViewLarge] visibleIf failed for', fieldKey, e);
+        } catch {
             return false;
         }
     }
     return true;
 };
 
-const headlineFields = computed(() => ([
-    'item_type',
-    'level',
-].filter(canShowField)));
+const getFieldUi = (fieldKey) =>
+    resolveEntityFieldUi({ fieldKey, descriptors: descriptors.value, tableMeta: props.tableMeta, entityType: 'item' });
+const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
+const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon || 'fa-solid fa-info-circle';
+const getFieldIconStyle = (fieldKey) => {
+    const color = getFieldUi(fieldKey).color;
+    return color ? { color } : {};
+};
+const getFieldUnit = (fieldKey) => getFieldUi(fieldKey).characteristic?.unit ?? '';
 
-const metaFields = computed(() => ([
-    'rarity',
-    'price',
-    'weight',
-].filter(canShowField).filter((k) => !headlineFields.value.includes(k))));
-
-const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
-
-const userCanEditFields = computed(() => ([
-    'dofus_version',
-    'auto_update',
-    'read_level',
-    'write_level',
-].filter(canShowField)));
-
-const technicalFields = computed(() => ([
-    'dofusdb_id',
-    'official_id',
-    'created_by',
-    'created_at',
-    'updated_at',
-].filter(canShowField)));
-
-const bodyFields = computed(() => ([
-    'effect',
-    'bonus',
-    'recipe',
-].filter(canShowField)));
-
-const ingredients = computed(
-    () => props.item?.resources ?? props.item?._data?.resources ?? []
-);
+const getCell = (fieldKey) =>
+    props.item.toCell(fieldKey, { size: 'lg', context: 'extended' });
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
         item_type: 'info',
         level: 'warning',
-        price: 'success',
         rarity: 'auto',
-        weight: 'secondary',
-        dofus_version: 'secondary',
         read_level: 'primary',
         write_level: 'secondary',
-        auto_update: 'warning',
-        dofusdb_id: 'neutral',
-        official_id: 'neutral',
-        created_by: 'neutral',
-        created_at: 'neutral',
-        updated_at: 'neutral',
     };
     return resolveEntityBadgeUi({
         fieldKey,
         cell: getCell(fieldKey),
-        fieldUi: resolveEntityFieldUi({
-            fieldKey,
-            descriptors: descriptors.value,
-            tableMeta: props.tableMeta,
-            entityType: 'item',
-        }),
+        fieldUi: getFieldUi(fieldKey),
         localColorMap: colorMap,
     }).color;
 };
 
-const getBadgeAutoParams = (fieldKey) => {
-    const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
-        fieldKey,
-        cell: getCell(fieldKey),
-        fieldUi: resolveEntityFieldUi({
-            fieldKey,
-            descriptors: descriptors.value,
-            tableMeta: props.tableMeta,
-            entityType: 'item',
-        }),
-    });
-    return { autoLabel, autoScheme, autoTone };
-};
+const levelDisplay = computed(() => {
+    const v = props.item?.level ?? props.item?._data?.level;
+    return v !== null && v !== undefined && v !== '' ? String(v) : '-';
+});
+const typeDisplay = computed(() => {
+    const it = props.item?.itemType ?? props.item?._data?.itemType;
+    return it?.name ?? it?.label ?? '-';
+});
+const rarityDisplay = computed(() => {
+    const r = props.item?.rarity ?? props.item?._data?.rarity ?? 0;
+    const cfg = getRarityConfig(r);
+    return cfg?.label ?? '-';
+});
+const rarityBadgeColor = computed(() => {
+    const r = props.item?.rarity ?? props.item?._data?.rarity ?? 0;
+    const cfg = getRarityConfig(r);
+    return cfg?.color ?? 'neutral';
+});
+const readLevelLabel = computed(() => {
+    const v = props.item?.read_level ?? props.item?._data?.read_level ?? 0;
+    const cfg = getRoleConfig(v);
+    return cfg?.label ?? '-';
+});
+const writeLevelLabel = computed(() => {
+    const v = props.item?.write_level ?? props.item?._data?.write_level ?? 0;
+    const cfg = getRoleConfig(v);
+    return cfg?.label ?? '-';
+});
 
-const asTextCell = (cell) => {
-    if (!cell) return { type: 'text', value: '-', params: {} };
-    const v = cell?.value;
-    return {
-        type: 'text',
-        value: (v === null || typeof v === 'undefined' || String(v) === '') ? '-' : String(v),
-        params: cell?.params || {},
-    };
-};
+const stateOptions = computed(() => getEntityStateOptions());
+const stateColorMap = { raw: 'error', draft: 'warning', playable: 'success', archived: 'info' };
+const stateBadgeColor = computed(() => stateColorMap[stateValue.value] ?? 'neutral');
+const stateLabel = computed(() => {
+    const opt = stateOptions.value.find((o) => o.value === stateValue.value);
+    return opt?.label ?? '-';
+});
 
-const getFieldUi = (fieldKey) =>
-    resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'item',
-    });
-
-const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
-
-const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
-
-const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
-
-const getFieldIconStyle = (fieldKey) => {
-    const color = getFieldUi(fieldKey).color;
-    return color ? { color } : undefined;
-};
-
-const getCell = (fieldKey) => {
-    return props.item.toCell(fieldKey, {
-        size: 'lg',
-        context: 'extended',
+const handleStateChange = (newState) => {
+    if (!props.item?.id || !userCanEdit.value) return;
+    router.patch(route('entities.items.update', { item: props.item.id }), { state: newState }, {
+        preserveScroll: true,
+        preserveState: true,
     });
 };
 
 const handleAction = async (actionKey) => {
     const itemId = props.item.id;
     if (!itemId) return;
-
     switch (actionKey) {
         case 'view':
             router.visit(route('entities.items.show', { item: itemId }));
@@ -221,9 +174,7 @@ const handleAction = async (actionKey) => {
         case 'copy-link': {
             const cfg = getEntityRouteConfig('item');
             const url = resolveEntityRouteUrl('item', 'show', itemId, cfg);
-            if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien de l'item copié !");
-            }
+            if (url) await copyToClipboard(`${window.location.origin}${url}`, 'Lien copié !');
             emit('copy-link', props.item);
             break;
         }
@@ -232,7 +183,7 @@ const handleAction = async (actionKey) => {
             emit('download-pdf', props.item);
             break;
         case 'refresh':
-            router.reload({ only: ['items'] });
+            router.reload({ only: ['item'] });
             emit('refresh', props.item);
             break;
         case 'delete':
@@ -250,78 +201,143 @@ const handleAction = async (actionKey) => {
                     <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
                         <EntityUsableDot :state="stateValue" />
                     </div>
-
-                    <div class="absolute top-2 right-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <Badge
-                            :color="getBadgeColor('level')"
-                            :auto-label="getBadgeAutoParams('level').autoLabel"
-                            :auto-scheme="getBadgeAutoParams('level').autoScheme"
-                            :auto-tone="getBadgeAutoParams('level').autoTone"
-                            size="sm"
-                        >
-                            <CellRenderer :cell="asTextCell(getCell('level'))" ui-color="primary" />
-                        </Badge>
-                    </div>
-
                     <ImageViewer
                         v-if="item.image"
-                        :source="item.image"
-                        :alt="item.name || 'Item'"
+                        :src="item.image"
+                        :alt="item.name || 'Équipement'"
                         :caption="item.name || ''"
                         preload="hover"
-                        :image-props="{
-                            size: 'xl',
-                            rounded: 'lg',
-                            fit: 'cover',
-                            class: 'w-full h-full',
-                        }"
+                        :image-props="{ size: 'xl', rounded: 'lg', fit: 'cover', class: 'w-full h-full' }"
                     />
                     <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
-                        <Icon source="fa-solid fa-box" :alt="item.name" size="xl" />
+                        <Icon source="fa-solid fa-sword" :alt="item.name" size="xl" />
                     </div>
                 </div>
             </template>
 
             <template #title>
-                <h2 class="text-2xl font-bold text-primary-100 break-words">{{ item.name }}</h2>
-            </template>
-
-            <template #mainInfos>
-                <!-- Metas: icône + label inline, valeur seule en badge -->
-                <div v-if="displayMetaFields.length > 0" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                    <template v-for="fieldKey in displayMetaFields" :key="fieldKey">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="flex items-start justify-between gap-2 min-w-0">
-                                <div class="flex items-center gap-2 min-w-0">
-                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                                    <span
-                                        v-if="!shouldOmitLabelInMeta(fieldKey)"
-                                        class="text-xs uppercase font-semibold text-primary-300 truncate"
-                                    >
-                                        {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
-                                    </span>
-                                </div>
-
-                                <PropertyDisplay
-                                    :property="getFieldUi(fieldKey)"
-                                    :value="getCell(fieldKey)?.value"
-                                    variant="badge"
+                <div class="space-y-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h2 class="text-2xl font-bold text-primary-100 break-words">{{ item.name }}</h2>
+                        <template v-if="canShowField('level')">
+                            <Badge
+                                :color="getBadgeColor('level')"
+                                :auto-label="levelDisplay"
+                                auto-scheme="level"
+                                auto-tone="mid"
+                                size="sm"
+                            >
+                                Nvx {{ levelDisplay }}
+                            </Badge>
+                        </template>
+                        <template v-if="canShowField('item_type')">
+                            <Tooltip :content="getFieldTooltip('item_type')" placement="top">
+                                <Badge
+                                    color="auto"
+                                    :auto-label="typeDisplay"
+                                    auto-scheme="mixed"
+                                    auto-tone="mid"
                                     size="sm"
-                                    class="max-w-[18rem] whitespace-normal break-words"
-                                />
-                            </div>
-                        </Tooltip>
-                    </template>
+                                >
+                                    {{ typeDisplay }}
+                                </Badge>
+                            </Tooltip>
+                        </template>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                        <template v-if="canShowField('rarity')">
+                            <Badge
+                                :color="rarityBadgeColor"
+                                :auto-label="String(item.rarity ?? 0)"
+                                auto-scheme="rarity"
+                                auto-tone="mid"
+                                size="sm"
+                            >
+                                {{ rarityDisplay }}
+                            </Badge>
+                        </template>
+                        <template v-if="canShowField('weight')">
+                            <Tooltip :content="getFieldTooltip('weight')" placement="top">
+                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('weight')">
+                                    <Icon :source="getFieldIcon('weight')" :alt="getFieldLabel('weight')" size="xs" />
+                                    <span class="font-semibold">{{ getFieldLabel('weight') }}</span><span> {{ item.weight ?? '-' }}{{ getFieldUnit('weight') ? ` ${getFieldUnit('weight')}` : '' }}</span>
+                                </span>
+                            </Tooltip>
+                        </template>
+                        <template v-if="canShowField('price')">
+                            <Tooltip :content="getFieldTooltip('price')" placement="top">
+                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('price')">
+                                    <Icon :source="getFieldIcon('price')" :alt="getFieldLabel('price')" size="xs" />
+                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ item.price ?? '-' }}{{ getFieldUnit('price') ? ` ${getFieldUnit('price')}` : '' }}</span>
+                                </span>
+                            </Tooltip>
+                        </template>
+                    </div>
                 </div>
             </template>
 
+            <template #mainInfos />
             <template #subtitle>
                 <p v-if="item.description" class="text-primary-300 mt-2 break-words">{{ item.description }}</p>
             </template>
 
             <template #actions>
-                <div v-if="showActions">
+                <div class="flex items-center gap-2">
+                    <template v-if="canShowField('state')">
+                        <Dropdown
+                            v-if="userCanEdit"
+                            placement="bottom-end"
+                            :close-on-content-click="true"
+                            aria-label="Changer l'état"
+                        >
+                            <template #trigger>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-ghost gap-1.5 min-h-0 h-8 px-2 rounded-md hover:bg-base-300/50"
+                                    aria-haspopup="listbox"
+                                    aria-expanded="false"
+                                >
+                                    <Badge :color="stateBadgeColor" size="xs" variant="soft">
+                                        {{ stateLabel }}
+                                    </Badge>
+                                    <Icon source="fa-solid fa-chevron-down" size="xs" class="opacity-70" aria-hidden="true" />
+                                </button>
+                            </template>
+                            <template #content>
+                                <ul class="dropdown-content dropdown-content-glass dropdown-content-sm py-1 min-w-[140px]" role="listbox">
+                                    <li
+                                        v-for="opt in stateOptions"
+                                        :key="opt.value"
+                                        role="option"
+                                        :aria-selected="stateValue === opt.value"
+                                        class="cursor-pointer px-3 py-2 text-sm hover:bg-base-300/50 flex items-center gap-2"
+                                        :class="{ 'bg-base-300/30': stateValue === opt.value }"
+                                        @click="handleStateChange(opt.value)"
+                                    >
+                                        <span
+                                            class="w-2 h-2 rounded-full shrink-0"
+                                            :class="{
+                                                'bg-error': opt.value === 'raw',
+                                                'bg-warning': opt.value === 'draft',
+                                                'bg-success': opt.value === 'playable',
+                                                'bg-info': opt.value === 'archived',
+                                                'bg-base-300': !['raw','draft','playable','archived'].includes(opt.value),
+                                            }"
+                                            aria-hidden="true"
+                                        />
+                                        {{ opt.label }}
+                                    </li>
+                                </ul>
+                            </template>
+                        </Dropdown>
+                        <Tooltip v-else :content="getFieldTooltip('state')" placement="top">
+                            <Badge :color="stateBadgeColor" size="xs" variant="soft">
+                                {{ stateLabel }}
+                            </Badge>
+                        </Tooltip>
+                    </template>
                     <EntityActions
+                        v-if="showActions"
                         entity-type="item"
                         :entity="item"
                         format="buttons"
@@ -335,91 +351,101 @@ const handleAction = async (actionKey) => {
             </template>
         </EntityViewHeader>
 
-        <!-- Infos techniques (texte) + UserCanEdit (paramètres) -->
-        <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
-            <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
-                <template v-for="fieldKey in technicalFields" :key="fieldKey">
-                    <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                        <div class="inline-flex items-center gap-2 min-w-0">
-                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                            <span class="uppercase tracking-wide text-primary-300">
-                                {{ getFieldLabel(fieldKey) }}
-                            </span>
-                            <span class="min-w-0 break-words">
-                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                            </span>
+        <!-- Effet -->
+        <div v-if="canShowField('effect') && (item.effect || item._data?.effect)" class="space-y-2">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Effet</h3>
+            <div class="text-primary-200 p-3 rounded-lg bg-base-200/50 entity-radius-box">
+                <CellRenderer :cell="getCell('effect')" ui-color="primary" />
+            </div>
+        </div>
+
+        <!-- Bonus -->
+        <div v-if="canShowField('bonus') && (item.bonus || item._data?.bonus)" class="space-y-2">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Bonus</h3>
+            <div class="text-primary-200 p-3 rounded-lg bg-base-200/50 entity-radius-box">
+                <CellRenderer :cell="getCell('bonus')" ui-color="primary" />
+            </div>
+        </div>
+
+        <!-- Ingrédients -->
+        <div v-if="ingredients.length > 0" class="space-y-2">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Ingrédients</h3>
+            <ResourceIngredientsList :ingredients="ingredients" />
+        </div>
+
+        <!-- Bloc admin (write permission) -->
+        <section
+            v-if="userCanEdit && (canShowField('read_level') || canShowField('write_level') || canShowField('dofus_version') || canShowField('dofusdb_id') || canShowField('auto_update') || canShowField('created_by') || canShowField('created_at') || canShowField('updated_at'))"
+            role="region"
+            aria-label="Administration"
+            class="rounded-box overflow-hidden border border-base-300 bg-base-200/50 border-glass-primary-md"
+        >
+            <div class="px-5 py-4 flex items-center gap-3 border-b border-base-300/80 bd-glass-xs">
+                <div class="flex w-10 h-10 shrink-0 items-center justify-center rounded-lg bg-primary-500/20 text-primary-400">
+                    <Icon source="fa-solid fa-shield-halved" size="sm" aria-hidden="true" />
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-primary-200">Administration</h3>
+                    <p class="text-xs text-base-content/60 mt-0.5">Paramètres techniques</p>
+                </div>
+            </div>
+            <div class="p-5 space-y-4">
+                <div v-if="canShowField('read_level') || canShowField('write_level')" class="space-y-3">
+                    <h4 class="text-xs font-medium uppercase tracking-wider text-base-content/60">Accès</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <Badge
+                            v-if="canShowField('read_level')"
+                            :color="getBadgeColor('read_level')"
+                            :auto-label="String(item.read_level ?? 0)"
+                            auto-scheme="level"
+                            size="xs"
+                            variant="soft"
+                        >
+                            <Icon source="fa-solid fa-eye" size="xs" class="mr-1" />
+                            {{ readLevelLabel }}
+                        </Badge>
+                        <Badge
+                            v-if="canShowField('write_level')"
+                            :color="getBadgeColor('write_level')"
+                            :auto-label="String(item.write_level ?? 0)"
+                            auto-scheme="level"
+                            size="xs"
+                            variant="soft"
+                        >
+                            <Icon source="fa-solid fa-pen-to-square" size="xs" class="mr-1" />
+                            {{ writeLevelLabel }}
+                        </Badge>
+                    </div>
+                </div>
+                <div v-if="canShowField('dofus_version') || canShowField('dofusdb_id') || canShowField('auto_update')" class="space-y-3 pt-3 border-t border-base-300/60">
+                    <h4 class="text-xs font-medium uppercase tracking-wider text-base-content/60">Source</h4>
+                    <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                        <div v-if="canShowField('dofus_version')" class="inline-flex items-center gap-2">
+                            <Icon source="fa-solid fa-gamepad" size="xs" class="text-primary-400 opacity-80" />
+                            <span class="text-base-content/70">Dofus</span>
+                            <span class="font-mono text-xs text-base-content">{{ item.dofus_version ?? '—' }}</span>
                         </div>
-                    </Tooltip>
-                </template>
-            </div>
-
-            <div v-if="userCanEditFields.length > 0" class="mt-4">
-                <div class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Paramètres</div>
-                <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
-                    <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="inline-flex items-center gap-2 min-w-0">
-                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                                <span class="uppercase tracking-wide text-primary-300">
-                                    {{ getFieldLabel(fieldKey) }}
-                                </span>
-                                <span class="min-w-0 break-words">
-                                    <template v-if="fieldKey === 'auto_update'">
-                                        <Icon
-                                            v-if="autoUpdateValue !== null"
-                                            :source="autoUpdateValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
-                                            :alt="autoUpdateValue ? 'Oui' : 'Non'"
-                                            size="sm"
-                                            :class="autoUpdateValue ? 'text-success-800' : 'text-error-800'"
-                                        />
-                                        <span v-else>—</span>
-                                    </template>
-                                    <template v-else>
-                                        <Badge
-                                            :color="getBadgeColor(fieldKey)"
-                                            :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                                            :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                                            :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
-                                            size="sm"
-                                        >
-                                            <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                                        </Badge>
-                                    </template>
-                                </span>
-                            </div>
-                        </Tooltip>
-                    </template>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contenu (body) -->
-        <div v-if="bodyFields.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div v-for="fieldKey in bodyFields" :key="fieldKey" class="p-3 bg-base-200 entity-radius-box">
-                <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-2">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="flex items-center gap-2">
-                                <Icon :source="getFieldIcon(fieldKey)" :alt="getFieldLabel(fieldKey)" size="xs" class="text-primary-400" :style="getFieldIconStyle(fieldKey)" />
-                                <span class="text-xs text-primary-400 uppercase font-semibold">
-                                    {{ getFieldLabel(fieldKey) }}
-                                </span>
-                            </div>
-                        </Tooltip>
-                    </div>
-                    <div class="text-primary-100 break-words">
-                        <CellRenderer :cell="getCell(fieldKey)" ui-color="primary" />
+                        <div v-if="canShowField('dofusdb_id')" class="inline-flex items-center gap-2">
+                            <Icon source="fa-solid fa-link" size="xs" class="text-primary-400 opacity-80" />
+                            <span class="text-base-content/70">DofusDB ID</span>
+                            <span class="font-mono text-xs text-base-content">{{ item.dofusdb_id ?? '—' }}</span>
+                        </div>
+                        <div v-if="canShowField('auto_update')" class="inline-flex items-center gap-2">
+                            <Icon source="fa-solid fa-arrows-rotate" size="xs" class="text-primary-400 opacity-80" />
+                            <span class="text-base-content/70">Auto-update</span>
+                            <Icon
+                                v-if="autoUpdateValue !== null"
+                                :source="autoUpdateValue ? 'fa-solid fa-check-circle' : 'fa-solid fa-times-circle'"
+                                size="sm"
+                                :class="autoUpdateValue ? 'text-success' : 'text-error'"
+                                :alt="autoUpdateValue ? 'Oui' : 'Non'"
+                            />
+                            <span v-else class="text-base-content/60">—</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Ingrédients (ressources de recette) -->
-        <ResourceIngredientsList
-            v-if="ingredients.length > 0"
-            :ingredients="ingredients"
-            class="mt-4"
-        />
+        </section>
     </div>
 </template>
 

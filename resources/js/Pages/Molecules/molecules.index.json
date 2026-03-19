@@ -971,6 +971,42 @@
     "file": "entity/shared/EntityViewTextLink.vue"
   },
   {
+    "name": "EntityPropertyDisplay",
+    "description": "EntityPropertyDisplay — Affichage unifié des propriétés d'entité (minimal, compact, extended, detailed)",
+    "props": [
+      { "name": "fieldKey", "type": "string", "desc": "Clé du champ" },
+      { "name": "entity", "type": "Object", "desc": "Entité (modèle ou objet)" },
+      { "name": "entityType", "type": "string", "desc": "Type d'entité (resource, spell, etc.)" },
+      { "name": "displayMode", "type": "string", "desc": "minimal | compact | extended | detailed" },
+      { "name": "descriptors", "type": "Object", "desc": "Descriptors (getXFieldDescriptors())" },
+      { "name": "tableMeta", "type": "Object", "desc": "Meta tableau" }
+    ],
+    "slots": [],
+    "file": "entity/shared/EntityPropertyDisplay.vue"
+  },
+  {
+    "name": "EntityViewLargeWrapper",
+    "description": "EntityViewLargeWrapper — Wrapper pour vues Large en page (bouton retour, etc.)",
+    "props": [
+      { "name": "showBackButton", "type": "boolean", "desc": "Afficher le bouton Retour" },
+      { "name": "backRoute", "type": "string", "desc": "Route Laravel pour le retour" },
+      { "name": "backLabel", "type": "string", "desc": "Libellé du bouton" }
+    ],
+    "slots": [{ "name": "default", "desc": "Contenu (ex: ResourceViewLarge)" }],
+    "file": "entity/shared/EntityViewLargeWrapper.vue"
+  },
+  {
+    "name": "EntityViewCompactWrapper",
+    "description": "EntityViewCompactWrapper — Wrapper pour vues Compact en page (bouton retour, etc.)",
+    "props": [
+      { "name": "showBackButton", "type": "boolean", "desc": "Afficher le bouton Retour" },
+      { "name": "backRoute", "type": "string", "desc": "Route Laravel pour le retour" },
+      { "name": "backLabel", "type": "string", "desc": "Libellé du bouton" }
+    ],
+    "slots": [{ "name": "default", "desc": "Contenu (ex: ResourceViewCompact)" }],
+    "file": "entity/shared/EntityViewCompactWrapper.vue"
+  },
+  {
     "name": "EntityViewHeader",
     "description": "EntityViewHeader — Header commun pour les vues d'entités",
     "props": [

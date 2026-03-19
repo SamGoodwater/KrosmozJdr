@@ -197,8 +197,8 @@ const attrs = computed(() => getCommonAttrs(props));
 // Appliquer le style glass aussi au contenu généré par data-tip (tooltip natif DaisyUI)
 [data-tip][class*="tooltip-glass-tip"]::before,
 [data-tip][class~="tooltip-glass-tip"]::before {
-    background-color: color-mix(in oklch, var(--color) 20%, transparent) !important;
-    border: 1px solid color-mix(in oklch, var(--color) 30%, transparent) !important;
+    background-color: color-mix(in oklch, var(--color) 5%, transparent) !important;
+    border: 1px solid color-mix(in oklch, var(--color) 15%, transparent) !important;
     box-shadow: 0 0 30px 5px color-mix(in oklch, var(--color) 20%, transparent) inset,
                 1px 2px 3px 0 rgba(0, 0, 0, 0.1) inset !important;
 }

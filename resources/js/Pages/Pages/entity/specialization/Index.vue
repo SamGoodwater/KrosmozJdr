@@ -120,7 +120,7 @@ const handleRowDoubleClick = (row) => {
     const model = raw instanceof Specialization ? raw : Specialization.fromArray([raw])[0] || null;
     if (!model) return;
     selectedEntity.value = model;
-    modalView.value = 'large';
+    modalView.value = 'compact';
     modalOpen.value = true;
 };
 

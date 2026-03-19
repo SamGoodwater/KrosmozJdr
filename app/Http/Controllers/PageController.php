@@ -305,7 +305,6 @@ class PageController extends Controller
         $menuTree = PageService::buildMenuTree($pages);
 
         $tree = collect($menuTree);
-        $accueil = $tree->first(fn ($p) => ($p['slug'] ?? '') === 'accueil');
         $reglesItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Règles')->sortBy('order')->values()->toArray();
         $informationsItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Informations')->sortBy('order')->values()->toArray();
 
@@ -326,45 +325,20 @@ class PageController extends Controller
             ->values()
             ->toArray();
 
-        $sorted = collect();
-        if ($accueil) {
-            $sorted->push($accueil);
-        }
-        $sorted->push([
-            'id' => 'regles',
-            'title' => 'Règles',
-            'menu_group' => 'Règles',
-            'order' => 1,
-            'icon' => 'fa-book',
-            'children' => $reglesItems,
-        ]);
-        $sorted->push([
-            'id' => 'bibliotheques',
-            'title' => 'Bibliothèques',
-            'menu_group' => 'Bibliothèques',
-            'order' => 2,
-            'icon' => 'fa-book-open-reader',
-            'children' => $bibliothequesItems,
-        ]);
-        $sorted->push([
-            'id' => 'outils',
-            'title' => 'Outils',
-            'menu_group' => 'Outils',
-            'order' => 3,
-            'icon' => 'fa-screwdriver-wrench',
-            'children' => [],
-        ]);
-        $sorted->push([
-            'id' => 'informations',
-            'title' => 'Informations',
-            'menu_group' => 'Informations',
-            'order' => 4,
-            'icon' => 'fa-circle-info',
-            'children' => $informationsItems,
-        ]);
+        $allGroups = [
+            ['id' => 'regles', 'title' => 'Règles', 'menu_group' => 'Règles', 'order' => 1, 'icon' => 'fa-book', 'children' => $reglesItems],
+            ['id' => 'bibliotheques', 'title' => 'Bibliothèques', 'menu_group' => 'Bibliothèques', 'order' => 2, 'icon' => 'fa-book-open-reader', 'children' => $bibliothequesItems],
+            ['id' => 'informations', 'title' => 'Informations', 'menu_group' => 'Informations', 'order' => 4, 'icon' => 'fa-circle-info', 'children' => $informationsItems],
+        ];
+
+        $menu = collect($allGroups)
+            ->filter(fn (array $group) => count($group['children'] ?? []) > 0)
+            ->sortBy('order')
+            ->values()
+            ->toArray();
 
         return response()->json([
-            'menu' => $sorted->values()->toArray(),
+            'menu' => $menu,
         ]);
     }
 

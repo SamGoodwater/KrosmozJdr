@@ -49,7 +49,7 @@ const tools = [
 <template>
     <li class="dock-custom dock-md flex flex-col items-center w-full">
         <Dropdown
-            placement="top-end"
+            placement="top-start"
             variant="glass"
             :aria-label="label"
         >

@@ -12,8 +12,8 @@
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
@@ -82,14 +82,6 @@ const extendedFields = computed(() => {
     ['created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
     return fields.filter(canShowField);
 });
-
-const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
-};
-
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
-};
 
 const getCell = (fieldKey) => {
     return props.attribute.toCell(fieldKey, {
@@ -192,21 +184,15 @@ const handleAction = async (actionKey) => {
                 class="p-3 bg-base-200 entity-radius-box"
             >
                 <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-2">
-                        <Icon
-                            :source="getFieldIcon(fieldKey)"
-                            :alt="getFieldLabel(fieldKey)"
-                            size="xs"
-                            class="text-primary-400"
-                        />
-                        <span class="text-xs text-primary-400 uppercase font-semibold">
-                            {{ getFieldLabel(fieldKey) }}
-                        </span>
-                    </div>
                     <div class="text-primary-100 break-words">
-                        <CellRenderer
-                            :cell="getCell(fieldKey)"
-                            ui-color="primary"
+                        <EntityPropertyDisplay
+                            :field-key="fieldKey"
+                            :entity="attribute"
+                            entity-type="attribute"
+                            display-mode="extended"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            size="sm"
                         />
                     </div>
                 </div>

@@ -167,14 +167,17 @@ export function buildCharacteristicEffectCell({
             const renderedValue = String(value);
             const name = def?.name || key;
             const shortLabel = def?.short_name || name;
+            const unit = def?.unit ?? null;
+            const valueWithUnit = unit ? `${renderedValue} ${unit}` : renderedValue;
             items.push({
                 icon: def?.icon || "fa-solid fa-circle-info",
                 color: def?.color || null,
                 value: renderedValue,
+                unit,
                 name,
                 shortLabel,
                 label: name,
-                tooltip: `${name}: ${renderedValue}`,
+                tooltip: `${name}: ${valueWithUnit}`,
             });
         }
 

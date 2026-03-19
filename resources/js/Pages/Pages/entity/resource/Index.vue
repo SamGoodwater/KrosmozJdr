@@ -130,7 +130,9 @@ const handleRowDoubleClick = (row) => {
     if (!raw) return;
     const model = Resource.fromArray([raw])[0] || null;
     if (!model) return;
-    openModal(model);
+    selectedEntity.value = model;
+    modalView.value = 'compact';
+    modalOpen.value = true;
 };
 
 // Descriptors -> fieldsConfig (source de vérité unique)

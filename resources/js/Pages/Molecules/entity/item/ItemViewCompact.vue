@@ -1,45 +1,38 @@
 <script setup>
 /**
- * ItemViewCompact — Vue Compact pour Item
- * 
+ * ItemViewCompact — Vue Compact pour Item (équipement)
+ *
  * @description
- * Vue réduite d'un item avec informations essentielles.
- * Utilisée dans les modals compacts.
- * 
+ * Vue réduite d'un équipement avec informations essentielles.
+ * Layout aligné sur ResourceViewCompact : EntityViewHeader mode compact,
+ * badges niveau+type, rareté+poids+prix, description, ingrédients.
+ *
  * @props {Item} item - Instance du modèle Item
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import Badge from "@/Pages/Atoms/data-display/Badge.vue";
-import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import Badge from '@/Pages/Atoms/data-display/Badge.vue';
+import CellRenderer from '@/Pages/Atoms/data-display/CellRenderer.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
-import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
+import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
+import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
+import EntityUsableDot from '@/Pages/Atoms/data-display/EntityUsableDot.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
-import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
-import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
-import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
+import { getItemFieldDescriptors } from '@/Entities/item/item-descriptors';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
+import { getRarityConfig, getEntityStateOptions } from '@/Utils/Entity/SharedConstants';
+import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
+import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
+import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 
 const props = defineProps({
-    item: {
-        type: Object,
-        required: true
-    },
-    showActions: {
-        type: Boolean,
-        default: true
-    },
-    tableMeta: {
-        type: Object,
-        default: () => ({})
-    }
+    item: { type: Object, required: true },
+    showActions: { type: Boolean, default: true },
+    tableMeta: { type: Object, default: () => ({}) },
 });
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
@@ -47,25 +40,24 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 const { copyToClipboard } = useCopyToClipboard();
 const permissions = usePermissions();
 
-const ctx = computed(() => {
-    const capabilities = {
+const ctx = computed(() => ({
+    capabilities: {
         viewAny: permissions.can('items', 'viewAny'),
         createAny: permissions.can('items', 'createAny'),
         updateAny: permissions.can('items', 'updateAny'),
         deleteAny: permissions.can('items', 'deleteAny'),
         manageAny: permissions.can('items', 'manageAny'),
-    };
-    return { capabilities, meta: { capabilities } };
-});
+    },
+    meta: { capabilities: {} },
+}));
 
 const descriptors = computed(() => getItemFieldDescriptors(ctx.value));
-
 const stateValue = computed(() => props.item?.state ?? props.item?._data?.state ?? null);
-
 const autoUpdateValue = computed(() => {
     const v = props.item?.auto_update ?? props.item?._data?.auto_update;
     return typeof v === 'boolean' ? v : null;
 });
+const userCanEdit = computed(() => ctx.value.capabilities.updateAny ?? props.item?.can?.update ?? false);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -74,90 +66,44 @@ const canShowField = (fieldKey) => {
     if (typeof visibleIf === 'function') {
         try {
             return Boolean(visibleIf(ctx.value));
-        } catch (e) {
-            console.warn('[ItemViewCompact] visibleIf failed for', fieldKey, e);
+        } catch {
             return false;
         }
     }
     return true;
 };
 
-const headlineFields = computed(() => ([
-    'item_type',
-    'level',
-].filter(canShowField)));
-
-const metaFields = computed(() => ([
-    'rarity',
-    'price',
-    'weight',
-].filter(canShowField).filter((k) => !headlineFields.value.includes(k))));
-
-const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
-
-const userCanEditFields = computed(() => ([
-    'dofus_version',
-    'auto_update',
-    'read_level',
-    'write_level',
-].filter(canShowField)));
-
-const technicalFields = computed(() => ([
-    'dofusdb_id',
-    'official_id',
-    'created_by',
-    'created_at',
-    'updated_at',
-].filter(canShowField)));
-
 const getFieldUi = (fieldKey) =>
-    resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'item',
-    });
-
+    resolveEntityFieldUi({ fieldKey, descriptors: descriptors.value, tableMeta: props.tableMeta, entityType: 'item' });
 const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
-
-const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
-
 const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
-
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon || 'fa-solid fa-info-circle';
 const getFieldIconStyle = (fieldKey) => {
     const color = getFieldUi(fieldKey).color;
     return color ? { color } : undefined;
 };
+const getFieldUnit = (fieldKey) => getFieldUi(fieldKey).characteristic?.unit ?? '';
 
-const getCell = (fieldKey) => {
-    return props.item.toCell(fieldKey, {
-        size: 'md',
-        context: 'compact',
-    });
-};
+const getCell = (fieldKey) =>
+    props.item.toCell(fieldKey, { size: 'md', context: 'compact' });
 
 const asTextCell = (cell) => {
     if (!cell) return { type: 'text', value: '-', params: {} };
     const v = cell?.value;
-    return { type: 'text', value: (v === null || typeof v === 'undefined' || String(v) === '') ? '-' : String(v), params: cell?.params || {} };
+    return {
+        type: 'text',
+        value: (v === null || typeof v === 'undefined' || String(v) === '') ? '-' : String(v),
+        params: cell?.params || {},
+    };
 };
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
         item_type: 'info',
         level: 'warning',
-        price: 'success',
         rarity: 'auto',
+        price: 'success',
         weight: 'secondary',
-        dofus_version: 'secondary',
-        read_level: 'primary',
-        write_level: 'secondary',
-        auto_update: 'warning',
-        dofusdb_id: 'neutral',
-        official_id: 'neutral',
-        created_by: 'neutral',
-        created_at: 'neutral',
-        updated_at: 'neutral',
     };
     return resolveEntityBadgeUi({
         fieldKey,
@@ -166,10 +112,6 @@ const getBadgeColor = (fieldKey) => {
         localColorMap: colorMap,
     }).color;
 };
-
-const ingredients = computed(
-    () => props.item?.resources ?? props.item?._data?.resources ?? []
-);
 
 const getBadgeAutoParams = (fieldKey) => {
     const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
@@ -180,10 +122,30 @@ const getBadgeAutoParams = (fieldKey) => {
     return { autoLabel, autoScheme, autoTone };
 };
 
+const stateOptions = computed(() => getEntityStateOptions());
+const stateColorMap = { raw: 'error', draft: 'warning', playable: 'success', archived: 'info' };
+const stateBadgeColor = computed(() => stateColorMap[stateValue.value] ?? 'neutral');
+const stateLabel = computed(() => {
+    const opt = stateOptions.value.find((o) => o.value === stateValue.value);
+    return opt?.label ?? '-';
+});
+
+const handleStateChange = (newState) => {
+    if (!props.item?.id || !userCanEdit.value) return;
+    router.patch(route('entities.items.update', { item: props.item.id }), { state: newState }, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+};
+
+const ingredients = computed(() => {
+    const raw = props.item?.resources ?? props.item?._data?.resources ?? [];
+    return Array.isArray(raw) ? raw : [];
+});
+
 const handleAction = async (actionKey) => {
     const itemId = props.item.id;
     if (!itemId) return;
-
     switch (actionKey) {
         case 'view':
             router.visit(route('entities.items.show', { item: itemId }));
@@ -199,9 +161,7 @@ const handleAction = async (actionKey) => {
         case 'copy-link': {
             const cfg = getEntityRouteConfig('item');
             const url = resolveEntityRouteUrl('item', 'show', itemId, cfg);
-            if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien copié !");
-            }
+            if (url) await copyToClipboard(`${window.location.origin}${url}`, 'Lien copié !');
             emit('copy-link', props.item);
             break;
         }
@@ -231,22 +191,16 @@ const handleAction = async (actionKey) => {
                             <CellRenderer :cell="asTextCell(getCell('level'))" ui-color="primary" />
                         </Badge>
                     </div>
-
                     <ImageViewer
                         v-if="item.image"
-                        :source="item.image"
-                        :alt="item.name || 'Item'"
+                        :src="item.image"
+                        :alt="item.name || 'Équipement'"
                         :caption="item.name || ''"
                         preload="hover"
-                        :image-props="{
-                            size: 'sm',
-                            rounded: 'lg',
-                            fit: 'cover',
-                            class: 'w-full h-full',
-                        }"
+                        :image-props="{ size: 'sm', rounded: 'lg', fit: 'cover', class: 'w-full h-full' }"
                     />
                     <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
-                        <Icon source="fa-solid fa-box" :alt="item.name" size="md" />
+                        <Icon source="fa-solid fa-sword" :alt="item.name" size="md" />
                     </div>
                 </div>
             </template>
@@ -256,8 +210,49 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #actions>
-                <div v-if="showActions">
+                <div class="flex items-center gap-2">
+                    <template v-if="canShowField('state')">
+                        <Dropdown
+                            v-if="userCanEdit"
+                            placement="bottom-end"
+                            :close-on-content-click="true"
+                            aria-label="Changer l'état"
+                        >
+                            <template #trigger>
+                                <Badge :color="stateBadgeColor" size="xs" variant="soft" class="cursor-pointer">
+                                    {{ stateLabel }}
+                                </Badge>
+                            </template>
+                            <template #content>
+                                <ul class="dropdown-content dropdown-content-glass dropdown-content-sm py-1 min-w-[140px]" role="listbox">
+                                    <li
+                                        v-for="opt in stateOptions"
+                                        :key="opt.value"
+                                        role="option"
+                                        class="cursor-pointer px-3 py-2 text-sm hover:bg-base-300/50 flex items-center gap-2"
+                                        :class="{ 'bg-base-300/30': stateValue === opt.value }"
+                                        @click="handleStateChange(opt.value)"
+                                    >
+                                        <span
+                                            class="w-2 h-2 rounded-full shrink-0"
+                                            :class="{
+                                                'bg-error': opt.value === 'raw',
+                                                'bg-warning': opt.value === 'draft',
+                                                'bg-success': opt.value === 'playable',
+                                                'bg-info': opt.value === 'archived',
+                                            }"
+                                        />
+                                        {{ opt.label }}
+                                    </li>
+                                </ul>
+                            </template>
+                        </Dropdown>
+                        <Badge v-else :color="stateBadgeColor" size="xs" variant="soft">
+                            {{ stateLabel }}
+                        </Badge>
+                    </template>
                     <EntityActions
+                        v-if="showActions"
                         entity-type="item"
                         :entity="item"
                         format="dropdown"
@@ -271,79 +266,61 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #mainInfos>
-                <div v-if="displayMetaFields.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <template v-for="fieldKey in displayMetaFields" :key="fieldKey">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="flex items-start justify-between gap-2 min-w-0">
-                                <div class="flex items-center gap-2 min-w-0">
-                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                                    <span
-                                        v-if="!shouldOmitLabelInMeta(fieldKey)"
-                                        class="text-xs uppercase font-semibold text-primary-300 truncate"
-                                    >
-                                        {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
-                                    </span>
-                                </div>
-                                <PropertyDisplay
-                                    :property="getFieldUi(fieldKey)"
-                                    :value="getCell(fieldKey)?.value"
-                                    variant="badge"
-                                    size="sm"
-                                    class="max-w-[14rem] whitespace-normal break-words"
-                                />
-                            </div>
-                        </Tooltip>
-                    </template>
+                <div class="space-y-1 mt-1">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <template v-if="canShowField('level')">
+                            <Badge
+                                :color="getBadgeColor('level')"
+                                :auto-label="String(item.level ?? '')"
+                                auto-scheme="level"
+                                auto-tone="mid"
+                                size="xs"
+                            >
+                                Nvx {{ item.level ?? '-' }}
+                            </Badge>
+                        </template>
+                        <template v-if="canShowField('item_type')">
+                            <Badge
+                                color="auto"
+                                :auto-label="item.itemType?.name ?? item.itemType?.label ?? '-'"
+                                auto-scheme="mixed"
+                                auto-tone="mid"
+                                size="xs"
+                            >
+                                {{ item.itemType?.name ?? item.itemType?.label ?? '-' }}
+                            </Badge>
+                        </template>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                        <template v-if="canShowField('rarity')">
+                            <Badge
+                                :color="(getRarityConfig(item.rarity ?? 0))?.color ?? 'neutral'"
+                                size="xs"
+                            >
+                                {{ (getRarityConfig(item.rarity ?? 0))?.label ?? '-' }}
+                            </Badge>
+                        </template>
+                        <template v-if="canShowField('weight')">
+                            <Tooltip :content="getFieldTooltip('weight')" placement="top">
+                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('weight')">
+                                    <Icon :source="getFieldIcon('weight')" :alt="getFieldLabel('weight')" size="xs" />
+                                    <span class="font-semibold">{{ getFieldLabel('weight') }}</span><span> {{ item.weight ?? '-' }}{{ getFieldUnit('weight') ? ' ' + getFieldUnit('weight') : '' }}</span>
+                                </span>
+                            </Tooltip>
+                        </template>
+                        <template v-if="canShowField('price')">
+                            <Tooltip :content="getFieldTooltip('price')" placement="top">
+                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('price')">
+                                    <Icon :source="getFieldIcon('price')" :alt="getFieldLabel('price')" size="xs" />
+                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ item.price ?? '-' }}{{ getFieldUnit('price') ? ' ' + getFieldUnit('price') : '' }}</span>
+                                </span>
+                            </Tooltip>
+                        </template>
+                    </div>
+                    <p v-if="item.description" class="text-primary-300 text-xs mt-1 line-clamp-2">{{ item.description }}</p>
                 </div>
             </template>
         </EntityViewHeader>
-
-        <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
-            <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
-                <template v-for="fieldKey in technicalFields" :key="fieldKey">
-                    <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                        <div class="inline-flex items-center gap-2 min-w-0">
-                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                            <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
-                            <span class="min-w-0 break-words">
-                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                            </span>
-                        </div>
-                    </Tooltip>
-                </template>
-            </div>
-
-            <div v-if="userCanEditFields.length > 0" class="mt-4">
-                <div class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Paramètres</div>
-                <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
-                    <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="inline-flex items-center gap-2 min-w-0">
-                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                                <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
-                                <span class="min-w-0 break-words">
-                                    <template v-if="fieldKey === 'auto_update'">
-                                        <Icon
-                                            v-if="autoUpdateValue !== null"
-                                            :source="autoUpdateValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
-                                            :alt="autoUpdateValue ? 'Oui' : 'Non'"
-                                            size="sm"
-                                            :class="autoUpdateValue ? 'text-success-800' : 'text-error-800'"
-                                        />
-                                        <span v-else>—</span>
-                                    </template>
-                                    <template v-else>
-                                        <Badge :color="getBadgeColor(fieldKey)" size="sm">
-                                            <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                                        </Badge>
-                                    </template>
-                                </span>
-                            </div>
-                        </Tooltip>
-                    </template>
-                </div>
-            </div>
-        </div>
 
         <ResourceIngredientsList
             v-if="ingredients.length > 0"

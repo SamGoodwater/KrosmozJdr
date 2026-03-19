@@ -75,6 +75,9 @@ class ProjectInitCommand extends Command
             }
             $this->newLine();
 
+            $this->runStorageLink();
+            $this->newLine();
+
         if (! (bool) $this->option('skip-seeders')) {
             $this->runSeeders();
         } else {
@@ -125,6 +128,14 @@ class ProjectInitCommand extends Command
         $this->info('=== Initialisation terminée ===');
 
         return self::SUCCESS;
+    }
+
+    private function runStorageLink(): void
+    {
+        $this->info('Phase 1b : Lien symbolique storage');
+        $this->line('  → storage:link');
+        Artisan::call('storage:link');
+        $this->output->write(Artisan::output());
     }
 
     private function runMigrations(): void

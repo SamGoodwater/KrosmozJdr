@@ -148,6 +148,32 @@ export const DISPLAY_MODES = Object.freeze({
 });
 
 /**
+ * Modes d'affichage des propriétés/caractéristiques.
+ * Mapping vue entité → mode : Minimal/Line→minimal, Compact→compact, Large→extended/detailed
+ *
+ * @see docs/30-UI/PROPERTY_DISPLAY_SYSTEM.md
+ */
+export const PROPERTY_DISPLAY_MODES = Object.freeze({
+    /** icône + valeur + unité */
+    minimal: "minimal",
+    /** icône + label abrégé + valeur + unité */
+    compact: "compact",
+    /** icône + label complet + valeur + unité */
+    extended: "extended",
+    /** extended + détails (formules, valeurs par niveau) ; partie visible + partie au hover */
+    detailed: "detailed",
+});
+
+/**
+ * Mapping labelMode (legacy) → PROPERTY_DISPLAY_MODES
+ */
+export const LABEL_MODE_TO_PROPERTY_DISPLAY = Object.freeze({
+    "icon-only": PROPERTY_DISPLAY_MODES.minimal,
+    short: PROPERTY_DISPLAY_MODES.compact,
+    full: PROPERTY_DISPLAY_MODES.extended,
+});
+
+/**
  * Formats de champs disponibles
  */
 export const FIELD_FORMATS = Object.freeze({

@@ -158,7 +158,9 @@ const handleRowDoubleClick = (row) => {
     if (!raw) return;
     const model = Monster.fromArray([raw])[0] || null;
     if (!model) return;
-    openModal(model);
+    selectedEntity.value = model;
+    modalView.value = 'compact';
+    modalOpen.value = true;
 };
 
 const handleCreate = () => {

@@ -6,14 +6,13 @@
  * Même structure que ResourceLineRow : State • Image • Level • Nom • Type • Rareté • Prix • Description • Effets
  * Pas de poids.
  */
-import { computed } from "vue";
+import { ref, computed, onUnmounted } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
@@ -30,6 +29,7 @@ const props = defineProps({
     isSelected: { type: Boolean, default: false },
     showActions: { type: Boolean, default: true },
     uiColor: { type: String, default: "primary" },
+    entityType: { type: String, default: "consumables" },
 });
 
 const emit = defineEmits(["row-click", "toggle-select", "action"]);
@@ -80,6 +80,25 @@ const ingredients = computed(
 );
 
 const handleRowClick = () => emit("row-click", props.row);
+
+const contextMenuVisible = ref(false);
+const contextMenuPosition = ref({ x: 0, y: 0 });
+const handleContextMenu = (e) => {
+    if (!props.entityType) return;
+    e.preventDefault();
+    e.stopPropagation();
+    contextMenuPosition.value = { x: e.clientX, y: e.clientY };
+    contextMenuVisible.value = true;
+};
+const closeContextMenu = () => { contextMenuVisible.value = false; };
+const handleContextAction = (actionKey) => {
+    closeContextMenu();
+    emit("action", actionKey, entity.value ?? props.row, props.row);
+};
+onUnmounted(() => {
+    if (typeof window !== "undefined") document.removeEventListener("click", closeContextMenu);
+});
+if (typeof window !== "undefined") document.addEventListener("click", closeContextMenu);
 </script>
 
 <template>
@@ -89,6 +108,7 @@ const handleRowClick = () => emit("row-click", props.row);
         role="button"
         tabindex="0"
         @click="handleRowClick"
+        @contextmenu="handleContextMenu"
         @keydown.enter.space.prevent="handleRowClick"
     >
         <!-- State : coin supérieur gauche (absolute) -->
@@ -117,14 +137,13 @@ const handleRowClick = () => emit("row-click", props.row);
                 <div class="flex items-center gap-2 min-w-0 flex-1">
                     <LevelBadge v-if="levelValue != null" :level="levelValue" size="sm" class="shrink-0" />
                     <div class="min-w-0 flex-1">
-                        <Route
+                        <span
                             v-if="nameCell?.type === 'route' && nameCell?.params?.href"
-                            :href="nameCell.params.href"
-                            color="neutral"
-                            class="font-semibold truncate block text-base-content hover:text-base-content no-underline"
+                            class="font-semibold truncate block text-base-content hover:text-base-content no-underline cursor-pointer link link-neutral link-hover"
+                            @click.prevent
                         >
                             {{ nameCell.value || "—" }}
-                        </Route>
+                        </span>
                         <span v-else class="font-semibold truncate block">{{ nameCell?.value || "—" }}</span>
                     </div>
                 </div>
@@ -198,4 +217,20 @@ const handleRowClick = () => emit("row-click", props.row);
             <ResourceIngredientsList :ingredients="ingredients" />
         </div>
     </div>
+
+    <Teleport to="body">
+        <EntityActions
+            v-if="entityType && contextMenuVisible"
+            :entity-type="entityType"
+            :entity="entity || row"
+            format="context"
+            display="icon-text"
+            size="sm"
+            color="primary"
+            :context="{ inPanel: false }"
+            :context-position="contextMenuPosition"
+            :context-visible="contextMenuVisible"
+            @action="handleContextAction"
+        />
+    </Teleport>
 </template>

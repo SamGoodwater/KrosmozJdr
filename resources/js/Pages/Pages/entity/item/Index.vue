@@ -125,7 +125,9 @@ const handleRowDoubleClick = (row) => {
     if (!raw) return;
     const model = Item.fromArray([raw])[0] || null;
     if (!model) return;
-    openModal(model);
+    selectedEntity.value = model;
+    modalView.value = 'compact';
+    modalOpen.value = true;
 };
 
 // Handler pour les actions du tableau

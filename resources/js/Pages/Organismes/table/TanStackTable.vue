@@ -33,6 +33,7 @@ import { BREAKPOINTS } from "@/Utils/Entity/Constants.js";
 import { getEntityConfig, normalizeEntityType } from "@/Entities/entity-registry.js";
 import { resolveEntityViewComponentSync } from "@/Utils/entity/resolveEntityViewComponent.js";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 
 /** Mappe entityType → nom de prop attendu par les *ViewMinimal */
 const ENTITY_PROP_MAP = {
@@ -355,6 +356,28 @@ function getEntityPropName(entityType) {
     const et = normalizeEntityType(entityType);
     return ENTITY_PROP_MAP[et] ?? "entity";
 }
+
+/** Menu contextuel pour la vue Minimal */
+const minimalContextMenuVisible = ref(false);
+const minimalContextMenuPosition = ref({ x: 0, y: 0 });
+const minimalContextMenuRow = ref(null);
+const handleMinimalContextMenu = (e, row) => {
+    if (!props.entityType) return;
+    e.preventDefault();
+    e.stopPropagation();
+    minimalContextMenuPosition.value = { x: e.clientX, y: e.clientY };
+    minimalContextMenuRow.value = row;
+    minimalContextMenuVisible.value = true;
+};
+const closeMinimalContextMenu = () => {
+    minimalContextMenuVisible.value = false;
+    minimalContextMenuRow.value = null;
+};
+const handleMinimalContextAction = (actionKey, entity, row) => {
+    closeMinimalContextMenu();
+    emit("action", actionKey, entity || getEntityFromRow(row, props.entityType), row);
+};
+const minimalContextEntity = computed(() => (minimalContextMenuRow.value ? getEntityFromRow(minimalContextMenuRow.value, props.entityType) : null));
 
 const filterPresets = ref([]);
 const selectedPresetId = ref("");
@@ -953,6 +976,7 @@ const updateScreenSize = (forcedWidth = null) => {
 };
 
 onMounted(() => {
+    if (typeof document !== "undefined") document.addEventListener("click", closeMinimalContextMenu);
     try {
         const storedDensity = localStorage.getItem(densityStorageKey.value);
         if (storedDensity && densityOptions.some((opt) => opt.value === storedDensity)) {
@@ -1006,6 +1030,7 @@ watch(
 );
 
 onUnmounted(() => {
+    if (typeof document !== "undefined") document.removeEventListener("click", closeMinimalContextMenu);
     if (typeof window !== "undefined") {
         window.removeEventListener("resize", () => updateScreenSize());
         try {
@@ -1965,6 +1990,7 @@ const handleExport = () => {
                                 :key="row.id"
                                 :is="lineRowComponent"
                                 :row="row"
+                                :entity-type="entityType"
                                 :get-cell-for="getCellFor"
                                 :columns="columnsWithoutActions"
                                 :table-meta="config?._metadata?.context || {}"
@@ -1999,6 +2025,7 @@ const handleExport = () => {
                                 <div
                                     class="cursor-pointer w-full"
                                     @click="handleRowClick(row)"
+                                    @contextmenu="handleMinimalContextMenu($event, row)"
                                     @dblclick="emit('row-dblclick', row)"
                                 >
                                     <component
@@ -2073,6 +2100,7 @@ const handleExport = () => {
                             <div
                                 class="cursor-pointer h-full"
                                 @click="handleRowClick(row)"
+                                @contextmenu="handleMinimalContextMenu($event, row)"
                                 @dblclick="emit('row-dblclick', row)"
                             >
                                 <component
@@ -2107,6 +2135,21 @@ const handleExport = () => {
                     </div>
                 </div>
             </div>
+            <Teleport to="body">
+                <EntityActions
+                    v-if="entityType && minimalContextMenuVisible && minimalContextEntity"
+                    :entity-type="entityType"
+                    :entity="minimalContextEntity"
+                    format="context"
+                    display="icon-text"
+                    size="sm"
+                    color="primary"
+                    :context="{ inPanel: false }"
+                    :context-position="minimalContextMenuPosition"
+                    :context-visible="minimalContextMenuVisible"
+                    @action="(k) => handleMinimalContextAction(k, minimalContextEntity, minimalContextMenuRow)"
+                />
+            </Teleport>
         </div>
 
         <!-- Table (vue colonnes) -->

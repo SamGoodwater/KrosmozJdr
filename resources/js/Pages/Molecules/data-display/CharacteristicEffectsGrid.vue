@@ -3,15 +3,16 @@
  * CharacteristicEffectsGrid — Grille d'effets/caractéristiques responsive.
  *
  * @description
- * Affiche une liste d'items (icône + nom + valeur) en grille responsive :
+ * Affiche une liste d'items (icône + nom + valeur + unité) en grille responsive :
  * - xs (mobile) : 1 colonne
  * - sm (smartphone) : 2 colonnes
  * - md : 3 colonnes
  * - lg+ : 4 colonnes
  * Réutilisable pour effets Resource, Item, Spell, etc.
+ * Affiche l'unité (item.unit) après la valeur quand disponible.
  *
- * @props {Array} items - [{ icon, color, name, shortLabel, value, tooltip }]
- * @props {String} labelMode - 'full' | 'short' | 'icon-only' — full: nom complet, short: abrégé, icon-only: icône + valeur sans label (Line/Large=full, Compact=short, Minimal=icon-only)
+ * @props {Array} items - [{ icon, color, name, shortLabel, value, unit, tooltip }]
+ * @props {String} labelMode - 'full' | 'short' | 'icon-only' — full: nom complet, short: abrégé, icon-only: icône + valeur + unité
  */
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
@@ -46,7 +47,14 @@ const displayLabel = (item) => {
     return "";
 };
 
-/** icon-only : icône + valeur (sans label). full/short : icône + label + valeur */
+/** Valeur avec unité si disponible */
+const displayValueWithUnit = (item) => {
+    const v = item?.value ?? "";
+    const unit = item?.unit;
+    return unit ? `${v} ${unit}` : v;
+};
+
+/** icon-only : icône + valeur + unité (sans label). full/short : icône + label + valeur + unité */
 const showLabel = computed(() => props.labelMode !== "icon-only");
 </script>
 
@@ -55,7 +63,7 @@ const showLabel = computed(() => props.labelMode !== "icon-only");
         <Tooltip
             v-for="(item, idx) in chipItems"
             :key="idx"
-            :content="item.tooltip || `${item.name || item.label || ''}: ${item.value}`"
+            :content="item.tooltip || `${item.name || item.label || ''}: ${displayValueWithUnit(item)}`"
             placement="top"
             class="inline-flex items-center gap-1.5 min-w-0"
         >
@@ -73,7 +81,7 @@ const showLabel = computed(() => props.labelMode !== "icon-only");
                 </span>
             </template>
             <span class="text-xs font-medium truncate min-w-0" :style="getColorStyle(item)">
-                {{ item.value }}
+                {{ displayValueWithUnit(item) }}
             </span>
         </Tooltip>
         <span v-if="!chipItems.length" class="text-base-content/40 text-xs col-span-full">—</span>

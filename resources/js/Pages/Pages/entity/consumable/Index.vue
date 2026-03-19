@@ -128,7 +128,7 @@ const handleRowDoubleClick = (row) => {
     const model = Consumable.fromArray([raw])[0] || null;
     if (!model) return;
     selectedEntity.value = model;
-    modalView.value = 'large';
+    modalView.value = 'compact';
     modalOpen.value = true;
 };
 

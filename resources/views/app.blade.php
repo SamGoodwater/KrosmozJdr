@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="{{ asset('css/characteristic-colors.css') }}" />
 </head>
 
-<body class="antialiased w-screen h-screen overflow-x-hidden">
+<body class="antialiased w-screen h-screen overflow-hidden">
     @inertia
 </body>
 

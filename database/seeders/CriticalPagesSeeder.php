@@ -131,6 +131,29 @@ class CriticalPagesSeeder extends Seeder
             1,
             $defaultCreatorId
         );
+
+        $changelogPage = $this->createOrRestoreBySlug([
+            'title' => 'Changelog',
+            'slug' => 'changelog',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'menu_order' => 960,
+            'menu_group' => 'Informations',
+            'parent_id' => null,
+            'created_by' => $defaultCreatorId,
+            'menu_item_css_classes' => 'color-neutral-500 box-shadow-glass',
+        ], 'Page Changelog');
+
+        $this->ensureLegalMarkdownSection(
+            $changelogPage,
+            'legal-changelog',
+            'Changelog du site',
+            Storage::disk('public')->url('legal/changelog.md'),
+            1,
+            $defaultCreatorId
+        );
     }
 
     /**
@@ -284,6 +307,7 @@ class CriticalPagesSeeder extends Seeder
         $documents = [
             'legal/cgu.md' => $this->defaultCguMarkdown(),
             'legal/politique-donnees.md' => $this->defaultPrivacyMarkdown(),
+            'legal/changelog.md' => $this->defaultChangelogMarkdown(),
         ];
 
         foreach ($documents as $path => $content) {
@@ -374,6 +398,28 @@ Tu peux demander l'acces, la rectification, l'effacement, la limitation ou l'opp
 
 ## 8. Contact
 Pour exercer tes droits ou poser une question : contact@krosmoz-jdr.fr
+MD;
+    }
+
+    private function defaultChangelogMarkdown(): string
+    {
+        return <<<MD
+# Changelog du site KrosmozJDR
+
+Derniere mise a jour : 2026-03-19
+
+## 2026-03-19
+
+- Page Changelog creee automatiquement via le seeder
+- Menu : retrait du bouton Accueil (acces via le logo)
+- Menu : retrait du groupe Outils (non utilise)
+- Menu : affichage des groupes uniquement s'ils contiennent des pages
+- Lanceur de des : modal accessible via le dropdown Outils du footer Aside
+
+## 2026-03-06
+
+- Conditions generales d'utilisation (CGU)
+- Politique de confidentialite et cookies
 MD;
     }
 }

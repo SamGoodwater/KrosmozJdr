@@ -16,6 +16,15 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 /** Colonnes à contenu riche : max-width pour forcer le wrap et éviter scroll cellule */
 const RICH_CONTENT_COLUMNS = new Set(["spell_summary_profile", "effect_summary"]);
 
+const NAME_COLUMN_RE = /\b(name|nom|title|titre|libelle|label)\b/;
+const buildColumnHaystack = (col) => {
+    const id = String(col?.id || "").toLowerCase();
+    const cellId = String(col?.cellId || "").toLowerCase();
+    const label = String(col?.label || "").toLowerCase();
+    return `${id} ${cellId} ${label}`;
+};
+const isNameColumn = (col) => NAME_COLUMN_RE.test(buildColumnHaystack(col));
+
 const props = defineProps({
     row: { type: Object, required: true },
     columns: { type: Array, required: true },
@@ -307,7 +316,12 @@ const handleAction = (actionKey, entity) => {
                         :class="[dotBgClass]"
                     />
                 </Tooltip>
-                <CellRenderer :cell="getCell(col)" :ui-color="uiColor" :entity="rowEntity" />
+                <CellRenderer
+                    :cell="getCell(col)"
+                    :ui-color="uiColor"
+                    :entity="rowEntity"
+                    :on-route-click="isNameColumn(col) && entityType && getCell(col)?.type === 'route' ? (e) => e?.preventDefault?.() : undefined"
+                />
             </div>
         </td>
     </tr>
