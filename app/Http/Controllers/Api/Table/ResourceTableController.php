@@ -33,15 +33,6 @@ class ResourceTableController extends Controller
         'archived' => 'error',
     ];
 
-    private const LEVEL_OPTIONS = [
-        ['value' => '0', 'label' => 'Invité'],
-        ['value' => '1', 'label' => 'Utilisateur'],
-        ['value' => '2', 'label' => 'Joueur'],
-        ['value' => '3', 'label' => 'Maître de jeu'],
-        ['value' => '4', 'label' => 'Admin'],
-        ['value' => '5', 'label' => 'Super admin'],
-    ];
-
     private function stateColor(?string $state): string
     {
         $s = (string) ($state ?? '');
@@ -148,18 +139,12 @@ class ResourceTableController extends Controller
                 ->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])
                 ->values()
                 ->all(),
-            'auto_update' => [
-                ['value' => '1', 'label' => 'Oui'],
-                ['value' => '0', 'label' => 'Non'],
-            ],
             'state' => [
                 ['value' => 'raw', 'label' => 'Brut'],
                 ['value' => 'draft', 'label' => 'Brouillon'],
                 ['value' => 'playable', 'label' => 'Jouable'],
                 ['value' => 'archived', 'label' => 'Archivé'],
             ],
-            'read_level' => self::LEVEL_OPTIONS,
-            'write_level' => self::LEVEL_OPTIONS,
             'level' => [
                 ['value' => '1', 'label' => '1'],
                 ['value' => '50', 'label' => '50'],

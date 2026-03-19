@@ -24,6 +24,7 @@ import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import GlassMenuPanel from "@/Pages/Atoms/navigation/GlassMenuPanel.vue";
 import DynamicMenu from "@/Pages/Organismes/section/DynamicMenu.vue";
+import ToolsFooterDropdown from "@/Pages/Organismes/layout/ToolsFooterDropdown.vue";
 import { ref } from "vue";
 
 const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
@@ -39,11 +40,12 @@ const footerItems = [
         tooltip: "Tous les liens pour contribuer au projet KrosmozJDR",
     },
     {
+        id: "tools",
         route: "",
         label: "Outils",
         icon: "fa-dice",
         pack: "solid",
-        tooltip: "En cours de développement",
+        tooltip: "Outils KrosmozJDR (lanceur de dés, etc.)",
     },
     {
         route: "",
@@ -79,9 +81,33 @@ const footerItems = [
         </div>
         <div id="footer">
             <Dock size="md" class="px-1 py-2 relative box-glass-t-xs">
-                <Tooltip v-for="item in footerItems" :key="item.label" :content="item.tooltip" placement="right">
-                    <DockItem :route="item.route" :icon="item.icon"
-                        :pack="item.pack" :label="item.label" />
+                <Tooltip
+                    v-for="item in footerItems"
+                    :key="item.label"
+                    :content="item.tooltip"
+                    placement="right"
+                >
+                    <DockItem
+                        v-if="item.route"
+                        :route="item.route"
+                        :icon="item.icon"
+                        :pack="item.pack"
+                        :label="item.label"
+                    />
+                    <ToolsFooterDropdown
+                        v-else-if="item.id === 'tools'"
+                        :icon="item.icon"
+                        :pack="item.pack"
+                        :label="item.label"
+                        :tooltip="item.tooltip"
+                    />
+                    <DockItem
+                        v-else
+                        :route="item.route"
+                        :icon="item.icon"
+                        :pack="item.pack"
+                        :label="item.label"
+                    />
                 </Tooltip>
             </Dock>
         </div>

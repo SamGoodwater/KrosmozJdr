@@ -1,4 +1,8 @@
-import { colord } from 'colord';
+import { colord, extend } from 'colord';
+import a11yPlugin from 'colord/plugins/a11y';
+
+// Étendre colord avec le plugin A11y (contrast, luminance, isReadable)
+extend([a11yPlugin]);
 
 /**
  * Utilitaire de gestion des couleurs basé sur colord

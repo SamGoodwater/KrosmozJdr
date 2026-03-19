@@ -25,7 +25,8 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entit
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
 import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
+import { getRarityConfig } from '@/Utils/Entity/SharedConstants';
+import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 
 const props = defineProps({
     resource: {
@@ -125,6 +126,8 @@ const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
 const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
 
 const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
+
+const getFieldUnit = (fieldKey) => getFieldUi(fieldKey).characteristic?.unit ?? '';
 
 const getFieldIconStyle = (fieldKey) => {
     const color = getFieldUi(fieldKey).color;
@@ -281,30 +284,65 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #mainInfos>
-                <div v-if="displayMetaFields.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <template v-for="fieldKey in displayMetaFields" :key="fieldKey">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="flex items-start justify-between gap-2 min-w-0">
-                                <div class="flex items-center gap-2 min-w-0">
-                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                                    <span
-                                        v-if="!shouldOmitLabelInMeta(fieldKey)"
-                                        class="text-xs uppercase font-semibold text-primary-300 truncate"
-                                    >
-                                        {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
-                                    </span>
-                                </div>
-                                <PropertyDisplay
-                                    :property="getFieldUi(fieldKey)"
-                                    :value="getCell(fieldKey)?.value"
-                                    variant="badge"
-                                    size="sm"
-                                    class="max-w-[14rem] whitespace-normal break-words"
-                                />
-                            </div>
-                        </Tooltip>
-                    </template>
+                <div class="space-y-1 mt-1">
+                    <!-- Ligne 1 : Niveau (badge Nvx+val) + Type (badge sans icône) -->
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <template v-if="canShowField('level')">
+                            <Badge
+                                :color="getBadgeColor('level')"
+                                :auto-label="String(resource.level ?? '')"
+                                auto-scheme="level"
+                                auto-tone="mid"
+                                size="xs"
+                            >
+                                Nvx {{ resource.level ?? '-' }}
+                            </Badge>
+                        </template>
+                        <template v-if="canShowField('resource_type')">
+                            <Badge
+                                color="auto"
+                                :auto-label="resource.resourceType?.name ?? resource.resourceType?.label ?? '-'"
+                                auto-scheme="mixed"
+                                auto-tone="mid"
+                                size="xs"
+                            >
+                                {{ resource.resourceType?.name ?? resource.resourceType?.label ?? '-' }}
+                            </Badge>
+                        </template>
+                    </div>
+                    <!-- Ligne 2 : Rareté (badge), Poids, Prix (texte collé) -->
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                        <template v-if="canShowField('rarity')">
+                            <Badge
+                                :color="(getRarityConfig(resource.rarity ?? 0))?.color ?? 'neutral'"
+                                size="xs"
+                            >
+                                {{ (getRarityConfig(resource.rarity ?? 0))?.label ?? '-' }}
+                            </Badge>
+                        </template>
+                        <template v-if="canShowField('weight')">
+                            <Tooltip :content="getFieldTooltip('weight')" placement="top">
+                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('weight')">
+                                    <Icon :source="getFieldIcon('weight')" :alt="getFieldLabel('weight')" size="xs" />
+                                    <span class="font-semibold">{{ getFieldLabel('weight') }}</span><span> {{ resource.weight ?? '-' }}{{ getFieldUnit('weight') ? ' ' + getFieldUnit('weight') : '' }}</span>
+                                </span>
+                            </Tooltip>
+                        </template>
+                        <template v-if="canShowField('price')">
+                            <Tooltip :content="getFieldTooltip('price')" placement="top">
+                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('price')">
+                                    <Icon :source="getFieldIcon('price')" :alt="getFieldLabel('price')" size="xs" />
+                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ resource.price ?? '-' }}{{ getFieldUnit('price') ? ' ' + getFieldUnit('price') : '' }}</span>
+                                </span>
+                            </Tooltip>
+                        </template>
+                    </div>
+                    <!-- Ligne 3 : Description -->
+                    <p v-if="resource.description" class="text-primary-300 text-xs mt-1 line-clamp-2">{{ resource.description }}</p>
                 </div>
+            </template>
+            <template #subtitle>
+                <p v-if="resource.description" class="text-primary-300 mt-1 text-xs break-words line-clamp-2">{{ resource.description }}</p>
             </template>
         </EntityViewHeader>
 

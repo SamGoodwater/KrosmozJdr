@@ -12,6 +12,7 @@ Pour la documentation technique et les bonnes pratiques, voir :
 
 ### Livraisons
 
+- **Lanceur de dés (outil modal) (2026-03-19)** : Outil de lancer de dés accessible via le dropdown « Outils » du footer de l'Aside. Formule ndX (ex: 2d6+3, 3d10-1, 4d6/2) avec opérations +, -, *, / et notations alternatives (x, :). Affichage min/max/moyenne en temps réel, raccourcis d4, d6, d8, d10, d12, d20, d100. Lancer via bouton ou touche Entrée. Voir `resources/js/Utils/dice/diceParser.js`, `DiceRollerModal.vue`, `ToolsFooterDropdown.vue`.
 - **Confirmation mot de passe — délai d'inactivité** : Middleware `RequirePasswordWithInactivity` remplaçant le comportement par défaut de Laravel. Une confirmation débloque l'accès ; la sécurité se réactive après 1 h d'inactivité (config `AUTH_PASSWORD_INACTIVITY_TIMEOUT`). Prop Inertia `auth.password_recently_confirmed` pour éviter de redemander le mot de passe à chaque chargement de page (ex. Scrapping).
 - **Vérification confidentialité GitHub** : [VERIFICATION_CONFIDENTIALITE_GITHUB.md](./VERIFICATION_CONFIDENTIALITE_GITHUB.md) — audit des données personnelles (emails, clés, fichiers sensibles), corrections appliquées (scripts Playwright + neutralisation des références à l’ancien site dans la doc règles), 2 mentions conservées pour l’ancienne adresse du JDR.
 - **Scrapping (backend)** : [FINALISATION_SCRAPPING_BACKEND.md](./FINALISATION_SCRAPPING_BACKEND.md) — limites depuis config, initiative monster, import range via runMany, robustesse, tests, doc.

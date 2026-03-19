@@ -164,6 +164,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Image de la ressource",
       },
       table: {
+        order: 0,
         cell: {
           sizes: {
             xs: { mode: "thumb" },
@@ -202,6 +203,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Nom de la ressource",
       },
       table: {
+        order: 1,
         sortable: true,
         searchable: true,
         cell: {
@@ -281,11 +283,13 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Effets éventuels de la ressource",
       },
       table: {
+        order: 50,
         sortable: false,
         searchable: true,
         filterable: {
           id: "effect",
           type: "text",
+          defaultVisible: false,
         },
         // Rare sur les ressources : masqué par défaut.
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -324,12 +328,14 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Niveau de la ressource",
       },
       table: {
+        order: 51,
         sortable: true,
         filterable: {
           id: "level",
           // UI: multi => dropdown + checkboxes (permet plusieurs valeurs)
           // Les options peuvent venir du serveur via meta.filterOptions.level
           type: "multi",
+          defaultVisible: false,
           ui: {
             // Afficher uniquement les niveaux présents dans le dataset (et non une plage arbitraire)
             optionsMode: "rows",
@@ -337,8 +343,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
             maxOptions: 250,
           },
         },
-        // Responsive: disparaît avant "type"
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        // Masqué par défaut (colonne et filtre)
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -389,6 +395,12 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Type (métier) de la ressource",
       },
       table: {
+        order: 2,
+        filterable: {
+          id: "resource_type_id",
+          type: "multi",
+          defaultVisible: true,
+        },
         // Responsive: disparaît en dernier (avant il reste sur sm+)
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {
@@ -441,11 +453,13 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Niveau de rareté de la ressource (0-5)",
       },
       table: {
+        order: 3,
         sortable: true,
         filterable: {
           id: "rarity",
           // UI: multi => dropdown + checkboxes
           type: "multi",
+          defaultVisible: true,
           // Fallback si le serveur ne fournit pas filterOptions.rarity
           options: getRarityOptions().map(({ value, label }) => ({ value, label })),
         },
@@ -651,12 +665,6 @@ export function getResourceFieldDescriptors(ctx = {}) {
           return can;
         },
         sortable: true,
-        filterable: {
-          id: "read_level",
-          // UI: multi => checkboxes
-          type: "multi",
-          options: getUserRoleOptions(),
-        },
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -699,11 +707,6 @@ export function getResourceFieldDescriptors(ctx = {}) {
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         visibleIf: (ctx) => Boolean(ctx?.capabilities?.updateAny ?? ctx?.meta?.capabilities?.updateAny),
         sortable: true,
-        filterable: {
-          id: "write_level",
-          type: "multi",
-          options: getUserRoleOptions(),
-        },
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -740,13 +743,15 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Cycle de vie de la ressource (brut, brouillon, jouable, archivé)",
       },
       table: {
+        order: 4,
         sortable: true,
         filterable: {
           id: "state",
           type: "multi",
+          defaultVisible: true,
           options: getEntityStateOptions(),
         },
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -791,12 +796,6 @@ export function getResourceFieldDescriptors(ctx = {}) {
         // Vérification supplémentaire de visibilité selon les permissions
         visibleIf: (ctx) => Boolean(ctx?.capabilities?.updateAny ?? ctx?.meta?.capabilities?.updateAny),
         sortable: true,
-        filterable: {
-          id: "auto_update",
-          // UI: multi => checkboxes (Oui/Non)
-          // Options fournies par le serveur via filterOptions.auto_update
-          type: "multi",
-        },
         cell: {
           sizes: {
             xs: { mode: "boolIcon" },

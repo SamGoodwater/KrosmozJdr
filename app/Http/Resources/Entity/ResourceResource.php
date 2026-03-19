@@ -40,10 +40,13 @@ class ResourceResource extends JsonResource
             'updated_at' => $this->updated_at?->toISOString(),
             'deleted_at' => $this->deleted_at?->toISOString(),
 
-            // Relations (uniquement recette = ingrédients ; pas de relations inverses items/consumables/creatures)
+            // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
             'resourceType' => $this->whenLoaded('resourceType'),
             'recipeIngredients' => $this->whenLoaded('recipeIngredients'),
+            'consumables' => $this->whenLoaded('consumables'),
+            'items' => $this->whenLoaded('items'),
+            'creatures' => $this->whenLoaded('creatures'),
             'scenarios' => $this->whenLoaded('scenarios'),
             'campaigns' => $this->whenLoaded('campaigns'),
             'shops' => $this->whenLoaded('shops'),
