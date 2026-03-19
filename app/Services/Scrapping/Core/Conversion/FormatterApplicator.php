@@ -5,6 +5,8 @@ namespace App\Services\Scrapping\Core\Conversion;
 use App\Models\Type\ResourceType;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
 
 /**
@@ -27,7 +29,9 @@ final class FormatterApplicator
         private readonly ?DofusConversionService $conversionService = null,
         private readonly ?CharacteristicGetterService $getter = null,
         ?ItemEffectsToBonusConverter $itemEffectsConverter = null,
-        ?RecipeToResourceRecipeConverter $recipeConverter = null
+        ?RecipeToResourceRecipeConverter $recipeConverter = null,
+        private readonly ?DofusDbItemTypesCatalogService $itemTypesCatalog = null,
+        private readonly ?DofusDbItemSuperTypeMappingService $superTypeMapping = null
     ) {
         $this->itemEffectsConverter = $itemEffectsConverter ?? ($getter !== null ? new ItemEffectsToBonusConverter($getter, $conversionService) : null);
         $this->recipeConverter = $recipeConverter ?? new RecipeToResourceRecipeConverter();
@@ -333,7 +337,10 @@ final class FormatterApplicator
 
     /**
      * Résout un typeId DofusDB vers l'id Krosmoz resource_types (firstOrCreate).
-     * Utilise raw.type.name pour le libellé si créé.
+     * N'ajoute que les types dont le superType DofusDB = 9 (Ressource).
+     * Les consommables (superType 6, 70) et équipements (autres) retournent null.
+     *
+     * @see docs/50-Fonctionnalités/Scrapping/Architecture/ITEM_TYPES_REFERENCE.md
      */
     private function resolveResourceTypeId(mixed $value, array $raw, string $lang): ?int
     {
@@ -341,6 +348,23 @@ final class FormatterApplicator
         if ($typeId <= 0) {
             return null;
         }
+
+        if ($this->itemTypesCatalog !== null && $this->superTypeMapping !== null) {
+            $superTypeId = $this->itemTypesCatalog->getSuperTypeIdForTypeId($typeId, $lang, false);
+            if ($superTypeId === null) {
+                return null;
+            }
+            $category = $this->superTypeMapping->getCategoryForSuperTypeId($superTypeId);
+            if ($category !== 'resource') {
+                return null;
+            }
+        } else {
+            // Pas de catalog : ne pas créer, retourner l'existant uniquement (évite pollution).
+            $rt = ResourceType::where('dofusdb_type_id', $typeId)->first();
+
+            return $rt?->id;
+        }
+
         $typeNode = $this->getByPath($raw, 'type');
         $name = null;
         if (is_array($typeNode) && isset($typeNode['name'])) {

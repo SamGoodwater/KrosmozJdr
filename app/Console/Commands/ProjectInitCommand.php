@@ -23,13 +23,13 @@ use Illuminate\Support\Facades\DB;
  */
 class ProjectInitCommand extends Command
 {
-    protected $signature = 'project:init
+    protected $signature = 'project:init|init
         {--fresh : migrate:fresh --force avant tout}
         {--skip-migrate : Ne pas lancer les migrations}
         {--skip-seeders : Ne pas exécuter les seeders (socle déjà fait)}
         {--skip-scrapping : Ne pas scraper}
         {--skip-capabilities : Ne pas importer les capabilities}
-        {--skip-types : Ne pas extraire/seed les types item (resource, consumable, equipment)}
+        {--skip-types : Ne pas extraire/seed les types (resources, consommables, équipements, races monstres)}
         {--noimage : Désactiver le téléchargement des images}
         {--skip-cache : Ignorer le cache HTTP pour le scrapping}
         {--entity= : Limiter à une entité (class,spell,monster,resource,consumable,item,panoply)}
@@ -40,7 +40,7 @@ class ProjectInitCommand extends Command
         {--skip-clear-queue : Ne pas vider la queue avant le scrapping}
         {--skip-notify : Ne pas notifier les admin à la fin}';
 
-    protected $description = 'Initialise le projet (migrations, seeders, scrapping, capabilities)';
+    protected $description = 'Initialise le projet (migrations, seeders, types, scrapping, capabilities)';
 
     /** Ordre des entités scrapping (dépendances). */
     private const SCRAPPING_ENTITIES = [
@@ -175,22 +175,33 @@ class ProjectInitCommand extends Command
 
     private function runTypesSetup(): void
     {
-        $this->info('Phase 3 : Types item (ressources, consommables, équipements)');
+        $this->info('Phase 3 : Récupération de tous les types depuis DofusDB');
 
-        $this->line('  → scrapping:types:extract');
-        $code = Artisan::call('scrapping:types:extract');
+        $typeArgs = ['--skip-cache' => (bool) $this->option('skip-cache')];
+
+        $this->line('  → scrapping:types:seed (ressources, consommables, équipements)');
+        $code = Artisan::call('scrapping:types:seed', $typeArgs);
         $this->output->write(Artisan::output());
         if ($code !== 0) {
-            $this->warn('  Avertissement : extraction types a échoué.');
+            $this->warn('  Avertissement : seed types item a échoué.');
             return;
         }
 
-        $this->line('  → scrapping:types:seed');
-        $code = Artisan::call('scrapping:types:seed');
+        $this->line('  → scrapping:races:seed (races monstres)');
+        $code = Artisan::call('scrapping:races:seed', $typeArgs);
         $this->output->write(Artisan::output());
         if ($code !== 0) {
-            $this->warn('  Avertissement : seed types a échoué.');
+            $this->warn('  Avertissement : seed races monstres a échoué.');
         }
+
+        $this->line('  → SpellTypeSeeder (types de sorts, référentiel métier)');
+        $code = Artisan::call('db:seed', ['--class' => \Database\Seeders\Type\SpellTypeSeeder::class, '--force' => true]);
+        $this->output->write(Artisan::output());
+        if ($code !== 0) {
+            $this->warn('  Avertissement : seed types de sorts a échoué.');
+        }
+
+        $this->line('  Types récupérés : ressources, consommables, équipements, races monstres, types de sorts');
     }
 
     private function runScrapping(): void

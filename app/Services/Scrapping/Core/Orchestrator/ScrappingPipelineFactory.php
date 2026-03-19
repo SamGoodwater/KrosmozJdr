@@ -14,6 +14,8 @@ use App\Services\Scrapping\Core\Conversion\FormatterApplicator;
 use App\Services\Scrapping\Core\Conversion\ItemEffectsToBonusConverter;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Normalizer\SpellGlobalNormalizer;
+use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
 use App\Services\Scrapping\Core\Relation\RelationResolutionService;
 
@@ -36,7 +38,14 @@ final class ScrappingPipelineFactory
         $getter = app(CharacteristicGetterService::class);
 
         $itemEffectsConverter = new ItemEffectsToBonusConverter($getter, $conversionService);
-        $formatterApplicator = new FormatterApplicator($conversionService, $getter, $itemEffectsConverter);
+        $formatterApplicator = new FormatterApplicator(
+            $conversionService,
+            $getter,
+            $itemEffectsConverter,
+            null,
+            app(\App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService::class),
+            app(\App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService::class)
+        );
 
         $orchestrator = new Orchestrator(
             $configLoader,

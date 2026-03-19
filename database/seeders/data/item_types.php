@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 /**
- * item_types – Équipements. Régénéré par : php artisan scrapping:seeders:export --item-types
+ * item_types – Équipements (hors resource/consumable exclus).
+ * Généré par : php artisan scrapping:types:extract
+ * Régénéré depuis la BDD par : php artisan scrapping:seeders:export --item-types
  */
 
 return array (
@@ -13,8 +15,6 @@ return array (
     'name' => 'Amulette',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   1 => 
   array (
@@ -22,8 +22,6 @@ return array (
     'name' => 'Arc',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   2 => 
   array (
@@ -31,8 +29,6 @@ return array (
     'name' => 'Baguette',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   3 => 
   array (
@@ -40,8 +36,6 @@ return array (
     'name' => 'Bâton',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   4 => 
   array (
@@ -49,8 +43,6 @@ return array (
     'name' => 'Dague',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   5 => 
   array (
@@ -58,8 +50,6 @@ return array (
     'name' => 'Épée',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   6 => 
   array (
@@ -67,8 +57,6 @@ return array (
     'name' => 'Marteau',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   7 => 
   array (
@@ -76,8 +64,6 @@ return array (
     'name' => 'Pelle',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   8 => 
   array (
@@ -85,8 +71,6 @@ return array (
     'name' => 'Anneau',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   9 => 
   array (
@@ -94,8 +78,6 @@ return array (
     'name' => 'Ceinture',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   10 => 
   array (
@@ -103,8 +85,6 @@ return array (
     'name' => 'Bottes',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   11 => 
   array (
@@ -112,8 +92,6 @@ return array (
     'name' => 'Chapeau',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   12 => 
   array (
@@ -121,8 +99,6 @@ return array (
     'name' => 'Cape',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   13 => 
   array (
@@ -130,8 +106,6 @@ return array (
     'name' => 'Familier',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   14 => 
   array (
@@ -139,8 +113,6 @@ return array (
     'name' => 'Hache',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   15 => 
   array (
@@ -148,8 +120,6 @@ return array (
     'name' => 'Outil',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   16 => 
   array (
@@ -157,8 +127,6 @@ return array (
     'name' => 'Pioche',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   17 => 
   array (
@@ -166,8 +134,6 @@ return array (
     'name' => 'Faux',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   18 => 
   array (
@@ -175,8 +141,6 @@ return array (
     'name' => 'Dofus',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   19 => 
   array (
@@ -184,8 +148,6 @@ return array (
     'name' => 'Bouclier',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   20 => 
   array (
@@ -193,8 +155,6 @@ return array (
     'name' => 'Arme magique',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   21 => 
   array (
@@ -202,8 +162,6 @@ return array (
     'name' => 'Montilier',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   22 => 
   array (
@@ -211,8 +169,6 @@ return array (
     'name' => 'Trophée',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   23 => 
   array (
@@ -220,8 +176,6 @@ return array (
     'name' => 'Prysmaradite',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   24 => 
   array (
@@ -229,8 +183,6 @@ return array (
     'name' => 'Lance',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   25 => 
   array (
@@ -238,8 +190,6 @@ return array (
     'name' => 'Monture',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   26 => 
   array (
@@ -247,8 +197,6 @@ return array (
     'name' => 'Dragodinde',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   27 => 
   array (
@@ -256,8 +204,6 @@ return array (
     'name' => 'Muldo',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   28 => 
   array (
@@ -265,7 +211,5 @@ return array (
     'name' => 'Volkorne',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
 );

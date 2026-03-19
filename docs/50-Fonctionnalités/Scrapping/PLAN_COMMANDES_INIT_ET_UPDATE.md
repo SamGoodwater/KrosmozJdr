@@ -28,8 +28,7 @@ Transformer une base vide (après migrations) en un projet fonctionnel avec :
 | 1 | Migrations | `php artisan migrate --force` |
 | 2 | Socle scrapping | `php artisan scrapping:setup` (ou exécuter les seeders manuellement) |
 | 3 | Pages / menu / utilisateur | `php artisan db:seed --class=UserSeeder` etc. (ou `DatabaseSeeder` partiel) |
-| 4 | Types item (ressources, consommables, équipements) | `php artisan scrapping:types:extract` puis `scrapping:types:seed` |
-| 5 | Races monstres | `php artisan db:seed --class=MonsterRaceSeeder` |
+| 4 | Types item + races monstres | `scrapping:types:seed` (ressources, consommables, équipements) puis `scrapping:races:seed` (races DofusDB). MonsterRaceSeeder (races statiques) inclus dans TypeSeeder (phase 2). |
 | 6 | Scrapping entités (ordre de dépendances) | Voir tableau ci-dessous |
 | 7 | Capabilities | `php artisan capabilities:import-legacy database/seeders/data/capability.json` (si fichier présent) |
 | 8 | Données optionnelles | Shops, scénarios, campagnes (seeders si disponibles) |
