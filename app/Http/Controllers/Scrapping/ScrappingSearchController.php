@@ -69,6 +69,10 @@ class ScrappingSearchController extends Controller
             $filters = array_merge($aliasCfg['defaultFilter'], $filters);
         }
 
+        // Items : superTypeGroup n'est pas supporté par l'API DofusDB → résoudre en typeIds.
+        // Sinon l'API retourne tous les items et SearchResultEnricher pollue les registres de types.
+        $filters = $this->resolveSuperTypeGroupToTypeIds($collectEntity, $filters);
+
         // Monstres: race_mode (all/allowed/selected) -> injecter raceIds par défaut si besoin.
         if (strtolower($entity) === 'monster') {
             $raceMode = $this->extractRaceMode($request);
@@ -331,6 +335,35 @@ class ScrappingSearchController extends Controller
     {
         $v = $request->query('type_mode', ItemEntityTypeFilterService::TYPE_MODE_ALLOWED);
         return is_string($v) ? $v : ItemEntityTypeFilterService::TYPE_MODE_ALLOWED;
+    }
+
+    /**
+     * Résout superTypeGroup en typeIds pour l'entité item.
+     * L'API DofusDB ne supporte pas superTypeGroup → sans cette résolution,
+     * l'API retourne tous les items et SearchResultEnricher pollue les registres.
+     *
+     * @param array<string,mixed> $filters
+     * @return array<string,mixed>
+     */
+    private function resolveSuperTypeGroupToTypeIds(string $collectEntity, array $filters): array
+    {
+        if ($collectEntity !== 'item') {
+            return $filters;
+        }
+        $group = $filters['superTypeGroup'] ?? null;
+        if (!is_string($group) || $group === '') {
+            return $filters;
+        }
+        $existingTypeIds = $filters['typeIds'] ?? [];
+        if (!empty($existingTypeIds)) {
+            return $filters;
+        }
+        $typeIds = $this->itemEntityTypeFilters->getTypeIdsForGroup($group);
+        if ($typeIds !== []) {
+            $filters['typeIds'] = $typeIds;
+        }
+
+        return $filters;
     }
 }
 
