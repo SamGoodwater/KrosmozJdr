@@ -66,40 +66,7 @@ const goEdit = () => {
             </div>
 
             <div class="rounded-box border border-base-300 p-4">
-                <h2 class="font-semibold text-primary-100 mb-2">Objets (recettes)</h2>
-                <ul v-if="(resource.items || []).length" class="space-y-1 text-sm">
-                    <li v-for="it in resource.items" :key="it.id" class="flex justify-between gap-3">
-                        <span>{{ it.name }}</span>
-                        <span class="text-primary-300">x{{ it.pivot?.quantity ?? 0 }}</span>
-                    </li>
-                </ul>
-                <p v-else class="text-sm text-primary-300 italic">Aucun objet lié.</p>
-            </div>
-
-            <div class="rounded-box border border-base-300 p-4">
-                <h2 class="font-semibold text-primary-100 mb-2">Consommables</h2>
-                <ul v-if="(resource.consumables || []).length" class="space-y-1 text-sm">
-                    <li v-for="c in resource.consumables" :key="c.id" class="flex justify-between gap-3">
-                        <span>{{ c.name }}</span>
-                        <span class="text-primary-300">x{{ c.pivot?.quantity ?? 0 }}</span>
-                    </li>
-                </ul>
-                <p v-else class="text-sm text-primary-300 italic">Aucun consommable lié.</p>
-            </div>
-
-            <div class="rounded-box border border-base-300 p-4">
-                <h2 class="font-semibold text-primary-100 mb-2">Créatures</h2>
-                <ul v-if="(resource.creatures || []).length" class="space-y-1 text-sm">
-                    <li v-for="cr in resource.creatures" :key="cr.id" class="flex justify-between gap-3">
-                        <span>{{ cr.name }}</span>
-                        <span class="text-primary-300">x{{ cr.pivot?.quantity ?? 0 }}</span>
-                    </li>
-                </ul>
-                <p v-else class="text-sm text-primary-300 italic">Aucune créature liée.</p>
-            </div>
-
-            <div class="rounded-box border border-base-300 p-4">
-                <h2 class="font-semibold text-primary-100 mb-2">hotels de vente vente vente vente vente</h2>
+                <h2 class="font-semibold text-primary-100 mb-2">Hôtels de vente</h2>
                 <ul v-if="(resource.shops || []).length" class="space-y-2 text-sm">
                     <li v-for="s in resource.shops" :key="s.id" class="flex justify-between gap-3">
                         <div>

@@ -80,7 +80,7 @@ class ResourceTableController extends Controller
 
         $query = Resource::query()
             ->with(['createdBy', 'resourceType', 'recipeIngredients'])
-            ->withCount(['items', 'consumables', 'creatures', 'recipeIngredients']);
+            ->withCount(['recipeIngredients']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -205,9 +205,6 @@ class ResourceTableController extends Controller
                             'pivot' => ['quantity' => $ing->pivot?->quantity ?? 1],
                         ])->values()->all()
                         : [],
-                    'items_count' => (int) ($r->items_count ?? 0),
-                    'consumables_count' => (int) ($r->consumables_count ?? 0),
-                    'creatures_count' => (int) ($r->creatures_count ?? 0),
                     'recipe_ingredients_count' => (int) ($r->recipe_ingredients_count ?? 0),
                     'createdBy' => $createdBy ? [
                         'id' => $createdBy->id,
@@ -410,9 +407,6 @@ class ResourceTableController extends Controller
                             'id' => $r->resourceType->id,
                             'name' => $r->resourceType->name,
                         ] : null,
-                        'items_count' => (int) ($r->items_count ?? 0),
-                        'consumables_count' => (int) ($r->consumables_count ?? 0),
-                        'creatures_count' => (int) ($r->creatures_count ?? 0),
                         'recipe_ingredients_count' => (int) ($r->recipe_ingredients_count ?? 0),
                         'createdBy' => $createdBy ? [
                             'id' => $createdBy->id,

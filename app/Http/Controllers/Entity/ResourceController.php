@@ -31,7 +31,7 @@ class ResourceController extends Controller
 
         $user = request()->user();
         
-        $query = Resource::with(['createdBy', 'resourceType', 'consumables']);
+        $query = Resource::with(['createdBy', 'resourceType']);
         
         // Recherche
         if (request()->has('search') && request()->search) {
@@ -103,9 +103,6 @@ class ResourceController extends Controller
         return Inertia::render('Pages/entity/resource/Edit', [
             'resource' => null,
             'resourceTypes' => ResourceType::query()->select('id', 'name')->orderBy('name')->get(),
-            'availableItems' => Item::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
-            'availableConsumables' => Consumable::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
-            'availableCreatures' => Creature::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
             'availableShops' => Shop::query()->select('id', 'name', 'description')->orderBy('name')->get(),
             'availableScenarios' => Scenario::query()->select('id', 'name', 'description')->orderBy('name')->get(),
             'availableCampaigns' => Campaign::query()->select('id', 'name', 'description')->orderBy('name')->get(),
@@ -156,9 +153,6 @@ class ResourceController extends Controller
         $resource->load([
             'createdBy',
             'resourceType',
-            'consumables',
-            'creatures',
-            'items',
             'recipeIngredients',
             'scenarios',
             'campaigns',
@@ -180,9 +174,6 @@ class ResourceController extends Controller
         $resource->load([
             'createdBy',
             'resourceType',
-            'consumables',
-            'creatures',
-            'items',
             'recipeIngredients',
             'scenarios',
             'campaigns',
@@ -199,9 +190,6 @@ class ResourceController extends Controller
             'resource' => new ResourceResource($resource),
             'resourceTypes' => ResourceType::query()->select('id', 'name')->orderBy('name')->get(),
             'availableResourcesForRecipe' => $availableResourcesForRecipe,
-            'availableItems' => Item::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
-            'availableConsumables' => Consumable::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
-            'availableCreatures' => Creature::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
             'availableShops' => Shop::query()->select('id', 'name', 'description')->orderBy('name')->get(),
             'availableScenarios' => Scenario::query()->select('id', 'name', 'description')->orderBy('name')->get(),
             'availableCampaigns' => Campaign::query()->select('id', 'name', 'description')->orderBy('name')->get(),

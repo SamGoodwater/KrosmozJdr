@@ -31,18 +31,6 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    availableItems: {
-        type: Array,
-        default: () => [],
-    },
-    availableConsumables: {
-        type: Array,
-        default: () => [],
-    },
-    availableCreatures: {
-        type: Array,
-        default: () => [],
-    },
     availableShops: {
         type: Array,
         default: () => [],
@@ -118,55 +106,6 @@ setPageTitle(`Modifier la ressource : ${resource.value.name || 'Nouvelle ressour
                 pivotFields: ['quantity'],
                 itemLabel: 'ressource',
                 itemLabelPlural: 'ressources'
-            }"
-        />
-
-        <!-- Relations / pivots niveau 1 -->
-        <EntityRelationsManager
-            :relations="resource.items || []"
-            :available-items="availableItems"
-            :entity-id="resource.id"
-            entity-type="resources"
-            relation-type="items"
-            relation-name="Objets utilisant cette ressource"
-            :config="{
-                displayFields: ['name', 'description', 'level'],
-                searchFields: ['name', 'description'],
-                pivotFields: ['quantity'],
-                itemLabel: 'objet',
-                itemLabelPlural: 'objets'
-            }"
-        />
-
-        <EntityRelationsManager
-            :relations="resource.consumables || []"
-            :available-items="availableConsumables"
-            :entity-id="resource.id"
-            entity-type="resources"
-            relation-type="consumables"
-            relation-name="Consommables utilisant cette ressource"
-            :config="{
-                displayFields: ['name', 'description', 'level'],
-                searchFields: ['name', 'description'],
-                pivotFields: ['quantity'],
-                itemLabel: 'consommable',
-                itemLabelPlural: 'consommables'
-            }"
-        />
-
-        <EntityRelationsManager
-            :relations="resource.creatures || []"
-            :available-items="availableCreatures"
-            :entity-id="resource.id"
-            entity-type="resources"
-            relation-type="creatures"
-            relation-name="Créatures liées (quantité)"
-            :config="{
-                displayFields: ['name', 'description', 'level'],
-                searchFields: ['name', 'description'],
-                pivotFields: ['quantity'],
-                itemLabel: 'créature',
-                itemLabelPlural: 'créatures'
             }"
         />
 

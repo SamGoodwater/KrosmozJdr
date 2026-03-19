@@ -29,19 +29,19 @@ export const RELATION_EXTRACT_CONFIG = {
         { key: "summon", relationType: "monster", single: true, idFrom: (s) => Number(s?.id ?? 0) },
     ],
     resource: [
-        { key: "recipeIds", relationType: "resource", idFrom: (id) => Number(id) },
+        // Uniquement recipe.ingredientIds (ressources qui composent), pas recipeIds (recettes qui utilisent cette ressource)
         { key: "recipe", relationType: "resource", single: true, idFrom: recipeIdFrom },
     ],
     consumable: [
-        { key: "recipeIds", relationType: "item", idFrom: (id) => Number(id) },
+        // Uniquement recipe.ingredientIds (ingrédients), pas recipeIds (recettes qui utilisent ce consommable)
         { key: "recipe", relationType: "item", single: true, idFrom: recipeIdFrom },
     ],
     item: [
-        { key: "recipeIds", relationType: "item", idFrom: (id) => Number(id) },
+        // Uniquement recipe.ingredientIds (ingrédients), pas recipeIds (recettes qui utilisent cet objet)
         { key: "recipe", relationType: "item", single: true, idFrom: recipeIdFrom },
     ],
     equipment: [
-        { key: "recipeIds", relationType: "item", idFrom: (id) => Number(id) },
+        // Uniquement recipe.ingredientIds (ingrédients), pas recipeIds (recettes qui utilisent cet équipement)
         { key: "recipe", relationType: "item", single: true, idFrom: recipeIdFrom },
     ],
     panoply: [

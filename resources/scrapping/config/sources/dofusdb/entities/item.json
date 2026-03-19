@@ -7,7 +7,7 @@
     "description": "Items DofusDB. Un même mapping alimente resources, consumables et items selon le typeId. Champs communs : dofusdb_id, name, description, level, price, image, typeId, rarity. resources : + weight (realWeight). effect : effects[] converti en bonus Krosmoz pour resources/consumables/items ; bonus : effects[] brut JSON (items uniquement). _mappingUnusedDocumentation liste les champs DofusDB non mappés."
   },
   "endpoints": {
-    "fetchOne": { "pathTemplate": "/items/{id}", "method": "GET", "queryDefaults": { "lang": "fr" } },
+    "fetchOne": { "pathTemplate": "/items/{id}", "method": "GET", "queryDefaults": { "lang": "fr", "$populate": false } },
     "fetchMany": { "path": "/items", "method": "GET", "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 } }
   },
   "filters": {
