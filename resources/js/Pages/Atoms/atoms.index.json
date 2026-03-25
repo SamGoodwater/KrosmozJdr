@@ -2351,9 +2351,14 @@
         "desc": "- Unité (affichée après la valeur)"
       },
       {
+        "name": "displayMode",
+        "type": "string",
+        "desc": "- 'minimal'|'compact'|'extended'|'detailed' (PROPERTY_DISPLAY_MODES)"
+      },
+      {
         "name": "compact",
         "type": "boolean",
-        "desc": "- Mode compact (icône + valeur uniquement, padding minimal)"
+        "desc": "- Legacy: si true, équivaut à displayMode='minimal'"
       }
     ],
     "slots": [],
@@ -2361,12 +2366,12 @@
   },
   {
     "name": "CharacteristicChip",
-    "description": "CharacteristicChip — atome d'affichage d'une caractéristique (icône + label + valeur).",
+    "description": "CharacteristicChip — atome d'affichage d'une caractéristique (icône + label + valeur + unité).",
     "props": [
       {
         "name": "labelMode",
         "type": "String",
-        "desc": "- 'full' | 'short' | 'icon-only' — full: nom complet, short: abrégé, icon-only: icône seule"
+        "desc": "- 'full' | 'short' | 'icon-only' — full: nom complet, short: abrégé, icon-only: icône + valeur + unité"
       }
     ],
     "slots": [],

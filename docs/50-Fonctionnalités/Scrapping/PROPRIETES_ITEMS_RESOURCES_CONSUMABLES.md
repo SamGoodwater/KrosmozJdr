@@ -82,7 +82,27 @@ En base, **Consumable** a notamment : `name`, `description`, `effect`, `level`, 
 
 - **level** / **price** sans préfixe : ce sont les **mêmes** valeurs que dans les blocs (souvent affichées une fois à la racine pour résumer).
 - **type.name** : nom du **type** d’item (ex. type “Parchemin”) ; peut venir d’une relation ou d’un sous-objet `type` dans les données converties.
-- **typeId** (sans valeur affichée) : c’est le **typeId** DofusDB de l’item (ex. type consommable/ressource). Il sert à décider dans quelle table intégrer (resources / consumables / items) et à résoudre **resource_type_id** ou **consumable_type_id**.
+- **typeId** (sans valeur affichée) : c’est le **typeId** DofusDB de l’item (ex. type consommable/ressource/équipement). Il sert à décider dans quelle table intégrer (resources / consumables / items) et à résoudre **resource_type_id**, **consumable_type_id** ou **item_type_id**.
+
+---
+
+## 5b. Propriétés spécifiques Items (équipements)
+
+| Propriété | DofusDB | Rôle |
+|-----------|---------|------|
+| **items.item_type_id** | `typeId` | ID du type d'équipement **KrosmozJDR** (résolu via `resolveItemTypeId`) |
+
+- **item_type_id** : pour les équipements, on utilise le **superTypeId** (type : Amulette, Arme, Bouclier, etc.) et non le typeId (sous-type : Arc, Baguette, Marteau). Le `typeId` DofusDB (ex. 82 pour un bouclier) est résolu vers son superTypeId (7 = Bouclier), puis vers l'ID de la table `item_types` en BDD. Seuls les types dont le superType DofusDB correspond à equipment sont créés/résolus.
+
+---
+
+## 5c. Propriétés spécifiques Consumables
+
+| Propriété | DofusDB | Rôle |
+|-----------|---------|------|
+| **consumables.consumable_type_id** | `typeId` | ID du type de consommable **KrosmozJDR** (résolu via `resolveConsumableTypeId`) |
+
+- **consumable_type_id** : le `typeId` DofusDB (ex. 96 pour Parchemin) est résolu vers l'ID de la table `consumable_types` en BDD. Seuls les types dont le superType DofusDB = 6 ou 70 (Consommable) sont créés/résolus.
 
 ---
 

@@ -381,7 +381,13 @@ const handleAction = async (actionKey) => {
                                         <span v-else>—</span>
                                     </template>
                                     <template v-else>
-                                        <Badge :color="getBadgeColor(fieldKey)" size="sm">
+                                        <Badge
+                                            :color="getBadgeColor(fieldKey)"
+                                            :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
+                                            :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
+                                            :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
+                                            size="sm"
+                                        >
                                             <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
                                         </Badge>
                                     </template>

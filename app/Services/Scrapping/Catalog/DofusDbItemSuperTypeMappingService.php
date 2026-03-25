@@ -24,8 +24,8 @@ class DofusDbItemSuperTypeMappingService
      */
     public function getConfig(): array
     {
-        $path = rtrim($this->basePath, '/') . '/sources/dofusdb/item-super-types.json';
-        if (!is_file($path)) {
+        $path = rtrim($this->basePath, '/').'/sources/dofusdb/item-super-types.json';
+        if (! is_file($path)) {
             return [];
         }
 
@@ -35,7 +35,7 @@ class DofusDbItemSuperTypeMappingService
         }
 
         $decoded = json_decode($raw, true);
-        if (!is_array($decoded)) {
+        if (! is_array($decoded)) {
             return [];
         }
 
@@ -49,27 +49,27 @@ class DofusDbItemSuperTypeMappingService
     {
         $cfg = $this->getConfig();
         $groups = $cfg['groups'] ?? null;
-        if (!is_array($groups)) {
+        if (! is_array($groups)) {
             $groups = [];
         }
 
         $g = $groups[$group] ?? null;
-        if (!is_array($g)) {
+        if (! is_array($g)) {
             $g = [];
         }
 
         $strategy = isset($g['strategy']) && is_string($g['strategy']) ? strtolower($g['strategy']) : 'include';
-        if (!in_array($strategy, ['include', 'exclude'], true)) {
+        if (! in_array($strategy, ['include', 'exclude'], true)) {
             $strategy = 'include';
         }
 
         $superTypeIds = $g['superTypeIds'] ?? [];
-        if (!is_array($superTypeIds)) {
+        if (! is_array($superTypeIds)) {
             $superTypeIds = [];
         }
 
         $excludeSuperTypeIds = $g['excludeSuperTypeIds'] ?? [];
-        if (!is_array($excludeSuperTypeIds)) {
+        if (! is_array($excludeSuperTypeIds)) {
             $excludeSuperTypeIds = [];
         }
 
@@ -82,9 +82,9 @@ class DofusDbItemSuperTypeMappingService
 
     /**
      * Retourne la catégorie Krosmoz (resource, consumable, equipment) pour un superTypeId DofusDB.
-     * Utilisé pour l'extraction des types (Phase 3) ; exclut les superTypes non inclus (excluded).
+     * Priorité : resource > consumable > equipment. null = superType non mappé.
      *
-     * @return 'resource'|'consumable'|'equipment'|null null = exclu
+     * @return 'resource'|'consumable'|'equipment'|null null = superType non configuré
      */
     public function getCategoryForSuperTypeId(int $superTypeId): ?string
     {
@@ -97,7 +97,7 @@ class DofusDbItemSuperTypeMappingService
 
         $resourceIds = array_flip($resource['superTypeIds'] ?? []);
         $consumableIds = array_flip($consumable['superTypeIds'] ?? []);
-        $excludeIds = array_flip($equipment['excludeSuperTypeIds'] ?? []);
+        $equipmentIds = array_flip($equipment['superTypeIds'] ?? []);
 
         if (isset($resourceIds[$superTypeId])) {
             return 'resource';
@@ -105,8 +105,36 @@ class DofusDbItemSuperTypeMappingService
         if (isset($consumableIds[$superTypeId])) {
             return 'consumable';
         }
-        if (!isset($excludeIds[$superTypeId])) {
+        if (isset($equipmentIds[$superTypeId])) {
             return 'equipment';
+        }
+
+        return null;
+    }
+
+    /**
+     * Retourne le nom français d'un superTypeId depuis superTypesReference.
+     *
+     * @return string|null null si superTypeId inconnu
+     */
+    public function getNameForSuperTypeId(int $superTypeId): ?string
+    {
+        if ($superTypeId <= 0) {
+            return null;
+        }
+        $cfg = $this->getConfig();
+        $refs = $cfg['superTypesReference'] ?? [];
+        if (! is_array($refs)) {
+            return null;
+        }
+        foreach ($refs as $r) {
+            if (! is_array($r)) {
+                continue;
+            }
+            $id = isset($r['id']) ? (int) $r['id'] : 0;
+            if ($id === $superTypeId) {
+                return isset($r['nameFr']) && is_string($r['nameFr']) ? $r['nameFr'] : null;
+            }
         }
 
         return null;
@@ -122,7 +150,7 @@ class DofusDbItemSuperTypeMappingService
     {
         $cfg = $this->getConfig();
         $ids = $cfg['excludedTypeIds'] ?? [];
-        if (!is_array($ids)) {
+        if (! is_array($ids)) {
             return [];
         }
         $ids = array_values(array_unique(array_map('intval', $ids)));
@@ -130,4 +158,3 @@ class DofusDbItemSuperTypeMappingService
         return array_values(array_filter($ids, fn (int $id): bool => $id > 0));
     }
 }
-

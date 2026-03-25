@@ -151,6 +151,27 @@ export function useScrappingCompare(options) {
         return prefixKey !== undefined ? flat[prefixKey] : undefined;
     }
 
+    /**
+     * Même logique que findInFlat, avec alias camelCase ↔ snake_case pour l’id de type DofusDB
+     * (brut : typeId, converti : items.type_id / resources.type_id / consumables.type_id).
+     *
+     * @param {Record<string, unknown>} flat
+     * @param {string} modelKey
+     * @returns {unknown}
+     */
+    function findInFlatWithTypeIdAlias(flat, modelKey) {
+        if (!modelKey || typeof modelKey !== "string") return undefined;
+        let v = findInFlat(flat, modelKey);
+        if (v !== undefined) return v;
+        const last = modelKey.includes(".") ? modelKey.split(".").pop() : modelKey;
+        const paired = last === "typeId" ? "type_id" : last === "type_id" ? "typeId" : null;
+        if (paired !== null) {
+            v = findInFlat(flat, paired);
+            if (v !== undefined) return v;
+        }
+        return undefined;
+    }
+
     function isAllowedComparisonKey(key, entityTypeStr) {
         if (!key || typeof key !== "string") return false;
         const comparisonKeys = config()[String(entityTypeStr || "")]?.comparisonKeys;
@@ -327,8 +348,11 @@ export function useScrappingCompare(options) {
             });
         }
         return modelKeys.sort().map((key) => {
-            const brut = findInFlat(rawFlat, key) ?? findInFlat(rawFlat, key.split(".").pop());
-            const converti = findInFlat(convertedFlat, key) ?? findInFlat(convertedFlat, key.split(".").pop());
+            const brut =
+                findInFlatWithTypeIdAlias(rawFlat, key) ?? findInFlatWithTypeIdAlias(rawFlat, key.split(".").pop());
+            const converti =
+                findInFlatWithTypeIdAlias(convertedFlat, key)
+                ?? findInFlatWithTypeIdAlias(convertedFlat, key.split(".").pop());
             const existant = existingFlat[key];
             const differs = converti !== existant;
             return { key, brut, converti, existant, differs };
@@ -378,10 +402,16 @@ export function useScrappingCompare(options) {
         };
         return cellTriple(
             item,
-            (r) => (r?.item_type_id ?? r?.resource_type_id ?? r?.consumable_type_id ?? r?.type_id != null ? String(r.item_type_id ?? r.resource_type_id ?? r.consumable_type_id ?? r.type_id) : null),
+            (r) => {
+                const v =
+                    r?.item_type_id ?? r?.resource_type_id ?? r?.consumable_type_id ?? r?.type_id ?? null;
+                return v != null ? String(v) : null;
+            },
             (c) => {
                 const block = extractFirstBlock(c);
-                return block?.type_id != null ? String(block.type_id) : null;
+                if (!block || typeof block !== "object") return null;
+                const v = block.item_type_id ?? block.type_id ?? null;
+                return v != null ? String(v) : null;
             },
             rawType,
             dataEntry
@@ -404,6 +434,7 @@ export function useScrappingCompare(options) {
         flattenForCompareShallow,
         flattenRawForCompare,
         findInFlat,
+        findInFlatWithTypeIdAlias,
         convertedName,
         convertedLevel,
         extractFirstBlock,

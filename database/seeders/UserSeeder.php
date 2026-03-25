@@ -2,21 +2,18 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Models\User;
-use Database\Factories\UserFactory;
 
 class UserSeeder extends Seeder
 {
     /**
      * Crée ou restaure un utilisateur (soft delete) à partir d'une adresse email.
      *
-     * @param array{name:string,email:string,role:int,password:string,avatar?:string,notifications_enabled?:bool,notification_channels?:array,is_system?:bool} $attributes
-     * @param string $label Label d'affichage pour la sortie console
-     * @return User
+     * @param  array{name:string,email:string,role:int,password:string,avatar?:string,notifications_enabled?:bool,notification_channels?:array,is_system?:bool}  $attributes
+     * @param  string  $label  Label d'affichage pour la sortie console
      */
     private function createOrRestoreByEmail(array $attributes, string $label): User
     {
@@ -32,12 +29,14 @@ class UserSeeder extends Seeder
             $user->fill($attributes);
             $user->save();
 
-            $this->command->info('♻️  ' . $label . ' restauré/mis à jour: ' . $email);
+            $this->command->info('♻️  '.$label.' restauré/mis à jour: '.$email);
+
             return $user;
         }
 
         $user = User::create($attributes);
-        $this->command->info('✅ ' . $label . ' créé: ' . $email);
+        $this->command->info('✅ '.$label.' créé: '.$email);
+
         return $user;
     }
 
@@ -58,21 +57,10 @@ class UserSeeder extends Seeder
             'notification_channels' => [],
             'is_system' => true,
         ], 'Utilisateur système (ne peut pas se connecter)');
-        $this->command->info('ℹ️  Utilisateur système ID: ' . $systemUser->id);
+        $this->command->info('ℹ️  Utilisateur système ID: '.$systemUser->id);
 
-        // Super Admin
-        $this->createOrRestoreByEmail([
-            'name' => 'Super Admin',
-            'email' => 'super-admin@test.fr',
-            'role' => User::ROLE_SUPER_ADMIN, // super_admin = 5
-            'password' => Hash::make('0000'),
-            'avatar' => User::DEFAULT_AVATAR,
-            'email_verified_at' => now(),
-            'notifications_enabled' => true,
-            'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
-            'is_system' => false,
-        ], 'Super Admin (0000)');
-        $this->command->info('🔑 Super Admin: super-admin@test.fr / 0000');
+        // Compte super_admin humain : créé de façon interactive par `php artisan project:init` (ou `init`).
+        // Les comptes ci-dessous restent pour les tests en local (à retirer plus tard si besoin).
 
         // Test User
         $this->createOrRestoreByEmail([

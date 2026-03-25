@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use Illuminate\Console\Command;
 
 /**
@@ -24,6 +24,7 @@ class ScrappingTypesExtractCommand extends Command
                             {--skip-cache : Ignorer le cache du catalogue}';
 
     protected $description = 'Extrait les types item DofusDB par catégorie (resource/consumable/equipment) vers database/seeders/data/';
+
     protected $aliases = ['scrapping:extract-item-types'];
 
     public function __construct(
@@ -57,20 +58,19 @@ class ScrappingTypesExtractCommand extends Command
                 if ($typeId <= 0 || isset($excludedTypeIds[$typeId])) {
                     continue;
                 }
-                $name = $this->catalogService->stripDofusdbSuffix($t['name'] ?? null) ?? 'Type ' . $typeId;
+                $name = $this->catalogService->stripDofusdbSuffix($t['name'] ?? null) ?? 'Type '.$typeId;
                 $row = [
                     'dofusdb_type_id' => $typeId,
                     'name' => $name,
                     'decision' => 'pending',
                     'state' => 'draft',
                 ];
-                if ($category === 'resource') {
-                    $resourceTypes[] = $row;
-                } elseif ($category === 'consumable') {
-                    $consumableTypes[] = $row;
-                } else {
-                    $itemTypes[] = $row;
-                }
+                match ($category) {
+                    'resource' => $resourceTypes[] = $row,
+                    'consumable' => $consumableTypes[] = $row,
+                    'equipment' => $itemTypes[] = $row,
+                    default => null,
+                };
             }
         }
 
@@ -79,29 +79,29 @@ class ScrappingTypesExtractCommand extends Command
         usort($itemTypes, fn ($a, $b) => $a['dofusdb_type_id'] <=> $b['dofusdb_type_id']);
 
         $dir = database_path('seeders/data');
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
 
-        $this->writeFile($dir . '/resource_types.php', $resourceTypes, 'resource_types', 'Ressources (superType 9)');
-        $this->writeFile($dir . '/consumable_types.php', $consumableTypes, 'consumable_types', 'Consommables (superTypes 6, 70)');
-        $this->writeFile($dir . '/item_types.php', $itemTypes, 'item_types', 'Équipements (hors resource/consumable exclus)');
+        $this->writeFile($dir.'/resource_types.php', $resourceTypes, 'resource_types', 'Ressources (superTypes 9, 14) - typeIds');
+        $this->writeFile($dir.'/consumable_types.php', $consumableTypes, 'consumable_types', 'Consommables (superTypes 6, 70, 15-19, 26, 27) - typeIds');
+        $this->writeFile($dir.'/item_types.php', $itemTypes, 'item_types', 'Équipements (superTypes 1-5, 7, 10-13, 20, 22-25, 69) - typeIds');
 
-        $this->info('Extraction terminée : ' . count($resourceTypes) . ' ressources, ' . count($consumableTypes) . ' consommables, ' . count($itemTypes) . ' équipements.');
+        $this->info('Extraction terminée : '.count($resourceTypes).' ressources, '.count($consumableTypes).' consommables, '.count($itemTypes).' équipements (tous en typeIds).');
 
         return self::SUCCESS;
     }
 
     /**
-     * @param list<array{dofusdb_type_id:int,name:string,decision:string,state:string}> $data
+     * @param  list<array{dofusdb_type_id:int,name:string,decision:string,state:string}>  $data
      */
     private function writeFile(string $path, array $data, string $label, string $comment): void
     {
         $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * {$label} – {$comment}.\n"
-            . " * Généré par : php artisan scrapping:types:extract\n"
-            . " * Régénéré depuis la BDD par : php artisan scrapping:seeders:export --item-types\n */\n\nreturn "
-            . var_export($data, true) . ";\n";
+            ." * Généré par : php artisan scrapping:types:extract\n"
+            ." * Régénéré depuis la BDD par : php artisan scrapping:seeders:export --item-types\n */\n\nreturn "
+            .var_export($data, true).";\n";
         file_put_contents($path, $content);
-        $this->line('  → ' . $path . ' (' . count($data) . ' entrées)');
+        $this->line('  → '.$path.' ('.count($data).' entrées)');
     }
 }

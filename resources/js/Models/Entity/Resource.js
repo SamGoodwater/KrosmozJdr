@@ -319,9 +319,11 @@ export class Resource extends BaseModel {
         const typeName = resourceType.name || resourceType.label || '-';
 
         return {
-            type: 'text',
+            type: 'badge',
             value: typeName,
             params: {
+                color: 'auto',
+                autoLabel: typeName,
                 tooltip: typeName === '-' ? '' : typeName,
                 sortValue: typeName,
                 searchValue: typeName,

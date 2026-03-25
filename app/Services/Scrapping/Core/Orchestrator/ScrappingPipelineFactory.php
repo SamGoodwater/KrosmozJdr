@@ -12,11 +12,9 @@ use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Conversion\ConversionService;
 use App\Services\Scrapping\Core\Conversion\FormatterApplicator;
 use App\Services\Scrapping\Core\Conversion\ItemEffectsToBonusConverter;
+use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Normalizer\SpellGlobalNormalizer;
-use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
-use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
-use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
 use App\Services\Scrapping\Core\Relation\RelationResolutionService;
 
 /**
@@ -52,10 +50,10 @@ final class ScrappingPipelineFactory
             app(CollectService::class),
             new ConversionService($configLoader, $formatterApplicator, $conversionService),
             app(CharacteristicLimitService::class),
-            new IntegrationService(),
+            app(IntegrationService::class),
             app(SpellEffectsConversionService::class),
             null,
-            new SpellGlobalNormalizer()
+            new SpellGlobalNormalizer
         );
         $orchestrator->setRelationResolutionService(new RelationResolutionService($orchestrator));
 

@@ -62,7 +62,7 @@ export class CategoryFormatter extends BaseFormatter {
     const label = option?.label || `Catégorie ${numValue}`;
 
     if (mode === 'badge' && option) {
-      return this.buildBadgeCell(label, option.color, {
+      return this.buildTypeBadgeCell(label, {
         sortValue: numValue,
         filterValue: numValue,
       });

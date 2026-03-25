@@ -11,9 +11,11 @@ use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
+use App\Models\Type\ResourceType;
+use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Catalog\DofusDbMonsterRacesCatalogService;
 use App\Services\Scrapping\Registry\TypeRegistryBatchTouchService;
-use App\Models\Type\ResourceType;
 
 /**
  * Enrichit les résultats de recherche scrapping (exists, typeName, raceName, etc.).
@@ -25,13 +27,15 @@ final class SearchResultEnricher
     public function __construct(
         private TypeRegistryBatchTouchService $typeRegistryBatchTouch,
         private DofusDbMonsterRacesCatalogService $monsterRacesCatalog,
+        private ?DofusDbItemTypesCatalogService $itemTypesCatalog = null,
+        private ?DofusDbItemSuperTypeMappingService $itemSuperTypeMapping = null,
     ) {}
 
     /**
      * Enrichit les items : exists/existing, libellés de type, libellé de race (monstres).
      *
-     * @param string $entity Type d'entité (class, monster, item, spell, panoply, resource, consumable, equipment)
-     * @param array<int, array<string, mixed>> $items Items bruts (liste indexée)
+     * @param  string  $entity  Type d'entité (class, monster, item, spell, panoply, resource, consumable, equipment)
+     * @param  array<int, array<string, mixed>>  $items  Items bruts (liste indexée)
      * @return array<int, array<string, mixed>>
      */
     public function enrich(string $entity, array $items): array
@@ -49,7 +53,7 @@ final class SearchResultEnricher
      * Pour les ressources : recipesThatUse (recettes qui utilisent la ressource) — on obtient
      * les recettes à l'inverse via équipements/consommables → leurs ingrédients.
      *
-     * @param array<int, array<string, mixed>> $items
+     * @param  array<int, array<string, mixed>>  $items
      * @return array<int, array<string, mixed>>
      */
     private function stripUnwantedFields(string $entity, array $items): array
@@ -59,7 +63,7 @@ final class SearchResultEnricher
         }
 
         foreach ($items as $i => $it) {
-            if (!is_array($it)) {
+            if (! is_array($it)) {
                 continue;
             }
             unset($items[$i]['recipesThatUse']);
@@ -71,7 +75,7 @@ final class SearchResultEnricher
     /**
      * Ajoute `exists` + `existing` (id interne) aux items.
      *
-     * @param array<int, array<string, mixed>> $items
+     * @param  array<int, array<string, mixed>>  $items
      * @return array<int, array<string, mixed>>
      */
     public function withExistsFlag(string $entity, array $items): array
@@ -132,7 +136,9 @@ final class SearchResultEnricher
     /**
      * Ajoute typeName, typeDecision, typeKnown (et enregistre les typeId en base si absent).
      *
-     * @param array<int, array<string, mixed>> $items
+     * Les trois registries (resource_types, consumable_types, item_types) stockent des typeIds.
+     *
+     * @param  array<int, array<string, mixed>>  $items
      * @return array<int, array<string, mixed>>
      */
     public function withTypeLabelsAndRegistry(string $entity, array $items): array
@@ -167,21 +173,21 @@ final class SearchResultEnricher
             return $items;
         }
 
-        $byTypeId = [];
+        $byLookupId = [];
         try {
             /** @var class-string $registry */
             $rows = $registry::query()->whereIn('dofusdb_type_id', $typeIds)->get();
             foreach ($rows as $row) {
                 $id = is_numeric($row->dofusdb_type_id ?? null) ? (int) $row->dofusdb_type_id : 0;
                 if ($id > 0) {
-                    $byTypeId[$id] = $row;
+                    $byLookupId[$id] = $row;
                 }
             }
         } catch (\Throwable) {
-            $byTypeId = [];
+            $byLookupId = [];
         }
 
-        $knownIds = array_map('intval', array_keys($byTypeId));
+        $knownIds = array_map('intval', array_keys($byLookupId));
         $missing = array_values(array_diff($typeIds, $knownIds));
         if ($missing !== []) {
             try {
@@ -191,7 +197,7 @@ final class SearchResultEnricher
                 foreach ($touched as $row) {
                     $id = is_numeric($row->dofusdb_type_id ?? null) ? (int) $row->dofusdb_type_id : 0;
                     if ($id > 0) {
-                        $byTypeId[$id] = $row;
+                        $byLookupId[$id] = $row;
                     }
                 }
             } catch (\Throwable) {
@@ -212,7 +218,7 @@ final class SearchResultEnricher
                 continue;
             }
             try {
-                $typeModel = $byTypeId[$typeId] ?? null;
+                $typeModel = $byLookupId[$typeId] ?? null;
                 if ($typeModel === null) {
                     continue;
                 }
@@ -232,7 +238,7 @@ final class SearchResultEnricher
     /**
      * Enrichit les monstres avec raceId + raceName.
      *
-     * @param array<int, array<string, mixed>> $items
+     * @param  array<int, array<string, mixed>>  $items
      * @return array<int, array<string, mixed>>
      */
     public function withMonsterRaceLabel(string $entity, array $items): array

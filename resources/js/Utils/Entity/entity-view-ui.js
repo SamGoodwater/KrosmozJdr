@@ -69,6 +69,23 @@ export function shouldOmitLabelInMeta(fieldKey) {
 }
 
 /**
+ * Clés de champs "type/catégorie/race" : couleur dérivée du contenu (getTailwindTokenFromLabel)
+ * pour un design cohérent et une identification visuelle rapide.
+ */
+export const TYPE_LIKE_FIELD_KEYS = Object.freeze([
+  "resource_type",
+  "item_type",
+  "consumable_type",
+  "monster_race",
+  "category",
+  "spell_category",
+  "spell_types",
+  "capability_type",
+  "panoply_type",
+  "element",
+]);
+
+/**
  * Mapping des aliases de groupes de caractéristiques (store ou tableMeta).
  * Permet de gérer les différences de nommage entre entité UI et payload API.
  *
@@ -225,6 +242,25 @@ export function resolveEntityBadgeUi(options = {}) {
       autoScheme: "level",
       autoTone: "mid",
     };
+  }
+
+  // Type/catégorie/race : couleur dérivée du contenu (même type = même couleur)
+  if (TYPE_LIKE_FIELD_KEYS.includes(fieldKey)) {
+    const val = cell?.value;
+    const label =
+      val == null || val === ""
+        ? ""
+        : typeof val === "object" && val !== null
+          ? String(val?.name ?? val?.label ?? val?.value ?? "").trim()
+          : String(val).trim();
+    if (label) {
+      return {
+        color: "auto",
+        autoLabel: label,
+        autoScheme: "mixed",
+        autoTone: "mid",
+      };
+    }
   }
 
   return { color };

@@ -2,6 +2,8 @@
 
 namespace App\Services\Scrapping\Core\Conversion;
 
+use App\Models\Type\ConsumableType;
+use App\Models\Type\ItemType;
 use App\Models\Type\ResourceType;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
@@ -34,17 +36,16 @@ final class FormatterApplicator
         private readonly ?DofusDbItemSuperTypeMappingService $superTypeMapping = null
     ) {
         $this->itemEffectsConverter = $itemEffectsConverter ?? ($getter !== null ? new ItemEffectsToBonusConverter($getter, $conversionService) : null);
-        $this->recipeConverter = $recipeConverter ?? new RecipeToResourceRecipeConverter();
+        $this->recipeConverter = $recipeConverter ?? new RecipeToResourceRecipeConverter;
         $this->registry = $this->buildRegistry();
     }
 
     /**
      * Dispatch unique : délègue au formatter enregistré ou retourne la valeur inchangée.
      *
-     * @param array<string, mixed> $args
-     * @param array<string, mixed> $raw
-     * @param array{entityType?: string, lang?: string, mappingRule?: array{characteristic_key?: string|null}} $context
-     * @return mixed
+     * @param  array<string, mixed>  $args
+     * @param  array<string, mixed>  $raw
+     * @param  array{entityType?: string, lang?: string, mappingRule?: array{characteristic_key?: string|null}}  $context
      */
     public function apply(string $name, mixed $value, array $args, array $raw, array $context = []): mixed
     {
@@ -79,7 +80,16 @@ final class FormatterApplicator
             'toJson' => fn (mixed $v): ?string => $this->toJson($v),
             'extractItemIds' => fn (mixed $v): array => $this->extractItemIds($v),
             'resolveResourceTypeId' => function (mixed $v, array $a, array $r, array $c): ?int {
-                return $this->resolveResourceTypeId($v, $r, (string) ($c['lang'] ?? 'fr'));
+                return $this->resolveResourceTypeId($v, $r, (string) ($c['lang'] ?? 'fr'), $c);
+            },
+            'resolveItemTypeId' => function (mixed $v, array $a, array $r, array $c): ?int {
+                return $this->resolveItemTypeId($v, $r, (string) ($c['lang'] ?? 'fr'), $c);
+            },
+            'resolveItemTypeName' => function (mixed $v, array $a, array $r, array $c): ?string {
+                return $this->resolveItemTypeName($v, $r, (string) ($c['lang'] ?? 'fr'));
+            },
+            'resolveConsumableTypeId' => function (mixed $v, array $a, array $r, array $c): ?int {
+                return $this->resolveConsumableTypeId($v, $r, (string) ($c['lang'] ?? 'fr'), $c);
             },
             'defaultRarityByLevel' => function (mixed $v, array $a, array $r, array $c): int {
                 return $this->defaultRarityByLevel($v, $r, (string) ($c['entityType'] ?? 'item'));
@@ -95,13 +105,14 @@ final class FormatterApplicator
                 } elseif (is_numeric($v)) {
                     $i = (int) $v;
                     // Entier seul : si c'est un effectId (typ. 1–5000), ne pas l'utiliser comme zone (mapping erroné).
-                    if ($i >= 1 && $i <= 5000 && !isset($v['shape'])) {
+                    if ($i >= 1 && $i <= 5000 && ! isset($v['shape'])) {
                         return null;
                     }
                     $zone = ['shape' => $i];
                 } else {
                     $zone = null;
                 }
+
                 return $zone !== null ? SpellEffectsConversionService::zoneDescrToNotation($zone) : null;
             },
         ];
@@ -111,6 +122,7 @@ final class FormatterApplicator
                 $entityType = (string) ($c['entityType'] ?? 'monster');
                 $d = $this->numericValue($v);
                 $key = $this->conversionService->getLevelCharacteristicKey($entityType);
+
                 return $this->conversionService->convert($key, ['d' => $d], $entityType, (float) round($d / 10), $c);
             };
             $registry['dofusdb_life'] = function (mixed $v, array $a, array $r, array $c): mixed {
@@ -122,6 +134,7 @@ final class FormatterApplicator
             $registry['dofusdb_ini'] = function (mixed $v, array $a, array $r, array $c): mixed {
                 $entityType = (string) ($c['entityType'] ?? 'monster');
                 $d = $this->numericValue($v);
+
                 return $this->conversionService->convert('ini_creature', ['d' => $d], $entityType, $d, $c);
             };
         }
@@ -152,7 +165,7 @@ final class FormatterApplicator
      */
     private function extractItemIds(mixed $value): array
     {
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             return [];
         }
         $ids = [];
@@ -182,7 +195,7 @@ final class FormatterApplicator
     }
 
     /**
-     * @param array<string, mixed> $context Contexte (convertedOutput, raw) pour les fonctions de conversion
+     * @param  array<string, mixed>  $context  Contexte (convertedOutput, raw) pour les fonctions de conversion
      */
     private function applyDofusdbLife(mixed $value, array $raw, array $args, string $entityType, array $context = []): int
     {
@@ -200,7 +213,7 @@ final class FormatterApplicator
      * Extrait la clé de caractéristique depuis context.mappingRule (règle de mapping BDD).
      * Une seule responsabilité : résoudre la clé pour les formatters dofusdb_*.
      *
-     * @param array{mappingRule?: array{characteristic_key?: string|null}} $context
+     * @param  array{mappingRule?: array{characteristic_key?: string|null}}  $context
      */
     private function resolveCharacteristicKeyFromContext(array $context): ?string
     {
@@ -217,7 +230,7 @@ final class FormatterApplicator
      * Applique dofusdb_attribute : utilise characteristic_key de la règle de mapping si présent,
      * sinon args.characteristicId (convention xxx_creature).
      *
-     * @param array<string, mixed> $context Contexte (convertedOutput, raw) pour les fonctions de conversion
+     * @param  array<string, mixed>  $context  Contexte (convertedOutput, raw) pour les fonctions de conversion
      */
     private function applyDofusdbAttribute(mixed $value, array $args, string $entityType, ?string $characteristicKey, array $context = []): mixed
     {
@@ -235,15 +248,14 @@ final class FormatterApplicator
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @return mixed
+     * @param  array<string, mixed>  $data
      */
     private function getByPath(array $data, string $path): mixed
     {
         $parts = explode('.', $path);
         $cur = $data;
         foreach ($parts as $part) {
-            if (!is_array($cur)) {
+            if (! is_array($cur)) {
                 return null;
             }
             $key = ctype_digit($part) ? (int) $part : $part;
@@ -271,7 +283,7 @@ final class FormatterApplicator
         if (is_string($value)) {
             return $value;
         }
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             return '';
         }
         if (isset($value[$lang]) && is_string($value[$lang])) {
@@ -342,20 +354,30 @@ final class FormatterApplicator
      *
      * @see docs/50-Fonctionnalités/Scrapping/Architecture/ITEM_TYPES_REFERENCE.md
      */
-    private function resolveResourceTypeId(mixed $value, array $raw, string $lang): ?int
+    /**
+     * @param  array<string, mixed>  $context  Doit contenir targetModel (resources|consumables|items) quand conversion ciblée.
+     */
+    private function resolveResourceTypeId(mixed $value, array $raw, string $lang, array $context = []): ?int
     {
         $typeId = is_numeric($value) ? (int) $value : 0;
         if ($typeId <= 0) {
             return null;
         }
 
+        $pipelineTargetsResources = ((string) ($context['targetModel'] ?? '')) === 'resources';
+
         if ($this->itemTypesCatalog !== null && $this->superTypeMapping !== null) {
-            $superTypeId = $this->itemTypesCatalog->getSuperTypeIdForTypeId($typeId, $lang, false);
-            if ($superTypeId === null) {
-                return null;
-            }
-            $category = $this->superTypeMapping->getCategoryForSuperTypeId($superTypeId);
-            if ($category !== 'resource') {
+            $superTypeId = $this->itemTypesCatalog->getSuperTypeIdForTypeId($typeId, $lang, false)
+                ?? $this->itemTypesCatalog->inferSuperTypeIdFromItemRaw($raw);
+            $category = $superTypeId !== null
+                ? $this->superTypeMapping->getCategoryForSuperTypeId($superTypeId)
+                : null;
+
+            if ($pipelineTargetsResources) {
+                if ($category !== null && $category !== 'resource') {
+                    return null;
+                }
+            } elseif ($superTypeId === null || $category !== 'resource') {
                 return null;
             }
         } else {
@@ -370,7 +392,7 @@ final class FormatterApplicator
         if (is_array($typeNode) && isset($typeNode['name'])) {
             $name = $this->pickLang($typeNode['name'], $lang, 'fr');
         }
-        $name = is_string($name) && $name !== '' ? $name : 'DofusDB type #' . $typeId;
+        $name = is_string($name) && $name !== '' ? $name : 'DofusDB type #'.$typeId;
 
         $rt = ResourceType::firstOrCreate(
             ['dofusdb_type_id' => $typeId],
@@ -378,6 +400,144 @@ final class FormatterApplicator
         );
 
         return $rt->id;
+    }
+
+    /**
+     * Résout un typeId DofusDB vers l'id Krosmoz item_types (équipements).
+     * On stocke le typeId (Arc, Baguette, Épée, Marteau…) comme pour resource_types et consumable_types.
+     *
+     * @see docs/50-Fonctionnalités/Scrapping/Architecture/ITEM_TYPES_REFERENCE.md
+     */
+    /**
+     * @param  array<string, mixed>  $context  targetModel = items pour équipements (conversion ciblée).
+     */
+    private function resolveItemTypeId(mixed $value, array $raw, string $lang, array $context = []): ?int
+    {
+        $typeId = is_numeric($value) ? (int) $value : 0;
+        if ($typeId <= 0) {
+            return null;
+        }
+
+        $pipelineTargetsItems = ((string) ($context['targetModel'] ?? '')) === 'items';
+
+        if ($this->itemTypesCatalog !== null && $this->superTypeMapping !== null) {
+            $superTypeId = $this->itemTypesCatalog->getSuperTypeIdForTypeId($typeId, $lang, false)
+                ?? $this->itemTypesCatalog->inferSuperTypeIdFromItemRaw($raw);
+            $category = $superTypeId !== null
+                ? $this->superTypeMapping->getCategoryForSuperTypeId($superTypeId)
+                : null;
+
+            if ($pipelineTargetsItems) {
+                if ($category !== null && $category !== 'equipment') {
+                    return null;
+                }
+            } elseif ($superTypeId === null || $category !== 'equipment') {
+                return null;
+            }
+
+            $typeNode = $this->getByPath($raw, 'type');
+            $name = null;
+            if (is_array($typeNode) && isset($typeNode['name'])) {
+                $name = $this->pickLang($typeNode['name'], $lang, 'fr');
+            }
+            $name = is_string($name) && $name !== '' ? $name
+                : ($this->itemTypesCatalog->fetchName($typeId, $lang, false) ?? 'DofusDB type #'.$typeId);
+
+            $it = ItemType::firstOrCreate(
+                ['dofusdb_type_id' => $typeId],
+                ['name' => $name, 'state' => ItemType::STATE_DRAFT]
+            );
+
+            return $it->id;
+        }
+
+        $it = ItemType::where('dofusdb_type_id', $typeId)->first();
+
+        return $it?->id;
+    }
+
+    /**
+     * Résout un typeId DofusDB vers l'id Krosmoz consumable_types.
+     * N'ajoute que les types dont le superType DofusDB = 6 ou 70 (Consommable).
+     *
+     * @see docs/50-Fonctionnalités/Scrapping/Architecture/ITEM_TYPES_REFERENCE.md
+     */
+    /**
+     * @param  array<string, mixed>  $context  targetModel = consumables en conversion ciblée.
+     */
+    private function resolveConsumableTypeId(mixed $value, array $raw, string $lang, array $context = []): ?int
+    {
+        $typeId = is_numeric($value) ? (int) $value : 0;
+        if ($typeId <= 0) {
+            return null;
+        }
+
+        $pipelineTargetsConsumables = ((string) ($context['targetModel'] ?? '')) === 'consumables';
+
+        if ($this->itemTypesCatalog !== null && $this->superTypeMapping !== null) {
+            $superTypeId = $this->itemTypesCatalog->getSuperTypeIdForTypeId($typeId, $lang, false)
+                ?? $this->itemTypesCatalog->inferSuperTypeIdFromItemRaw($raw);
+            $category = $superTypeId !== null
+                ? $this->superTypeMapping->getCategoryForSuperTypeId($superTypeId)
+                : null;
+
+            if ($pipelineTargetsConsumables) {
+                if ($category !== null && $category !== 'consumable') {
+                    return null;
+                }
+            } elseif ($superTypeId === null || $category !== 'consumable') {
+                return null;
+            }
+        } else {
+            $ct = ConsumableType::where('dofusdb_type_id', $typeId)->first();
+
+            return $ct?->id;
+        }
+
+        $typeNode = $this->getByPath($raw, 'type');
+        $name = null;
+        if (is_array($typeNode) && isset($typeNode['name'])) {
+            $name = $this->pickLang($typeNode['name'], $lang, 'fr');
+        }
+        $name = is_string($name) && $name !== '' ? $name
+            : ($this->itemTypesCatalog->fetchName($typeId, $lang, false) ?? 'DofusDB type #'.$typeId);
+
+        $ct = ConsumableType::firstOrCreate(
+            ['dofusdb_type_id' => $typeId],
+            ['name' => $name, 'state' => ConsumableType::STATE_DRAFT]
+        );
+
+        return $ct->id;
+    }
+
+    /**
+     * Retourne le nom du type d'équipement (Arc, Baguette, Épée…).
+     * Utilisé pour l'affichage dans le bloc converti (type_name).
+     */
+    private function resolveItemTypeName(mixed $value, array $raw, string $lang): ?string
+    {
+        $typeId = is_numeric($value) ? (int) $value : 0;
+        if ($typeId <= 0 || $this->itemTypesCatalog === null || $this->superTypeMapping === null) {
+            return null;
+        }
+        $superTypeId = $this->itemTypesCatalog->getSuperTypeIdForTypeId($typeId, $lang, false)
+            ?? $this->itemTypesCatalog->inferSuperTypeIdFromItemRaw($raw);
+        if ($superTypeId === null) {
+            return null;
+        }
+        if ($this->superTypeMapping->getCategoryForSuperTypeId($superTypeId) !== 'equipment') {
+            return null;
+        }
+
+        $typeNode = $this->getByPath($raw, 'type');
+        if (is_array($typeNode) && isset($typeNode['name'])) {
+            $name = $this->pickLang($typeNode['name'], $lang, 'fr');
+            if (is_string($name) && $name !== '') {
+                return $name;
+            }
+        }
+
+        return $this->itemTypesCatalog->fetchName($typeId, $lang, false);
     }
 
     /**
@@ -396,9 +556,11 @@ final class FormatterApplicator
                 $def = $this->getter->getDefinition('rarity_object', $entityType);
                 if ($def !== null && isset($def['value_available']) && is_array($def['value_available']) && $def['value_available'] !== []) {
                     $first = reset($def['value_available']);
+
                     return is_numeric($first) ? (int) (float) $first : 0;
                 }
             }
+
             return 0;
         }
         $keyLevel = $this->conversionService->getLevelCharacteristicKey($entityType);
@@ -410,5 +572,4 @@ final class FormatterApplicator
 
         return $this->conversionService->convert('rarity_object', ['level' => $level], $entityType, (float) $fallback);
     }
-
 }

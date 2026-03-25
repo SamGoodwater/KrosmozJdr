@@ -39,6 +39,19 @@
     "file": "type-management/TypeManagerTable.vue"
   },
   {
+    "name": "DiceRollerModal",
+    "description": "DiceRollerModal Organism",
+    "props": [
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "- Contrôle l'ouverture du modal"
+      }
+    ],
+    "slots": [],
+    "file": "tools/DiceRollerModal.vue"
+  },
+  {
     "name": "TanStackTable",
     "description": "TanStackTable Organism",
     "props": [],
@@ -448,42 +461,8 @@
     "file": "scrapping/CompareModal.vue"
   },
   {
-    "name": "SidebarNav",
-    "description": "SidebarNav Organism",
-    "props": [],
-    "slots": [],
-    "file": "layout/SidebarNav.vue"
-  },
-  {
-    "name": "NotificationContainer",
-    "description": "NotificationContainer Organism",
-    "props": [],
-    "slots": [],
-    "file": "feedback/NotificationContainer.vue"
-  },
-  {
-    "name": "FeedbackFab",
-    "description": "FeedbackFab Organism",
-    "props": [],
-    "slots": [],
-    "file": "feedback/FeedbackFab.vue"
-  },
-  {
-    "name": "DiceRollerModal",
-    "description": "Modal lanceur de dés avec formule ndX (2d6+3, etc.), min/max/moyenne en temps réel, raccourcis d4-d100",
-    "props": [
-      {
-        "name": "open",
-        "type": "Boolean",
-        "desc": "- Contrôle l'ouverture du modal"
-      }
-    ],
-    "slots": [],
-    "file": "tools/DiceRollerModal.vue"
-  },
-  {
     "name": "ToolsFooterDropdown",
-    "description": "Dropdown Outils dans le footer de l'Aside (trigger style DockItem, contenu : Lanceur de dés, etc.)",
+    "description": "ToolsFooterDropdown Organism",
     "props": [
       {
         "name": "icon",
@@ -508,6 +487,27 @@
     ],
     "slots": [],
     "file": "layout/ToolsFooterDropdown.vue"
+  },
+  {
+    "name": "SidebarNav",
+    "description": "SidebarNav Organism",
+    "props": [],
+    "slots": [],
+    "file": "layout/SidebarNav.vue"
+  },
+  {
+    "name": "NotificationContainer",
+    "description": "NotificationContainer Organism",
+    "props": [],
+    "slots": [],
+    "file": "feedback/NotificationContainer.vue"
+  },
+  {
+    "name": "FeedbackFab",
+    "description": "FeedbackFab Organism",
+    "props": [],
+    "slots": [],
+    "file": "feedback/FeedbackFab.vue"
   },
   {
     "name": "EntityRelationsManager",

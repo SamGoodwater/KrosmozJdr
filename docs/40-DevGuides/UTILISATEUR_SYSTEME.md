@@ -13,6 +13,7 @@ Contrainte sécurité : cet utilisateur **ne peut pas se connecter**.
   - `User::canLogin()` (retourne `false` si `is_system=true`)
 - **Seeder** : `database/seeders/UserSeeder.php`
   - crée l’utilisateur `system@krosmozjdr.local` avec `is_system=true`
+  - le **super_admin humain** n’est plus créé par le seeder : il est saisi de façon interactive lors de `php artisan project:init` (email, pseudo, mot de passe). En CI, utiliser `--skip-super-admin-prompt` et créer le compte autrement.
 
 ## Utilisation
 Les services qui créent/modifient des entités automatiquement doivent privilégier `User::getSystemUser()` pour renseigner `created_by`.

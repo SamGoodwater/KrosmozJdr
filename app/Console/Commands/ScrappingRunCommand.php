@@ -8,7 +8,6 @@ use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Catalog\DofusDbMonsterRacesCatalogService;
 use App\Services\Scrapping\Core\Collect\CollectService;
-use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
@@ -76,6 +75,7 @@ class ScrappingRunCommand extends Command
         {--backfill-delay-ms=0 : (backfill-images) Pause entre téléchargements (ms)}';
 
     protected $description = 'Récupération et import DofusDB (--entity=... par défaut importe ; --simulate pour ne pas écrire ; --backfill-images pour rattraper les images).';
+
     protected $aliases = ['scrapping'];
 
     private function isDebug(): bool
@@ -88,11 +88,11 @@ class ScrappingRunCommand extends Command
      */
     private function debugLine(string $message, bool $withTime = true): void
     {
-        if (!$this->isDebug() || (bool) $this->option('json')) {
+        if (! $this->isDebug() || (bool) $this->option('json')) {
             return;
         }
-        $prefix = $withTime ? '[' . now()->format('H:i:s') . '] [debug] ' : ' [debug] ';
-        $this->line('<comment>' . $prefix . $message . '</comment>');
+        $prefix = $withTime ? '['.now()->format('H:i:s').'] [debug] ' : ' [debug] ';
+        $this->line('<comment>'.$prefix.$message.'</comment>');
     }
 
     public function handle(CollectService $collectService, Orchestrator $orchestrator, IntegrationService $integrationService): int
@@ -108,18 +108,20 @@ class ScrappingRunCommand extends Command
         $entities = $this->parseEntityList((string) ($this->option('entity') ?? ''));
         if (empty($entities)) {
             $this->error('Aucune entité fournie. Utilise --entity=monster ou --entity=monster,item,...');
+
             return Command::FAILURE;
         }
 
-        $doSave = !(bool) $this->option('simulate');
+        $doSave = ! (bool) $this->option('simulate');
         $outputMode = (string) $this->option('output');
-        if ($outputMode !== '' && !in_array($outputMode, ['raw', 'useful', 'summary'], true)) {
+        if ($outputMode !== '' && ! in_array($outputMode, ['raw', 'useful', 'summary'], true)) {
             $this->error("Option --output invalide: {$outputMode}. Valeurs: raw, useful, summary.");
+
             return Command::FAILURE;
         }
         $usefulInclude = $this->parseUsefulInclude((string) $this->option('useful'), $outputMode);
         $outputAsJson = (bool) $this->option('json');
-        $outputVerbose = !$outputAsJson;
+        $outputVerbose = ! $outputAsJson;
 
         if ((bool) $this->option('noimage')) {
             config(['scrapping.images.enabled' => false]);
@@ -137,11 +139,11 @@ class ScrappingRunCommand extends Command
                 $this->debugLine($msg, true);
             };
         }
-        $outputVerboseForCollect = !(bool) $this->option('json');
+        $outputVerboseForCollect = ! (bool) $this->option('json');
         if ($outputVerboseForCollect) {
             $options['collect_progress_callback'] = function (int $page, int $collected, int $totalApi): void {
                 $totalStr = $totalApi > 0 ? "/{$totalApi}" : '';
-                $this->line("  <comment>[" . now()->format('H:i:s') . "]</comment> Collecte… page {$page}, {$collected}{$totalStr} items");
+                $this->line('  <comment>['.now()->format('H:i:s')."]</comment> Collecte… page {$page}, {$collected}{$totalStr} items");
             };
         }
 
@@ -172,8 +174,10 @@ class ScrappingRunCommand extends Command
                 : "➡️  {$normalizedEntity}";
             $this->info($entityLabel);
 
-            // Cas spécial: resource = items côté DofusDB, mais import via importResource
-            $collectorEntity = $normalizedEntity === 'resource' ? 'item' : $normalizedEntity;
+            // resource, consumable, equipment : tous utilisent l'API /items et la config item.json
+            $collectorEntity = in_array($normalizedEntity, ['resource', 'consumable', 'equipment'], true)
+                ? 'item'
+                : $normalizedEntity;
 
             $entityResult = [
                 'entity' => $normalizedEntity,
@@ -199,7 +203,7 @@ class ScrappingRunCommand extends Command
                         ->all();
 
                     if (empty($typeIds)) {
-                        throw new \RuntimeException("Aucun typeId autorisé trouvé dans resource_types (decision=allowed).");
+                        throw new \RuntimeException('Aucun typeId autorisé trouvé dans resource_types (decision=allowed).');
                     }
 
                     $perType = (bool) ((int) $this->option('per-type'));
@@ -215,9 +219,9 @@ class ScrappingRunCommand extends Command
                             $localFilters['typeId'] = $onlyTypeId;
                         }
 
-                        $this->debugLine("Collecte {$collectorEntity} (resource-types) typeId=" . ($onlyTypeId ?? 'tous') . '…');
+                        $this->debugLine("Collecte {$collectorEntity} (resource-types) typeId=".($onlyTypeId ?? 'tous').'…');
                         $search = $collectService->fetchManyResult('dofusdb', $collectorEntity, $localFilters, $options);
-                        $this->debugLine("Collecte {$collectorEntity} typeId=" . ($onlyTypeId ?? 'tous') . " terminée : " . count($search['items'] ?? []) . " items, pages=" . ($search['meta']['pages'] ?? '?'));
+                        $this->debugLine("Collecte {$collectorEntity} typeId=".($onlyTypeId ?? 'tous').' terminée : '.count($search['items'] ?? []).' items, pages='.($search['meta']['pages'] ?? '?'));
                         $items = $search['items'] ?? [];
                         $entityResult['items'] = array_merge($entityResult['items'], $items);
                         $entityResult['metaByType'][] = [
@@ -234,8 +238,8 @@ class ScrappingRunCommand extends Command
                     }
 
                     $entityResult['ids'] = array_values(array_unique(array_filter($entityResult['ids'])));
-                    $this->line("  - trouvés: " . count($entityResult['ids']));
-                } elseif (!empty($ids)) {
+                    $this->line('  - trouvés: '.count($entityResult['ids']));
+                } elseif (! empty($ids)) {
                     $entityResult['ids'] = $ids;
 
                     // Collecte unitaire (fetchOne) pour avoir du contenu même en mode IDs.
@@ -248,7 +252,7 @@ class ScrappingRunCommand extends Command
                         $this->debugLine("FetchOne {$collectorEntity} id={$id} OK");
                     }
                 } else {
-                    $this->debugLine("Début collecte {$collectorEntity} (filtres: " . json_encode($filters) . ", page_size=" . ($options['page_size'] ?? $options['limit'] ?? '?') . ", max_pages=" . ($options['max_pages'] ?? '?') . ", max_items=" . ($options['max_items'] ?? '?') . "). Pour tout récupérer : --max-items=0.");
+                    $this->debugLine("Début collecte {$collectorEntity} (filtres: ".json_encode($filters).', page_size='.($options['page_size'] ?? $options['limit'] ?? '?').', max_pages='.($options['max_pages'] ?? '?').', max_items='.($options['max_items'] ?? '?').'). Pour tout récupérer : --max-items=0.');
                     $this->line("  Collecte {$collectorEntity} en cours…");
                     $search = $collectService->fetchManyResult('dofusdb', $collectorEntity, $filters, $options);
                     $items = $search['items'] ?? [];
@@ -265,8 +269,8 @@ class ScrappingRunCommand extends Command
                     $entityResult['ids'] = $foundIds;
 
                     $meta = $search['meta'] ?? [];
-                    $this->debugLine("Collecte {$collectorEntity} terminée : " . count($foundIds) . " items, total API=" . ($meta['total'] ?? '?') . ", pages=" . ($meta['pages'] ?? '?'));
-                    $this->line("  - trouvés: " . count($foundIds));
+                    $this->debugLine("Collecte {$collectorEntity} terminée : ".count($foundIds).' items, total API='.($meta['total'] ?? '?').', pages='.($meta['pages'] ?? '?'));
+                    $this->line('  - trouvés: '.count($foundIds));
                 }
 
                 if ($outputMode === 'useful') {
@@ -274,7 +278,7 @@ class ScrappingRunCommand extends Command
                     $integrationService = app(IntegrationService::class);
                     $entityConfig = $configLoader->loadEntity('dofusdb', $collectorEntity);
                     $entityTypeKrosmoz = (string) ($entityConfig['target']['krosmozEntity'] ?? $collectorEntity);
-                    $runOptsBase = ['convert' => true, 'validate' => !(bool) $this->option('no-validate'), 'integrate' => false, 'lang' => (string) $this->option('lang', 'fr')];
+                    $runOptsBase = ['convert' => true, 'validate' => ! (bool) $this->option('no-validate'), 'integrate' => false, 'lang' => (string) $this->option('lang', 'fr')];
                     $includeRaw = in_array('raw', $usefulInclude, true);
                     $includeConverted = in_array('converted', $usefulInclude, true);
                     $includeValidated = in_array('validated', $usefulInclude, true);
@@ -282,17 +286,18 @@ class ScrappingRunCommand extends Command
                     $entityResult['output_items'] = [];
                     $totalUseful = count($entityResult['items']);
                     $this->debugLine("Début conversion/preview {$normalizedEntity} : {$totalUseful} item(s)");
-                    $usefulBar = ($outputVerbose && !$outputAsJson && $totalUseful > 2)
+                    $usefulBar = ($outputVerbose && ! $outputAsJson && $totalUseful > 2)
                         ? $this->createProgressBar($totalUseful, "  Conversion/preview {$normalizedEntity}")
                         : null;
                     if ($usefulBar !== null) {
                         $usefulBar->start();
                     }
                     foreach ($entityResult['items'] as $idx => $rawItem) {
-                        if (!is_array($rawItem)) {
+                        if (! is_array($rawItem)) {
                             if ($usefulBar !== null) {
                                 $usefulBar->advance();
                             }
+
                             continue;
                         }
                         $rawUseful = ScrappingPreviewBuilder::buildRawUseful($rawItem, $entityConfig);
@@ -303,7 +308,7 @@ class ScrappingRunCommand extends Command
                         $existing = null;
                         $validationValid = null;
                         if ($includeConverted || $includeValidated || $includeCompared) {
-                            $this->debugLine("  runOneWithRaw {$collectorEntity} index={$idx} id=" . ($rawItem['id'] ?? '?'));
+                            $this->debugLine("  runOneWithRaw {$collectorEntity} index={$idx} id=".($rawItem['id'] ?? '?'));
                             $runResult = $orchestrator->runOneWithRaw('dofusdb', $collectorEntity, $rawItem, $runOptsBase);
                             $converted = $runResult->getConverted();
                             $validationErrors = $runResult->getValidationErrors();
@@ -339,7 +344,7 @@ class ScrappingRunCommand extends Command
                                 $prop['existing_value'] = $existing !== null ? ($existing[$key] ?? null) : null;
                             }
                             if ($includeValidated) {
-                                $prop['valid'] = !isset($errorPaths[$key]);
+                                $prop['valid'] = ! isset($errorPaths[$key]);
                             }
                             $properties[$key] = $prop;
                         }
@@ -381,24 +386,25 @@ class ScrappingRunCommand extends Command
                     $summaryCounts = ['collected' => count($entityResult['items']), 'converted' => 0, 'validated' => 0];
                     $totalSummary = count($entityResult['items']);
                     $this->debugLine("Début validation (summary) {$normalizedEntity} : {$totalSummary} item(s)");
-                    $summaryBar = ($outputVerbose && !$outputAsJson && $totalSummary > 2)
+                    $summaryBar = ($outputVerbose && ! $outputAsJson && $totalSummary > 2)
                         ? $this->createProgressBar($totalSummary, "  Validation {$normalizedEntity}")
                         : null;
                     if ($summaryBar !== null) {
                         $summaryBar->start();
                     }
                     foreach ($entityResult['items'] as $sIdx => $rawItem) {
-                        if (!is_array($rawItem) || !isset($rawItem['id'])) {
+                        if (! is_array($rawItem) || ! isset($rawItem['id'])) {
                             if ($summaryBar !== null) {
                                 $summaryBar->advance();
                             }
+
                             continue;
                         }
-                        $this->debugLine("  Validation (summary) {$normalizedEntity} index={$sIdx} id=" . $rawItem['id']);
+                        $this->debugLine("  Validation (summary) {$normalizedEntity} index={$sIdx} id=".$rawItem['id']);
                         $summaryCounts['converted']++;
                         $runResult = $orchestrator->runOneWithRaw('dofusdb', $collectorEntity, $rawItem, [
                             'convert' => true,
-                            'validate' => !(bool) $this->option('no-validate'),
+                            'validate' => ! (bool) $this->option('no-validate'),
                             'integrate' => false,
                             'lang' => (string) $this->option('lang', 'fr'),
                         ]);
@@ -420,15 +426,15 @@ class ScrappingRunCommand extends Command
 
                 if ($doSave) {
                     $importOptions = $this->buildImportOptions($options);
-                    if ($outputVerbose && !$outputAsJson) {
+                    if ($outputVerbose && ! $outputAsJson) {
                         $importOptions['drain_progress_callback'] = function (string $entity, string $dofusdbId): void {
-                            $this->line("  <comment>[relations " . now()->format('H:i:s') . "]</comment> {$entity} id={$dofusdbId}");
+                            $this->line('  <comment>[relations '.now()->format('H:i:s')."]</comment> {$entity} id={$dofusdbId}");
                         };
                     }
                     $idsToImport = $entityResult['ids'];
                     $totalImport = count($idsToImport);
                     $this->debugLine("Début import {$normalizedEntity} : {$totalImport} id(s) à traiter");
-                    $showImportProgress = $outputVerbose && !$outputAsJson && $totalImport > 0;
+                    $showImportProgress = $outputVerbose && ! $outputAsJson && $totalImport > 0;
                     $importBar = null;
                     if ($showImportProgress) {
                         $importBar = $this->createProgressBar($totalImport, "  Import {$normalizedEntity}");
@@ -444,12 +450,12 @@ class ScrappingRunCommand extends Command
                             $importBar->display();
                         }
                         if ($idx > 0 && ($idx + 1) % $heartbeatInterval === 0) {
-                            $this->line("  <comment>[" . now()->format('H:i:s') . "]</comment> {$normalizedEntity} " . ($idx + 1) . "/{$totalImport}");
+                            $this->line('  <comment>['.now()->format('H:i:s')."]</comment> {$normalizedEntity} ".($idx + 1)."/{$totalImport}");
                         }
                         if (($idx + 1) % $reconnectInterval === 0) {
                             \Illuminate\Support\Facades\DB::reconnect();
                         }
-                        $this->debugLine("Import {$normalizedEntity} id={$id} (" . ($idx + 1) . "/{$totalImport})…");
+                        $this->debugLine("Import {$normalizedEntity} id={$id} (".($idx + 1)."/{$totalImport})…");
                         if ($entityKey !== null) {
                             $skipInfo = $orchestrator->resolveSkipForEntity($entityKey, (int) $id, $importOptions);
                             if ($skipInfo !== null) {
@@ -462,13 +468,14 @@ class ScrappingRunCommand extends Command
                                 if ($importBar !== null) {
                                     $importBar->advance();
                                 }
+
                                 continue;
                             }
                         }
                         $oneResult = $this->importOne($orchestrator, $normalizedEntity, (int) $id, $importOptions);
                         $entityResult['imported'][] = $oneResult;
                         $ok = (bool) ($oneResult['success'] ?? false);
-                        $this->debugLine("Import {$normalizedEntity} id={$id} " . ($ok ? 'OK' : 'FAIL: ' . ($oneResult['error'] ?? 'inconnu')));
+                        $this->debugLine("Import {$normalizedEntity} id={$id} ".($ok ? 'OK' : 'FAIL: '.($oneResult['error'] ?? 'inconnu')));
                         if ($importBar !== null) {
                             $importBar->advance();
                         }
@@ -483,14 +490,14 @@ class ScrappingRunCommand extends Command
                         $results['summary']['integrated'] = ($results['summary']['integrated'] ?? 0) + $integratedCount;
                     }
                 }
-                if ($outputMode === 'summary' && !$doSave) {
+                if ($outputMode === 'summary' && ! $doSave) {
                     $results['summary']['integrated'] = $results['summary']['integrated'] ?? 0;
                 }
 
-                if ($outputVerbose && !$outputAsJson) {
+                if ($outputVerbose && ! $outputAsJson) {
                     if ($doSave) {
                         $ok = collect($entityResult['imported'])->filter(fn ($r) => (bool) ($r['success'] ?? false))->count();
-                        $this->line("  - imports: <info>{$ok}</info>/" . count($entityResult['imported']));
+                        $this->line("  - imports: <info>{$ok}</info>/".count($entityResult['imported']));
                     }
                 }
             } catch (\Throwable $e) {
@@ -513,8 +520,8 @@ class ScrappingRunCommand extends Command
      * Crée une barre de progression avec pourcentage et libellé.
      * N'est pas affichée en mode JSON pour ne pas corrompre la sortie.
      *
-     * @param int $max Nombre total d'étapes
-     * @param string $message Libellé affiché à gauche (ex. "  Import monster")
+     * @param  int  $max  Nombre total d'étapes
+     * @param  string  $message  Libellé affiché à gauche (ex. "  Import monster")
      */
     private function createProgressBar(int $max, string $message = ''): ProgressBar
     {
@@ -551,13 +558,14 @@ class ScrappingRunCommand extends Command
                 $out[] = $p;
             }
         }
+
         return array_values(array_unique($out));
     }
 
     /**
      * Affiche la sortie en mode verbose (lisible, coloré).
      *
-     * @param array<string, mixed> $results
+     * @param  array<string, mixed>  $results
      */
     private function renderVerboseOutput(array $results, string $outputMode): void
     {
@@ -565,43 +573,44 @@ class ScrappingRunCommand extends Command
         if (isset($results['summary'])) {
             $s = $results['summary'];
             $this->info('📊 Résumé');
-            $this->line('  Collectés : <info>' . (int) ($s['collected'] ?? 0) . '</info>');
-            $this->line('  Convertis : <info>' . (int) ($s['converted'] ?? 0) . '</info>');
-            $this->line('  Validés   : <info>' . (int) ($s['validated'] ?? 0) . '</info>');
-            $this->line('  Intégrés  : <info>' . (int) ($s['integrated'] ?? 0) . '</info>');
+            $this->line('  Collectés : <info>'.(int) ($s['collected'] ?? 0).'</info>');
+            $this->line('  Convertis : <info>'.(int) ($s['converted'] ?? 0).'</info>');
+            $this->line('  Validés   : <info>'.(int) ($s['validated'] ?? 0).'</info>');
+            $this->line('  Intégrés  : <info>'.(int) ($s['integrated'] ?? 0).'</info>');
+
             return;
         }
         foreach ($results['entities'] ?? [] as $entityResult) {
             $entity = $entityResult['entity'] ?? '?';
-            $this->line('<comment>▶ ' . $entity . '</comment>');
+            $this->line('<comment>▶ '.$entity.'</comment>');
             $count = isset($entityResult['output_items']) ? count($entityResult['output_items']) : count($entityResult['items'] ?? []);
-            $this->line('  Objets : <info>' . $count . '</info>');
-            if ($outputMode === 'raw' && !empty($entityResult['items'])) {
+            $this->line('  Objets : <info>'.$count.'</info>');
+            if ($outputMode === 'raw' && ! empty($entityResult['items'])) {
                 foreach ($entityResult['items'] as $i => $rawItem) {
-                    if (!is_array($rawItem)) {
+                    if (! is_array($rawItem)) {
                         continue;
                     }
                     $id = $rawItem['id'] ?? $i;
-                    $this->line('  --- DofusDB #' . $id . ' ---');
-                    $this->line('    ' . $this->shortValue($rawItem));
+                    $this->line('  --- DofusDB #'.$id.' ---');
+                    $this->line('    '.$this->shortValue($rawItem));
                 }
             }
-            if (!empty($entityResult['errors'])) {
+            if (! empty($entityResult['errors'])) {
                 foreach ($entityResult['errors'] as $err) {
-                    $this->line('  <error>✗ ' . $this->formatErrorMessage((string) $err) . '</error>');
+                    $this->line('  <error>✗ '.$this->formatErrorMessage((string) $err).'</error>');
                 }
             }
-            if ($outputMode === 'useful' && !empty($entityResult['output_items'])) {
+            if ($outputMode === 'useful' && ! empty($entityResult['output_items'])) {
                 $usefulInclude = $results['mode']['useful_include'] ?? [];
                 $includeCompared = in_array('compared', $usefulInclude, true);
                 foreach ($entityResult['output_items'] as $i => $item) {
                     $dofusId = $item['dofusdb_id'] ?? $i;
                     if ($includeCompared && array_key_exists('krosmoz_id', $item)) {
                         $krosmozId = $item['krosmoz_id'];
-                        $krosmozLabel = $krosmozId !== null ? '#' . $krosmozId : '(non importé)';
-                        $this->line('  --- DofusDB #' . $dofusId . ' - KrosmozJDR - ' . $krosmozLabel . ' ---');
+                        $krosmozLabel = $krosmozId !== null ? '#'.$krosmozId : '(non importé)';
+                        $this->line('  --- DofusDB #'.$dofusId.' - KrosmozJDR - '.$krosmozLabel.' ---');
                     } else {
-                        $this->line('  --- DofusDB #' . $dofusId . ' ---');
+                        $this->line('  --- DofusDB #'.$dofusId.' ---');
                     }
                     $valid = $item['validation_valid'] ?? null;
                     if ($valid !== null) {
@@ -610,33 +619,33 @@ class ScrappingRunCommand extends Command
                     foreach ($item['properties'] ?? [] as $key => $prop) {
                         $hasAny = array_key_exists('raw_value', $prop) || array_key_exists('converted_value', $prop)
                             || array_key_exists('existing_value', $prop);
-                        if (!$hasAny) {
+                        if (! $hasAny) {
                             continue;
                         }
-                        $this->line('    <comment>' . $key . '</comment> :');
+                        $this->line('    <comment>'.$key.'</comment> :');
                         if (array_key_exists('raw_value', $prop)) {
                             $v = $prop['raw_value'];
-                            $hasRaw = $v !== null && $v !== '' && (!is_array($v) || $v !== []);
-                            $this->line('      DofusDB   : ' . ($hasRaw ? '<comment>' . $this->formatValueForDisplay($key, $v) . '</comment>' : '—'));
+                            $hasRaw = $v !== null && $v !== '' && (! is_array($v) || $v !== []);
+                            $this->line('      DofusDB   : '.($hasRaw ? '<comment>'.$this->formatValueForDisplay($key, $v).'</comment>' : '—'));
                         }
                         if (array_key_exists('converted_value', $prop) || array_key_exists('valid', $prop)) {
                             $cv = $prop['converted_value'] ?? null;
                             $validMark = array_key_exists('valid', $prop)
                                 ? ($prop['valid'] ? ' <info>✓</info>' : ' <error>✗</error>')
                                 : '';
-                            $hasConverted = $cv !== null && $cv !== '' && (!is_array($cv) || $cv !== []);
-                            $this->line('      Converti  : ' . ($hasConverted ? $this->formatValueForDisplay($key, $cv) : '—') . $validMark);
+                            $hasConverted = $cv !== null && $cv !== '' && (! is_array($cv) || $cv !== []);
+                            $this->line('      Converti  : '.($hasConverted ? $this->formatValueForDisplay($key, $cv) : '—').$validMark);
                         }
                         if (array_key_exists('existing_value', $prop)) {
                             $ev = $prop['existing_value'];
-                            $hasExisting = $ev !== null && $ev !== '' && (!is_array($ev) || $ev !== []);
-                            $this->line('      Krosmoz   : ' . ($hasExisting ? $this->formatValueForDisplay($key, $ev) : '—'));
+                            $hasExisting = $ev !== null && $ev !== '' && (! is_array($ev) || $ev !== []);
+                            $this->line('      Krosmoz   : '.($hasExisting ? $this->formatValueForDisplay($key, $ev) : '—'));
                         }
                     }
-                    if (!empty($item['relation_objects_missing'])) {
+                    if (! empty($item['relation_objects_missing'])) {
                         $this->line('    <comment>Relations à importer (objets non en base) :</comment>');
                         foreach ($item['relation_objects_missing'] as $rel) {
-                            $this->line('      - DofusDB #' . $rel['dofusdb_id'] . ' x' . ($rel['quantity'] ?? 1));
+                            $this->line('      - DofusDB #'.$rel['dofusdb_id'].' x'.($rel['quantity'] ?? 1));
                         }
                     }
                 }
@@ -651,7 +660,8 @@ class ScrappingRunCommand extends Command
             return json_encode($v, JSON_UNESCAPED_UNICODE);
         }
         $s = (string) $v;
-        return mb_strlen($s) > 40 ? mb_substr($s, 0, 37) . '…' : $s;
+
+        return mb_strlen($s) > 40 ? mb_substr($s, 0, 37).'…' : $s;
     }
 
     /** Longueur max d'affichage pour une valeur (évite le wrap terminal et les lignes répétées). */
@@ -668,7 +678,7 @@ class ScrappingRunCommand extends Command
             return $this->formatRecipeIngredientsForDisplay($value);
         }
 
-        $truncate = !in_array($key, ['description', 'name'], true);
+        $truncate = ! in_array($key, ['description', 'name'], true);
         $base = $truncate ? $this->shortValue($value) : $this->longValue($value);
         if ($base === '—' || $base === '') {
             return $base;
@@ -678,7 +688,7 @@ class ScrappingRunCommand extends Command
         $base = str_replace(["\r\n", "\n", "\r"], ' ', $base);
         // Valeurs brutes longues (ex. JSON i18n name/description) : tronquer pour une ligne lisible ; pas les chaînes déjà converties.
         if (is_array($value) && mb_strlen($base) > self::DISPLAY_VALUE_MAX_LENGTH) {
-            $base = mb_substr($base, 0, self::DISPLAY_VALUE_MAX_LENGTH - 1) . '…';
+            $base = mb_substr($base, 0, self::DISPLAY_VALUE_MAX_LENGTH - 1).'…';
         }
 
         if ($key === 'type_id' && is_numeric($value)) {
@@ -686,7 +696,7 @@ class ScrappingRunCommand extends Command
             if ($typeId > 0) {
                 $name = app(DofusDbItemTypesCatalogService::class)->fetchName($typeId, 'fr', true);
                 if ($name !== null && $name !== '') {
-                    return $typeId . ' (' . $name . ')';
+                    return $typeId.' ('.$name.')';
                 }
             }
         }
@@ -696,11 +706,11 @@ class ScrappingRunCommand extends Command
             if ($id > 0) {
                 $rt = ResourceType::find($id);
                 if ($rt !== null && $rt->name !== null && $rt->name !== '') {
-                    return $id . ' (' . $rt->name . ')';
+                    return $id.' ('.$rt->name.')';
                 }
                 $name = app(DofusDbItemTypesCatalogService::class)->fetchName($id, 'fr', true);
                 if ($name !== null && $name !== '') {
-                    return $id . ' (' . $name . ')';
+                    return $id.' ('.$name.')';
                 }
             }
         }
@@ -709,7 +719,7 @@ class ScrappingRunCommand extends Command
             $r = (int) $value;
             $label = Resource::RARITY[$r] ?? null;
             if ($label !== null) {
-                return $r . ' (' . $label . ')';
+                return $r.' ('.$label.')';
             }
         }
 
@@ -735,18 +745,18 @@ class ScrappingRunCommand extends Command
      */
     private function formatRecipeIngredientsForDisplay(mixed $value): string
     {
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             return '—';
         }
         $parts = [];
         if (isset($value['ingredientIds'], $value['quantities']) && is_array($value['ingredientIds']) && is_array($value['quantities'])) {
             foreach ($value['ingredientIds'] as $idx => $id) {
                 $qty = $value['quantities'][$idx] ?? 1;
-                $parts[] = (string) $id . ' x' . (int) $qty;
+                $parts[] = (string) $id.' x'.(int) $qty;
             }
         } else {
             foreach ($value as $row) {
-                if (!is_array($row)) {
+                if (! is_array($row)) {
                     continue;
                 }
                 $id = $row['ingredient_dofusdb_id'] ?? $row['ingredient_resource_id'] ?? null;
@@ -757,10 +767,11 @@ class ScrappingRunCommand extends Command
                         $r = Resource::find((int) $row['ingredient_resource_id']);
                         $name = $r?->name;
                     }
-                    $parts[] = $name !== null && $name !== '' ? $name . ' (#' . $id . ') x' . $qty : (string) $id . ' x' . $qty;
+                    $parts[] = $name !== null && $name !== '' ? $name.' (#'.$id.') x'.$qty : (string) $id.' x'.$qty;
                 }
             }
         }
+
         return $parts === [] ? '—' : implode(', ', $parts);
     }
 
@@ -774,35 +785,40 @@ class ScrappingRunCommand extends Command
             $jsonStr = trim($m[3]);
             $decoded = json_decode($jsonStr, true);
             if (is_array($decoded) && isset($decoded['message']) && is_string($decoded['message'])) {
-                return $prefix . ' ' . $decoded['message'];
+                return $prefix.' '.$decoded['message'];
             }
         }
-        return mb_strlen($err) > 120 ? mb_substr($err, 0, 117) . '…' : $err;
+
+        return mb_strlen($err) > 120 ? mb_substr($err, 0, 117).'…' : $err;
     }
 
     private function handleBatchImport(Orchestrator $orchestrator): int
     {
         $path = (string) $this->option('batch');
-        if ($path === '' || !is_file($path)) {
+        if ($path === '' || ! is_file($path)) {
             $this->error("Fichier batch introuvable: {$path}");
+
             return Command::FAILURE;
         }
 
         $raw = file_get_contents($path);
         if ($raw === false) {
             $this->error("Impossible de lire le fichier: {$path}");
+
             return Command::FAILURE;
         }
 
         $decoded = json_decode($raw, true);
-        if (!is_array($decoded)) {
+        if (! is_array($decoded)) {
             $this->error("JSON invalide: {$path}");
+
             return Command::FAILURE;
         }
 
         $entities = isset($decoded['entities']) && is_array($decoded['entities']) ? $decoded['entities'] : $decoded;
-        if (!is_array($entities) || empty($entities)) {
+        if (! is_array($entities) || empty($entities)) {
             $this->error("Le fichier doit contenir un tableau d'entités ou un objet avec clé 'entities'.");
+
             return Command::FAILURE;
         }
 
@@ -812,8 +828,8 @@ class ScrappingRunCommand extends Command
             : [];
 
         $options = [
-            'validate' => !(bool) $this->option('no-validate'),
-            'integrate' => !(bool) $this->option('simulate'),
+            'validate' => ! (bool) $this->option('no-validate'),
+            'integrate' => ! (bool) $this->option('simulate'),
             'dry_run' => (bool) $this->option('simulate'),
             'force_update' => (bool) $this->option('replace-existing'),
             'include_relations' => (bool) ((int) $this->option('include-relations')),
@@ -831,6 +847,7 @@ class ScrappingRunCommand extends Command
             if ($entityKey === null) {
                 $results[] = ['index' => $i, 'type' => $type, 'id' => $eid, 'success' => false, 'error' => 'Type non supporté'];
                 $errorCount++;
+
                 continue;
             }
             $result = $orchestrator->runOne('dofusdb', $entityKey, $eid, $options);
@@ -841,7 +858,7 @@ class ScrappingRunCommand extends Command
                 'success' => $result->isSuccess(),
                 'error' => $result->isSuccess() ? null : $result->getMessage(),
             ];
-            if (!$result->isSuccess()) {
+            if (! $result->isSuccess()) {
                 $errorCount++;
             }
         }
@@ -857,9 +874,9 @@ class ScrappingRunCommand extends Command
         } else {
             $summary = $result['summary'];
             $this->info('📦 Import batch terminé');
-            $this->line('Total: ' . $summary['total']);
-            $this->line('Succès: ' . $summary['success']);
-            $this->line('Erreurs: ' . $summary['errors']);
+            $this->line('Total: '.$summary['total']);
+            $this->line('Succès: '.$summary['success']);
+            $this->line('Erreurs: '.$summary['errors']);
         }
 
         return $result['success'] ? Command::SUCCESS : Command::FAILURE;
@@ -887,12 +904,14 @@ class ScrappingRunCommand extends Command
             return [];
         }
         $parts = array_filter(array_map('trim', explode(',', $raw)));
+
         return array_values(array_unique($parts));
     }
 
     private function normalizeEntity(string $entity): string
     {
         $entity = strtolower(trim($entity));
+
         return match ($entity) {
             'classe' => 'class',
             default => $entity,
@@ -900,8 +919,6 @@ class ScrappingRunCommand extends Command
     }
 
     /**
-     * @param mixed $id
-     * @param mixed $ids
      * @return array<int,int>
      */
     private function parseIds(mixed $id, mixed $ids): array
@@ -923,11 +940,12 @@ class ScrappingRunCommand extends Command
         }
 
         $out = array_values(array_unique(array_filter($out)));
+
         return $out;
     }
 
     /**
-     * @param array<int,int> $ids
+     * @param  array<int,int>  $ids
      * @return array<string,mixed>
      */
     /**
@@ -935,15 +953,16 @@ class ScrappingRunCommand extends Command
      * levelMin/levelMax s'appliquent aux entités avec niveau (monster, item, resource, consumable, panoply).
      * idMin/idMax à toutes les entités qui les supportent (monster, item, spell, breed, panoply).
      *
-     * @param array<int,int> $ids
+     * @param  array<int,int>  $ids
      * @return array<string,mixed>
      */
     private function extractFilters(array $ids): array
     {
         $filters = [];
 
-        if (!empty($ids)) {
+        if (! empty($ids)) {
             $filters['ids'] = $ids;
+
             return $filters;
         }
 
@@ -978,7 +997,7 @@ class ScrappingRunCommand extends Command
                 $excluded = $superTypeMapping->getExcludedTypeIds();
                 $filters['typeIds'] = array_values(array_diff($typeIds, $excluded));
             }
-        } elseif (!isset($filters['typeIds'])) {
+        } elseif (! isset($filters['typeIds'])) {
             $typeId = $this->option('typeId');
             if ($typeId !== null && $typeId !== '') {
                 $filters['typeId'] = is_numeric($typeId) ? (int) $typeId : $typeId;
@@ -1106,15 +1125,16 @@ class ScrappingRunCommand extends Command
         $delayMs = max(0, (int) $this->option('backfill-delay-ms'));
 
         $cfg = config('scrapping.images', []);
-        if (!(bool) ($cfg['enabled'] ?? false)) {
+        if (! (bool) ($cfg['enabled'] ?? false)) {
             $this->warn('SCRAPPING_IMAGES_ENABLED=false → backfill annulé.');
+
             return Command::SUCCESS;
         }
 
         $baseUrl = rtrim((string) config('scrapping.data_collect.dofusdb_base_url', 'https://api.dofusdb.fr'), '/');
         $this->info('🖼️  Backfill images (Media Library, entités déjà en base)');
-        $this->line('Entités : ' . implode(', ', $entities));
-        $this->line('Mode : ' . ($dryRun ? 'dry-run' : 'écriture'));
+        $this->line('Entités : '.implode(', ', $entities));
+        $this->line('Mode : '.($dryRun ? 'dry-run' : 'écriture'));
         $this->newLine();
 
         $stats = ['scanned' => 0, 'candidates' => 0, 'downloaded' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0];
@@ -1128,31 +1148,36 @@ class ScrappingRunCommand extends Command
             if ($limit > 0 && $globalProcessed > $limit) {
                 return false;
             }
-            if (!$dofusdbId) {
+            if (! $dofusdbId) {
                 $stats['skipped']++;
+
                 return true;
             }
             $hasMedia = method_exists($entity, 'getMedia') && $entity->getMedia('images')->isNotEmpty();
-            if ($hasMedia && !$force) {
+            if ($hasMedia && ! $force) {
                 $stats['skipped']++;
+
                 return true;
             }
             $remoteUrl = ($currentImage && Str::startsWith($currentImage, ['http://', 'https://'])) ? $currentImage : null;
-            if (!$remoteUrl) {
+            if (! $remoteUrl) {
                 $remoteUrl = $this->guessDofusdbImageUrl($baseUrl, $folder, $dofusdbId);
             }
-            if (!$remoteUrl) {
+            if (! $remoteUrl) {
                 $stats['skipped']++;
+
                 return true;
             }
             $stats['candidates']++;
             if ($dryRun) {
                 $this->line("  - {$folder}#{$dofusdbId} → {$remoteUrl}");
+
                 return true;
             }
             $ok = $integrationService->attachImageFromUrl($entity, $remoteUrl, ['download_images' => true]);
-            if (!$ok) {
+            if (! $ok) {
                 $stats['errors']++;
+
                 return true;
             }
             $stats['downloaded']++;
@@ -1160,6 +1185,7 @@ class ScrappingRunCommand extends Command
             if ($delayMs > 0) {
                 usleep($delayMs * 1000);
             }
+
             return true;
         };
 
@@ -1173,6 +1199,7 @@ class ScrappingRunCommand extends Command
                             return false;
                         }
                     }
+
                     return true;
                 });
             }
@@ -1183,6 +1210,7 @@ class ScrappingRunCommand extends Command
                             return false;
                         }
                     }
+
                     return true;
                 });
             }
@@ -1193,6 +1221,7 @@ class ScrappingRunCommand extends Command
                             return false;
                         }
                     }
+
                     return true;
                 });
             }
@@ -1203,6 +1232,7 @@ class ScrappingRunCommand extends Command
                             return false;
                         }
                     }
+
                     return true;
                 });
             }
@@ -1210,13 +1240,14 @@ class ScrappingRunCommand extends Command
                 \App\Models\Entity\Monster::query()->whereNotNull('dofusdb_id')->with('creature:id,image')->orderBy('id')->chunkById($chunk, function ($rows) use ($processOne) {
                     foreach ($rows as $m) {
                         $c = $m->creature;
-                        if (!$c) {
+                        if (! $c) {
                             continue;
                         }
                         if ($processOne($c, (string) $m->dofusdb_id, $c->image, 'monsters') === false) {
                             return false;
                         }
                     }
+
                     return true;
                 });
             }
@@ -1225,8 +1256,9 @@ class ScrappingRunCommand extends Command
         $this->newLine();
         $this->info('📊 Résumé');
         foreach ($stats as $k => $v) {
-            $this->line(str_pad($k, 12) . ': ' . $v);
+            $this->line(str_pad($k, 12).': '.$v);
         }
+
         return Command::SUCCESS;
     }
 
@@ -1236,6 +1268,7 @@ class ScrappingRunCommand extends Command
     private function guessDofusdbImageUrl(string $baseUrl, string $folder, string $dofusdbId): ?string
     {
         $id = rawurlencode($dofusdbId);
+
         return match ($folder) {
             'items', 'resources', 'consumables' => "{$baseUrl}/img/items/{$id}.png",
             'spells' => "{$baseUrl}/img/spells/sort_{$id}.png",
@@ -1286,6 +1319,7 @@ class ScrappingRunCommand extends Command
         $result = $orchestrator->runOne('dofusdb', $entityKey, $id, $runOptions);
 
         $data = $result->getIntegrationResult()?->getData();
+
         return [
             'success' => $result->isSuccess(),
             'entity' => $entity,
@@ -1295,4 +1329,3 @@ class ScrappingRunCommand extends Command
         ];
     }
 }
-

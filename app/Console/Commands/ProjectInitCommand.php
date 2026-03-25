@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 /**
  * Initialisation complète du projet : migrations, seeders, scrapping, capabilities.
@@ -38,7 +43,8 @@ class ProjectInitCommand extends Command
         {--simulate : Ne pas écrire en base (validation seule)}
         {--init-scheduler : Afficher la ligne cron pour le scheduler Laravel}
         {--skip-clear-queue : Ne pas vider la queue avant le scrapping}
-        {--skip-notify : Ne pas notifier les admin à la fin}';
+        {--skip-notify : Ne pas notifier les admin à la fin}
+        {--skip-super-admin-prompt : Ne pas demander la création du super_admin (CI / scripts)}';
 
     protected $description = 'Initialise le projet (migrations, seeders, types, scrapping, capabilities)';
 
@@ -78,36 +84,36 @@ class ProjectInitCommand extends Command
             $this->runStorageLink();
             $this->newLine();
 
-        if (! (bool) $this->option('skip-seeders')) {
-            $this->runSeeders();
-        } else {
-            $this->warn('Seeders ignorés (--skip-seeders).');
-        }
-        $this->newLine();
+            if (! (bool) $this->option('skip-seeders')) {
+                $this->runSeeders();
+            } else {
+                $this->warn('Seeders ignorés (--skip-seeders).');
+            }
+            $this->newLine();
 
-        if (! (bool) $this->option('skip-types')) {
-            $this->runTypesSetup();
-        }
-        $this->newLine();
+            if (! (bool) $this->option('skip-types')) {
+                $this->runTypesSetup();
+            }
+            $this->newLine();
 
-        if (! (bool) $this->option('skip-scrapping')) {
-            $this->runScrapping();
-        } else {
-            $this->warn('Scrapping ignoré (--skip-scrapping).');
-        }
-        $this->newLine();
+            if (! (bool) $this->option('skip-scrapping')) {
+                $this->runScrapping();
+            } else {
+                $this->warn('Scrapping ignoré (--skip-scrapping).');
+            }
+            $this->newLine();
 
-        if (! (bool) $this->option('skip-capabilities')) {
-            $this->runCapabilitiesImport();
-        }
-        $this->newLine();
+            if (! (bool) $this->option('skip-capabilities')) {
+                $this->runCapabilitiesImport();
+            }
+            $this->newLine();
 
-        if ((bool) $this->option('init-scheduler')) {
-            $this->runInitScheduler();
-        }
-        $this->newLine();
+            if ((bool) $this->option('init-scheduler')) {
+                $this->runInitScheduler();
+            }
+            $this->newLine();
 
-        $success = true;
+            $success = true;
         } catch (\Throwable $e) {
             $lastError = $e->getMessage();
             throw $e;
@@ -178,10 +184,102 @@ class ProjectInitCommand extends Command
             $this->output->write(Artisan::output());
             if ($code !== 0) {
                 $this->warn("  Avertissement : échec partiel de {$seeder}");
+            } elseif ($seeder === \Database\Seeders\UserSeeder::class) {
+                $this->promptPrimarySuperAdmin();
             }
         }
 
         // MonsterRaceSeeder est inclus dans TypeSeeder (scrapping:setup)
+    }
+
+    /**
+     * Crée le compte super_admin principal (email, pseudo, mot de passe) après UserSeeder.
+     *
+     * @description
+     * En mode non interactif (CI, `-n`) ou avec `--skip-super-admin-prompt`, aucune création.
+     * Si un super_admin humain existe déjà (`is_system = false`), la saisie est ignorée.
+     */
+    private function promptPrimarySuperAdmin(): void
+    {
+        if ((bool) $this->option('skip-super-admin-prompt')) {
+            $this->warn('  Création du super_admin ignorée (--skip-super-admin-prompt). Créez un compte manuellement si besoin.');
+
+            return;
+        }
+
+        if (! $this->input->isInteractive()) {
+            $this->warn('  Mode non interactif : aucun super_admin créé. Relancez `php artisan project:init` sans `-n` ou créez un utilisateur avec le rôle super_admin.');
+
+            return;
+        }
+
+        if (User::query()->where('role', User::ROLE_SUPER_ADMIN)->where('is_system', false)->exists()) {
+            $existing = User::query()->where('role', User::ROLE_SUPER_ADMIN)->where('is_system', false)->first();
+            $this->line('  Un super_admin humain existe déjà ('.($existing?->email ?? '?').'), saisie ignorée.');
+
+            return;
+        }
+
+        $this->newLine();
+        $this->info('  Compte super_admin principal');
+        $this->line('  Saisissez l’email, le pseudo et le mot de passe du premier administrateur.');
+
+        while (true) {
+            $email = Str::lower(trim((string) $this->ask('  Adresse e-mail')));
+            $name = trim((string) $this->ask('  Pseudo (nom affiché)'));
+            $password = (string) $this->secret('  Mot de passe');
+            $passwordConfirm = (string) $this->secret('  Confirmation du mot de passe');
+
+            $validator = Validator::make(
+                [
+                    'email' => $email,
+                    'name' => $name,
+                    'password' => $password,
+                    'password_confirmation' => $passwordConfirm,
+                ],
+                [
+                    'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class.',email'],
+                    'name' => ['required', 'string', 'max:255'],
+                    'password' => ['required', 'string', 'confirmed', Password::defaults()],
+                ],
+                [
+                    'email.required' => 'L’e-mail est requis.',
+                    'email.email' => 'L’e-mail n’est pas valide.',
+                    'email.unique' => 'Cette adresse est déjà utilisée.',
+                    'name.required' => 'Le pseudo est requis.',
+                    'password.required' => 'Le mot de passe est requis.',
+                    'password.confirmed' => 'Les mots de passe ne correspondent pas.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                foreach ($validator->errors()->all() as $message) {
+                    $this->error('  '.$message);
+                }
+                if (! $this->confirm('  Réessayer ?', true)) {
+                    throw new \RuntimeException('Création du super_admin annulée.');
+                }
+
+                continue;
+            }
+
+            User::create([
+                'name' => $name,
+                'email' => $email,
+                'password' => Hash::make($password),
+                'role' => User::ROLE_SUPER_ADMIN,
+                'avatar' => User::DEFAULT_AVATAR,
+                'email_verified_at' => now(),
+                'notifications_enabled' => true,
+                'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
+                'is_system' => false,
+            ]);
+
+            $this->info('  Super_admin créé : '.$email);
+            $this->newLine();
+
+            return;
+        }
     }
 
     private function runTypesSetup(): void
@@ -195,6 +293,7 @@ class ProjectInitCommand extends Command
         $this->output->write(Artisan::output());
         if ($code !== 0) {
             $this->warn('  Avertissement : seed types item a échoué.');
+
             return;
         }
 
@@ -254,16 +353,18 @@ class ProjectInitCommand extends Command
             $entity = strtolower(trim($entity));
             if (! in_array($entity, self::SCRAPPING_ENTITIES, true)) {
                 $this->warn("  Entité inconnue ignorée : {$entity}");
+
                 continue;
             }
 
             if ($entity === 'monster') {
                 $this->runScrappingMonsters($scrapArgs);
                 $this->newLine();
+
                 continue;
             }
             if ($entity === 'resource') {
-                $this->line("  → scrapping:run --entity=resource --resource-types=allowed");
+                $this->line('  → scrapping:run --entity=resource --resource-types=allowed');
                 $code = $this->call('scrapping:run', array_merge($scrapArgs, [
                     '--entity' => 'resource',
                     '--resource-types' => 'allowed',
@@ -309,6 +410,7 @@ class ProjectInitCommand extends Command
         $path = base_path('database/seeders/data/capability.json');
         if (! is_file($path)) {
             $this->line('  Fichier capability.json absent, import ignoré.');
+
             return;
         }
         $this->line("  → capabilities:import-legacy {$path}");

@@ -28,10 +28,10 @@ class DofusDbItemTypesCatalogService
      */
     public function getCatalog(string $lang = 'fr', bool $skipCache = false): array
     {
-        $cacheKey = 'scrapping_dofusdb_item_types_catalog_' . $lang;
+        $cacheKey = 'scrapping_dofusdb_item_types_catalog_'.$lang;
         $ttl = (int) config('scrapping.data_collect.cache_ttl', 3600);
 
-        if (!$skipCache) {
+        if (! $skipCache) {
             $cached = Cache::get($cacheKey);
             if (is_array($cached)) {
                 return $cached;
@@ -51,11 +51,11 @@ class DofusDbItemTypesCatalogService
         while ($page < $maxPages) {
             $page++;
 
-            $url = rtrim($baseUrl, '/') . '/item-types?lang=' . urlencode($lang) . '&$limit=' . $limit . '&$skip=' . $skip;
+            $url = rtrim($baseUrl, '/').'/item-types?lang='.urlencode($lang).'&$limit='.$limit.'&$skip='.$skip;
             $payload = $this->client->getJson($url, ['skip_cache' => $skipCache]);
 
             $data = $payload['data'] ?? null;
-            if (!is_array($data) || count($data) === 0) {
+            if (! is_array($data) || count($data) === 0) {
                 break;
             }
 
@@ -70,7 +70,9 @@ class DofusDbItemTypesCatalogService
             }
 
             foreach ($data as $row) {
-                if (!is_array($row)) continue;
+                if (! is_array($row)) {
+                    continue;
+                }
 
                 $typeId = isset($row['id']) ? (int) $row['id'] : 0;
                 $superTypeId = isset($row['superTypeId']) ? (int) $row['superTypeId'] : 0;
@@ -97,13 +99,13 @@ class DofusDbItemTypesCatalogService
                     }
                 }
 
-                if (!isset($bySuperType[$superTypeId])) {
+                if (! isset($bySuperType[$superTypeId])) {
                     $bySuperType[$superTypeId] = [
                         'id' => $superTypeId,
                         'name' => $superTypeName,
                         'types' => [],
                     ];
-                } elseif (!$bySuperType[$superTypeId]['name'] && $superTypeName) {
+                } elseif (! $bySuperType[$superTypeId]['name'] && $superTypeName) {
                     $bySuperType[$superTypeId]['name'] = $superTypeName;
                 }
 
@@ -147,7 +149,7 @@ class DofusDbItemTypesCatalogService
             'superTypes' => $superTypes,
         ];
 
-        if (!$skipCache && $ttl > 0) {
+        if (! $skipCache && $ttl > 0) {
             Cache::put($cacheKey, $result, $ttl);
         }
 
@@ -155,7 +157,7 @@ class DofusDbItemTypesCatalogService
     }
 
     /**
-     * @param array<int,int> $superTypeIds
+     * @param  array<int,int>  $superTypeIds
      * @return array<int,int>
      */
     public function getTypeIdsForSuperTypes(array $superTypeIds, string $lang = 'fr', bool $skipCache = false): array
@@ -168,19 +170,24 @@ class DofusDbItemTypesCatalogService
 
         foreach ($catalog['superTypes'] as $st) {
             $sid = (int) ($st['id'] ?? 0);
-            if ($sid <= 0 || !isset($wanted[$sid])) {
+            if ($sid <= 0 || ! isset($wanted[$sid])) {
                 continue;
             }
             $types = $st['types'] ?? [];
-            if (!is_array($types)) continue;
+            if (! is_array($types)) {
+                continue;
+            }
             foreach ($types as $t) {
                 $tid = is_array($t) && isset($t['id']) ? (int) $t['id'] : 0;
-                if ($tid > 0) $ids[] = $tid;
+                if ($tid > 0) {
+                    $ids[] = $tid;
+                }
             }
         }
 
         $ids = array_values(array_unique($ids));
         sort($ids);
+
         return $ids;
     }
 
@@ -193,10 +200,13 @@ class DofusDbItemTypesCatalogService
         $ids = [];
         foreach ($catalog['superTypes'] as $st) {
             $sid = (int) ($st['id'] ?? 0);
-            if ($sid > 0) $ids[] = $sid;
+            if ($sid > 0) {
+                $ids[] = $sid;
+            }
         }
         $ids = array_values(array_unique($ids));
         sort($ids);
+
         return $ids;
     }
 
@@ -216,7 +226,7 @@ class DofusDbItemTypesCatalogService
         foreach ($catalog['superTypes'] ?? [] as $st) {
             $sid = (int) ($st['id'] ?? 0);
             $types = $st['types'] ?? [];
-            if (!is_array($types)) {
+            if (! is_array($types)) {
                 continue;
             }
             foreach ($types as $t) {
@@ -226,6 +236,41 @@ class DofusDbItemTypesCatalogService
                 }
             }
         }
+
+        return null;
+    }
+
+    /**
+     * Infère le superTypeId depuis la charge utile DofusDB d'un item (sans passer par le catalogue).
+     * Utile quand getSuperTypeIdForTypeId échoue (cache incomplet, nouveau typeId) alors que la réponse
+     * inclut déjà type.superTypeId ou type.superType.id.
+     *
+     * @param  array<string, mixed>  $raw  Réponse brute /items ou document normalisé
+     * @return int|null superTypeId DofusDB ou null
+     */
+    public function inferSuperTypeIdFromItemRaw(array $raw): ?int
+    {
+        if (isset($raw['superTypeId']) && is_numeric($raw['superTypeId'])) {
+            $id = (int) $raw['superTypeId'];
+
+            return $id > 0 ? $id : null;
+        }
+        $type = $raw['type'] ?? null;
+        if (! is_array($type)) {
+            return null;
+        }
+        if (isset($type['superTypeId']) && is_numeric($type['superTypeId'])) {
+            $id = (int) $type['superTypeId'];
+
+            return $id > 0 ? $id : null;
+        }
+        $super = $type['superType'] ?? null;
+        if (is_array($super) && isset($super['id']) && is_numeric($super['id'])) {
+            $id = (int) $super['id'];
+
+            return $id > 0 ? $id : null;
+        }
+
         return null;
     }
 
@@ -234,7 +279,7 @@ class DofusDbItemTypesCatalogService
      */
     public function stripDofusdbSuffix(?string $name): ?string
     {
-        if (!$name) {
+        if (! $name) {
             return $name;
         }
         $n = trim($name);
@@ -312,4 +357,3 @@ class DofusDbItemTypesCatalogService
         return [];
     }
 }
-

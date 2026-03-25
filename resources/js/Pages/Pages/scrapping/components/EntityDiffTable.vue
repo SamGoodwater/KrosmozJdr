@@ -59,6 +59,20 @@ function findInFlat(flat, modelKey) {
     return found !== undefined ? flat[found] : undefined;
 }
 
+/** Brut DofusDB : typeId ; converti : items.type_id (etc.) — même valeur, noms différents. */
+function findInFlatWithTypeIdAlias(flat, modelKey) {
+    if (!modelKey || typeof modelKey !== 'string') return undefined;
+    let v = findInFlat(flat, modelKey);
+    if (v !== undefined) return v;
+    const last = modelKey.includes('.') ? modelKey.split('.').pop() : modelKey;
+    const paired = last === 'typeId' ? 'type_id' : last === 'type_id' ? 'typeId' : null;
+    if (paired !== null) {
+        v = findInFlat(flat, paired);
+        if (v !== undefined) return v;
+    }
+    return undefined;
+}
+
 function formatVal(val) {
     if (val === undefined || val === null) return '—';
     if (typeof val === 'object') return typeof val === 'string' ? val : `[${Object.keys(val).length} clé(s)]`;
@@ -175,8 +189,11 @@ const rows = computed(() => {
     }
 
     return [...keysSet].sort().map((key) => {
-        const brut = findInFlat(rawFlat, key) ?? findInFlat(rawFlat, key.split('.').pop());
-        const converti = findInFlat(incomingFlat, key) ?? findInFlat(incomingFlat, key.split('.').pop());
+        const brut =
+            findInFlatWithTypeIdAlias(rawFlat, key) ?? findInFlatWithTypeIdAlias(rawFlat, key.split('.').pop());
+        const converti =
+            findInFlatWithTypeIdAlias(incomingFlat, key)
+            ?? findInFlatWithTypeIdAlias(incomingFlat, key.split('.').pop());
         const krosmoz = existingFlat[key];
         const differs = converti !== krosmoz;
         return {

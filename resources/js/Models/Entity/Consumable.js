@@ -306,9 +306,11 @@ export class Consumable extends BaseModel {
         const typeName = consumableType.name || consumableType.label || '-';
 
         return {
-            type: 'text',
+            type: 'badge',
             value: typeName,
             params: {
+                color: 'auto',
+                autoLabel: typeName,
                 tooltip: typeName === '-' ? '' : typeName,
                 sortValue: typeName,
                 searchValue: typeName,

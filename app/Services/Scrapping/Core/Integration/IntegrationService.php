@@ -2,24 +2,26 @@
 
 namespace App\Services\Scrapping\Core\Integration;
 
-use App\Models\Entity\Breed;
-use App\Models\Entity\Consumable;
-use App\Models\Entity\Creature;
 use App\Models\Effect;
 use App\Models\EffectGroup;
 use App\Models\EffectSubEffect;
+use App\Models\EffectUsage;
+use App\Models\Entity\Breed;
+use App\Models\Entity\Consumable;
+use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
-use App\Models\EffectUsage;
 use App\Models\SpellState;
 use App\Models\SubEffect;
-use App\Models\User;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
 use App\Models\Type\ResourceType;
+use App\Models\User;
+use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -32,17 +34,17 @@ use Illuminate\Support\Facades\Log;
  */
 final class IntegrationService
 {
-    public function __construct()
-    {
-    }
+    public function __construct(
+        private readonly ?DofusDbItemTypesCatalogService $itemTypesCatalog = null,
+        private readonly ?DofusDbItemSuperTypeMappingService $superTypeMapping = null
+    ) {}
 
     /**
      * Intègre les données converties pour un type d’entité.
      *
-     * @param string $entityType Type KrosmozJDR (ex. monster)
-     * @param array<string, array<string, mixed>> $convertedData Structure par modèle (creatures, monsters)
-     * @param array{dry_run?: bool, force_update?: bool, ignore_unvalidated?: bool, exclude_from_update?: list<string>} $options
-     * @return IntegrationResult
+     * @param  string  $entityType  Type KrosmozJDR (ex. monster)
+     * @param  array<string, array<string, mixed>>  $convertedData  Structure par modèle (creatures, monsters)
+     * @param  array{dry_run?: bool, force_update?: bool, ignore_unvalidated?: bool, exclude_from_update?: list<string>}  $options
      */
     public function integrate(string $entityType, array $convertedData, array $options = []): IntegrationResult
     {
@@ -68,10 +70,10 @@ final class IntegrationService
     /**
      * Indique si on remplacerait une entité existante (public pour pré-vérification batch).
      *
-     * @param bool $forceUpdate Valeur legacy force_update
-     * @param string|null $replaceMode 'never' | 'draft_raw_only' | 'always'
-     * @param Creature|Item|Resource|Consumable|Spell|Breed|Panoply|Monster|null $existing Entité existante (avec state)
-     * @param Creature|Item|Resource|Consumable|Spell|Breed|Monster|null $entityWithAutoUpdate Entité portant le champ auto_update (Monster pour Creature)
+     * @param  bool  $forceUpdate  Valeur legacy force_update
+     * @param  string|null  $replaceMode  'never' | 'draft_raw_only' | 'always'
+     * @param  Creature|Item|resource|Consumable|Spell|Breed|Panoply|Monster|null  $existing  Entité existante (avec state)
+     * @param  Creature|Item|resource|Consumable|Spell|Breed|Monster|null  $entityWithAutoUpdate  Entité portant le champ auto_update (Monster pour Creature)
      */
     public function wouldReplaceExisting(
         bool $forceUpdate,
@@ -105,7 +107,7 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, ignore_unvalidated?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
+     * @param  array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, ignore_unvalidated?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>}  $options
      */
     private function integrateMonster(array $convertedData, array $options = []): IntegrationResult
     {
@@ -116,12 +118,12 @@ final class IntegrationService
         $ignoreUnvalidated = (bool) ($options['ignore_unvalidated'] ?? false);
         /** @var list<string> $excludeFromUpdate */
         $excludeFromUpdate = $options['exclude_from_update'] ?? [];
-        if (!is_array($excludeFromUpdate)) {
+        if (! is_array($excludeFromUpdate)) {
             $excludeFromUpdate = [];
         }
         /** @var list<string> $propertyWhitelist */
         $propertyWhitelist = $options['property_whitelist'] ?? [];
-        if (!is_array($propertyWhitelist)) {
+        if (! is_array($propertyWhitelist)) {
             $propertyWhitelist = [];
         }
 
@@ -149,13 +151,13 @@ final class IntegrationService
         }
 
         $existingMonsterByDofus = null;
-        if (!empty($monsterData['dofusdb_id'])) {
+        if (! empty($monsterData['dofusdb_id'])) {
             $existingMonsterByDofus = Monster::where('dofusdb_id', (string) $monsterData['dofusdb_id'])->first();
         }
         $existingCreature = $existingMonsterByDofus?->creature ?? Creature::where('name', (string) ($creatureData['name'] ?? ''))->first();
 
         $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existingCreature, $existingMonsterByDofus, $respectAutoUpdate);
-        if ($existingMonsterByDofus && !$doReplace) {
+        if ($existingMonsterByDofus && ! $doReplace) {
             return IntegrationResult::ok(
                 $existingCreature?->id,
                 $existingMonsterByDofus->id,
@@ -273,7 +275,7 @@ final class IntegrationService
     }
 
     /**
-     * @param array<string, mixed> $creatureData
+     * @param  array<string, mixed>  $creatureData
      * @return array<string, mixed>
      */
     private function mapCreatureAttributes(array $creatureData, int $createdBy): array
@@ -316,8 +318,8 @@ final class IntegrationService
     /**
      * Retire des données les clés listées dans exclude (pour ne pas écraser à la mise à jour).
      *
-     * @param array<string, mixed> $data
-     * @param list<string> $exclude
+     * @param  array<string, mixed>  $data
+     * @param  list<string>  $exclude
      * @return array<string, mixed>
      */
     private function filterExcludedFromUpdate(array $data, array $exclude): array
@@ -333,8 +335,8 @@ final class IntegrationService
     /**
      * Restreint les clés au whitelist si non vide.
      *
-     * @param array<string, mixed> $data
-     * @param list<string> $whitelist
+     * @param  array<string, mixed>  $data
+     * @param  list<string>  $whitelist
      * @return array<string, mixed>
      */
     private function filterByWhitelist(array $data, array $whitelist): array
@@ -352,8 +354,8 @@ final class IntegrationService
      * Respecte download_images et allowed_hosts (config scrapping.images).
      * Met à jour la colonne image de l'entité avec l'URL du média.
      *
-     * @param object $entity Modèle avec HasMedia et collection 'images'
-     * @param array{dry_run?: bool, download_images?: bool} $options
+     * @param  object  $entity  Modèle avec HasMedia et collection 'images'
+     * @param  array{dry_run?: bool, download_images?: bool}  $options
      * @return bool true si le média a été attaché, false si ignoré ou erreur
      */
     public function attachImageFromUrl(object $entity, ?string $imageUrl, array $options = []): bool
@@ -361,21 +363,21 @@ final class IntegrationService
         if ($imageUrl === null || trim($imageUrl) === '') {
             return false;
         }
-        if (!($options['download_images'] ?? true)) {
+        if (! ($options['download_images'] ?? true)) {
             return false;
         }
         $url = trim($imageUrl);
-        if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://')) {
+        if (! str_starts_with($url, 'http://') && ! str_starts_with($url, 'https://')) {
             return false;
         }
         $host = (string) parse_url($url, PHP_URL_HOST);
         if ($host !== '') {
             $allowedHosts = config('scrapping.images.allowed_hosts', []);
-            if ($allowedHosts !== [] && !in_array(strtolower($host), array_map('strtolower', $allowedHosts), true)) {
+            if ($allowedHosts !== [] && ! in_array(strtolower($host), array_map('strtolower', $allowedHosts), true)) {
                 return false;
             }
         }
-        if (!method_exists($entity, 'clearMediaCollection') || !method_exists($entity, 'addMediaFromUrl')) {
+        if (! method_exists($entity, 'clearMediaCollection') || ! method_exists($entity, 'addMediaFromUrl')) {
             return false;
         }
         try {
@@ -414,7 +416,7 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
+     * @param  array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>}  $options
      */
     private function integrateSpell(array $convertedData, array $options = []): IntegrationResult
     {
@@ -432,20 +434,20 @@ final class IntegrationService
 
         $existingSpell = null;
         $existingByDofusId = false;
-        if (!empty($data['dofusdb_id'])) {
+        if (! empty($data['dofusdb_id'])) {
             $existingSpell = Spell::where('dofusdb_id', (string) $data['dofusdb_id'])->first();
             $existingByDofusId = $existingSpell !== null;
         }
-        if (!$existingSpell && !empty($data['name'])) {
+        if (! $existingSpell && ! empty($data['name'])) {
             $existingSpell = Spell::where('name', $data['name'])->first();
         }
 
         $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existingSpell, null, $respectAutoUpdate);
         // Pour les sorts, un match dofusdb_id reste synchronisé à la source si auto_update le permet (sauf replace_mode=never).
-        if ($replaceMode !== 'never' && $existingByDofusId && (!$respectAutoUpdate || ($existingSpell !== null && (bool) $existingSpell->auto_update))) {
+        if ($replaceMode !== 'never' && $existingByDofusId && (! $respectAutoUpdate || ($existingSpell !== null && (bool) $existingSpell->auto_update))) {
             $doReplace = true;
         }
-        if ($existingSpell && !$doReplace) {
+        if ($existingSpell && ! $doReplace) {
             return IntegrationResult::okEntity(
                 $existingSpell->id,
                 $dryRun ? 'would_skip' : 'skipped',
@@ -542,7 +544,7 @@ final class IntegrationService
      * Accepte des valeurs numériques ou des formules (ex. "[level]", "[level]*2").
      * 0 = soi-même, 1-1 = cac, 2-6 = plage.
      *
-     * @param array<string, mixed> $data Données converties du sort (spells)
+     * @param  array<string, mixed>  $data  Données converties du sort (spells)
      * @return array{0: string, 1: string} [po_min, po_max]
      */
     private function buildSpellPoMinMax(array $data): array
@@ -560,8 +562,10 @@ final class IntegrationService
             $parts = explode('-', $single, 2);
             $min = trim($parts[0]) !== '' ? trim($parts[0]) : '1';
             $max = trim($parts[1] ?? '') !== '' ? trim($parts[1]) : $min;
+
             return [$min, $max];
         }
+
         return [$single, $single];
     }
 
@@ -589,7 +593,7 @@ final class IntegrationService
     {
         $groupData = $payload['effect_group'] ?? null;
         $effectsData = $payload['effects'] ?? [];
-        if (!is_array($groupData) || $effectsData === []) {
+        if (! is_array($groupData) || $effectsData === []) {
             return;
         }
 
@@ -597,25 +601,25 @@ final class IntegrationService
         $groupName = (string) ($groupData['name'] ?? $spell->name);
 
         $group = EffectGroup::firstOrCreate(
-            ['slug' => $groupSlug !== '' ? $groupSlug : 'spell-' . $spell->id],
+            ['slug' => $groupSlug !== '' ? $groupSlug : 'spell-'.$spell->id],
             ['name' => $groupName !== '' ? $groupName : $spell->name]
         );
 
         $slugToId = $this->collectSubEffectIdsFromSpellPayload($effectsData);
 
         foreach ($effectsData as $effectRow) {
-            if (!is_array($effectRow)) {
+            if (! is_array($effectRow)) {
                 continue;
             }
             $degree = isset($effectRow['degree']) && is_numeric($effectRow['degree']) ? (int) $effectRow['degree'] : 1;
             $effectName = (string) ($effectRow['name'] ?? $spell->name);
             $effectSlug = (string) ($effectRow['slug'] ?? '');
             if ($effectSlug === '') {
-                $effectSlug = $group->slug . '-' . $degree;
+                $effectSlug = $group->slug.'-'.$degree;
             }
 
             $subEffectsRaw = $effectRow['sub_effects'] ?? [];
-            if (!is_array($subEffectsRaw)) {
+            if (! is_array($subEffectsRaw)) {
                 $subEffectsRaw = [];
             }
 
@@ -669,11 +673,11 @@ final class IntegrationService
             );
 
             foreach ($subEffectsRaw as $row) {
-                if (!is_array($row)) {
+                if (! is_array($row)) {
                     continue;
                 }
                 $slug = (string) ($row['sub_effect_slug'] ?? '');
-                if ($slug === '' || !isset($slugToId[$slug])) {
+                if ($slug === '' || ! isset($slugToId[$slug])) {
                     continue;
                 }
                 $subId = $slugToId[$slug];
@@ -707,13 +711,13 @@ final class IntegrationService
      * Simule la création des effets d'un sort sans écrire en base.
      * Retourne pour chaque effet du payload : action (create|reuse), existing_effect_id si réutilisation.
      *
-     * @param array{effect_group: array{name?: string, slug?: string}, effects: list<array{degree?: int, name?: string, slug?: string, target_type?: string, area?: string, sub_effects?: list}>} $payload
+     * @param  array{effect_group: array{name?: string, slug?: string}, effects: list<array{degree?: int, name?: string, slug?: string, target_type?: string, area?: string, sub_effects?: list}>}  $payload
      * @return list<array{index: int, degree: int, name: string, slug: string, target_type: string, area: string|null, sub_effects_count: int, action: 'create'|'reuse', existing_effect_id: int|null}>
      */
     public function simulateSpellEffects(array $payload): array
     {
         $effectsData = $payload['effects'] ?? [];
-        if (!is_array($effectsData) || $effectsData === []) {
+        if (! is_array($effectsData) || $effectsData === []) {
             return [];
         }
 
@@ -722,7 +726,7 @@ final class IntegrationService
         $index = 0;
 
         foreach ($effectsData as $effectRow) {
-            if (!is_array($effectRow)) {
+            if (! is_array($effectRow)) {
                 continue;
             }
             $degree = isset($effectRow['degree']) && is_numeric($effectRow['degree']) ? (int) $effectRow['degree'] : 1;
@@ -766,18 +770,18 @@ final class IntegrationService
     /**
      * Collecte tous les slugs de sous-effets présents dans le payload et retourne slug => id.
      *
-     * @param list<array{sub_effects?: list<array{sub_effect_slug?: string}>}> $effectsData
+     * @param  list<array{sub_effects?: list<array{sub_effect_slug?: string}>}>  $effectsData
      * @return array<string, int>
      */
     private function collectSubEffectIdsFromSpellPayload(array $effectsData): array
     {
         $slugs = [];
         foreach ($effectsData as $effectRow) {
-            if (!is_array($effectRow)) {
+            if (! is_array($effectRow)) {
                 continue;
             }
             foreach ($effectRow['sub_effects'] ?? [] as $row) {
-                if (is_array($row) && !empty($row['sub_effect_slug'])) {
+                if (is_array($row) && ! empty($row['sub_effect_slug'])) {
                     $slugs[(string) $row['sub_effect_slug']] = true;
                 }
             }
@@ -795,7 +799,7 @@ final class IntegrationService
                     ['slug' => $slug],
                     [
                         'type_slug' => $slug,
-                        'template_text' => 'Effet ' . $slug . '.',
+                        'template_text' => 'Effet '.$slug.'.',
                         'variables_allowed' => [],
                         'param_schema' => [
                             'action' => $slug,
@@ -816,8 +820,8 @@ final class IntegrationService
     /**
      * Normalise les lignes sous-effets pour le calcul de signature : résolution slug → id, déduplication.
      *
-     * @param list<array{order?: int, sub_effect_slug?: string, params?: array, crit_only?: bool}> $rows
-     * @param array<string, int> $slugToId
+     * @param  list<array{order?: int, sub_effect_slug?: string, params?: array, crit_only?: bool}>  $rows
+     * @param  array<string, int>  $slugToId
      * @return list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value: mixed, state_dofusdb_id: mixed}>
      */
     private function normalizeSubEffectsRowsForSignature(array $rows, array $slugToId): array
@@ -825,11 +829,11 @@ final class IntegrationService
         $seen = [];
         $out = [];
         foreach ($rows as $row) {
-            if (!is_array($row)) {
+            if (! is_array($row)) {
                 continue;
             }
             $slug = (string) ($row['sub_effect_slug'] ?? '');
-            if ($slug === '' || !isset($slugToId[$slug])) {
+            if ($slug === '' || ! isset($slugToId[$slug])) {
                 continue;
             }
             $params = is_array($row['params'] ?? null) ? $row['params'] : [];
@@ -866,7 +870,7 @@ final class IntegrationService
      * Calcule une signature (hash) pour réutiliser un Effect existant.
      * Inclut target_type et area pour éviter de fusionner des effets directs/piège/glyphe.
      *
-     * @param list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value?: mixed, state_dofusdb_id?: mixed}> $normalizedRows
+     * @param  list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value?: mixed, state_dofusdb_id?: mixed}>  $normalizedRows
      */
     private function computeEffectConfigSignature(array $normalizedRows, string $targetType = Effect::TARGET_DIRECT, ?string $area = null): string
     {
@@ -883,8 +887,8 @@ final class IntegrationService
                 'state' => $r['state_dofusdb_id'] ?? null,
             ], JSON_UNESCAPED_UNICODE);
         }
-        $parts[] = 't:' . $targetType;
-        $parts[] = 'a:' . ($area ?? '');
+        $parts[] = 't:'.$targetType;
+        $parts[] = 'a:'.($area ?? '');
 
         return hash('sha256', implode("\n", $parts));
     }
@@ -927,10 +931,10 @@ final class IntegrationService
      */
     private function effectSubEffectDedupKey(int $subEffectId, bool $critOnly, array $params): string
     {
-        return $subEffectId . '|' . ($critOnly ? '1' : '0') . '|'
-            . ($params['characteristic'] ?? '') . '|' . ($params['value_formula'] ?? '') . '|'
-            . ($params['value_formula_crit'] ?? '') . '|' . ($params['value'] ?? '') . '|'
-            . ($params['state_dofusdb_id'] ?? '');
+        return $subEffectId.'|'.($critOnly ? '1' : '0').'|'
+            .($params['characteristic'] ?? '').'|'.($params['value_formula'] ?? '').'|'
+            .($params['value_formula_crit'] ?? '').'|'.($params['value'] ?? '').'|'
+            .($params['state_dofusdb_id'] ?? '');
     }
 
     /**
@@ -953,20 +957,21 @@ final class IntegrationService
         if (array_key_exists('state_dofusdb_id', $params)) {
             $where['params->state_dofusdb_id'] = $params['state_dofusdb_id'];
         }
+
         return $where;
     }
 
     /**
      * Enregistre l'état DofusDB lié à un sous-effet de sort et le relie au sort.
      *
-     * @param array<string, mixed> $params
+     * @param  array<string, mixed>  $params
      */
     private function integrateSpellStateFromParams(Spell $spell, string $subEffectSlug, array $params): void
     {
-        if (!in_array($subEffectSlug, ['appliquer-etat', 's-appliquer-etat'], true)) {
+        if (! in_array($subEffectSlug, ['appliquer-etat', 's-appliquer-etat'], true)) {
             return;
         }
-        if (!isset($params['state_dofusdb_id']) || !is_numeric($params['state_dofusdb_id'])) {
+        if (! isset($params['state_dofusdb_id']) || ! is_numeric($params['state_dofusdb_id'])) {
             return;
         }
 
@@ -1006,7 +1011,7 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
+     * @param  array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>}  $options
      */
     private function integrateBreed(array $convertedData, array $options = []): IntegrationResult
     {
@@ -1023,15 +1028,15 @@ final class IntegrationService
         }
 
         $existingBreed = null;
-        if (!empty($data['dofusdb_id'])) {
+        if (! empty($data['dofusdb_id'])) {
             $existingBreed = Breed::where('dofusdb_id', (string) $data['dofusdb_id'])->first();
         }
-        if (!$existingBreed && !empty($data['name'])) {
+        if (! $existingBreed && ! empty($data['name'])) {
             $existingBreed = Breed::where('name', $data['name'])->first();
         }
 
         $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existingBreed, null, $respectAutoUpdate);
-        if ($existingBreed && !$doReplace) {
+        if ($existingBreed && ! $doReplace) {
             return IntegrationResult::okEntity(
                 $existingBreed->id,
                 $dryRun ? 'would_skip' : 'skipped',
@@ -1101,7 +1106,7 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, include_relations?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
+     * @param  array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, include_relations?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>}  $options
      */
     private function integrateItem(array $convertedData, array $options = []): IntegrationResult
     {
@@ -1128,7 +1133,7 @@ final class IntegrationService
                 default => Item::where('dofusdb_id', $dofusdbId)->first(),
             };
         }
-        if (!$existing && !empty($data['name'])) {
+        if (! $existing && ! empty($data['name'])) {
             $existing = match ($targetTable) {
                 'items' => Item::where('name', $data['name'])->first(),
                 'consumables' => Consumable::where('name', $data['name'])->first(),
@@ -1138,8 +1143,9 @@ final class IntegrationService
         }
 
         $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existing, null, $respectAutoUpdate);
-        if ($existing && !$doReplace) {
+        if ($existing && ! $doReplace) {
             $id = $existing->id;
+
             return IntegrationResult::okEntity(
                 $id,
                 $dryRun ? 'would_skip' : 'skipped',
@@ -1205,6 +1211,9 @@ final class IntegrationService
                     $this->syncResourceRecipe($entity, $data['recipe_ingredients'] ?? []);
                 }
             } elseif ($targetTable === 'consumables') {
+                if (isset($data['consumable_type_id']) && $data['consumable_type_id'] !== null) {
+                    $payload['consumable_type_id'] = (int) $data['consumable_type_id'];
+                }
                 if ($existing instanceof Consumable) {
                     $existing->update($payload);
                     $entity = $existing;
@@ -1212,6 +1221,9 @@ final class IntegrationService
                     $entity = Consumable::create($payload);
                 }
             } else {
+                if (isset($data['item_type_id']) && $data['item_type_id'] !== null) {
+                    $payload['item_type_id'] = (int) $data['item_type_id'];
+                }
                 if ($existing instanceof Item) {
                     $existing->update($payload);
                     $entity = $existing;
@@ -1243,7 +1255,7 @@ final class IntegrationService
      * ingrédients convertis (recipe_ingredients issus de recipeIds DofusDB).
      * Seuls les ingrédients déjà présents en base (Resource avec ce dofusdb_id) sont liés.
      *
-     * @param list<array{ingredient_dofusdb_id: string, quantity: int}> $recipeIngredients
+     * @param  list<array{ingredient_dofusdb_id: string, quantity: int}>  $recipeIngredients
      */
     private function syncResourceRecipe(Resource $resource, array $recipeIngredients): void
     {
@@ -1282,8 +1294,11 @@ final class IntegrationService
     public function getItemTargetTableFromRaw(array $raw): string
     {
         $typeId = isset($raw['typeId']) ? (int) $raw['typeId'] : null;
+        if ($typeId === null && isset($raw['type']) && is_array($raw['type']) && isset($raw['type']['id'])) {
+            $typeId = (int) $raw['type']['id'];
+        }
 
-        return $this->resolveItemTargetTable($typeId);
+        return $this->resolveItemTargetTable($typeId, $raw);
     }
 
     /**
@@ -1293,19 +1308,20 @@ final class IntegrationService
     public function getItemTargetTable(array $convertedData): string
     {
         if (isset($convertedData['resources']) && is_array($convertedData['resources']) && $convertedData['resources'] !== []
-            && (!isset($convertedData['consumables']) || !is_array($convertedData['consumables']) || $convertedData['consumables'] === [])
-            && (!isset($convertedData['items']) || !is_array($convertedData['items']) || $convertedData['items'] === [])) {
+            && (! isset($convertedData['consumables']) || ! is_array($convertedData['consumables']) || $convertedData['consumables'] === [])
+            && (! isset($convertedData['items']) || ! is_array($convertedData['items']) || $convertedData['items'] === [])) {
             return 'resources';
         }
         if (isset($convertedData['consumables']) && is_array($convertedData['consumables']) && $convertedData['consumables'] !== []
-            && (!isset($convertedData['resources']) || !is_array($convertedData['resources']) || $convertedData['resources'] === [])
-            && (!isset($convertedData['items']) || !is_array($convertedData['items']) || $convertedData['items'] === [])) {
+            && (! isset($convertedData['resources']) || ! is_array($convertedData['resources']) || $convertedData['resources'] === [])
+            && (! isset($convertedData['items']) || ! is_array($convertedData['items']) || $convertedData['items'] === [])) {
             return 'consumables';
         }
         if (isset($convertedData['items']) && is_array($convertedData['items']) && $convertedData['items'] !== []
-            && (!isset($convertedData['resources']) || !is_array($convertedData['resources']) || $convertedData['resources'] === [])
-            && (!isset($convertedData['consumables']) || !is_array($convertedData['consumables']) || $convertedData['consumables'] === [])) {
+            && (! isset($convertedData['resources']) || ! is_array($convertedData['resources']) || $convertedData['resources'] === [])
+            && (! isset($convertedData['consumables']) || ! is_array($convertedData['consumables']) || $convertedData['consumables'] === [])) {
             $typeId = isset($convertedData['items']['type_id']) ? (int) $convertedData['items']['type_id'] : null;
+
             return $this->resolveItemTargetTable($typeId);
         }
 
@@ -1322,29 +1338,52 @@ final class IntegrationService
 
     /**
      * Détermine la table cible (items, consumables, resources) à partir du typeId DofusDB.
-     * Priorité : item_types (équipements) puis consumable_types puis resource_types,
-     * pour que les anneaux, armes, etc. soient bien routés vers items même si un doublon existe en base.
+     *
+     * Ordre volontaire :
+     * 1. Catalogue DofusDB (superType du typeId) + item-super-types.json — aligné sur resolveResourceTypeId /
+     *    resolveConsumableTypeId / resolveItemTypeId. Doit primer sur les registries : un typeId présent à tort
+     *    dans resource_types ne doit pas forcer targetModel=resources (sinon category ≠ resource → type FK null).
+     * 2. Registries Krosmoz (consumable_types, resource_types, item_types) si superType non mappé ou catalogue absent.
+     *
+     * @param  array<string, mixed>|null  $itemRaw  Réponse brute item (optionnel) pour inférer superTypeId si le catalogue ne connaît pas le typeId
      */
-    private function resolveItemTargetTable(?int $typeId): string
+    private function resolveItemTargetTable(?int $typeId, ?array $itemRaw = null): string
     {
         if ($typeId === null || $typeId <= 0) {
             return 'items';
         }
-        if (ItemType::where('dofusdb_type_id', $typeId)->exists()) {
-            return 'items';
+
+        $superTypeId = $this->itemTypesCatalog?->getSuperTypeIdForTypeId($typeId, 'fr', false);
+        if ($superTypeId === null && $this->itemTypesCatalog !== null && $itemRaw !== null) {
+            $superTypeId = $this->itemTypesCatalog->inferSuperTypeIdFromItemRaw($itemRaw);
         }
+        if ($superTypeId !== null && $this->superTypeMapping !== null) {
+            $category = $this->superTypeMapping->getCategoryForSuperTypeId($superTypeId);
+            if ($category !== null) {
+                return match ($category) {
+                    'resource' => 'resources',
+                    'consumable' => 'consumables',
+                    'equipment' => 'items',
+                    default => 'items',
+                };
+            }
+        }
+
         if (ConsumableType::where('dofusdb_type_id', $typeId)->exists()) {
             return 'consumables';
         }
         if (ResourceType::where('dofusdb_type_id', $typeId)->exists()) {
             return 'resources';
         }
+        if (ItemType::where('dofusdb_type_id', $typeId)->exists()) {
+            return 'items';
+        }
 
         return 'items';
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
+     * @param  array{dry_run?: bool, force_update?: bool, replace_mode?: string, respect_auto_update?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>}  $options
      */
     private function integratePanoply(array $convertedData, array $options = []): IntegrationResult
     {
@@ -1365,12 +1404,12 @@ final class IntegrationService
         if ($dofusdbId !== null && $dofusdbId !== '') {
             $existingPanoply = Panoply::where('dofusdb_id', $dofusdbId)->first();
         }
-        if (!$existingPanoply && !empty($data['name'])) {
+        if (! $existingPanoply && ! empty($data['name'])) {
             $existingPanoply = Panoply::where('name', $data['name'])->first();
         }
 
         $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existingPanoply, null, $respectAutoUpdate);
-        if ($existingPanoply && !$doReplace) {
+        if ($existingPanoply && ! $doReplace) {
             return IntegrationResult::okEntity(
                 $existingPanoply->id,
                 $dryRun ? 'would_skip' : 'skipped',
@@ -1452,8 +1491,8 @@ final class IntegrationService
      * Retourne les attributs de l'entité existante (si trouvée) avec les mêmes clés que les données converties (merged).
      * Utilisé pour la sortie verbose de la commande scrapping (comparaison DofusDB / converti / existant).
      *
-     * @param string $entityType monster, spell, breed, class, item, panoply
-     * @param array<string, array<string, mixed>> $convertedData Structure par modèle (creatures, monsters, spells, …)
+     * @param  string  $entityType  monster, spell, breed, class, item, panoply
+     * @param  array<string, array<string, mixed>>  $convertedData  Structure par modèle (creatures, monsters, spells, …)
      * @return array<string, mixed>|null Attributs avec clés "converted" (ex. strength, intelligence) ou null si pas trouvé
      */
     public function getExistingAttributesForComparison(string $entityType, array $convertedData): ?array
@@ -1465,20 +1504,21 @@ final class IntegrationService
                 return null;
             }
             $existingMonster = null;
-            if (!empty($monsterData['dofusdb_id'])) {
+            if (! empty($monsterData['dofusdb_id'])) {
                 $existingMonster = Monster::where('dofusdb_id', (string) $monsterData['dofusdb_id'])->first();
             }
-            if (!$existingMonster && !empty($creatureData['name'])) {
+            if (! $existingMonster && ! empty($creatureData['name'])) {
                 $existingCreature = Creature::where('name', (string) $creatureData['name'])->first();
                 $existingMonster = $existingCreature?->monster;
             }
-            if (!$existingMonster) {
+            if (! $existingMonster) {
                 return null;
             }
             $c = $existingMonster->creature;
             $sizeMap = [0 => 'tiny', 1 => 'small', 2 => 'medium', 3 => 'large', 4 => 'huge'];
             $sizeInt = $existingMonster->size ?? 2;
             $sizeStr = $sizeMap[$sizeInt] ?? 'medium';
+
             return array_merge(
                 [
                     'id' => $existingMonster->id,
@@ -1518,9 +1558,10 @@ final class IntegrationService
             $model = $entityType === 'spell'
                 ? Spell::where('dofusdb_id', (string) ($data['dofusdb_id'] ?? ''))->orWhere('name', $data['name'] ?? '')->first()
                 : Breed::where('dofusdb_id', (string) ($data['dofusdb_id'] ?? ''))->orWhere('name', $data['name'] ?? '')->first();
-            if (!$model) {
+            if (! $model) {
                 return null;
             }
+
             return $model->toArray();
         }
 
@@ -1530,16 +1571,16 @@ final class IntegrationService
                 return null;
             }
             $p = Panoply::where('dofusdb_id', (string) ($data['dofusdb_id'] ?? ''))->orWhere('name', $data['name'] ?? '')->first();
+
             return $p ? $p->toArray() : null;
         }
 
         if ($entityType === 'item') {
-            $data = $convertedData['items'] ?? $convertedData['resources'] ?? $convertedData['consumables'] ?? [];
+            $table = $this->getItemTargetTable($convertedData);
+            $data = $convertedData[$table] ?? [];
             if ($data === []) {
                 return null;
             }
-            $typeId = isset($data['type_id']) ? (int) $data['type_id'] : null;
-            $table = $this->resolveItemTargetTable($typeId);
             $dofusdbId = (string) ($data['dofusdb_id'] ?? '');
             $name = $data['name'] ?? '';
             $model = match ($table) {
@@ -1547,7 +1588,7 @@ final class IntegrationService
                 'consumables' => Consumable::where('dofusdb_id', $dofusdbId)->orWhere('name', $name)->first(),
                 default => Item::where('dofusdb_id', $dofusdbId)->orWhere('name', $name)->first(),
             };
-            if (!$model) {
+            if (! $model) {
                 return null;
             }
             $out = $model->toArray();
@@ -1563,6 +1604,7 @@ final class IntegrationService
                 }
                 $out['recipe_ingredients'] = $recipeIngredients;
             }
+
             return $out;
         }
 
@@ -1576,6 +1618,7 @@ final class IntegrationService
     public function resolveItemEntityType(?int $typeId): string
     {
         $table = $this->resolveItemTargetTable($typeId);
+
         return match ($table) {
             'resources' => 'resource',
             'consumables' => 'consumable',
@@ -1613,7 +1656,7 @@ final class IntegrationService
         if (is_string($value)) {
             return trim($value);
         }
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             return '';
         }
         foreach (['fr', 'en'] as $lang) {
@@ -1622,6 +1665,7 @@ final class IntegrationService
             }
         }
         $first = reset($value);
+
         return is_string($first) ? trim($first) : '';
     }
 }

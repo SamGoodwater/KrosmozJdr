@@ -125,6 +125,29 @@ export class BaseFormatter {
   }
 
   /**
+   * Génère une cellule badge pour type/catégorie/race (couleur dérivée du contenu).
+   *
+   * @param {string} label - Label du badge (source pour la couleur)
+   * @param {Object} [options={}] - Options (sortValue, filterValue, etc.)
+   * @returns {Object} Objet Cell {type: 'badge', value, params}
+   */
+  static buildTypeBadgeCell(label, options = {}) {
+    return {
+      type: 'badge',
+      value: label,
+      params: {
+        color: 'auto',
+        autoLabel: String(label || ''),
+        sortValue: options.sortValue ?? label,
+        filterValue: options.filterValue,
+        icon: options.icon,
+        strong: options.strong,
+        textColor: options.textColor,
+      },
+    };
+  }
+
+  /**
    * Génère une cellule booléenne standardisée
    *
    * @param {any} value - Valeur booléenne

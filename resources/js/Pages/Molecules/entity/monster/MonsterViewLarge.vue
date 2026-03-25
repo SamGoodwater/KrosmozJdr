@@ -185,6 +185,20 @@ const getBadgeColor = (fieldKey) => {
     }).color;
 };
 
+const getBadgeAutoParams = (fieldKey) => {
+    const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
+        fieldKey,
+        cell: getCell(fieldKey),
+        fieldUi: resolveEntityFieldUi({
+            fieldKey,
+            descriptors: descriptors.value,
+            tableMeta: props.tableMeta,
+            entityType: 'monster',
+        }),
+    });
+    return { autoLabel, autoScheme, autoTone };
+};
+
 const asTextCell = (cell) => {
     if (!cell) return { type: 'text', value: '-', params: {} };
     const v = cell?.value;
@@ -363,7 +377,13 @@ const handleAction = async (actionKey) => {
                                         <span v-else>—</span>
                                     </template>
                                     <template v-else>
-                                        <Badge :color="getBadgeColor(fieldKey)" size="sm">
+                                        <Badge
+                                            :color="getBadgeColor(fieldKey)"
+                                            :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
+                                            :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
+                                            :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
+                                            size="sm"
+                                        >
                                             <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
                                         </Badge>
                                     </template>

@@ -24,8 +24,7 @@ final class CharacteristicLimitService
 
     public function __construct(
         private readonly CharacteristicGetterService $getter
-    ) {
-    }
+    ) {}
 
     /**
      * Valide une valeur pour une caractéristique et une entité (validation unitaire).
@@ -47,6 +46,7 @@ final class CharacteristicLimitService
                     'message' => "{$characteristicKey} doit être vrai ou faux (true/false, 1/0).",
                 ]]);
             }
+
             return ValidationResult::ok();
         }
 
@@ -57,10 +57,11 @@ final class CharacteristicLimitService
                 if (! $this->valueInList($normalized, $allowed)) {
                     return ValidationResult::fail([[
                         'path' => $characteristicKey,
-                        'message' => "{$characteristicKey} doit être une des valeurs autorisées : " . implode(', ', array_map(strval(...), $allowed)) . ".",
+                        'message' => "{$characteristicKey} doit être une des valeurs autorisées : ".implode(', ', array_map(strval(...), $allowed)).'.',
                     ]]);
                 }
             }
+
             return ValidationResult::ok();
         }
 
@@ -84,12 +85,12 @@ final class CharacteristicLimitService
      * Valide les données converties pour un type d'entité (tous les champs ayant une définition).
      * Applique la règle selon le type de chaque caractéristique (boolean, list, min/max).
      *
-     * @param array<string, array<string, mixed>> $convertedData Données par modèle (ex. ['creatures' => [...], 'monsters' => [...]])
-     * @param string $entityType Type d'entité (monster, class, item, resource, spell, etc.)
+     * @param  array<string, array<string, mixed>>  $convertedData  Données par modèle (ex. ['creatures' => [...], 'monsters' => [...]])
+     * @param  string  $entityType  Type d'entité (monster, class, item, resource, spell, etc.)
      */
     public function validate(array $convertedData, string $entityType): ValidationResult
     {
-        $entity = self::ENTITY_ALIASES[$entityType] ?? $entityType;
+        $entity = $this->normalizeScrappingTableEntity(self::ENTITY_ALIASES[$entityType] ?? $entityType);
         $merged = $this->mergeModels($convertedData);
         $errors = [];
 
@@ -117,12 +118,12 @@ final class CharacteristicLimitService
      * Clampe les valeurs numériques des données converties dans les limites min/max avant validation.
      * Convention : éviter les échecs de validation pour des valeurs hors bornes en les ramenant dans l'intervalle.
      *
-     * @param array<string, array<string, mixed>> $convertedData Données par modèle (ex. ['creatures' => [...], 'monsters' => [...]])
+     * @param  array<string, array<string, mixed>>  $convertedData  Données par modèle (ex. ['creatures' => [...], 'monsters' => [...]])
      * @return array<string, array<string, mixed>> Données avec champs numériques clamés
      */
     public function clampConvertedData(array $convertedData, string $entityType): array
     {
-        $entity = self::ENTITY_ALIASES[$entityType] ?? $entityType;
+        $entity = $this->normalizeScrappingTableEntity(self::ENTITY_ALIASES[$entityType] ?? $entityType);
         foreach ($convertedData as $model => $fields) {
             if (! is_array($fields)) {
                 continue;
@@ -142,6 +143,7 @@ final class CharacteristicLimitService
                 }
             }
         }
+
         return $convertedData;
     }
 
@@ -166,6 +168,20 @@ final class CharacteristicLimitService
         return max($limits['min'], min($limits['max'], $value));
     }
 
+    /**
+     * Le scrapping utilise parfois les noms de tables (items, resources, consumables) ;
+     * les caractéristiques en base sont liées à item, resource, consumable.
+     */
+    private function normalizeScrappingTableEntity(string $entity): string
+    {
+        return match ($entity) {
+            'items' => 'item',
+            'resources' => 'resource',
+            'consumables' => 'consumable',
+            default => $entity,
+        };
+    }
+
     private function isValidBoolean(mixed $value): bool
     {
         if (is_bool($value)) {
@@ -176,6 +192,7 @@ final class CharacteristicLimitService
         }
         if (is_string($value)) {
             $v = strtolower(trim($value));
+
             return in_array($v, ['true', 'false', '1', '0', 'oui', 'non', 'yes', 'no', 'y', 'n', 'o', 'vrai', 'faux'], true);
         }
 
@@ -210,7 +227,7 @@ final class CharacteristicLimitService
     }
 
     /**
-     * @param array<string, array<string, mixed>> $convertedData
+     * @param  array<string, array<string, mixed>>  $convertedData
      * @return array<string, mixed>
      */
     private function mergeModels(array $convertedData): array
@@ -224,6 +241,7 @@ final class CharacteristicLimitService
                 $merged[$field] = $value;
             }
         }
+
         return $merged;
     }
 }

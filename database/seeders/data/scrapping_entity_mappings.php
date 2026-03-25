@@ -528,6 +528,12 @@ return array (
         'target_field' => 'type_id',
         'sort_order' => 1,
       ),
+      2 => 
+      array (
+        'target_model' => 'consumables',
+        'target_field' => 'type_id',
+        'sort_order' => 2,
+      ),
     ),
   ),
   13 => 
@@ -560,6 +566,66 @@ return array (
       ),
     ),
   ),
+  71 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'item',
+    'mapping_key' => 'consumable_type_id',
+    'from_path' => 'typeId',
+    'from_lang_aware' => false,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'resolveConsumableTypeId',
+        'args' => 
+        array (
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 8,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'consumables',
+        'target_field' => 'consumable_type_id',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  72 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'item',
+    'mapping_key' => 'item_type_id',
+    'from_path' => 'typeId',
+    'from_lang_aware' => false,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'resolveItemTypeId',
+        'args' => 
+        array (
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 9,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'items',
+        'target_field' => 'item_type_id',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
   14 => 
   array (
     'source' => 'dofusdb',
@@ -579,7 +645,7 @@ return array (
       ),
     ),
     'spell_level_aggregation' => NULL,
-    'sort_order' => 8,
+    'sort_order' => 10,
     'targets' => 
     array (
       0 => 
@@ -609,7 +675,7 @@ return array (
       ),
     ),
     'spell_level_aggregation' => NULL,
-    'sort_order' => 9,
+    'sort_order' => 11,
     'targets' => 
     array (
       0 => 
@@ -651,7 +717,7 @@ return array (
       ),
     ),
     'spell_level_aggregation' => NULL,
-    'sort_order' => 10,
+    'sort_order' => 12,
     'targets' => 
     array (
       0 => 
@@ -693,7 +759,7 @@ return array (
       ),
     ),
     'spell_level_aggregation' => NULL,
-    'sort_order' => 11,
+    'sort_order' => 13,
     'targets' => 
     array (
       0 => 
@@ -735,7 +801,7 @@ return array (
       ),
     ),
     'spell_level_aggregation' => NULL,
-    'sort_order' => 12,
+    'sort_order' => 14,
     'targets' => 
     array (
       0 => 

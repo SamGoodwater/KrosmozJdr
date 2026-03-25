@@ -37,8 +37,7 @@ final class Orchestrator
         private SpellEffectsConversionService $spellEffectsConversionService,
         private ?RelationResolutionService $relationResolutionService = null,
         private ?SpellGlobalNormalizer $spellGlobalNormalizer = null
-    ) {
-    }
+    ) {}
 
     /**
      * Crée une instance avec les services par défaut (délègue à ScrappingPipelineFactory).
@@ -128,8 +127,8 @@ final class Orchestrator
                 return OrchestratorResult::fail('Panoplie cosmétique : seules les panoplies à bonus (stats) sont importables.');
             }
 
-            $doConvert = !empty($options['convert']) || !empty($options['validate']) || !empty($options['integrate']);
-            if (!$doConvert) {
+            $doConvert = ! empty($options['convert']) || ! empty($options['validate']) || ! empty($options['integrate']);
+            if (! $doConvert) {
                 return OrchestratorResult::ok('OK', $raw, null, null, null, null);
             }
 
@@ -143,7 +142,7 @@ final class Orchestrator
      * Exécute convert → validate → integrate avec des données brutes déjà collectées (sans collecte).
      * Utilisé pour monster quand on a déjà les données brutes (ex. avec spells/drops).
      *
-     * @param array<string, mixed> $raw Données brutes déjà récupérées
+     * @param  array<string, mixed>  $raw  Données brutes déjà récupérées
      * @param array{
      *   convert?: bool,
      *   lang?: string,
@@ -162,8 +161,8 @@ final class Orchestrator
                 return OrchestratorResult::fail('Panoplie cosmétique : seules les panoplies à bonus (stats) sont importables.');
             }
 
-            $doConvert = !empty($options['convert']) || !empty($options['validate']) || !empty($options['integrate']);
-            if (!$doConvert) {
+            $doConvert = ! empty($options['convert']) || ! empty($options['validate']) || ! empty($options['integrate']);
+            if (! $doConvert) {
                 return OrchestratorResult::ok('OK', $raw, null, null, null, null);
             }
 
@@ -177,8 +176,8 @@ final class Orchestrator
      * Exécute le pipeline complet pour un jeu de données brutes : enrichissement → conversion
      * → validation → intégration → relations. Partagé par runOne et runOneWithRaw.
      *
-     * @param array<string, mixed> $raw
-     * @param array<string, mixed> $options
+     * @param  array<string, mixed>  $raw
+     * @param  array<string, mixed>  $options
      */
     private function executePipelineForOneRaw(string $source, string $entity, array $raw, array $options): OrchestratorResult
     {
@@ -218,7 +217,7 @@ final class Orchestrator
         if ($doValidate) {
             $converted = $this->limitService->clampConvertedData($converted, $entityType);
             $validationResult = $this->limitService->validate($converted, $entityType);
-            if (!$validationResult->isValid()) {
+            if (! $validationResult->isValid()) {
                 return OrchestratorResult::validationFailed(
                     'Validation échouée.',
                     $validationResult->getErrors(),
@@ -230,13 +229,13 @@ final class Orchestrator
 
         $integrationResult = null;
         $relations = null;
-        if (!empty($options['integrate'])) {
+        if (! empty($options['integrate'])) {
             $integrationResult = $this->integrationService->integrate(
                 $entityType,
                 $converted,
                 $this->integrationOptions($options)
             );
-            if (!$integrationResult->isSuccess()) {
+            if (! $integrationResult->isSuccess()) {
                 return OrchestratorResult::fail($integrationResult->getMessage());
             }
             if ($this->relationResolutionService !== null && ($options['include_relations'] ?? false)) {
@@ -258,7 +257,7 @@ final class Orchestrator
     /**
      * Exécute le pipeline pour une liste (fetchMany → convert/validate/integrate par item).
      *
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @param array{
      *   limit?: int,
      *   offset?: int,
@@ -288,13 +287,14 @@ final class Orchestrator
             $items = $result['items'];
             $meta = $result['meta'];
 
-            $doConvert = !empty($options['convert']) || !empty($options['validate']) || !empty($options['integrate']);
-            if (!$doConvert) {
+            $doConvert = ! empty($options['convert']) || ! empty($options['validate']) || ! empty($options['integrate']);
+            if (! $doConvert) {
                 $totalApi = (int) ($meta['total'] ?? count($items));
                 $collected = (int) ($meta['collected'] ?? count($items));
                 $msg = $totalApi > 0
                     ? sprintf('%d objet(s) collectés (offset=%d, limit=%s, total API: %d)', $collected, $meta['offset'] ?? 0, $meta['limit'] === 0 ? 'tout' : (string) $meta['limit'], $totalApi)
                     : sprintf('%d objet(s) collectés (offset=%d, limit=%s)', $collected, $meta['offset'] ?? 0, $meta['limit'] === 0 ? 'tout' : (string) $meta['limit']);
+
                 return OrchestratorResult::ok(
                     $msg,
                     null,
@@ -319,7 +319,7 @@ final class Orchestrator
             $recipeCache = [];
 
             foreach ($items as $i => $raw) {
-                if (!is_array($raw)) {
+                if (! is_array($raw)) {
                     continue;
                 }
                 $raw = $this->prepareRawForConversion($source, $entity, $raw, $options, $spellLevelsCache, $recipeCache);
@@ -352,7 +352,7 @@ final class Orchestrator
                 if ($doValidate) {
                     $converted = $this->limitService->clampConvertedData($converted, $entityTypeForItem);
                     $validationResult = $this->limitService->validate($converted, $entityTypeForItem);
-                    if (!$validationResult->isValid()) {
+                    if (! $validationResult->isValid()) {
                         $itemValid = false;
                         foreach ($validationResult->getErrors() as $err) {
                             $allValidationErrors[] = [
@@ -364,7 +364,7 @@ final class Orchestrator
                 }
 
                 // N'intégrer que les items dont la validation a réussi (ou lorsque la validation est désactivée).
-                if ($itemValid && !empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false)) {
+                if ($itemValid && ! empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false)) {
                     $intResult = $this->integrationService->integrate(
                         $entityTypeForItem,
                         $converted,
@@ -374,7 +374,7 @@ final class Orchestrator
                     if ($this->relationResolutionService !== null && ($options['include_relations'] ?? false) && $intResult->isSuccess()) {
                         $this->resolveRelationsAndDrain($source, $entity, $entityTypeForItem, $raw, $converted, $intResult, $options);
                     }
-                } elseif (!empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false) && !$itemValid) {
+                } elseif (! empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false) && ! $itemValid) {
                     // Conserver l'alignement des index avec convertedList pour le rapport (item non intégré car invalide).
                     $integrationResults[] = IntegrationResult::fail('Validation échouée.');
                 }
@@ -394,6 +394,7 @@ final class Orchestrator
             $msg = $totalApi > 0
                 ? sprintf('%d objet(s) traités (offset=%d, limit=%s, total API: %d)', $collected, $meta['offset'] ?? 0, $meta['limit'] === 0 ? 'tout' : (string) $meta['limit'], $totalApi)
                 : sprintf('%d objet(s) traités (offset=%d, limit=%s)', $collected, $meta['offset'] ?? 0, $meta['limit'] === 0 ? 'tout' : (string) $meta['limit']);
+
             return OrchestratorResult::ok(
                 $msg,
                 null,
@@ -411,7 +412,7 @@ final class Orchestrator
      * Enrichit le payload brut avec la recette (ingredientIds + quantities) si l'objet a une recette.
      * Appelle l'API /recipes?resultId= pour obtenir les quantités réelles.
      *
-     * @param array<string, mixed> $raw
+     * @param  array<string, mixed>  $raw
      * @return array<string, mixed>
      */
     private function enrichRawWithRecipe(
@@ -419,14 +420,13 @@ final class Orchestrator
         string $entity,
         array $raw,
         ?array &$recipeCache = null
-    ): array
-    {
-        if (!in_array($entity, ['item', 'resource', 'consumable'], true)) {
+    ): array {
+        if (! in_array($entity, ['item', 'resource', 'consumable'], true)) {
             return $raw;
         }
         $hasRecipe = (bool) ($raw['hasRecipe'] ?? false);
         $recipeIds = $raw['recipeIds'] ?? [];
-        if (!$hasRecipe && (!is_array($recipeIds) || $recipeIds === [])) {
+        if (! $hasRecipe && (! is_array($recipeIds) || $recipeIds === [])) {
             return $raw;
         }
         $resultId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
@@ -451,10 +451,10 @@ final class Orchestrator
     /**
      * Prépare les données brutes avant conversion (enrichissements communs + spécifiques entité).
      *
-     * @param array<string, mixed> $raw
-     * @param array<string, mixed> $options
-     * @param array<int, array<string, mixed>>|null $spellLevelsCache Cache local runMany pour éviter les requêtes répétées.
-     * @param array<int, array<string, mixed>|null>|null $recipeCache Cache local runMany des recettes par resultId.
+     * @param  array<string, mixed>  $raw
+     * @param  array<string, mixed>  $options
+     * @param  array<int, array<string, mixed>>|null  $spellLevelsCache  Cache local runMany pour éviter les requêtes répétées.
+     * @param  array<int, array<string, mixed>|null>|null  $recipeCache  Cache local runMany des recettes par resultId.
      * @return array<string, mixed>
      */
     private function prepareRawForConversion(
@@ -466,6 +466,12 @@ final class Orchestrator
         ?array &$recipeCache = null
     ): array {
         $raw = $this->enrichRawWithRecipe($source, $entity, $raw, $recipeCache);
+
+        if (in_array($entity, ['item', 'resource', 'consumable', 'equipment'], true)) {
+            if (! isset($raw['typeId']) && isset($raw['type']) && is_array($raw['type']) && isset($raw['type']['id'])) {
+                $raw['typeId'] = (int) $raw['type']['id'];
+            }
+        }
 
         // Breed : enrichir breedSpellsId avec spell-variants (44 sorts) pour affichage et relations
         if ($entity === 'breed') {
@@ -499,11 +505,11 @@ final class Orchestrator
             }
         }
 
-        $normalizer = $this->spellGlobalNormalizer ?? new SpellGlobalNormalizer();
+        $normalizer = $this->spellGlobalNormalizer ?? new SpellGlobalNormalizer;
         $raw['spell_global'] = $normalizer->build($raw);
 
         // Extraire l'invocation (monstre) depuis les effets spell-levels (effectId 181 = Invoquer)
-        if (!isset($raw['summon']) && isset($raw['levels']) && is_array($raw['levels'])) {
+        if (! isset($raw['summon']) && isset($raw['levels']) && is_array($raw['levels'])) {
             $extracted = $this->extractSummonFromSpellLevels($raw['levels']);
             if ($extracted !== null) {
                 $raw['summon'] = $extracted;
@@ -516,13 +522,13 @@ final class Orchestrator
     /**
      * Prépare le contexte de conversion selon l'entité.
      *
-     * @param array<string, mixed> $raw
-     * @param array<string, mixed> $context
+     * @param  array<string, mixed>  $raw
+     * @param  array<string, mixed>  $context
      * @return array<string, mixed>
      */
     private function prepareContextForEntity(string $entity, array $raw, array $context): array
     {
-        if ($entity === 'item') {
+        if (in_array($entity, ['item', 'resource', 'consumable', 'equipment'], true)) {
             $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
         }
 
@@ -533,7 +539,7 @@ final class Orchestrator
      * Normalise les données brutes monster pour la résolution des relations : l’API DofusDB renvoie
      * spells comme tableau d’IDs [10198, 10199] et drops avec objectId/count au lieu de itemId/quantity.
      *
-     * @param array<string, mixed> $raw
+     * @param  array<string, mixed>  $raw
      * @return array<string, mixed>
      */
     private function normalizeMonsterRawForRelations(array $raw): array
@@ -552,7 +558,7 @@ final class Orchestrator
         if (isset($raw['drops']) && is_array($raw['drops'])) {
             $drops = [];
             foreach ($raw['drops'] as $d) {
-                if (!is_array($d)) {
+                if (! is_array($d)) {
                     continue;
                 }
                 $itemId = (int) ($d['itemId'] ?? $d['objectId'] ?? $d['id'] ?? 0);
@@ -564,6 +570,7 @@ final class Orchestrator
             }
             $out['drops'] = $drops;
         }
+
         return $out;
     }
 
@@ -572,8 +579,8 @@ final class Orchestrator
      * items, recettes) puis vide la pile. Une seule pile est utilisée par run pour toutes les relations.
      * Retourne la liste des relations (type + id DofusDB) pour affichage dans le tableau (monster → spells, drops).
      *
-     * @param array<string, mixed> $raw Données brutes (pour monster: spells/drops ; pour spell: summon)
-     * @param array<string, array<string, mixed>> $converted Données converties
+     * @param  array<string, mixed>  $raw  Données brutes (pour monster: spells/drops ; pour spell: summon)
+     * @param  array<string, array<string, mixed>>  $converted  Données converties
      * @return list<array{type: string, id: int}>
      */
     private function resolveRelationsAndDrain(
@@ -587,7 +594,7 @@ final class Orchestrator
     ): array {
         $stack = $options['relation_import_stack'] ?? null;
         if ($stack === null) {
-            $stack = new RelationImportStack();
+            $stack = new RelationImportStack;
         }
         $relOptions = [
             'integrate' => true,
@@ -701,7 +708,7 @@ final class Orchestrator
                 $items = $raw['items'] ?? [];
                 if (is_array($items)) {
                     foreach ($items as $itemRow) {
-                        if (!is_array($itemRow)) {
+                        if (! is_array($itemRow)) {
                             continue;
                         }
                         $id = (int) ($itemRow['id'] ?? 0);
@@ -726,17 +733,16 @@ final class Orchestrator
     }
 
     /**
-     * @param mixed $recipeIngredients
      * @return list<int>
      */
     private function extractRecipeRelationIds(mixed $recipeIngredients): array
     {
-        if (!is_array($recipeIngredients)) {
+        if (! is_array($recipeIngredients)) {
             return [];
         }
         $ids = [];
         foreach ($recipeIngredients as $row) {
-            if (!is_array($row)) {
+            if (! is_array($row)) {
                 continue;
             }
             $id = $row['ingredient_dofusdb_id'] ?? $row['id'] ?? null;
@@ -752,13 +758,13 @@ final class Orchestrator
     }
 
     /**
-     * @param array<string, mixed> $raw
+     * @param  array<string, mixed>  $raw
      * @return list<int>
      */
     private function extractBreedSpellIds(array $raw): array
     {
         $src = $raw['breedSpellsId'] ?? $raw['spells'] ?? [];
-        if (!is_array($src)) {
+        if (! is_array($src)) {
             return [];
         }
         $ids = [];
@@ -779,7 +785,7 @@ final class Orchestrator
      * Extrait l'invocation (monstre) depuis les effets des spell-levels.
      * effectId 181 = Invoquer (CreateEntity), diceNum = ID du monstre DofusDB.
      *
-     * @param list<array<string, mixed>> $levels
+     * @param  list<array<string, mixed>>  $levels
      * @return array{id: int}|null
      */
     private function extractSummonFromSpellLevels(array $levels): ?array
@@ -787,15 +793,15 @@ final class Orchestrator
         $effectIdSummon = 181;
 
         foreach ($levels as $level) {
-            if (!is_array($level)) {
+            if (! is_array($level)) {
                 continue;
             }
             $effects = $level['effects'] ?? [];
-            if (!is_array($effects)) {
+            if (! is_array($effects)) {
                 continue;
             }
             foreach ($effects as $eff) {
-                if (!is_array($eff)) {
+                if (! is_array($eff)) {
                     continue;
                 }
                 $eid = (int) ($eff['effectId'] ?? $eff['effect_id'] ?? 0);
@@ -816,7 +822,7 @@ final class Orchestrator
      * onImported pour mettre à jour toutes les tables de relation (recettes, breed_spell,
      * creature_spell, creature_resource, spell_invocation).
      *
-     * @param array{lang?: string, validate?: bool, integrate?: bool, dry_run?: bool, force_update?: bool} $options
+     * @param  array{lang?: string, validate?: bool, integrate?: bool, dry_run?: bool, force_update?: bool}  $options
      */
     private function drainRelationImportStack(RelationImportStack $stack, array $options): void
     {
@@ -825,7 +831,7 @@ final class Orchestrator
             'relation_import_stack' => $stack,
             'convert' => true,
             'validate' => ($options['validate'] ?? true) !== false,
-            'integrate' => ($options['integrate'] ?? true) && !$dryRun,
+            'integrate' => ($options['integrate'] ?? true) && ! $dryRun,
         ]);
 
         $drainCallback = $options['drain_progress_callback'] ?? null;
@@ -886,16 +892,19 @@ final class Orchestrator
 
         if ($entity === 'spell') {
             $spell = Spell::query()->where('dofusdb_id', $dofusdbId)->first();
+
             return $spell !== null ? ['primary_id' => (int) $spell->id, 'table' => 'spells'] : null;
         }
 
         if ($entity === 'breed' || $entity === 'class') {
             $breed = Breed::query()->where('dofusdb_id', $dofusdbId)->first();
+
             return $breed !== null ? ['primary_id' => (int) $breed->id, 'table' => 'breeds'] : null;
         }
 
         if ($entity === 'monster') {
             $monster = Monster::query()->where('dofusdb_id', $dofusdbId)->first();
+
             return $monster !== null ? ['primary_id' => (int) $monster->id, 'table' => 'monsters'] : null;
         }
 
@@ -916,6 +925,7 @@ final class Orchestrator
 
         if ($entity === 'panoply') {
             $panoply = Panoply::query()->where('dofusdb_id', $dofusdbId)->first();
+
             return $panoply !== null ? ['primary_id' => (int) $panoply->id, 'table' => 'panoplies'] : null;
         }
 
@@ -926,7 +936,7 @@ final class Orchestrator
      * Si skip_existing est actif et que l'entité existe sans mise à jour prévue, retourne les infos pour skip.
      * Évite fetch API + conversion + validation pour les entités déjà en BDD qu'on ne remplacerait pas.
      *
-     * @param string $entity breed, monster, spell, item, resource, consumable, panoply
+     * @param  string  $entity  breed, monster, spell, item, resource, consumable, panoply
      * @return array{primary_id: int, table: string}|null null = exécuter runOne, array = skip (entité déjà à jour)
      */
     public function resolveSkipForEntity(string $entity, int $dofusdbId, array $options): ?array

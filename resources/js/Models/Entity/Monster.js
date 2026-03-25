@@ -508,9 +508,11 @@ export class Monster extends BaseModel {
         const raceName = monsterRace.name || monsterRace.label || '-';
 
         return {
-            type: 'text',
+            type: 'badge',
             value: raceName,
             params: {
+                color: 'auto',
+                autoLabel: raceName,
                 tooltip: raceName === '-' ? '' : raceName,
                 sortValue: raceName,
                 searchValue: raceName,

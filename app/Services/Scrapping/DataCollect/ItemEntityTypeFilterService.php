@@ -20,7 +20,9 @@ use Illuminate\Support\Facades\Cache;
 class ItemEntityTypeFilterService
 {
     public const TYPE_MODE_ALL = 'all';
+
     public const TYPE_MODE_ALLOWED = 'allowed';
+
     public const TYPE_MODE_SELECTED = 'selected';
 
     public function __construct(
@@ -29,7 +31,7 @@ class ItemEntityTypeFilterService
     ) {}
 
     /**
-     * @param array<string,mixed> $filters
+     * @param  array<string,mixed>  $filters
      * @return array<string,mixed>
      */
     public function applyDefaults(string $entity, array $filters, string $typeMode = self::TYPE_MODE_ALLOWED): array
@@ -48,6 +50,7 @@ class ItemEntityTypeFilterService
         }
 
         $defaults = $this->defaultFiltersForEntity($entity, $typeMode);
+
         return empty($defaults) ? $filters : array_replace($filters, $defaults);
     }
 
@@ -119,9 +122,10 @@ class ItemEntityTypeFilterService
             $ids = match ($entity) {
                 'resource' => ResourceType::query()->whereNotNull('dofusdb_type_id')->pluck('dofusdb_type_id')->all(),
                 'consumable' => ConsumableType::query()->whereNotNull('dofusdb_type_id')->pluck('dofusdb_type_id')->all(),
-                'equipment' => ItemType::query()->whereNotNull('dofusdb_type_id')->pluck('dofusdb_type_id')->all(),
+                'equipment' => array_values(array_unique(array_map('intval', ItemType::query()->whereNotNull('dofusdb_type_id')->pluck('dofusdb_type_id')->all()))),
                 default => [],
             };
+
             return array_values(array_unique(array_map('intval', $ids)));
         } catch (\Throwable) {
             return [];
@@ -136,7 +140,7 @@ class ItemEntityTypeFilterService
         $lang = (string) config('scrapping.data_collect.default_language', 'fr');
         $g = $this->itemSuperTypeMapping->getGroup($group);
         $superTypeIds = $g['superTypeIds'] ?? [];
-        if (!is_array($superTypeIds) || empty($superTypeIds)) {
+        if (! is_array($superTypeIds) || empty($superTypeIds)) {
             return [];
         }
 
@@ -164,28 +168,33 @@ class ItemEntityTypeFilterService
         if ($entity === 'resource' || $entity === 'consumable') {
             if ($typeMode === self::TYPE_MODE_ALLOWED) {
                 $allowed = $this->getAllowedTypeIdsFromRegistry($entity);
-                if (!empty($allowed)) {
+                if (! empty($allowed)) {
                     $allowed = $this->disambiguateTypeIdsForEntity($entity, $allowed);
+
                     return in_array($typeId, $allowed, true);
                 }
+
                 return true;
             }
 
             $fromRegistry = $this->getTypeIdsFromRegistry($entity);
-            return !empty($fromRegistry) && in_array($typeId, $fromRegistry, true);
+
+            return ! empty($fromRegistry) && in_array($typeId, $fromRegistry, true);
         }
 
         if ($entity === 'equipment') {
             if ($typeMode === self::TYPE_MODE_ALLOWED) {
                 $allowed = $this->getAllowedTypeIdsFromRegistry('equipment');
-                if (!empty($allowed)) {
+                if (! empty($allowed)) {
                     return in_array($typeId, $allowed, true);
                 }
+
                 return true;
             }
 
             $fromRegistry = $this->getTypeIdsFromRegistry('equipment');
-            return !empty($fromRegistry) && in_array($typeId, $fromRegistry, true);
+
+            return ! empty($fromRegistry) && in_array($typeId, $fromRegistry, true);
         }
 
         return false;
@@ -198,9 +207,10 @@ class ItemEntityTypeFilterService
     {
         if ($typeMode === self::TYPE_MODE_ALLOWED) {
             $allowed = $this->getAllowedTypeIdsFromRegistry('resource');
-            if (!empty($allowed)) {
+            if (! empty($allowed)) {
                 $allowed = $this->disambiguateTypeIdsForEntity('resource', $allowed);
-                return !empty($allowed) ? ['typeIds' => $allowed] : [];
+
+                return ! empty($allowed) ? ['typeIds' => $allowed] : [];
             }
         }
 
@@ -214,9 +224,10 @@ class ItemEntityTypeFilterService
     {
         if ($typeMode === self::TYPE_MODE_ALLOWED) {
             $allowed = $this->getAllowedTypeIdsFromRegistry('consumable');
-            if (!empty($allowed)) {
+            if (! empty($allowed)) {
                 $allowed = $this->disambiguateTypeIdsForEntity('consumable', $allowed);
-                return !empty($allowed) ? ['typeIds' => $allowed] : [];
+
+                return ! empty($allowed) ? ['typeIds' => $allowed] : [];
             }
         }
 
@@ -229,7 +240,7 @@ class ItemEntityTypeFilterService
      * Priorité métier alignée avec l'intégration:
      * equipment > consumable > resource.
      *
-     * @param array<int,int> $typeIds
+     * @param  array<int,int>  $typeIds
      * @return array<int,int>
      */
     private function disambiguateTypeIdsForEntity(string $entity, array $typeIds): array
@@ -261,7 +272,7 @@ class ItemEntityTypeFilterService
     {
         if ($typeMode === self::TYPE_MODE_ALLOWED) {
             $allowed = $this->getAllowedTypeIdsFromRegistry('equipment');
-            if (!empty($allowed)) {
+            if (! empty($allowed)) {
                 return ['typeIds' => $allowed];
             }
         }
@@ -272,6 +283,7 @@ class ItemEntityTypeFilterService
     private function normalizeTypeMode(string $mode): string
     {
         $mode = strtolower(trim((string) $mode));
+
         return match ($mode) {
             self::TYPE_MODE_ALL => self::TYPE_MODE_ALL,
             self::TYPE_MODE_SELECTED => self::TYPE_MODE_SELECTED,
@@ -279,4 +291,3 @@ class ItemEntityTypeFilterService
         };
     }
 }
-

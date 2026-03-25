@@ -169,7 +169,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
             </div>
             <!-- Ligne 2 : Type • Rareté • Prix -->
             <div class="flex flex-wrap items-center gap-2 text-sm">
-                <Badge v-if="typeCell?.value" color="neutral" variant="soft" size="xs">
+                <Badge v-if="typeCell?.value" color="auto" :auto-label="typeCell.value" variant="soft" size="xs">
                     {{ typeCell.value }}
                 </Badge>
                 <Badge
