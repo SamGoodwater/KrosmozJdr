@@ -324,6 +324,8 @@ export class Resource extends BaseModel {
             params: {
                 color: 'auto',
                 autoLabel: typeName,
+                autoScheme: 'mixed',
+                autoTone: 'dark',
                 tooltip: typeName === '-' ? '' : typeName,
                 sortValue: typeName,
                 searchValue: typeName,

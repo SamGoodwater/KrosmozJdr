@@ -107,6 +107,7 @@ export class BaseFormatter {
    * @param {string} [options.icon] - Icône FontAwesome (optionnel)
    * @param {boolean} [options.strong] - Force un texte gras
    * @param {string} [options.textColor] - Couleur de texte forcée (CSS)
+   * @param {string} [options.tooltip] - Texte du tooltip (ex. niveau, état)
    * @returns {Object} Objet Cell {type: 'badge', value, params}
    */
   static buildBadgeCell(label, color, options = {}) {
@@ -120,6 +121,7 @@ export class BaseFormatter {
         icon: options.icon,
         strong: options.strong,
         textColor: options.textColor,
+        tooltip: options.tooltip,
       },
     };
   }

@@ -164,6 +164,45 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
       f.ui = ui;
     }
 
+    const rarityLike = fieldKey === 'rarity' || f?.id === 'rarity';
+    if (rarityLike) {
+      const ui = (f.ui && typeof f.ui === 'object') ? { ...f.ui } : {};
+      const optionBadge = (ui.optionBadge && typeof ui.optionBadge === 'object') ? { ...ui.optionBadge } : {};
+      if (typeof optionBadge.enabled === 'undefined') optionBadge.enabled = true;
+      if (!optionBadge.color) optionBadge.color = 'auto';
+      if (!optionBadge.autoLabelFrom) optionBadge.autoLabelFrom = 'label';
+      if (!optionBadge.autoScheme) optionBadge.autoScheme = 'rarity';
+      if (!optionBadge.autoTone) optionBadge.autoTone = 'dark';
+      if (!optionBadge.variant) optionBadge.variant = 'soft';
+      ui.optionBadge = optionBadge;
+      f.ui = ui;
+    }
+
+    const resourceTypeLike = fieldKey === 'resource_type' || f?.id === 'resource_type_id';
+    if (resourceTypeLike) {
+      const ui = (f.ui && typeof f.ui === 'object') ? { ...f.ui } : {};
+      const optionBadge = (ui.optionBadge && typeof ui.optionBadge === 'object') ? { ...ui.optionBadge } : {};
+      if (typeof optionBadge.enabled === 'undefined') optionBadge.enabled = true;
+      if (!optionBadge.color) optionBadge.color = 'auto';
+      if (!optionBadge.autoLabelFrom) optionBadge.autoLabelFrom = 'label';
+      if (!optionBadge.autoScheme) optionBadge.autoScheme = 'mixed';
+      if (!optionBadge.autoTone) optionBadge.autoTone = 'dark';
+      if (!optionBadge.variant) optionBadge.variant = 'soft';
+      ui.optionBadge = optionBadge;
+      f.ui = ui;
+    }
+
+    const stateLike = fieldKey === 'state' || f?.id === 'state';
+    if (stateLike) {
+      const ui = (f.ui && typeof f.ui === 'object') ? { ...f.ui } : {};
+      const optionBadge = (ui.optionBadge && typeof ui.optionBadge === 'object') ? { ...ui.optionBadge } : {};
+      if (typeof optionBadge.enabled === 'undefined') optionBadge.enabled = true;
+      if (!optionBadge.leadingDot) optionBadge.leadingDot = 'entity-state';
+      if (!optionBadge.variant) optionBadge.variant = 'soft';
+      ui.optionBadge = optionBadge;
+      f.ui = ui;
+    }
+
     column.withFilter(f);
   }
   // Visibilité par défaut depuis table.defaultVisible

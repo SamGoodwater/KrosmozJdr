@@ -70,6 +70,7 @@ export class LevelFormatter extends BaseFormatter {
       icon: 'fa-solid fa-level-up-alt',
       strong: true,
       textColor: '#ffffff',
+      tooltip: `Niveau ${numValue}`,
     });
   }
 }

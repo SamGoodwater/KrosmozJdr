@@ -99,9 +99,10 @@ function onLeave() {
     /* Sous les tooltips (typiquement 9999) */
     border-radius: var(--rounded-box, 0.1rem);
     border: 1px solid var(--color-base-300, oklch(var(--b3)));
-    background: oklch(var(--b1) / 0.95);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    /* Fond plus opaque pour la lisibilité tout en conservant blur + léger voile */
+    background: color-mix(in oklch, oklch(var(--b1)) 94%, oklch(var(--bc)) 6%);
+    backdrop-filter: blur(28px) saturate(1.05);
+    -webkit-backdrop-filter: blur(28px) saturate(1.05);
     box-shadow: 0 8px 24px oklch(0 0 0 / 0.15);
 }
 

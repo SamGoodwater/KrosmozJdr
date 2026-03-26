@@ -22,7 +22,7 @@
  * <Badge color="blue-700" content="Custom Tailwind" />
  * <Badge color="orange-500" size="sm">Custom</Badge>
  * <Badge color="auto" auto-label="Alice" content="A" />
- * <Badge color="auto" auto-label="12" auto-scheme="level" content="N12" />
+ * <Badge color="auto" auto-label="12" auto-scheme="level" content="12" />
  * <Badge color="auto" auto-label="6" auto-scheme="rarity" content="Unique" />
  *
  * @props {String} content - Texte simple à afficher dans le badge (optionnel, prioritaire sur slot)

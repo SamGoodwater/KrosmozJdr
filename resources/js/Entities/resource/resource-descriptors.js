@@ -664,7 +664,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           const can = ctx?.capabilities?.updateAny || ctx?.meta?.capabilities?.updateAny || false;
           return can;
         },
-        sortable: true,
+        sortable: false,
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -706,7 +706,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       table: {
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         visibleIf: (ctx) => Boolean(ctx?.capabilities?.updateAny ?? ctx?.meta?.capabilities?.updateAny),
-        sortable: true,
+        sortable: false,
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -795,7 +795,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         // Vérification supplémentaire de visibilité selon les permissions
         visibleIf: (ctx) => Boolean(ctx?.capabilities?.updateAny ?? ctx?.meta?.capabilities?.updateAny),
-        sortable: true,
+        sortable: false,
         cell: {
           sizes: {
             xs: { mode: "boolIcon" },

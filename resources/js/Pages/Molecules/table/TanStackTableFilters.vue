@@ -16,7 +16,11 @@ import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import RadioCore from "@/Pages/Atoms/data-input/RadioCore.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import { computed, unref, ref } from "vue";
-import { getLevelColor } from "@/Utils/Entity/SharedConstants.js";
+import {
+    getEntityStateDotClass,
+    getLevelColor,
+    getRarityFilterBadgeTailwindColor,
+} from "@/Utils/Entity/SharedConstants.js";
 
 const props = defineProps({
     columns: { type: Array, required: true },
@@ -93,15 +97,31 @@ const optionBadgeProps = (col, opt) => {
     const isLevelValue = Number.isFinite(num);
     const levelColor = (isLevelScheme && isLevelValue) ? getLevelColor(num) : null;
 
+    // Rareté: teintes plus soutenues pour lisibilité (filtres / badges)
+    const isRarityScheme = String(cfg.autoScheme || "") === "rarity";
+    const rarityNum = Number(opt?.value);
+    const rarityTailwind =
+        isRarityScheme && Number.isFinite(rarityNum)
+            ? getRarityFilterBadgeTailwindColor(rarityNum)
+            : null;
+
+    const stateDotClass =
+        String(cfg.leadingDot || "") === "entity-state" && opt?.value !== null && opt?.value !== undefined && String(opt.value) !== ""
+            ? getEntityStateDotClass(opt.value)
+            : "";
+
+    const resolvedColor = levelColor || rarityTailwind || cfg.color || props.uiColor;
+
     return {
-        color: levelColor || cfg.color || props.uiColor,
+        color: resolvedColor,
         autoLabel: label,
         autoScheme: cfg.autoScheme,
         autoTone: cfg.autoTone,
         variant: cfg.variant || "soft",
         glassy: Boolean(cfg.glassy),
-        strong: isLevelScheme,
-        textColor: isLevelScheme ? "#ffffff" : "",
+        strong: Boolean((isLevelScheme && isLevelValue) || rarityTailwind),
+        textColor: isLevelScheme && isLevelValue ? "#ffffff" : "",
+        stateDotClass,
     };
 };
 
@@ -497,20 +517,30 @@ const clearAllActiveFilters = () => {
                                             :color="uiColor"
                                             @update:model-value="(v) => handleSelectUpdate(col.filter.id, v)"
                                         />
-                                        <Badge
+                                        <span
                                             v-if="isOptionBadgeEnabled(col)"
-                                            :color="optionBadgeProps(col, opt).color"
-                                            :auto-label="optionBadgeProps(col, opt).autoLabel"
-                                            :auto-scheme="optionBadgeProps(col, opt).autoScheme || undefined"
-                                            :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
-                                            :variant="optionBadgeProps(col, opt).variant"
-                                            :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
-                                            :strong="Boolean(optionBadgeProps(col, opt).strong)"
-                                            :text-color="optionBadgeProps(col, opt).textColor || ''"
-                                            size="sm"
+                                            class="inline-flex items-center gap-1.5 min-w-0"
                                         >
-                                            {{ opt.label }}
-                                        </Badge>
+                                            <span
+                                                v-if="optionBadgeProps(col, opt).stateDotClass"
+                                                class="w-2 h-2 rounded-full shrink-0 ring-1 ring-base-300 opacity-90"
+                                                :class="optionBadgeProps(col, opt).stateDotClass"
+                                                aria-hidden="true"
+                                            />
+                                            <Badge
+                                                :color="optionBadgeProps(col, opt).color"
+                                                :auto-label="optionBadgeProps(col, opt).autoLabel"
+                                                :auto-scheme="optionBadgeProps(col, opt).autoScheme || undefined"
+                                                :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
+                                                :variant="optionBadgeProps(col, opt).variant"
+                                                :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
+                                                :strong="Boolean(optionBadgeProps(col, opt).strong)"
+                                                :text-color="optionBadgeProps(col, opt).textColor || ''"
+                                                size="sm"
+                                            >
+                                                {{ opt.label }}
+                                            </Badge>
+                                        </span>
                                         <span v-else class="text-sm">{{ opt.label }}</span>
                                     </label>
                                 </div>
@@ -629,20 +659,30 @@ const clearAllActiveFilters = () => {
                                             :color="uiColor"
                                             @update:model-value="(checked) => toggleMultiValue(col.filter.id, opt.value, Boolean(checked))"
                                         />
-                                        <Badge
+                                        <span
                                             v-if="isOptionBadgeEnabled(col)"
-                                            :color="optionBadgeProps(col, opt).color"
-                                            :auto-label="optionBadgeProps(col, opt).autoLabel"
-                                            :auto-scheme="optionBadgeProps(col, opt).autoScheme || undefined"
-                                            :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
-                                            :variant="optionBadgeProps(col, opt).variant"
-                                            :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
-                                            :strong="Boolean(optionBadgeProps(col, opt).strong)"
-                                            :text-color="optionBadgeProps(col, opt).textColor || ''"
-                                            size="sm"
+                                            class="inline-flex items-center gap-1.5 min-w-0"
                                         >
-                                            {{ opt.label }}
-                                        </Badge>
+                                            <span
+                                                v-if="optionBadgeProps(col, opt).stateDotClass"
+                                                class="w-2 h-2 rounded-full shrink-0 ring-1 ring-base-300 opacity-90"
+                                                :class="optionBadgeProps(col, opt).stateDotClass"
+                                                aria-hidden="true"
+                                            />
+                                            <Badge
+                                                :color="optionBadgeProps(col, opt).color"
+                                                :auto-label="optionBadgeProps(col, opt).autoLabel"
+                                                :auto-scheme="optionBadgeProps(col, opt).autoScheme || undefined"
+                                                :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
+                                                :variant="optionBadgeProps(col, opt).variant"
+                                                :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
+                                                :strong="Boolean(optionBadgeProps(col, opt).strong)"
+                                                :text-color="optionBadgeProps(col, opt).textColor || ''"
+                                                size="sm"
+                                            >
+                                                {{ opt.label }}
+                                            </Badge>
+                                        </span>
                                         <span v-else class="text-sm">{{ opt.label }}</span>
                                     </label>
                                 </div>

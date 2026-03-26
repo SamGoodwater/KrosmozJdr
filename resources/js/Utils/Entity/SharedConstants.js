@@ -213,6 +213,26 @@ export function getRarityConfig(rarity) {
 }
 
 /**
+ * Token Tailwind `color-shade` pour badges de filtre (contraste texte renforcé vs. RARITY_GRADIENT).
+ *
+ * @param {number|string|null|undefined} rarity
+ * @returns {string|null}
+ */
+export function getRarityFilterBadgeTailwindColor(rarity) {
+  const n = typeof rarity === "number" ? rarity : Number.parseInt(String(rarity ?? ""), 10);
+  if (!Number.isFinite(n) || n < 0 || n > 5) return null;
+  const byValue = {
+    0: "slate-600",
+    1: "sky-700",
+    2: "emerald-700",
+    3: "amber-700",
+    4: "rose-700",
+    5: "fuchsia-800",
+  };
+  return byValue[n] ?? null;
+}
+
+/**
  * Options de rareté (compatibilité avec l'ancien système)
  * @deprecated Utiliser getRarityOptions() à la place
  */
@@ -358,6 +378,28 @@ export const ENTITY_STATE_OPTIONS = Object.freeze([
 
 export function getEntityStateOptions() {
   return ENTITY_STATE_OPTIONS.map(({ value, label }) => ({ value, label }));
+}
+
+/**
+ * Classes Tailwind pour un point de couleur d'état (raw/draft/playable/archived).
+ * Aligné sur {@link EntityUsableDot} pour cohérence filtres / cartes.
+ *
+ * @param {string|null|undefined} state
+ * @returns {string}
+ */
+export function getEntityStateDotClass(state) {
+  switch (String(state ?? "")) {
+    case "playable":
+      return "bg-success";
+    case "draft":
+      return "bg-warning";
+    case "raw":
+      return "bg-error";
+    case "archived":
+      return "bg-info";
+    default:
+      return "bg-base-300";
+  }
 }
 
 /**

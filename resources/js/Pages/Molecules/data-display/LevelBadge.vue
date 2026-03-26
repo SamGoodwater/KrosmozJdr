@@ -32,9 +32,9 @@ const props = defineProps({
    */
   variant: { type: String, default: "soft" },
   /**
-   * Afficher le préfixe "N".
+   * Préfixe avant le chiffre (défaut vide : le tooltip porte « Niveau »).
    */
-  prefix: { type: String, default: "N" },
+  prefix: { type: String, default: "" },
   /**
    * Tooltip optionnel (fallback auto).
    */
@@ -55,7 +55,8 @@ const parsed = computed(() => {
 
 const label = computed(() => {
   if (parsed.value === null) return "—";
-  return `${props.prefix}${parsed.value}`;
+  const p = props.prefix ?? "";
+  return p ? `${p}${parsed.value}` : String(parsed.value);
 });
 
 const color = computed(() => {
