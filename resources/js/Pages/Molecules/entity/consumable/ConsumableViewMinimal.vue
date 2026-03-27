@@ -163,7 +163,7 @@ const handleAction = async (actionKey) => {
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Badge v-if="typeName && typeName !== '—'" color="auto" :auto-label="typeName" variant="soft" size="xs">
+                            <Badge v-if="typeName && typeName !== '—'" color="auto" :auto-label="typeName" auto-scheme="labelHash" auto-tone="light" variant="soft" size="xs">
                                 {{ typeName }}
                             </Badge>
                             <Badge
@@ -250,7 +250,7 @@ const handleAction = async (actionKey) => {
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Badge v-if="typeName && typeName !== '—'" color="auto" :auto-label="typeName" variant="soft" size="xs">
+                            <Badge v-if="typeName && typeName !== '—'" color="auto" :auto-label="typeName" auto-scheme="labelHash" auto-tone="light" variant="soft" size="xs">
                                 {{ typeName }}
                             </Badge>
                             <Badge

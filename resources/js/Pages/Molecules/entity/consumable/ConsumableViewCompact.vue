@@ -267,8 +267,8 @@ const handleAction = async (actionKey) => {
                             <Badge
                                 color="auto"
                                 :auto-label="consumable.consumableType?.name ?? consumable.consumableType?.label ?? '-'"
-                                auto-scheme="mixed"
-                                auto-tone="mid"
+                                auto-scheme="labelHash"
+                                auto-tone="light"
                                 size="xs"
                             >
                                 {{ consumable.consumableType?.name ?? consumable.consumableType?.label ?? '-' }}

@@ -302,8 +302,8 @@ const handleAction = async (actionKey) => {
                             <Badge
                                 color="auto"
                                 :auto-label="resource.resourceType?.name ?? resource.resourceType?.label ?? '-'"
-                                auto-scheme="mixed"
-                                auto-tone="mid"
+                                auto-scheme="labelHash"
+                                auto-tone="light"
                                 size="xs"
                             >
                                 {{ resource.resourceType?.name ?? resource.resourceType?.label ?? '-' }}

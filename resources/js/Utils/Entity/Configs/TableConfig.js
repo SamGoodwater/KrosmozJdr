@@ -185,8 +185,8 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
       if (typeof optionBadge.enabled === 'undefined') optionBadge.enabled = true;
       if (!optionBadge.color) optionBadge.color = 'auto';
       if (!optionBadge.autoLabelFrom) optionBadge.autoLabelFrom = 'label';
-      if (!optionBadge.autoScheme) optionBadge.autoScheme = 'mixed';
-      if (!optionBadge.autoTone) optionBadge.autoTone = 'dark';
+      if (!optionBadge.autoScheme) optionBadge.autoScheme = 'labelHash';
+      if (!optionBadge.autoTone) optionBadge.autoTone = 'light';
       if (!optionBadge.variant) optionBadge.variant = 'soft';
       ui.optionBadge = optionBadge;
       f.ui = ui;

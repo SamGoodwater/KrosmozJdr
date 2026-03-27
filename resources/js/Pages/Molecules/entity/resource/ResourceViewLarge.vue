@@ -276,8 +276,8 @@ const handleAction = async (actionKey) => {
                                 <Badge
                                     color="auto"
                                     :auto-label="typeDisplay"
-                                    auto-scheme="mixed"
-                                    auto-tone="mid"
+                                    auto-scheme="labelHash"
+                                    auto-tone="light"
                                     size="sm"
                                 >
                                     {{ typeDisplay }}

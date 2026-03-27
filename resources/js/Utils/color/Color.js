@@ -528,7 +528,7 @@ export function convertToTailwind(color, intensity = null, options = {}) {
  *
  * @param {string|number|null|undefined} input
  * @param {Object} options
- * @param {"mixed"|"rainbow"|"level"|"rarity"} [options.scheme="mixed"] - Nuancié/schéma d'auto-color
+ * @param {"mixed"|"rainbow"|"level"|"rarity"|"labelHash"} [options.scheme="mixed"] - Nuancié/schéma d'auto-color (`labelHash` = hash sur tout le libellé, pastels)
  * @param {"mid"|"light"|"dark"} [options.tone="mid"] - Jeu de nuances à utiliser
  * @param {number[]} [options.shades] - Override complet des nuances
  * @param {"stableRandom"|"alphabetical"|"numericProgression"|"shadeProgression"} [options.mode="stableRandom"]
@@ -585,6 +585,8 @@ export function getTailwindTokenFromLabel(input, options = {}) {
     rainbow: "rainbow",
     level: "level",
     rarity: "rarity",
+    /** Hash FNV sur le texte entier + pastels Tailwind (évite bandes alphabétiques) */
+    labelHash: "labelHash",
   });
 
   const palette = Array.isArray(paletteOverride) && paletteOverride.length
@@ -725,6 +727,26 @@ export function getTailwindTokenFromLabel(input, options = {}) {
     const shade = shades[(Math.floor(h / palette.length) % shades.length)];
     return `${color}-${shade}`;
   };
+
+  /**
+   * Couleurs pastel (nuances claires) pour fonds lisibles avec texte foncé.
+   * Indépendant de l’ordre alphabétique : le hash porte sur tout le libellé.
+   */
+  if (s === SCHEMES.labelHash) {
+    const raw = normalizeToken(token);
+    if (!raw) return String(fallback);
+    let key = raw.toLowerCase();
+    try {
+      key = key.normalize("NFC");
+    } catch {
+      /* ignore */
+    }
+    const h = hash32(key);
+    const pastelShades = [100, 200, 300];
+    const colorName = palette[h % palette.length];
+    const shade = pastelShades[Math.floor(h / palette.length) % pastelShades.length];
+    return `${colorName}-${shade}`;
+  }
 
   // 2) mapping selon mode
   // Scheme "mixed" (par défaut) utilise la logique existante

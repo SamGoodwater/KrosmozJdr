@@ -257,8 +257,8 @@ export function resolveEntityBadgeUi(options = {}) {
       return {
         color: "auto",
         autoLabel: label,
-        autoScheme: "mixed",
-        autoTone: "mid",
+        autoScheme: "labelHash",
+        autoTone: "light",
       };
     }
   }

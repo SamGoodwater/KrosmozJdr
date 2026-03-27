@@ -140,6 +140,8 @@ export class BaseFormatter {
       params: {
         color: 'auto',
         autoLabel: String(label || ''),
+        autoScheme: 'labelHash',
+        autoTone: 'light',
         sortValue: options.sortValue ?? label,
         filterValue: options.filterValue,
         icon: options.icon,

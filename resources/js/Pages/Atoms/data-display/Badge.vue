@@ -28,7 +28,7 @@
  * @props {String} content - Texte simple à afficher dans le badge (optionnel, prioritaire sur slot)
  * @props {String} color - Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error') ou Tailwind (format 'color-shade', ex: 'blue-700') ou auto ('auto')
  * @props {String} autoLabel - Source de l'auto-color (obligatoire si le badge utilise un slot, optionnel si `content` est fourni)
- * @props {String} autoScheme - Nuancié: 'mixed' | 'rainbow' | 'level' | 'rarity' (défaut: 'mixed')
+ * @props {String} autoScheme - Nuancié: 'mixed' | 'rainbow' | 'level' | 'rarity' | 'labelHash' (défaut: 'mixed')
  * @props {String} autoTone - 'mid' | 'light' | 'dark' (défaut: 'mid')
  * @props {String} textColor - Force la couleur du texte (ex: '#fff')
  * @props {Boolean} strong - Force un texte plus gras
@@ -89,7 +89,7 @@ const props = defineProps({
     autoScheme: {
         type: String,
         default: 'mixed',
-        validator: v => ['mixed', 'rainbow', 'level', 'rarity'].includes(v),
+        validator: v => ['mixed', 'rainbow', 'level', 'rarity', 'labelHash'].includes(v),
     },
     autoTone: {
         type: String,

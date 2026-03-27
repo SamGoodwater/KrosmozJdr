@@ -283,8 +283,8 @@ const handleAction = async (actionKey) => {
                             <Badge
                                 color="auto"
                                 :auto-label="item.itemType?.name ?? item.itemType?.label ?? '-'"
-                                auto-scheme="mixed"
-                                auto-tone="mid"
+                                auto-scheme="labelHash"
+                                auto-tone="light"
                                 size="xs"
                             >
                                 {{ item.itemType?.name ?? item.itemType?.label ?? '-' }}
