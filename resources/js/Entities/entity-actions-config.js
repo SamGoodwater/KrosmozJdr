@@ -251,6 +251,34 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
     },
   },
 
+  /** Panoplies : Rafraîchir utilise le pipeline V2. */
+  panoplies: {
+    refresh: {
+      key: "refresh",
+      label: "Rafraîchir",
+      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
+      icon: "fa-solid fa-arrow-rotate-right",
+      permission: "canManage",
+      requiresEntity: true,
+      group: "tools",
+      badge: "V2",
+    },
+  },
+
+  /** Capacités : Rafraîchir utilise le pipeline V2. */
+  capabilities: {
+    refresh: {
+      key: "refresh",
+      label: "Rafraîchir",
+      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
+      icon: "fa-solid fa-arrow-rotate-right",
+      permission: "canManage",
+      requiresEntity: true,
+      group: "tools",
+      badge: "V2",
+    },
+  },
+
   /** Items : Rafraîchir utilise le pipeline V2. */
   items: {
     refresh: {

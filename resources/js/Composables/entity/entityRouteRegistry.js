@@ -101,6 +101,24 @@ export const ENTITY_ROUTE_CONFIG = {
 };
 
 /**
+ * Nom du paramètre de route au singulier pour `route('entities.{plural}.*', { [key]: id })`.
+ *
+ * @param {string} normalizedPlural - Type pluriel normalisé (ex. `normalizeEntityType('spell')` → `spells`)
+ * @returns {string}
+ *
+ * @example
+ * getEntitySingularRouteKey('spells') // 'spell'
+ * getEntitySingularRouteKey('resource-types') // 'resourceType'
+ */
+export function getEntitySingularRouteKey(normalizedPlural) {
+  const n = String(normalizedPlural || "");
+  if (n === "resource-types") return "resourceType";
+  if (n === "panoplies") return "panoply";
+  if (n.endsWith("s") && n.length > 1) return n.slice(0, -1);
+  return n;
+}
+
+/**
  * Retourne une config de routes pour une entité.
  * Par défaut, on suppose `entities.{entityType}.show` avec param scalaire (le plus robuste côté Ziggy).
  *

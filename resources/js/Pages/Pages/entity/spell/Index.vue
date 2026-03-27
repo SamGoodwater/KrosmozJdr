@@ -323,7 +323,7 @@ const handleQuickEditSubmit = () => {
         <!-- Modal de création -->
         <CreateEntityModal
             :open="createModalOpen"
-            entity-type="spell"
+            entity-type="spells"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />
@@ -332,7 +332,7 @@ const handleQuickEditSubmit = () => {
         <EntityModal
             v-if="selectedEntity"
             :entity="selectedEntity"
-            entity-type="spell"
+            entity-type="spells"
             :view="modalView"
             :open="modalOpen"
             :table-meta="tableMeta"
@@ -349,7 +349,7 @@ const handleQuickEditSubmit = () => {
         <EntityQuickEditModal
             v-if="quickEditEntity"
             :entity="quickEditEntity"
-            entity-type="spell"
+            entity-type="spells"
             :fields-config="fieldsConfig"
             :open="quickEditModalOpen"
             @close="quickEditModalOpen = false"

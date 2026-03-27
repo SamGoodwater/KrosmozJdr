@@ -14,20 +14,22 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Capability } from "@/Models/Entity/Capability";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
+import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
+import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
-import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
+import { createFieldsConfigFromDescriptors } from "@/Utils/entity/descriptor-form";
 
-const props = defineProps({
+defineProps({
     capabilities: {
         type: Object,
         required: true
@@ -46,6 +48,7 @@ const canModify = computed(() => canUpdateAny('capabilities'));
 // Bulk request
 const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
+const { downloadPdf } = useDownloadPdf("capability");
 const { refreshEntity } = useScrapping();
 
 // Table v2
@@ -71,11 +74,6 @@ const serverUrl = computed(() => `${route('api.tables.capabilities')}?format=ent
 const fieldsConfig = computed(() => {
   const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
   return createFieldsConfigFromDescriptors(getCapabilityFieldDescriptors(ctx));
-});
-
-const defaultEntity = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createDefaultEntityFromDescriptors(getCapabilityFieldDescriptors(ctx));
 });
 
 // Calcul des entités sélectionnées depuis les IDs et les rows
@@ -125,9 +123,19 @@ const modalOpen = ref(false);
 const modalView = ref('large');
 const quickEditModalOpen = ref(false);
 const quickEditEntity = ref(null);
+const createModalOpen = ref(false);
 
 const handleCreate = () => {
-    router.visit(route('entities.capabilities.create'));
+    createModalOpen.value = true;
+};
+
+const handleCloseCreateModal = () => {
+    createModalOpen.value = false;
+};
+
+const handleEntityCreated = () => {
+    createModalOpen.value = false;
+    refreshToken.value++;
 };
 
 const closeModal = () => {
@@ -177,7 +185,7 @@ const handleTableAction = async (actionKey, entity, row) => {
         }
 
         case 'download-pdf':
-            // TODO: Implémenter le téléchargement PDF
+            await downloadPdf(entityId);
             break;
 
         case 'refresh':
@@ -215,8 +223,10 @@ const handleModalCopyLink = async (entity) => {
     }
 };
 
-const handleModalDownloadPdf = (entity) => {
-    // TODO: Implémenter le téléchargement PDF
+const handleModalDownloadPdf = async (entity) => {
+    const entityId = entity?.id;
+    if (!entityId) return;
+    await downloadPdf(entityId);
 };
 
 const handleModalRefresh = async (entity) => {
@@ -227,13 +237,14 @@ const handleModalRefresh = async (entity) => {
     closeModal();
 };
 
-const handleModalDelete = (entity) => {
+const handleModalDelete = (_entity) => {
     // TODO: Implémenter la suppression avec confirmation
 };
 
 const handleQuickEditSubmit = () => {
     refreshToken.value++;
     quickEditEntity.value = null;
+    quickEditModalOpen.value = false;
 };
 </script>
 
@@ -285,11 +296,19 @@ const handleQuickEditSubmit = () => {
             </div>
         </div>
 
+        <!-- Modal de création -->
+        <CreateEntityModal
+            :open="createModalOpen"
+            entity-type="capabilities"
+            @close="handleCloseCreateModal"
+            @created="handleEntityCreated"
+        />
+
         <!-- Modal de visualisation -->
         <EntityModal
             v-if="selectedEntity"
             :entity="selectedEntity"
-            entity-type="capability"
+            entity-type="capabilities"
             :view="modalView"
             :open="modalOpen"
             :table-meta="tableMeta"
@@ -306,7 +325,7 @@ const handleQuickEditSubmit = () => {
         <EntityQuickEditModal
             v-if="quickEditEntity"
             :entity="quickEditEntity"
-            entity-type="capability"
+            entity-type="capabilities"
             :fields-config="fieldsConfig"
             :open="quickEditModalOpen"
             @close="quickEditModalOpen = false"

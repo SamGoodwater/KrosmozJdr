@@ -171,17 +171,25 @@ export function getSpellFieldDescriptors(ctx = {}) {
       table: {
         order: 200,
         sortable: true,
-        filterable: { id: "level", type: "multi", defaultVisible: true },
+        filterable: {
+          id: "level",
+          type: "multi",
+          defaultVisible: true,
+          ui: {
+            optionsMode: "rows",
+            maxOptions: 250,
+          },
+        },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
-        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
         sizes: {
-          xs: { mode: "text" },
-          sm: { mode: "text" },
-          md: { mode: "text" },
-          lg: { mode: "text" },
-          xl: { mode: "text" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
       edit: {
@@ -449,7 +457,12 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-circle-info",
       table: {
         sortable: true,
-        filterable: { id: "state", type: "multi", defaultVisible: true },
+        filterable: {
+          id: "state",
+          type: "multi",
+          defaultVisible: true,
+          options: getEntityStateOptions(),
+        },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -480,6 +493,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-arrows-rotate",
       visibleIf: () => canUpdateAny,
       table: {
+        sortable: false,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -508,7 +522,8 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       table: {
-        sortable: true,
+        sortable: false,
+        filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -538,7 +553,8 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
       table: {
-        sortable: true,
+        sortable: false,
+        filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -599,15 +615,15 @@ export function getSpellFieldDescriptors(ctx = {}) {
         sortable: true,
         filterable: { id: "types", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
-        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
         sizes: {
-          xs: { mode: "text", truncate: 10 },
-          sm: { mode: "text", truncate: 15 },
-          md: { mode: "text", truncate: 20 },
-          lg: { mode: "text" },
-          xl: { mode: "text" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
       edit: {

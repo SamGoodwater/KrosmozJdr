@@ -1,252 +1,278 @@
 <script setup>
 /**
  * BreedViewMinimal — Vue Minimal pour Breed
- * 
+ *
  * @description
- * Petite carte qui s'étend au survol.
- * Utilisée dans des grilles, petites modals ou hovers.
- * 
- * @props {Breed} classe - Instance du modèle Breed
+ * Alignée sur MonsterViewMinimal : EntityMinimalCard, état • image • nom • vie / dé • spécificité • relations • description.
+ *
+ * @props {Breed} breed - Instance du modèle Breed
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
-import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
-import Image from '@/Pages/Atoms/data-display/Image.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { computed } from "vue";
+import { router } from "@inertiajs/vue3";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
+import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
+import Route from "@/Pages/Atoms/action/Route.vue";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 
 const props = defineProps({
     breed: {
         type: Object,
-        required: true
+        required: true,
     },
     showActions: {
         type: Boolean,
-        default: true
+        default: true,
     },
     displayMode: {
         type: String,
-        default: 'hover',
-        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+        default: "extended",
+        validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
     tableMeta: {
         type: Object,
-        default: () => ({})
-    }
+        default: () => ({}),
+    },
 });
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits(["edit", "view", "delete", "action"]);
 
-const isHovered = ref(props.displayMode === 'extended');
-const canHoverExpand = computed(() => props.displayMode === 'hover');
-const permissions = usePermissions();
+const entity = computed(() => props.breed);
 
-const ctx = computed(() => {
-    const capabilities = {
-        viewAny: permissions.can('breed', 'viewAny'),
-        createAny: permissions.can('breed', 'createAny'),
-        updateAny: permissions.can('breed', 'updateAny'),
-        deleteAny: permissions.can('breed', 'deleteAny'),
-        manageAny: permissions.can('breed', 'manageAny'),
-    };
-    return { capabilities, meta: { capabilities } };
+const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
+
+const imageUrl = computed(() => {
+    const u = entity.value?.image ?? entity.value?.icon ?? entity.value?._data?.image ?? entity.value?._data?.icon;
+    return u && String(u).trim() ? String(u) : null;
 });
 
-const descriptors = computed(() => getBreedFieldDescriptors(ctx.value));
+const cellOpts = () => ({ size: "xs", context: "minimal" });
 
-const canShowField = (fieldKey) => {
-    const desc = descriptors.value?.[fieldKey];
-    if (!desc) return false;
-    const visibleIf = desc?.permissions?.visibleIf;
-    if (typeof visibleIf === 'function') {
-        try {
-            return Boolean(visibleIf(ctx.value));
-        } catch (e) {
-            console.warn('[BreedViewMinimal] visibleIf failed for', fieldKey, e);
-            return false;
-        }
-    }
-    return true;
-};
+const lifeCell = computed(() => entity.value?.toCell?.("life", cellOpts()) ?? null);
+const lifeDiceCell = computed(() => entity.value?.toCell?.("life_dice", cellOpts()) ?? null);
+const specificityCell = computed(() => entity.value?.toCell?.("specificity", cellOpts()) ?? null);
+const relationsCell = computed(() => entity.value?.toCell?.("breed_summary_relations", cellOpts()) ?? null);
 
-// Champs importants à afficher
-const importantFields = computed(() => ['name', 'life', 'life_dice'].filter(canShowField));
-
-const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
-const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
-const sortExtendedFields = (fields) => {
-    return [...fields].sort((a, b) => {
-        const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
-        const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
-
-        if (rankA === -1 && rankB === -1) return 0;
-        if (rankA === -1) return -1;
-        if (rankB === -1) return 1;
-        return rankA - rankB;
-    });
-};
-
-// En mode étendu, afficher toutes les propriétés visibles non principales.
-const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image']);
-    const fields = Object.keys(descriptors.value || {}).filter((key) => {
-        return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
-    });
-    return sortExtendedFields(fields);
+const descriptionFull = computed(() => {
+    const d = entity.value?.description ?? entity.value?._data?.description;
+    return d && String(d).trim() ? String(d) : "";
 });
 
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
-};
-
-const getCell = (fieldKey) => {
-    return props.breed.toCell(fieldKey, {
-        size: 'sm',
-        context: 'minimal',
-    });
-};
-
-const tooltipForField = (fieldKey, cell) => {
-    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
-    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
-    return `${label} : ${value}`;
-};
+const showHref = computed(() =>
+    entity.value?.id ? route("entities.breeds.show", { breed: entity.value.id }) : null
+);
 
 const handleAction = async (actionKey) => {
-    const breedId = props.breed.id;
+    const breedId = entity.value?.id;
     if (!breedId) return;
 
     switch (actionKey) {
-        case 'view':
-            router.visit(route('entities.breeds.show', { breed: breedId }));
-            emit('view', props.breed);
+        case "view":
+            router.visit(route("entities.breeds.show", { breed: breedId }));
+            emit("view", props.breed);
             break;
-        case 'edit':
-            router.visit(route('entities.breeds.edit', { breed: breedId }));
-            emit('edit', props.breed);
+        case "edit":
+            router.visit(route("entities.breeds.edit", { breed: breedId }));
+            emit("edit", props.breed);
             break;
-        case 'delete':
-            emit('delete', props.breed);
+        case "delete":
+            emit("delete", props.breed);
             break;
+        default:
+            emit("action", actionKey, props.breed);
     }
 };
 </script>
 
 <template>
-    <div 
-        class="relative rounded-box border border-base-300 transition-all duration-300 overflow-hidden"
-        :class="{ 
-            'bg-base-200 shadow-lg': isHovered,
-            'bg-base-100': !isHovered
-        }"
-        :style="{ 
-            width: isHovered ? 'auto' : '150px',
-            minWidth: '150px',
-            maxWidth: isHovered ? '300px' : '200px',
-            height: isHovered ? 'auto' : '100px',
-            minHeight: '80px'
-        }"
-        @mouseenter="canHoverExpand && (isHovered = true)"
-        @mouseleave="canHoverExpand && (isHovered = false)">
-        
-        <div class="p-3">
-            <!-- En-tête avec image/icône, nom et actions -->
-            <div class="flex items-start justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <div v-if="breed.image || breed.icon" class="flex-shrink-0">
-                        <Image
-                            :src="breed.image || breed.icon"
-                            :alt="breed.name || 'Breed'"
-                            size="xs"
-                            class="rounded"
+    <EntityMinimalCard :display-mode="displayMode">
+        <template #compact>
+            <div
+                data-cy="entity-minimal-card-compact"
+                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+            >
+                <div class="absolute top-1.5 left-1.5 z-10">
+                    <EntityUsableDot :state="stateValue" />
+                </div>
+                <div class="flex gap-2">
+                    <div
+                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
+                    >
+                        <img
+                            v-if="imageUrl"
+                            :src="imageUrl"
+                            :alt="entity?.name ?? 'Classe'"
+                            class="h-full w-full object-contain"
+                            loading="lazy"
                         />
+                        <Icon v-else source="fa-solid fa-graduation-cap" alt="" size="xs" class="text-base-content/40" />
                     </div>
-                    <Tooltip :content="breed.name || 'Breed'" placement="top">
-                        <span class="font-semibold text-primary-100 text-sm truncate block">
-                            <CellRenderer
-                                :cell="getCell('name')"
-                                ui-color="primary"
-                            />
-                        </span>
-                    </Tooltip>
-                </div>
-                
-                <div v-if="showActions && isHovered" class="flex-shrink-0">
-                    <EntityActions
-                        entity-type="breed"
-                        :entity="breed"
-                        format="buttons"
-                        display="icon-only"
-                        size="xs"
-                        color="primary"
-                        :context="{ inPanel: false }"
-                        @action="handleAction"
-                    />
-                </div>
-            </div>
-
-            <!-- Infos importantes en icônes avec tooltips -->
-            <div class="flex gap-2 flex-wrap">
-                <template v-for="field in importantFields" :key="field">
-                    <Tooltip
-                        :content="tooltipForField(field, getCell(field))"
-                        placement="top"
-                    >
-                        <div class="flex items-center gap-1 px-2 py-1 bg-base-200 rounded">
-                            <Icon
-                                :source="getFieldIcon(field)"
-                                size="xs"
-                                class="text-primary-400"
-                            />
-                            <span class="text-xs text-primary-300 font-medium">
-                                <CellRenderer
-                                    :cell="getCell(field)"
-                                    ui-color="primary"
+                    <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <div class="min-w-0 flex-1">
+                                <Route
+                                    v-if="showHref"
+                                    :href="showHref"
+                                    color="neutral"
+                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
+                                >
+                                    {{ entity?.name ?? "—" }}
+                                </Route>
+                                <span v-else class="font-semibold truncate block text-sm">
+                                    {{ entity?.name ?? "—" }}
+                                </span>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="breeds"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    @action="(k) => handleAction(k)"
                                 />
-                            </span>
-                        </div>
-                    </Tooltip>
-                </template>
-            </div>
-
-            <!-- Contenu supplémentaire au hover -->
-            <div 
-                v-if="isHovered" 
-                class="mt-2 pt-2 border-t border-base-300 space-y-1 text-xs text-primary-300 animate-fade-in">
-                <div
-                    v-for="key in expandedFields"
-                    :key="key"
-                    class="flex items-start gap-2"
-                >
-                    <Tooltip
-                        :content="tooltipForField(key, getCell(key))"
-                        placement="left"
-                    >
-                        <div class="flex items-start gap-2 w-full">
-                            <Icon
-                                :source="getFieldIcon(key)"
-                                size="xs"
-                                class="text-primary-400 flex-shrink-0 mt-0.5"
-                            />
-                            <div class="flex-1 min-w-0">
-                                <div class="font-semibold text-primary-400">
-                                    {{ key }}:
-                                </div>
-                                <div class="text-primary-200 truncate">
-                                    <CellRenderer
-                                        :cell="getCell(key)"
-                                        ui-color="primary"
-                                    />
-                                </div>
                             </div>
                         </div>
-                    </Tooltip>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <Tooltip
+                                v-if="lifeCell?.value && lifeCell.value !== '-' && lifeCell.value !== '—'"
+                                :content="`Vie : ${lifeCell.value}`"
+                                placement="top"
+                            >
+                                <span class="text-base-content/80">
+                                    <span class="font-medium">Vie</span>
+                                    {{ lifeCell.value }}
+                                </span>
+                            </Tooltip>
+                            <Tooltip
+                                v-if="lifeDiceCell?.value && lifeDiceCell.value !== '-' && lifeDiceCell.value !== '—'"
+                                :content="`Dé de vie : ${lifeDiceCell.value}`"
+                                placement="top"
+                            >
+                                <span class="text-base-content/80">
+                                    <span class="font-medium">Dé</span>
+                                    {{ lifeDiceCell.value }}
+                                </span>
+                            </Tooltip>
+                            <CellRenderer
+                                v-if="
+                                    relationsCell?.type === 'chips' &&
+                                    (relationsCell?.params?.items?.length ?? 0) > 0
+                                "
+                                :cell="relationsCell"
+                                class="inline-flex items-center"
+                            />
+                        </div>
+                        <p
+                            v-if="specificityCell?.value && specificityCell.value !== '-' && specificityCell.value !== '—'"
+                            class="text-xs text-base-content/70 line-clamp-2"
+                            :title="String(specificityCell.value)"
+                        >
+                            {{ specificityCell.value }}
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </template>
+        <template #expanded>
+            <div
+                data-cy="entity-minimal-card-expanded"
+                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+            >
+                <div class="absolute top-1.5 left-1.5 z-10">
+                    <EntityUsableDot :state="stateValue" />
+                </div>
+                <div class="flex gap-2">
+                    <div
+                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
+                    >
+                        <img
+                            v-if="imageUrl"
+                            :src="imageUrl"
+                            :alt="entity?.name ?? 'Classe'"
+                            class="h-full w-full object-contain"
+                            loading="lazy"
+                        />
+                        <Icon v-else source="fa-solid fa-graduation-cap" alt="" size="xs" class="text-base-content/40" />
+                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <div class="min-w-0 flex-1">
+                                <Route
+                                    v-if="showHref"
+                                    :href="showHref"
+                                    color="neutral"
+                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
+                                >
+                                    {{ entity?.name ?? "—" }}
+                                </Route>
+                                <span v-else class="font-semibold truncate block text-sm">
+                                    {{ entity?.name ?? "—" }}
+                                </span>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="breeds"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    @action="(k) => handleAction(k)"
+                                />
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <Tooltip
+                                v-if="lifeCell?.value && lifeCell.value !== '-' && lifeCell.value !== '—'"
+                                :content="`Vie : ${lifeCell.value}`"
+                                placement="top"
+                            >
+                                <span class="text-base-content/80">
+                                    <span class="font-medium">Vie</span>
+                                    {{ lifeCell.value }}
+                                </span>
+                            </Tooltip>
+                            <Tooltip
+                                v-if="lifeDiceCell?.value && lifeDiceCell.value !== '-' && lifeDiceCell.value !== '—'"
+                                :content="`Dé de vie : ${lifeDiceCell.value}`"
+                                placement="top"
+                            >
+                                <span class="text-base-content/80">
+                                    <span class="font-medium">Dé</span>
+                                    {{ lifeDiceCell.value }}
+                                </span>
+                            </Tooltip>
+                            <CellRenderer
+                                v-if="
+                                    relationsCell?.type === 'chips' &&
+                                    (relationsCell?.params?.items?.length ?? 0) > 0
+                                "
+                                :cell="relationsCell"
+                                class="inline-flex items-center"
+                            />
+                        </div>
+                        <p
+                            v-if="specificityCell?.value && specificityCell.value !== '-' && specificityCell.value !== '—'"
+                            class="text-xs text-base-content/70 line-clamp-2"
+                            :title="String(specificityCell.value)"
+                        >
+                            {{ specificityCell.value }}
+                        </p>
+                        <p
+                            v-if="descriptionFull"
+                            class="text-xs text-base-content/80 line-clamp-4"
+                            :title="descriptionFull"
+                        >
+                            {{ descriptionFull }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </EntityMinimalCard>
 </template>

@@ -279,8 +279,13 @@ export function getBreedFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-circle-info",
       table: {
         sortable: true,
-        filterable: { id: "state", type: "multi", defaultVisible: true },
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        filterable: {
+          id: "state",
+          type: "multi",
+          defaultVisible: true,
+          options: getEntityStateOptions(),
+        },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -309,7 +314,7 @@ export function getBreedFieldDescriptors(ctx = {}) {
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       table: {
-        sortable: true,
+        sortable: false,
         filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -340,7 +345,7 @@ export function getBreedFieldDescriptors(ctx = {}) {
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
       table: {
-        sortable: true,
+        sortable: false,
         filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -394,6 +399,11 @@ export function getBreedFieldDescriptors(ctx = {}) {
       label: "Auto-update",
       icon: "fa-solid fa-arrows-rotate",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: false,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },

@@ -190,13 +190,13 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       label: "Relations",
       icon: "fa-solid fa-link",
       table: {
-        type: "chips",
         sortable: false,
         searchable: true,
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
       display: {
+        tooltip: "Résumé des liens (équipements, PNJ, campagnes…)",
         sizes: {
           xs: { mode: "chips" },
           sm: { mode: "chips" },
@@ -243,8 +243,13 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-circle-info",
       table: {
         sortable: true,
-        filterable: { id: "state", type: "multi", defaultVisible: true },
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        filterable: {
+          id: "state",
+          type: "multi",
+          defaultVisible: true,
+          options: getEntityStateOptions(),
+        },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -273,7 +278,7 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       table: {
-        sortable: true,
+        sortable: false,
         filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -304,7 +309,7 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
       table: {
-        sortable: true,
+        sortable: false,
         filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },

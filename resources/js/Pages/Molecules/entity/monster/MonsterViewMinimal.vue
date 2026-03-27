@@ -1,283 +1,276 @@
 <script setup>
 /**
  * MonsterViewMinimal — Vue Minimal pour Monster
- * 
+ *
  * @description
- * Petite carte qui s'étend au survol.
- * Utilisée dans des grilles, petites modals ou hovers.
- * 
+ * Alignée sur ResourceViewMinimal : EntityMinimalCard, État • Image créature • Niveau • Nom • Race • Taille • Boss • Description,
+ * caractéristiques créature en zone étendue.
+ *
  * @props {Monster} monster - Instance du modèle Monster
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
-import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
+import { computed } from "vue";
+import { router } from "@inertiajs/vue3";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Badge from "@/Pages/Atoms/data-display/Badge.vue";
+import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
+import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
+import Route from "@/Pages/Atoms/action/Route.vue";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
+import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
-import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
-import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     monster: {
         type: Object,
-        required: true
+        required: true,
     },
     showActions: {
         type: Boolean,
-        default: true
+        default: true,
     },
     displayMode: {
         type: String,
-        default: 'hover',
-        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+        default: "extended",
+        validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
-    /** Meta du tableau (ex. characteristics.creature.byDbColumn) pour la carte caractéristiques */
     tableMeta: {
         type: Object,
-        default: () => ({})
-    }
+        default: () => ({}),
+    },
 });
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits(["edit", "view", "delete", "action"]);
 
-const isHovered = ref(props.displayMode === 'extended');
-const canHoverExpand = computed(() => props.displayMode === 'hover');
-const permissions = usePermissions();
+const entity = computed(() => props.monster);
 
-const ctx = computed(() => {
-    const capabilities = {
-        viewAny: permissions.can('monsters', 'viewAny'),
-        createAny: permissions.can('monsters', 'createAny'),
-        updateAny: permissions.can('monsters', 'updateAny'),
-        deleteAny: permissions.can('monsters', 'deleteAny'),
-        manageAny: permissions.can('monsters', 'manageAny'),
-    };
-    return { capabilities, meta: { capabilities } };
+const creatureData = computed(() => entity.value?.creature ?? entity.value?._data?.creature ?? null);
+
+const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
+
+const levelValue = computed(() => {
+    const lv = creatureData.value?.level;
+    if (lv == null || lv === "") return null;
+    const n = Number(lv);
+    return Number.isFinite(n) ? n : null;
 });
 
-const descriptors = computed(() => getMonsterFieldDescriptors(ctx.value));
-
-const canShowField = (fieldKey) => {
-    const desc = descriptors.value?.[fieldKey];
-    if (!desc) return false;
-    const visibleIf = desc?.permissions?.visibleIf;
-    if (typeof visibleIf === 'function') {
-        try {
-            return Boolean(visibleIf(ctx.value));
-        } catch (e) {
-            console.warn('[MonsterViewMinimal] visibleIf failed for', fieldKey, e);
-            return false;
-        }
-    }
-    return true;
-};
-
-// Champs importants à afficher
-const importantFields = computed(() => ['monster_race', 'size', 'is_boss', 'dofus_version'].filter(canShowField));
-
-const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
-const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
-const sortExtendedFields = (fields) => {
-    return [...fields].sort((a, b) => {
-        const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
-        const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
-
-        if (rankA === -1 && rankB === -1) return 0;
-        if (rankA === -1) return -1;
-        if (rankB === -1) return 1;
-        return rankA - rankB;
-    });
-};
-
-// En mode étendu, afficher toutes les propriétés visibles non principales.
-const expandedFields = computed(() => {
-    const excluded = new Set(['creature_name', 'image', 'creature_characteristics']);
-    const fields = Object.keys(descriptors.value || {}).filter((key) => {
-        return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
-    });
-    return sortExtendedFields(fields);
+const imageUrl = computed(() => {
+    const u = creatureData.value?.image;
+    return u && String(u).trim() ? String(u) : null;
 });
 
-const getFieldIcon = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'monster',
-    }).icon;
-};
+const creatureName = computed(() => creatureData.value?.name ?? "—");
 
-const getCell = (fieldKey) => {
-    return props.monster.toCell(fieldKey, {
-        size: 'sm',
-        context: 'minimal',
-    });
-};
-
-const getFieldLabel = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'monster',
-    }).label;
-};
-const getFieldTooltip = (fieldKey) => resolveEntityFieldUi({
-    fieldKey,
-    descriptors: descriptors.value,
-    tableMeta: props.tableMeta,
-    entityType: 'monster',
-}).tooltip;
-
-const getFieldIconStyle = (fieldKey) => {
-    const color = resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'monster',
-    }).color;
-    return color ? { color } : undefined;
-};
-
-const creatureData = computed(() => {
-    const m = props.monster;
-    return m?.creature ?? m?.data?.creature ?? null;
+const raceName = computed(() => {
+    const r = entity.value?.monsterRace ?? entity.value?._data?.monsterRace;
+    return r?.name ?? r?.label ?? null;
 });
-const creatureCharacteristicsGroups = computed(() =>
-    buildCreatureCharacteristicGroups(creatureData.value)
-);
+
+const sizeLabels = {
+    0: "Minuscule",
+    1: "Petit",
+    2: "Moyen",
+    3: "Grand",
+    4: "Colossal",
+    5: "Gigantesque",
+};
+
+const sizeLabel = computed(() => {
+    const s = entity.value?.size ?? entity.value?._data?.size;
+    if (s === null || typeof s === "undefined") return null;
+    return sizeLabels[Number(s)] ?? String(s);
+});
+
+const isBoss = computed(() => Boolean(entity.value?.isBoss ?? entity.value?._data?.is_boss));
+
+const descriptionFull = computed(() => {
+    const d = creatureData.value?.description;
+    return d && String(d).trim() ? String(d) : "";
+});
+
+const creatureCharacteristicsGroups = computed(() => buildCreatureCharacteristicGroups(creatureData.value));
 const hasCreatureCharacteristics = computed(() => !!creatureData.value);
 
-const tooltipForField = (fieldKey, cell) => {
-    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
-    if (shouldOmitLabelInMeta(fieldKey)) return String(value);
-    const shortLabel = getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey));
-    return `${shortLabel} : ${value}`;
-};
+const showHref = computed(() =>
+    entity.value?.id ? route("entities.monsters.show", { monster: entity.value.id }) : null
+);
 
 const handleAction = async (actionKey) => {
-    const monsterId = props.monster.id;
+    const monsterId = entity.value?.id;
     if (!monsterId) return;
 
     switch (actionKey) {
-        case 'view':
-            router.visit(route('entities.monsters.show', { monster: monsterId }));
-            emit('view', props.monster);
+        case "view":
+            router.visit(route("entities.monsters.show", { monster: monsterId }));
+            emit("view", props.monster);
             break;
-        case 'edit':
-            router.visit(route('entities.monsters.edit', { monster: monsterId }));
-            emit('edit', props.monster);
+        case "edit":
+            router.visit(route("entities.monsters.edit", { monster: monsterId }));
+            emit("edit", props.monster);
             break;
-        case 'delete':
-            emit('delete', props.monster);
+        case "delete":
+            emit("delete", props.monster);
             break;
+        default:
+            emit("action", actionKey, props.monster);
     }
 };
 </script>
 
 <template>
-    <div
-        data-cy="entity-minimal-card"
-        class="relative rounded-box border border-base-300 transition-all duration-300 overflow-hidden"
-        :class="{ 
-            'bg-base-200 shadow-lg': isHovered,
-            'bg-base-100': !isHovered
-        }"
-        :style="{ 
-            width: isHovered ? 'auto' : '150px',
-            minWidth: '150px',
-            maxWidth: isHovered ? '300px' : '200px',
-            height: isHovered ? 'auto' : '100px',
-            minHeight: '80px',
-            borderRadius: 'var(--radius-box, 0.1rem)'
-        }"
-        @mouseenter="canHoverExpand && (isHovered = true)"
-        @mouseleave="canHoverExpand && (isHovered = false)">
-        
-        <div class="p-3">
-            <EntityViewHeader mode="minimal">
-                <template #media>
-                    <Icon source="fa-solid fa-dragon" :alt="monster.creature?.name || 'Monstre'" size="sm" class="shrink-0" />
-                </template>
-
-                <template #title>
-                    <Tooltip :content="monster.creature?.name || 'Monstre'" placement="top">
-                        <span class="font-semibold text-primary-100 text-sm truncate block">
-                            <CellRenderer :cell="getCell('creature_name')" ui-color="primary" />
-                        </span>
-                    </Tooltip>
-                </template>
-
-                <template #mainInfosRight>
-                    <div class="flex items-center gap-2">
-                        <template v-for="field in importantFields" :key="field">
-                            <Tooltip :content="tooltipForField(field, getCell(field))" placement="top">
-                                <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" :style="getFieldIconStyle(field)" />
-                            </Tooltip>
-                        </template>
-                    </div>
-                </template>
-
-                <template #actions>
-                    <div v-if="showActions">
-                        <EntityActions
-                            entity-type="monster"
-                            :entity="monster"
-                            format="dropdown"
-                            display="icon-only"
-                            size="xs"
-                            color="primary"
-                            :context="{ inPanel: false }"
-                            @action="handleAction"
-                        />
-                    </div>
-                </template>
-            </EntityViewHeader>
-
-            <!-- Contenu supplémentaire au hover -->
+    <EntityMinimalCard :display-mode="displayMode">
+        <template #compact>
             <div
-                v-if="isHovered"
-                data-cy="entity-minimal-expanded"
-                class="mt-2 pt-2 border-t border-base-300 space-y-2 text-xs text-primary-300 animate-fade-in">
-                <div
-                    v-for="key in expandedFields"
-                    :key="key"
-                    :data-field-key="key"
-                    class="flex items-start gap-2"
-                >
-                    <Tooltip
-                        :content="getFieldTooltip(key) || tooltipForField(key, getCell(key))"
-                        placement="left"
+                data-cy="entity-minimal-card-compact"
+                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+            >
+                <div class="absolute top-1.5 left-1.5 z-10">
+                    <EntityUsableDot :state="stateValue" />
+                </div>
+                <div class="flex gap-2">
+                    <div
+                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
                     >
-                        <div class="flex items-start gap-2 w-full">
-                            <Icon
-                                :source="getFieldIcon(key)"
-                                size="xs"
-                                class="text-primary-400 shrink-0 mt-0.5"
-                                :style="getFieldIconStyle(key)"
-                            />
-                            <div class="flex-1 min-w-0">
-                                <div class="font-semibold text-primary-400">
-                                    {{ getFieldLabel(key) }}:
-                                </div>
-                                <div class="text-primary-200 truncate">
-                                    <CellRenderer
-                                        :cell="getCell(key)"
-                                        ui-color="primary"
-                                    />
-                                </div>
+                        <img
+                            v-if="imageUrl"
+                            :src="imageUrl"
+                            :alt="creatureName"
+                            class="h-full w-full object-contain"
+                            loading="lazy"
+                        />
+                        <Icon v-else source="fa-solid fa-dragon" alt="" size="xs" class="text-base-content/40" />
+                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <div class="min-w-0 flex-1">
+                                <Route
+                                    v-if="showHref"
+                                    :href="showHref"
+                                    color="neutral"
+                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
+                                >
+                                    {{ creatureName }}
+                                </Route>
+                                <span v-else class="font-semibold truncate block text-sm">
+                                    {{ creatureName }}
+                                </span>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="monsters"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    @action="(k) => handleAction(k)"
+                                />
                             </div>
                         </div>
-                    </Tooltip>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <Badge
+                                v-if="raceName"
+                                color="auto"
+                                :auto-label="raceName"
+                                auto-scheme="labelHash"
+                                auto-tone="light"
+                                variant="soft"
+                                size="xs"
+                            >
+                                {{ raceName }}
+                            </Badge>
+                            <Tooltip v-if="sizeLabel" :content="`Taille: ${sizeLabel}`" placement="top">
+                                <span class="text-base-content/80">{{ sizeLabel }}</span>
+                            </Tooltip>
+                            <Badge v-if="isBoss" color="error" variant="soft" size="xs">Boss</Badge>
+                        </div>
+                    </div>
                 </div>
-                <!-- Carte caractéristiques (mode dense) -->
-                <section v-if="hasCreatureCharacteristics" class="pt-2 border-t border-base-300">
-                    <h4 class="text-xs font-semibold uppercase tracking-wide text-primary-400 mb-1.5">Caractéristiques</h4>
+            </div>
+        </template>
+        <template #expanded>
+            <div
+                data-cy="entity-minimal-card-expanded"
+                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+            >
+                <div class="absolute top-1.5 left-1.5 z-10">
+                    <EntityUsableDot :state="stateValue" />
+                </div>
+                <div class="flex gap-2">
+                    <div
+                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
+                    >
+                        <img
+                            v-if="imageUrl"
+                            :src="imageUrl"
+                            :alt="creatureName"
+                            class="h-full w-full object-contain"
+                            loading="lazy"
+                        />
+                        <Icon v-else source="fa-solid fa-dragon" alt="" size="xs" class="text-base-content/40" />
+                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <div class="min-w-0 flex-1">
+                                <Route
+                                    v-if="showHref"
+                                    :href="showHref"
+                                    color="neutral"
+                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
+                                >
+                                    {{ creatureName }}
+                                </Route>
+                                <span v-else class="font-semibold truncate block text-sm">
+                                    {{ creatureName }}
+                                </span>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="monsters"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    @action="(k) => handleAction(k)"
+                                />
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <Badge
+                                v-if="raceName"
+                                color="auto"
+                                :auto-label="raceName"
+                                auto-scheme="labelHash"
+                                auto-tone="light"
+                                variant="soft"
+                                size="xs"
+                            >
+                                {{ raceName }}
+                            </Badge>
+                            <Tooltip v-if="sizeLabel" :content="`Taille: ${sizeLabel}`" placement="top">
+                                <span class="text-base-content/80">{{ sizeLabel }}</span>
+                            </Tooltip>
+                            <Badge v-if="isBoss" color="error" variant="soft" size="xs">Boss</Badge>
+                        </div>
+                        <p
+                            v-if="descriptionFull"
+                            class="text-xs text-base-content/80 line-clamp-3"
+                            :title="descriptionFull"
+                        >
+                            {{ descriptionFull }}
+                        </p>
+                    </div>
+                </div>
+                <section
+                    v-if="hasCreatureCharacteristics"
+                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+                >
                     <CharacteristicsCard
                         :entity="creatureData"
                         :groups="creatureCharacteristicsGroups"
@@ -285,6 +278,6 @@ const handleAction = async (actionKey) => {
                     />
                 </section>
             </div>
-        </div>
-    </div>
+        </template>
+    </EntityMinimalCard>
 </template>

@@ -276,7 +276,7 @@ const handleQuickEditSubmit = () => {
 
         <CreateEntityModal
             :open="createModalOpen"
-            entity-type="breed"
+            entity-type="breeds"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />
@@ -284,7 +284,7 @@ const handleQuickEditSubmit = () => {
         <EntityModal
             v-if="selectedEntity"
             :entity="selectedEntity"
-            entity-type="breed"
+            entity-type="breeds"
             :view="modalView"
             :open="modalOpen"
             :table-meta="tableMeta"
@@ -300,7 +300,7 @@ const handleQuickEditSubmit = () => {
         <EntityQuickEditModal
             v-if="quickEditEntity"
             :entity="quickEditEntity"
-            entity-type="breed"
+            entity-type="breeds"
             :fields-config="fieldsConfig"
             :open="quickEditModalOpen"
             @close="quickEditModalOpen = false"

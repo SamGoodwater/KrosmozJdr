@@ -513,6 +513,8 @@ export class Monster extends BaseModel {
             params: {
                 color: 'auto',
                 autoLabel: raceName,
+                autoScheme: 'labelHash',
+                autoTone: 'light',
                 tooltip: raceName === '-' ? '' : raceName,
                 sortValue: raceName,
                 searchValue: raceName,

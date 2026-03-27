@@ -24,6 +24,7 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entit
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { normalizeEntityType } from '@/Entities/entity-registry';
+import { getEntitySingularRouteKey } from '@/Composables/entity/entityRouteRegistry';
 import { resolveEntityViewComponent } from '@/Utils/entity/resolveEntityViewComponent';
 
 const props = defineProps({
@@ -57,8 +58,11 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'edit', 'quick-edit', 'expand', 'copy-link', 'download-pdf', 'refresh', 'delete']);
 
+// Préférences UI / PDF : type normalisé pluriel (spell | spells → spells)
+const normalizedEntityType = normalizeEntityType(props.entityType);
+
 // Utiliser le format stocké si useStoredFormat est true et que view n'est pas fourni
-const { viewFormat, setViewFormat, availableFormats, minimalDisplayMode, setMinimalDisplayMode, availableMinimalDisplayModes } = useEntityViewFormat(props.entityType);
+const { viewFormat, setViewFormat, availableFormats, minimalDisplayMode, setMinimalDisplayMode, availableMinimalDisplayModes } = useEntityViewFormat(normalizedEntityType);
 const currentView = computed(() => {
     if (props.view) {
         return props.view;
@@ -97,16 +101,13 @@ const getEntityName = () => {
 
 // Handlers pour les actions
 const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf } = useDownloadPdf(props.entityType);
+const { downloadPdf } = useDownloadPdf(normalizedEntityType);
 
-const entityTypeKey = computed(() => {
-    // Normaliser le type d'entité (ex: 'resources' -> 'resource')
-    const type = props.entityType;
-    if (type.endsWith('s')) {
-        return type.slice(0, -1);
-    }
-    return type;
-});
+/** Pluriel normalisé (ex. spells) — actions, reload Inertia */
+const entityTypePlural = computed(() => normalizeEntityType(props.entityType));
+
+/** Clé de paramètre de route au singulier (ex. spell) */
+const entityRouteParamKey = computed(() => getEntitySingularRouteKey(entityTypePlural.value));
 
 // Charger dynamiquement le composant de vue approprié
 const ViewComponent = shallowRef(null);
@@ -195,7 +196,8 @@ const handleAction = async (actionKey, entity) => {
     const entityId = targetEntity?.id ?? props.entity?.id ?? null;
     if (!entityId) return;
 
-    const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${entityTypeKey.value}s`;
+    const plural = entityTypePlural.value;
+    const paramKey = entityRouteParamKey.value;
 
     switch (actionKey) {
         case 'quick-edit':
@@ -204,14 +206,14 @@ const handleAction = async (actionKey, entity) => {
 
         case 'expand':
             // Expand depuis un modal : redirige vers view (page complète)
-            router.visit(route(`entities.${entityTypePlural}.show`, { [entityTypeKey.value]: entityId }));
+            router.visit(route(`entities.${plural}.show`, { [paramKey]: entityId }));
             emit('expand', targetEntity);
             handleClose(); // Fermer le modal après redirection
             break;
 
         case 'copy-link': {
-            const cfg = getEntityRouteConfig(entityTypeKey.value);
-            const url = resolveEntityRouteUrl(entityTypeKey.value, 'show', entityId, cfg);
+            const cfg = getEntityRouteConfig(paramKey);
+            const url = resolveEntityRouteUrl(paramKey, 'show', entityId, cfg);
             if (url) {
                 await copyToClipboard(`${window.location.origin}${url}`, "Lien de l'entité copié !");
             }
@@ -225,7 +227,7 @@ const handleAction = async (actionKey, entity) => {
             break;
 
         case 'refresh':
-            router.reload({ only: [entityTypePlural] });
+            router.reload({ only: [plural] });
             emit('refresh', targetEntity);
             break;
 
@@ -309,7 +311,7 @@ const handleAction = async (actionKey, entity) => {
                     </Dropdown>
 
                     <EntityActions
-                        :entity-type="entityTypeKey"
+                        :entity-type="entityTypePlural"
                         :entity="entity"
                         format="buttons"
                         display="icon-only"

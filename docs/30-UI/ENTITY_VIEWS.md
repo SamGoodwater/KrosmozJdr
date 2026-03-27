@@ -4,6 +4,10 @@
 
 Standardiser l’affichage des entités (ressources, items, monstres, sorts, etc.) afin d’obtenir des “cards” cohérentes dans les modales et les listes, et limiter la duplication de logique.
 
+### Pages liste — création
+
+**Convention UX** : sur les pages `resources/js/Pages/Pages/entity/*/Index.vue`, le bouton **Créer** ouvre **`CreateEntityModal`** avec le **`entity-type` pluriel** du registre (`spells`, `capabilities`, `panoplies`, etc.), et non une navigation vers `entities.{…}.create`. Les routes de création complètes restent utiles pour les liens directs ou l’édition avancée. Après succès, le modal recharge les props Inertia ; les tableaux branchés sur l’API incrémentent en général un **`refreshToken`** dans le handler **`@created`** pour rafraîchir les lignes.
+
 ### Méthode de description (sections)
 
 On décrit une vue d’entité comme une **structure fixe en 3 sections** :
@@ -508,3 +512,53 @@ Cet exemple sert de **modèle** pour implémenter les autres entités.
   - Body : visible uniquement au hover (extended).
 - **Texte**
   - Délègue à `EntityViewTextLink` : inline, hover → `ResourceViewMinimal`.
+
+### Spell & Monster (alignement récent)
+
+Même logique que Resource : **descriptors** + **`resolveEntityBadgeUi`** pour les badges (types / catégories / races avec `labelHash` quand applicable), **`CellRenderer`** pour refléter les cellules `toCell` du modèle.
+
+#### Spell
+
+- **Descriptors** : `resources/js/Entities/spell/spell-descriptors.js`
+- **Vues** :
+  - `SpellViewLarge.vue` / `SpellViewCompact.vue` : `EntityActions` avec **`entity-type="spells"`** (pluriel, aligné `entity-actions-config` et `EntityTanStackTable`).
+  - **Compact** : métas du header (`spell_types`, `level`, `pa`, `po`, `area`, `element`, `category`) via **`CellRenderer`** + `getCell()` (même rendu que le tableau : élément, badges, etc.).
+  - `SpellViewMinimal.vue` : `EntityMinimalCard` (comme Resource).
+  - `SpellLineRow.vue` : vue **Line** du tableau (`EntityTanStackTable`, `displayMode: line`).
+  - Page liste `spell/Index.vue` : modals génériques (`CreateEntityModal`, `EntityModal`, `EntityQuickEditModal`) avec **`entity-type="spells"`** ; `EntityEditForm` sur la page d’édition reste **`entity-type="spell"`** (singulier requis par les routes du formulaire).
+
+#### Monster
+
+- **Descriptors** : `resources/js/Entities/monster/monster-descriptors.js`
+- **Vues** : `MonsterViewMinimal.vue` (`EntityMinimalCard`), `MonsterLineRow.vue` (vue Line).
+- **Vue Line** : à gauche image + nom + métas (race, taille, **hostilité**, boss) + description ; à droite une **grille** des cinq résumés (mêmes clés `creature_summary_*`) via `getCellFor` + colonnes factices — **un seul titre** par carte (`CharacteristicGroup`), styles `:deep` pour compacter les chips.
+
+#### Breed (classes)
+
+- **Descriptors** : `resources/js/Entities/breed/breed-descriptors.js`
+- **Vues** :
+  - `BreedViewLarge.vue` : `EntityViewHeader` (comme Spell), `EntityActions` avec **`entity-type="breeds"`** ; `EntityPropertyDisplay` avec **`entity-type="breed"`** (singulier).
+  - `BreedViewCompact.vue` / `BreedViewMinimal.vue` : actions **`breeds`**, Minimal sur **`EntityMinimalCard`**.
+  - `BreedLineRow.vue` : vue **Line** (`EntityTanStackTable`, `entity-type="breeds"`).
+- **Index** : `breed/Index.vue` — modals génériques avec **`entity-type="breeds"`** (comme les sorts).
+
+#### Panoply (panoplies)
+
+- **Descriptors** : `resources/js/Entities/panoply/panoply-descriptors.js`
+- **Vues** :
+  - `PanoplyViewLarge.vue` : `EntityViewHeader` (picto `fa-layer-group`), **`EntityActions`** avec **`entity-type="panoplies"`**, **`EntityPropertyDisplay`** avec **`entity-type="panoply"`**.
+  - `PanoplyViewCompact.vue` / `PanoplyViewMinimal.vue` : actions **`panoplies`**, Minimal sur **`EntityMinimalCard`**.
+  - `PanoplyLineRow.vue` : vue **Line** (`EntityTanStackTable`, `entity-type="panoplies"`).
+- **Index** : `panoply/Index.vue` — modals avec **`entity-type="panoplies"`**.
+- **Actions** : entrée **`panoplies`** dans `entity-actions-config.js` pour l’action **Rafraîchir** (V2), comme les autres entités DofusDB.
+
+#### Capability (capacités / états de jeu)
+
+- **Descriptors** : `resources/js/Entities/capability/capability-descriptors.js`
+- **Vues** :
+  - `CapabilityViewLarge.vue` : `EntityViewHeader` (aligné Spell), **`EntityActions`** avec **`entity-type="capabilities"`**, métas via **`EntityPropertyDisplay`** / grille d’effets.
+  - `CapabilityViewCompact.vue` / `CapabilityViewMinimal.vue` : liste compacte avec **`CellRenderer`** + descriptors ; actions **`capabilities`**, Minimal sur **`EntityMinimalCard`**.
+  - `CapabilityLineRow.vue` : vue **Line** (`EntityTanStackTable`, `entity-type="capabilities"`).
+- **Index** : `capability/Index.vue` — **`CreateEntityModal`** + modals avec **`entity-type="capabilities"`** (comme panoplies / sorts).
+- **Actions** : entrée **`capabilities`** dans `entity-actions-config.js` pour l’action **Rafraîchir** (V2).
+- **Convention** : routes et formulaires d’édition utilisent le singulier **`capability`** ; barres d’actions, tableau et modals de liste utilisent le pluriel **`capabilities`**.

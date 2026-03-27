@@ -333,6 +333,8 @@ export class Item extends BaseModel {
             params: {
                 color: 'auto',
                 autoLabel: typeName,
+                autoScheme: 'labelHash',
+                autoTone: 'light',
                 tooltip: typeName === '-' ? '' : typeName,
                 sortValue: typeName,
                 searchValue: typeName,

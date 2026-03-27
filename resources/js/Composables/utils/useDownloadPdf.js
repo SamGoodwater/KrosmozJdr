@@ -12,6 +12,8 @@
  */
 import { ref } from 'vue';
 import { useUxFeedback } from '@/Composables/utils/useUxFeedback';
+import { normalizeEntityType } from '@/Entities/entity-registry';
+import { getEntitySingularRouteKey } from '@/Composables/entity/entityRouteRegistry';
 
 /**
  * @param {string} entityType - Le type d'entité (item, spell, monster, etc.)
@@ -34,8 +36,9 @@ export function useDownloadPdf(entityType) {
         isDownloading.value = true;
 
         try {
-            const entityTypePlural = entityType === 'panoply' ? 'panoplies' : `${entityType}s`;
-            const routeName = `entities.${entityTypePlural}.pdf`;
+            const plural = normalizeEntityType(entityType);
+            const paramKey = getEntitySingularRouteKey(plural);
+            const routeName = `entities.${plural}.pdf`;
 
             // Si c'est un tableau, on passe les IDs en query string
             if (Array.isArray(entityIdOrIds)) {
@@ -49,7 +52,7 @@ export function useDownloadPdf(entityType) {
                 }
 
                 // Utiliser le premier ID pour la route et passer les autres en query string
-                const baseUrl = route(routeName, { [entityType]: ids[0] });
+                const baseUrl = route(routeName, { [paramKey]: ids[0] });
                 const separator = baseUrl.includes('?') ? '&' : '?';
                 const idsParam = ids.map(id => `ids[]=${encodeURIComponent(id)}`).join('&');
                 const url = `${baseUrl}${separator}${idsParam}`;
@@ -62,7 +65,7 @@ export function useDownloadPdf(entityType) {
                     ? (entityIdOrIds.id ?? entityIdOrIds.id)
                     : entityIdOrIds;
 
-                const url = route(routeName, { [entityType]: entityId });
+                const url = route(routeName, { [paramKey]: entityId });
 
                 // Utiliser window.open pour déclencher le téléchargement
                 window.open(url, '_blank');

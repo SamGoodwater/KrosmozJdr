@@ -1,249 +1,234 @@
 <script setup>
 /**
  * PanoplyViewMinimal — Vue Minimal pour Panoply
- * 
+ *
  * @description
- * Petite carte qui s'étend au survol.
- * Utilisée dans des grilles, petites modals ou hovers.
- * 
+ * Alignée sur BreedViewMinimal : EntityMinimalCard, état • picto • nom • objets • bonus • relations • description.
+ *
  * @props {Panoply} panoply - Instance du modèle Panoply
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
-import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { computed } from "vue";
+import { router } from "@inertiajs/vue3";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
-import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
+import Route from "@/Pages/Atoms/action/Route.vue";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 
 const props = defineProps({
     panoply: {
         type: Object,
-        required: true
+        required: true,
     },
     showActions: {
         type: Boolean,
-        default: true
+        default: true,
     },
     displayMode: {
         type: String,
-        default: 'hover',
-        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+        default: "extended",
+        validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
     tableMeta: {
         type: Object,
-        default: () => ({})
-    }
+        default: () => ({}),
+    },
 });
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits(["edit", "view", "delete", "action"]);
 
-const isHovered = ref(props.displayMode === 'extended');
-const canHoverExpand = computed(() => props.displayMode === 'hover');
-const permissions = usePermissions();
+const entity = computed(() => props.panoply);
 
-const ctx = computed(() => {
-    const capabilities = {
-        viewAny: permissions.can('panoply', 'viewAny'),
-        createAny: permissions.can('panoply', 'createAny'),
-        updateAny: permissions.can('panoply', 'updateAny'),
-        deleteAny: permissions.can('panoply', 'deleteAny'),
-        manageAny: permissions.can('panoply', 'manageAny'),
-    };
-    return { capabilities, meta: { capabilities } };
+const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
+
+const cellOpts = () => ({ size: "xs", context: "minimal" });
+
+const itemsCountCell = computed(() => entity.value?.toCell?.("items_count", cellOpts()) ?? null);
+const bonusCell = computed(() => entity.value?.toCell?.("bonus", cellOpts()) ?? null);
+const relationsCell = computed(() => entity.value?.toCell?.("panoply_summary_relations", cellOpts()) ?? null);
+
+const descriptionFull = computed(() => {
+    const d = entity.value?.description ?? entity.value?._data?.description;
+    return d && String(d).trim() ? String(d) : "";
 });
 
-const descriptors = computed(() => getPanoplyFieldDescriptors(ctx.value));
-
-const stateValue = computed(() => props.panoply?.state ?? props.panoply?._data?.state ?? null);
-
-const canShowField = (fieldKey) => {
-    const desc = descriptors.value?.[fieldKey];
-    if (!desc) return false;
-    const visibleIf = desc?.permissions?.visibleIf;
-    if (typeof visibleIf === 'function') {
-        try {
-            return Boolean(visibleIf(ctx.value));
-        } catch (e) {
-            console.warn('[PanoplyViewMinimal] visibleIf failed for', fieldKey, e);
-            return false;
-        }
-    }
-    return true;
-};
-
-// Champs importants à afficher
-const importantFields = computed(() => ['name', 'bonus', 'items_count'].filter(canShowField));
-
-const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
-const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
-const sortExtendedFields = (fields) => {
-    return [...fields].sort((a, b) => {
-        const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
-        const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
-
-        if (rankA === -1 && rankB === -1) return 0;
-        if (rankA === -1) return -1;
-        if (rankB === -1) return 1;
-        return rankA - rankB;
-    });
-};
-
-// En mode étendu, afficher toutes les propriétés visibles non principales.
-const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image']);
-    const fields = Object.keys(descriptors.value || {}).filter((key) => {
-        return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
-    });
-    return sortExtendedFields(fields);
-});
-
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
-};
-
-const getCell = (fieldKey) => {
-    return props.panoply.toCell(fieldKey, {
-        size: 'sm',
-        context: 'minimal',
-    });
-};
-
-const tooltipForField = (fieldKey, cell) => {
-    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
-    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
-    return `${label} : ${value}`;
-};
+const showHref = computed(() =>
+    entity.value?.id ? route("entities.panoplies.show", { panoply: entity.value.id }) : null
+);
 
 const handleAction = async (actionKey) => {
-    const panoplyId = props.panoply.id;
+    const panoplyId = entity.value?.id;
     if (!panoplyId) return;
 
     switch (actionKey) {
-        case 'view':
-            router.visit(route('entities.panoplies.show', { panoply: panoplyId }));
-            emit('view', props.panoply);
+        case "view":
+            router.visit(route("entities.panoplies.show", { panoply: panoplyId }));
+            emit("view", props.panoply);
             break;
-        case 'edit':
-            router.visit(route('entities.panoplies.edit', { panoply: panoplyId }));
-            emit('edit', props.panoply);
+        case "edit":
+            router.visit(route("entities.panoplies.edit", { panoply: panoplyId }));
+            emit("edit", props.panoply);
             break;
-        case 'delete':
-            emit('delete', props.panoply);
+        case "delete":
+            emit("delete", props.panoply);
             break;
+        default:
+            emit("action", actionKey, props.panoply);
     }
 };
 </script>
 
 <template>
-    <div 
-        class="relative rounded-box border border-base-300 transition-all duration-300 overflow-hidden"
-        :class="{ 
-            'bg-base-200 shadow-lg': isHovered,
-            'bg-base-100': !isHovered
-        }"
-        :style="{ 
-            width: isHovered ? 'auto' : '150px',
-            minWidth: '150px',
-            maxWidth: isHovered ? '300px' : '200px',
-            height: isHovered ? 'auto' : '100px',
-            minHeight: '80px'
-        }"
-        @mouseenter="canHoverExpand && (isHovered = true)"
-        @mouseleave="canHoverExpand && (isHovered = false)">
-        <div class="absolute top-1 left-1 z-20">
-            <EntityUsableDot :state="stateValue" />
-        </div>
-        
-        <div class="p-3">
-            <!-- En-tête avec nom et actions -->
-            <div class="flex items-start justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <Tooltip :content="panoply.name || 'Panoply'" placement="top">
-                        <span class="font-semibold text-primary-100 text-sm truncate block">
-                            <CellRenderer
-                                :cell="getCell('name')"
-                                ui-color="primary"
-                            />
-                        </span>
-                    </Tooltip>
+    <EntityMinimalCard :display-mode="displayMode">
+        <template #compact>
+            <div
+                data-cy="entity-minimal-card-compact"
+                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+            >
+                <div class="absolute top-1.5 left-1.5 z-10">
+                    <EntityUsableDot :state="stateValue" />
                 </div>
-                
-                <div v-if="showActions && isHovered" class="flex-shrink-0">
-                    <EntityActions
-                        entity-type="panoply"
-                        :entity="panoply"
-                        format="buttons"
-                        display="icon-only"
-                        size="xs"
-                        color="primary"
-                        :context="{ inPanel: false }"
-                        @action="handleAction"
-                    />
-                </div>
-            </div>
-
-            <!-- Infos importantes en icônes avec tooltips -->
-            <div class="flex gap-2 flex-wrap">
-                <template v-for="field in importantFields" :key="field">
-                    <Tooltip
-                        :content="tooltipForField(field, getCell(field))"
-                        placement="top"
+                <div class="flex gap-2">
+                    <div
+                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
                     >
-                        <div class="flex items-center gap-1 px-2 py-1 bg-base-200 rounded">
-                            <Icon
-                                :source="getFieldIcon(field)"
-                                size="xs"
-                                class="text-primary-400"
-                            />
-                            <span class="text-xs text-primary-300 font-medium">
-                                <CellRenderer
-                                    :cell="getCell(field)"
-                                    ui-color="primary"
+                        <Icon source="fa-solid fa-layer-group" alt="" size="md" class="text-base-content/40" />
+                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <div class="min-w-0 flex-1">
+                                <Route
+                                    v-if="showHref"
+                                    :href="showHref"
+                                    color="neutral"
+                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
+                                >
+                                    {{ entity?.name ?? "—" }}
+                                </Route>
+                                <span v-else class="font-semibold truncate block text-sm">
+                                    {{ entity?.name ?? "—" }}
+                                </span>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="panoplies"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    @action="(k) => handleAction(k)"
                                 />
-                            </span>
-                        </div>
-                    </Tooltip>
-                </template>
-            </div>
-
-            <!-- Contenu supplémentaire au hover -->
-            <div 
-                v-if="isHovered" 
-                class="mt-2 pt-2 border-t border-base-300 space-y-1 text-xs text-primary-300 animate-fade-in">
-                <div
-                    v-for="key in expandedFields"
-                    :key="key"
-                    class="flex items-start gap-2"
-                >
-                    <Tooltip
-                        :content="tooltipForField(key, getCell(key))"
-                        placement="left"
-                    >
-                        <div class="flex items-start gap-2 w-full">
-                            <Icon
-                                :source="getFieldIcon(key)"
-                                size="xs"
-                                class="text-primary-400 flex-shrink-0 mt-0.5"
-                            />
-                            <div class="flex-1 min-w-0">
-                                <div class="font-semibold text-primary-400">
-                                    {{ descriptors?.[key]?.general?.label || key }}:
-                                </div>
-                                <div class="text-primary-200 truncate">
-                                    <CellRenderer
-                                        :cell="getCell(key)"
-                                        ui-color="primary"
-                                    />
-                                </div>
                             </div>
                         </div>
-                    </Tooltip>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <Tooltip
+                                v-if="itemsCountCell?.value && itemsCountCell.value !== '-' && itemsCountCell.value !== '—'"
+                                :content="`Nb objets : ${itemsCountCell.value}`"
+                                placement="top"
+                            >
+                                <span class="text-base-content/80">
+                                    <span class="font-medium">Objets</span>
+                                    {{ itemsCountCell.value }}
+                                </span>
+                            </Tooltip>
+                            <CellRenderer
+                                v-if="bonusCell?.type === 'chips' && (bonusCell?.params?.items?.length ?? 0) > 0"
+                                :cell="bonusCell"
+                                class="inline-flex items-center max-w-full"
+                            />
+                            <CellRenderer
+                                v-if="
+                                    relationsCell?.type === 'chips' &&
+                                    (relationsCell?.params?.items?.length ?? 0) > 0
+                                "
+                                :cell="relationsCell"
+                                class="inline-flex items-center"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </template>
+        <template #expanded>
+            <div
+                data-cy="entity-minimal-card-expanded"
+                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+            >
+                <div class="absolute top-1.5 left-1.5 z-10">
+                    <EntityUsableDot :state="stateValue" />
+                </div>
+                <div class="flex gap-2">
+                    <div
+                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
+                    >
+                        <Icon source="fa-solid fa-layer-group" alt="" size="md" class="text-base-content/40" />
+                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <div class="min-w-0 flex-1">
+                                <Route
+                                    v-if="showHref"
+                                    :href="showHref"
+                                    color="neutral"
+                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
+                                >
+                                    {{ entity?.name ?? "—" }}
+                                </Route>
+                                <span v-else class="font-semibold truncate block text-sm">
+                                    {{ entity?.name ?? "—" }}
+                                </span>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="panoplies"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    @action="(k) => handleAction(k)"
+                                />
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <Tooltip
+                                v-if="itemsCountCell?.value && itemsCountCell.value !== '-' && itemsCountCell.value !== '—'"
+                                :content="`Nb objets : ${itemsCountCell.value}`"
+                                placement="top"
+                            >
+                                <span class="text-base-content/80">
+                                    <span class="font-medium">Objets</span>
+                                    {{ itemsCountCell.value }}
+                                </span>
+                            </Tooltip>
+                            <CellRenderer
+                                v-if="bonusCell?.type === 'chips' && (bonusCell?.params?.items?.length ?? 0) > 0"
+                                :cell="bonusCell"
+                                class="inline-flex items-center max-w-full"
+                            />
+                            <CellRenderer
+                                v-if="
+                                    relationsCell?.type === 'chips' &&
+                                    (relationsCell?.params?.items?.length ?? 0) > 0
+                                "
+                                :cell="relationsCell"
+                                class="inline-flex items-center"
+                            />
+                        </div>
+                        <p
+                            v-if="descriptionFull"
+                            class="text-xs text-base-content/80 line-clamp-4"
+                            :title="descriptionFull"
+                        >
+                            {{ descriptionFull }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </EntityMinimalCard>
 </template>

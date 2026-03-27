@@ -9,6 +9,7 @@
  * console.log(spell.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { BaseFormatter } from '@/Utils/Formatters/BaseFormatter.js';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
@@ -668,7 +669,7 @@ export class Spell extends BaseModel {
      * Génère une cellule pour les types de sort
      * @private
      */
-    _toSpellTypesCell(format, size, options) {
+    _toSpellTypesCell(_format, _size, _options) {
         const spellTypes = this.spellTypes || [];
         
         if (!spellTypes.length) {
@@ -685,18 +686,24 @@ export class Spell extends BaseModel {
 
         const typeNames = spellTypes.map(t => t.name || t.label || '-').filter(n => n !== '-');
         const displayValue = typeNames.join(', ') || '-';
-        
+
         const typeIds = spellTypes.map((t) => String(t.id ?? t.value ?? ''));
-        return {
-            type: 'text',
-            value: displayValue,
-            params: {
-                tooltip: displayValue === '-' ? '' : displayValue,
-                sortValue: displayValue,
-                searchValue: displayValue === '-' ? '' : displayValue,
-                filterValue: typeIds,
-            },
-        };
+        if (displayValue === '-') {
+            return {
+                type: 'text',
+                value: '-',
+                params: {
+                    sortValue: '',
+                    searchValue: '',
+                    filterValue: [],
+                },
+            };
+        }
+
+        return BaseFormatter.buildTypeBadgeCell(displayValue, {
+            sortValue: displayValue,
+            filterValue: typeIds,
+        });
     }
 
     /**

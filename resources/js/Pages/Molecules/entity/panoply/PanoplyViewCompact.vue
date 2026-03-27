@@ -15,6 +15,7 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
+import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
@@ -37,15 +38,16 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
+const { downloadPdf } = useDownloadPdf('panoply');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
     const capabilities = {
-        viewAny: permissions.can('panoply', 'viewAny'),
-        createAny: permissions.can('panoply', 'createAny'),
-        updateAny: permissions.can('panoply', 'updateAny'),
-        deleteAny: permissions.can('panoply', 'deleteAny'),
-        manageAny: permissions.can('panoply', 'manageAny'),
+        viewAny: permissions.can('panoplies', 'viewAny'),
+        createAny: permissions.can('panoplies', 'createAny'),
+        updateAny: permissions.can('panoplies', 'updateAny'),
+        deleteAny: permissions.can('panoplies', 'deleteAny'),
+        manageAny: permissions.can('panoplies', 'manageAny'),
     };
     return { capabilities, meta: { capabilities } };
 });
@@ -55,7 +57,7 @@ const descriptors = computed(() => getPanoplyFieldDescriptors(ctx.value));
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
-    const visibleIf = desc?.permissions?.visibleIf;
+    const visibleIf = desc?.permissions?.visibleIf ?? desc?.visibleIf;
     if (typeof visibleIf === 'function') {
         try {
             return Boolean(visibleIf(ctx.value));
@@ -78,11 +80,11 @@ const compactFields = computed(() => [
 ].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    return descriptors.value?.[fieldKey]?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -112,11 +114,19 @@ const handleAction = async (actionKey) => {
             const cfg = getEntityRouteConfig('panoply');
             const url = resolveEntityRouteUrl('panoply', 'show', panoplyId, cfg);
             if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien copié !");
+                await copyToClipboard(`${window.location.origin}${url}`, "Lien de la panoplie copié !");
             }
             emit('copy-link', props.panoply);
             break;
         }
+        case 'download-pdf':
+            await downloadPdf(panoplyId);
+            emit('download-pdf', props.panoply);
+            break;
+        case 'refresh':
+            router.reload({ only: ['panoplies'] });
+            emit('refresh', props.panoply);
+            break;
         case 'delete':
             emit('delete', props.panoply);
             break;
@@ -139,13 +149,13 @@ const handleAction = async (actionKey) => {
             
             <div v-if="showActions" class="flex-shrink-0">
                 <EntityActions
-                    entity-type="panoply"
+                    entity-type="panoplies"
                     :entity="panoply"
                     format="buttons"
                     display="icon-only"
                     size="sm"
                     color="primary"
-                    :context="{ inPanel: false }"
+                    :context="{ inPanel: false, inPage: true }"
                     @action="handleAction"
                 />
             </div>

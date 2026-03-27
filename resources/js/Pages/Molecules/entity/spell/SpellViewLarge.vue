@@ -14,14 +14,13 @@ import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
+import { resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
@@ -151,10 +150,7 @@ const getCell = (fieldKey) => {
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
-        spell_types: 'info',
         level: 'warning',
-        element: 'secondary',
-        category: 'secondary',
         auto_update: 'warning',
         read_level: 'primary',
         write_level: 'secondary',
@@ -297,7 +293,7 @@ const handleAction = async (actionKey) => {
             <template #actions>
                 <div v-if="showActions">
                     <EntityActions
-                        entity-type="spell"
+                        entity-type="spells"
                         :entity="spell"
                         format="buttons"
                         display="icon-only"

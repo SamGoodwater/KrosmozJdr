@@ -150,7 +150,15 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
     // UI helpers: rendre les options de niveau lisibles et cohérentes (badges colorés)
     // sans obliger chaque entité à dupliquer la config.
     const f = { ...tableConfigDesc.filterable };
-    const levelLike = fieldKey === 'level' || fieldKey === 'min_level' || fieldKey === 'max_level' || f?.id === 'level' || f?.id === 'min_level' || f?.id === 'max_level';
+    const levelLike =
+      fieldKey === "level" ||
+      fieldKey === "min_level" ||
+      fieldKey === "max_level" ||
+      fieldKey === "creature_level" ||
+      f?.id === "level" ||
+      f?.id === "min_level" ||
+      f?.id === "max_level" ||
+      f?.id === "creature_level";
     if (levelLike) {
       const ui = (f.ui && typeof f.ui === 'object') ? { ...f.ui } : {};
       const optionBadge = (ui.optionBadge && typeof ui.optionBadge === 'object') ? { ...ui.optionBadge } : {};
@@ -178,7 +186,19 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
       f.ui = ui;
     }
 
-    const resourceTypeLike = fieldKey === 'resource_type' || f?.id === 'resource_type_id';
+    const resourceTypeLike =
+      fieldKey === "resource_type" ||
+      fieldKey === "item_type" ||
+      fieldKey === "consumable_type" ||
+      fieldKey === "monster_race" ||
+      fieldKey === "element" ||
+      fieldKey === "category" ||
+      fieldKey === "spell_types" ||
+      f?.id === "resource_type_id" ||
+      f?.id === "item_type_id" ||
+      f?.id === "consumable_type_id" ||
+      f?.id === "monster_race_id" ||
+      f?.id === "types";
     if (resourceTypeLike) {
       const ui = (f.ui && typeof f.ui === 'object') ? { ...f.ui } : {};
       const optionBadge = (ui.optionBadge && typeof ui.optionBadge === 'object') ? { ...ui.optionBadge } : {};

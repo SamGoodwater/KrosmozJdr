@@ -154,11 +154,11 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {
           sizes: {
-            xs: { mode: 'text', truncate: 10 },
-            sm: { mode: 'text', truncate: 15 },
-            md: { mode: 'text', truncate: 20 },
-            lg: { mode: 'text' },
-            xl: { mode: 'text' },
+            xs: { mode: 'badge' },
+            sm: { mode: 'badge' },
+            md: { mode: 'badge' },
+            lg: { mode: 'badge' },
+            xl: { mode: 'badge' },
           },
         },
       },
@@ -192,7 +192,15 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         searchable: true,
-        filterable: { id: 'creature_level', type: 'multi', defaultVisible: true },
+        filterable: {
+          id: 'creature_level',
+          type: 'multi',
+          defaultVisible: true,
+          ui: {
+            optionsMode: 'rows',
+            maxOptions: 250,
+          },
+        },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'badge' }, sm: { mode: 'badge' }, md: { mode: 'badge' }, lg: { mode: 'badge' }, xl: { mode: 'badge' } } },
       },
@@ -581,7 +589,12 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
       table: {
         sortable: true,
-        filterable: { id: 'state', type: 'multi', defaultVisible: true },
+        filterable: {
+          id: 'state',
+          type: 'multi',
+          defaultVisible: true,
+          options: getEntityStateOptions(),
+        },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {
           sizes: {
@@ -613,7 +626,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         tooltip: 'Rôle minimum requis pour consulter ce monstre',
       },
       table: {
-        sortable: true,
+        sortable: false,
         filterable: { id: 'read_level', type: 'multi', defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: {
@@ -646,7 +659,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         tooltip: 'Rôle minimum requis pour modifier ce monstre',
       },
       table: {
-        sortable: true,
+        sortable: false,
         filterable: { id: 'write_level', type: 'multi', defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: {
@@ -753,6 +766,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         visibleIf: () => canUpdateAny,
       },
       table: {
+        sortable: false,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         visibleIf: () => canUpdateAny,
         cell: {

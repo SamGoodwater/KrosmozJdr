@@ -14,6 +14,7 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Panoply } from "@/Models/Entity/Panoply";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
+import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
@@ -51,6 +52,7 @@ const canModify = computed(() => canUpdateAny('panoplies'));
 // Bulk request
 const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
+const { downloadPdf } = useDownloadPdf("panoply");
 const { refreshEntity } = useScrapping();
 
 // État
@@ -58,6 +60,8 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
+const quickEditModalOpen = ref(false);
+const quickEditEntity = ref(null);
 
 // Table v2
 const selectedIds = ref([]);
@@ -189,7 +193,7 @@ const handleTableAction = async (actionKey, entity, row) => {
         }
 
         case 'download-pdf':
-            // TODO: Implémenter le téléchargement PDF
+            await downloadPdf(entityId);
             break;
 
         case 'refresh':
@@ -227,8 +231,10 @@ const handleModalCopyLink = async (entity) => {
     }
 };
 
-const handleModalDownloadPdf = (entity) => {
-    // TODO: Implémenter le téléchargement PDF
+const handleModalDownloadPdf = async (entity) => {
+    const entityId = entity?.id;
+    if (!entityId) return;
+    await downloadPdf(entityId);
 };
 
 const handleModalRefresh = async (entity) => {
@@ -239,13 +245,14 @@ const handleModalRefresh = async (entity) => {
     closeModal();
 };
 
-const handleModalDelete = (entity) => {
+const handleModalDelete = (_entity) => {
     // TODO: Implémenter la suppression avec confirmation
 };
 
 const handleQuickEditSubmit = () => {
     refreshToken.value++;
     quickEditEntity.value = null;
+    quickEditModalOpen.value = false;
 };
 </script>
 
@@ -300,7 +307,7 @@ const handleQuickEditSubmit = () => {
         <!-- Modal de création -->
         <CreateEntityModal
             :open="createModalOpen"
-            entity-type="panoply"
+            entity-type="panoplies"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />
@@ -309,7 +316,7 @@ const handleQuickEditSubmit = () => {
         <EntityModal
             v-if="selectedEntity"
             :entity="selectedEntity"
-            entity-type="panoply"
+            entity-type="panoplies"
             :view="modalView"
             :open="modalOpen"
             :table-meta="tableMeta"
@@ -326,7 +333,7 @@ const handleQuickEditSubmit = () => {
         <EntityQuickEditModal
             v-if="quickEditEntity"
             :entity="quickEditEntity"
-            entity-type="panoply"
+            entity-type="panoplies"
             :fields-config="fieldsConfig"
             :open="quickEditModalOpen"
             @close="quickEditModalOpen = false"

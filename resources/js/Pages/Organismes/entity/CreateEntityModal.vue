@@ -177,7 +177,9 @@ const entityTypeLabel = computed(() => {
         monster: 'monstre',
         npc: 'PNJ',
         breed: 'Classe',
+        breeds: 'classe',
         panoply: 'panoplie',
+        panoplies: 'panoplie',
         campaign: 'campagne',
         scenario: 'scénario',
         creature: 'créature',
@@ -185,6 +187,7 @@ const entityTypeLabel = computed(() => {
         consumable: 'consommable',
         attribute: 'attribut',
         capability: 'capacité',
+        capabilities: 'capacité',
         specialization: 'spécialisation',
         shop: 'hotel de vente'
         ,resourceType: 'type de ressource'

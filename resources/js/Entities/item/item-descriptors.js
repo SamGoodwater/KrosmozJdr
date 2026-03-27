@@ -14,7 +14,7 @@
  * const descriptors = getItemFieldDescriptors({ meta });
  */
 
-import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+import { getEntityStateOptions, getRarityOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
 
 /**
  * @typedef {Object} ItemFieldDescriptor
@@ -177,17 +177,25 @@ export function getItemFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-level-up-alt",
       table: {
         sortable: true,
-        filterable: { id: "level", type: "multi", defaultVisible: true },
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
-        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+        filterable: {
+          id: "level",
+          type: "multi",
+          defaultVisible: false,
+          ui: {
+            optionsMode: "rows",
+            maxOptions: 250,
+          },
+        },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
         sizes: {
-          xs: { mode: "text" },
-          sm: { mode: "text" },
-          md: { mode: "text" },
-          lg: { mode: "text" },
-          xl: { mode: "text" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
       edit: {
@@ -207,7 +215,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-star",
       table: {
         sortable: true,
-        filterable: { id: "rarity", type: "multi", defaultVisible: true },
+        filterable: {
+          id: "rarity",
+          type: "multi",
+          defaultVisible: true,
+          options: getRarityOptions().map(({ value, label }) => ({ value, label })),
+        },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -246,7 +259,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-circle-info",
       table: {
         sortable: true,
-        filterable: { id: "state", type: "multi", defaultVisible: true },
+        filterable: {
+          id: "state",
+          type: "multi",
+          defaultVisible: true,
+          options: getEntityStateOptions(),
+        },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -277,6 +295,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-arrows-rotate",
       visibleIf: () => canUpdateAny,
       table: {
+        sortable: false,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -305,7 +324,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       table: {
-        sortable: true,
+        sortable: false,
         filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -336,7 +355,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
       table: {
-        sortable: true,
+        sortable: false,
         filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -427,17 +446,17 @@ export function getItemFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-tags",
       table: {
         sortable: true,
-        filterable: { id: "item_type_id", type: "multi", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
-        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+        filterable: { id: "item_type_id", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
         sizes: {
-          xs: { mode: "text", truncate: 10 },
-          sm: { mode: "text", truncate: 15 },
-          md: { mode: "text", truncate: 20 },
-          lg: { mode: "text" },
-          xl: { mode: "text" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
     },

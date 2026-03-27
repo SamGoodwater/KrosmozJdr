@@ -20,6 +20,11 @@ import TanStackTable from "@/Pages/Organismes/table/TanStackTable.vue";
 import ResourceLineRow from "@/Pages/Molecules/entity/resource/ResourceLineRow.vue";
 import ItemLineRow from "@/Pages/Molecules/entity/item/ItemLineRow.vue";
 import ConsumableLineRow from "@/Pages/Molecules/entity/consumable/ConsumableLineRow.vue";
+import MonsterLineRow from "@/Pages/Molecules/entity/monster/MonsterLineRow.vue";
+import SpellLineRow from "@/Pages/Molecules/entity/spell/SpellLineRow.vue";
+import BreedLineRow from "@/Pages/Molecules/entity/breed/BreedLineRow.vue";
+import PanoplyLineRow from "@/Pages/Molecules/entity/panoply/PanoplyLineRow.vue";
+import CapabilityLineRow from "@/Pages/Molecules/entity/capability/CapabilityLineRow.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useTableServerParams } from "@/Composables/table/useTableServerParams";
 
@@ -188,6 +193,11 @@ const lineRowComponent = computed(() => {
     if (t === "resources") return ResourceLineRow;
     if (t === "items") return ItemLineRow;
     if (t === "consumables") return ConsumableLineRow;
+    if (t === "monsters") return MonsterLineRow;
+    if (t === "spells") return SpellLineRow;
+    if (t === "breeds") return BreedLineRow;
+    if (t === "panoplies") return PanoplyLineRow;
+    if (t === "capabilities") return CapabilityLineRow;
     return null;
 });
 

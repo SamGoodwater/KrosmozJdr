@@ -1,265 +1,349 @@
 <script setup>
 /**
  * SpellViewMinimal — Vue Minimal pour Spell
- * 
+ *
  * @description
- * Petite carte qui s'étend au survol.
- * Utilisée dans des grilles, petites modals ou hovers.
- * 
+ * Alignée sur ResourceViewMinimal : EntityMinimalCard, état, image, niveau, nom, élément, catégorie, types, PA/PO, description, effets.
+ *
  * @props {Spell} spell - Instance du modèle Spell
- * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
-import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { computed } from "vue";
+import { router } from "@inertiajs/vue3";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
-import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
-import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
+import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
+import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
+import Route from "@/Pages/Atoms/action/Route.vue";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
+import { getEntityCharacteristicsByDbColumn } from "@/Utils/Entity/entity-view-ui";
+import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 
 const props = defineProps({
     spell: {
         type: Object,
-        required: true
+        required: true,
     },
     showActions: {
         type: Boolean,
-        default: true
+        default: true,
     },
     displayMode: {
         type: String,
-        default: 'hover',
-        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+        default: "extended",
+        validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
     tableMeta: {
         type: Object,
-        default: () => ({})
-    }
+        default: () => ({}),
+    },
 });
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits(["edit", "view", "delete", "action"]);
 
-const isHovered = ref(props.displayMode === 'extended');
-const canHoverExpand = computed(() => props.displayMode === 'hover');
-const permissions = usePermissions();
+const entity = computed(() => props.spell);
 
-const ctx = computed(() => {
-    const capabilities = {
-        viewAny: permissions.can('spells', 'viewAny'),
-        createAny: permissions.can('spells', 'createAny'),
-        updateAny: permissions.can('spells', 'updateAny'),
-        deleteAny: permissions.can('spells', 'deleteAny'),
-        manageAny: permissions.can('spells', 'manageAny'),
-    };
-    return { capabilities, meta: { capabilities } };
+const cellOpts = () => ({ size: "xs", context: "minimal" });
+
+const elementCell = computed(() => entity.value?.toCell?.("element", cellOpts()) ?? null);
+const categoryCell = computed(() => entity.value?.toCell?.("category", cellOpts()) ?? null);
+const spellTypesCell = computed(() => entity.value?.toCell?.("spell_types", cellOpts()) ?? null);
+
+const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
+
+const levelValue = computed(() => {
+    const lv = entity.value?.level ?? entity.value?._data?.level;
+    if (lv == null || lv === "") return null;
+    const n = Number(lv);
+    return Number.isFinite(n) ? n : null;
 });
 
-const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
+const paValue = computed(() => entity.value?.pa ?? entity.value?._data?.pa ?? null);
+const poValue = computed(() => entity.value?.po ?? entity.value?._data?.po ?? null);
 
-const stateValue = computed(() => props.spell?.state ?? props.spell?._data?.state ?? null);
+const descriptionFull = computed(
+    () => entity.value?.description ?? entity.value?._data?.description ?? ""
+);
 
-const canShowField = (fieldKey) => {
-    const desc = descriptors.value?.[fieldKey];
-    if (!desc) return false;
-    const visibleIf = desc?.permissions?.visibleIf;
-    if (typeof visibleIf === 'function') {
-        try {
-            return Boolean(visibleIf(ctx.value));
-        } catch (e) {
-            console.warn('[SpellViewMinimal] visibleIf failed for', fieldKey, e);
-            return false;
-        }
-    }
-    return true;
-};
-
-// Champs importants à afficher
-const importantFields = computed(() => ['level', 'pa', 'po', 'element', 'category', 'state', 'read_level'].filter(canShowField));
-
-const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
-const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
-const sortExtendedFields = (fields) => {
-    return [...fields].sort((a, b) => {
-        const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
-        const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
-
-        if (rankA === -1 && rankB === -1) return 0;
-        if (rankA === -1) return -1;
-        if (rankB === -1) return 1;
-        return rankA - rankB;
+const effectItems = computed(() => {
+    const cell = buildCharacteristicEffectCell({
+        rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
+        options: {},
+        sourceGroups: ["spell", "item"],
+        size: "sm",
     });
-};
-
-// En mode étendu, afficher toutes les propriétés visibles non principales.
-const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image']);
-    const fields = Object.keys(descriptors.value || {}).filter((key) => {
-        return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
-    });
-    return sortExtendedFields(fields);
+    return cell?.type === "chips" ? cell.params?.items || [] : [];
 });
 
-const getFieldIcon = (fieldKey) => {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'spell',
-    }).icon;
-};
+const byDbColumn = computed(() => getEntityCharacteristicsByDbColumn(props.tableMeta, "spell"));
+const paMeta = computed(() => byDbColumn.value?.pa || null);
+const poMeta = computed(() => byDbColumn.value?.po || byDbColumn.value?.po_max || null);
 
-const getCell = (fieldKey) => {
-    return props.spell.toCell(fieldKey, {
-        size: 'sm',
-        context: 'minimal',
-    });
-};
+const imageUrl = computed(() => {
+    const u = entity.value?.image ?? entity.value?._data?.image;
+    return u && String(u).trim() ? String(u) : null;
+});
 
-const getFieldLabel = (fieldKey) => resolveEntityFieldUi({
-    fieldKey,
-    descriptors: descriptors.value,
-    tableMeta: props.tableMeta,
-    entityType: 'spell',
-}).label;
-
-const getFieldIconStyle = (fieldKey) => {
-    const color = resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'spell',
-    }).color;
-    return color ? { color } : undefined;
-};
-
-const tooltipForField = (fieldKey, cell) => {
-    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
-    const label = getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey));
-    if (shouldOmitLabelInMeta(fieldKey)) return String(value);
-    return `${label} : ${value}`;
-};
+const showHref = computed(() =>
+    entity.value?.id ? route("entities.spells.show", { spell: entity.value.id }) : null
+);
 
 const handleAction = async (actionKey) => {
-    const spellId = props.spell.id;
+    const spellId = entity.value?.id;
     if (!spellId) return;
 
     switch (actionKey) {
-        case 'view':
-            router.visit(route('entities.spells.show', { spell: spellId }));
-            emit('view', props.spell);
+        case "view":
+            router.visit(route("entities.spells.show", { spell: spellId }));
+            emit("view", props.spell);
             break;
-        case 'edit':
-            router.visit(route('entities.spells.edit', { spell: spellId }));
-            emit('edit', props.spell);
+        case "edit":
+            router.visit(route("entities.spells.edit", { spell: spellId }));
+            emit("edit", props.spell);
             break;
-        case 'delete':
-            emit('delete', props.spell);
+        case "delete":
+            emit("delete", props.spell);
             break;
+        default:
+            emit("action", actionKey, props.spell);
     }
 };
 </script>
 
 <template>
-    <div
-        data-cy="entity-minimal-card"
-        class="relative rounded-box border border-base-300 transition-all duration-300 overflow-hidden"
-        :class="{ 
-            'bg-base-200 shadow-lg': isHovered,
-            'bg-base-100': !isHovered
-        }"
-        :style="{ 
-            width: isHovered ? 'auto' : '150px',
-            minWidth: '150px',
-            maxWidth: isHovered ? '300px' : '200px',
-            height: isHovered ? 'auto' : '100px',
-            minHeight: '80px',
-            borderRadius: 'var(--radius-box, 0.1rem)'
-        }"
-        @mouseenter="canHoverExpand && (isHovered = true)"
-        @mouseleave="canHoverExpand && (isHovered = false)">
-        
-        <div class="p-3">
-            <EntityViewHeader mode="minimal">
-                <template #dot>
+    <EntityMinimalCard :display-mode="displayMode">
+        <template #compact>
+            <div
+                data-cy="entity-minimal-card-compact"
+                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+            >
+                <div class="absolute top-1.5 left-1.5 z-10">
                     <EntityUsableDot :state="stateValue" />
-                </template>
-                <template #media>
-                    <Icon source="fa-solid fa-wand-magic-sparkles" :alt="spell.name" size="sm" class="shrink-0" />
-                </template>
-
-                <template #title>
-                    <Tooltip :content="spell.name" placement="top">
-                        <span class="font-semibold text-primary-100 text-sm truncate block">{{ spell.name }}</span>
-                    </Tooltip>
-                </template>
-
-                <template #actions>
-                    <div v-if="showActions && isHovered">
-                        <EntityActions
-                            entity-type="spell"
-                            :entity="spell"
-                            format="buttons"
-                            display="icon-only"
+                </div>
+                <div class="flex gap-2">
+                    <div
+                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
+                    >
+                        <img
+                            v-if="imageUrl"
+                            :src="imageUrl"
+                            :alt="entity?.name ?? 'Sort'"
+                            class="h-full w-full object-contain"
+                            loading="lazy"
+                        />
+                        <Icon
+                            v-else
+                            source="fa-solid fa-wand-magic-sparkles"
+                            alt=""
                             size="xs"
-                            color="primary"
-                            :context="{ inPanel: false }"
-                            @action="handleAction"
+                            class="text-base-content/40"
                         />
                     </div>
-                </template>
-
-                <template #mainInfosRight>
-                    <div class="flex items-center gap-2">
-                        <template v-for="field in importantFields" :key="field">
-                            <Tooltip :content="tooltipForField(field, getCell(field))" placement="top">
-                                <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" :style="getFieldIconStyle(field)" />
-                            </Tooltip>
-                        </template>
-                    </div>
-                </template>
-            </EntityViewHeader>
-
-            <!-- Contenu supplémentaire au hover -->
-            <div
-                v-if="isHovered"
-                data-cy="entity-minimal-expanded"
-                class="mt-2 pt-2 border-t border-base-300 space-y-1 text-xs text-primary-300 animate-fade-in">
-                <div
-                    v-for="key in expandedFields"
-                    :key="key"
-                    :data-field-key="key"
-                    class="flex items-start gap-2"
-                >
-                    <Tooltip
-                        :content="tooltipForField(key, getCell(key))"
-                        placement="left"
-                    >
-                        <div class="flex items-start gap-2 w-full">
-                            <Icon
-                                :source="getFieldIcon(key)"
-                                size="xs"
-                                class="text-primary-400 shrink-0 mt-0.5"
-                                :style="getFieldIconStyle(key)"
-                            />
-                            <div class="flex-1 min-w-0">
-                                <div class="font-semibold text-primary-400">
-                                    {{ getFieldLabel(key) }}:
-                                </div>
-                                <div class="text-primary-200 truncate">
-                                    <CellRenderer
-                                        :cell="getCell(key)"
-                                        ui-color="primary"
-                                    />
-                                </div>
+                    <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <div class="min-w-0 flex-1">
+                                <Route
+                                    v-if="showHref"
+                                    :href="showHref"
+                                    color="neutral"
+                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
+                                >
+                                    {{ entity?.name ?? "—" }}
+                                </Route>
+                                <span v-else class="font-semibold truncate block text-sm">
+                                    {{ entity?.name ?? "—" }}
+                                </span>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="spells"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    @action="(k) => handleAction(k)"
+                                />
                             </div>
                         </div>
-                    </Tooltip>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <CellRenderer
+                                v-if="elementCell?.value && elementCell.value !== '—'"
+                                :cell="elementCell"
+                                class="inline-flex items-center"
+                            />
+                            <CellRenderer
+                                v-if="categoryCell?.value && categoryCell.value !== '-' && categoryCell.value !== '—'"
+                                :cell="categoryCell"
+                                class="inline-flex items-center"
+                            />
+                            <CellRenderer
+                                v-if="spellTypesCell?.value && spellTypesCell.value !== '-' && spellTypesCell.value !== '—'"
+                                :cell="spellTypesCell"
+                                class="inline-flex items-center"
+                            />
+                            <Tooltip
+                                v-if="paValue != null && paValue !== ''"
+                                :content="`PA: ${paValue}`"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center gap-1">
+                                    <Icon
+                                        :source="paMeta?.icon || 'fa-solid fa-bolt'"
+                                        alt="PA"
+                                        size="xs"
+                                        :style="paMeta?.color ? { color: `var(--color-${paMeta.color})` } : undefined"
+                                    />
+                                    <span>{{ paValue }}</span>
+                                </span>
+                            </Tooltip>
+                            <Tooltip
+                                v-if="poValue != null && poValue !== ''"
+                                :content="`Portée: ${poValue}`"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center gap-1">
+                                    <Icon
+                                        :source="poMeta?.icon || 'fa-solid fa-crosshairs'"
+                                        alt="Portée"
+                                        size="xs"
+                                        :style="poMeta?.color ? { color: `var(--color-${poMeta.color})` } : undefined"
+                                    />
+                                    <span>{{ poValue }}</span>
+                                </span>
+                            </Tooltip>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    v-if="effectItems.length > 0"
+                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+                >
+                    <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
                 </div>
             </div>
-        </div>
-    </div>
+        </template>
+        <template #expanded>
+            <div
+                data-cy="entity-minimal-card-expanded"
+                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+            >
+                <div class="absolute top-1.5 left-1.5 z-10">
+                    <EntityUsableDot :state="stateValue" />
+                </div>
+                <div class="flex gap-2">
+                    <div
+                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
+                    >
+                        <img
+                            v-if="imageUrl"
+                            :src="imageUrl"
+                            :alt="entity?.name ?? 'Sort'"
+                            class="h-full w-full object-contain"
+                            loading="lazy"
+                        />
+                        <Icon
+                            v-else
+                            source="fa-solid fa-wand-magic-sparkles"
+                            alt=""
+                            size="xs"
+                            class="text-base-content/40"
+                        />
+                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <div class="min-w-0 flex-1">
+                                <Route
+                                    v-if="showHref"
+                                    :href="showHref"
+                                    color="neutral"
+                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
+                                >
+                                    {{ entity?.name ?? "—" }}
+                                </Route>
+                                <span v-else class="font-semibold truncate block text-sm">
+                                    {{ entity?.name ?? "—" }}
+                                </span>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="spells"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    @action="(k) => handleAction(k)"
+                                />
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <CellRenderer
+                                v-if="elementCell?.value && elementCell.value !== '—'"
+                                :cell="elementCell"
+                                class="inline-flex items-center"
+                            />
+                            <CellRenderer
+                                v-if="categoryCell?.value && categoryCell.value !== '-' && categoryCell.value !== '—'"
+                                :cell="categoryCell"
+                                class="inline-flex items-center"
+                            />
+                            <CellRenderer
+                                v-if="spellTypesCell?.value && spellTypesCell.value !== '-' && spellTypesCell.value !== '—'"
+                                :cell="spellTypesCell"
+                                class="inline-flex items-center"
+                            />
+                            <Tooltip
+                                v-if="paValue != null && paValue !== ''"
+                                :content="`PA: ${paValue}`"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center gap-1">
+                                    <Icon
+                                        :source="paMeta?.icon || 'fa-solid fa-bolt'"
+                                        alt="PA"
+                                        size="xs"
+                                        :style="paMeta?.color ? { color: `var(--color-${paMeta.color})` } : undefined"
+                                    />
+                                    <span>{{ paValue }}</span>
+                                </span>
+                            </Tooltip>
+                            <Tooltip
+                                v-if="poValue != null && poValue !== ''"
+                                :content="`Portée: ${poValue}`"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center gap-1">
+                                    <Icon
+                                        :source="poMeta?.icon || 'fa-solid fa-crosshairs'"
+                                        alt="Portée"
+                                        size="xs"
+                                        :style="poMeta?.color ? { color: `var(--color-${poMeta.color})` } : undefined"
+                                    />
+                                    <span>{{ poValue }}</span>
+                                </span>
+                            </Tooltip>
+                        </div>
+                        <p
+                            v-if="descriptionFull"
+                            class="text-xs text-base-content/80 line-clamp-3"
+                            :title="descriptionFull"
+                        >
+                            {{ descriptionFull }}
+                        </p>
+                    </div>
+                </div>
+                <div
+                    v-if="effectItems.length > 0"
+                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+                >
+                    <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
+                </div>
+            </div>
+        </template>
+    </EntityMinimalCard>
 </template>

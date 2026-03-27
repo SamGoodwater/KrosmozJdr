@@ -16,6 +16,7 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
+import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
@@ -38,15 +39,16 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
+const { downloadPdf } = useDownloadPdf('breed');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
     const capabilities = {
-        viewAny: permissions.can('breed', 'viewAny'),
-        createAny: permissions.can('breed', 'createAny'),
-        updateAny: permissions.can('breed', 'updateAny'),
-        deleteAny: permissions.can('breed', 'deleteAny'),
-        manageAny: permissions.can('breed', 'manageAny'),
+        viewAny: permissions.can('breeds', 'viewAny'),
+        createAny: permissions.can('breeds', 'createAny'),
+        updateAny: permissions.can('breeds', 'updateAny'),
+        deleteAny: permissions.can('breeds', 'deleteAny'),
+        manageAny: permissions.can('breeds', 'manageAny'),
     };
     return { capabilities, meta: { capabilities } };
 });
@@ -56,7 +58,7 @@ const descriptors = computed(() => getBreedFieldDescriptors(ctx.value));
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
-    const visibleIf = desc?.permissions?.visibleIf;
+    const visibleIf = desc?.permissions?.visibleIf ?? desc?.visibleIf;
     if (typeof visibleIf === 'function') {
         try {
             return Boolean(visibleIf(ctx.value));
@@ -114,11 +116,19 @@ const handleAction = async (actionKey) => {
             const cfg = getEntityRouteConfig('breed');
             const url = resolveEntityRouteUrl('breed', 'show', breedId, cfg);
             if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien copié !");
+                await copyToClipboard(`${window.location.origin}${url}`, "Lien de la classe copié !");
             }
             emit('copy-link', props.breed);
             break;
         }
+        case 'download-pdf':
+            await downloadPdf(breedId);
+            emit('download-pdf', props.breed);
+            break;
+        case 'refresh':
+            router.reload({ only: ['breeds'] });
+            emit('refresh', props.breed);
+            break;
         case 'delete':
             emit('delete', props.breed);
             break;
@@ -149,13 +159,13 @@ const handleAction = async (actionKey) => {
             
             <div v-if="showActions" class="flex-shrink-0">
                 <EntityActions
-                    entity-type="breed"
+                    entity-type="breeds"
                     :entity="breed"
                     format="buttons"
                     display="icon-only"
                     size="sm"
                     color="primary"
-                    :context="{ inPanel: false }"
+                    :context="{ inPanel: false, inPage: true }"
                     @action="handleAction"
                 />
             </div>

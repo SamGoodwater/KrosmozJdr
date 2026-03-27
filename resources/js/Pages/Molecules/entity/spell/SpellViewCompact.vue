@@ -14,8 +14,6 @@ import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
-import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
-import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
@@ -150,10 +148,7 @@ const asTextCell = (cell) => {
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
-        spell_types: 'info',
         level: 'warning',
-        element: 'secondary',
-        category: 'secondary',
         auto_update: 'warning',
         read_level: 'primary',
         write_level: 'secondary',
@@ -269,7 +264,7 @@ const handleAction = async (actionKey) => {
             <template #actions>
                 <div v-if="showActions">
                     <EntityActions
-                        entity-type="spell"
+                        entity-type="spells"
                         :entity="spell"
                         format="buttons"
                         display="icon-only"
@@ -295,19 +290,13 @@ const handleAction = async (actionKey) => {
                                         {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
                                     </span>
                                 </div>
-                                <ElementDisplay
-                                    v-if="fieldKey === 'element'"
-                                    :element="spell?.element ?? 0"
-                                    size="sm"
-                                />
-                                <PropertyDisplay
-                                    v-else
-                                    :property="getFieldUi(fieldKey)"
-                                    :value="getCell(fieldKey)?.value"
-                                    variant="badge"
-                                    size="sm"
-                                    class="max-w-[14rem] whitespace-normal break-words"
-                                />
+                                <div class="min-w-0 max-w-[14rem] flex justify-end">
+                                    <CellRenderer
+                                        :cell="getCell(fieldKey)"
+                                        ui-color="primary"
+                                        class="whitespace-normal wrap-break-word"
+                                    />
+                                </div>
                             </div>
                         </Tooltip>
                     </template>

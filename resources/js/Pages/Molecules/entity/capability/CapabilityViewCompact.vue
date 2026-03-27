@@ -14,15 +14,12 @@ import { router } from '@inertiajs/vue3';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
-import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
+import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
-import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
-
 const props = defineProps({
     capability: {
         type: Object,
@@ -41,6 +38,7 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
+const { downloadPdf } = useDownloadPdf('capability');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
@@ -59,7 +57,7 @@ const descriptors = computed(() => getCapabilityFieldDescriptors(ctx.value));
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
-    const visibleIf = desc?.permissions?.visibleIf;
+    const visibleIf = desc?.permissions?.visibleIf ?? desc?.visibleIf;
     if (typeof visibleIf === 'function') {
         try {
             return Boolean(visibleIf(ctx.value));
@@ -83,21 +81,12 @@ const compactFields = computed(() => [
     'write_level',
 ].filter(canShowField));
 
-const getFieldUi = (fieldKey) =>
-    resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'capability',
-    });
+const getFieldLabel = (fieldKey) => {
+    return descriptors.value?.[fieldKey]?.label || fieldKey;
+};
 
-const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
-
-const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
-
-const getFieldIconStyle = (fieldKey) => {
-    const color = getFieldUi(fieldKey).color;
-    return color ? { color } : undefined;
+const getFieldIcon = (fieldKey) => {
+    return descriptors.value?.[fieldKey]?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -127,11 +116,19 @@ const handleAction = async (actionKey) => {
             const cfg = getEntityRouteConfig('capability');
             const url = resolveEntityRouteUrl('capability', 'show', capabilityId, cfg);
             if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien copié !");
+                await copyToClipboard(`${window.location.origin}${url}`, "Lien de la capacité copié !");
             }
             emit('copy-link', props.capability);
             break;
         }
+        case 'download-pdf':
+            await downloadPdf(capabilityId);
+            emit('download-pdf', props.capability);
+            break;
+        case 'refresh':
+            router.reload({ only: ['capabilities'] });
+            emit('refresh', props.capability);
+            break;
         case 'delete':
             emit('delete', props.capability);
             break;
@@ -160,13 +157,13 @@ const handleAction = async (actionKey) => {
             
             <div v-if="showActions" class="flex-shrink-0">
                 <EntityActions
-                    entity-type="capability"
+                    entity-type="capabilities"
                     :entity="capability"
                     format="buttons"
                     display="icon-only"
                     size="sm"
                     color="primary"
-                    :context="{ inPanel: false }"
+                    :context="{ inPanel: false, inPage: true }"
                     @action="handleAction"
                 />
             </div>
@@ -177,21 +174,26 @@ const handleAction = async (actionKey) => {
             <div
                 v-for="fieldKey in compactFields"
                 :key="fieldKey"
-                class="flex items-center justify-between gap-2 p-2 entity-radius-field hover:bg-base-200 transition-colors"
+                class="flex items-start gap-2 p-2 entity-radius-field hover:bg-base-200 transition-colors"
             >
-                <ElementDisplay
-                    v-if="fieldKey === 'element'"
-                    :element="capability?.element ?? 0"
-                    size="sm"
+                <Icon
+                    :source="getFieldIcon(fieldKey)"
+                    size="xs"
+                    class="text-primary-400 shrink-0 mt-0.5"
                 />
-                <PropertyDisplay
-                    v-else
-                    :property="getFieldUi(fieldKey)"
-                    :value="getCell(fieldKey)?.value"
-                    variant="inline"
-                    size="sm"
-                    class="flex-1"
-                />
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-primary-400 text-xs font-semibold uppercase">
+                            {{ getFieldLabel(fieldKey) }}
+                        </span>
+                        <div class="flex-1 text-right min-w-0 text-primary-200">
+                            <CellRenderer
+                                :cell="getCell(fieldKey)"
+                                ui-color="primary"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
