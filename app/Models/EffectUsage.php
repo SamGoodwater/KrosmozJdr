@@ -10,14 +10,14 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * Lien polymorphique entité (spell, item, consumable…) → effect.
- * level_min / level_max = tranche de niveau pour cet effet.
+ * required_creature_level = niveau **minimum du porteur** (créature / PJ) pour utiliser cet effet à ce degré
+ * (distinct du niveau « fiche sort »). Logique produit : parmi les degrés dont le seuil est atteint, on prend le plus élevé.
  *
  * @property int $id
  * @property string $entity_type
  * @property int $entity_id
  * @property int $effect_id
- * @property int|null $level_min
- * @property int|null $level_max
+ * @property int|null $required_creature_level
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property-read Model $entity
@@ -31,15 +31,13 @@ class EffectUsage extends Model
         'entity_type',
         'entity_id',
         'effect_id',
-        'level_min',
-        'level_max',
+        'required_creature_level',
     ];
 
     protected $casts = [
         'entity_id' => 'integer',
         'effect_id' => 'integer',
-        'level_min' => 'integer',
-        'level_max' => 'integer',
+        'required_creature_level' => 'integer',
     ];
 
     public function entity(): MorphTo

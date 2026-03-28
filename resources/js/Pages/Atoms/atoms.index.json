@@ -2547,7 +2547,7 @@
       {
         "name": "autoScheme",
         "type": "String",
-        "desc": "- Nuancié: 'mixed' | 'rainbow' | 'level' | 'rarity' (défaut: 'mixed')"
+        "desc": "- Nuancié: 'mixed' | 'rainbow' | 'level' | 'rarity' | 'labelHash' (défaut: 'mixed')"
       },
       {
         "name": "autoTone",

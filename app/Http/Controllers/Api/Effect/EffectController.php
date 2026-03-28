@@ -22,8 +22,7 @@ class EffectController extends Controller
     public function __construct(
         private readonly EffectService $effectService,
         private readonly EffectResolutionService $effectResolutionService
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): AnonymousResourceCollection
     {
@@ -34,6 +33,7 @@ class EffectController extends Controller
         }
 
         $list = Effect::with('subEffects')->orderBy('name')->get();
+
         return EffectResource::collection($list);
     }
 
@@ -41,12 +41,14 @@ class EffectController extends Controller
     {
         $effect = Effect::create($request->validated());
         $effect->load('subEffects');
+
         return (new EffectResource($effect))->response()->setStatusCode(201);
     }
 
     public function show(Effect $effect): EffectResource
     {
         $effect->load('subEffects');
+
         return new EffectResource($effect);
     }
 
@@ -54,15 +56,21 @@ class EffectController extends Controller
     {
         $effect->update($request->validated());
         $effect->load('subEffects');
+
         return new EffectResource($effect->fresh());
     }
 
     public function destroy(Effect $effect): JsonResponse
     {
         $effect->delete();
+
         return response()->json(null, 204);
     }
 
+    /**
+     * Prévisualisation : effets applicables selon le **niveau du porteur** (seuil {@see \App\Models\EffectUsage::required_creature_level}).
+     * Le paramètre `level` sert aussi au contexte de résolution des formules (comportement existant).
+     */
     public function forEntity(Request $request): JsonResponse
     {
         $validated = $request->validate([

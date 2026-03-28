@@ -666,10 +666,10 @@ final class IntegrationService
                     'entity_type' => 'spell',
                     'entity_id' => $spell->id,
                     'effect_id' => $effect->id,
-                    'level_min' => $degree,
-                    'level_max' => $degree,
                 ],
-                []
+                [
+                    'required_creature_level' => $degree,
+                ]
             );
 
             foreach ($subEffectsRaw as $row) {

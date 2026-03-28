@@ -3,7 +3,7 @@
  * SpellViewMinimal — Vue Minimal pour Spell
  *
  * @description
- * Alignée sur ResourceViewMinimal : EntityMinimalCard, état, image, niveau, nom, élément, catégorie, types, PA/PO, description, effets.
+ * Effets : `resolveSpellEffectsDisplayCell` (résumé API + SpellEffectChips, ou fallback `effect`).
  *
  * @props {Spell} spell - Instance du modèle Spell
  */
@@ -13,11 +13,13 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
-import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
+import {
+    resolveSpellEffectsDisplayCell,
+    spellEffectsCellHasContent,
+} from "@/Composables/entity/useSpellEffectsDisplayCell";
 import { getEntityCharacteristicsByDbColumn } from "@/Utils/Entity/entity-view-ui";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 
@@ -67,15 +69,15 @@ const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
 );
 
-const effectItems = computed(() => {
-    const cell = buildCharacteristicEffectCell({
-        rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
-        options: {},
-        sourceGroups: ["spell", "item"],
-        size: "sm",
-    });
-    return cell?.type === "chips" ? cell.params?.items || [] : [];
-});
+const effectDisplayCell = computed(() =>
+    resolveSpellEffectsDisplayCell(entity.value, {
+        size: "xs",
+        context: "minimal",
+        ctx: props.tableMeta,
+        maxEffectRows: 3,
+    }),
+);
+const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
 
 const byDbColumn = computed(() => getEntityCharacteristicsByDbColumn(props.tableMeta, "spell"));
 const paMeta = computed(() => byDbColumn.value?.pa || null);
@@ -219,10 +221,14 @@ const handleAction = async (actionKey) => {
                     </div>
                 </div>
                 <div
-                    v-if="effectItems.length > 0"
-                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+                    v-if="hasEffects"
+                    class="spell-effects-minimal w-full pt-1.5 mt-1 border-t border-base-300"
                 >
-                    <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
+                    <CellRenderer
+                        :cell="effectDisplayCell"
+                        ui-color="primary"
+                        class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
+                    />
                 </div>
             </div>
         </template>
@@ -338,10 +344,14 @@ const handleAction = async (actionKey) => {
                     </div>
                 </div>
                 <div
-                    v-if="effectItems.length > 0"
-                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+                    v-if="hasEffects"
+                    class="spell-effects-minimal w-full pt-1.5 mt-1 border-t border-base-300"
                 >
-                    <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
+                    <CellRenderer
+                        :cell="effectDisplayCell"
+                        ui-color="primary"
+                        class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
+                    />
                 </div>
             </div>
         </template>

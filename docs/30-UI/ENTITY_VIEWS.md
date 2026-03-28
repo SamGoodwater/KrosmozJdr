@@ -523,8 +523,8 @@ Même logique que Resource : **descriptors** + **`resolveEntityBadgeUi`** pour l
 - **Vues** :
   - `SpellViewLarge.vue` / `SpellViewCompact.vue` : `EntityActions` avec **`entity-type="spells"`** (pluriel, aligné `entity-actions-config` et `EntityTanStackTable`).
   - **Compact** : métas du header (`spell_types`, `level`, `pa`, `po`, `area`, `element`, `category`) via **`CellRenderer`** + `getCell()` (même rendu que le tableau : élément, badges, etc.).
-  - `SpellViewMinimal.vue` : `EntityMinimalCard` (comme Resource).
-  - `SpellLineRow.vue` : vue **Line** du tableau (`EntityTanStackTable`, `displayMode: line`).
+  - `SpellViewMinimal.vue` : `EntityMinimalCard` (comme Resource) ; effets via **`resolveSpellEffectsDisplayCell`** (`effect_summary` → `SpellEffectChips` + degrés, sinon `effect`).
+  - `SpellLineRow.vue` : vue **Line** ; mêmes effets que la Minimal (composable partagé, `CellRenderer`).
   - Page liste `spell/Index.vue` : modals génériques (`CreateEntityModal`, `EntityModal`, `EntityQuickEditModal`) avec **`entity-type="spells"`** ; `EntityEditForm` sur la page d’édition reste **`entity-type="spell"`** (singulier requis par les routes du formulaire).
 
 #### Monster

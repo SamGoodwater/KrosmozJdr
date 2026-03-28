@@ -10,7 +10,7 @@ class UpdateEffectUsageRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->verifyRole('admin') ?? false;
+        return $this->user()?->verifyRole('game_master') ?? false;
     }
 
     /**
@@ -20,8 +20,7 @@ class UpdateEffectUsageRequest extends FormRequest
     {
         return [
             'effect_id' => 'sometimes|integer|exists:effects,id',
-            'level_min' => 'nullable|integer|min:0',
-            'level_max' => 'nullable|integer|min:0|gte:level_min',
+            'required_creature_level' => 'nullable|integer|min:0',
         ];
     }
 }

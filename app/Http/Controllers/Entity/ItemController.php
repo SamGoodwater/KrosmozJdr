@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreItemRequest;
 use App\Http\Requests\Entity\UpdateItemRequest;
 use App\Http\Requests\Entity\UpdateItemResourcesRequest;
+use App\Http\Resources\Entity\ItemResource;
 use App\Models\Effect;
 use App\Models\Entity\Item;
-use App\Http\Resources\Entity\ItemResource;
 use App\Services\PdfService;
 use Inertia\Inertia;
 
@@ -20,43 +20,43 @@ class ItemController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Item::class);
-        
+
         $query = Item::with(['createdBy', 'itemType', 'resources']);
-        
+
         // Recherche
         if (request()->has('search') && request()->search) {
             $search = request()->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
-        
+
         // Filtres
         if (request()->has('level') && request()->level !== '') {
             $query->where('level', request()->level);
         }
-        
+
         if (request()->has('rarity') && request()->rarity !== '') {
             $query->where('rarity', request()->rarity);
         }
-        
+
         if (request()->has('item_type_id') && request()->item_type_id !== '') {
             $query->where('item_type_id', request()->item_type_id);
         }
-        
+
         // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
-        
+
         if (in_array($sortColumn, ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'created_at'])) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
         }
-        
+
         $items = $query->paginate(20)->withQueryString();
-        
+
         return Inertia::render('Pages/entity/item/Index', [
             'items' => ItemResource::collection($items),
             'filters' => request()->only(['search', 'level', 'rarity', 'item_type_id']),
@@ -100,7 +100,7 @@ class ItemController extends Controller
             ->orderBy('name')
             ->get();
 
-        $effectUsages = $item->effectUsages()->with('effect.subEffects')->orderBy('level_min')->get()->map(fn ($u) => [
+        $effectUsages = $item->effectUsages()->with('effect.subEffects')->orderBy('required_creature_level')->get()->map(fn ($u) => [
             'id' => $u->id,
             'effect_id' => $u->effect_id,
             'effect' => $u->effect ? [
@@ -111,13 +111,12 @@ class ItemController extends Controller
                 'target_type' => $u->effect->target_type ?? \App\Models\Effect::TARGET_DIRECT,
                 'area' => $u->effect->area,
             ] : null,
-            'level_min' => $u->level_min,
-            'level_max' => $u->level_max,
+            'required_creature_level' => $u->required_creature_level,
         ])->values()->all();
 
         $availableEffects = Effect::orderBy('name')->get(['id', 'name', 'slug', 'degree', 'target_type', 'area'])->map(fn ($e) => [
             'id' => $e->id,
-            'name' => $e->name ?? $e->slug ?? 'Effet #' . $e->id,
+            'name' => $e->name ?? $e->slug ?? 'Effet #'.$e->id,
             'slug' => $e->slug,
             'degree' => $e->degree,
             'target_type' => $e->target_type ?? \App\Models\Effect::TARGET_DIRECT,
@@ -139,11 +138,11 @@ class ItemController extends Controller
     public function update(UpdateItemRequest $request, Item $item)
     {
         $this->authorize('update', $item);
-        
+
         $item->update($request->validated());
-        
+
         $item->load(['itemType', 'createdBy']);
-        
+
         return redirect()->route('entities.items.show', $item)
             ->with('success', 'Item mis à jour avec succès.');
     }
@@ -162,60 +161,60 @@ class ItemController extends Controller
     public function updateResources(UpdateItemResourcesRequest $request, Item $item)
     {
         $this->authorize('update', $item);
-        
+
         // Les données sont déjà normalisées et validées par la FormRequest
         $resources = $request->input('resources', []);
         $syncData = [];
-        
+
         foreach ($resources as $resourceId => $pivotData) {
             $syncData[$resourceId] = ['quantity' => $pivotData['quantity']];
         }
-        
+
         $item->resources()->sync($syncData);
-        
+
         return redirect()->back()
             ->with('success', 'Ressources de l\'objet mises à jour avec succès.');
     }
 
     /**
      * Télécharge un PDF pour un ou plusieurs items.
-     * 
-     * @param Item|null $item L'item unique (si un seul)
+     *
+     * @param  Item|null  $item  L'item unique (si un seul)
      * @return \Illuminate\Http\Response
      */
     public function downloadPdf(?Item $item = null)
     {
         // Si des IDs sont fournis dans la query string, on peut télécharger plusieurs items
         $ids = request()->get('ids');
-        
-        if (!empty($ids)) {
+
+        if (! empty($ids)) {
             // Convertir en tableau si c'est une chaîne
             if (is_string($ids)) {
                 $ids = explode(',', $ids);
             }
-            
+
             if (is_array($ids) && count($ids) > 0) {
                 // Génération pour plusieurs items
                 $items = Item::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Item::class);
-                
+
                 $pdf = PdfService::generateForEntities($items, 'item');
-                $filename = 'items-' . now()->format('Y-m-d-His') . '.pdf';
-                
+                $filename = 'items-'.now()->format('Y-m-d-His').'.pdf';
+
                 return $pdf->download($filename);
             }
         }
-        
+
         // Génération pour un seul item
-        if (!$item) {
+        if (! $item) {
             abort(404);
         }
-        
+
         $this->authorize('view', $item);
-        
+
         $pdf = PdfService::generateForEntity($item, 'item');
-        $filename = 'item-' . $item->id . '-' . now()->format('Y-m-d-His') . '.pdf';
-        
+        $filename = 'item-'.$item->id.'-'.now()->format('Y-m-d-His').'.pdf';
+
         return $pdf->download($filename);
     }
 }

@@ -348,13 +348,14 @@ export class Spell extends BaseModel {
      * @private
      */
     _toEffectCell(format, size, options) {
+        const userLayout = options?.chipsLayout && typeof options.chipsLayout === 'object' ? options.chipsLayout : {};
         return buildCharacteristicEffectCell({
             rawValues: [this.effect],
             options,
             sourceGroups: ['spell'],
             format,
             size,
-            chipsLayout: { maxRows: 3 },
+            chipsLayout: { maxRows: 3, ...userLayout },
         });
     }
 
@@ -374,14 +375,34 @@ export class Spell extends BaseModel {
                 },
             };
         }
-        const items = chips.map((chip) => ({
-            icon: getElementIcon(chip.element ?? 0),
-            color: getElementColor(chip.element ?? 0),
-            value: chip.text ?? '',
-            tooltip: chip.tooltip ?? chip.text ?? '',
-            degree: chip.degree ?? null,
-        }));
+        // Niveau créature requis par chip (effect_usage), distinct du niveau du sort — voir creature_level_requirement (API).
+        const items = chips.map((chip) => {
+            const req =
+                chip.creature_level_requirement && typeof chip.creature_level_requirement === 'object'
+                    ? chip.creature_level_requirement
+                    : null;
+            const requiredCreatureLevel = {
+                min: req?.min ?? chip.level_min ?? null,
+                max: req?.max ?? chip.level_max ?? null,
+                label: req?.label ?? chip.creature_level_label ?? null,
+            };
+            return {
+                icon: getElementIcon(chip.element ?? 0),
+                color: getElementColor(chip.element ?? 0),
+                value: chip.text ?? '',
+                tooltip: chip.tooltip ?? chip.text ?? '',
+                degree: chip.degree ?? null,
+                requiredCreatureLevel,
+            };
+        });
         const subEffectSlugs = this._data.effect_sub_effect_slugs ?? [];
+        const ctx = options?.context || 'table';
+        const labelMode =
+            ctx === 'minimal' || size === 'xs'
+                ? 'icon-only'
+                : ctx === 'compact' || size === 'sm'
+                  ? 'short'
+                  : 'full';
         return {
             type: 'spell_effects',
             value: '',
@@ -390,6 +411,7 @@ export class Spell extends BaseModel {
                 sortValue: this.effectUsagesSummary || '',
                 searchValue: this.effectUsagesSummary || '',
                 filterValue: subEffectSlugs,
+                chipsLayout: { labelMode },
             },
         };
     }

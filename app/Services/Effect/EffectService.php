@@ -19,16 +19,18 @@ final class EffectService
     public function __construct(
         private readonly EffectTextResolver $textResolver,
         private readonly CharacteristicFormulaService $formulaService
-    ) {
-    }
+    ) {}
 
     /**
-     * Retourne les effects applicables pour une entité à un niveau donné.
+     * Retourne les effects applicables pour une entité au niveau de créature donné.
      *
-     * @param string $entity_type spell, item, consumable, resource
-     * @param int $entity_id
-     * @param int $level Niveau du sort/objet/personnage
-     * @param string|null $context combat | out_of_combat | null (tous)
+     * Pour chaque groupe d’effets (même {@see Effect::effect_group_id}), on ne retient que le **degré le plus élevé**
+     * dont le seuil {@see EffectUsage::required_creature_level} est atteint (null = toujours éligible).
+     * Les groupes sans aucun usage éligible sont ignorés.
+     *
+     * @param  string  $entity_type  spell, item, consumable, resource
+     * @param  int  $level  Niveau du **porteur** (créature / PJ)
+     * @param  string|null  $context  combat | out_of_combat | null (tous)
      * @return Collection<int, Effect> Effects avec sous-effets chargés (filtrés par scope si context fourni)
      */
     public function getEffectsForEntity(
@@ -40,17 +42,40 @@ final class EffectService
         $usages = EffectUsage::query()
             ->where('entity_type', $entity_type)
             ->where('entity_id', $entity_id)
-            ->where(function ($q) use ($level) {
-                $q->whereNull('level_min')->orWhere('level_min', '<=', $level);
-            })
-            ->where(function ($q) use ($level) {
-                $q->whereNull('level_max')->orWhere('level_max', '>=', $level);
-            })
-            ->with(['effect.subEffects'])
-            ->orderBy('level_min')
+            ->with([
+                'effect' => function ($q) {
+                    $q->select('id', 'degree', 'effect_group_id', 'name', 'slug', 'description', 'target_type', 'area', 'config_signature');
+                },
+                'effect.subEffects',
+            ])
             ->get();
 
-        $effects = $usages->pluck('effect')->filter()->unique('id')->values();
+        $byGroup = $usages->groupBy(function (EffectUsage $u) {
+            $gid = $u->effect?->effect_group_id;
+
+            return $gid !== null ? 'g_'.$gid : 'u_'.$u->id;
+        });
+
+        $pickedEffects = collect();
+        foreach ($byGroup as $groupUsages) {
+            $eligible = $groupUsages->filter(function (EffectUsage $usage) use ($level) {
+                $req = $usage->required_creature_level;
+                if ($req === null) {
+                    return true;
+                }
+
+                return $level >= $req;
+            });
+            if ($eligible->isEmpty()) {
+                continue;
+            }
+            $best = $eligible->sortByDesc(fn (EffectUsage $u) => $u->effect?->degree ?? 0)->first();
+            if ($best?->effect) {
+                $pickedEffects->push($best->effect);
+            }
+        }
+
+        $effects = $pickedEffects->unique('id')->values();
 
         if ($context !== null) {
             $scopes = $context === 'combat'
@@ -69,9 +94,9 @@ final class EffectService
     /**
      * Rendu texte complet d'un effect : résout template + formula pour chaque sous-effet, concatène.
      *
-     * @param array<string, int|float|string> $context Variables (level, agi, value, element…)
-     * @param string|null $scope_filter combat | out_of_combat | null (tous)
-     * @param bool $format_dice_human "2d6" → "2 dés à 6 faces"
+     * @param  array<string, int|float|string>  $context  Variables (level, agi, value, element…)
+     * @param  string|null  $scope_filter  combat | out_of_combat | null (tous)
+     * @param  bool  $format_dice_human  "2d6" → "2 dés à 6 faces"
      */
     public function renderEffectText(
         Effect $effect,
@@ -106,8 +131,8 @@ final class EffectService
     /**
      * Construit le contexte pour un sous-effet (pivot + formule évaluée).
      *
-     * @param \Illuminate\Database\Eloquent\Model $sub SubEffect avec pivot
-     * @param array<string, int|float|string> $base_context
+     * @param  \Illuminate\Database\Eloquent\Model  $sub  SubEffect avec pivot
+     * @param  array<string, int|float|string>  $base_context
      * @return array<string, int|float|string>
      */
     private function buildSubEffectContext($sub, array $base_context): array
@@ -124,7 +149,7 @@ final class EffectService
             }
             $ctx['value'] = $pivot->value_min ?? $pivot->value_max ?? ($base_context['value'] ?? null);
             if ($pivot->dice_num !== null && $pivot->dice_side !== null) {
-                $ctx['dice'] = $pivot->dice_num . 'd' . $pivot->dice_side;
+                $ctx['dice'] = $pivot->dice_num.'d'.$pivot->dice_side;
             }
             if (is_array($pivot->params ?? null)) {
                 foreach ($pivot->params as $k => $v) {

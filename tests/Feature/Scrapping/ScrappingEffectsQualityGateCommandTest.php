@@ -104,8 +104,7 @@ class ScrappingEffectsQualityGateCommandTest extends TestCase
             'entity_type' => 'spell',
             'entity_id' => 1,
             'effect_id' => $effect->id,
-            'level_min' => 1,
-            'level_max' => 1,
+            'required_creature_level' => 1,
         ]);
 
         $code = Artisan::call('scrapping:effects:quality-gate', [
@@ -121,4 +120,3 @@ class ScrappingEffectsQualityGateCommandTest extends TestCase
         $this->assertTrue((bool) ($decoded['ok'] ?? false));
     }
 }
-

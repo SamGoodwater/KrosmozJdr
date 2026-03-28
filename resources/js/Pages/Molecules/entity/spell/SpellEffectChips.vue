@@ -19,6 +19,12 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    /** Transmis à CharacteristicInlineGroup (full | short | icon-only) */
+    labelMode: {
+        type: String,
+        default: "full",
+        validator: (v) => ["full", "short", "icon-only"].includes(v),
+    },
 });
 
 const showAllDegrees = ref(false);
@@ -65,7 +71,7 @@ const toggleDegrees = () => {
 
 <template>
     <span class="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5">
-        <CharacteristicInlineGroup :items="visibleItems" />
+        <CharacteristicInlineGroup :items="visibleItems" :label-mode="labelMode" />
         <Btn
             v-if="hasHigherDegrees"
             size="xs"

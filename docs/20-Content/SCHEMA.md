@@ -265,7 +265,7 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
     name : varchar(255)
-    description : varchar(255)
+    description : text
     effect : varchar(255)
     level : varchar(255)
     recipe : varchar(255)
@@ -458,6 +458,7 @@ erDiagram
     effect_id : bigint(20) unsigned
     level_min : smallint(5) unsigned
     level_max : smallint(5) unsigned
+    caster_level_min : smallint(5) unsigned
     created_at : timestamp
     updated_at : timestamp
   }
@@ -533,7 +534,7 @@ erDiagram
     dofusdb_id : varchar(255)
     name : varchar(255)
     level : varchar(255)
-    description : varchar(255)
+    description : text
     effect : varchar(255)
     bonus : text
     recipe : varchar(255)
@@ -804,7 +805,7 @@ erDiagram
     dofusdb_id : varchar(255)
     official_id : int(11)
     name : varchar(255)
-    description : varchar(255)
+    description : text
     effect : varchar(255)
     level : varchar(255)
     price : varchar(255)

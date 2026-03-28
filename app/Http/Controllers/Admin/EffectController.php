@@ -6,15 +6,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Effect\StoreEffectRequest;
+use App\Http\Requests\Effect\UpdateEffectGroupRequest;
 use App\Http\Requests\Effect\UpdateEffectRequest;
 use App\Models\Effect;
 use App\Models\EffectGroup;
-use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Models\EffectSubEffect;
 use App\Models\Entity\Monster;
 use App\Models\SubEffect;
+use App\Services\Scrapping\Core\Integration\IntegrationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -31,6 +34,7 @@ class EffectController extends Controller
             ->orderBy('degree')
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'effect_group_id', 'degree']);
+
         return Inertia::render('Admin/effects/Index', [
             'effects' => $list->map(fn (Effect $e) => [
                 'id' => $e->id,
@@ -41,6 +45,7 @@ class EffectController extends Controller
             ])->values()->all(),
             'groups' => $this->buildSidebarGroups($list),
             'selected' => null,
+            'groupEffects' => null,
             'options' => $this->options(),
         ]);
     }
@@ -52,6 +57,7 @@ class EffectController extends Controller
             ->orderBy('degree')
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'effect_group_id', 'degree']);
+
         return Inertia::render('Admin/effects/Index', [
             'effects' => $list->map(fn (Effect $e) => [
                 'id' => $e->id,
@@ -62,6 +68,7 @@ class EffectController extends Controller
             ])->values()->all(),
             'groups' => $this->buildSidebarGroups($list),
             'selected' => 'new',
+            'groupEffects' => null,
             'options' => $this->options(),
         ]);
     }
@@ -69,6 +76,7 @@ class EffectController extends Controller
     public function store(StoreEffectRequest $request): RedirectResponse
     {
         $effect = Effect::create($request->validated());
+
         return redirect()->route('admin.effects.show', $effect)
             ->with('success', 'Effet créé.');
     }
@@ -81,41 +89,16 @@ class EffectController extends Controller
             ->orderBy('degree')
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'effect_group_id', 'degree']);
-        $selected = [
-            'id' => $effect->id,
-            'name' => $effect->name,
-            'slug' => $effect->slug,
-            'description' => $effect->description,
-            'effect_group_id' => $effect->effect_group_id,
-            'degree' => $effect->degree,
-            'target_type' => $effect->target_type ?? \App\Models\Effect::TARGET_DIRECT,
-            'area' => $effect->area,
-            'sub_effects' => $effect->effectSubEffects->map(function (EffectSubEffect $p) {
-                $params = $p->params ?? [];
-                if (! isset($params['characteristic'])) {
-                    $params['characteristic'] = $params['element'] ?? $params['caracteristic'] ?? '';
-                }
-                return [
-                    'id' => $p->subEffect->id,
-                    'slug' => $p->subEffect->slug,
-                    'type_slug' => $p->subEffect->type_slug,
-                    'template_text' => $p->subEffect->template_text,
-                    'param_schema' => $p->subEffect->param_schema,
-                    'order' => $p->order,
-                    'scope' => $p->scope ?? 'general',
-                    'value_min' => $p->value_min,
-                    'value_max' => $p->value_max,
-                    'dice_num' => $p->dice_num,
-                    'dice_side' => $p->dice_side,
-                    'duration_formula' => $p->duration_formula,
-                    'logic_group' => $p->logic_group,
-                    'logic_operator' => $p->logic_operator,
-                    'logic_condition' => $p->logic_condition,
-                    'crit_only' => (bool) ($p->crit_only ?? false),
-                    'params' => $params,
-                ];
-            })->values()->all(),
-        ];
+
+        $siblings = $this->effectsInSameGroup($effect);
+
+        $groupEffects = $siblings
+            ->map(fn (Effect $e) => $this->serializeEffectForEditor($e))
+            ->values()
+            ->all();
+
+        $selected = $this->serializeEffectForEditor($effect);
+
         return Inertia::render('Admin/effects/Index', [
             'effects' => $list->map(fn (Effect $e) => [
                 'id' => $e->id,
@@ -126,6 +109,7 @@ class EffectController extends Controller
             ])->values()->all(),
             'groups' => $this->buildSidebarGroups($list),
             'selected' => $selected,
+            'groupEffects' => $groupEffects,
             'options' => $this->options(),
         ]);
     }
@@ -168,40 +152,7 @@ class EffectController extends Controller
             'effect_sub_effects.*.crit_only' => 'nullable|boolean',
         ]);
 
-        $effect->effectSubEffects()->delete();
-        $sanitizer = new \App\Services\Effect\EffectTextSanitizer();
-        foreach ($validated['effect_sub_effects'] as $i => $row) {
-            $params = $row['params'] ?? null;
-            if ($params && ! empty($params['value_formula'])) {
-                $params['value_formula'] = $sanitizer->sanitize($params['value_formula']);
-            }
-            if ($params && ! empty($params['value_formula_crit'])) {
-                $params['value_formula_crit'] = $sanitizer->sanitize($params['value_formula_crit']);
-            }
-            $durationFormula = $row['duration_formula'] ?? null;
-            if ($durationFormula) {
-                $durationFormula = $sanitizer->sanitize($durationFormula);
-            }
-            $logicCondition = $row['logic_condition'] ?? null;
-            if ($logicCondition) {
-                $logicCondition = $sanitizer->sanitize($logicCondition);
-            }
-            $effect->effectSubEffects()->create([
-                'sub_effect_id' => $row['sub_effect_id'],
-                'order' => $row['order'] ?? $i,
-                'scope' => $row['scope'] ?? 'general',
-                'value_min' => $row['value_min'] ?? null,
-                'value_max' => $row['value_max'] ?? null,
-                'dice_num' => $row['dice_num'] ?? null,
-                'dice_side' => $row['dice_side'] ?? null,
-                'duration_formula' => $durationFormula,
-                'logic_group' => $row['logic_group'] ?? null,
-                'logic_operator' => $row['logic_operator'] ?? null,
-                'logic_condition' => $logicCondition,
-                'crit_only' => (bool) ($row['crit_only'] ?? false),
-                'params' => $params,
-            ]);
-        }
+        $this->replaceEffectSubEffects($effect, $validated['effect_sub_effects']);
 
         $effect->load('effectSubEffects');
         $newSignature = app(IntegrationService::class)->rebuildConfigSignatureForEffect($effect);
@@ -213,9 +164,55 @@ class EffectController extends Controller
             ->with('success', 'Effet enregistré.');
     }
 
+    public function updateGroup(UpdateEffectGroupRequest $request, Effect $effect): RedirectResponse
+    {
+        $validated = $request->validated();
+        $allowedIds = $this->groupEffectIds($effect);
+
+        $degreeIds = collect($validated['degrees'])->pluck('id');
+        if ($degreeIds->unique()->count() !== $degreeIds->count()) {
+            abort(422, 'Identifiants de degrés en double.');
+        }
+        if ($degreeIds->count() !== $allowedIds->count() || $degreeIds->diff($allowedIds)->isNotEmpty()) {
+            abort(422, 'La liste des degrés doit correspondre exactement aux effets du groupe.');
+        }
+
+        $common = $validated['common'];
+
+        DB::transaction(function () use ($validated, $common, $allowedIds): void {
+            foreach ($allowedIds as $effectId) {
+                $model = Effect::query()->whereKey($effectId)->firstOrFail();
+                $model->update([
+                    'name' => $common['name'] ?? null,
+                    'description' => $common['description'] ?? null,
+                    'effect_group_id' => $common['effect_group_id'] ?? null,
+                    'target_type' => $common['target_type'] ?? Effect::TARGET_DIRECT,
+                ]);
+            }
+
+            foreach ($validated['degrees'] as $row) {
+                $model = Effect::query()->whereKey($row['id'])->firstOrFail();
+                $model->update([
+                    'slug' => $row['slug'] ?? null,
+                    'area' => $row['area'] ?? null,
+                ]);
+                $this->replaceEffectSubEffects($model, $row['effect_sub_effects']);
+                $model->load('effectSubEffects');
+                $newSignature = app(IntegrationService::class)->rebuildConfigSignatureForEffect($model);
+                if ($newSignature !== null) {
+                    $model->update(['config_signature' => $newSignature]);
+                }
+            }
+        });
+
+        return redirect()->route('admin.effects.show', $effect)
+            ->with('success', 'Groupe d’effets enregistré.');
+    }
+
     public function destroy(Effect $effect): RedirectResponse
     {
         $effect->delete();
+
         return redirect()->route('admin.effects.index')
             ->with('success', 'Effet supprimé.');
     }
@@ -226,7 +223,7 @@ class EffectController extends Controller
 
         $newEffect = Effect::create([
             'name' => $effect->name,
-            'slug' => $effect->slug ? $effect->slug . '-copy' : null,
+            'slug' => $effect->slug ? $effect->slug.'-copy' : null,
             'description' => $effect->description,
             'effect_group_id' => $effect->effect_group_id,
             'degree' => $effect->degree,
@@ -267,13 +264,13 @@ class EffectController extends Controller
 
         // S'assurer qu'un groupe existe pour cet effet et ses degrés
         if (! $effect->effect_group_id) {
-            $baseName = $effect->name ?: ($effect->slug ?: 'Groupe effet #' . $effect->id);
-            $baseSlug = $effect->slug ? $effect->slug . '-group' : Str::slug($baseName);
+            $baseName = $effect->name ?: ($effect->slug ?: 'Groupe effet #'.$effect->id);
+            $baseSlug = $effect->slug ? $effect->slug.'-group' : Str::slug($baseName);
 
             $slug = $baseSlug;
             $i = 1;
             while (EffectGroup::where('slug', $slug)->exists()) {
-                $slug = $baseSlug . '-' . $i;
+                $slug = $baseSlug.'-'.$i;
                 $i++;
             }
 
@@ -289,7 +286,7 @@ class EffectController extends Controller
         $newDegree = ($effect->degree ?? 0) + 1;
         $newEffect = Effect::create([
             'name' => $effect->name,
-            'slug' => $effect->slug ? $effect->slug . '-d' . $newDegree : null,
+            'slug' => $effect->slug ? $effect->slug.'-d'.$newDegree : null,
             'description' => $effect->description,
             'effect_group_id' => $effect->effect_group_id,
             'degree' => $newDegree,
@@ -321,6 +318,128 @@ class EffectController extends Controller
 
         return redirect()->route('admin.effects.show', $newEffect)
             ->with('success', 'Degré dupliqué. Ajustez les sous-effets si besoin.');
+    }
+
+    /**
+     * Effets du même groupe (ou l’effet seul s’il n’a pas de groupe), triés par degré.
+     *
+     * @return Collection<int, Effect>
+     */
+    private function effectsInSameGroup(Effect $effect): Collection
+    {
+        if ($effect->effect_group_id) {
+            return Effect::query()
+                ->where('effect_group_id', $effect->effect_group_id)
+                ->orderBy('degree')
+                ->orderBy('id')
+                ->with(['effectSubEffects.subEffect'])
+                ->get();
+        }
+
+        $effect->load(['effectSubEffects.subEffect']);
+
+        return collect([$effect]);
+    }
+
+    /**
+     * @return Collection<int, int>
+     */
+    private function groupEffectIds(Effect $effect): Collection
+    {
+        return $this->effectsInSameGroup($effect)->pluck('id')->values();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function serializeEffectForEditor(Effect $effect): array
+    {
+        $effect->loadMissing('effectSubEffects.subEffect');
+
+        return [
+            'id' => $effect->id,
+            'name' => $effect->name,
+            'slug' => $effect->slug,
+            'description' => $effect->description,
+            'effect_group_id' => $effect->effect_group_id,
+            'degree' => $effect->degree,
+            'target_type' => $effect->target_type ?? Effect::TARGET_DIRECT,
+            'area' => $effect->area,
+            'sub_effects' => $effect->effectSubEffects->map(function (EffectSubEffect $p) {
+                $params = $p->params ?? [];
+                if (! isset($params['characteristic'])) {
+                    $params['characteristic'] = $params['element'] ?? $params['caracteristic'] ?? '';
+                }
+
+                return [
+                    'id' => $p->subEffect->id,
+                    'slug' => $p->subEffect->slug,
+                    'type_slug' => $p->subEffect->type_slug,
+                    'template_text' => $p->subEffect->template_text,
+                    'param_schema' => $p->subEffect->param_schema,
+                    'order' => $p->order,
+                    'scope' => $p->scope ?? 'general',
+                    'value_min' => $p->value_min,
+                    'value_max' => $p->value_max,
+                    'dice_num' => $p->dice_num,
+                    'dice_side' => $p->dice_side,
+                    'duration_formula' => $p->duration_formula,
+                    'logic_group' => $p->logic_group,
+                    'logic_operator' => $p->logic_operator,
+                    'logic_condition' => $p->logic_condition,
+                    'crit_only' => (bool) ($p->crit_only ?? false),
+                    'params' => $params,
+                ];
+            })->values()->all(),
+        ];
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $rows
+     */
+    private function replaceEffectSubEffects(Effect $effect, array $rows): void
+    {
+        foreach ($rows as $i => $row) {
+            $params = $row['params'] ?? [];
+            if (array_key_exists('monster_id', $params) && $params['monster_id'] === '') {
+                $rows[$i]['params']['monster_id'] = null;
+            }
+        }
+
+        $effect->effectSubEffects()->delete();
+        $sanitizer = new \App\Services\Effect\EffectTextSanitizer;
+        foreach ($rows as $i => $row) {
+            $params = $row['params'] ?? null;
+            if ($params && ! empty($params['value_formula'])) {
+                $params['value_formula'] = $sanitizer->sanitize($params['value_formula']);
+            }
+            if ($params && ! empty($params['value_formula_crit'])) {
+                $params['value_formula_crit'] = $sanitizer->sanitize($params['value_formula_crit']);
+            }
+            $durationFormula = $row['duration_formula'] ?? null;
+            if ($durationFormula) {
+                $durationFormula = $sanitizer->sanitize($durationFormula);
+            }
+            $logicCondition = $row['logic_condition'] ?? null;
+            if ($logicCondition) {
+                $logicCondition = $sanitizer->sanitize($logicCondition);
+            }
+            $effect->effectSubEffects()->create([
+                'sub_effect_id' => $row['sub_effect_id'],
+                'order' => $row['order'] ?? $i,
+                'scope' => $row['scope'] ?? 'general',
+                'value_min' => $row['value_min'] ?? null,
+                'value_max' => $row['value_max'] ?? null,
+                'dice_num' => $row['dice_num'] ?? null,
+                'dice_side' => $row['dice_side'] ?? null,
+                'duration_formula' => $durationFormula,
+                'logic_group' => $row['logic_group'] ?? null,
+                'logic_operator' => $row['logic_operator'] ?? null,
+                'logic_condition' => $logicCondition,
+                'crit_only' => (bool) ($row['crit_only'] ?? false),
+                'params' => $params,
+            ]);
+        }
     }
 
     private function options(): array
@@ -355,7 +474,7 @@ class EffectController extends Controller
     /**
      * Regroupe les effets par groupe pour l'affichage dans le menu latéral.
      *
-     * @param \Illuminate\Support\Collection<int,Effect> $effects
+     * @param  \Illuminate\Support\Collection<int,Effect>  $effects
      * @return array<int,array<string,mixed>>
      */
     private function buildSidebarGroups($effects): array
@@ -366,10 +485,10 @@ class EffectController extends Controller
             $groupId = $effect->effect_group_id;
 
             if ($groupId) {
-                $key = 'group-' . $groupId;
+                $key = 'group-'.$groupId;
                 if (! isset($groups[$key])) {
                     $label = $effect->effectGroup?->name
-                        ?? ($effect->name ?: ($effect->slug ?: 'Groupe #' . $groupId));
+                        ?? ($effect->name ?: ($effect->slug ?: 'Groupe #'.$groupId));
 
                     $groups[$key] = [
                         'id' => $groupId,
@@ -386,9 +505,9 @@ class EffectController extends Controller
                 ];
             } else {
                 // Effet isolé sans groupe → groupe virtuel 1:1
-                $key = 'single-' . $effect->id;
+                $key = 'single-'.$effect->id;
                 if (! isset($groups[$key])) {
-                    $label = $effect->name ?: ($effect->slug ?: 'Effet #' . $effect->id);
+                    $label = $effect->name ?: ($effect->slug ?: 'Effet #'.$effect->id);
                     $groups[$key] = [
                         'id' => null,
                         'label' => $label,

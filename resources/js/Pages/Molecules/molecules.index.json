@@ -725,11 +725,6 @@
         "name": "spell",
         "type": "Spell",
         "desc": "- Instance du modèle Spell"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
       }
     ],
     "slots": [],
@@ -770,6 +765,13 @@
     ],
     "slots": [],
     "file": "entity/spell/SpellViewCompact.vue"
+  },
+  {
+    "name": "SpellLineRow",
+    "description": "SpellLineRow — Une ligne de la vue Line pour Spell",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellLineRow.vue"
   },
   {
     "name": "SpellEffectChips",
@@ -1512,6 +1514,13 @@
     "file": "entity/panoply/PanoplyViewCompact.vue"
   },
   {
+    "name": "PanoplyLineRow",
+    "description": "PanoplyLineRow — Une ligne de la vue Line pour les panoplies",
+    "props": [],
+    "slots": [],
+    "file": "entity/panoply/PanoplyLineRow.vue"
+  },
+  {
     "name": "NpcViewText",
     "description": "NpcViewText — Vue Texte pour NPC",
     "props": [
@@ -1644,6 +1653,13 @@
     ],
     "slots": [],
     "file": "entity/monster/MonsterViewCompact.vue"
+  },
+  {
+    "name": "MonsterLineRow",
+    "description": "MonsterLineRow — Une ligne de la vue Line pour Monster",
+    "props": [],
+    "slots": [],
+    "file": "entity/monster/MonsterLineRow.vue"
   },
   {
     "name": "ItemViewText",
@@ -1792,11 +1808,6 @@
         "name": "capability",
         "type": "Capability",
         "desc": "- Instance du modèle Capability"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
       }
     ],
     "slots": [],
@@ -1837,6 +1848,13 @@
     ],
     "slots": [],
     "file": "entity/capability/CapabilityViewCompact.vue"
+  },
+  {
+    "name": "CapabilityLineRow",
+    "description": "CapabilityLineRow — Ligne vue Line pour les capacités",
+    "props": [],
+    "slots": [],
+    "file": "entity/capability/CapabilityLineRow.vue"
   },
   {
     "name": "CampaignViewText",
@@ -1923,7 +1941,7 @@
     "description": "BreedViewMinimal — Vue Minimal pour Breed",
     "props": [
       {
-        "name": "classe",
+        "name": "breed",
         "type": "Breed",
         "desc": "- Instance du modèle Breed"
       },
@@ -1943,7 +1961,7 @@
       {
         "name": "breed",
         "type": "Breed",
-        "desc": "- Instance du modèle Breed (affichée « Classe »)"
+        "desc": "- Instance du modèle Breed"
       },
       {
         "name": "showActions",
@@ -1971,6 +1989,13 @@
     ],
     "slots": [],
     "file": "entity/breed/BreedViewCompact.vue"
+  },
+  {
+    "name": "BreedLineRow",
+    "description": "BreedLineRow — Une ligne de la vue Line pour les classes (Breed)",
+    "props": [],
+    "slots": [],
+    "file": "entity/breed/BreedLineRow.vue"
   },
   {
     "name": "AttributeViewText",

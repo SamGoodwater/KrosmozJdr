@@ -30,7 +30,7 @@ class EffectUsageController extends Controller
             ->where('entity_type', $class)
             ->where('entity_id', $validated['entity_id'])
             ->with('effect.subEffects')
-            ->orderBy('level_min')
+            ->orderBy('required_creature_level')
             ->get();
 
         return EffectUsageResource::collection($list);
@@ -46,12 +46,14 @@ class EffectUsageController extends Controller
         $data['entity_type'] = $class;
         $usage = EffectUsage::create($data);
         $usage->load('effect.subEffects');
+
         return (new EffectUsageResource($usage))->response()->setStatusCode(201);
     }
 
     public function show(EffectUsage $effectUsage): EffectUsageResource
     {
         $effectUsage->load('effect.subEffects');
+
         return new EffectUsageResource($effectUsage);
     }
 
@@ -59,12 +61,14 @@ class EffectUsageController extends Controller
     {
         $effectUsage->update($request->validated());
         $effectUsage->load('effect.subEffects');
+
         return new EffectUsageResource($effectUsage->fresh());
     }
 
     public function destroy(EffectUsage $effectUsage): JsonResponse
     {
         $effectUsage->delete();
+
         return response()->json(null, 204);
     }
 }

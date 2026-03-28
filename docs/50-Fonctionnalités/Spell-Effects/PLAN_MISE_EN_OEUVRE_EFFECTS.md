@@ -58,6 +58,16 @@ Les documents de référence sont : [MODELE_EFFECT_SOUS_EFFECT.md](./MODELE_EFFE
 
 ## 3. API exposée
 
+### Table sorts (`SpellTableController`)
+
+Les entrées de `effect_usages_chips` incluent, pour chaque ligne issue d’un usage (une ligne = un sous-effet résolu pour un `effect_usage` donné ; le **degré** vient de l’`Effect` lié) :
+
+- `creature_level_requirement` : objet canonique `{ min, max, label }` — niveau de **créature** (PJ / monstre) requis pour utiliser ce sort **à ce degré** dans cette tranche. **Ce n’est pas** le champ `spells.level` (niveau du sort Dofus / fiche).
+- `level_min` / `level_max` : mêmes valeurs qu’en base (`effect_usages`), conservées pour compatibilité / filtres.
+- `creature_level_label` : libellé prêt à l’affichage (ex. « Créature niveaux 6–50 »), aussi injecté dans `tooltip`.
+
+Côté front (`Spell.js` → cellule `spell_effects`), chaque item de chip expose `requiredCreatureLevel` (miroir de `creature_level_requirement`).
+
 Contrôleur : `App\Http\Controllers\Api\Effect\EffectController`.
 
 - `GET /api/effects/effects` :

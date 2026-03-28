@@ -213,7 +213,7 @@ setPageTitle(`Modifier le sort : ${spell.value.name || 'Nouveau sort'}`);
             }"
         />
 
-        <!-- Effets (système unifié : effect_usage par tranche de niveau) -->
+        <!-- Effets (système unifié : effect_usage + niveau créature min.) -->
         <EffectUsagesManager
             :effect-usages="effectUsages"
             :available-effects="availableEffects"

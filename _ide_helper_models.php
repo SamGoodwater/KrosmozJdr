@@ -401,7 +401,9 @@ namespace App\Models{
 /**
  * Lien polymorphique entité (spell, item, consumable…) → effect.
  * 
- * level_min / level_max = tranche de niveau pour cet effet.
+ * level_min / level_max = tranche de **niveau de créature** (PJ / monstre) pour laquelle cet usage s’applique
+ * (distinct du niveau « fiche sort » sur `spells.level`). Un effet de degré D2 peut ainsi exiger un niveau
+ * créature différent de D1 via une autre ligne effect_usages.
  *
  * @property int $id
  * @property string $entity_type
@@ -413,9 +415,11 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon $updated_at
  * @property-read Model $entity
  * @property-read Effect $effect
+ * @property int|null $caster_level_min
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereCasterLevelMin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEffectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEntityId($value)

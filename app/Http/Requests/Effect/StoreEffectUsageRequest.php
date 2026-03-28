@@ -19,8 +19,7 @@ class StoreEffectUsageRequest extends FormRequest
             'entity_type' => 'required|string|in:spell,item,consumable,resource',
             'entity_id' => 'required|integer|min:1',
             'effect_id' => 'required|integer|exists:effects,id',
-            'level_min' => 'nullable|integer|min:0',
-            'level_max' => 'nullable|integer|min:0|gte:level_min',
+            'required_creature_level' => 'nullable|integer|min:0',
         ];
     }
 }

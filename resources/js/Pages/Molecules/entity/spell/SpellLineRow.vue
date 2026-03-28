@@ -3,18 +3,20 @@
  * SpellLineRow — Une ligne de la vue Line pour Spell
  *
  * @description
- * Aligné sur ItemLineRow : État • Image • Niveau • Nom • Élément • Catégorie • Types • PA/PO • Description • Effets.
+ * Effets via `resolveSpellEffectsDisplayCell` : résumé API (`SpellEffectChips`) ou fallback `effect` (chips).
  */
 import { ref, computed, onUnmounted } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
-import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
+import {
+    resolveSpellEffectsDisplayCell,
+    spellEffectsCellHasContent,
+} from "@/Composables/entity/useSpellEffectsDisplayCell";
 import { getEntityCharacteristicsByDbColumn } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
@@ -58,15 +60,16 @@ const poCell = computed(() => getCell("po"));
 
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
 
-const effectItems = computed(() => {
-    const cell = buildCharacteristicEffectCell({
-        rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
-        options: {},
-        sourceGroups: ["spell", "item"],
-        size: "md",
-    });
-    return cell?.type === "chips" ? cell.params?.items || [] : [];
-});
+/** Effets : `effect_summary` (SpellEffectChips) si dispo, sinon fallback `effect` */
+const effectDisplayCell = computed(() =>
+    resolveSpellEffectsDisplayCell(entity.value, {
+        size: "sm",
+        context: "compact",
+        ctx: props.tableMeta,
+        maxEffectRows: 5,
+    }),
+);
+const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
 
 const byDbColumn = computed(() => getEntityCharacteristicsByDbColumn(props.tableMeta, "spell"));
 const paMeta = computed(() => byDbColumn.value?.pa || null);
@@ -212,10 +215,14 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
             </div>
         </div>
         <div
-            v-if="effectItems.length > 0"
-            class="w-full pt-2 mt-1 border-t border-base-300"
+            v-if="hasEffects"
+            class="spell-effects-line w-full pt-2 mt-1 border-t border-base-300"
         >
-            <CharacteristicEffectsGrid :items="effectItems" />
+            <CellRenderer
+                :cell="effectDisplayCell"
+                ui-color="primary"
+                class="leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
+            />
         </div>
 
         <Teleport to="body">

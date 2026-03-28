@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Entity\Spell;
 use App\Models\SubEffect;
 use App\Models\Type\SpellType;
-use App\Support\AreaConstants;
 use App\Services\Effect\EffectResolutionService;
+use App\Support\AreaConstants;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -23,8 +23,7 @@ class SpellTableController extends Controller
 {
     public function __construct(
         private readonly EffectResolutionService $effectResolutionService
-    ) {
-    }
+    ) {}
 
     /** Slugs élément → id (0=Neutre, 1=Terre, 2=Feu, 3=Air, 4=Eau). */
     private const ELEMENT_SLUG_TO_ID = [
@@ -45,7 +44,7 @@ class SpellTableController extends Controller
     /**
      * Construit le résumé texte (pour recherche/tri) et les chips structurés (pour affichage).
      *
-     * @return array{summary: string, chips: list<array{text: string, degree: int|null, element: int, element_label: string, target_type: string, target_label: string, area: string|null, duration: int|null, duration_label: string, tooltip: string}>}
+     * @return array{summary: string, chips: list<array{text: string, degree: int|null, element: int, element_label: string, target_type: string, target_label: string, area: string|null, duration: int|null, duration_label: string, tooltip: string, required_creature_level: int|null, creature_level_label: string|null, creature_level_requirement: array{value: int|null, label: string|null}>}
      */
     private function buildEffectUsagesData(Spell $spell): array
     {
@@ -59,13 +58,13 @@ class SpellTableController extends Controller
         $parts = [];
         $chips = [];
 
-        foreach ($usages->sortBy('level_min') as $usage) {
+        foreach ($usages->sortBy('required_creature_level') as $usage) {
             $effect = $usage->effect;
             if (! $effect) {
                 continue;
             }
             $degree = $effect->degree;
-            $degreePrefix = $degree !== null ? 'D' . $degree . ' ' : '';
+            $degreePrefix = $degree !== null ? 'D'.$degree.' ' : '';
             $targetType = $effect->target_type ?? 'direct';
             $targetLabel = self::TARGET_TYPE_LABELS[$targetType] ?? 'Direct';
             $area = $effect->area;
@@ -77,7 +76,7 @@ class SpellTableController extends Controller
                     continue;
                 }
                 $text = $this->humanizeEffectText($text);
-                $parts[] = $degreePrefix . $text;
+                $parts[] = $degreePrefix.$text;
 
                 $charSlug = strtolower((string) ($sub['characteristic'] ?? ''));
                 $elementId = self::ELEMENT_SLUG_TO_ID[$charSlug] ?? 0;
@@ -88,7 +87,11 @@ class SpellTableController extends Controller
 
                 $details = [];
                 if ($degree !== null) {
-                    $details[] = 'Degré ' . $degree;
+                    $details[] = 'Degré '.$degree;
+                }
+                $creatureLevelLabel = $this->formatCreatureLevelRequirement($usage->required_creature_level);
+                if ($creatureLevelLabel !== '') {
+                    $details[] = $creatureLevelLabel;
                 }
                 if ($targetType !== 'direct') {
                     $details[] = $targetLabel;
@@ -97,8 +100,8 @@ class SpellTableController extends Controller
                     $details[] = "zone {$area}";
                 }
                 $details[] = $durationLabel;
-                $displayText = $degreePrefix . $text;
-                $tooltip = $displayText . (\count($details) > 0 ? ' — ' . implode(', ', $details) : '');
+                $displayText = $degreePrefix.$text;
+                $tooltip = $displayText.(\count($details) > 0 ? ' — '.implode(', ', $details) : '');
 
                 $chips[] = [
                     'text' => $displayText,
@@ -111,6 +114,13 @@ class SpellTableController extends Controller
                     'duration' => $duration,
                     'duration_label' => $durationLabel,
                     'tooltip' => $tooltip,
+                    'required_creature_level' => $usage->required_creature_level,
+                    'creature_level_label' => $creatureLevelLabel !== '' ? $creatureLevelLabel : null,
+                    // Niveau créature minimum (≠ niveau du sort) ; degré via effect.degree
+                    'creature_level_requirement' => [
+                        'value' => $usage->required_creature_level,
+                        'label' => $creatureLevelLabel !== '' ? $creatureLevelLabel : null,
+                    ],
                 ];
             }
         }
@@ -119,6 +129,18 @@ class SpellTableController extends Controller
             'summary' => implode(' • ', $parts),
             'chips' => $chips,
         ];
+    }
+
+    /**
+     * Libellé : niveau minimum de créature requis pour l’usage — distinct du niveau du sort.
+     */
+    private function formatCreatureLevelRequirement(?int $requiredCreatureLevel): string
+    {
+        if ($requiredCreatureLevel === null) {
+            return '';
+        }
+
+        return "Créature niveau ≥ {$requiredCreatureLevel}";
     }
 
     /** Traduit duration 0 ou 1 en "Immédiat", sinon "X tour(s)". */
@@ -130,7 +152,8 @@ class SpellTableController extends Controller
         if ($duration === 0 || $duration === 1) {
             return 'Immédiat';
         }
-        return $duration . ' tour' . ($duration > 1 ? 's' : '');
+
+        return $duration.' tour'.($duration > 1 ? 's' : '');
     }
 
     /** Construit la cellule area (chips avec icône) pour le format cells. */
@@ -153,7 +176,7 @@ class SpellTableController extends Controller
                     [
                         'icon' => AreaConstants::getIconPath($area),
                         'value' => $value,
-                        'tooltip' => 'Zone: ' . $value,
+                        'tooltip' => 'Zone: '.$value,
                     ],
                 ],
                 'sortValue' => $value,
@@ -184,8 +207,9 @@ class SpellTableController extends Controller
             'neutral' => 'Neutre',
         ];
         foreach ($elementLabels as $slug => $label) {
-            $text = preg_replace('/\b' . preg_quote($slug, '/') . '\b/i', $label, $text);
+            $text = preg_replace('/\b'.preg_quote($slug, '/').'\b/i', $label, $text);
         }
+
         return $text;
     }
 
@@ -201,7 +225,7 @@ class SpellTableController extends Controller
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
         foreach (['level', 'pa', 'category', 'element', 'is_magic', 'powerful', 'state'] as $k) {
-            if (!array_key_exists($k, $filters) && $request->has($k)) {
+            if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
         }
@@ -216,7 +240,7 @@ class SpellTableController extends Controller
 
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
-        if (!in_array($order, ['asc', 'desc'], true)) {
+        if (! in_array($order, ['asc', 'desc'], true)) {
             $order = 'desc';
         }
 
@@ -347,6 +371,7 @@ class SpellTableController extends Controller
                     ->unique()
                     ->values()
                     ->all();
+
                 return [
                     'id' => $sp->id,
                     'official_id' => $sp->official_id,
@@ -577,5 +602,3 @@ class SpellTableController extends Controller
         ]);
     }
 }
-
-

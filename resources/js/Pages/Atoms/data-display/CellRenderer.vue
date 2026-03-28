@@ -336,6 +336,7 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
     <SpellEffectChips
         v-else-if="type === 'spell_effects'"
         :items="params.items || []"
+        :label-mode="params.chipsLayout?.labelMode || 'full'"
     />
 
     <!-- chips : colonnes résumées (icône + valeur avec tooltip par item) -->

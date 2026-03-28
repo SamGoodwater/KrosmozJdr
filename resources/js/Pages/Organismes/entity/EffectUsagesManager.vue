@@ -1,7 +1,7 @@
 <script setup>
 /**
  * EffectUsagesManager — Gestion des effect_usages sur une entité (sort, item, consumable).
- * Liste des usages (tranche level_min–level_max → effect), ajout/édition/suppression via API.
+ * Liste des usages (effet + niveau créature min. requis), ajout/édition/suppression via API.
  * Prévisualisation « effet pour niveau X » via GET api/effects/for-entity.
  */
 import { ref, watch, computed } from 'vue';
@@ -31,8 +31,7 @@ const usages = ref(
         id: u.id,
         effect_id: u.effect_id,
         effect: u.effect,
-        level_min: u.level_min ?? null,
-        level_max: u.level_max ?? null,
+        required_creature_level: u.required_creature_level ?? null,
     }))
 );
 const previewLevel = ref(1);
@@ -40,13 +39,16 @@ const previewData = ref(null);
 const previewLoading = ref(false);
 const saveLoading = ref(false);
 const errorMessage = ref('');
+/** Onglet actif (un usage = souvent un degré lié au sort). */
+const activeUsageTab = ref(0);
 
 const effectOptions = computed(() => [
     { value: '', label: '— Choisir un effet —' },
     ...props.availableEffects.map((e) => {
         const base = e.name || e.slug || 'Effet #' + e.id;
+        const deg = e.degree != null && e.degree !== '' ? ` · D${e.degree}` : '';
         const suffix = showTargetTypeBadge(e.target_type) ? ` (${targetTypeLabel(e.target_type)})` : '';
-        return { value: e.id, label: base + suffix };
+        return { value: e.id, label: base + deg + suffix };
     }),
 ]);
 
@@ -74,6 +76,27 @@ async function fetchPreview() {
 
 watch([previewLevel, () => props.entityId], () => fetchPreview(), { immediate: true });
 
+watch(
+    () => usages.value.length,
+    (len) => {
+        if (activeUsageTab.value >= len) {
+            activeUsageTab.value = Math.max(0, len - 1);
+        }
+    }
+);
+
+/** Libellé d’onglet : degré de l’effet si connu, sinon identifiant. */
+function usageTabLabel(u, i) {
+    const d = u.effect?.degree;
+    if (d !== undefined && d !== null && d !== '') {
+        return `Degré ${d}`;
+    }
+    if (u.effect_id) {
+        return `Effet #${u.effect_id}`;
+    }
+    return `Usage ${i + 1}`;
+}
+
 async function fetchUsages() {
     try {
         const { data } = await axios.get('/api/effects/usages', {
@@ -84,8 +107,7 @@ async function fetchUsages() {
             id: u.id,
             effect_id: u.effect_id,
             effect: u.effect,
-            level_min: u.level_min ?? null,
-            level_max: u.level_max ?? null,
+            required_creature_level: u.required_creature_level ?? null,
         }));
     } catch (err) {
         errorMessage.value = err.response?.data?.message || 'Erreur lors du chargement des usages.';
@@ -97,9 +119,9 @@ function addUsage() {
         id: null,
         effect_id: props.availableEffects[0]?.id ?? '',
         effect: null,
-        level_min: null,
-        level_max: null,
+        required_creature_level: null,
     });
+    activeUsageTab.value = usages.value.length - 1;
 }
 
 async function saveUsage(index) {
@@ -111,16 +133,20 @@ async function saveUsage(index) {
         if (u.id) {
             await axios.patch(`/api/effects/usages/${u.id}`, {
                 effect_id: u.effect_id,
-                level_min: u.level_min || null,
-                level_max: u.level_max || null,
+                required_creature_level:
+                    u.required_creature_level !== '' && u.required_creature_level != null
+                        ? Number(u.required_creature_level)
+                        : null,
             });
         } else {
             await axios.post('/api/effects/usages', {
                 entity_type: props.entityType,
                 entity_id: props.entityId,
                 effect_id: u.effect_id,
-                level_min: u.level_min || null,
-                level_max: u.level_max || null,
+                required_creature_level:
+                    u.required_creature_level !== '' && u.required_creature_level != null
+                        ? Number(u.required_creature_level)
+                        : null,
             });
         }
         await fetchUsages();
@@ -196,75 +222,104 @@ function selectedEffectTargetType(effectId) {
     <Container>
         <h2 class="text-lg font-semibold mb-3">Effets (système unifié)</h2>
         <p class="text-sm text-base-content/70 mb-4">
-            Tranches de niveau → effet. Les usages sont enregistrés via l’API. Aperçu pour un niveau donné ci-dessous.
+            Chaque onglet correspond à un <strong>usage</strong> : un effet (souvent un degré D1, D2…) lié à un
+            <strong>niveau minimum de créature</strong> (PJ ou monstre) pour activer cet usage — ce n’est
+            <strong>pas</strong> le niveau affiché sur la fiche du sort. L’aperçu plus bas simule une créature de niveau donné.
         </p>
 
         <p v-if="errorMessage" class="text-error text-sm mb-3">{{ errorMessage }}</p>
 
-        <div class="space-y-3 mb-6">
-            <div
-                v-for="(u, index) in usages"
-                :key="u.id || 'new-' + index"
-                class="flex flex-wrap items-end gap-3 rounded-box border border-base-300 bg-base-200/30 p-3"
-            >
-                <div class="min-w-[200px] flex-1">
-                    <label class="label text-xs">Effet</label>
-                    <div class="flex items-center gap-2">
-                        <select
-                            v-model="u.effect_id"
-                            class="select select-bordered select-sm flex-1"
+        <div class="mb-6 space-y-4">
+            <div v-if="usages.length" class="space-y-4">
+                <div role="tablist" class="tabs tabs-boxed flex-wrap gap-1">
+                    <button
+                        v-for="(u, ti) in usages"
+                        :key="u.id || 'tab-new-' + ti"
+                        type="button"
+                        role="tab"
+                        class="tab"
+                        :class="{ 'tab-active': activeUsageTab === ti }"
+                        @click="activeUsageTab = ti"
+                    >
+                        {{ usageTabLabel(u, ti) }}
+                    </button>
+                </div>
+
+                <div
+                    v-for="(u, index) in usages"
+                    v-show="activeUsageTab === index"
+                    :key="u.id || 'panel-new-' + index"
+                    class="rounded-box border border-base-300 bg-base-200/30 p-4 space-y-4"
+                >
+                    <div class="flex flex-wrap items-end gap-3">
+                        <div class="min-w-[200px] flex-1">
+                            <label class="label text-xs">Effet (degré)</label>
+                            <div class="flex items-center gap-2">
+                                <select
+                                    v-model="u.effect_id"
+                                    class="select select-bordered select-sm flex-1"
+                                >
+                                    <option
+                                        v-for="opt in effectOptions"
+                                        :key="opt.value || 'empty'"
+                                        :value="opt.value"
+                                    >
+                                        {{ opt.label }}
+                                    </option>
+                                </select>
+                                <span
+                                    v-if="u.effect_id && showTargetTypeBadge(selectedEffectTargetType(u.effect_id))"
+                                    class="badge badge-sm badge-outline badge-primary shrink-0"
+                                    :title="'Type : ' + targetTypeLabel(selectedEffectTargetType(u.effect_id))"
+                                >
+                                    {{ targetTypeLabel(selectedEffectTargetType(u.effect_id)) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="max-w-xs">
+                        <InputField
+                            v-model="u.required_creature_level"
+                            label="Niveau créature min. requis"
+                            type="number"
+                            helper="Seuil du porteur pour activer cet usage (vide = toujours actif)."
+                        />
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            :disabled="saveLoading || !u.effect_id"
+                            @click="saveUsage(index)"
                         >
-                            <option
-                                v-for="opt in effectOptions"
-                                :key="opt.value || 'empty'"
-                                :value="opt.value"
-                            >
-                                {{ opt.label }}
-                            </option>
-                        </select>
-                        <span
-                            v-if="u.effect_id && showTargetTypeBadge(selectedEffectTargetType(u.effect_id))"
-                            class="badge badge-sm badge-outline badge-primary shrink-0"
-                            :title="'Type : ' + targetTypeLabel(selectedEffectTargetType(u.effect_id))"
+                            Enregistrer cet usage
+                        </button>
+                        <button
+                            v-if="u.id"
+                            type="button"
+                            class="btn btn-ghost btn-sm text-error"
+                            :disabled="saveLoading"
+                            @click="deleteUsage(u.id)"
                         >
-                            {{ targetTypeLabel(selectedEffectTargetType(u.effect_id)) }}
-                        </span>
+                            Supprimer cet usage
+                        </button>
                     </div>
                 </div>
-                <InputField v-model="u.level_min" label="Niveau min" type="number" class="w-24" />
-                <InputField v-model="u.level_max" label="Niveau max" type="number" class="w-24" />
-                <button
-                    type="button"
-                    class="btn btn-primary btn-sm"
-                    :disabled="saveLoading || !u.effect_id"
-                    @click="saveUsage(index)"
-                >
-                    Enregistrer
-                </button>
-                <button
-                    v-if="u.id"
-                    type="button"
-                    class="btn btn-ghost btn-sm btn-square text-error"
-                    title="Supprimer"
-                    :disabled="saveLoading"
-                    @click="deleteUsage(u.id)"
-                >
-                    ×
-                </button>
             </div>
+            <p v-else class="text-sm text-base-content/70">Aucun usage pour l’instant.</p>
             <button type="button" class="btn btn-outline btn-sm" @click="addUsage">
                 + Ajouter un usage d’effet
             </button>
         </div>
 
         <div class="border-t border-base-300 pt-4">
-            <h3 class="font-medium mb-2">Aperçu pour un niveau</h3>
+            <h3 class="font-medium mb-2">Aperçu pour un niveau de créature</h3>
             <div class="flex flex-wrap items-center gap-3 mb-3">
                 <InputField
                     v-model="previewLevel"
-                    label="Niveau"
+                    label="Niveau créature"
                     type="number"
-                    class="w-24"
+                    class="w-28"
                 />
                 <button
                     type="button"
