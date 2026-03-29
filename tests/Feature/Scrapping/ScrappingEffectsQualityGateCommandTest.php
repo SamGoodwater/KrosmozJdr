@@ -6,9 +6,9 @@ namespace Tests\Feature\Scrapping;
 
 use App\Models\DofusdbEffectMapping;
 use App\Models\Effect;
-use App\Models\EffectGroup;
+use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
-use App\Models\EffectUsage;
+use App\Models\Entity\Spell;
 use App\Models\SubEffect;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
@@ -76,22 +76,22 @@ class ScrappingEffectsQualityGateCommandTest extends TestCase
 
     public function test_gate_passes_when_thresholds_are_respected(): void
     {
-        $group = EffectGroup::query()->create([
-            'name' => 'Test',
-            'slug' => 'test-group',
-        ]);
+        $spell = Spell::factory()->create();
         $effect = Effect::query()->create([
             'name' => 'Test effect',
             'slug' => 'test-effect',
-            'effect_group_id' => $group->id,
+        ]);
+        $degree = EffectDegree::query()->create([
+            'effect_id' => $effect->id,
             'degree' => 1,
+            'slug' => 'test-effect-d1',
         ]);
         $sub = SubEffect::query()->create([
             'slug' => 'frapper',
             'type_slug' => 'damage',
         ]);
         EffectSubEffect::query()->create([
-            'effect_id' => $effect->id,
+            'effect_degree_id' => $degree->id,
             'sub_effect_id' => $sub->id,
             'order' => 0,
             'params' => [
@@ -100,12 +100,7 @@ class ScrappingEffectsQualityGateCommandTest extends TestCase
                 'characteristic_key' => 'strength',
             ],
         ]);
-        EffectUsage::query()->create([
-            'entity_type' => 'spell',
-            'entity_id' => 1,
-            'effect_id' => $effect->id,
-            'required_creature_level' => 1,
-        ]);
+        $spell->effects()->attach($effect->id);
 
         $code = Artisan::call('scrapping:effects:quality-gate', [
             '--min-coverage' => 99,

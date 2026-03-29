@@ -8,8 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Effect\StoreEffectRequest;
 use App\Http\Requests\Effect\UpdateEffectRequest;
 use App\Http\Resources\Effect\EffectResource;
+use App\Http\Resources\Effect\ResolvedEffectDegreeResource;
 use App\Models\Effect;
+use App\Models\EffectDegree;
 use App\Models\EffectUsage;
+use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Services\Effect\EffectResolutionService;
 use App\Services\Effect\EffectService;
@@ -27,35 +30,41 @@ class EffectController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
-        // Effets réservés aux utilisateurs ayant au moins le rôle "player"
         if (! $user || ! $user->verifyRole(User::ROLE_PLAYER)) {
             abort(403);
         }
 
-        $list = Effect::with('subEffects')->orderBy('name')->get();
+        $list = Effect::with('degrees')->orderBy('name')->get();
 
         return EffectResource::collection($list);
     }
 
     public function store(StoreEffectRequest $request): JsonResponse
     {
-        $effect = Effect::create($request->validated());
-        $effect->load('subEffects');
+        $effect = Effect::create($request->safe()->only(['name', 'slug', 'description', 'target_type'])->toArray());
+        EffectDegree::create([
+            'effect_id' => $effect->id,
+            'degree' => 1,
+            'area' => $request->input('initial_area'),
+            'required_creature_level' => $request->input('initial_required_creature_level'),
+            'slug' => $request->input('initial_degree_slug'),
+        ]);
+        $effect->load('degrees');
 
         return (new EffectResource($effect))->response()->setStatusCode(201);
     }
 
     public function show(Effect $effect): EffectResource
     {
-        $effect->load('subEffects');
+        $effect->load('degrees');
 
         return new EffectResource($effect);
     }
 
     public function update(UpdateEffectRequest $request, Effect $effect): EffectResource
     {
-        $effect->update($request->validated());
-        $effect->load('subEffects');
+        $effect->update($request->safe()->only(['name', 'slug', 'description', 'target_type'])->toArray());
+        $effect->load('degrees');
 
         return new EffectResource($effect->fresh());
     }
@@ -68,8 +77,7 @@ class EffectController extends Controller
     }
 
     /**
-     * Prévisualisation : effets applicables selon le **niveau du porteur** (seuil {@see \App\Models\EffectUsage::required_creature_level}).
-     * Le paramètre `level` sert aussi au contexte de résolution des formules (comportement existant).
+     * Prévisualisation : degrés d’effet applicables selon le niveau du porteur.
      */
     public function forEntity(Request $request): JsonResponse
     {
@@ -80,34 +88,37 @@ class EffectController extends Controller
             'context' => 'nullable|string|in:combat,out_of_combat',
             'format_dice_human' => 'boolean',
         ]);
-        $entityType = $validated['entity_type']; // short type: spell, item, consumable, resource
+        $entityType = $validated['entity_type'];
         $entityId = (int) $validated['entity_id'];
         $level = (int) $validated['level'];
         $context = $validated['context'] ?? null;
         $formatDiceHuman = (bool) ($validated['format_dice_human'] ?? false);
 
-        $class = EffectUsage::entityTypeToClass($entityType);
-        if ($class === null) {
-            return response()->json(['message' => 'Invalid entity_type'], 422);
+        if ($entityType === 'spell') {
+            if (! Spell::query()->whereKey($entityId)->exists()) {
+                return response()->json(['message' => 'Sort introuvable.'], 422);
+            }
+        } else {
+            $class = EffectUsage::entityTypeToClass($entityType);
+            if ($class === null) {
+                return response()->json(['message' => 'Invalid entity_type'], 422);
+            }
         }
 
-        // On utilise le short type pour la requête (convention côté EffectUsage)
-        $effects = $this->effectService->getEffectsForEntity($entityType, $entityId, $level, $context);
+        $degrees = $this->effectService->getEffectDegreesForEntity($entityType, $entityId, $level, $context);
         $baseContext = ['level' => $level];
 
-        $payload = $effects->map(function (Effect $e) use ($request, $baseContext, $context, $formatDiceHuman) {
-            $resolved = $this->effectResolutionService->resolveEffect($e, $baseContext, $context, $formatDiceHuman, false);
-            $resolvedCrit = $this->effectResolutionService->resolveEffect($e, $baseContext, $context, $formatDiceHuman, true);
+        $payload = $degrees->map(function (EffectDegree $d) use ($request, $baseContext, $context, $formatDiceHuman) {
+            $d->loadMissing('effect');
+            $resolved = $this->effectResolutionService->resolveEffect($d, $baseContext, $context, $formatDiceHuman, false);
+            $resolvedCrit = $this->effectResolutionService->resolveEffect($d, $baseContext, $context, $formatDiceHuman, true);
 
             return [
-                'effect' => (new EffectResource($e))->toArray($request),
-                // Texte global (compat) basé sur l’ancien rendu agrégé
-                'resolved_text' => $this->effectService->renderEffectText($e, $baseContext, $context, $formatDiceHuman),
-                // Résolution détaillée par sous-effet (normal)
+                'effect' => (new ResolvedEffectDegreeResource($d))->toArray($request),
+                'resolved_text' => $this->effectService->renderEffectText($d, $baseContext, $context, $formatDiceHuman),
                 'resolved' => $resolved,
-                // Résolution en cas de critique (sous-effets crit_only + value_formula_crit)
                 'resolved_crit' => $resolvedCrit,
-                'description' => $e->description,
+                'description' => $d->effect?->description,
             ];
         })->values()->all();
 

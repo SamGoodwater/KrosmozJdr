@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('capabilities', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description')->nullable();
-            $table->string('effect')->nullable();
+            $table->text('description')->nullable();
+            $table->text('effect')->nullable();
             $table->string('level')->default('1');
             $table->string('pa')->default('3');
             $table->string('po')->default('0');
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('time_before_use_again')->default('0');
             $table->string('casting_time')->default('0');
             $table->string('duration')->default('0');
-            $table->string('element')->default('neutral');
+            $table->unsignedTinyInteger('element')->default(0);
             $table->boolean('is_magic')->default(true);
             $table->boolean('ritual_available')->default(true);
             $table->string('powerful')->nullable();

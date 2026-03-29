@@ -12,7 +12,7 @@ import { BaseModel } from '../BaseModel';
 import { BaseFormatter } from '@/Utils/Formatters/BaseFormatter.js';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
-import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
+import { getByCharacteristicKey, getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
 import { isPoCac, PO_CAC_ICON, PO_CAC_LABEL } from '@/Composables/entity/useCharacteristicDisplay';
 import { getElementLabel, getElementIcon, getElementColor, ELEMENT_PRIMARY_ICONS } from '@/Utils/Entity/Elements';
 import { getAreaIcon, getAreaShape } from '@/Utils/Entity/Areas';
@@ -102,7 +102,8 @@ export class Spell extends BaseModel {
     }
 
     get element() {
-        return this._data.element || null;
+        const v = this._data.element;
+        return v === undefined || v === null ? null : v;
     }
 
     get category() {
@@ -110,7 +111,75 @@ export class Spell extends BaseModel {
     }
 
     get isMagic() {
-        return this._data.is_magic || null;
+        const v = this._data.is_magic;
+        if (v === null || v === undefined) {
+            return null;
+        }
+        return Boolean(v);
+    }
+
+    /** Définitions d’effets (pivot + degrés) pour la fiche sort, si chargées par l’API. */
+    get effectsDefinitions() {
+        const raw = this._data.effects_definitions;
+        return Array.isArray(raw) ? raw : [];
+    }
+
+    /**
+     * Monstres invoqués uniques à partir du payload `effects_definitions` (API fiche ou table).
+     *
+     * @param {unknown} definitions - Tableau renvoyé par l’API ou `[]`
+     * @returns {Array<{ id: number, name: string, image: string|null }>}
+     * @example
+     * Spell.summonMonstersFromEffectsDefinitionsPayload(spell.effects_definitions);
+     */
+    static summonMonstersFromEffectsDefinitionsPayload(definitions) {
+        const defs = Array.isArray(definitions) ? definitions : [];
+        const out = [];
+        const seen = new Set();
+        for (const def of defs) {
+            for (const deg of def.degrees || []) {
+                for (const row of deg.rows || []) {
+                    const sm = row.summon_monster;
+                    if (sm?.id != null && !seen.has(sm.id)) {
+                        seen.add(sm.id);
+                        out.push({
+                            id: sm.id,
+                            name: sm.name ?? `Monstre #${sm.id}`,
+                            image: sm.image ?? null,
+                        });
+                    }
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Monstres invoqués uniques (résumés `summon_monster` des lignes pivot), pour vues minimal / texte.
+     *
+     * @returns {Array<{ id: number, name: string, image: string|null }>}
+     */
+    get summonMonstersFromEffectDefinitions() {
+        return Spell.summonMonstersFromEffectsDefinitionsPayload(this.effectsDefinitions);
+    }
+
+    /** Utilisable en rituel — présent si la colonne existe côté API. */
+    get ritualAvailable() {
+        return this._data.ritual_available ?? null;
+    }
+
+    /**
+     * Rituel actif (affichage UI : icône / mention seulement si true).
+     * Priorité `is_ritual` puis `ritual_available` pour compatibilité.
+     */
+    get isRitual() {
+        if (this._data.is_ritual === true) {
+            return true;
+        }
+        if (this._data.ritual_available === true) {
+            return true;
+        }
+        return false;
     }
 
     get powerful() {
@@ -135,6 +204,11 @@ export class Spell extends BaseModel {
 
     get saveSuccessNote() {
         return this._data.save_success_note || null;
+    }
+
+    /** Réussite automatique si la cible est consentante (règle optionnelle côté résolution). */
+    get autoSuccessIfWillingTarget() {
+        return Boolean(this._data.auto_success_if_willing_target);
     }
 
     get image() {
@@ -239,7 +313,7 @@ export class Spell extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
-        const overrideFields = new Set(['pa', 'po', 'spell_summary_profile', 'effect', 'effect_summary']);
+        const overrideFields = new Set(['pa', 'po', 'po_range', 'spell_summary_profile', 'effect', 'effect_summary']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
         if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
@@ -260,6 +334,8 @@ export class Spell extends BaseModel {
                 return this._toAreaCell(format, size, options);
             case 'po':
                 return this._toPoCell(format, size, options);
+            case 'po_range':
+                return this._toPoRangeCell(format, size, options);
             case 'po_min':
                 return this._toPoMinMaxCell(this.poMin, options);
             case 'po_max':
@@ -453,6 +529,66 @@ export class Spell extends BaseModel {
      * Génère une cellule pour les PO (portée)
      * @private
      */
+    /**
+     * Portée affichée à partir de po_min / po_max : « min - max » (une seule valeur si égales).
+     * @private
+     */
+    _toPoRangeCell(format, size, options) {
+        const minRaw = this.poMin;
+        const maxRaw = this.poMax;
+        const min =
+            minRaw != null && String(minRaw).trim() !== '' ? String(minRaw).trim() : null;
+        const max =
+            maxRaw != null && String(maxRaw).trim() !== '' ? String(maxRaw).trim() : min;
+
+        if (min == null && max == null) {
+            return {
+                type: 'text',
+                value: '—',
+                params: { sortValue: '', searchValue: '' },
+            };
+        }
+
+        const display = min === max ? min : `${min} - ${max}`;
+        const poDef =
+            this._getCharacteristicDef(options, ['po_max', 'po_min', 'po']) ||
+            getByCharacteristicKey('spell', 'range_spell');
+        const poLabel = poDef?.short_name || poDef?.name || 'Portée';
+        const cac = isPoCac(display);
+
+        if (poDef && display !== '-') {
+            const poFilterValue = this._parsePoForFilter(display);
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [
+                        {
+                            icon: cac ? PO_CAC_ICON : (poDef.icon || 'fa-solid fa-crosshairs'),
+                            color: poDef.color || null,
+                            value: cac ? '' : display,
+                            tooltip: cac ? PO_CAC_LABEL : `${poLabel}: ${display}`,
+                        },
+                    ],
+                    sortValue: display,
+                    searchValue: display,
+                    filterValue: poFilterValue,
+                },
+            };
+        }
+
+        const poFilterValue = this._parsePoForFilter(display);
+        return {
+            type: 'text',
+            value: display,
+            params: {
+                sortValue: display,
+                searchValue: display,
+                filterValue: poFilterValue,
+            },
+        };
+    }
+
     _toPoCell(format, size, options) {
         const po = this.po || '-';
         const poDef = this._getCharacteristicDef(options, ['po', 'po_max', 'po_min']);
@@ -499,7 +635,7 @@ export class Spell extends BaseModel {
     _parsePoForFilter(po) {
         if (!po || String(po).trim() === '') return [];
         const s = String(po).trim();
-        const m = s.match(/^(\d+)-(\d+)$/);
+        const m = s.match(/^(\d+)\s*-\s*(\d+)$/);
         if (m) {
             const lo = parseInt(m[1], 10);
             const hi = parseInt(m[2], 10);
@@ -849,6 +985,7 @@ export class Spell extends BaseModel {
      */
     toFormData() {
         return {
+            id: this.id,
             official_id: this.officialId,
             dofusdb_id: this.dofusdbId,
             name: this.name,
@@ -865,7 +1002,8 @@ export class Spell extends BaseModel {
             sight_line: this.sightLine,
             number_between_two_cast: this.numberBetweenTwoCast,
             number_between_two_cast_editable: this.numberBetweenTwoCastEditable,
-            element: this.element,
+            element: this._data.element === undefined ? null : this._data.element,
+            spellTypes: (this.spellTypes || []).map((t) => Number(t.id ?? t)).filter((n) => Number.isFinite(n)),
             category: this.category,
             is_magic: this.isMagic,
             powerful: this.powerful,
@@ -874,11 +1012,14 @@ export class Spell extends BaseModel {
             save_characteristic_key: this.saveCharacteristicKey,
             save_dc_formula: this.saveDcFormula,
             save_success_note: this.saveSuccessNote,
+            auto_success_if_willing_target: this.autoSuccessIfWillingTarget,
             state: this.state,
             read_level: this.readLevel,
             write_level: this.writeLevel,
             image: this.image,
-            auto_update: this.autoUpdate
+            auto_update: this.autoUpdate,
+            created_at: this._data.created_at ?? null,
+            updated_at: this._data.updated_at ?? null,
         };
     }
 }

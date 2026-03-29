@@ -26,6 +26,5 @@ Route::prefix('admin/effects')
         Route::post('/{effect}/duplicate', [AdminEffectController::class, 'duplicate'])->name('duplicate');
         Route::patch('/{effect}/group', [AdminEffectController::class, 'updateGroup'])->name('group-update');
         Route::get('/{effect}', [AdminEffectController::class, 'show'])->name('show');
-        Route::patch('/{effect}', [AdminEffectController::class, 'update'])->name('update');
         Route::delete('/{effect}', [AdminEffectController::class, 'destroy'])->name('destroy');
     });

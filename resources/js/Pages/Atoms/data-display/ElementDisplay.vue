@@ -27,7 +27,7 @@ import {
 const props = defineProps({
   element: {
     type: [Number, String],
-    default: 0,
+    default: undefined,
   },
   size: {
     type: String,
@@ -49,22 +49,30 @@ const props = defineProps({
   },
 });
 
-const numValue = computed(() => {
+const isUnset = computed(() => {
   const v = props.element;
-  if (v === null || v === undefined) return 0;
+  return v === null || v === undefined || v === '';
+});
+
+const numValue = computed(() => {
+  if (isUnset.value) return null;
+  const v = props.element;
   const n = typeof v === 'string' ? parseInt(v, 10) : Number(v);
   return Number.isFinite(n) && n >= 0 && n <= 29 ? n : 0;
 });
 
-const label = computed(() => getElementLabel(numValue.value) ?? 'Neutre');
+const label = computed(() => (numValue.value === null ? '' : getElementLabel(numValue.value) ?? 'Neutre'));
 
 const iconSource = computed(() => {
+  if (numValue.value === null) return ELEMENT_PRIMARY_ICONS[0];
   const primaries = getElementPrimaries(numValue.value);
   const first = primaries[0] ?? 0;
   return ELEMENT_PRIMARY_ICONS[first] ?? ELEMENT_PRIMARY_ICONS[0];
 });
 
-const badgeClass = computed(() => `element-badge element-badge--${numValue.value}`);
+const badgeClass = computed(() =>
+  numValue.value === null ? 'element-badge element-badge--empty' : `element-badge element-badge--${numValue.value}`,
+);
 
 const sizeClass = computed(() => {
   const map = { xs: 'badge-xs', sm: 'badge-sm', md: 'badge-md', lg: 'badge-lg', xl: 'badge-xl' };
@@ -73,7 +81,9 @@ const sizeClass = computed(() => {
 </script>
 
 <template>
+  <span v-if="isUnset" class="text-sm text-base-content/55">—</span>
   <span
+    v-else
     :class="[
       badgeClass,
       sizeClass,

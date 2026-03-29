@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Effect;
 
 use App\Models\Effect;
+use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 
@@ -24,29 +25,29 @@ final class EffectResolutionService
     public function __construct(
         private readonly EffectTextResolver $textResolver,
         private readonly CharacteristicFormulaService $formulaService
-    ) {
-    }
+    ) {}
 
     /**
      * Résout un effect pour un contexte donné.
      *
-     * @param array<string, int|float|string> $baseContext Variables disponibles (level, agi, etc.)
-     * @param bool $isCrit Si true, inclut les sous-effets « uniquement critique » et utilise value_formula_crit quand présent.
+     * @param  array<string, int|float|string>  $baseContext  Variables disponibles (level, agi, etc.)
+     * @param  bool  $isCrit  Si true, inclut les sous-effets « uniquement critique » et utilise value_formula_crit quand présent.
      * @return array{
      *     effect_id: int,
+     *     effect_degree_id: int,
      *     sub_effects: list<array<string,mixed>>
      * }
      */
     public function resolveEffect(
-        Effect $effect,
+        EffectDegree $degree,
         array $baseContext = [],
         ?string $scopeFilter = null,
         bool $formatDiceHuman = false,
         bool $isCrit = false
     ): array {
-        $effect->loadMissing('effectSubEffects.subEffect');
+        $degree->loadMissing('effectSubEffects.subEffect', 'effect');
 
-        $rows = $effect->effectSubEffects;
+        $rows = $degree->effectSubEffects;
 
         if ($scopeFilter !== null) {
             $scopes = $scopeFilter === Effect::SCOPE_COMBAT
@@ -109,7 +110,8 @@ final class EffectResolutionService
         }
 
         return [
-            'effect_id' => $effect->id,
+            'effect_id' => (int) $degree->effect_id,
+            'effect_degree_id' => (int) $degree->id,
             'sub_effects' => $resolved,
         ];
     }
@@ -117,8 +119,8 @@ final class EffectResolutionService
     /**
      * Construit le contexte pour une ligne pivot (sous-effet attaché).
      *
-     * @param array<string, int|float|string> $baseContext
-     * @param bool $isCrit Si true, utilise value_formula_crit pour la valeur quand elle est définie.
+     * @param  array<string, int|float|string>  $baseContext
+     * @param  bool  $isCrit  Si true, utilise value_formula_crit pour la valeur quand elle est définie.
      * @return array<string, int|float|string>
      */
     private function buildContextForRow(EffectSubEffect $row, array $baseContext, bool $isCrit = false): array
@@ -162,7 +164,7 @@ final class EffectResolutionService
      * - AND : appliqué seulement si le précédent du groupe était appliqué.
      * - OR  : appliqué si la condition numérique > 0 (formule logic_condition), indépendant de l'état précédent.
      *
-     * @param array<string, int|float|string> $ctx
+     * @param  array<string, int|float|string>  $ctx
      * @return array{0: bool, 1: bool} [applied, newLastApplied]
      */
     private function evaluateLogic(EffectSubEffect $row, array $ctx, bool $lastApplied): array
@@ -175,6 +177,7 @@ final class EffectResolutionService
 
         if ($op === 'AND') {
             $applied = $lastApplied;
+
             return [$applied, $applied];
         }
 
@@ -196,7 +199,7 @@ final class EffectResolutionService
     }
 
     /**
-     * @param array<string, int|float|string> $ctx
+     * @param  array<string, int|float|string>  $ctx
      * @return array<string, int|float>
      */
     private function toNumericContext(array $ctx): array
@@ -213,4 +216,3 @@ final class EffectResolutionService
         return $out;
     }
 }
-

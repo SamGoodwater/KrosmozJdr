@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\Effect\EffectController;
+use App\Http\Controllers\Api\Effect\EffectSpellAttachmentController;
 use App\Http\Controllers\Api\Effect\EffectUsageController;
 use App\Http\Controllers\Api\Effect\SubEffectController;
 use Illuminate\Support\Facades\Route;
@@ -35,5 +36,7 @@ Route::prefix('effects')->group(function () {
         Route::post('usages', [EffectUsageController::class, 'store'])->name('effects.usages.store');
         Route::match(['put', 'patch'], 'usages/{effect_usage}', [EffectUsageController::class, 'update'])->name('effects.usages.update');
         Route::delete('usages/{effect_usage}', [EffectUsageController::class, 'destroy'])->name('effects.usages.destroy');
+        Route::post('spell-attachments', [EffectSpellAttachmentController::class, 'store'])->name('effects.spell-attachments.store');
+        Route::delete('spell-attachments', [EffectSpellAttachmentController::class, 'destroy'])->name('effects.spell-attachments.destroy');
     });
 });

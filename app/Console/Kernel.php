@@ -6,9 +6,6 @@ use App\Jobs\SendNotificationDigestsJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
-//  generate:IconsGenerator
-// generate:Test
-
 class Kernel extends ConsoleKernel
 {
     protected $middleware = [
@@ -18,7 +15,6 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -32,12 +28,12 @@ class Kernel extends ConsoleKernel
         $schedule->job(new SendNotificationDigestsJob('weekly'))->weeklyOn(1, '00:10');
         $schedule->job(new SendNotificationDigestsJob('monthly'))->monthlyOn(1, '00:15');
 
-        // Mise à jour des entités avec auto_update=true (project:update)
+        // Mise à jour des entités avec auto_update=true (project:data:sync, alias project:update)
         // Activable via env: PROJECT_UPDATE_AUTO_ENABLED=true
         // Fréquence via PROJECT_UPDATE_CRON (format cron, défaut: 1er du mois à 1h)
         if ((bool) env('PROJECT_UPDATE_AUTO_ENABLED', false)) {
             $cron = env('PROJECT_UPDATE_CRON', '0 1 1 * *');
-            $schedule->command('project:update')->cron($cron);
+            $schedule->command('project:data:sync')->cron($cron);
         }
 
         // Sync automatique du catalogue de ressources depuis DofusDB
@@ -58,7 +54,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
     }

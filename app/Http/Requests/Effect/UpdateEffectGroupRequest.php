@@ -12,7 +12,7 @@ class UpdateEffectGroupRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->verifyRole('admin') ?? false;
+        return $this->user()?->verifyRole('game_master') ?? false;
     }
 
     /**
@@ -24,13 +24,13 @@ class UpdateEffectGroupRequest extends FormRequest
             'common' => 'required|array',
             'common.name' => 'nullable|string|max:255',
             'common.description' => 'nullable|string|max:65535',
-            'common.effect_group_id' => 'nullable|integer|exists:effect_groups,id',
             'common.target_type' => 'nullable|string|in:direct,trap,glyph',
 
             'degrees' => 'required|array|min:1',
-            'degrees.*.id' => 'required|integer|exists:effects,id',
+            'degrees.*.id' => 'required|integer|exists:effect_degrees,id',
             'degrees.*.slug' => 'nullable|string|max:64',
             'degrees.*.area' => 'nullable|string|max:64',
+            'degrees.*.required_creature_level' => 'nullable|integer|min:0',
             'degrees.*.effect_sub_effects' => 'present|array',
             'degrees.*.effect_sub_effects.*.sub_effect_id' => 'required|integer|exists:sub_effects,id',
             'degrees.*.effect_sub_effects.*.order' => 'integer|min:0',
@@ -71,7 +71,7 @@ class UpdateEffectGroupRequest extends FormRequest
                 if ($slug === null || $slug === '') {
                     continue;
                 }
-                $q = \App\Models\Effect::query()->where('slug', $slug);
+                $q = \App\Models\EffectDegree::query()->where('slug', $slug);
                 if ($id) {
                     $q->where('id', '!=', $id);
                 }

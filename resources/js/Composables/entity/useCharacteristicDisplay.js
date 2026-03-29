@@ -41,7 +41,7 @@ export const PO_CAC_LABEL = PO_CAC_TOOLTIP;
  */
 export function isPoCac(po) {
   if (po == null) return false;
-  const s = String(po).trim();
+  const s = String(po).trim().replace(/\s+/g, '');
   return s === '1' || s === '1-1';
 }
 

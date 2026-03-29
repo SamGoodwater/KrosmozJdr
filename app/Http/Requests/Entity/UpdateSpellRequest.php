@@ -14,6 +14,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class UpdateSpellRequest extends FormRequest
 {
     use HasCharacteristicValidation;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -45,8 +46,10 @@ class UpdateSpellRequest extends FormRequest
             'number_between_two_cast_editable' => ['nullable', 'boolean'],
             'element' => array_merge(
                 ['nullable', 'integer'],
-                $this->characteristicMinMaxRules('element', 'spell') ?: ['min:0', 'max:19']
+                $this->characteristicMinMaxRules('element', 'spell') ?: ['min:0', 'max:29']
             ),
+            'spellTypes' => ['nullable', 'array'],
+            'spellTypes.*' => ['integer', 'exists:spell_types,id'],
             'category' => array_merge(
                 ['nullable', 'integer'],
                 $this->characteristicMinMaxRules('category', 'spell')
@@ -61,11 +64,14 @@ class UpdateSpellRequest extends FormRequest
             'save_characteristic_key' => ['nullable', 'string', 'max:64'],
             'save_dc_formula' => ['nullable', 'string', 'max:255'],
             'save_success_note' => ['nullable', 'string'],
+            'auto_success_if_willing_target' => ['nullable', 'boolean'],
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'image' => ['nullable', 'string', 'max:255'],
             'auto_update' => ['nullable', 'boolean'],
+            'official_id' => ['nullable', 'string', 'max:255'],
+            'dofusdb_id' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

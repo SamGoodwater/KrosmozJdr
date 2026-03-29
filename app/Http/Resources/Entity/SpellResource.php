@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Entity;
 
+use App\Services\Effect\SpellEffectDefinitionsSerializer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,6 +19,7 @@ class SpellResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+
         return [
             'id' => $this->id,
             'official_id' => $this->official_id,
@@ -46,6 +48,11 @@ class SpellResource extends JsonResource
             'save_characteristic_key' => $this->save_characteristic_key,
             'save_dc_formula' => $this->save_dc_formula,
             'save_success_note' => $this->save_success_note,
+            'auto_success_if_willing_target' => (bool) ($this->auto_success_if_willing_target ?? false),
+            'is_ritual' => $this->when(
+                array_key_exists('is_ritual', $this->resource->getAttributes()),
+                (bool) $this->resource->getAttribute('is_ritual')
+            ),
             'state' => $this->state,
             'read_level' => (int) ($this->read_level ?? 0),
             'write_level' => (int) ($this->write_level ?? 0),
@@ -73,6 +80,7 @@ class SpellResource extends JsonResource
                     'id' => $spellType->id,
                     'name' => $spellType->name,
                     'description' => $spellType->description,
+                    'color' => $spellType->color ?? null,
                 ];
             })->values()->all() : [],
             'spellEffects' => ($this->relationLoaded('spellEffects') || isset($this->spellEffects)) ? $this->spellEffects->map(function ($effect) {
@@ -101,6 +109,12 @@ class SpellResource extends JsonResource
             })->values()->all() : [],
             'monsters' => $this->whenLoaded('monsters'),
 
+            /** Définitions d’effets liées (pivot effect_spell) + degrés + pivots sous-effets — pour affichage fiche. */
+            'effects_definitions' => $this->when(
+                $this->relationLoaded('effects'),
+                fn () => app(SpellEffectDefinitionsSerializer::class)->serialize($this->effects)
+            ),
+
             // Droits d'accès
             'can' => [
                 'update' => $user ? $user->can('update', $this->resource) : false,
@@ -110,4 +124,3 @@ class SpellResource extends JsonResource
         ];
     }
 }
-

@@ -555,6 +555,11 @@
     "description": "Ce dossier regroupe les scripts, automatisations et outils pour le développement, la maintenance et le déploiement du projet."
   },
   {
+    "path": "40-DevGuides/PROJECT_CLI.md",
+    "title": "Interface CLI unifiée (project:*)",
+    "description": "Commandes project:deps, project:dev, project:refresh, project:data, project:data:sync, project:super-admin ; lien avec run et setup."
+  },
+  {
     "path": "40-DevGuides/UTILISATEUR_SYSTEME.md",
     "title": "Utilisateur système (imports automatiques)",
     "description": "Le projet utilise un **utilisateur système** pour attribuer (tracer) les opérations automatiques, notamment les imports du scrapping."

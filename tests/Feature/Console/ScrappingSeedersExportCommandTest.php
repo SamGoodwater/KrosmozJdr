@@ -12,7 +12,7 @@ use Tests\TestCase;
 /**
  * Tests de la commande scrapping:seeders:export (export, backup ZIP, nettoyage des anciens backups).
  *
- * @see App\Console\Commands\ScrappingSeedersExportCommand
+ * @see \App\Console\Commands\Scrapping\ScrappingSeedersExportCommand
  */
 class ScrappingSeedersExportCommandTest extends TestCase
 {
@@ -64,12 +64,12 @@ class ScrappingSeedersExportCommandTest extends TestCase
 
         Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
 
-        $path = $this->dataDir . '/characteristics.php';
+        $path = $this->dataDir.'/characteristics.php';
         $this->assertFileExists($path);
         $this->assertStringContainsString('return', file_get_contents($path));
-        $this->assertFileExists($this->dataDir . '/characteristic_creature.php');
-        $this->assertFileExists($this->dataDir . '/characteristic_object.php');
-        $this->assertFileExists($this->dataDir . '/characteristic_spell.php');
+        $this->assertFileExists($this->dataDir.'/characteristic_creature.php');
+        $this->assertFileExists($this->dataDir.'/characteristic_object.php');
+        $this->assertFileExists($this->dataDir.'/characteristic_spell.php');
     }
 
     public function test_command_creates_backup_zip_when_data_files_exist(): void
@@ -80,11 +80,11 @@ class ScrappingSeedersExportCommandTest extends TestCase
         $this->seed(\Database\Seeders\SpellCharacteristicSeeder::class);
 
         Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
-        $this->assertFileExists($this->dataDir . '/characteristics.php');
+        $this->assertFileExists($this->dataDir.'/characteristics.php');
 
         Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
 
-        $zips = File::glob($this->backupDir . '/seeder-data-*.zip');
+        $zips = File::glob($this->backupDir.'/seeder-data-*.zip');
         $this->assertNotEmpty($zips, 'Au moins un backup ZIP doit exister après un second export.');
     }
 
@@ -97,8 +97,8 @@ class ScrappingSeedersExportCommandTest extends TestCase
         $oldCount = 8;
         $cutoff = time() - (8 * 24 * 60 * 60);
         for ($i = 0; $i < $oldCount; $i++) {
-            $path = $this->backupDir . '/seeder-data-old-' . $i . '.zip';
-            $zip = new \ZipArchive();
+            $path = $this->backupDir.'/seeder-data-old-'.$i.'.zip';
+            $zip = new \ZipArchive;
             $zip->open($path, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
             $zip->addFromString('dummy.txt', 'test');
             $zip->close();
@@ -111,8 +111,8 @@ class ScrappingSeedersExportCommandTest extends TestCase
         $this->seed(\Database\Seeders\SpellCharacteristicSeeder::class);
         Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
 
-        $zips = File::glob($this->backupDir . '/seeder-data-*.zip');
-        $oldZips = File::glob($this->backupDir . '/seeder-data-old-*.zip');
+        $zips = File::glob($this->backupDir.'/seeder-data-*.zip');
+        $oldZips = File::glob($this->backupDir.'/seeder-data-old-*.zip');
         $this->assertCount(0, $oldZips, 'Les anciens backups (seeder-data-old-*) doivent être supprimés.');
         $this->assertGreaterThanOrEqual(1, count($zips), 'Au moins le nouveau backup doit rester.');
     }

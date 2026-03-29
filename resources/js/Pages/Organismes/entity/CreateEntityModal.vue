@@ -48,7 +48,37 @@ const props = defineProps({
     routeParamKey: {
         type: String,
         default: null
-    }
+    },
+    /** Même API que {@link EntityEditForm} — sections cartes. */
+    fieldSections: {
+        type: Array,
+        default: null,
+    },
+    /** Surcharge des champs masqués (ex. `['dofus_version']` pour afficher `auto_update`). */
+    hiddenFieldKeys: {
+        type: Array,
+        default: null,
+    },
+    showStateToolbar: {
+        type: Boolean,
+        default: true,
+    },
+    showAccessLevelsInFooter: {
+        type: Boolean,
+        default: true,
+    },
+    /**
+     * Clés autorisées à la création alors qu’elles sont masquées par défaut (ex. `dofusdb_id`, `auto_update`).
+     */
+    createAllowFieldKeys: {
+        type: Array,
+        default: () => [],
+    },
+    /** @see EntityEditForm — groupe Characteristics pour icônes / couleurs (ex. spell). */
+    characteristicsGroup: {
+        type: String,
+        default: null,
+    },
 });
 
 const emit = defineEmits(['close', 'created']);
@@ -101,17 +131,25 @@ const createHiddenFieldKeys = new Set([
     'deleted_at',
 ]);
 
+const effectiveCreateHiddenFieldKeys = computed(() => {
+    const s = new Set(createHiddenFieldKeys);
+    for (const k of props.createAllowFieldKeys || []) {
+        s.delete(k);
+    }
+    return s;
+});
+
 const mergedFieldsConfig = computed(() => {
     const custom = props.fieldsConfig || {};
     if (Object.keys(custom).length > 0) {
         return Object.fromEntries(
-            Object.entries(custom).filter(([fieldKey]) => !createHiddenFieldKeys.has(fieldKey))
+            Object.entries(custom).filter(([fieldKey]) => !effectiveCreateHiddenFieldKeys.value.has(fieldKey))
         );
     }
     const generated = descriptorBackedFieldsConfig.value || {};
     if (Object.keys(generated).length > 0) {
         return Object.fromEntries(
-            Object.entries(generated).filter(([fieldKey]) => !createHiddenFieldKeys.has(fieldKey))
+            Object.entries(generated).filter(([fieldKey]) => !effectiveCreateHiddenFieldKeys.value.has(fieldKey))
         );
     }
     return custom;
@@ -282,6 +320,11 @@ const handleCancel = () => {
                     :route-name-base="routeNameBase"
                     :route-param-key="routeParamKey"
                     :is-updating="false"
+                    :hidden-field-keys="hiddenFieldKeys"
+                    :field-sections="fieldSections"
+                    :show-state-toolbar="showStateToolbar"
+                    :show-access-levels-in-footer="showAccessLevelsInFooter"
+                    :characteristics-group="characteristicsGroup"
                     @submit="handleSubmit"
                     @cancel="handleCancel"
                 />

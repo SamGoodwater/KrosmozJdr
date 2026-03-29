@@ -11,15 +11,18 @@ class EffectUsageResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return [
+        $row = [
             'id' => $this->id,
             'entity_type' => $this->entity_type,
             'entity_id' => $this->entity_id,
-            'effect_id' => $this->effect_id,
-            'required_creature_level' => $this->required_creature_level,
+            'effect_degree_id' => $this->effect_degree_id,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
-            'effect' => new EffectResource($this->whenLoaded('effect')),
         ];
+        if ($this->relationLoaded('effectDegree') && $this->effectDegree) {
+            $row['effect_degree'] = (new ResolvedEffectDegreeResource($this->effectDegree))->toArray($request);
+        }
+
+        return $row;
     }
 }

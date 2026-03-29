@@ -17,8 +17,8 @@ const props = defineProps({
   validationState: { type: [String, null], default: null }, // Accept String or null
   validationMessage: { type: [String, null], default: null }, // Accept String or null
   helper: { type: [String, Object], default: '' },
-  // Nouvelle prop pour détecter le type d'input
-  inputType: { type: String, default: 'input' }
+  /** @type {'input'|'textarea'|'select'|string} — Ajuste l’alignement flex et la position des actions (textarea = plusieurs lignes). */
+  inputType: { type: String, default: 'input' },
 })
 
 // Classes dynamiques pour le bloc principal selon le type d'input
@@ -50,7 +50,10 @@ const mainBlockClasses = computed(() => {
       <slot name="labelTop" />
     </InputLabel>
 
-    <div class="relative flex items-center w-full">
+    <div
+      class="relative flex w-full"
+      :class="props.inputType === 'textarea' ? 'items-start' : 'items-center'"
+    >
       <!-- ⬅️ Label à gauche -->
       <InputLabel
         v-if="labelConfig.start || $slots.labelStart"
@@ -76,7 +79,8 @@ const mainBlockClasses = computed(() => {
         <!-- 🎯 Actions overStart -->
         <div
           v-if="$slots.overStart"
-          class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 flex gap-1"
+          class="absolute left-2 z-10 flex gap-1"
+          :class="inputType === 'textarea' ? 'top-2' : 'top-1/2 -translate-y-1/2'"
         >
           <slot name="overStart" />
         </div>
@@ -84,7 +88,8 @@ const mainBlockClasses = computed(() => {
         <!-- 🎯 Actions overEnd + contextuelles -->
         <div
           v-if="$slots.overEnd || actionsToDisplay.length"
-          class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 flex items-center gap-1"
+          class="absolute right-2 z-10 flex items-center gap-1"
+          :class="inputType === 'textarea' ? 'top-2' : 'top-1/2 -translate-y-1/2'"
         >
           <slot name="overEnd" />
           <Btn

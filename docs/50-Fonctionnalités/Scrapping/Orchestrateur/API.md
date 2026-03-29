@@ -146,7 +146,7 @@ POST /api/scrapping/import/all
 
 ## CLI (commande unifiée)
 Pour les usages CLI (collect/search/import), voir :
-- `app/Console/Commands/ScrappingRunCommand.php` (commande canonique : `scrapping:run`, alias legacy : `scrapping`)
+- `app/Console/Commands/Scrapping/ScrappingRunCommand.php` (commande canonique : `scrapping:run`, alias legacy : `scrapping`)
 
 Exemples :
 ```bash

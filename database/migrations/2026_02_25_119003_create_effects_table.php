@@ -6,6 +6,10 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Définition d’effet (généralités) : partagée entre degrés ; liée aux sorts via effect_spell.
+ * Zone et seuil de niveau portés par {@see effect_degrees}.
+ */
 return new class extends Migration
 {
     public function up(): void
@@ -15,13 +19,8 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('slug', 64)->nullable()->unique();
             $table->text('description')->nullable();
-            $table->foreignId('effect_group_id')->nullable()->constrained('effect_groups')->nullOnDelete();
-            $table->unsignedTinyInteger('degree')->nullable();
-            $table->string('config_signature', 64)->nullable();
+            $table->string('target_type', 32)->default('direct');
             $table->timestamps();
-
-            $table->index(['effect_group_id', 'degree']);
-            $table->index('config_signature');
         });
     }
 

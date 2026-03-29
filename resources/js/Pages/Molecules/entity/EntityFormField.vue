@@ -30,6 +30,7 @@ import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vu
 import FileField from '@/Pages/Molecules/data-input/FileField.vue';
 import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue';
 import LevelBadge from '@/Pages/Molecules/data-display/LevelBadge.vue';
+import SpellElementPrimariesField from '@/Pages/Molecules/entity/spell/SpellElementPrimariesField.vue';
 
 const props = defineProps({
     fieldKey: {
@@ -76,7 +77,13 @@ const isLevelLikeField = computed(() => {
 });
 
 // Vérifier si c'est un champ de type text
-const isTextField = computed(() => fieldType.value === 'text' || (!['textarea', 'select', 'file', 'number', 'checkbox'].includes(fieldType.value)));
+const isTextField = computed(
+    () =>
+        fieldType.value === 'text' ||
+        !['textarea', 'select', 'file', 'number', 'checkbox', 'elementPrimaries'].includes(fieldType.value),
+);
+
+const isElementPrimariesField = computed(() => fieldType.value === 'elementPrimaries');
 
 // Vérifier si c'est un champ de type checkbox
 const isCheckboxField = computed(() => fieldType.value === 'checkbox');
@@ -179,9 +186,18 @@ const handleFileUpdate = async (v) => {
 <template>
     <div class="form-control">
 
+        <!-- Éléments primaires (sort) -->
+        <SpellElementPrimariesField
+            v-if="isElementPrimariesField"
+            v-model="localValue"
+            :label="fieldConfig?.label"
+            :disabled="disabled || fieldConfig?.disabled"
+            :validation="error ? { state: 'error', message: error } : null"
+        />
+
         <!-- Text -->
         <InputField
-            v-if="isTextField"
+            v-else-if="isTextField"
             v-model="localValue"
             :label="fieldConfig?.label"
             type="text"

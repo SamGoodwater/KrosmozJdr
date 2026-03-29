@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Entity;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Effect\UpdateSpellEffectGroupRequest;
 use App\Http\Requests\Entity\StoreSpellRequest;
 use App\Http\Requests\Entity\UpdateSpellRequest;
 use App\Http\Resources\Entity\SpellResource;
 use App\Models\Effect;
 use App\Models\Entity\Spell;
 use App\Models\Type\SpellType;
+use App\Services\Effect\EffectGroupEditorDataService;
+use App\Services\Effect\EffectGroupUpdateService;
 use App\Services\PdfService;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
 class SpellController extends Controller
@@ -85,7 +89,17 @@ class SpellController extends Controller
      */
     public function show(Spell $spell)
     {
-        //
+        $this->authorize('view', $spell);
+
+        $spell->load([
+            'createdBy',
+            'spellTypes',
+            'effects.degrees.effectSubEffects.subEffect',
+        ]);
+
+        return Inertia::render('Pages/entity/spell/Show', [
+            'spell' => new SpellResource($spell),
+        ]);
     }
 
     /**
@@ -95,7 +109,7 @@ class SpellController extends Controller
     {
         $this->authorize('update', $spell);
 
-        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes', 'effectUsages.effect.subEffects']);
+        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes', 'effects.degrees']);
 
         $availableBreeds = \App\Models\Entity\Breed::select('id', 'name', 'description')
             ->orderBy('name')
@@ -105,37 +119,47 @@ class SpellController extends Controller
             ->orderBy('name')
             ->get();
 
-        $effectUsages = $spell->effectUsages()->with('effect.subEffects')->orderBy('required_creature_level')->get()->map(fn ($u) => [
-            'id' => $u->id,
-            'effect_id' => $u->effect_id,
-            'effect' => $u->effect ? [
-                'id' => $u->effect->id,
-                'name' => $u->effect->name,
-                'slug' => $u->effect->slug,
-                'degree' => $u->effect->degree,
-                'target_type' => $u->effect->target_type ?? Effect::TARGET_DIRECT,
-                'area' => $u->effect->area,
-            ] : null,
-            'required_creature_level' => $u->required_creature_level,
-        ])->values()->all();
+        $availableEffects = Effect::with('degrees')
+            ->orderBy('name')
+            ->get()
+            ->flatMap(function (Effect $e) {
+                return $e->degrees->map(fn ($d) => [
+                    'id' => $d->id,
+                    'name' => ($e->name ?? $e->slug ?? 'Effet #'.$e->id).' · D'.$d->degree,
+                    'slug' => $d->slug,
+                    'degree' => $d->degree,
+                    'target_type' => $e->target_type ?? Effect::TARGET_DIRECT,
+                    'area' => $d->area,
+                    'effect_definition_id' => $e->id,
+                ]);
+            })
+            ->values()
+            ->all();
 
-        $availableEffects = Effect::orderBy('name')->get(['id', 'name', 'slug', 'degree', 'target_type', 'area'])->map(fn ($e) => [
-            'id' => $e->id,
-            'name' => $e->name ?? $e->slug ?? 'Effet #'.$e->id,
-            'slug' => $e->slug,
-            'degree' => $e->degree,
-            'target_type' => $e->target_type ?? Effect::TARGET_DIRECT,
-            'area' => $e->area,
-        ])->values()->all();
+        $editorData = app(EffectGroupEditorDataService::class);
 
         return Inertia::render('Pages/entity/spell/Edit', [
             'spell' => new SpellResource($spell),
             'availableBreeds' => $availableBreeds,
             'availableSpellTypes' => $availableSpellTypes,
-            'effectUsages' => $effectUsages,
             'availableEffects' => $availableEffects,
             'effectEntityType' => 'spell',
+            'effectFormOptions' => $editorData->formOptions(),
+            'spellEffectGroups' => $editorData->distinctGroupsForSpell($spell),
         ]);
+    }
+
+    /**
+     * Enregistre un groupe d’effets depuis la fiche sort (même charge utile que l’admin).
+     */
+    public function updateEffectGroup(UpdateSpellEffectGroupRequest $request, Spell $spell, Effect $effect): RedirectResponse
+    {
+        $this->authorize('update', $spell);
+
+        app(EffectGroupUpdateService::class)->updateGroup($effect, $request->validated());
+
+        return redirect()->route('entities.spells.edit', $spell)
+            ->with('success', 'Effets du groupe enregistrés.');
     }
 
     /**
@@ -145,7 +169,15 @@ class SpellController extends Controller
     {
         $this->authorize('update', $spell);
 
-        $spell->update($request->validated());
+        $data = $request->validated();
+        $spellTypes = $data['spellTypes'] ?? null;
+        unset($data['spellTypes']);
+
+        $spell->update($data);
+
+        if (is_array($spellTypes)) {
+            $spell->spellTypes()->sync($spellTypes);
+        }
 
         $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes']);
 

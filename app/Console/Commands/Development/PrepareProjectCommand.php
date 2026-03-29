@@ -1,0 +1,64 @@
+<?php
+
+namespace App\Console\Commands\Development;
+
+use App\Console\Concerns\GuardsProductionEnvironment;
+use Illuminate\Console\Command;
+
+class PrepareProjectCommand extends Command
+{
+    use GuardsProductionEnvironment;
+
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'server:prepare';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Préparer le projet : framework, migrations, autoload, ide-helper:models, meta PHPStorm';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        if (! $this->guardDevelopmentOnly()) {
+            return self::FAILURE;
+        }
+
+        $this->info('Préparation du projet');
+
+        $this->info('Mise à jour des dépendances avec Composer');
+        exec('composer update');
+
+        $this->info('Génération des fichiers ide-helper:models');
+        $this->call('ide-helper:models');
+
+        $this->info('Génération des fichiers ide-helper:generate');
+        $this->call('ide-helper:generate');
+
+        $this->info('Génération des fichiers ide-helper:eloquent');
+        $this->call('ide-helper:eloquent');
+
+        $this->info('Génération des fichiers ide-helper:meta');
+        $this->call('ide-helper:meta');
+
+        $this->info('Regénération de l\'autoloader de Composer');
+        exec('composer dump-autoload');
+
+        $this->info('Installation des dépendances pnpm');
+        exec('pnpm install');
+
+        $this->info('Exécution des migrations de la base de données');
+        $this->call('migrate');
+
+        $this->info('Optimisation du framework');
+        $this->call('optimize');
+    }
+}

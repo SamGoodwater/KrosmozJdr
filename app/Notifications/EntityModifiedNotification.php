@@ -2,11 +2,11 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Mail\NotificationMail;
 use App\Services\NotificationService;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Notification;
 
 /**
  * Notification générique pour la modification d'une entité (page, section, campagne, etc.).
@@ -38,13 +38,13 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
     public $url;
 
     /**
-     * @param string $entityType
-     * @param int $entityId
-     * @param string $entityName
-     * @param \App\Models\User $modifier
-     * @param array $channels
-     * @param array $changes
-     * @param string|null $url
+     * @param  string  $entityType
+     * @param  int  $entityId
+     * @param  string  $entityName
+     * @param  \App\Models\User  $modifier
+     * @param  array  $channels
+     * @param  array  $changes
+     * @param  string|null  $url
      */
     public function __construct($entityType, $entityId, $entityName, $modifier, $channels = ['database'], $changes = [], $url = null)
     {
@@ -78,16 +78,18 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
     {
         $linkUrl = $this->url ?? url("/{$this->entityType}/{$this->entityId}");
         $lines = ["L'entité {$this->entityType} : '{$this->entityName}' (ID: {$this->entityId}) a été modifiée par {$this->modifier->name}."];
-        if (!empty($this->changes)) {
+        if (! empty($this->changes)) {
             $lines[] = 'Changements principaux :';
             $displayed = 0;
             foreach ($this->changes as $field => $change) {
-                if ($displayed >= 3) break;
+                if ($displayed >= 3) {
+                    break;
+                }
                 $old = NotificationService::truncateAndSanitize($change['old']);
                 $new = NotificationService::truncateAndSanitize($change['new']);
                 $line = "• $field : '$old' → '$new'";
-                if (!empty($change['image_url'])) {
-                    $line .= " (voir l'image : " . $change['image_url'] . ")";
+                if (! empty($change['image_url'])) {
+                    $line .= " (voir l'image : ".$change['image_url'].')';
                 }
                 $lines[] = $line;
                 $displayed++;
@@ -96,14 +98,15 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
                 $lines[] = '...et d\'autres changements.';
             }
         }
-        return new NotificationMail(
+
+        return (new NotificationMail(
             subject: 'Modification d\'une entité',
             greeting: 'Bonjour !',
             lines: $lines,
             actionUrl: $linkUrl,
             actionText: 'Voir l\'entité',
             footer: 'Merci d\'utiliser Krosmoz JDR.',
-        );
+        ))->to($notifiable->routeNotificationFor('mail', $this));
     }
 
     /**
@@ -117,7 +120,9 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
         $changes = [];
         $displayed = 0;
         foreach ($this->changes as $field => $change) {
-            if ($displayed >= 3) break;
+            if ($displayed >= 3) {
+                break;
+            }
             $changes[$field] = [
                 'old' => NotificationService::truncateAndSanitize($change['old']),
                 'new' => NotificationService::truncateAndSanitize($change['new']),
@@ -126,6 +131,7 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
         }
         $more_changes = count($this->changes) > 3;
         $linkUrl = $this->url ?? url("/{$this->entityType}/{$this->entityId}");
+
         return [
             'entity_type' => $this->entityType,
             'entity_id' => $this->entityId,

@@ -19,8 +19,7 @@ class UpdateEffectUsageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'effect_id' => 'sometimes|integer|exists:effects,id',
-            'required_creature_level' => 'nullable|integer|min:0',
+            'effect_degree_id' => 'sometimes|integer|exists:effect_degrees,id',
         ];
     }
 }

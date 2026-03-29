@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('dofusdb_id')->nullable();
             $table->string('name');
             $table->string('description')->nullable();
-            $table->string('bonus')->nullable();
+            $table->text('bonus')->nullable();
             $table->string('state')->default('draft');
             $table->tinyInteger('read_level')->default(0);
             $table->tinyInteger('write_level')->default(3);

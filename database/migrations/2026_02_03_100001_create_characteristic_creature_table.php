@@ -17,6 +17,7 @@ return new class extends Migration
         Schema::create('characteristic_creature', function (Blueprint $table) {
             $table->id();
             $table->foreignId('characteristic_id')->constrained('characteristics')->cascadeOnDelete();
+            $table->unsignedInteger('dofusdb_characteristic_id')->nullable()->comment('Id renvoyé par GET /characteristics (DofusDB)');
             $table->string('entity', 32)->comment('monster, class, npc ou * = toutes les entités du groupe');
             $table->string('db_column', 64)->nullable();
             $table->string('min', 512)->nullable();

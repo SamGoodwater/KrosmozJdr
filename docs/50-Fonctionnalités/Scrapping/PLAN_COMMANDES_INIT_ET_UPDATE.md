@@ -192,9 +192,9 @@ Pour chaque entité supportée :
 
 | Fichier | Action |
 |---------|--------|
-| `app/Console/Commands/ProjectInitCommand.php` | Créer |
-| `app/Console/Commands/ProjectUpdateCommand.php` | Créer |
-| `app/Console/Commands/ScrappingRunCommand.php` | Modifier (--update-mode, --skip-existing) |
+| `app/Console/Commands/Project/ProjectInitCommand.php` | Créer |
+| `app/Console/Commands/Project/ProjectUpdateCommand.php` | Créer |
+| `app/Console/Commands/Scrapping/ScrappingRunCommand.php` | Modifier (--update-mode, --skip-existing) |
 | `app/Console/Kernel.php` | Modifier (schedule project:update si env) |
 | `docs/50-Fonctionnalités/Scrapping/PLAN_COMMANDES_INIT_ET_UPDATE.md` | Ce document |
 | `docs/100- Done/README.md` | Ajouter entrée après livraison |

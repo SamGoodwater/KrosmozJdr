@@ -18,6 +18,13 @@ return new class extends Migration
             $table->boolean('in_menu')->default(true);
             $table->foreignId('parent_id')->nullable()->constrained('pages')->nullOnDelete();
             $table->integer('menu_order')->default(0);
+            $table->string('menu_group')->nullable();
+            $table->string('entity_key', 50)->nullable();
+            $table->string('icon', 255)->nullable();
+            $table->string('page_css_classes', 500)->nullable();
+            $table->string('title_css_classes', 500)->nullable();
+            $table->string('menu_item_css_classes', 500)->nullable();
+            $table->index('menu_group');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();

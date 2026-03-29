@@ -2,34 +2,26 @@
 
 namespace App\Models\Entity;
 
+use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Effect;
+use App\Models\SpellEffect;
+use App\Models\SpellState;
+use App\Models\Type\SpellType;
+use App\Models\User;
+use App\Support\AreaConstants;
+use App\Support\ElementConstants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Entity\Breed;
-use App\Models\Entity\Creature;
-use App\Models\Entity\Scenario;
-use App\Models\Entity\Campaign;
-use App\Models\Type\SpellType;
-use App\Models\Entity\Monster;
-use App\Models\EffectUsage;
-use App\Models\SpellState;
-use App\Models\SpellEffect;
-use App\Models\Concerns\HasEntityImageMedia;
-use App\Support\AreaConstants;
-use App\Support\ElementConstants;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
- * 
- *
  * @property int $id
  * @property string|null $official_id
  * @property string|null $dofusdb_id
  * @property string $name
  * @property string $description
  * @property string|null $effect
- * @property string|null $area Zone d'impact (déléguée au premier effet lié ; voir Effect::area)
  * @property string $level
  * @property string|null $po_min Portée min (valeur ou formule, ex. "0", "[level]")
  * @property string|null $po_max Portée max (valeur ou formule, ex. "1", "6")
@@ -49,6 +41,7 @@ use Spatie\MediaLibrary\HasMedia;
  * @property string|null $save_characteristic_key
  * @property string|null $save_dc_formula
  * @property string|null $save_success_note
+ * @property bool $auto_success_if_willing_target Réussite auto si la cible est consentante
  * @property string $state
  * @property int $read_level
  * @property int $write_level
@@ -69,6 +62,7 @@ use Spatie\MediaLibrary\HasMedia;
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, SpellType> $spellTypes
  * @property-read int|null $spell_types_count
+ *
  * @method static \Database\Factories\Entity\SpellFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell newQuery()
@@ -106,25 +100,34 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Spell extends Model implements HasMedia
 {
     /** @use HasFactory<\\Database\\Factories\\SpellFactory> */
-    use HasFactory, SoftDeletes, HasEntityImageMedia;
+    use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     public const CATEGORY_CLASS = 0;
+
     public const CATEGORY_CREATURE = 1;
+
     public const CATEGORY_LEARNABLE = 2;
+
     public const CATEGORY_CONSUMABLE = 3;
 
     public const RESOLUTION_ATTACK_ROLL = 'attack_roll';
+
     public const RESOLUTION_SAVING_THROW = 'saving_throw';
+
     public const RESOLUTION_AUTO_SUCCESS = 'auto_success';
 
     /** @deprecated Utiliser AreaConstants::SHAPE_ID_MAP */
@@ -169,6 +172,7 @@ class Spell extends Model implements HasMedia
         'save_characteristic_key',
         'save_dc_formula',
         'save_success_note',
+        'auto_success_if_willing_target',
         'state',
         'read_level',
         'write_level',
@@ -193,6 +197,7 @@ class Spell extends Model implements HasMedia
         'number_between_two_cast_editable' => 'boolean',
         'is_magic' => 'boolean',
         'auto_update' => 'boolean',
+        'auto_success_if_willing_target' => 'boolean',
     ];
 
     /**
@@ -218,6 +223,7 @@ class Spell extends Model implements HasMedia
     {
         return $this->belongsToMany(Creature::class, 'creature_spell');
     }
+
     /**
      * Les scénarios associés à ce sort.
      */
@@ -225,6 +231,7 @@ class Spell extends Model implements HasMedia
     {
         return $this->belongsToMany(Scenario::class, 'scenario_spell');
     }
+
     /**
      * Les campagnes associées à ce sort.
      */
@@ -232,6 +239,7 @@ class Spell extends Model implements HasMedia
     {
         return $this->belongsToMany(Campaign::class, 'campaign_spell');
     }
+
     /**
      * Les types de ce sort.
      */
@@ -269,11 +277,11 @@ class Spell extends Model implements HasMedia
     }
 
     /**
-     * Usages d'effets unifiés (effect_usage) pour ce sort.
+     * Définitions d’effets liées à ce sort (pivot effect_spell).
      */
-    public function effectUsages()
+    public function effects()
     {
-        return $this->morphMany(EffectUsage::class, 'entity');
+        return $this->belongsToMany(Effect::class, 'effect_spell');
     }
 
     /**
@@ -285,19 +293,19 @@ class Spell extends Model implements HasMedia
         $min = $this->po_min ?? '1';
         $max = $this->po_max ?? $this->po_min ?? '1';
 
-        return $min === $max ? $min : $min . '-' . $max;
+        return $min === $max ? $min : $min.' - '.$max;
     }
 
     /**
-     * Zone d'impact du sort (déléguée au premier effet lié).
-     * La colonne area a été déplacée sur Effect ; cet accesseur assure la rétrocompatibilité.
+     * Zone d’impact affichée (premier degré du premier effet lié).
      *
-     * @return string|null Notation zone (point, line-1x9, cross-2, circle-2, rect-3x4) ou null
+     * @return string|null Notation zone (point, line-1x9, …) ou null
      */
     public function getAreaAttribute(): ?string
     {
-        $usage = $this->effectUsages()->with('effect')->first();
+        $effect = $this->effects()->with('degrees')->first();
+        $deg = $effect?->degrees->sortBy('degree')->first();
 
-        return $usage?->effect?->area;
+        return $deg?->area;
     }
 }

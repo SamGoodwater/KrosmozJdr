@@ -111,6 +111,8 @@ export const SPECIFIC_PROPS = {
         ],
         field: [
             { key: 'options', type: Array, default: () => [] },
+            /** Badges option (filtres tableau / {@link buildSelectOptionBadgeProps}) */
+            { key: 'optionBadge', type: Object, default: null },
         ],
         events: [...COMMON_EVENTS, 'onChange'],
     },

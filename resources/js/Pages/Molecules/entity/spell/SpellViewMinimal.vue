@@ -20,8 +20,13 @@ import {
     resolveSpellEffectsDisplayCell,
     spellEffectsCellHasContent,
 } from "@/Composables/entity/useSpellEffectsDisplayCell";
-import { getEntityCharacteristicsByDbColumn } from "@/Utils/Entity/entity-view-ui";
+import { getEntityCharacteristicsByDbColumn, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
+import { getCharacteristicColorStyle, isPoCac, PO_CAC_ICON, PO_CAC_TOOLTIP } from "@/Composables/entity/useCharacteristicDisplay";
+import { getByCharacteristicKey } from "@/Composables/store/useCharacteristicsStore";
+import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import SpellSummonMonsterInline from "@/Pages/Molecules/entity/spell/SpellSummonMonsterInline.vue";
+import { Spell } from "@/Models/Entity/Spell";
 
 const props = defineProps({
     spell: {
@@ -63,7 +68,26 @@ const levelValue = computed(() => {
 });
 
 const paValue = computed(() => entity.value?.pa ?? entity.value?._data?.pa ?? null);
-const poValue = computed(() => entity.value?.po ?? entity.value?._data?.po ?? null);
+
+/** Portée affichée « min - max » (aligné modèle Spell / API). */
+const poRangeLabel = computed(() => {
+    const min = entity.value?.poMin ?? entity.value?._data?.po_min;
+    const max = entity.value?.poMax ?? entity.value?._data?.po_max;
+    const hasMin = min != null && String(min).trim() !== "";
+    const hasMax = max != null && String(max).trim() !== "";
+    if (!hasMin && !hasMax) {
+        const fallback = entity.value?.po ?? entity.value?._data?.po ?? "";
+        return fallback !== "" ? String(fallback) : "";
+    }
+    const a = hasMin ? String(min).trim() : "";
+    const b = hasMax ? String(max).trim() : a;
+    if (a === b) {
+        return a;
+    }
+    return `${a} - ${b}`;
+});
+
+const poIsCac = computed(() => isPoCac(poRangeLabel.value));
 
 const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
@@ -79,9 +103,47 @@ const effectDisplayCell = computed(() =>
 );
 const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
 
+/** Monstres invoqués (instance Spell ou objet brut table / Inertia avec `effects_definitions`). */
+const summonMonsterBriefs = computed(() => {
+    const e = entity.value;
+    const raw =
+        e instanceof Spell
+            ? e.effectsDefinitions
+            : e?.effects_definitions ?? e?._data?.effects_definitions;
+    return Spell.summonMonstersFromEffectsDefinitionsPayload(raw);
+});
+
 const byDbColumn = computed(() => getEntityCharacteristicsByDbColumn(props.tableMeta, "spell"));
 const paMeta = computed(() => byDbColumn.value?.pa || null);
-const poMeta = computed(() => byDbColumn.value?.po || byDbColumn.value?.po_max || null);
+const rangeSpellMeta = computed(() => getByCharacteristicKey("spell", "range_spell") || null);
+
+const descriptorsMinimal = computed(() => getSpellFieldDescriptors({ meta: {} }));
+
+function fieldUiTooltip(fieldKey) {
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptorsMinimal.value,
+        tableMeta: props.tableMeta,
+        entityType: "spell",
+    }).tooltip;
+}
+
+const paTooltip = computed(() => {
+    const h = paMeta.value?.helper || paMeta.value?.descriptions?.join?.(" ") || "";
+    return [h || "Coût en points d’action.", paValue.value != null && `Valeur : ${paValue.value}`]
+        .filter(Boolean)
+        .join("\n\n");
+});
+
+const poTooltip = computed(() => {
+    const m = rangeSpellMeta.value;
+    const h = m?.helper || (Array.isArray(m?.descriptions) ? m.descriptions.join(" ") : m?.descriptions) || "";
+    const base = h || "Portée minimale et maximale en cases.";
+    if (poIsCac.value) {
+        return [base, PO_CAC_TOOLTIP].filter(Boolean).join("\n\n");
+    }
+    return [base, poRangeLabel.value && `Affichage : ${poRangeLabel.value}`].filter(Boolean).join("\n\n");
+});
 
 const imageUrl = computed(() => {
     const u = entity.value?.image ?? entity.value?._data?.image;
@@ -172,24 +234,36 @@ const handleAction = async (actionKey) => {
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <CellRenderer
+                            <Tooltip
                                 v-if="elementCell?.value && elementCell.value !== '—'"
-                                :cell="elementCell"
-                                class="inline-flex items-center"
-                            />
-                            <CellRenderer
+                                :content="fieldUiTooltip('element')"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center">
+                                    <CellRenderer :cell="elementCell" class="inline-flex items-center" />
+                                </span>
+                            </Tooltip>
+                            <Tooltip
                                 v-if="categoryCell?.value && categoryCell.value !== '-' && categoryCell.value !== '—'"
-                                :cell="categoryCell"
-                                class="inline-flex items-center"
-                            />
-                            <CellRenderer
+                                :content="fieldUiTooltip('category')"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center">
+                                    <CellRenderer :cell="categoryCell" class="inline-flex items-center" />
+                                </span>
+                            </Tooltip>
+                            <Tooltip
                                 v-if="spellTypesCell?.value && spellTypesCell.value !== '-' && spellTypesCell.value !== '—'"
-                                :cell="spellTypesCell"
-                                class="inline-flex items-center"
-                            />
+                                :content="fieldUiTooltip('spell_types')"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center">
+                                    <CellRenderer :cell="spellTypesCell" class="inline-flex items-center" />
+                                </span>
+                            </Tooltip>
                             <Tooltip
                                 v-if="paValue != null && paValue !== ''"
-                                :content="`PA: ${paValue}`"
+                                :content="paTooltip"
                                 placement="top"
                             >
                                 <span class="inline-flex items-center gap-1">
@@ -197,24 +271,24 @@ const handleAction = async (actionKey) => {
                                         :source="paMeta?.icon || 'fa-solid fa-bolt'"
                                         alt="PA"
                                         size="xs"
-                                        :style="paMeta?.color ? { color: `var(--color-${paMeta.color})` } : undefined"
+                                        :style="paMeta?.color ? getCharacteristicColorStyle(paMeta.color) : undefined"
                                     />
                                     <span>{{ paValue }}</span>
                                 </span>
                             </Tooltip>
-                            <Tooltip
-                                v-if="poValue != null && poValue !== ''"
-                                :content="`Portée: ${poValue}`"
-                                placement="top"
-                            >
+                            <Tooltip v-if="poRangeLabel !== ''" :content="poTooltip" placement="top">
                                 <span class="inline-flex items-center gap-1">
                                     <Icon
-                                        :source="poMeta?.icon || 'fa-solid fa-crosshairs'"
+                                        :source="poIsCac ? PO_CAC_ICON : (rangeSpellMeta?.icon || 'fa-solid fa-crosshairs')"
                                         alt="Portée"
                                         size="xs"
-                                        :style="poMeta?.color ? { color: `var(--color-${poMeta.color})` } : undefined"
+                                        :style="
+                                            rangeSpellMeta?.color
+                                                ? getCharacteristicColorStyle(rangeSpellMeta.color)
+                                                : undefined
+                                        "
                                     />
-                                    <span>{{ poValue }}</span>
+                                    <span v-if="!poIsCac">{{ poRangeLabel }}</span>
                                 </span>
                             </Tooltip>
                         </div>
@@ -229,6 +303,21 @@ const handleAction = async (actionKey) => {
                         ui-color="primary"
                         class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
                     />
+                </div>
+                <div
+                    v-if="summonMonsterBriefs.length > 0"
+                    class="spell-summon-monsters w-full pt-1.5 mt-1 border-t border-base-300 flex flex-col gap-1.5"
+                >
+                    <span class="text-[10px] font-semibold uppercase tracking-wide text-base-content/55">
+                        Invocation{{ summonMonsterBriefs.length > 1 ? "s" : "" }}
+                    </span>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <SpellSummonMonsterInline
+                            v-for="m in summonMonsterBriefs"
+                            :key="m.id"
+                            :monster-brief="m"
+                        />
+                    </div>
                 </div>
             </div>
         </template>
@@ -288,24 +377,36 @@ const handleAction = async (actionKey) => {
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <CellRenderer
+                            <Tooltip
                                 v-if="elementCell?.value && elementCell.value !== '—'"
-                                :cell="elementCell"
-                                class="inline-flex items-center"
-                            />
-                            <CellRenderer
+                                :content="fieldUiTooltip('element')"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center">
+                                    <CellRenderer :cell="elementCell" class="inline-flex items-center" />
+                                </span>
+                            </Tooltip>
+                            <Tooltip
                                 v-if="categoryCell?.value && categoryCell.value !== '-' && categoryCell.value !== '—'"
-                                :cell="categoryCell"
-                                class="inline-flex items-center"
-                            />
-                            <CellRenderer
+                                :content="fieldUiTooltip('category')"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center">
+                                    <CellRenderer :cell="categoryCell" class="inline-flex items-center" />
+                                </span>
+                            </Tooltip>
+                            <Tooltip
                                 v-if="spellTypesCell?.value && spellTypesCell.value !== '-' && spellTypesCell.value !== '—'"
-                                :cell="spellTypesCell"
-                                class="inline-flex items-center"
-                            />
+                                :content="fieldUiTooltip('spell_types')"
+                                placement="top"
+                            >
+                                <span class="inline-flex items-center">
+                                    <CellRenderer :cell="spellTypesCell" class="inline-flex items-center" />
+                                </span>
+                            </Tooltip>
                             <Tooltip
                                 v-if="paValue != null && paValue !== ''"
-                                :content="`PA: ${paValue}`"
+                                :content="paTooltip"
                                 placement="top"
                             >
                                 <span class="inline-flex items-center gap-1">
@@ -313,24 +414,24 @@ const handleAction = async (actionKey) => {
                                         :source="paMeta?.icon || 'fa-solid fa-bolt'"
                                         alt="PA"
                                         size="xs"
-                                        :style="paMeta?.color ? { color: `var(--color-${paMeta.color})` } : undefined"
+                                        :style="paMeta?.color ? getCharacteristicColorStyle(paMeta.color) : undefined"
                                     />
                                     <span>{{ paValue }}</span>
                                 </span>
                             </Tooltip>
-                            <Tooltip
-                                v-if="poValue != null && poValue !== ''"
-                                :content="`Portée: ${poValue}`"
-                                placement="top"
-                            >
+                            <Tooltip v-if="poRangeLabel !== ''" :content="poTooltip" placement="top">
                                 <span class="inline-flex items-center gap-1">
                                     <Icon
-                                        :source="poMeta?.icon || 'fa-solid fa-crosshairs'"
+                                        :source="poIsCac ? PO_CAC_ICON : (rangeSpellMeta?.icon || 'fa-solid fa-crosshairs')"
                                         alt="Portée"
                                         size="xs"
-                                        :style="poMeta?.color ? { color: `var(--color-${poMeta.color})` } : undefined"
+                                        :style="
+                                            rangeSpellMeta?.color
+                                                ? getCharacteristicColorStyle(rangeSpellMeta.color)
+                                                : undefined
+                                        "
                                     />
-                                    <span>{{ poValue }}</span>
+                                    <span v-if="!poIsCac">{{ poRangeLabel }}</span>
                                 </span>
                             </Tooltip>
                         </div>
@@ -352,6 +453,21 @@ const handleAction = async (actionKey) => {
                         ui-color="primary"
                         class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
                     />
+                </div>
+                <div
+                    v-if="summonMonsterBriefs.length > 0"
+                    class="spell-summon-monsters w-full pt-1.5 mt-1 border-t border-base-300 flex flex-col gap-1.5"
+                >
+                    <span class="text-[10px] font-semibold uppercase tracking-wide text-base-content/55">
+                        Invocation{{ summonMonsterBriefs.length > 1 ? "s" : "" }}
+                    </span>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <SpellSummonMonsterInline
+                            v-for="m in summonMonsterBriefs"
+                            :key="m.id"
+                            :monster-brief="m"
+                        />
+                    </div>
                 </div>
             </div>
         </template>

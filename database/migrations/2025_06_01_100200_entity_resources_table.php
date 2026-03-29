@@ -13,7 +13,8 @@ return new class extends Migration
             $table->string('dofusdb_id')->nullable();
             $table->integer('official_id')->nullable();
             $table->string('name');
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
+            $table->string('effect')->nullable();
             $table->string('level')->default('1');
             $table->string('price')->nullable();
             $table->string('weight')->nullable();

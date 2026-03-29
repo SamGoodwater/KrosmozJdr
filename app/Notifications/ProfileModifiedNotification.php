@@ -2,11 +2,11 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Mail\NotificationMail;
 use App\Services\NotificationService;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Notification;
 
 /**
  * Notification pour la modification du profil utilisateur.
@@ -20,14 +20,17 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     public $modifiedUser;
+
     public $modifier;
+
     public $channels;
+
     public $changes;
 
     /**
-     * @param \App\Models\User $modifiedUser
-     * @param \App\Models\User $modifier
-     * @param array $channels
+     * @param  \App\Models\User  $modifiedUser
+     * @param  \App\Models\User  $modifier
+     * @param  array  $channels
      */
     public function __construct($modifiedUser, $modifier, $channels = ['database', 'mail'], $changes = [])
     {
@@ -57,16 +60,18 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $lines = ["Ton profil a été modifié par {$this->modifier->name}."];
-        if (!empty($this->changes)) {
+        if (! empty($this->changes)) {
             $lines[] = 'Changements principaux :';
             $displayed = 0;
             foreach ($this->changes as $field => $change) {
-                if ($displayed >= 3) break;
+                if ($displayed >= 3) {
+                    break;
+                }
                 $old = NotificationService::truncateAndSanitize($change['old']);
                 $new = NotificationService::truncateAndSanitize($change['new']);
                 $line = "• $field : '$old' → '$new'";
-                if (!empty($change['image_url'])) {
-                    $line .= " (voir l'image : " . $change['image_url'] . ")";
+                if (! empty($change['image_url'])) {
+                    $line .= " (voir l'image : ".$change['image_url'].')';
                 }
                 $lines[] = $line;
                 $displayed++;
@@ -76,14 +81,15 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
             }
         }
         $url = url("/users/{$this->modifiedUser->id}");
-        return new NotificationMail(
+
+        return (new NotificationMail(
             subject: 'Ton profil a été modifié',
             greeting: 'Bonjour !',
             lines: $lines,
             actionUrl: $url,
             actionText: 'Voir mon profil',
             footer: 'Si tu n\'es pas à l\'origine de cette modification, contacte un administrateur.',
-        );
+        ))->to($notifiable->routeNotificationFor('mail', $this));
     }
 
     /**
@@ -97,7 +103,9 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
         $changes = [];
         $displayed = 0;
         foreach ($this->changes as $field => $change) {
-            if ($displayed >= 3) break;
+            if ($displayed >= 3) {
+                break;
+            }
             $changes[$field] = [
                 'old' => NotificationService::truncateAndSanitize($change['old']),
                 'new' => NotificationService::truncateAndSanitize($change['new']),
@@ -106,6 +114,7 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
             $displayed++;
         }
         $more_changes = count($this->changes) > 3;
+
         return [
             'modified_user_id' => $this->modifiedUser->id,
             'modifier_id' => $this->modifier->id,

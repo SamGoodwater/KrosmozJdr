@@ -21,8 +21,11 @@ import { computed, ref, useAttrs } from 'vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import InputCore from '@/Pages/Atoms/data-input/InputCore.vue';
 import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue';
+import Badge from '@/Pages/Atoms/data-display/Badge.vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import useInputField from '@/Composables/form/useInputField';
 import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper';
+import { buildSelectOptionBadgeProps } from '@/Utils/Entity/selectOptionBadge';
 
 // ------------------------------------------
 // 🔧 Définition des props et des events
@@ -104,17 +107,47 @@ const filteredOptions = computed(() => {
 // Valeur affichée : on s'appuie sur la prop pour rester synchronisé avec le parent (v-model)
 const displayedValue = computed(() => props.modelValue ?? currentValue.value);
 
+// Option sélectionnée (objet complet, pour badges)
+const selectedOption = computed(() => {
+    const val = displayedValue.value;
+    if (val === null || val === undefined || val === '') {
+        return null;
+    }
+    return (
+        (props.options || []).find((o) => {
+            const optValue = o?.value ?? o;
+            return String(optValue) === String(val);
+        }) || null
+    );
+});
+
 // Label de l'option sélectionnée (basé sur la prop pour mise à jour fiable)
 const selectedLabel = computed(() => {
     const val = displayedValue.value;
     if (val === null || val === undefined || val === '') {
         return props.placeholder || 'Choisir...';
     }
-    const opt = (props.options || []).find((o) => {
-        const optValue = o?.value ?? o;
-        return String(optValue) === String(val);
-    });
+    const opt = selectedOption.value;
     return opt?.label ?? opt?.value ?? val ?? props.placeholder ?? 'Choisir...';
+});
+
+const badgesEnabled = computed(() => Boolean(props.optionBadge?.enabled));
+
+const selectedBadgeProps = computed(() => {
+    if (!badgesEnabled.value || !selectedOption.value) return null;
+    return buildSelectOptionBadgeProps(selectedOption.value, props.optionBadge, props.color);
+});
+
+/** Options filtrées + props Badge pré-calculées (évite N appels dans le template). */
+const filteredOptionsWithBadges = computed(() => {
+    const opts = filteredOptions.value;
+    if (!badgesEnabled.value) {
+        return opts.map((raw) => ({ raw, badge: null }));
+    }
+    return opts.map((raw) => ({
+        raw,
+        badge: buildSelectOptionBadgeProps(raw, props.optionBadge, props.color),
+    }));
 });
 
 // Indique si une option est sélectionnée (pour le style de fond, sans radio)
@@ -169,7 +202,8 @@ defineExpose({
                     <button
                         type="button"
                         :class="[
-                            'select select-bordered w-full max-w-none text-left',
+                            'select select-bordered w-full max-w-none text-left min-h-0',
+                            badgesEnabled ? 'select-trigger--badges py-1.5' : '',
                             props.size === 'xs' ? 'select-xs' : props.size === 'sm' ? 'select-sm' : props.size === 'md' ? 'select-md' : props.size === 'lg' ? 'select-lg' : props.size === 'xl' ? 'select-xl' : '',
                             hasError ? 'select-error' : '',
                             (isReadonly || props.disabled) ? 'select-disabled' : '',
@@ -178,13 +212,54 @@ defineExpose({
                         :disabled="props.disabled || isReadonly"
                         ref="inputRef"
                     >
-                        <span :class="{ 'opacity-50': (displayedValue == null || displayedValue === '') }">
+                        <span
+                            v-if="badgesEnabled && selectedBadgeProps && selectedOption"
+                            class="inline-flex min-w-0 max-w-full items-center gap-1.5"
+                        >
+                            <img
+                                v-if="selectedOption.iconUrl"
+                                :src="selectedOption.iconUrl"
+                                :alt="selectedLabel"
+                                class="h-5 w-5 shrink-0 object-contain opacity-95"
+                            />
+                            <Icon
+                                v-else-if="selectedOption.iconFa"
+                                :source="selectedOption.iconFa"
+                                :alt="selectedLabel"
+                                size="sm"
+                                class="shrink-0 opacity-95"
+                            />
+                            <span
+                                v-if="selectedBadgeProps.stateDotClass"
+                                class="h-2 w-2 shrink-0 rounded-full opacity-90 ring-1 ring-base-300"
+                                :class="selectedBadgeProps.stateDotClass"
+                                aria-hidden="true"
+                            />
+                            <Badge
+                                :color="selectedBadgeProps.color"
+                                :auto-label="selectedBadgeProps.autoLabel"
+                                :auto-scheme="selectedBadgeProps.autoScheme || undefined"
+                                :auto-tone="selectedBadgeProps.autoTone || undefined"
+                                :variant="selectedBadgeProps.variant"
+                                :glassy="Boolean(selectedBadgeProps.glassy)"
+                                :strong="Boolean(selectedBadgeProps.strong)"
+                                :text-color="selectedBadgeProps.textColor || ''"
+                                size="sm"
+                                class="max-w-full min-w-0"
+                            >
+                                <span class="truncate">{{ selectedLabel }}</span>
+                            </Badge>
+                        </span>
+                        <span
+                            v-else
+                            :class="{ 'opacity-50': (displayedValue == null || displayedValue === '') }"
+                        >
                             {{ selectedLabel }}
                         </span>
                     </button>
                 </template>
                 <template #content>
-                    <div class="p-3 w-72 space-y-2">
+                    <div class="p-2 w-72 space-y-1.5 sm:w-80">
                         <!-- Champ de recherche -->
                         <InputCore
                             type="search"
@@ -202,7 +277,7 @@ defineExpose({
                         <button
                             v-if="!props.required"
                             type="button"
-                            class="w-full flex items-center rounded p-2 text-left text-sm cursor-pointer transition-colors"
+                            class="flex w-full cursor-pointer items-center rounded px-2 py-1.5 text-left text-sm transition-colors"
                             :class="isOptionSelected(null) ? 'bg-primary/20 text-primary-content' : 'hover:bg-base-200'"
                             @click.stop="handleSelect(null)"
                         >
@@ -210,20 +285,55 @@ defineExpose({
                         </button>
 
                             <!-- Liste des options filtrées (sans radio, sélection par fond) -->
-                            <div class="max-h-64 overflow-y-auto pr-1 space-y-1">
+                            <div class="max-h-64 space-y-0.5 overflow-y-auto pr-1">
                                 <button
-                                    v-for="option in filteredOptions"
-                                    :key="String(option?.value ?? option)"
+                                    v-for="row in filteredOptionsWithBadges"
+                                    :key="String(row.raw?.value ?? row.raw)"
                                     type="button"
-                                    class="w-full flex items-center rounded p-2 text-left text-sm cursor-pointer transition-colors"
+                                    class="flex w-full cursor-pointer items-center gap-1.5 rounded px-2 py-1.5 text-left text-sm transition-colors"
                                     :class="[
-                                        option?.disabled ? 'opacity-50 cursor-not-allowed' : '',
-                                        isOptionSelected(option?.value ?? option) ? 'bg-primary/20 text-primary-content' : 'hover:bg-base-200'
+                                        row.raw?.disabled ? 'cursor-not-allowed opacity-50' : '',
+                                        isOptionSelected(row.raw?.value ?? row.raw) ? 'bg-primary/20 text-primary-content' : 'hover:bg-base-200'
                                     ]"
-                                    :disabled="option?.disabled"
-                                    @click.stop="!option?.disabled && handleSelect(option?.value ?? option)"
+                                    :disabled="row.raw?.disabled"
+                                    @click.stop="!row.raw?.disabled && handleSelect(row.raw?.value ?? row.raw)"
                                 >
-                                    <span>{{ option?.label ?? option?.value ?? option }}</span>
+                                    <template v-if="row.badge">
+                                        <img
+                                            v-if="row.raw.iconUrl"
+                                            :src="row.raw.iconUrl"
+                                            :alt="String(row.raw?.label ?? row.raw?.value ?? '')"
+                                            class="h-5 w-5 shrink-0 object-contain opacity-95"
+                                        />
+                                        <Icon
+                                            v-else-if="row.raw.iconFa"
+                                            :source="row.raw.iconFa"
+                                            :alt="String(row.raw?.label ?? row.raw?.value ?? '')"
+                                            size="sm"
+                                            class="shrink-0 opacity-95"
+                                        />
+                                        <span
+                                            v-if="row.badge.stateDotClass"
+                                            class="h-2 w-2 shrink-0 rounded-full opacity-90 ring-1 ring-base-300"
+                                            :class="row.badge.stateDotClass"
+                                            aria-hidden="true"
+                                        />
+                                        <Badge
+                                            :color="row.badge.color"
+                                            :auto-label="row.badge.autoLabel"
+                                            :auto-scheme="row.badge.autoScheme || undefined"
+                                            :auto-tone="row.badge.autoTone || undefined"
+                                            :variant="row.badge.variant"
+                                            :glassy="Boolean(row.badge.glassy)"
+                                            :strong="Boolean(row.badge.strong)"
+                                            :text-color="row.badge.textColor || ''"
+                                            size="sm"
+                                            class="min-w-0 flex-1"
+                                        >
+                                            {{ row.raw?.label ?? row.raw?.value ?? row.raw }}
+                                        </Badge>
+                                    </template>
+                                    <span v-else>{{ row.raw?.label ?? row.raw?.value ?? row.raw }}</span>
                                 </button>
                             
                             <!-- Message si aucune option trouvée -->
@@ -272,6 +382,10 @@ defineExpose({
     &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+    }
+
+    &.select-trigger--badges {
+        min-height: 2.25rem;
     }
 }
 </style>

@@ -285,39 +285,26 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * Effet (conteneur de sous-effets). Niveau sur effect_usage.
- * 
- * target_type : application directe sur la cible (direct), ou pose d’un piège (trap) / glyphe (glyph).
- * area : notation de la zone d’impact sur le damier (point, line-1x9, cross-2, circle-2, rect-3x4).
+ * Définition d’effet (généralités). Les degrés (zone, seuil, sous-effets) : {@see EffectDegree}.
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
  * @property int $id
  * @property string|null $name
  * @property string|null $slug
  * @property string|null $description
- * @property int|null $effect_group_id
- * @property int|null $degree
  * @property string $target_type
- * @property string|null $area
- * @property string|null $config_signature
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\EffectGroup|null $effectGroup
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectSubEffect> $effectSubEffects
- * @property-read int|null $effect_sub_effects_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectDegree> $degrees
+ * @property-read int|null $degrees_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SubEffect> $subEffects
- * @property-read int|null $sub_effects_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Spell> $spells
+ * @property-read int|null $spells_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereArea($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereConfigSignature($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereDegree($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereEffectGroupId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereSlug($value)
@@ -329,33 +316,45 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * Groupe d'effets (degres de puissance).
+ * Degré d’un effet : zone, slug, seuil de niveau requis, sous-effets.
  *
+ * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
  * @property int $id
- * @property string $name
- * @property string $slug
+ * @property int $effect_id
+ * @property int $degree
+ * @property int|null $required_creature_level
+ * @property string|null $area
+ * @property string|null $slug
+ * @property string|null $config_signature
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Effect> $effects
- * @property-read int|null $effects_count
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup whereUpdatedAt($value)
+ * @property-read \App\Models\Effect $effect
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectSubEffect> $effectSubEffects
+ * @property-read int|null $effect_sub_effects_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read int|null $effect_usages_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereArea($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereConfigSignature($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereDegree($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereEffectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereRequiredCreatureLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereUpdatedAt($value)
  */
-	class EffectGroup extends \Eloquent {}
+	class EffectDegree extends \Eloquent {}
 }
 
 namespace App\Models{
 /**
- * Pivot effect / sub_effect (ordre, scope, params).
+ * Pivot degré d’effet / sub_effect (ordre, scope, params).
  *
  * @property int $id
- * @property int $effect_id
+ * @property int $effect_degree_id
  * @property int $sub_effect_id
  * @property int $order
  * @property string $scope
@@ -371,7 +370,7 @@ namespace App\Models{
  * @property string|null $logic_condition
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Effect $effect
+ * @property-read \App\Models\EffectDegree $effectDegree
  * @property-read \App\Models\SubEffect $subEffect
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect newQuery()
@@ -381,7 +380,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereDiceNum($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereDiceSide($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereDurationFormula($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereEffectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereEffectDegreeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereLogicCondition($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereLogicGroup($value)
@@ -399,34 +398,26 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * Lien polymorphique entité (spell, item, consumable…) → effect.
+ * Lien polymorphique entité (item, consumable, resource) → degré d’effet.
  * 
- * level_min / level_max = tranche de **niveau de créature** (PJ / monstre) pour laquelle cet usage s’applique
- * (distinct du niveau « fiche sort » sur `spells.level`). Un effet de degré D2 peut ainsi exiger un niveau
- * créature différent de D1 via une autre ligne effect_usages.
+ * Les sorts utilisent la table {@see effect_spell} ; le seuil est sur {@see EffectDegree::required_creature_level}.
  *
  * @property int $id
  * @property string $entity_type
  * @property int $entity_id
- * @property int $effect_id
- * @property int|null $level_min
- * @property int|null $level_max
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
- * @property-read Model $entity
- * @property-read Effect $effect
- * @property int|null $caster_level_min
+ * @property int $effect_degree_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\EffectDegree $effectDegree
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $entity
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereCasterLevelMin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEffectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEffectDegreeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEntityId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEntityType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereLevelMax($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereLevelMin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereUpdatedAt($value)
  */
 	class EffectUsage extends \Eloquent {}
@@ -1480,7 +1471,6 @@ namespace App\Models\Entity{
  * @property string $name
  * @property string $description
  * @property string|null $effect
- * @property string|null $area Zone d'impact (déléguée au premier effet lié ; voir Effect::area)
  * @property string $level
  * @property string|null $po_min Portée min (valeur ou formule, ex. "0", "[level]")
  * @property string|null $po_max Portée max (valeur ou formule, ex. "1", "6")
@@ -1560,8 +1550,9 @@ namespace App\Models\Entity{
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
  * @property-read int|null $breeds_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
- * @property-read int|null $effect_usages_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Effect> $effects
+ * @property-read int|null $effects_count
+ * @property-read string|null $area
  * @property-read string $po_display
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
@@ -2151,8 +2142,8 @@ namespace App\Models{
  * @property int|null $dofusdb_effect_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Effect> $effects
- * @property-read int|null $effects_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectDegree> $effectDegrees
+ * @property-read int|null $effect_degrees_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect query()

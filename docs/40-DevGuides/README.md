@@ -2,9 +2,13 @@
 
 Ce dossier regroupe les scripts, automatisations et outils pour le développement, la maintenance et le déploiement du projet.
 
+## Interface unifiée `project:*`
+
+Voir **[PROJECT_CLI.md](./PROJECT_CLI.md)** : `project:deps`, `project:dev`, `project:refresh`, `project:data`, `project:data:sync`, `project:super-admin`, lien avec `run` et `setup`.
+
 ## Commande `php artisan setup`
 
-Setup centralise la vérification/installation des logiciels et librairies et la base de données. Utilisée seule ou appelée par `run`. Options : `--install` (paquets apt dont MySQL + composer/pnpm), `--update` (apt, pnpm, composer), `--db` (MySQL par défaut : création user et base si besoin via root/DB_PASSWORD, puis migrations + seeders ; `--no-seed` pour sans seeders), `--clean` (supprimer node_modules, vendor, locks ; clear config), `--refresh` (clean puis réinstall). Liste des paquets apt dans `app/Console/Commands/SetupCommand.php`.
+Setup centralise la vérification/installation des logiciels et librairies et la base de données. Utilisée seule ou appelée par `run`. Options : `--install` (paquets apt dont MySQL + composer/pnpm), `--update` (apt, pnpm, composer), `--db` (MySQL par défaut : création user et base si besoin via root/DB_PASSWORD, puis migrations + seeders ; `--no-seed` pour sans seeders), `--clean` (supprimer node_modules, vendor, locks ; clear config), `--refresh` (clean puis réinstall). Liste des paquets apt dans `app/Console/Commands/Project/SetupCommand.php`.
 
 ## Commande `php artisan run`
 
@@ -58,7 +62,7 @@ La commande `run` centralise toutes les tâches de maintenance, de nettoyage, de
 - **Mise à jour globale de pnpm/composer** : nécessite sudo, à faire manuellement si besoin, pas dans les scripts automatisés.
 - **Utilisation de reset** : uniquement en cas de problème, jamais en routine.
 - **Enchaînement d’options** : tu peux combiner autant d’options que tu veux, elles seront exécutées dans l’ordre logique (kill → clear → update/install → optimise → migrate → dev).
-- **Voir le code source** : `app/Console/Commands/Run.php` (run), `app/Console/Commands/SetupCommand.php` (setup, liste des paquets apt).
+- **Voir le code source** : `app/Console/Commands/Project/ProjectRunCommand.php` (`run`), `app/Console/Commands/Project/SetupCommand.php` (setup, liste des paquets apt). Index des commandes : `app/Console/README.md`.
 
 ---
 

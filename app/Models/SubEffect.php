@@ -23,10 +23,14 @@ class SubEffect extends Model
         'dofusdb_effect_id' => 'integer',
     ];
 
-    public function effects(): BelongsToMany
+    public function effectDegrees(): BelongsToMany
     {
-        return $this->belongsToMany(Effect::class, 'effect_sub_effect')
-            ->withPivot(['order', 'scope', 'value_min', 'value_max', 'dice_num', 'dice_side', 'params'])
+        return $this->belongsToMany(EffectDegree::class, 'effect_sub_effect', 'sub_effect_id', 'effect_degree_id')
+            ->withPivot([
+                'order', 'scope', 'value_min', 'value_max', 'dice_num', 'dice_side',
+                'duration_formula', 'logic_group', 'logic_operator', 'logic_condition',
+                'params', 'crit_only',
+            ])
             ->withTimestamps()
             ->orderByPivot('order');
     }

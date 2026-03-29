@@ -2,35 +2,34 @@
 
 namespace Tests\Feature\Scrapping;
 
-use App\Models\User;
 use App\Models\Entity\Breed;
-use App\Models\Entity\Spell;
-use App\Models\Entity\Creature;
-use App\Models\Entity\Monster;
-use App\Models\Entity\Resource;
-use App\Models\Entity\Item;
-use App\Models\Entity\Panoply;
 use App\Models\Entity\Consumable;
+use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
+use App\Models\Entity\Monster;
+use App\Models\Entity\Panoply;
+use App\Models\Entity\Resource;
+use App\Models\Entity\Spell;
+use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
 use App\Models\Type\ResourceType;
-use App\Models\Type\ConsumableType;
+use App\Models\User;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Tests\CreatesSystemUser;
 use Tests\SeedsScrappingPipeline;
 use Tests\TestCase;
-use Tests\CreatesSystemUser;
 
 /**
  * Tests d'intégration pour vérifier que les relations sont bien importées lors du scrapping.
- *
- * @package Tests\Feature\Scrapping
  */
 class ScrappingRelationsTest extends TestCase
 {
-    use RefreshDatabase, CreatesSystemUser, SeedsScrappingPipeline;
+    use CreatesSystemUser, RefreshDatabase, SeedsScrappingPipeline;
 
     private Orchestrator $orchestrator;
+
     private User $user;
 
     protected function setUp(): void
@@ -46,6 +45,7 @@ class ScrappingRelationsTest extends TestCase
     private function resultToArray($result): array
     {
         $data = $result->getIntegrationResult()?->getData();
+
         return [
             'success' => $result->isSuccess(),
             'data' => $data ?? [],
@@ -56,15 +56,45 @@ class ScrappingRelationsTest extends TestCase
     private function pipelineOptions(array $opts = []): array
     {
         return [
-            'integrate' => !($opts['dry_run'] ?? false) && !($opts['validate_only'] ?? false),
+            'integrate' => ! ($opts['dry_run'] ?? false) && ! ($opts['validate_only'] ?? false),
             'dry_run' => (bool) ($opts['dry_run'] ?? false),
             'force_update' => (bool) ($opts['force_update'] ?? false),
         ];
     }
 
     /**
+     * Stubs HTTP pour appels DofusDB déclenchés par la conversion (hors scénario mocké).
+     * En testing, DofusDbClient force skip_cache : le catalogue /item-types est toujours rechargé ;
+     * sans réponse fake, les tests partiels recevaient 404 et l’import d’items échouait.
+     *
+     * superTypeId : 2 = équipement (Arme), 6 = consommable, 9 = ressource (voir item-super-types.json).
+     *
+     * @return \GuzzleHttp\Promise\PromiseInterface|null
+     */
+    private function dofusdbHttpStubIfGlobalEndpoint(string $url): mixed
+    {
+        if (str_contains($url, '/item-types')) {
+            return Http::response([
+                'data' => [
+                    ['id' => 6, 'superTypeId' => 2, 'name' => ['fr' => 'Équipement test']],
+                    ['id' => 12, 'superTypeId' => 6, 'name' => ['fr' => 'Consommable test']],
+                    ['id' => 51, 'superTypeId' => 9, 'name' => ['fr' => 'Ressource test']],
+                ],
+                'total' => 3,
+                'limit' => 50,
+                'skip' => 0,
+            ], 200);
+        }
+        if (str_contains($url, '/recipes')) {
+            return Http::response(['data' => [], 'total' => 0, 'limit' => 50, 'skip' => 0], 200);
+        }
+
+        return null;
+    }
+
+    /**
      * Test que l'import d'un breed avec include_relations crée les relations dans breed_spell
-     * 
+     *
      * Note: Ce test nécessite que l'API DofusDB soit accessible et que les données soient cohérentes
      */
     public function test_import_class_with_spells_creates_relations(): void
@@ -112,7 +142,7 @@ class ScrappingRelationsTest extends TestCase
     {
         // Un monstre qui devrait avoir des sorts et des drops
         $dofusdbId = 31; // Utiliser un ID qui fonctionne avec les mocks
-        
+
         $monsterData = [
             'id' => 31,
             'name' => ['fr' => 'Bouftou'],
@@ -121,11 +151,11 @@ class ScrappingRelationsTest extends TestCase
             'pa' => 3,
             'pm' => 3,
             'spells' => [
-                ['id' => 201, 'name' => ['fr' => 'Sort de monstre']]
+                ['id' => 201, 'name' => ['fr' => 'Sort de monstre']],
             ],
             'drops' => [
-                ['id' => 15, 'name' => ['fr' => 'Ressource'], 'quantity' => 1]
-            ]
+                ['id' => 15, 'name' => ['fr' => 'Ressource'], 'quantity' => 1],
+            ],
         ];
 
         $spellData = [
@@ -136,13 +166,13 @@ class ScrappingRelationsTest extends TestCase
                     'description' => ['fr' => 'Description'],
                     'cost' => 3,
                     'range' => 1,
-                    'area' => 1
-                ]
-            ]
+                    'area' => 1,
+                ],
+            ],
         ];
 
         $levelsList = [
-            'data' => []
+            'data' => [],
         ];
 
         $itemData = [
@@ -152,7 +182,7 @@ class ScrappingRelationsTest extends TestCase
             'typeId' => 15,
             'level' => 1,
             'rarity' => 'common',
-            'price' => 10
+            'price' => 10,
         ];
 
         Http::fake(function ($request) use ($monsterData, $spellData, $levelsList, $itemData) {
@@ -169,16 +199,17 @@ class ScrappingRelationsTest extends TestCase
             if (str_contains($url, '/items/15')) {
                 return Http::response($itemData, 200);
             }
+
             return Http::response([], 404);
         });
-        
+
         $r = $this->orchestrator->runOneWithRaw('dofusdb', 'monster', $monsterData, [
             'convert' => true,
             'validate' => true,
             'integrate' => true,
         ]);
-        if (!$r->isSuccess()) {
-            $this->fail('Import monster V2 échoué: ' . $r->getMessage());
+        if (! $r->isSuccess()) {
+            $this->fail('Import monster V2 échoué: '.$r->getMessage());
         }
         $creatureId = $r->getIntegrationResult()?->getCreatureId();
         $monsterId = $r->getIntegrationResult()?->getMonsterId();
@@ -287,6 +318,7 @@ class ScrappingRelationsTest extends TestCase
             if (str_contains($url, '/monsters/31')) {
                 return Http::response($monsterData, 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -385,6 +417,10 @@ class ScrappingRelationsTest extends TestCase
 
         Http::fake(function ($request) use ($panoplyData, $itemData1, $itemData2) {
             $url = $request->url();
+            $global = $this->dofusdbHttpStubIfGlobalEndpoint($url);
+            if ($global !== null) {
+                return $global;
+            }
             if (str_contains($url, '/item-sets/1001')) {
                 return Http::response($panoplyData, 200);
             }
@@ -456,6 +492,10 @@ class ScrappingRelationsTest extends TestCase
 
         Http::fake(function ($request) use ($ingredientResourceRaw) {
             $url = $request->url();
+            $global = $this->dofusdbHttpStubIfGlobalEndpoint($url);
+            if ($global !== null) {
+                return $global;
+            }
             if (str_contains($url, '/items/274')) {
                 return Http::response($ingredientResourceRaw, 200);
             }
@@ -534,6 +574,10 @@ class ScrappingRelationsTest extends TestCase
 
         Http::fake(function ($request) use ($panoplyRaw, $equipmentRaw, $ingredientRaw) {
             $url = $request->url();
+            $global = $this->dofusdbHttpStubIfGlobalEndpoint($url);
+            if ($global !== null) {
+                return $global;
+            }
             if (str_contains($url, '/item-sets/4100')) {
                 return Http::response($panoplyRaw, 200);
             }
@@ -609,6 +653,10 @@ class ScrappingRelationsTest extends TestCase
 
         Http::fake(function ($request) use ($ingredientRaw) {
             $url = $request->url();
+            $global = $this->dofusdbHttpStubIfGlobalEndpoint($url);
+            if ($global !== null) {
+                return $global;
+            }
             if (str_contains($url, '/items/6102')) {
                 return Http::response($ingredientRaw, 200);
             }
@@ -677,6 +725,10 @@ class ScrappingRelationsTest extends TestCase
 
         Http::fake(function ($request) use ($ingredientRaw) {
             $url = $request->url();
+            $global = $this->dofusdbHttpStubIfGlobalEndpoint($url);
+            if ($global !== null) {
+                return $global;
+            }
             if (str_contains($url, '/items/6202')) {
                 return Http::response($ingredientRaw, 200);
             }
@@ -801,4 +853,3 @@ class ScrappingRelationsTest extends TestCase
         ]);
     }
 }
-

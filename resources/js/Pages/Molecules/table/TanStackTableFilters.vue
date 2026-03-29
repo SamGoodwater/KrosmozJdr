@@ -16,11 +16,7 @@ import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import RadioCore from "@/Pages/Atoms/data-input/RadioCore.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import { computed, unref, ref } from "vue";
-import {
-    getEntityStateDotClass,
-    getLevelColor,
-    getRarityFilterBadgeTailwindColor,
-} from "@/Utils/Entity/SharedConstants.js";
+import { buildSelectOptionBadgeProps } from "@/Utils/Entity/selectOptionBadge.js";
 
 const props = defineProps({
     columns: { type: Array, required: true },
@@ -84,45 +80,9 @@ const getOptionBadgeCfg = (col) => {
 };
 const isOptionBadgeEnabled = (col) => Boolean(getOptionBadgeCfg(col)?.enabled);
 const optionBadgeProps = (col, opt) => {
-    const cfg = getOptionBadgeCfg(col) || {};
-    const autoLabelFrom = String(cfg.autoLabelFrom || "label"); // 'label' | 'value'
-    const label = autoLabelFrom === "value"
-        ? String(opt?.value ?? "")
-        : String(opt?.label ?? opt?.value ?? "");
-
-    // Niveau: respecter le gradient centralisé (SharedConstants.getLevelColor)
-    // au lieu de dépendre d'un mapping "auto" approximatif.
-    const isLevelScheme = String(cfg.autoScheme || "") === "level";
-    const num = Number(opt?.value ?? opt?.label);
-    const isLevelValue = Number.isFinite(num);
-    const levelColor = (isLevelScheme && isLevelValue) ? getLevelColor(num) : null;
-
-    // Rareté: teintes plus soutenues pour lisibilité (filtres / badges)
-    const isRarityScheme = String(cfg.autoScheme || "") === "rarity";
-    const rarityNum = Number(opt?.value);
-    const rarityTailwind =
-        isRarityScheme && Number.isFinite(rarityNum)
-            ? getRarityFilterBadgeTailwindColor(rarityNum)
-            : null;
-
-    const stateDotClass =
-        String(cfg.leadingDot || "") === "entity-state" && opt?.value !== null && opt?.value !== undefined && String(opt.value) !== ""
-            ? getEntityStateDotClass(opt.value)
-            : "";
-
-    const resolvedColor = levelColor || rarityTailwind || cfg.color || props.uiColor;
-
-    return {
-        color: resolvedColor,
-        autoLabel: label,
-        autoScheme: cfg.autoScheme,
-        autoTone: cfg.autoTone,
-        variant: cfg.variant || "soft",
-        glassy: Boolean(cfg.glassy),
-        strong: Boolean((isLevelScheme && isLevelValue) || rarityTailwind),
-        textColor: isLevelScheme && isLevelValue ? "#ffffff" : "",
-        stateDotClass,
-    };
+    const cfg = getOptionBadgeCfg(col);
+    if (!cfg) return null;
+    return buildSelectOptionBadgeProps(opt, cfg, props.uiColor);
 };
 
 /**

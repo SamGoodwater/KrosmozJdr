@@ -210,8 +210,8 @@ L'utilisateur souhaite :
 - `app/Support/ElementConstants.php` (nouveau)
 - `app/Models/Entity/Spell.php` (référence constante partagée)
 - `app/Models/Entity/Capability.php` (constante, cast)
-- `database/migrations/xxxx_alter_capabilities_element_to_integer.php` (nouveau)
-- `app/Console/Commands/ImportLegacyCapabilitiesCommand.php`
+- `database/migrations/2025_06_01_100130_entity_capabilities_table.php` (`element` en `unsignedTinyInteger`)
+- `app/Console/Commands/Characteristics/ImportLegacyCapabilitiesCommand.php`
 - `app/Http/Controllers/Api/Table/CapabilityTableController.php`
 - `app/Http/Controllers/Api/CapabilityBulkController.php`
 - `app/Http/Requests/Entity/StoreCapabilityRequest.php`

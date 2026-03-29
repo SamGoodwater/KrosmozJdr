@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('size')->nullable();
             $table->foreignId('breed_id')->nullable()->constrained('breeds')->cascadeOnDelete();
             $table->foreignId('specialization_id')->nullable()->constrained('specializations')->cascadeOnDelete();
+            $table->string('state')->default('draft');
+            $table->tinyInteger('read_level')->default(0);
+            $table->tinyInteger('write_level')->default(3);
             $table->timestamps();
         });
     }

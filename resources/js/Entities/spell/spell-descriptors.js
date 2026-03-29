@@ -17,17 +17,18 @@
 import {
   getEntityStateOptions,
   getUserRoleOptions,
-  getSpellElementOptions,
-  getSpellCategoryOptions
+  getSpellCategoryOptions,
 } from "@/Utils/Entity/SharedConstants";
 
-const SPELL_RESOLUTION_MODE_OPTIONS = () => [
+/** @returns {Array<{ value: string, label: string }>} */
+export const SPELL_RESOLUTION_MODE_OPTIONS = () => [
   { value: "attack_roll", label: "Jet d'attaque (vs CA)" },
   { value: "saving_throw", label: "Jet de sauvegarde" },
   { value: "auto_success", label: "Réussite automatique" },
 ];
 
-const SAVE_ABILITY_OPTIONS = () => [
+/** @returns {Array<{ value: string, label: string }>} */
+export const SAVE_ABILITY_OPTIONS = () => [
   { value: "", label: "—" },
   { value: "strong", label: "Force" },
   { value: "intel", label: "Intelligence" },
@@ -337,11 +338,10 @@ export function getSpellFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "select",
+          type: "elementPrimaries",
           group: "Métier",
           required: false,
           showInCompact: true,
-          options: getSpellElementOptions,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },

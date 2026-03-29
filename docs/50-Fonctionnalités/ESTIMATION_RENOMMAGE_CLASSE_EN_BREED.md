@@ -109,7 +109,7 @@ Créer une seule migration qui :
 | `database/factories/Entity/ClasseFactory.php` | → `BreedFactory.php`, model `Breed`, table `breeds`. |
 | `database/factories/Entity/NpcFactory.php` | `classe_id` → `breed_id`. |
 | `database/seeders/Entity/ClasseSeeder.php` | → `BreedSeeder.php`, références au model Breed. |
-| `app/Console/Commands/IconsJsonGenerator.php` | Chemins d’icônes « classes » / « classe_orientations » : décider si on renomme en `breeds` ou garde pour assets. |
+| `app/Console/Commands/Media/GenerateIconsJsonCommand.php` | Chemins d’icônes « classes » / « classe_orientations » : décider si on renomme en `breeds` ou garde pour assets. |
 | `_ide_helper.php` / `_ide_helper_models.php` | Régénérer après renommage (ou adapter manuellement). |
 
 ---

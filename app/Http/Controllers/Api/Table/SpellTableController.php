@@ -7,6 +7,7 @@ use App\Models\Entity\Spell;
 use App\Models\SubEffect;
 use App\Models\Type\SpellType;
 use App\Services\Effect\EffectResolutionService;
+use App\Services\Effect\SpellEffectDefinitionsSerializer;
 use App\Support\AreaConstants;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +23,8 @@ use Illuminate\Support\Facades\Gate;
 class SpellTableController extends Controller
 {
     public function __construct(
-        private readonly EffectResolutionService $effectResolutionService
+        private readonly EffectResolutionService $effectResolutionService,
+        private readonly SpellEffectDefinitionsSerializer $spellEffectDefinitionsSerializer
     ) {}
 
     /** Slugs élément → id (0=Neutre, 1=Terre, 2=Feu, 3=Air, 4=Eau). */
@@ -48,8 +50,9 @@ class SpellTableController extends Controller
      */
     private function buildEffectUsagesData(Spell $spell): array
     {
-        $usages = $spell->effectUsages ?? collect();
-        if ($usages->isEmpty()) {
+        $spell->loadMissing(['effects.degrees.effectSubEffects.subEffect']);
+        $definitions = $spell->effects ?? collect();
+        if ($definitions->isEmpty()) {
             return ['summary' => '', 'chips' => []];
         }
 
@@ -58,76 +61,106 @@ class SpellTableController extends Controller
         $parts = [];
         $chips = [];
 
-        foreach ($usages->sortBy('required_creature_level') as $usage) {
-            $effect = $usage->effect;
-            if (! $effect) {
-                continue;
-            }
-            $degree = $effect->degree;
-            $degreePrefix = $degree !== null ? 'D'.$degree.' ' : '';
-            $targetType = $effect->target_type ?? 'direct';
-            $targetLabel = self::TARGET_TYPE_LABELS[$targetType] ?? 'Direct';
-            $area = $effect->area;
+        foreach ($definitions as $definition) {
+            $degrees = $definition->degrees
+                ->sort(function ($a, $b) {
+                    $la = $a->required_creature_level ?? -1;
+                    $lb = $b->required_creature_level ?? -1;
+                    if ($la !== $lb) {
+                        return $la <=> $lb;
+                    }
 
-            $resolved = $this->effectResolutionService->resolveEffect($effect, $baseContext, null, false, false);
-            foreach ($resolved['sub_effects'] ?? [] as $sub) {
-                $text = trim((string) ($sub['text'] ?? ''));
-                if ($text === '') {
-                    continue;
-                }
-                $text = $this->humanizeEffectText($text);
-                $parts[] = $degreePrefix.$text;
+                    return $a->degree <=> $b->degree;
+                })
+                ->values();
+            foreach ($degrees as $degreeRow) {
+                $degreeNum = $degreeRow->degree;
+                $degreePrefix = 'D'.$degreeNum.' ';
+                $targetType = $definition->target_type ?? 'direct';
+                $targetLabel = self::TARGET_TYPE_LABELS[$targetType] ?? 'Direct';
+                $area = $degreeRow->area;
 
-                $charSlug = strtolower((string) ($sub['characteristic'] ?? ''));
-                $elementId = self::ELEMENT_SLUG_TO_ID[$charSlug] ?? 0;
-                $elementLabel = $this->elementIdToLabel($elementId);
+                $resolved = $this->effectResolutionService->resolveEffect($degreeRow, $baseContext, null, false, false);
+                foreach ($resolved['sub_effects'] ?? [] as $sub) {
+                    $text = trim((string) ($sub['text'] ?? ''));
+                    if ($text === '') {
+                        continue;
+                    }
+                    $text = $this->humanizeEffectText($text);
+                    $parts[] = $degreePrefix.$text;
 
-                $duration = isset($sub['duration']) && is_numeric($sub['duration']) ? (int) $sub['duration'] : null;
-                $durationLabel = $this->formatDurationLabel($duration);
+                    $charSlug = strtolower((string) ($sub['characteristic'] ?? ''));
+                    $elementId = self::ELEMENT_SLUG_TO_ID[$charSlug] ?? 0;
+                    $elementLabel = $this->elementIdToLabel($elementId);
 
-                $details = [];
-                if ($degree !== null) {
-                    $details[] = 'Degré '.$degree;
-                }
-                $creatureLevelLabel = $this->formatCreatureLevelRequirement($usage->required_creature_level);
-                if ($creatureLevelLabel !== '') {
-                    $details[] = $creatureLevelLabel;
-                }
-                if ($targetType !== 'direct') {
-                    $details[] = $targetLabel;
-                }
-                if ($area !== null && (string) $area !== '') {
-                    $details[] = "zone {$area}";
-                }
-                $details[] = $durationLabel;
-                $displayText = $degreePrefix.$text;
-                $tooltip = $displayText.(\count($details) > 0 ? ' — '.implode(', ', $details) : '');
+                    $duration = isset($sub['duration']) && is_numeric($sub['duration']) ? (int) $sub['duration'] : null;
+                    $durationLabel = $this->formatDurationLabel($duration);
 
-                $chips[] = [
-                    'text' => $displayText,
-                    'degree' => $degree,
-                    'element' => $elementId,
-                    'element_label' => $elementLabel,
-                    'target_type' => $targetType,
-                    'target_label' => $targetLabel,
-                    'area' => $area,
-                    'duration' => $duration,
-                    'duration_label' => $durationLabel,
-                    'tooltip' => $tooltip,
-                    'required_creature_level' => $usage->required_creature_level,
-                    'creature_level_label' => $creatureLevelLabel !== '' ? $creatureLevelLabel : null,
-                    // Niveau créature minimum (≠ niveau du sort) ; degré via effect.degree
-                    'creature_level_requirement' => [
-                        'value' => $usage->required_creature_level,
-                        'label' => $creatureLevelLabel !== '' ? $creatureLevelLabel : null,
-                    ],
-                ];
+                    $details = [];
+                    $details[] = 'Degré '.$degreeNum;
+                    $creatureLevelLabel = $this->formatCreatureLevelRequirement($degreeRow->required_creature_level);
+                    if ($creatureLevelLabel !== '') {
+                        $details[] = $creatureLevelLabel;
+                    }
+                    if ($targetType !== 'direct') {
+                        $details[] = $targetLabel;
+                    }
+                    if ($area !== null && (string) $area !== '') {
+                        $details[] = "zone {$area}";
+                    }
+                    $details[] = $durationLabel;
+                    $displayText = $degreePrefix.$text;
+                    $tooltip = $displayText.(\count($details) > 0 ? ' — '.implode(', ', $details) : '');
+
+                    $chips[] = [
+                        'text' => $displayText,
+                        'degree' => $degreeNum,
+                        'element' => $elementId,
+                        'element_label' => $elementLabel,
+                        'target_type' => $targetType,
+                        'target_label' => $targetLabel,
+                        'area' => $area,
+                        'duration' => $duration,
+                        'duration_label' => $durationLabel,
+                        'tooltip' => $tooltip,
+                        'required_creature_level' => $degreeRow->required_creature_level,
+                        'creature_level_label' => $creatureLevelLabel !== '' ? $creatureLevelLabel : null,
+                        'creature_level_requirement' => [
+                            'value' => $degreeRow->required_creature_level,
+                            'label' => $creatureLevelLabel !== '' ? $creatureLevelLabel : null,
+                        ],
+                    ];
+                }
             }
         }
 
         return [
             'summary' => implode(' • ', $parts),
             'chips' => $chips,
+        ];
+    }
+
+    /**
+     * Données communes liste / ligne (effets résolus, définitions + invocations, portée brute).
+     *
+     * @return array{
+     *     effect_usages_summary: string,
+     *     effect_usages_chips: list<array<string, mixed>>,
+     *     effects_definitions: list<array<string, mixed>>,
+     *     po_min: string|null,
+     *     po_max: string|null
+     * }
+     */
+    private function buildSpellTableDisplayPayload(Spell $spell): array
+    {
+        $effectUsagesData = $this->buildEffectUsagesData($spell);
+
+        return [
+            'effect_usages_summary' => $effectUsagesData['summary'],
+            'effect_usages_chips' => $effectUsagesData['chips'],
+            'effects_definitions' => $this->spellEffectDefinitionsSerializer->serialize($spell->effects ?? collect()),
+            'po_min' => $spell->po_min,
+            'po_max' => $spell->po_max,
         ];
     }
 
@@ -245,7 +278,7 @@ class SpellTableController extends Controller
         }
 
         $query = Spell::query()
-            ->with(['createdBy', 'spellTypes', 'effectUsages.effect.effectSubEffects.subEffect'])
+            ->with(['createdBy', 'spellTypes', 'effects.degrees.effectSubEffects.subEffect'])
             ->withCount(['spellTypes', 'breeds', 'creatures', 'monsters']);
 
         if ($search !== '') {
@@ -363,24 +396,22 @@ class SpellTableController extends Controller
         if ($format === 'entities') {
             $entities = $rows->map(function (Spell $sp) {
                 $createdBy = $sp->createdBy;
-                $effectUsagesData = $this->buildEffectUsagesData($sp);
-                $effectSubEffectSlugs = $sp->effectUsages
-                    ->flatMap(fn ($u) => $u->effect?->effectSubEffects ?? collect())
+                $displayPayload = $this->buildSpellTableDisplayPayload($sp);
+                $effectSubEffectSlugs = $sp->effects
+                    ->flatMap(fn ($e) => $e->degrees->flatMap(fn ($d) => $d->effectSubEffects))
                     ->map(fn ($ese) => $ese->subEffect?->slug)
                     ->filter()
                     ->unique()
                     ->values()
                     ->all();
 
-                return [
+                return array_merge([
                     'id' => $sp->id,
                     'official_id' => $sp->official_id,
                     'dofusdb_id' => $sp->dofusdb_id,
                     'name' => $sp->name,
                     'description' => $sp->description,
                     'effect' => $sp->effect,
-                    'effect_usages_summary' => $effectUsagesData['summary'],
-                    'effect_usages_chips' => $effectUsagesData['chips'],
                     'effect_sub_effect_slugs' => $effectSubEffectSlugs,
                     'area' => $sp->area,
                     'level' => $sp->level,
@@ -413,7 +444,7 @@ class SpellTableController extends Controller
                     ] : null,
                     'created_at' => $sp->created_at?->toISOString(),
                     'updated_at' => $sp->updated_at?->toISOString(),
-                ];
+                ], $displayPayload);
             })->values()->all();
 
             return response()->json([
@@ -455,6 +486,8 @@ class SpellTableController extends Controller
 
             $types = $sp->spellTypes?->pluck('name')->filter()->values()->all() ?? [];
             $typesLabel = count($types) ? implode(', ', $types) : '-';
+
+            $displayPayload = $this->buildSpellTableDisplayPayload($sp);
 
             return [
                 'id' => $sp->id,
@@ -537,7 +570,7 @@ class SpellTableController extends Controller
                     ],
                 ],
                 'rowParams' => [
-                    'entity' => [
+                    'entity' => array_merge([
                         'id' => $sp->id,
                         'official_id' => $sp->official_id,
                         'dofusdb_id' => $sp->dofusdb_id,
@@ -573,7 +606,7 @@ class SpellTableController extends Controller
                             'name' => $createdBy->name,
                             'email' => $createdBy->email,
                         ] : null,
-                    ],
+                    ], $displayPayload),
                 ],
             ];
         })->values()->all();

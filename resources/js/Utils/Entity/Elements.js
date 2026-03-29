@@ -117,7 +117,39 @@ export function getElementColor(value) {
  * @returns {number[]}
  */
 export function getElementPrimaries(value) {
+  if (value === null || value === undefined || value === '') {
+    return [];
+  }
   return ELEMENT_TO_PRIMARIES[Number(value)] ?? [0];
+}
+
+/**
+ * Les 5 éléments primaires seuls (Neutre, Terre, Feu, Air, Eau) — UI multi-sélection.
+ */
+export const SPELL_PRIMARY_ELEMENT_OPTIONS = Object.freeze(
+  ELEMENT_OPTIONS.filter((o) => o.value >= 0 && o.value <= 4),
+);
+
+/**
+ * Encode une liste d’indices primaires (0–4) vers la valeur unique 0–29 attendue par l’API.
+ *
+ * @param {number[]} primaries - Indices cochés (ex. [0, 1] → Neutre+Terre → 5)
+ * @returns {number}
+ */
+export function primariesToElementValue(primaries) {
+  const sorted = [...new Set((primaries || []).map((n) => Number(n)).filter((n) => n >= 0 && n <= 4))].sort(
+    (a, b) => a - b,
+  );
+  if (sorted.length === 0) {
+    return 0;
+  }
+  for (const [encoded, combo] of Object.entries(ELEMENT_TO_PRIMARIES)) {
+    const c = [...combo].sort((a, b) => a - b);
+    if (c.length === sorted.length && c.every((v, i) => v === sorted[i])) {
+      return Number(encoded);
+    }
+  }
+  return 0;
 }
 
 /**

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Entity\SpellController;
+use Illuminate\Support\Facades\Route;
 
 // Routes publiques (accessibles sans authentification)
 Route::prefix('entities/spells')->name('entities.spells.')->group(function () {
@@ -17,6 +17,7 @@ Route::prefix('entities/spells')->name('entities.spells.')->middleware('auth')->
     // Routes spécifiques pour les relations (doivent être avant la route update générique)
     Route::patch('/{spell}/breeds', [SpellController::class, 'updateBreeds'])->name('updateBreeds');
     Route::patch('/{spell}/spell-types', [SpellController::class, 'updateSpellTypes'])->name('updateSpellTypes');
+    Route::patch('/{spell}/effect-groups/{effect}', [SpellController::class, 'updateEffectGroup'])->name('updateEffectGroup');
     Route::get('/{spell}/pdf', [SpellController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{spell}', [SpellController::class, 'update'])->name('update');
     Route::delete('/{spell}', [SpellController::class, 'delete'])->name('delete');

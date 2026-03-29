@@ -7,13 +7,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** Pivot effect / sub_effect (ordre, scope, params). */
+/** Pivot degré d’effet / sub_effect (ordre, scope, params). */
 class EffectSubEffect extends Model
 {
     protected $table = 'effect_sub_effect';
 
     protected $fillable = [
-        'effect_id',
+        'effect_degree_id',
         'sub_effect_id',
         'order',
         'scope',
@@ -30,7 +30,7 @@ class EffectSubEffect extends Model
     ];
 
     protected $casts = [
-        'effect_id' => 'integer',
+        'effect_degree_id' => 'integer',
         'sub_effect_id' => 'integer',
         'order' => 'integer',
         'value_min' => 'integer',
@@ -45,9 +45,9 @@ class EffectSubEffect extends Model
         'crit_only' => 'boolean',
     ];
 
-    public function effect(): BelongsTo
+    public function effectDegree(): BelongsTo
     {
-        return $this->belongsTo(Effect::class);
+        return $this->belongsTo(EffectDegree::class);
     }
 
     public function subEffect(): BelongsTo

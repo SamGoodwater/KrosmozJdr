@@ -18,7 +18,7 @@ class EffectUsageController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $validated = $request->validate([
-            'entity_type' => 'required|string|in:spell,item,consumable,resource',
+            'entity_type' => 'required|string|in:item,consumable,resource',
             'entity_id' => 'required|integer|min:1',
         ]);
         $class = EffectUsage::entityTypeToClass($validated['entity_type']);
@@ -29,9 +29,10 @@ class EffectUsageController extends Controller
         $list = EffectUsage::query()
             ->where('entity_type', $class)
             ->where('entity_id', $validated['entity_id'])
-            ->with('effect.subEffects')
-            ->orderBy('required_creature_level')
-            ->get();
+            ->with(['effectDegree.effect'])
+            ->get()
+            ->sortBy(fn (EffectUsage $u) => $u->effectDegree?->required_creature_level ?? 0)
+            ->values();
 
         return EffectUsageResource::collection($list);
     }
@@ -42,17 +43,19 @@ class EffectUsageController extends Controller
         if ($class === null) {
             return response()->json(['message' => 'Invalid entity_type'], 422);
         }
-        $data = $request->validated();
-        $data['entity_type'] = $class;
-        $usage = EffectUsage::create($data);
-        $usage->load('effect.subEffects');
+        $usage = EffectUsage::create([
+            'entity_type' => $class,
+            'entity_id' => (int) $request->input('entity_id'),
+            'effect_degree_id' => (int) $request->input('effect_degree_id'),
+        ]);
+        $usage->load(['effectDegree.effect']);
 
         return (new EffectUsageResource($usage))->response()->setStatusCode(201);
     }
 
     public function show(EffectUsage $effectUsage): EffectUsageResource
     {
-        $effectUsage->load('effect.subEffects');
+        $effectUsage->load(['effectDegree.effect']);
 
         return new EffectUsageResource($effectUsage);
     }
@@ -60,7 +63,7 @@ class EffectUsageController extends Controller
     public function update(UpdateEffectUsageRequest $request, EffectUsage $effectUsage): EffectUsageResource
     {
         $effectUsage->update($request->validated());
-        $effectUsage->load('effect.subEffects');
+        $effectUsage->load(['effectDegree.effect']);
 
         return new EffectUsageResource($effectUsage->fresh());
     }

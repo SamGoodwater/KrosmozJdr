@@ -1,11 +1,11 @@
 <script setup>
 /**
  * SpellViewLarge — Vue Large pour Spell
- * 
+ *
  * @description
- * Vue complète d'un sort avec toutes les informations affichées.
- * Utilisée dans les grandes modals ou directement dans le main.
- * 
+ * Fiche sort : en-tête (image, niveau, nom), identité (types, catégorie, élément, magie/physique, rituel),
+ * description, utilisation, résolution, effets structurés (journal), puis métadonnées techniques.
+ *
  * @props {Spell} spell - Instance du modèle Spell
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
@@ -13,33 +13,59 @@ import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import CellRenderer from '@/Pages/Atoms/data-display/CellRenderer.vue';
+import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
-import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
+import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
+import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
+import EntityUsableDot from '@/Pages/Atoms/data-display/EntityUsableDot.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import SpellEffectsJournal from '@/Pages/Molecules/entity/spell/SpellEffectsJournal.vue';
+import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
-import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
+import { usePermissions } from '@/Composables/permissions/usePermissions';
+import { getSpellFieldDescriptors } from '@/Entities/spell/spell-descriptors';
+import { getByCharacteristicKey, getByDbColumn } from '@/Composables/store/useCharacteristicsStore';
+import { getCharacteristicColorStyle } from '@/Composables/entity/useCharacteristicDisplay';
+import { resolveSpellCharacteristicKey } from '@/Composables/entity/useSpellAbilityCharacteristic';
+
+const RESOLUTION_LABELS = Object.freeze({
+    attack_roll: "Jet d'attaque (vs CA)",
+    saving_throw: 'Jet de sauvegarde',
+    auto_success: 'Réussite automatique',
+});
+
+/** Libellés / icônes si le descriptor du champ est absent. */
+const USAGE_FIELD_FALLBACK = Object.freeze({
+    pa: { label: 'PA', icon: 'fa-solid fa-bolt' },
+    po_range: { label: 'Portée (min - max)', icon: 'fa-solid fa-crosshairs' },
+    cast_per_turn: { label: 'Lancers / tour', icon: 'fa-solid fa-rotate' },
+    cast_per_target: { label: 'Lancers / cible', icon: 'fa-solid fa-bullseye' },
+    sight_line: { label: 'Ligne de vue', icon: 'fa-solid fa-eye' },
+    number_between_two_cast: { label: 'Entre deux lancers', icon: 'fa-solid fa-hourglass-half' },
+});
 
 const props = defineProps({
     spell: {
         type: Object,
-        required: true
+        required: true,
     },
     showActions: {
         type: Boolean,
-        default: true
+        default: true,
     },
     tableMeta: {
         type: Object,
-        default: () => ({})
-    }
+        default: () => ({}),
+    },
+    /** Balise du titre principal (h1 sur page fiche, h2 en modal). */
+    titleTag: {
+        type: String,
+        default: 'h2',
+        validator: (v) => ['h1', 'h2', 'h3'].includes(v),
+    },
 });
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
@@ -71,7 +97,7 @@ const autoUpdateValue = computed(() => {
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
-    const visibleIf = desc?.permissions?.visibleIf;
+    const visibleIf = desc?.permissions?.visibleIf ?? desc?.visibleIf;
     if (typeof visibleIf === 'function') {
         try {
             return Boolean(visibleIf(ctx.value));
@@ -83,44 +109,15 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-const headlineFields = computed(() => ([
-    'spell_types',
-    'level',
-].filter(canShowField)));
+const identityFieldKeys = computed(() =>
+    ['spell_types', 'category', 'element'].filter(canShowField),
+);
 
-const metaFields = computed(() => ([
-    'pa',
-    'po',
-    'area',
-    'element',
-    'category',
-].filter(canShowField).filter((k) => !headlineFields.value.includes(k))));
+const userCanEditFields = computed(() => ['auto_update', 'read_level', 'write_level'].filter(canShowField));
 
-const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
-
-const userCanEditFields = computed(() => ([
-    'auto_update',
-    'read_level',
-    'write_level',
-].filter(canShowField)));
-
-const technicalFields = computed(() => ([
-    'dofusdb_id',
-    'official_id',
-    'created_by',
-    'created_at',
-    'updated_at',
-].filter(canShowField)));
-
-const bodyFields = computed(() => ([
-    'cast_per_turn',
-    'cast_per_target',
-    'sight_line',
-    'number_between_two_cast',
-    'is_magic',
-    'powerful',
-    'effect',
-].filter(canShowField)));
+const technicalFields = computed(() =>
+    ['dofusdb_id', 'official_id', 'created_by', 'created_at', 'updated_at'].filter(canShowField),
+);
 
 const getFieldUi = (fieldKey) =>
     resolveEntityFieldUi({
@@ -141,12 +138,11 @@ const getFieldIconStyle = (fieldKey) => {
     return color ? { color } : undefined;
 };
 
-const getCell = (fieldKey) => {
-    return props.spell.toCell(fieldKey, {
+const getCell = (fieldKey) =>
+    props.spell.toCell(fieldKey, {
         size: 'lg',
         context: 'extended',
     });
-};
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
@@ -180,8 +176,134 @@ const getBadgeAutoParams = (fieldKey) => {
 const asTextCell = (cell) => {
     if (!cell) return { type: 'text', value: '-', params: {} };
     const v = cell?.value;
-    return { type: 'text', value: (v === null || typeof v === 'undefined' || String(v) === '') ? '-' : String(v), params: cell?.params || {} };
+    return {
+        type: 'text',
+        value: v === null || typeof v === 'undefined' || String(v) === '' ? '-' : String(v),
+        params: cell?.params || {},
+    };
 };
+
+const magicMeta = computed(() => getByCharacteristicKey('spell', 'is_magic_spell'));
+
+const effectsDefinitions = computed(() =>
+    Array.isArray(props.spell?.effectsDefinitions) ? props.spell.effectsDefinitions : [],
+);
+
+const resolutionLabel = computed(() => RESOLUTION_LABELS[props.spell.resolutionMode] || props.spell.resolutionMode);
+
+const attackCharKeyResolved = computed(() =>
+    resolveSpellCharacteristicKey(props.spell.attackCharacteristicKey, 'attack'),
+);
+
+const saveCharKeyResolved = computed(() =>
+    resolveSpellCharacteristicKey(props.spell.saveCharacteristicKey, 'save'),
+);
+
+const attackCharDef = computed(() => {
+    const k = attackCharKeyResolved.value;
+    return k ? getByCharacteristicKey('spell', k) : null;
+});
+
+const saveCharDef = computed(() => {
+    const k = saveCharKeyResolved.value;
+    return k ? getByCharacteristicKey('spell', k) : null;
+});
+
+const poEditableMeta = computed(() => getByDbColumn('spell', 'po_editable'));
+
+const nbCastEditableMeta = computed(() => getByDbColumn('spell', 'number_between_two_cast_editable'));
+
+const ritualMeta = computed(() => getByDbColumn('spell', 'ritual_available'));
+
+const showRitualBadge = computed(() => props.spell?.isRitual === true);
+
+const ritualTooltipText = computed(() => {
+    const m = ritualMeta.value;
+    const t = m?.helper || (Array.isArray(m?.descriptions) ? m.descriptions.join(' ') : m?.descriptions) || '';
+    return t || 'Ce sort peut être lancé comme un rituel (incantation prolongée).';
+});
+
+function boolLabel(v) {
+    return v ? 'Oui' : 'Non';
+}
+
+/**
+ * Métadonnées caractéristique (BDD) pour les champs d’utilisation.
+ * @param {string} usageKey
+ * @returns {object|null}
+ */
+function usageCharacteristicMeta(usageKey) {
+    switch (usageKey) {
+        case 'pa':
+            return getByDbColumn('spell', 'pa');
+        case 'po_range':
+            return getByCharacteristicKey('spell', 'range_spell') ?? getByDbColumn('spell', 'po_max');
+        case 'cast_per_turn':
+            return getByDbColumn('spell', 'cast_per_turn');
+        case 'cast_per_target':
+            return getByDbColumn('spell', 'cast_per_target');
+        case 'sight_line':
+            return getByDbColumn('spell', 'sight_line');
+        case 'number_between_two_cast':
+            return getByDbColumn('spell', 'number_between_two_cast');
+        default:
+            return null;
+    }
+}
+
+function usageBlockTooltip(usageKey) {
+    const meta = usageCharacteristicMeta(usageKey);
+    const parts = [
+        usageFieldLabel(usageKey),
+        meta?.helper,
+        Array.isArray(meta?.descriptions) ? meta.descriptions.join(' ') : meta?.descriptions,
+    ].filter((p) => p && String(p).trim() !== '');
+    return parts.join('\n\n') || usageFieldLabel(usageKey);
+}
+
+function characteristicTooltipText(meta) {
+    if (!meta) return '';
+    return (
+        meta.helper ||
+        (Array.isArray(meta.descriptions) ? meta.descriptions.join(' ') : meta.descriptions) ||
+        ''
+    );
+}
+
+const usageFieldKeys = Object.freeze([
+    'pa',
+    'po_range',
+    'cast_per_turn',
+    'cast_per_target',
+    'sight_line',
+    'number_between_two_cast',
+]);
+
+function usageFieldLabel(key) {
+    const m = usageCharacteristicMeta(key);
+    if (m?.short_name || m?.name) {
+        return m.short_name || m.name;
+    }
+    const d = descriptors.value?.[key];
+    return d?.label || USAGE_FIELD_FALLBACK[key]?.label || key;
+}
+
+function usageFieldIcon(key) {
+    const m = usageCharacteristicMeta(key);
+    if (m?.icon) {
+        return m.icon;
+    }
+    const d = descriptors.value?.[key];
+    return d?.icon || USAGE_FIELD_FALLBACK[key]?.icon || 'fa-solid fa-circle-info';
+}
+
+function usageRowIconStyle(usageKey) {
+    const m = usageCharacteristicMeta(usageKey);
+    if (m?.color) {
+        return getCharacteristicColorStyle(m.color);
+    }
+    return getFieldIconStyle(usageKey);
+}
 
 const handleAction = async (actionKey) => {
     const spellId = props.spell.id;
@@ -203,7 +325,7 @@ const handleAction = async (actionKey) => {
             const cfg = getEntityRouteConfig('spell');
             const url = resolveEntityRouteUrl('spell', 'show', spellId, cfg);
             if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien du sort copié !");
+                await copyToClipboard(`${window.location.origin}${url}`, 'Lien du sort copié !');
             }
             emit('copy-link', props.spell);
             break;
@@ -224,11 +346,10 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-6">
+    <div class="space-y-8">
         <EntityViewHeader mode="large">
             <template #media>
                 <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
-
                     <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
                         <EntityUsableDot :state="stateValue" />
                     </div>
@@ -266,17 +387,17 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #title>
-                <h2 class="text-2xl font-bold text-primary-100 break-words">{{ spell.name }}</h2>
+                <component :is="titleTag" class="text-2xl font-bold text-primary-100 break-words">
+                    {{ spell.name }}
+                </component>
             </template>
 
-            <template #subtitle>
-                <p v-if="spell.description" class="text-primary-300 mt-2 break-words">{{ spell.description }}</p>
-            </template>
+            <template #subtitle />
 
             <template #mainInfos>
-                <div v-if="displayMetaFields.length > 0" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                <div v-if="identityFieldKeys.length > 0" class="mt-3 flex flex-wrap gap-3 items-start">
                     <EntityPropertyDisplay
-                        v-for="fieldKey in displayMetaFields"
+                        v-for="fieldKey in identityFieldKeys"
                         :key="fieldKey"
                         :field-key="fieldKey"
                         :entity="spell"
@@ -285,8 +406,53 @@ const handleAction = async (actionKey) => {
                         :descriptors="descriptors"
                         :table-meta="tableMeta"
                         size="sm"
-                        class="max-w-[18rem] whitespace-normal break-words"
+                        class="max-w-[20rem] whitespace-normal break-words"
                     />
+                </div>
+
+                <div class="mt-4 flex flex-wrap items-center gap-4">
+                    <Tooltip
+                        v-if="spell.isMagic === true && magicMeta"
+                        :content="characteristicTooltipText(magicMeta) || 'Sort magique : résolution fréquemment par sauvegarde.'"
+                        placement="top"
+                    >
+                        <span
+                            class="inline-flex items-center gap-2 text-sm font-medium cursor-default"
+                            :style="magicMeta.color ? getCharacteristicColorStyle(magicMeta.color) : undefined"
+                        >
+                            <Icon
+                                v-if="magicMeta.icon"
+                                :source="magicMeta.icon"
+                                :alt="magicMeta.short_name || 'Magique'"
+                                size="sm"
+                            />
+                            <span>{{ magicMeta.short_name || magicMeta.name || 'Magique' }}</span>
+                        </span>
+                    </Tooltip>
+                    <Tooltip
+                        v-else-if="spell.isMagic === false"
+                        content="Sort physique : résolution fréquemment par jet d’attaque (touche vs CA)."
+                        placement="top"
+                    >
+                        <span class="inline-flex items-center gap-2 text-sm font-medium text-primary-200 cursor-default">
+                            <Icon source="fa-solid fa-hand-fist" alt="Physique" size="sm" />
+                            <span>Physique</span>
+                        </span>
+                    </Tooltip>
+
+                    <Tooltip v-if="showRitualBadge" :content="ritualTooltipText" placement="top">
+                        <span
+                            class="inline-flex items-center gap-2 text-sm cursor-default"
+                            :style="ritualMeta?.color ? getCharacteristicColorStyle(ritualMeta.color) : undefined"
+                        >
+                            <Icon
+                                :source="ritualMeta?.icon || 'fa-solid fa-book-open'"
+                                :alt="ritualMeta?.short_name || 'Rituel'"
+                                size="sm"
+                            />
+                            <span>{{ ritualMeta?.short_name || ritualMeta?.name || 'Rituel' }}</span>
+                        </span>
+                    </Tooltip>
                 </div>
             </template>
 
@@ -306,12 +472,166 @@ const handleAction = async (actionKey) => {
             </template>
         </EntityViewHeader>
 
+        <section v-if="spell.description" class="space-y-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Description</h3>
+            <p class="text-primary-200 whitespace-pre-wrap break-words leading-relaxed">{{ spell.description }}</p>
+        </section>
+
+        <section class="space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Utilisation</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <Tooltip
+                    v-for="fieldKey in usageFieldKeys"
+                    :key="fieldKey"
+                    :content="usageBlockTooltip(fieldKey)"
+                    placement="top"
+                >
+                    <div class="p-3 bg-base-200 entity-radius-box space-y-1 cursor-default">
+                        <div class="flex items-center gap-2 text-xs text-primary-400 uppercase font-semibold">
+                            <Icon
+                                :source="usageFieldIcon(fieldKey)"
+                                :alt="usageFieldLabel(fieldKey)"
+                                size="xs"
+                                :style="usageRowIconStyle(fieldKey)"
+                            />
+                            <span>{{ usageFieldLabel(fieldKey) }}</span>
+                        </div>
+                        <div class="text-primary-100 break-words">
+                            <CellRenderer :cell="getCell(fieldKey)" ui-color="primary" />
+                        </div>
+                    </div>
+                </Tooltip>
+
+                <Tooltip
+                    v-if="poEditableMeta"
+                    :content="characteristicTooltipText(poEditableMeta) || 'Indique si la portée du sort peut être ajustée.'"
+                    placement="top"
+                >
+                    <div class="p-3 bg-base-200 entity-radius-box space-y-1 cursor-default">
+                        <div class="flex items-center gap-2 text-xs text-primary-400 uppercase font-semibold">
+                            <Icon
+                                v-if="poEditableMeta.icon"
+                                :source="poEditableMeta.icon"
+                                :alt="poEditableMeta.short_name || ''"
+                                size="xs"
+                                :style="poEditableMeta.color ? getCharacteristicColorStyle(poEditableMeta.color) : undefined"
+                            />
+                            <span>{{ poEditableMeta.short_name || poEditableMeta.name || 'Portée modifiable' }}</span>
+                        </div>
+                        <div class="text-primary-100">{{ boolLabel(Boolean(spell.poEditable)) }}</div>
+                    </div>
+                </Tooltip>
+
+                <Tooltip
+                    v-if="nbCastEditableMeta"
+                    :content="characteristicTooltipText(nbCastEditableMeta) || 'Indique si le délai entre deux lancers peut être modifié.'"
+                    placement="top"
+                >
+                    <div class="p-3 bg-base-200 entity-radius-box space-y-1 cursor-default">
+                        <div class="flex items-center gap-2 text-xs text-primary-400 uppercase font-semibold">
+                            <Icon
+                                v-if="nbCastEditableMeta.icon"
+                                :source="nbCastEditableMeta.icon"
+                                :alt="nbCastEditableMeta.short_name || ''"
+                                size="xs"
+                                :style="
+                                    nbCastEditableMeta.color
+                                        ? getCharacteristicColorStyle(nbCastEditableMeta.color)
+                                        : undefined
+                                "
+                            />
+                            <span>{{ nbCastEditableMeta.short_name || nbCastEditableMeta.name || 'Délai modifiable' }}</span>
+                        </div>
+                        <div class="text-primary-100">{{ boolLabel(Boolean(spell.numberBetweenTwoCastEditable)) }}</div>
+                    </div>
+                </Tooltip>
+            </div>
+        </section>
+
+        <section class="space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Résolution</h3>
+            <div class="p-4 bg-base-200 entity-radius-box space-y-3">
+                <p class="text-primary-100 font-medium">{{ resolutionLabel }}</p>
+
+                <Tooltip
+                    v-if="spell.resolutionMode === 'attack_roll' && attackCharDef"
+                    :content="
+                        characteristicTooltipText(attackCharDef) ||
+                        'Caractéristique utilisée pour le jet d’attaque de ce sort.'
+                    "
+                    placement="top"
+                >
+                    <div
+                        class="inline-flex flex-wrap items-center gap-2 text-sm text-primary-200 cursor-default"
+                        :style="attackCharDef.color ? getCharacteristicColorStyle(attackCharDef.color) : undefined"
+                    >
+                        <Icon
+                            v-if="attackCharDef.icon"
+                            :source="attackCharDef.icon"
+                            :alt="attackCharDef.short_name || ''"
+                            size="sm"
+                        />
+                        <span>{{ attackCharDef.short_name || attackCharDef.name }}</span>
+                    </div>
+                </Tooltip>
+
+                <div v-if="spell.resolutionMode === 'saving_throw'" class="space-y-2">
+                    <Tooltip
+                        v-if="saveCharDef"
+                        :content="
+                            characteristicTooltipText(saveCharDef) ||
+                            'Caractéristique de sauvegarde ciblée par ce sort.'
+                        "
+                        placement="top"
+                    >
+                        <div
+                            class="inline-flex flex-wrap items-center gap-2 text-sm text-primary-200 cursor-default"
+                            :style="saveCharDef.color ? getCharacteristicColorStyle(saveCharDef.color) : undefined"
+                        >
+                            <Icon
+                                v-if="saveCharDef.icon"
+                                :source="saveCharDef.icon"
+                                :alt="saveCharDef.short_name || ''"
+                                size="sm"
+                            />
+                            <span>{{ saveCharDef.short_name || saveCharDef.name }}</span>
+                        </div>
+                    </Tooltip>
+                    <p v-if="spell.saveDcFormula" class="text-sm text-primary-200 break-words">
+                        <span class="text-primary-400 font-semibold">DD : </span>
+                        <span class="font-mono">{{ spell.saveDcFormula }}</span>
+                    </p>
+                    <p v-if="spell.saveSuccessNote" class="text-sm text-primary-300 whitespace-pre-wrap break-words">
+                        <span class="text-primary-400 font-semibold">Si réussite : </span>
+                        {{ spell.saveSuccessNote }}
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
+            <SpellEffectsJournal v-if="effectsDefinitions.length > 0" :definitions="effectsDefinitions" />
+            <p
+                v-else-if="spell.effect && String(spell.effect).trim() !== ''"
+                class="text-sm text-primary-200 whitespace-pre-wrap wrap-break-word"
+            >
+                {{ spell.effect }}
+            </p>
+            <p v-else class="text-sm text-primary-400 italic">Aucun effet structuré ni texte associé.</p>
+        </section>
+
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
             <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
                 <template v-for="fieldKey in technicalFields" :key="fieldKey">
                     <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                         <div class="inline-flex items-center gap-2 min-w-0">
-                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
+                            <Icon
+                                :source="getFieldIcon(fieldKey)"
+                                size="xs"
+                                class="text-primary-300 flex-shrink-0"
+                                :style="getFieldIconStyle(fieldKey)"
+                            />
                             <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
                             <span class="min-w-0 break-words">
                                 <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
@@ -327,7 +647,12 @@ const handleAction = async (actionKey) => {
                     <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
                         <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                             <div class="inline-flex items-center gap-2 min-w-0">
-                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
+                                <Icon
+                                    :source="getFieldIcon(fieldKey)"
+                                    size="xs"
+                                    class="text-primary-300 flex-shrink-0"
+                                    :style="getFieldIconStyle(fieldKey)"
+                                />
                                 <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
                                 <span class="min-w-0 break-words">
                                     <template v-if="fieldKey === 'auto_update'">
@@ -355,24 +680,6 @@ const handleAction = async (actionKey) => {
                             </div>
                         </Tooltip>
                     </template>
-                </div>
-            </div>
-        </div>
-
-        <div v-if="bodyFields.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div v-for="fieldKey in bodyFields" :key="fieldKey" class="p-3 bg-base-200 entity-radius-box">
-                <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-2">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="flex items-center gap-2">
-                                <Icon :source="getFieldIcon(fieldKey)" :alt="getFieldLabel(fieldKey)" size="xs" class="text-primary-400" :style="getFieldIconStyle(fieldKey)" />
-                                <span class="text-xs text-primary-400 uppercase font-semibold">{{ getFieldLabel(fieldKey) }}</span>
-                            </div>
-                        </Tooltip>
-                    </div>
-                    <div class="text-primary-100 break-words">
-                        <CellRenderer :cell="getCell(fieldKey)" ui-color="primary" />
-                    </div>
                 </div>
             </div>
         </div>

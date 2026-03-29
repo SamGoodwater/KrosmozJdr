@@ -19,6 +19,9 @@ return new class extends Migration
             $table->boolean('is_boss')->default(false);
             $table->string('boss_pa')->default('');
             $table->foreignId('monster_race_id')->nullable()->constrained('monster_races')->cascadeOnDelete();
+            $table->string('state')->default('draft');
+            $table->tinyInteger('read_level')->default(0);
+            $table->tinyInteger('write_level')->default(3);
             $table->timestamps();
         });
     }

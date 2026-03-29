@@ -14,14 +14,11 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
-import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import TextareaField from '@/Pages/Molecules/data-input/TextareaField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
-import FileField from '@/Pages/Molecules/data-input/FileField.vue';
-import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import FormulaHelpHint from '@/Pages/Molecules/entity/FormulaHelpHint.vue';
+import EntityEditFormFieldBody from '@/Pages/Molecules/entity/EntityEditFormFieldBody.vue';
 import { FORMULA_PLACEHOLDER } from '@/Utils/entity/formula-help';
 
 const props = defineProps({
@@ -59,7 +56,40 @@ const props = defineProps({
     routeParamKey: {
         type: String,
         default: null
-    }
+    },
+    /**
+     * Clés masquées (non affichées). Par défaut : auto_update, dofus_version.
+     * Ex. pour les sorts : `['dofus_version']` pour afficher l’auto-update dans une section dédiée.
+     */
+    hiddenFieldKeys: {
+        type: Array,
+        default: null,
+    },
+    /**
+     * Sections du formulaire (cartes avec titre). Ordre des `fieldKeys` = ordre d’affichage.
+     * @type {Array<{ id: string, title: string, subtitle?: string, fieldKeys: string[] }>|null}
+     */
+    fieldSections: {
+        type: Array,
+        default: null,
+    },
+    /** Affiche l’état (workflow) dans la barre du haut. */
+    showStateToolbar: {
+        type: Boolean,
+        default: true,
+    },
+    /** Affiche lecture / écriture dans le pied de formulaire. */
+    showAccessLevelsInFooter: {
+        type: Boolean,
+        default: true,
+    },
+    /**
+     * Groupe Characteristics (ex. `spell`) pour enrichir les booléens (icône / couleur BDD).
+     */
+    characteristicsGroup: {
+        type: String,
+        default: null,
+    },
 });
 
 const emit = defineEmits(['submit', 'cancel']);
@@ -120,7 +150,12 @@ const fieldsConfig = computed(() => {
     return { ...defaultFieldsConfig.value, ...props.fieldsConfig };
 });
 
-const hiddenFieldKeys = new Set(['auto_update', 'dofus_version']);
+const resolvedHiddenFieldKeys = computed(() => {
+    if (props.hiddenFieldKeys !== null && props.hiddenFieldKeys !== undefined) {
+        return new Set(props.hiddenFieldKeys);
+    }
+    return new Set(['auto_update', 'dofus_version']);
+});
 const topRowFieldKeys = ['name'];
 const secondaryFieldKeys = new Set([
     'id', 'slug', 'read_level', 'write_level',
@@ -137,7 +172,30 @@ const isSecondaryField = (fieldKey, fieldConfig) => {
 };
 
 const visibleFields = computed(() => {
-    const entries = Object.entries(fieldsConfig.value).filter(([fieldKey]) => !hiddenFieldKeys.has(fieldKey));
+    const entries = Object.entries(fieldsConfig.value).filter(([fieldKey]) => !resolvedHiddenFieldKeys.value.has(fieldKey));
+
+    if (props.fieldSections?.length) {
+        const entryByKey = new Map(entries.map(([key, config]) => [key, { key, config }]));
+        const ordered = [];
+        const consumed = new Set();
+        for (const sec of props.fieldSections) {
+            for (const fieldKey of sec.fieldKeys || []) {
+                const entry = entryByKey.get(fieldKey);
+                if (entry && !consumed.has(fieldKey)) {
+                    ordered.push(entry);
+                    consumed.add(fieldKey);
+                }
+            }
+        }
+        for (const [fieldKey, fieldConfig] of entries) {
+            if (!consumed.has(fieldKey)) {
+                ordered.push({ key: fieldKey, config: fieldConfig });
+            }
+        }
+
+        return ordered;
+    }
+
     const entryByKey = new Map(entries.map(([key, config]) => [key, { key, config }]));
     const consumed = new Set();
     const ordered = [];
@@ -176,17 +234,30 @@ const visibleFields = computed(() => {
 });
 
 const stateField = computed(() => {
+    if (!props.showStateToolbar) {
+        return null;
+    }
     const entry = visibleFields.value.find((field) => field?.key === 'state');
     return entry?.config ? entry : null;
 });
 
-const accessLevelFields = computed(() =>
-    visibleFields.value.filter((field) => ['read_level', 'write_level'].includes(field?.key))
-);
+const accessLevelFields = computed(() => {
+    if (!props.showAccessLevelsInFooter) {
+        return [];
+    }
+    return visibleFields.value.filter((field) => ['read_level', 'write_level'].includes(field?.key));
+});
 
-const mainFields = computed(() =>
-    visibleFields.value.filter((field) => !['state', 'read_level', 'write_level'].includes(field?.key))
-);
+const mainFields = computed(() => {
+    const exclude = [];
+    if (props.showStateToolbar) {
+        exclude.push('state');
+    }
+    if (props.showAccessLevelsInFooter) {
+        exclude.push('read_level', 'write_level');
+    }
+    return visibleFields.value.filter((field) => !exclude.includes(field?.key));
+});
 
 // Initialisation du formulaire avec les données de l'entité
 const initializeForm = () => {
@@ -237,7 +308,10 @@ const getDefaultValue = (type) => {
         case 'number': return null;
         case 'checkbox': return false;
         case 'select': return null;
+        case 'elementPrimaries': return null;
+        case 'spellTypesMulti': return [];
         case 'file': return null;
+        case 'display': return '';
         default: return '';
     }
 };
@@ -250,10 +324,49 @@ const form = useForm(initializeForm());
 const initialSnapshot = ref(initializeForm());
 
 /**
+ * Visibilité conditionnelle (ex. résolution : champs selon `resolution_mode`).
+ *
+ * @param {string} fieldKey
+ * @param {object} fieldConfig
+ */
+function isFieldVisible(fieldKey, fieldConfig) {
+    const rule = fieldConfig?.visibleWhen;
+    if (!rule) return true;
+    const v = form[rule.field];
+    if (Object.prototype.hasOwnProperty.call(rule, 'value')) return v === rule.value;
+    if (Array.isArray(rule.in)) return rule.in.includes(v);
+    return true;
+}
+
+const mainFieldSections = computed(() => {
+    if (!props.fieldSections?.length) return null;
+    const mf = mainFields.value;
+    const byKey = new Map(mf.map((f) => [f.key, f]));
+    return props.fieldSections.map((sec) => ({
+        id: sec.id,
+        title: sec.title,
+        subtitle: sec.subtitle,
+        fields: (sec.fieldKeys || [])
+            .map((k) => byKey.get(k))
+            .filter(Boolean)
+            .filter((f) => isFieldVisible(f.key, f.config)),
+    })).filter((sec) => sec.fields.length > 0);
+});
+
+const visibleMainFields = computed(() =>
+    mainFields.value.filter((f) => isFieldVisible(f.key, f.config)),
+);
+
+/**
  * Track des bools modifiés en UI (utile pour gérer un état indeterminate en mode multi-edit).
  * @type {Record<string, boolean>}
  */
 const checkboxDirty = ref({});
+
+const onCheckboxUpdate = (key, v) => {
+    checkboxDirty.value = { ...(checkboxDirty.value || {}), [key]: true };
+    form[key] = Boolean(v);
+};
 
 /**
  * Track des champs non-bool modifiés en multi-edit.
@@ -403,9 +516,20 @@ const isImageField = (fieldKey, fieldConfig) => {
 };
 
 const getFieldRenderType = (fieldKey, fieldConfig) => {
+    if (fieldConfig?.type === 'display') return 'display';
     if (fieldConfig?.type === 'file') return 'file';
     if (fieldConfig?.type === 'text' && isImageField(fieldKey, fieldConfig)) return 'file';
+    if (fieldConfig?.type === 'elementPrimaries') return 'elementPrimaries';
+    if (fieldConfig?.type === 'spellTypesMulti') return 'spellTypesMulti';
     return fieldConfig?.type || 'text';
+};
+
+/**
+ * @param {unknown} val
+ */
+const formatDisplayValue = (val) => {
+    if (val === null || val === undefined || val === '') return '—';
+    return String(val);
 };
 
 const getFileCurrentPath = (fieldKey) => {
@@ -465,6 +589,8 @@ const getFieldWrapperClass = (fieldKey) => ([
     props.differentFields.includes(fieldKey) ? 'opacity-60' : '',
     fieldKey === 'name' ? 'form-field--wide' : '',
     fieldKey === 'description' ? 'form-field--full' : '',
+    ['category', 'state'].includes(fieldKey) ? 'form-field--meta-pair' : '',
+    fieldKey === 'element' ? 'form-field--full' : '',
 ].filter(Boolean));
 
 // Soumission du formulaire
@@ -536,7 +662,7 @@ const cancel = () => {
 
 <template>
     <Container class="entity-edit-form">
-        <div class="flex flex-col gap-4 mb-6">
+        <div class="flex flex-col gap-3 mb-4">
             <div class="top-tools-row">
                 <div class="top-tools-row__formula rounded-(--radius-field) border border-base-300 bg-base-100/60 px-3 py-2">
                     <FormulaHelpHint placement="bottom-start" />
@@ -551,6 +677,7 @@ const cancel = () => {
                         @update:model-value="() => markDirty(stateField.key)"
                         :label="getFieldLabel(stateField.key, stateField.config)"
                         :options="stateField.config.options || []"
+                        :option-badge="stateField.config.optionBadge || null"
                         :required="stateField.config.required"
                         :validation="getFieldValidation(stateField.key)"
                     />
@@ -559,176 +686,75 @@ const cancel = () => {
         </div>
 
         <!-- Formulaire -->
-        <form @submit.prevent="submit" class="space-y-6">
-            <div class="form-fields">
-                <template v-for="field in mainFields" :key="field.key">
-                    <template v-if="field?.config">
-                        <div :class="getFieldWrapperClass(field.key)">
-                            <Tooltip 
-                                class="w-full"
-                                :content="props.differentFields.includes(field.key) ? `${getFieldLabel(field.key, field.config)} (valeurs différentes)` : getFieldLabel(field.key, field.config)" 
-                                placement="top"
-                            >
-                                <!-- InputField -->
-                                <InputField
-                                    v-if="getFieldRenderType(field.key, field.config) === 'text' || !['textarea', 'select', 'file', 'number', 'checkbox'].includes(getFieldRenderType(field.key, field.config))"
-                                    v-model="form[field.key]"
-                                    @update:model-value="() => markDirty(field.key)"
-                                    :label="getFieldLabel(field.key, field.config)"
-                                    :type="field.config.type || 'text'"
-                                    :required="field.config.required"
-                                    :helper="getFieldHelper(field.key, field.config)"
-                                    :validation="getFieldValidation(field.key)"
-                                    :placeholder="getFieldPlaceholder(field.key, field.config)"
-                                >
-                                    <template
-                                        v-if="isMultiEdit && props.differentFields.includes(field.key) && fieldDirty.value?.[field.key]"
-                                        #overEnd
-                                    >
-                                        <Btn
-                                            size="xs"
-                                            variant="ghost"
-                                            title="Annuler la modification (ne pas modifier ce champ)"
-                                            @click.stop="resetFieldMultiEdit(field.key, field.config.type || 'text')"
-                                        >
-                                            <i class="fa-solid fa-rotate-left"></i>
-                                        </Btn>
-                                    </template>
-                                </InputField>
-                                
-                                <!-- TextareaField -->
-                                <TextareaField
-                                    v-else-if="getFieldRenderType(field.key, field.config) === 'textarea'"
-                                    v-model="form[field.key]"
-                                    @update:model-value="() => markDirty(field.key)"
-                                    :label="getFieldLabel(field.key, field.config)"
-                                    :required="field.config.required"
-                                    :helper="getFieldHelper(field.key, field.config)"
-                                    :validation="getFieldValidation(field.key)"
-                                    :placeholder="getFieldPlaceholder(field.key, field.config)"
-                                >
-                                    <template
-                                        v-if="isMultiEdit && props.differentFields.includes(field.key) && fieldDirty.value?.[field.key]"
-                                        #overEnd
-                                    >
-                                        <Btn
-                                            size="xs"
-                                            variant="ghost"
-                                            title="Annuler la modification (ne pas modifier ce champ)"
-                                            @click.stop="resetFieldMultiEdit(field.key, 'textarea')"
-                                        >
-                                            <i class="fa-solid fa-rotate-left"></i>
-                                        </Btn>
-                                    </template>
-                                </TextareaField>
-                                
-                                <!-- SelectField -->
-                                <SelectField
-                                    v-else-if="getFieldRenderType(field.key, field.config) === 'select'"
-                                    v-model="form[field.key]"
-                                    @update:model-value="() => markDirty(field.key)"
-                                    :label="getFieldLabel(field.key, field.config)"
-                                    :options="field.config.options || []"
-                                    :required="field.config.required"
-                                    :helper="getFieldHelper(field.key, field.config)"
-                                    :validation="getFieldValidation(field.key)"
-                                    :placeholder="getFieldPlaceholder(field.key, field.config)"
-                                >
-                                    <template
-                                        v-if="isMultiEdit && props.differentFields.includes(field.key) && fieldDirty.value?.[field.key]"
-                                        #overEnd
-                                    >
-                                        <Btn
-                                            size="xs"
-                                            variant="ghost"
-                                            title="Annuler la modification (ne pas modifier ce champ)"
-                                            @click.stop="resetFieldMultiEdit(field.key, 'select')"
-                                        >
-                                            <i class="fa-solid fa-rotate-left"></i>
-                                        </Btn>
-                                    </template>
-                                </SelectField>
-                                
-                                <!-- FileField -->
-                                <FileField
-                                    v-else-if="getFieldRenderType(field.key, field.config) === 'file'"
-                                    v-model="form[field.key]"
-                                    :current-path="getFileCurrentPath(field.key)"
-                                    :accept="getFileAccept(field.key, field.config)"
-                                    :label="getFieldLabel(field.key, field.config)"
-                                    :required="field.config.required"
-                                    :helper="getFieldHelper(field.key, field.config)"
-                                    :validation="getFieldValidation(field.key)"
+        <form @submit.prevent="submit" class="space-y-5">
+            <div v-if="mainFieldSections?.length" class="space-y-5">
+                <section
+                    v-for="sec in mainFieldSections"
+                    :key="sec.id"
+                    class="rounded-xl border border-base-300/70 bg-base-100/30 p-3 shadow-sm md:p-4"
+                >
+                    <div class="mb-3 border-b border-base-300/50 pb-2">
+                        <h2 class="text-base font-semibold tracking-tight text-base-content">
+                            {{ sec.title }}
+                        </h2>
+                        <p v-if="sec.subtitle" class="mt-0.5 text-xs leading-snug text-base-content/70 md:text-sm">
+                            {{ sec.subtitle }}
+                        </p>
+                    </div>
+                    <div class="form-fields">
+                        <template v-for="field in sec.fields" :key="field.key">
+                            <div v-if="field?.config" :class="getFieldWrapperClass(field.key)">
+                                <EntityEditFormFieldBody
+                                    :field="field"
+                                    :form="form"
+                                    :is-multi-edit="isMultiEdit"
+                                    :different-fields="props.differentFields"
+                                    :field-dirty="fieldDirty"
+                                    :checkbox-dirty="checkboxDirty"
+                                    :get-field-label="getFieldLabel"
+                                    :get-field-helper="getFieldHelper"
+                                    :get-field-validation="getFieldValidation"
+                                    :get-field-placeholder="getFieldPlaceholder"
+                                    :get-field-render-type="getFieldRenderType"
+                                    :get-file-current-path="getFileCurrentPath"
+                                    :get-file-accept="getFileAccept"
+                                    :format-display-value="formatDisplayValue"
+                                    :mark-dirty="markDirty"
+                                    :reset-field-multi-edit="resetFieldMultiEdit"
+                                    :reset-bool-multi-edit="resetBoolMultiEdit"
+                                    :on-checkbox-update="onCheckboxUpdate"
+                                    :characteristics-group="characteristicsGroup"
                                 />
-                                
-                                <!-- NumberField (using InputField with type number) -->
-                                <InputField
-                                    v-else-if="getFieldRenderType(field.key, field.config) === 'number'"
-                                    v-model="form[field.key]"
-                                    @update:model-value="() => markDirty(field.key)"
-                                    :label="getFieldLabel(field.key, field.config)"
-                                    type="number"
-                                    :required="field.config.required"
-                                    :helper="getFieldHelper(field.key, field.config)"
-                                    :validation="getFieldValidation(field.key)"
-                                    :placeholder="getFieldPlaceholder(field.key, field.config)"
-                                >
-                                    <template
-                                        v-if="isMultiEdit && props.differentFields.includes(field.key) && fieldDirty.value?.[field.key]"
-                                        #overEnd
-                                    >
-                                        <Btn
-                                            size="xs"
-                                            variant="ghost"
-                                            title="Annuler la modification (ne pas modifier ce champ)"
-                                            @click.stop="resetFieldMultiEdit(field.key, 'number')"
-                                        >
-                                            <i class="fa-solid fa-rotate-left"></i>
-                                        </Btn>
-                                    </template>
-                                </InputField>
-                                
-                                <!-- Bool (Toggle) -->
-                                <div v-else-if="getFieldRenderType(field.key, field.config) === 'checkbox'" class="flex items-center justify-between gap-3">
-                                    <div class="flex items-center gap-3">
-                                        <ToggleCore
-                                            variant="glass"
-                                            size="sm"
-                                            color="primary"
-                                            :model-value="Boolean(form[field.key])"
-                                            :indeterminate="props.differentFields.includes(field.key) && !checkboxDirty.value?.[field.key]"
-                                            @update:model-value="(v) => { checkboxDirty.value = { ...(checkboxDirty.value || {}), [field.key]: true }; form[field.key] = Boolean(v); }"
-                                        />
-                                        <span
-                                            class="text-sm transition-colors duration-200 flex items-center gap-1"
-                                            :class="{
-                                                'opacity-80': !(props.differentFields.includes(field.key) && !checkboxDirty.value?.[field.key]),
-                                                'text-warning font-semibold': props.differentFields.includes(field.key) && !checkboxDirty.value?.[field.key],
-                                            }"
-                                        >
-                                            <template v-if="props.differentFields.includes(field.key) && !checkboxDirty.value?.[field.key]">
-                                                <Icon source="fa-solid fa-exclamation-triangle" alt="Valeurs différentes" size="xs" />
-                                                Valeurs différentes
-                                            </template>
-                                            <template v-else>
-                                                {{ Boolean(form[field.key]) ? "Oui" : "Non" }}
-                                            </template>
-                                        </span>
-                                    </div>
-
-                                    <Btn
-                                        v-if="props.differentFields.includes(field.key) && checkboxDirty.value?.[field.key]"
-                                        size="xs"
-                                        variant="ghost"
-                                        title="Annuler la modification (ne pas modifier ce champ)"
-                                        @click.stop="resetBoolMultiEdit(field.key)"
-                                    >
-                                        <i class="fa-solid fa-rotate-left"></i>
-                                    </Btn>
-                                </div>
-                            </Tooltip>
-                        </div>
-                    </template>
+                            </div>
+                        </template>
+                    </div>
+                </section>
+            </div>
+            <div v-else class="form-fields">
+                <template v-for="field in visibleMainFields" :key="field.key">
+                    <div v-if="field?.config" :class="getFieldWrapperClass(field.key)">
+                        <EntityEditFormFieldBody
+                            :field="field"
+                            :form="form"
+                            :is-multi-edit="isMultiEdit"
+                            :different-fields="props.differentFields"
+                            :field-dirty="fieldDirty"
+                            :checkbox-dirty="checkboxDirty"
+                            :get-field-label="getFieldLabel"
+                            :get-field-helper="getFieldHelper"
+                            :get-field-validation="getFieldValidation"
+                            :get-field-placeholder="getFieldPlaceholder"
+                            :get-field-render-type="getFieldRenderType"
+                            :get-file-current-path="getFileCurrentPath"
+                            :get-file-accept="getFileAccept"
+                            :format-display-value="formatDisplayValue"
+                            :mark-dirty="markDirty"
+                            :reset-field-multi-edit="resetFieldMultiEdit"
+                            :reset-bool-multi-edit="resetBoolMultiEdit"
+                            :on-checkbox-update="onCheckboxUpdate"
+                            :characteristics-group="characteristicsGroup"
+                        />
+                    </div>
                 </template>
             </div>
 
@@ -814,7 +840,7 @@ const cancel = () => {
     .form-fields {
         display: flex;
         flex-wrap: wrap;
-        gap: 1.25rem;
+        gap: 0.875rem;
     }
 
     .form-field {
@@ -846,6 +872,11 @@ const cancel = () => {
         .form-field {
             flex: 1 1 calc(50% - 0.625rem);
             max-width: calc(50% - 0.625rem);
+        }
+
+        .form-field--meta-pair {
+            flex: 1 1 calc(50% - 0.4375rem);
+            max-width: calc(50% - 0.4375rem);
         }
 
         .form-field--wide {

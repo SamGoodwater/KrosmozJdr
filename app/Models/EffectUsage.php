@@ -9,19 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * Lien polymorphique entité (spell, item, consumable…) → effect.
- * required_creature_level = niveau **minimum du porteur** (créature / PJ) pour utiliser cet effet à ce degré
- * (distinct du niveau « fiche sort »). Logique produit : parmi les degrés dont le seuil est atteint, on prend le plus élevé.
+ * Lien polymorphique entité (item, consumable, resource) → degré d’effet.
+ * Les sorts utilisent la table {@see effect_spell} ; le seuil est sur {@see EffectDegree::required_creature_level}.
  *
  * @property int $id
  * @property string $entity_type
  * @property int $entity_id
- * @property int $effect_id
- * @property int|null $required_creature_level
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
- * @property-read Model $entity
- * @property-read Effect $effect
+ * @property int $effect_degree_id
  */
 class EffectUsage extends Model
 {
@@ -30,14 +24,12 @@ class EffectUsage extends Model
     protected $fillable = [
         'entity_type',
         'entity_id',
-        'effect_id',
-        'required_creature_level',
+        'effect_degree_id',
     ];
 
     protected $casts = [
         'entity_id' => 'integer',
-        'effect_id' => 'integer',
-        'required_creature_level' => 'integer',
+        'effect_degree_id' => 'integer',
     ];
 
     public function entity(): MorphTo
@@ -45,20 +37,18 @@ class EffectUsage extends Model
         return $this->morphTo();
     }
 
-    public function effect(): BelongsTo
+    public function effectDegree(): BelongsTo
     {
-        return $this->belongsTo(Effect::class);
+        return $this->belongsTo(EffectDegree::class);
     }
 
-    /** Entités supportées (nom court => classe). */
+    /** Entités supportées (nom court => classe). Les sorts ne passent plus par cette table. */
     private const ENTITY_TYPE_MAP = [
-        'spell' => \App\Models\Entity\Spell::class,
         'item' => \App\Models\Entity\Item::class,
         'consumable' => \App\Models\Entity\Consumable::class,
         'resource' => \App\Models\Entity\Resource::class,
     ];
 
-    /** Retourne la classe pour un type court (spell, item, …). */
     public static function entityTypeToClass(string $shortType): ?string
     {
         return self::ENTITY_TYPE_MAP[$shortType] ?? null;

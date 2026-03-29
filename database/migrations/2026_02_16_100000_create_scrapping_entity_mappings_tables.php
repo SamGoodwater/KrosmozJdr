@@ -27,6 +27,7 @@ return new class extends Migration
             $table->unsignedBigInteger('characteristic_id')->nullable()->comment('Si conversion/limites via une caractéristique');
             $table->foreign('characteristic_id', 'scr_ent_mappings_characteristic_id_fk')->references('id')->on('characteristics')->nullOnDelete();
             $table->json('formatters')->nullable()->comment('Liste {name, args} ex: [{"name":"toString","args":{}}]');
+            $table->string('spell_level_aggregation', 16)->nullable()->comment('Agrégation multi spell-level : first, max, min, last (défaut first)');
             $table->unsignedSmallInteger('sort_order')->default(0);
             $table->timestamps();
 

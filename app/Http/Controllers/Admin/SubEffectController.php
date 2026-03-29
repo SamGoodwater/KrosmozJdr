@@ -16,7 +16,7 @@ class SubEffectController extends Controller
 {
     public function index(): InertiaResponse
     {
-        $subEffects = SubEffect::withCount('effects')
+        $subEffects = SubEffect::withCount('effectDegrees')
             ->orderBy('type_slug')
             ->orderBy('slug')
             ->get();
@@ -28,7 +28,7 @@ class SubEffectController extends Controller
                 'type_slug' => $s->type_slug,
                 'template_text' => $s->template_text,
                 'dofusdb_effect_id' => $s->dofusdb_effect_id,
-                'effects_count' => $s->effects_count ?? 0,
+                'effects_count' => $s->effect_degrees_count ?? 0,
             ])->values()->all(),
         ]);
     }

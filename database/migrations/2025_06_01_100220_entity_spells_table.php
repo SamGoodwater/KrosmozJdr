@@ -15,9 +15,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->string('effect')->nullable();
-            $table->integer('area')->default(0);
             $table->string('level')->default('1');
-            $table->string('po')->default('1');
+            $table->string('po_min', 64)->default('1');
+            $table->string('po_max', 64)->default('1');
             $table->boolean('po_editable')->default(true);
             $table->string('pa')->default('3');
             $table->string('cast_per_turn')->default('1');
@@ -29,6 +29,11 @@ return new class extends Migration
             $table->integer('category')->default(0);
             $table->boolean('is_magic')->default(true);
             $table->integer('powerful')->default(0);
+            $table->string('resolution_mode', 32)->default('attack_roll')->index();
+            $table->string('attack_characteristic_key', 64)->nullable();
+            $table->string('save_characteristic_key', 64)->nullable();
+            $table->string('save_dc_formula', 255)->nullable();
+            $table->text('save_success_note')->nullable();
             $table->string('state')->default('draft');
             $table->tinyInteger('read_level')->default(0);
             $table->tinyInteger('write_level')->default(3);

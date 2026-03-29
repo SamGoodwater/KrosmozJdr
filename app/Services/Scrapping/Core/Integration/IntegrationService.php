@@ -3,7 +3,7 @@
 namespace App\Services\Scrapping\Core\Integration;
 
 use App\Models\Effect;
-use App\Models\EffectGroup;
+use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
 use App\Models\EffectUsage;
 use App\Models\Entity\Breed;
@@ -486,7 +486,9 @@ final class IntegrationService
             'sight_line' => (bool) (isset($data['sight_line']) ? (int) $data['sight_line'] : true),
             'number_between_two_cast' => (string) (isset($data['number_between_two_cast']) ? $data['number_between_two_cast'] : '0'),
             'number_between_two_cast_editable' => (bool) (isset($data['number_between_two_cast_editable']) ? (int) $data['number_between_two_cast_editable'] : true),
-            'element' => (int) ($data['element'] ?? 0),
+            'element' => array_key_exists('element', $data) && $data['element'] !== null && $data['element'] !== ''
+                ? (int) $data['element']
+                : null,
             'category' => (int) ($options['spell_category_hint'] ?? $data['category'] ?? Spell::CATEGORY_CREATURE),
             'is_magic' => (bool) (isset($data['is_magic']) ? (int) $data['is_magic'] : true),
             'powerful' => (int) ($data['powerful'] ?? 0),
@@ -495,6 +497,7 @@ final class IntegrationService
             'save_characteristic_key' => isset($data['save_characteristic_key']) ? (string) $data['save_characteristic_key'] : null,
             'save_dc_formula' => isset($data['save_dc_formula']) ? (string) $data['save_dc_formula'] : null,
             'save_success_note' => isset($data['save_success_note']) ? (string) $data['save_success_note'] : null,
+            'auto_success_if_willing_target' => (bool) ($data['auto_success_if_willing_target'] ?? false),
             'created_by' => $userId,
         ];
         if ($propertyWhitelist !== []) {
@@ -597,26 +600,23 @@ final class IntegrationService
             return;
         }
 
-        $groupSlug = (string) ($groupData['slug'] ?? '');
         $groupName = (string) ($groupData['name'] ?? $spell->name);
-
-        $group = EffectGroup::firstOrCreate(
-            ['slug' => $groupSlug !== '' ? $groupSlug : 'spell-'.$spell->id],
-            ['name' => $groupName !== '' ? $groupName : $spell->name]
-        );
+        $baseSlug = (string) ($groupData['slug'] ?? '');
+        if ($baseSlug === '') {
+            $baseSlug = 'spell-'.$spell->id;
+        }
 
         $slugToId = $this->collectSubEffectIdsFromSpellPayload($effectsData);
+        $attachEffectIds = [];
+        $localDefinition = null;
 
         foreach ($effectsData as $effectRow) {
             if (! is_array($effectRow)) {
                 continue;
             }
-            $degree = isset($effectRow['degree']) && is_numeric($effectRow['degree']) ? (int) $effectRow['degree'] : 1;
+            $degreeNum = isset($effectRow['degree']) && is_numeric($effectRow['degree']) ? (int) $effectRow['degree'] : 1;
             $effectName = (string) ($effectRow['name'] ?? $spell->name);
             $effectSlug = (string) ($effectRow['slug'] ?? '');
-            if ($effectSlug === '') {
-                $effectSlug = $group->slug.'-'.$degree;
-            }
 
             $subEffectsRaw = $effectRow['sub_effects'] ?? [];
             if (! is_array($subEffectsRaw)) {
@@ -625,52 +625,57 @@ final class IntegrationService
 
             $targetType = (string) ($effectRow['target_type'] ?? Effect::TARGET_DIRECT);
             $area = isset($effectRow['area']) ? (string) $effectRow['area'] : null;
+            $requiredCreatureLevel = isset($effectRow['required_creature_level']) && is_numeric($effectRow['required_creature_level'])
+                ? (int) $effectRow['required_creature_level']
+                : null;
 
             $normalizedRows = $this->normalizeSubEffectsRowsForSignature($subEffectsRaw, $slugToId);
             $signature = $normalizedRows !== [] ? $this->computeEffectConfigSignature($normalizedRows, $targetType, $area) : null;
 
-            $effect = null;
-            if ($signature !== null) {
-                $effect = Effect::where('config_signature', $signature)->first();
+            $existingDegree = ($signature !== null) ? EffectDegree::query()->where('config_signature', $signature)->first() : null;
+            if ($existingDegree !== null) {
+                $attachEffectIds[] = $existingDegree->effect_id;
+
+                continue;
             }
 
-            if ($effect === null) {
-                $effect = Effect::where('slug', $effectSlug)->first();
-                if ($effect !== null) {
-                    // Évite les collisions slug_unique quand une ancienne importation a créé l'effet sans signature.
-                    $effect->update([
-                        'effect_group_id' => $group->id,
-                        'degree' => $degree,
-                        'name' => $effectName,
-                        'description' => $effectRow['description'] ?? null,
-                        'target_type' => $targetType,
-                        'area' => $area,
-                        'config_signature' => $signature,
-                    ]);
-                } else {
-                    $effect = Effect::create([
-                        'effect_group_id' => $group->id,
-                        'degree' => $degree,
-                        'name' => $effectName,
-                        'slug' => $effectSlug,
-                        'description' => $effectRow['description'] ?? null,
-                        'target_type' => $targetType,
-                        'area' => $area,
-                        'config_signature' => $signature,
-                    ]);
+            if ($localDefinition === null) {
+                $defSlug = $baseSlug;
+                $i = 0;
+                while (Effect::query()->where('slug', $defSlug)->exists()) {
+                    $i++;
+                    $defSlug = $baseSlug.'-'.$i;
                 }
+                $localDefinition = Effect::create([
+                    'name' => $groupName !== '' ? $groupName : $effectName,
+                    'slug' => $defSlug,
+                    'description' => $effectRow['description'] ?? null,
+                    'target_type' => $targetType,
+                ]);
             }
 
-            EffectUsage::firstOrCreate(
+            if ($effectSlug === '') {
+                $effectSlug = $localDefinition->slug.'-d'.$degreeNum;
+            }
+            $degSlug = $this->makeUniqueEffectDegreeSlug($effectSlug);
+
+            $degreeModel = EffectDegree::query()->firstOrCreate(
                 [
-                    'entity_type' => 'spell',
-                    'entity_id' => $spell->id,
-                    'effect_id' => $effect->id,
+                    'effect_id' => $localDefinition->id,
+                    'degree' => $degreeNum,
                 ],
                 [
-                    'required_creature_level' => $degree,
+                    'required_creature_level' => $requiredCreatureLevel,
+                    'area' => $area,
+                    'slug' => $degSlug,
                 ]
             );
+            if (! $degreeModel->wasRecentlyCreated) {
+                $degreeModel->update([
+                    'required_creature_level' => $requiredCreatureLevel,
+                    'area' => $area,
+                ]);
+            }
 
             foreach ($subEffectsRaw as $row) {
                 if (! is_array($row)) {
@@ -688,7 +693,7 @@ final class IntegrationService
 
                 $this->integrateSpellStateFromParams($spell, $slug, $params);
 
-                $alreadyExists = $effect->effectSubEffects()
+                $alreadyExists = $degreeModel->effectSubEffects()
                     ->where($this->effectSubEffectDedupWhere($subId, $critOnly, $params))
                     ->exists();
 
@@ -696,7 +701,7 @@ final class IntegrationService
                     continue;
                 }
 
-                $effect->effectSubEffects()->create([
+                $degreeModel->effectSubEffects()->create([
                     'sub_effect_id' => $subId,
                     'order' => $order,
                     'scope' => Effect::SCOPE_GENERAL,
@@ -704,7 +709,37 @@ final class IntegrationService
                     'crit_only' => $critOnly,
                 ]);
             }
+
+            $degreeModel->load(['effectSubEffects', 'effect']);
+            $newSignature = $this->rebuildConfigSignatureForEffectDegree($degreeModel);
+            if ($newSignature !== null) {
+                $degreeModel->update(['config_signature' => $newSignature]);
+            }
         }
+
+        if ($localDefinition !== null) {
+            $attachEffectIds[] = $localDefinition->id;
+        }
+        $attachEffectIds = array_values(array_unique(array_filter($attachEffectIds)));
+        if ($attachEffectIds !== []) {
+            $spell->effects()->syncWithoutDetaching($attachEffectIds);
+        }
+    }
+
+    private function makeUniqueEffectDegreeSlug(string $preferred): ?string
+    {
+        $preferred = trim($preferred);
+        if ($preferred === '') {
+            return null;
+        }
+        $slug = $preferred;
+        $n = 0;
+        while (EffectDegree::query()->where('slug', $slug)->exists()) {
+            $n++;
+            $slug = $preferred.'-'.$n;
+        }
+
+        return $slug;
     }
 
     /**
@@ -743,10 +778,10 @@ final class IntegrationService
             $action = 'create';
             $existingEffectId = null;
             if ($signature !== null) {
-                $existing = Effect::where('config_signature', $signature)->first();
+                $existing = EffectDegree::query()->where('config_signature', $signature)->first();
                 if ($existing !== null) {
                     $action = 'reuse';
-                    $existingEffectId = $existing->id;
+                    $existingEffectId = $existing->effect_id;
                 }
             }
 
@@ -894,14 +929,13 @@ final class IntegrationService
     }
 
     /**
-     * Recalcule la config_signature d'un effet existant (inclut target_type et area).
-     * Utile pour le backfill après modification de l'algorithme de signature.
+     * Recalcule la config_signature d’un degré d’effet (target_type sur la définition, area sur le degré).
      */
-    public function rebuildConfigSignatureForEffect(Effect $effect): ?string
+    public function rebuildConfigSignatureForEffectDegree(\App\Models\EffectDegree $degree): ?string
     {
-        $effect->loadMissing('effectSubEffects');
+        $degree->loadMissing(['effectSubEffects', 'effect']);
         $rows = [];
-        foreach ($effect->effectSubEffects as $ese) {
+        foreach ($degree->effectSubEffects as $ese) {
             $params = is_array($ese->params) ? $ese->params : [];
             $rows[] = [
                 'order' => $ese->order,
@@ -919,10 +953,12 @@ final class IntegrationService
             return null;
         }
 
+        $targetType = $degree->effect?->target_type ?? Effect::TARGET_DIRECT;
+
         return $this->computeEffectConfigSignature(
             $rows,
-            $effect->target_type ?? Effect::TARGET_DIRECT,
-            $effect->area
+            $targetType,
+            $degree->area
         );
     }
 

@@ -425,16 +425,27 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
-  EFFECT_GROUPS {
+  EFFECT_DEGREES {
     id : bigint(20) unsigned
-    name : varchar(255)
+    effect_id : bigint(20) unsigned
+    degree : tinyint(3) unsigned
+    required_creature_level : smallint(5) unsigned
+    area : varchar(64)
     slug : varchar(64)
+    config_signature : varchar(64)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  EFFECT_SPELL {
+    id : bigint(20) unsigned
+    spell_id : bigint(20) unsigned
+    effect_id : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp
   }
   EFFECT_SUB_EFFECT {
     id : bigint(20) unsigned
-    effect_id : bigint(20) unsigned
+    effect_degree_id : bigint(20) unsigned
     sub_effect_id : bigint(20) unsigned
     order : smallint(5) unsigned
     scope : varchar(32)
@@ -455,10 +466,7 @@ erDiagram
     id : bigint(20) unsigned
     entity_type : varchar(255)
     entity_id : bigint(20) unsigned
-    effect_id : bigint(20) unsigned
-    level_min : smallint(5) unsigned
-    level_max : smallint(5) unsigned
-    caster_level_min : smallint(5) unsigned
+    effect_degree_id : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp
   }
@@ -467,11 +475,7 @@ erDiagram
     name : varchar(255)
     slug : varchar(64)
     description : text
-    effect_group_id : bigint(20) unsigned
-    degree : tinyint(3) unsigned
     target_type : varchar(32)
-    area : varchar(64)
-    config_signature : varchar(64)
     created_at : timestamp
     updated_at : timestamp
   }
@@ -1206,10 +1210,12 @@ erDiagram
   CREATURE_SPELL }o--|| SPELLS : "FK spell_id"
   CREATURES }o--|| USERS : "FK created_by"
   DATA_SUBJECT_REQUESTS }o--|| USERS : "FK user_id"
-  EFFECT_SUB_EFFECT }o--|| EFFECTS : "FK effect_id"
+  EFFECT_DEGREES }o--|| EFFECTS : "FK effect_id"
+  EFFECT_SPELL }o--|| EFFECTS : "FK effect_id"
+  EFFECT_SPELL }o--|| SPELLS : "FK spell_id"
+  EFFECT_SUB_EFFECT }o--|| EFFECT_DEGREES : "FK effect_degree_id"
   EFFECT_SUB_EFFECT }o--|| SUB_EFFECTS : "FK sub_effect_id"
-  EFFECT_USAGES }o--|| EFFECTS : "FK effect_id"
-  EFFECTS }o--|| EFFECT_GROUPS : "FK effect_group_id"
+  EFFECT_USAGES }o--|| EFFECT_DEGREES : "FK effect_degree_id"
   ITEM_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   ITEM_CAMPAIGN }o--|| ITEMS : "FK item_id"
   ITEM_PANOPLY }o--|| ITEMS : "FK item_id"

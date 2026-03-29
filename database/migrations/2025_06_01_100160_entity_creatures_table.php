@@ -28,6 +28,8 @@ return new class extends Migration
             $table->string('dodge_pm')->default('0');
             $table->string('fuite')->default('0');
             $table->string('tacle')->default('0');
+            $table->string('critical_hit', 16)->default('0');
+            $table->string('heal_bonus', 16)->default('0');
             $table->string('vitality')->default('0');
             $table->string('sagesse')->default('0');
             $table->string('strong')->default('0');
@@ -85,6 +87,18 @@ return new class extends Migration
             $table->tinyInteger('persuasion_mastery')->default(0);
             $table->tinyInteger('representation_mastery')->default(0);
             $table->tinyInteger('supercherie_mastery')->default(0);
+            $table->unsignedTinyInteger('save_vitality_bonus')->default(0);
+            $table->unsignedTinyInteger('save_wisdom_bonus')->default(0);
+            $table->unsignedTinyInteger('save_strength_bonus')->default(0);
+            $table->unsignedTinyInteger('save_intelligence_bonus')->default(0);
+            $table->unsignedTinyInteger('save_chance_bonus')->default(0);
+            $table->unsignedTinyInteger('save_agility_bonus')->default(0);
+            $table->unsignedTinyInteger('save_vitality_mastery')->default(0);
+            $table->unsignedTinyInteger('save_wisdom_mastery')->default(0);
+            $table->unsignedTinyInteger('save_strength_mastery')->default(0);
+            $table->unsignedTinyInteger('save_intelligence_mastery')->default(0);
+            $table->unsignedTinyInteger('save_chance_mastery')->default(0);
+            $table->unsignedTinyInteger('save_agility_mastery')->default(0);
             $table->string('kamas')->nullable();
             $table->string('drop_')->nullable();
             $table->string('other_item')->nullable();

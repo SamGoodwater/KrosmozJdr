@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('effect_sub_effect', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('effect_id')->constrained('effects')->cascadeOnDelete();
+            $table->foreignId('effect_degree_id')->constrained('effect_degrees')->cascadeOnDelete();
             $table->foreignId('sub_effect_id')->constrained('sub_effects')->cascadeOnDelete();
             $table->unsignedSmallInteger('order')->default(0);
             $table->string('scope', 32)->default('general');
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('logic_condition', 255)->nullable();
             $table->timestamps();
 
-            $table->index(['effect_id', 'order']);
+            $table->index(['effect_degree_id', 'order']);
         });
     }
 

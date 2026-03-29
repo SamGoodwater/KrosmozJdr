@@ -11,7 +11,7 @@ class UpdateEffectRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->verifyRole('admin') ?? false;
+        return $this->user()?->verifyRole('game_master') ?? false;
     }
 
     /**
@@ -20,21 +20,19 @@ class UpdateEffectRequest extends FormRequest
     public function rules(): array
     {
         $effect = $this->route('effect');
+
         return [
             'name' => 'nullable|string|max:255',
-            'slug' => 'nullable|string|max:64|unique:effects,slug,' . ($effect?->id ?? 0),
+            'slug' => 'nullable|string|max:64|unique:effects,slug,'.($effect?->id ?? 0),
             'description' => 'nullable|string|max:65535',
-            'effect_group_id' => 'nullable|integer|exists:effect_groups,id',
-            'degree' => 'nullable|integer|min:0|max:255',
             'target_type' => 'nullable|string|in:direct,trap,glyph',
-            'area' => 'nullable|string|max:64',
         ];
     }
 
     protected function passedValidation(): void
     {
         if ($this->filled('description')) {
-            $this->merge(['description' => (new EffectTextSanitizer())->sanitize((string) $this->description)]);
+            $this->merge(['description' => (new EffectTextSanitizer)->sanitize((string) $this->description)]);
         }
     }
 }

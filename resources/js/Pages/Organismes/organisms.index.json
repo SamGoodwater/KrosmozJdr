@@ -510,6 +510,13 @@
     "file": "feedback/FeedbackFab.vue"
   },
   {
+    "name": "SpellEffectsUnifiedSection",
+    "description": "Panneau unifié « effets du sort » : liaison pivot effect_spell, édition par définition (degrés + seuils).",
+    "props": [],
+    "slots": [],
+    "file": "entity/SpellEffectsUnifiedSection.vue"
+  },
+  {
     "name": "EntityRelationsManager",
     "description": "EntityRelationsManager Organism",
     "props": [
@@ -712,10 +719,17 @@
   },
   {
     "name": "EffectUsagesManager",
-    "description": "EffectUsagesManager — Gestion des effect_usages sur une entité (sort, item, consumable). Liste des usages (tranche level_min–level_max → effect), ajout/édition/suppression via API. Prévisualisation « effet pour niveau X » via GET api/effects/for-entity.",
+    "description": "EffectUsagesManager — Gestion des effect_usages (item, consommable, ressource) : lien vers un degré d’effet. Le seuil « niveau créature min. » est porté par le degré ; le modifier dans l’éditeur d’effet / admin.",
     "props": [],
     "slots": [],
     "file": "entity/EffectUsagesManager.vue"
+  },
+  {
+    "name": "EffectGroupEditorForm",
+    "description": "Édition d’un groupe d’effets (champs communs + onglets par degré + sous-effets). Utilisable depuis l’admin effets ou la fiche sort.",
+    "props": [],
+    "slots": [],
+    "file": "entity/EffectGroupEditorForm.vue"
   },
   {
     "name": "CreateEntityModal",

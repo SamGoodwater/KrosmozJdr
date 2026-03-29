@@ -1,0 +1,192 @@
+# Interface CLI unifiée du projet (`project:*`)
+
+Objectif : **un vocabulaire stable** (dépendances, dev, données, bootstrap) tout en **réutilisant** les implémentations existantes (`run`, `setup`, `project:init`, `scrapping:*`) pour rester **DRY**.
+
+## Principes
+
+| Préfixe | Rôle |
+|---------|------|
+| `project:deps` | Outils et librairies (apt, composer, pnpm), CSS, doc, migrations. |
+| `project:dev` | Préparation locale + serveurs PHP / Vite. |
+| `project:refresh` | Repartir de zéro (libs optionnelles + `migrate:fresh`). |
+| `project:data` | Données DofusDB (sync, init catalogue, guide fill). |
+| `project:data:sync` | Mise à jour des entités déjà en base avec `auto_update=true`. |
+| `project:init` | Pipeline complet d’installation (migrations, seeders, types, scrapping, capacités). |
+| `project:super-admin` | Création interactive du premier super_admin (hors `init`). |
+
+La commande historique **`run`** reste la **moteur bas niveau** (nombreuses options). Les `project:*` la **orchestrent** pour un usage quotidien plus lisible.
+
+**Collision résolue :** l’ancien `project:update` (sync auto_update) devient la commande canonique **`project:data:sync`**. L’alias **`project:update`** est conservé (scheduler, scripts, habitude).
+
+---
+
+## `project:deps` — stack & build
+
+Met à jour l’environnement de développement.
+
+| Option | Effet (délègue à `run`) |
+|--------|-------------------------|
+| *(aucune option)* | Équivalent **`--all`** : apt + composer + pnpm + CSS + doc + dump-autoload + **migrate**. |
+| `--all` | Idem. |
+| `--apt` | `--update:system` |
+| `--composer` | `--update:composer` |
+| `--pnpm` | `--update:pnpm` |
+| `--css` | `--update:css` |
+| `--docs` | `--update:docs` |
+| `--dump` | `--dump` |
+| `--migrate` | `--migrate` |
+| `--ide` | `--optimise:ide` |
+| `--laravel-clear` | `--optimise:laravel` |
+
+**Exemples**
+
+```bash
+php artisan project:deps              # tout (défaut)
+php artisan project:deps --pnpm --css # ciblé
+```
+
+**Init + deps :** `php artisan project:init --deps` enchaîne `project:deps` puis le pipeline `init`.
+
+---
+
+## `project:dev` — développement
+
+| Option | Effet |
+|--------|--------|
+| *(défaut)* | `run --dev` (serveur PHP + Vite optimisé). |
+| `--prepare` | Prépare l’environnement (nettoyage, deps de base, optimisations, **migrate**) — en interne : `run --regenerate`. |
+| `--migrate` | `run --migrate` uniquement. |
+| `--watch` | `run --dev:watch` (watch CSS). |
+
+---
+
+## `project:refresh` — reset local
+
+| Option | Effet |
+|--------|--------|
+| `--hard` | `setup --refresh` (reinstall vendor + node après clean). |
+| `--without-seed` | `migrate:fresh` **sans** `--seed`. |
+| `--force` | Pas de confirmation (CI). |
+
+Enchaîne ensuite `run --clear:all`.
+
+**Attention :** destructif sur la base (sauf si vous annulez la confirmation).
+
+---
+
+## `project:data` — données DofusDB
+
+| Action | Commande cible | Description |
+|--------|----------------|-------------|
+| `sync` ou `updates` | `project:data:sync` (+ catalogue optionnel) | Met à jour les fiches **déjà en base** avec `auto_update=true`, ou rafraîchit types / races avant. |
+| `init` | `project:init` | Pipeline complet d’init (voir options `project:init`). |
+| `fill` ou `upgrade` | *(guide)* | Import des **manquants** : pas encore automatisé ; utiliser `scrapping:run` sans `--skip-existing` ou filtres pagination, puis éventuellement `project:data sync`. |
+
+### `project:data sync` — entités (`--entity`)
+
+Liste **séparée par des virgules**. Alias acceptés :
+
+| Saisie utilisateur | Entité interne |
+|--------------------|----------------|
+| `breed`, `nbreed`, `classe` | `class` (races jouables DofusDB) |
+| `spell`, `monster`, `panoply`, `resource`, `item`, `consumable` | inchangé |
+
+Exemple :
+
+```bash
+php artisan project:data sync --entity=breed,spell,monster,panoply,resource,item,consumable
+```
+
+**Panoplie :** la table `panoplies` n’a pas encore de colonne `auto_update` ; le sync entité `panoply` est ignoré avec un avertissement tant que la colonne n’existe pas.
+
+### `project:data sync` — catalogue (`--type`, `--races`)
+
+Synchronise les **référentiels** (types d’objets DofusDB, races monstres, types de sorts métier).
+
+| Valeur `--type` | Effet |
+|-----------------|--------|
+| `all` | `scrapping:types:seed` (les 3 familles) + `scrapping:races:seed` + `SpellTypeSeeder` |
+| `monster` | Races monstres (`scrapping:races:seed`) — **`--races` est un raccourci pour `--type=monster`** |
+| `resource`, `consumable`, `item`, `equipment` | Sous-ensemble des types item (`equipment` = même seeder que `item`) via `scrapping:types:seed --only=…` |
+| `spell` | `SpellTypeSeeder` uniquement (référentiel sorts, pas les fiches sort) |
+
+Exemples :
+
+```bash
+php artisan project:data sync --type=all
+php artisan project:data sync --type=monster,resource,item,consumable
+php artisan project:data sync --races
+```
+
+Options **`--skip-cache`** et **`--lang`** s’appliquent aux commandes `scrapping:types:seed` et `scrapping:races:seed`.
+
+### Catalogue **et** sync entités
+
+Si tu passes **`--type` ou `--races`**, le sync des entités (`project:data:sync`) **ne s’exécute pas** tant que tu ne précises pas aussi **`--entity=…`**.
+
+| Commande | Résultat |
+|----------|----------|
+| `project:data sync` | Sync **toutes** les entités éligibles (comportement historique). |
+| `project:data sync --type=all` | **Uniquement** le catalogue (pas de sync entités). |
+| `project:data sync --type=all --entity=monster` | Catalogue complet, puis sync **monster** uniquement. |
+
+### `scrapping:types:seed --only=`
+
+Utilisable seul : `--only` liste `resource`, `consumable`, `item` ou `equipment` (virgules), ou `all` / vide pour les trois. Réutilise l’extraction API puis les seeders ciblés.
+
+**Exemples généraux**
+
+```bash
+php artisan project:data sync --entity=monster
+php artisan project:data init --fresh --noimage
+```
+
+Pour le détail des flags : `php artisan project:init -h`, `php artisan project:data:sync -h`, `php artisan project:data -h`.
+
+---
+
+## `project:data:sync` (alias `project:update`)
+
+Planifiable via `.env` :
+
+- `PROJECT_UPDATE_AUTO_ENABLED=true`
+- `PROJECT_UPDATE_CRON="..."`
+
+Le scheduler appelle **`project:data:sync`**.
+
+---
+
+## `project:init` — bootstrap complet
+
+Inchangé fonctionnellement, avec en plus :
+
+- **`--deps`** : lance d’abord `project:deps` (stack complète).
+
+Super admin : toujours via le flux seed + prompt (logique partagée avec `project:super-admin`, trait `PromptsPrimarySuperAdmin`).
+
+---
+
+## `project:super-admin`
+
+Crée le **premier** super_admin interactif si aucun super_admin humain n’existe. Utile hors `project:init`.
+
+---
+
+## Roadmap / améliorations possibles
+
+1. **`project:data fill`** : implémenter un service « catalogue DofusDB vs `dofusdb_id` » par entité (pagination API, batch `scrapping:run`), avec option `--update` pour enchaîner un `sync`.
+2. **Réduire `run`** : migrer progressivement les options rares vers des commandes dédiées, garder `run` comme compatibilité.
+3. **Tests** : feature tests sur `project:data`, `project:deps` (mock `Artisan::call`).
+
+---
+
+## Table de correspondance (ancien → nouveau)
+
+| Ancien usage | Préféré |
+|--------------|---------|
+| `project:update` | `project:data:sync` ou `project:data sync` |
+| Mise à jour stack + migrate via `run --update:all --migrate` | `project:deps` |
+| Préparer dev + serveurs via `run --regenerate` puis `run --dev` | `project:dev --prepare` puis `project:dev` |
+| Création super admin seul | `project:super-admin` |
+
+Référence complète des commandes Artisan : `app/Console/README.md`.

@@ -94,34 +94,43 @@ class ItemController extends Controller
     {
         $this->authorize('update', $item);
 
-        $item->load(['itemType', 'createdBy', 'resources', 'effectUsages.effect.subEffects']);
+        $item->load(['itemType', 'createdBy', 'resources', 'effectUsages.effectDegree.effect']);
 
         $availableResources = \App\Models\Entity\Resource::select('id', 'name', 'description', 'level')
             ->orderBy('name')
             ->get();
 
-        $effectUsages = $item->effectUsages()->with('effect.subEffects')->orderBy('required_creature_level')->get()->map(fn ($u) => [
+        $effectUsages = $item->effectUsages()->with(['effectDegree.effect'])->get()->sortBy(fn ($u) => $u->effectDegree?->required_creature_level ?? 0)->values()->map(fn ($u) => [
             'id' => $u->id,
-            'effect_id' => $u->effect_id,
-            'effect' => $u->effect ? [
-                'id' => $u->effect->id,
-                'name' => $u->effect->name,
-                'slug' => $u->effect->slug,
-                'degree' => $u->effect->degree,
-                'target_type' => $u->effect->target_type ?? \App\Models\Effect::TARGET_DIRECT,
-                'area' => $u->effect->area,
+            'effect_degree_id' => $u->effect_degree_id,
+            'effect' => $u->effectDegree ? [
+                'id' => $u->effectDegree->id,
+                'name' => ($u->effectDegree->effect->name ?? $u->effectDegree->effect->slug ?? 'Effet #'.$u->effectDegree->effect_id).' · D'.$u->effectDegree->degree,
+                'slug' => $u->effectDegree->slug,
+                'degree' => $u->effectDegree->degree,
+                'target_type' => $u->effectDegree->effect->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+                'area' => $u->effectDegree->area,
+                'effect_definition_id' => $u->effectDegree->effect_id,
             ] : null,
-            'required_creature_level' => $u->required_creature_level,
+            'required_creature_level' => $u->effectDegree?->required_creature_level,
         ])->values()->all();
 
-        $availableEffects = Effect::orderBy('name')->get(['id', 'name', 'slug', 'degree', 'target_type', 'area'])->map(fn ($e) => [
-            'id' => $e->id,
-            'name' => $e->name ?? $e->slug ?? 'Effet #'.$e->id,
-            'slug' => $e->slug,
-            'degree' => $e->degree,
-            'target_type' => $e->target_type ?? \App\Models\Effect::TARGET_DIRECT,
-            'area' => $e->area,
-        ])->values()->all();
+        $availableEffects = Effect::with('degrees')
+            ->orderBy('name')
+            ->get()
+            ->flatMap(function (Effect $e) {
+                return $e->degrees->map(fn ($d) => [
+                    'id' => $d->id,
+                    'name' => ($e->name ?? $e->slug ?? 'Effet #'.$e->id).' · D'.$d->degree,
+                    'slug' => $d->slug,
+                    'degree' => $d->degree,
+                    'target_type' => $e->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+                    'area' => $d->area,
+                    'effect_definition_id' => $e->id,
+                ]);
+            })
+            ->values()
+            ->all();
 
         return Inertia::render('Pages/entity/item/Edit', [
             'item' => new ItemResource($item),

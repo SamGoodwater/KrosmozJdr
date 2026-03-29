@@ -92,6 +92,7 @@ defineExpose({
 
 <template>
   <FieldTemplate
+    input-type="textarea"
     :container-classes="containerClasses"
     :label-config="labelConfig"
     :input-attrs="inputAttrs"

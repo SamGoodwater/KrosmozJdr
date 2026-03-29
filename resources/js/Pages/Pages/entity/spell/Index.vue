@@ -26,7 +26,13 @@ import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
-import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
+import {
+    buildSpellFormFieldsConfig,
+    SPELL_FORM_FIELD_SECTIONS_CREATE,
+    getSpellCreateDefaultEntity,
+    mergeSpellTypesFieldIntoSpellFormConfig,
+} from "@/Entities/spell/spell-form-config";
+import { createFieldsConfigFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 const props = defineProps({
     spells: {
@@ -119,9 +125,14 @@ const fieldsConfig = computed(() => {
   });
 });
 
-const defaultEntity = computed(() => {
-  return createDefaultEntityFromDescriptors(spellDescriptors.value);
-});
+/** Formulaire création (même structure que la fiche édition). */
+const spellCreateFieldsConfig = computed(() =>
+    mergeSpellTypesFieldIntoSpellFormConfig(
+        buildSpellFormFieldsConfig({ includeReadonlyMeta: false }),
+        props.spellTypes || [],
+    ),
+);
+const spellCreateDefaultEntity = getSpellCreateDefaultEntity();
 
 const clearSelection = () => {
     selectedIds.value = [];
@@ -323,7 +334,15 @@ const handleQuickEditSubmit = () => {
         <!-- Modal de création -->
         <CreateEntityModal
             :open="createModalOpen"
-            entity-type="spells"
+            entity-type="spell"
+            :fields-config="spellCreateFieldsConfig"
+            :default-entity="spellCreateDefaultEntity"
+            :field-sections="SPELL_FORM_FIELD_SECTIONS_CREATE"
+            :hidden-field-keys="['dofus_version']"
+            :show-state-toolbar="false"
+            :show-access-levels-in-footer="false"
+            :create-allow-field-keys="['dofusdb_id', 'auto_update']"
+            characteristics-group="spell"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />

@@ -66,8 +66,8 @@
 
 ### 3.5 Implémenté (2026-03-03)
 
-- **3.1** : Migration `2026_03_03_100000_add_dofusdb_characteristic_id_to_characteristic_group_tables.php` (colonnes sur characteristic_creature, characteristic_object, characteristic_spell). Modèles mis à jour (fillable, casts). Seeder `DofusdbCharacteristicIdSeeder` (remplit object depuis `dofusdb_characteristic_to_krosmoz.json`). `CharacteristicGetterService::getCharacteristicKeyByDofusdbCharacteristicId(int $dofusdbCharacteristicId, string $group)` pour la résolution id → characteristic_key.
-- **3.2** : Migration `2026_03_03_100001_add_spell_level_aggregation_to_scrapping_entity_mappings.php`. Modèle `ScrappingEntityMapping` : `spell_level_aggregation` en fillable. Règles panoply et migration des règles existantes à faire en Phase 3 (UI) ou manuellement.
+- **3.1** : Colonnes `dofusdb_characteristic_id` sur `characteristic_creature`, `characteristic_object`, `characteristic_spell` — définies dans `2026_02_03_100001_create_characteristic_creature_table.php` (et homologues object/spell). Modèles mis à jour (fillable, casts). Seeder `DofusdbCharacteristicIdSeeder` (remplit object depuis `dofusdb_characteristic_to_krosmoz.json`). `CharacteristicGetterService::getCharacteristicKeyByDofusdbCharacteristicId(int $dofusdbCharacteristicId, string $group)` pour la résolution id → characteristic_key.
+- **3.2** : Colonne `spell_level_aggregation` sur `scrapping_entity_mappings` — définie dans `2026_02_16_100000_create_scrapping_entity_mappings_tables.php`. Modèle `ScrappingEntityMapping` : `spell_level_aggregation` en fillable. Règles panoply et migration des règles existantes à faire en Phase 3 (UI) ou manuellement.
 - **3.3** : Table `dofusdb_effect_mappings` et `DofusdbEffectMappingSeeder` (effectId 96–100) déjà en place ; `DofusdbEffectMappingService` lit en BDD avec fallback PHP.
 
 ---

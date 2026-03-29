@@ -14,9 +14,9 @@ return new class extends Migration
             $table->string('dofusdb_id')->nullable();
             $table->string('name');
             $table->string('level')->nullable();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('effect')->nullable();
-            $table->string('bonus')->nullable();
+            $table->text('bonus')->nullable();
             $table->string('recipe')->nullable();
             $table->string('price')->nullable();
             $table->integer('rarity')->default(0);
