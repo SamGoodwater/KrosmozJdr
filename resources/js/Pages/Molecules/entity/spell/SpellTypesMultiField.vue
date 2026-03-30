@@ -3,7 +3,7 @@
  * Multi-sélection des types de sort (pivot) — `v-model` : tableau d’IDs.
  */
 import { computed } from 'vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import SpellTypeBadge from '@/Pages/Molecules/entity/spell/SpellTypeBadge.vue';
 
 const props = defineProps({
   modelValue: { type: Array, default: () => [] },
@@ -48,23 +48,14 @@ function toggle(id) {
   emit('update:modelValue', [...set].sort((a, b) => a - b));
 }
 
-function chipStyle(opt) {
-  const c = opt.color;
-  if (!c || typeof c !== 'string') return {};
-  return {
-    borderColor: c,
-    boxShadow: `inset 0 0 0 1px ${c}55`,
-  };
-}
-
 function chipClass(opt) {
   const on = isOn(opt.value);
   const base =
-    'inline-flex min-w-0 items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left text-sm transition-colors';
+    'inline-flex min-w-0 items-center text-left transition-opacity';
   if (on) {
-    return `${base} border-opacity-90 bg-base-200/40`;
+    return `${base} opacity-100`;
   }
-  return `${base} border-base-300/60 hover:border-base-300 hover:bg-base-200/25`;
+  return `${base} opacity-55 hover:opacity-80`;
 }
 </script>
 
@@ -85,13 +76,11 @@ function chipClass(opt) {
         :key="String(opt.value)"
         type="button"
         :class="[chipClass(opt), disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer']"
-        :style="chipStyle(opt)"
         :disabled="disabled"
         :aria-pressed="isOn(opt.value)"
         @click="toggle(opt.value)"
       >
-        <Icon source="fa-solid fa-tag" :alt="''" size="xs" class="shrink-0 opacity-80" />
-        <span class="truncate font-medium leading-tight">{{ opt.label }}</span>
+        <SpellTypeBadge :name="String(opt.label)" :color="opt.color || null" size="md" />
       </button>
     </div>
     <p v-if="hasError && validationMessage" class="mt-1.5 text-sm text-error">

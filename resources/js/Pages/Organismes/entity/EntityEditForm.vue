@@ -10,7 +10,7 @@
  * @props {Object} fieldsConfig - Configuration des champs à afficher
  * @props {Boolean} isUpdating - Mode édition (true) ou création (false)
  */
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, onUnmounted } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -20,6 +20,7 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import FormulaHelpHint from '@/Pages/Molecules/entity/FormulaHelpHint.vue';
 import EntityEditFormFieldBody from '@/Pages/Molecules/entity/EntityEditFormFieldBody.vue';
 import { FORMULA_PLACEHOLDER } from '@/Utils/entity/formula-help';
+import { registerSaveShortcut } from '@/Composables/utils/saveShortcutRegistry';
 
 const props = defineProps({
     entity: {
@@ -89,6 +90,14 @@ const props = defineProps({
     characteristicsGroup: {
         type: String,
         default: null,
+    },
+    /**
+     * Quand false : pas de Ctrl+S ni d’autres raccourcis globaux (Esc, Ctrl+Z) — utile si le
+     * formulaire reste monté alors que le conteneur (modal) est fermé.
+     */
+    shortcutsActive: {
+        type: Boolean,
+        default: true,
     },
 });
 
@@ -444,15 +453,6 @@ watch(() => props.entity, () => {
  * Raccourcis clavier
  */
 const handleKeydown = (event) => {
-    // Ctrl+S / Cmd+S : Sauvegarder
-    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-        event.preventDefault();
-        if (!form.processing) {
-            submit();
-        }
-        return;
-    }
-
     // Esc : Annuler / Fermer
     if (event.key === 'Escape') {
         event.preventDefault();
@@ -473,12 +473,39 @@ const handleKeydown = (event) => {
     }
 };
 
-onMounted(() => {
+let unregisterSaveShortcut = () => {};
+
+const attachShortcutListeners = () => {
+    unregisterSaveShortcut();
+    unregisterSaveShortcut = () => {};
+    if (!props.shortcutsActive) {
+        return;
+    }
+    unregisterSaveShortcut = registerSaveShortcut(() => {
+        if (!form.processing) {
+            submit();
+        }
+    });
     window.addEventListener('keydown', handleKeydown);
-});
+};
+
+const detachShortcutListeners = () => {
+    unregisterSaveShortcut();
+    unregisterSaveShortcut = () => {};
+    window.removeEventListener('keydown', handleKeydown);
+};
+
+watch(
+    () => props.shortcutsActive,
+    () => {
+        detachShortcutListeners();
+        attachShortcutListeners();
+    },
+    { immediate: true },
+);
 
 onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeydown);
+    detachShortcutListeners();
 });
 
 // Validation pour chaque champ

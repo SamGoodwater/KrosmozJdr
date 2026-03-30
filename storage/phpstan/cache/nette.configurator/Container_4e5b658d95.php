@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
+class Container_4e5b658d95 extends _PHPStan_5adafcbb8\Nette\DI\Container
 {
 	protected $tags = [
 		'phpstan.broker.dynamicMethodReturnTypeExtension' => [
@@ -5652,7 +5652,7 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_42b94c858f $container)
+			public function __construct(Container_4e5b658d95 $container)
 			{
 				$this->container = $container;
 			}
@@ -5672,7 +5672,7 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_42b94c858f $container)
+			public function __construct(Container_4e5b658d95 $container)
 			{
 				$this->container = $container;
 			}
@@ -5720,7 +5720,7 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_42b94c858f $container)
+			public function __construct(Container_4e5b658d95 $container)
 			{
 				$this->container = $container;
 			}
@@ -5743,7 +5743,7 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_42b94c858f $container)
+			public function __construct(Container_4e5b658d95 $container)
 			{
 				$this->container = $container;
 			}
@@ -5763,7 +5763,7 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_42b94c858f $container)
+			public function __construct(Container_4e5b658d95 $container)
 			{
 				$this->container = $container;
 			}
@@ -5828,7 +5828,7 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_42b94c858f $container)
+			public function __construct(Container_4e5b658d95 $container)
 			{
 				$this->container = $container;
 			}
@@ -5886,7 +5886,7 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_42b94c858f $container)
+			public function __construct(Container_4e5b658d95 $container)
 			{
 				$this->container = $container;
 			}
@@ -5944,7 +5944,7 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_42b94c858f $container)
+			public function __construct(Container_4e5b658d95 $container)
 			{
 				$this->container = $container;
 			}
@@ -6008,7 +6008,7 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_42b94c858f $container)
+			public function __construct(Container_4e5b658d95 $container)
 			{
 				$this->container = $container;
 			}
@@ -9209,7 +9209,7 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 	}
 
 
-	public function createServiceContainer(): Container_42b94c858f
+	public function createServiceContainer(): Container_4e5b658d95
 	{
 		return $this;
 	}
@@ -9867,94 +9867,94 @@ class Container_42b94c858f extends _PHPStan_5adafcbb8\Nette\DI\Container
 			'cliAutoloadFile' => null,
 			'env' => [
 				'SHELL' => '/bin/bash',
-				'UV_CACHE_DIR' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/uv',
+				'UV_CACHE_DIR' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/uv',
 				'CURSOR_SANDBOX' => 'native',
-				'__CURSOR_SANDBOX_ENV_RESTORE' => 'builtin export HTTP_PROXY=\'http://127.0.0.1:46811\'; builtin export HTTPS_PROXY=\'http://127.0.0.1:46811\'; builtin export http_proxy=\'http://127.0.0.1:46811\'; builtin export https_proxy=\'http://127.0.0.1:46811\'; builtin export GIT_HTTP_PROXY=\'http://127.0.0.1:46811\'; builtin export GIT_HTTPS_PROXY=\'http://127.0.0.1:46811\'; builtin export SOCKS_PROXY=\'socks5://127.0.0.1:44387\'; builtin export SOCKS5_PROXY=\'socks5://127.0.0.1:44387\'; builtin export socks_proxy=\'socks5://127.0.0.1:44387\'; builtin export socks5_proxy=\'socks5://127.0.0.1:44387\'; builtin export ALL_PROXY=\'http://127.0.0.1:46811\'; builtin export all_proxy=\'http://127.0.0.1:46811\'; builtin export NO_PROXY=\'127.0.0.1,::1,localhost\'; builtin export no_proxy=\'127.0.0.1,::1,localhost\'',
+				'__CURSOR_SANDBOX_ENV_RESTORE' => 'builtin export HTTP_PROXY=\'http://127.0.0.1:45821\'; builtin export HTTPS_PROXY=\'http://127.0.0.1:45821\'; builtin export http_proxy=\'http://127.0.0.1:45821\'; builtin export https_proxy=\'http://127.0.0.1:45821\'; builtin export GIT_HTTP_PROXY=\'http://127.0.0.1:45821\'; builtin export GIT_HTTPS_PROXY=\'http://127.0.0.1:45821\'; builtin export SOCKS_PROXY=\'socks5://127.0.0.1:35629\'; builtin export SOCKS5_PROXY=\'socks5://127.0.0.1:35629\'; builtin export socks_proxy=\'socks5://127.0.0.1:35629\'; builtin export socks5_proxy=\'socks5://127.0.0.1:35629\'; builtin export ALL_PROXY=\'http://127.0.0.1:45821\'; builtin export all_proxy=\'http://127.0.0.1:45821\'; builtin export NO_PROXY=\'127.0.0.1,::1,localhost\'; builtin export no_proxy=\'127.0.0.1,::1,localhost\'',
 				'NODE_TLS_REJECT_UNAUTHORIZED' => 'undefined',
 				'no_proxy' => '127.0.0.1,::1,localhost',
 				'_ZO_DOCTOR' => '0',
 				'WSL2_GUI_APPS_ENABLED' => '1',
 				'WSL_DISTRO_NAME' => 'KrosmozDebian',
-				'NPM_CONFIG_CACHE' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/npm',
+				'NPM_CONFIG_CACHE' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/npm',
 				'ELECTRON_RUN_AS_NODE' => '1',
-				'PNPM_STORE_PATH' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/pnpm-store',
-				'YARN_CACHE_FOLDER' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/yarn',
-				'SOCKS5_PROXY' => 'socks5://127.0.0.1:44387',
-				'TURBO_CACHE_DIR' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/turbo',
+				'PNPM_STORE_PATH' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/pnpm-store',
+				'YARN_CACHE_FOLDER' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/yarn',
+				'SOCKS5_PROXY' => 'socks5://127.0.0.1:35629',
+				'TURBO_CACHE_DIR' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/turbo',
 				'NAME' => 'SamyBook',
-				'CARGO_TARGET_DIR' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/cargo-target',
+				'CARGO_TARGET_DIR' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/cargo-target',
 				'PWD' => '/var/www/KrosmozJdr',
 				'LOGNAME' => 'goodwater',
-				'CCACHE_DIR' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/ccache',
-				'GIT_HTTP_PROXY' => 'http://127.0.0.1:46811',
+				'CCACHE_DIR' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/ccache',
+				'GIT_HTTP_PROXY' => 'http://127.0.0.1:45821',
 				'VSCODE_ESM_ENTRYPOINT' => 'vs/workbench/api/node/extensionHostProcess',
 				'PNPM_HOME' => '/home/goodwater/.local/share/pnpm',
-				'GIT_HTTPS_PROXY' => 'http://127.0.0.1:46811',
+				'GIT_HTTPS_PROXY' => 'http://127.0.0.1:45821',
 				'HOME' => '/home/goodwater',
 				'LANG' => 'en_US.UTF-8',
-				'WSL_INTEROP' => '/run/WSL/156376_interop',
+				'WSL_INTEROP' => '/run/WSL/574525_interop',
 				'LS_COLORS' => '',
-				'npm_config_devdir' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/node-gyp',
+				'npm_config_devdir' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/node-gyp',
 				'WAYLAND_DISPLAY' => 'wayland-0',
 				'FORCE_COLOR' => '0',
-				'https_proxy' => 'http://127.0.0.1:46811',
+				'https_proxy' => 'http://127.0.0.1:45821',
 				'VSCODE_L10N_BUNDLE_LOCATION' => 'vscode-local:/c%3A/Users/sambo/.cursor/extensions/ms-ceintl.vscode-language-pack-fr-1.105.0-universal/translations/extensions/vscode.json-language-features.i18n.json',
-				'POETRY_CACHE_DIR' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/poetry',
-				'PLAYWRIGHT_BROWSERS_PATH' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/playwright',
-				'PUPPETEER_CACHE_DIR' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/puppeteer',
-				'CP_HOME_DIR' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/cocoapods',
-				'PIP_CACHE_DIR' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/pip',
-				'GOMODCACHE' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/go-mod',
-				'socks_proxy' => 'socks5://127.0.0.1:44387',
-				'GEM_SPEC_CACHE' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/gem-specs',
+				'POETRY_CACHE_DIR' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/poetry',
+				'PLAYWRIGHT_BROWSERS_PATH' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/playwright',
+				'PUPPETEER_CACHE_DIR' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/puppeteer',
+				'CP_HOME_DIR' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/cocoapods',
+				'PIP_CACHE_DIR' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/pip',
+				'GOMODCACHE' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/go-mod',
+				'socks_proxy' => 'socks5://127.0.0.1:35629',
+				'GEM_SPEC_CACHE' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/gem-specs',
 				'CURSOR_AGENT' => '1',
-				'GRADLE_USER_HOME' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/gradle',
+				'GRADLE_USER_HOME' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/gradle',
 				'VSCODE_HANDLES_SIGPIPE' => 'true',
-				'socks5_proxy' => 'socks5://127.0.0.1:44387',
-				'CYPRESS_CACHE_FOLDER' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/cypress',
+				'socks5_proxy' => 'socks5://127.0.0.1:35629',
+				'CYPRESS_CACHE_FOLDER' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/cypress',
 				'TERM' => 'dumb',
 				'USER' => 'goodwater',
 				'NO_PROXY' => '127.0.0.1,::1,localhost',
-				'NX_CACHE_DIRECTORY' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/nx',
-				'EVERYSPHERE_RIPGREP_PATH' => '/home/goodwater/.cursor-server/bin/b29eb4ee5f9f6d1cb2afbc09070198d3ea6ad760/node_modules/@vscode/ripgrep/bin/rg',
+				'NX_CACHE_DIRECTORY' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/nx',
+				'EVERYSPHERE_RIPGREP_PATH' => '/home/goodwater/.cursor-server/bin/c6285feaba0ad62603f7c22e72f0a170dc8415a0/node_modules/@vscode/ripgrep/bin/rg',
 				'CURSOR_SANDBOX_LANDLOCK_STATUS' => 'fully_enforced',
 				'DISPLAY' => ':0',
 				'SHLVL' => '1',
-				'HTTPS_PROXY' => 'http://127.0.0.1:46811',
-				'HTTP_PROXY' => 'http://127.0.0.1:46811',
+				'HTTPS_PROXY' => 'http://127.0.0.1:45821',
+				'HTTP_PROXY' => 'http://127.0.0.1:45821',
 				'VSCODE_CWD' => '/mnt/c/Users/sambo/AppData/Local/Programs/cursor',
-				'http_proxy' => 'http://127.0.0.1:46811',
-				'GOCACHE' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/go-build',
+				'http_proxy' => 'http://127.0.0.1:45821',
+				'GOCACHE' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/go-build',
 				'NO_COLOR' => '1',
-				'NUGET_PACKAGES' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/nuget',
+				'NUGET_PACKAGES' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/nuget',
 				'XDG_RUNTIME_DIR' => '/run/user/1000/',
-				'ALL_PROXY' => 'http://127.0.0.1:46811',
-				'BUNDLE_PATH' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/bundle',
+				'ALL_PROXY' => 'http://127.0.0.1:45821',
+				'BUNDLE_PATH' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/bundle',
 				'WSLENV' => '',
-				'CONDA_PKGS_DIRS' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/conda',
-				'SOCKS_PROXY' => 'socks5://127.0.0.1:44387',
-				'all_proxy' => 'http://127.0.0.1:46811',
-				'PATH' => '/home/goodwater/.local/bin:/home/goodwater/.cursor-server/bin/b29eb4ee5f9f6d1cb2afbc09070198d3ea6ad760/bin/remote-cli:/home/goodwater/.local/bin:/home/goodwater/.local/share/pnpm:/home/goodwater/.cursor-server/bin/b29eb4ee5f9f6d1cb2afbc09070198d3ea6ad760/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Users/sambo/AppData/Local/Programs/cursor/resources/app/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/PowerShell/7/:/mnt/c/Program Files/Git/cmd:/mnt/c/Users/sambo/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/sambo/AppData/Local/Programs/cursor/resources/app/bin:/mnt/c/Users/sambo/AppData/Local/GitHubDesktop/bin:/mnt/c/Users/sambo/AppData/Local/PowerToys/DSCModules/',
+				'CONDA_PKGS_DIRS' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/conda',
+				'SOCKS_PROXY' => 'socks5://127.0.0.1:35629',
+				'all_proxy' => 'http://127.0.0.1:45821',
+				'PATH' => '/home/goodwater/.local/bin:/home/goodwater/.cursor-server/bin/c6285feaba0ad62603f7c22e72f0a170dc8415a0/bin/remote-cli:/home/goodwater/.local/bin:/home/goodwater/.local/share/pnpm:/home/goodwater/.cursor-server/bin/c6285feaba0ad62603f7c22e72f0a170dc8415a0/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Users/sambo/AppData/Local/Programs/cursor/resources/app/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/PowerShell/7/:/mnt/c/Program Files/Git/cmd:/mnt/c/Users/sambo/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/sambo/AppData/Local/Programs/cursor/resources/app/bin:/mnt/c/Users/sambo/AppData/Local/GitHubDesktop/bin:/mnt/c/Users/sambo/AppData/Local/PowerToys/DSCModules/',
 				'CI' => '1',
 				'DBUS_SESSION_BUS_ADDRESS' => 'unix:path=/run/user/1000/bus',
-				'VSCODE_NLS_CONFIG' => '{"userLocale":"fr","osLocale":"fr","resolvedLanguage":"en","defaultMessagesFile":"/home/goodwater/.cursor-server/bin/b29eb4ee5f9f6d1cb2afbc09070198d3ea6ad760/out/nls.messages.json","locale":"fr","availableLanguages":{}}',
+				'VSCODE_NLS_CONFIG' => '{"userLocale":"fr","osLocale":"fr","resolvedLanguage":"en","defaultMessagesFile":"/home/goodwater/.cursor-server/bin/c6285feaba0ad62603f7c22e72f0a170dc8415a0/out/nls.messages.json","locale":"fr","availableLanguages":{}}',
 				'HOSTTYPE' => 'x86_64',
 				'PULSE_SERVER' => 'unix:/mnt/wslg/PulseServer',
-				'HOMEBREW_CACHE' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/homebrew',
-				'COMPOSER_HOME' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/composer',
+				'HOMEBREW_CACHE' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/homebrew',
+				'COMPOSER_HOME' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/composer',
 				'VSCODE_HANDLES_UNCAUGHT_ERRORS' => 'true',
-				'BUN_INSTALL_CACHE_DIR' => '/tmp/cursor-sandbox-cache/ed9a319a21457a0a6a1b1a54908056c4/bun',
+				'BUN_INSTALL_CACHE_DIR' => '/tmp/cursor-sandbox-cache/363b1abb068f467f72d405db27e90d37/bun',
 				'OVSX_REGISTRY_URL' => 'https://open-vsx.org',
 				'OLDPWD' => '/var/www/KrosmozJdr',
-				'VSCODE_IPC_HOOK_CLI' => '/run/user/1000/vscode-ipc-aaa877a5-bbe1-49df-8ba4-2497534b3abe.sock',
+				'VSCODE_IPC_HOOK_CLI' => '/run/user/1000/vscode-ipc-c6f56a64-12ff-4bba-8e6c-1f22cd626a36.sock',
 				'_' => './vendor/bin/phpstan',
 				'LINES' => '50',
 				'COLUMNS' => '80',
 				'SHELL_VERBOSITY' => '0',
 				'PHPSTAN_ORIGINAL_INIS' => '/etc/php/8.4/cli/php.ini:/etc/php/8.4/cli/conf.d/10-mysqlnd.ini:/etc/php/8.4/cli/conf.d/10-opcache.ini:/etc/php/8.4/cli/conf.d/10-pdo.ini:/etc/php/8.4/cli/conf.d/15-xml.ini:/etc/php/8.4/cli/conf.d/20-bcmath.ini:/etc/php/8.4/cli/conf.d/20-calendar.ini:/etc/php/8.4/cli/conf.d/20-ctype.ini:/etc/php/8.4/cli/conf.d/20-curl.ini:/etc/php/8.4/cli/conf.d/20-dom.ini:/etc/php/8.4/cli/conf.d/20-exif.ini:/etc/php/8.4/cli/conf.d/20-ffi.ini:/etc/php/8.4/cli/conf.d/20-fileinfo.ini:/etc/php/8.4/cli/conf.d/20-ftp.ini:/etc/php/8.4/cli/conf.d/20-gd.ini:/etc/php/8.4/cli/conf.d/20-gettext.ini:/etc/php/8.4/cli/conf.d/20-iconv.ini:/etc/php/8.4/cli/conf.d/20-igbinary.ini:/etc/php/8.4/cli/conf.d/20-imagick.ini:/etc/php/8.4/cli/conf.d/20-intl.ini:/etc/php/8.4/cli/conf.d/20-ldap.ini:/etc/php/8.4/cli/conf.d/20-mbstring.ini:/etc/php/8.4/cli/conf.d/20-mysqli.ini:/etc/php/8.4/cli/conf.d/20-pdo_mysql.ini:/etc/php/8.4/cli/conf.d/20-phar.ini:/etc/php/8.4/cli/conf.d/20-posix.ini:/etc/php/8.4/cli/conf.d/20-readline.ini:/etc/php/8.4/cli/conf.d/20-shmop.ini:/etc/php/8.4/cli/conf.d/20-simplexml.ini:/etc/php/8.4/cli/conf.d/20-soap.ini:/etc/php/8.4/cli/conf.d/20-sockets.ini:/etc/php/8.4/cli/conf.d/20-sysvmsg.ini:/etc/php/8.4/cli/conf.d/20-sysvsem.ini:/etc/php/8.4/cli/conf.d/20-sysvshm.ini:/etc/php/8.4/cli/conf.d/20-tokenizer.ini:/etc/php/8.4/cli/conf.d/20-xdebug.ini:/etc/php/8.4/cli/conf.d/20-xmlreader.ini:/etc/php/8.4/cli/conf.d/20-xmlwriter.ini:/etc/php/8.4/cli/conf.d/20-xsl.ini:/etc/php/8.4/cli/conf.d/20-zip.ini:/etc/php/8.4/cli/conf.d/25-redis.ini',
 				'PHP_INI_SCAN_DIR' => '',
-				'PHPRC' => '/tmp/12gcc7aj2s0b8TNXFyS',
-				'XDEBUG_HANDLER_SETTINGS' => '/tmp/12gcc7aj2s0b8TNXFyS|1|*|*|/etc/php/8.4/cli/php.ini:/etc/php/8.4/cli/conf.d/10-mysqlnd.ini:/etc/php/8.4/cli/conf.d/10-opcache.ini:/etc/php/8.4/cli/conf.d/10-pdo.ini:/etc/php/8.4/cli/conf.d/15-xml.ini:/etc/php/8.4/cli/conf.d/20-bcmath.ini:/etc/php/8.4/cli/conf.d/20-calendar.ini:/etc/php/8.4/cli/conf.d/20-ctype.ini:/etc/php/8.4/cli/conf.d/20-curl.ini:/etc/php/8.4/cli/conf.d/20-dom.ini:/etc/php/8.4/cli/conf.d/20-exif.ini:/etc/php/8.4/cli/conf.d/20-ffi.ini:/etc/php/8.4/cli/conf.d/20-fileinfo.ini:/etc/php/8.4/cli/conf.d/20-ftp.ini:/etc/php/8.4/cli/conf.d/20-gd.ini:/etc/php/8.4/cli/conf.d/20-gettext.ini:/etc/php/8.4/cli/conf.d/20-iconv.ini:/etc/php/8.4/cli/conf.d/20-igbinary.ini:/etc/php/8.4/cli/conf.d/20-imagick.ini:/etc/php/8.4/cli/conf.d/20-intl.ini:/etc/php/8.4/cli/conf.d/20-ldap.ini:/etc/php/8.4/cli/conf.d/20-mbstring.ini:/etc/php/8.4/cli/conf.d/20-mysqli.ini:/etc/php/8.4/cli/conf.d/20-pdo_mysql.ini:/etc/php/8.4/cli/conf.d/20-phar.ini:/etc/php/8.4/cli/conf.d/20-posix.ini:/etc/php/8.4/cli/conf.d/20-readline.ini:/etc/php/8.4/cli/conf.d/20-shmop.ini:/etc/php/8.4/cli/conf.d/20-simplexml.ini:/etc/php/8.4/cli/conf.d/20-soap.ini:/etc/php/8.4/cli/conf.d/20-sockets.ini:/etc/php/8.4/cli/conf.d/20-sysvmsg.ini:/etc/php/8.4/cli/conf.d/20-sysvsem.ini:/etc/php/8.4/cli/conf.d/20-sysvshm.ini:/etc/php/8.4/cli/conf.d/20-tokenizer.ini:/etc/php/8.4/cli/conf.d/20-xdebug.ini:/etc/php/8.4/cli/conf.d/20-xmlreader.ini:/etc/php/8.4/cli/conf.d/20-xmlwriter.ini:/etc/php/8.4/cli/conf.d/20-xsl.ini:/etc/php/8.4/cli/conf.d/20-zip.ini:/etc/php/8.4/cli/conf.d/25-redis.ini|3.5.0',
+				'PHPRC' => '/tmp/crddqnqug32d7G1Oubs',
+				'XDEBUG_HANDLER_SETTINGS' => '/tmp/crddqnqug32d7G1Oubs|1|*|*|/etc/php/8.4/cli/php.ini:/etc/php/8.4/cli/conf.d/10-mysqlnd.ini:/etc/php/8.4/cli/conf.d/10-opcache.ini:/etc/php/8.4/cli/conf.d/10-pdo.ini:/etc/php/8.4/cli/conf.d/15-xml.ini:/etc/php/8.4/cli/conf.d/20-bcmath.ini:/etc/php/8.4/cli/conf.d/20-calendar.ini:/etc/php/8.4/cli/conf.d/20-ctype.ini:/etc/php/8.4/cli/conf.d/20-curl.ini:/etc/php/8.4/cli/conf.d/20-dom.ini:/etc/php/8.4/cli/conf.d/20-exif.ini:/etc/php/8.4/cli/conf.d/20-ffi.ini:/etc/php/8.4/cli/conf.d/20-fileinfo.ini:/etc/php/8.4/cli/conf.d/20-ftp.ini:/etc/php/8.4/cli/conf.d/20-gd.ini:/etc/php/8.4/cli/conf.d/20-gettext.ini:/etc/php/8.4/cli/conf.d/20-iconv.ini:/etc/php/8.4/cli/conf.d/20-igbinary.ini:/etc/php/8.4/cli/conf.d/20-imagick.ini:/etc/php/8.4/cli/conf.d/20-intl.ini:/etc/php/8.4/cli/conf.d/20-ldap.ini:/etc/php/8.4/cli/conf.d/20-mbstring.ini:/etc/php/8.4/cli/conf.d/20-mysqli.ini:/etc/php/8.4/cli/conf.d/20-pdo_mysql.ini:/etc/php/8.4/cli/conf.d/20-phar.ini:/etc/php/8.4/cli/conf.d/20-posix.ini:/etc/php/8.4/cli/conf.d/20-readline.ini:/etc/php/8.4/cli/conf.d/20-shmop.ini:/etc/php/8.4/cli/conf.d/20-simplexml.ini:/etc/php/8.4/cli/conf.d/20-soap.ini:/etc/php/8.4/cli/conf.d/20-sockets.ini:/etc/php/8.4/cli/conf.d/20-sysvmsg.ini:/etc/php/8.4/cli/conf.d/20-sysvsem.ini:/etc/php/8.4/cli/conf.d/20-sysvshm.ini:/etc/php/8.4/cli/conf.d/20-tokenizer.ini:/etc/php/8.4/cli/conf.d/20-xdebug.ini:/etc/php/8.4/cli/conf.d/20-xmlreader.ini:/etc/php/8.4/cli/conf.d/20-xmlwriter.ini:/etc/php/8.4/cli/conf.d/20-xsl.ini:/etc/php/8.4/cli/conf.d/20-zip.ini:/etc/php/8.4/cli/conf.d/25-redis.ini|3.5.0',
 			],
 		];
 	}

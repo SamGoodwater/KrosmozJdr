@@ -44,7 +44,6 @@ Source DofusDB :
 | `cast_per_target` | — | ❌ Krosmoz-only | — | |
 | `sight_line` | — | ❌ Krosmoz-only | — | |
 | `number_between_two_cast` | — | ❌ Krosmoz-only | — | |
-| `number_between_two_cast_editable` | — | ❌ Krosmoz-only | — | |
 | `is_magic` | — | ❌ Krosmoz-only | — | |
 | `powerful` | — | ❌ Krosmoz-only | — | |
 | `state` | — | ❌ Krosmoz-only | — | Workflow Krosmoz |

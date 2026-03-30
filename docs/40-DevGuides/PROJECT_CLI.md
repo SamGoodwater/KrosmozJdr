@@ -143,6 +143,20 @@ php artisan project:data init --fresh --noimage
 
 Pour le détail des flags : `php artisan project:init -h`, `php artisan project:data:sync -h`, `php artisan project:data -h`.
 
+### Interface web (super admin)
+
+Une page **Inertia** permet de lancer l’équivalent de **`project:data sync`** **sans bloquer le navigateur** : le travail est mis en file (`RunProjectDataSyncJob` → `Artisan::call('project:data', …)`).
+
+| Élément | Détail |
+|--------|--------|
+| **URL** | `/admin/project-maintenance` (routes nommées `admin.project-maintenance.index` et `admin.project-maintenance.sync`) |
+| **Accès** | Rôle **super_admin** uniquement ; entrée menu compte : **Sync données (DofusDB)** |
+| **Mot de passe** | Middleware **`password.confirm`** sur **toute la zone** (GET + POST), même logique que les routes API scrapping (`RequirePasswordWithInactivity`, ré-vérification après timeout dans `config/auth.php`) |
+| **POST `/sync`** | Validation stricte (`StoreProjectDataSyncRequest`), **throttle** dédié, journalisation `admin.project_maintenance.sync_dispatched` (identifiant utilisateur, IP, options sans secrets) |
+| **Prérequis** | Un **worker de file** doit tourner (`php artisan queue:work`) ; un verrou cache évite deux syncs massives en parallèle |
+
+Les options du formulaire (catalogue, entités, `--dry-run`, etc.) suivent les mêmes règles que la CLI décrites ci-dessus.
+
 ---
 
 ## `project:data:sync` (alias `project:update`)
@@ -176,7 +190,7 @@ Crée le **premier** super_admin interactif si aucun super_admin humain n’exis
 
 1. **`project:data fill`** : implémenter un service « catalogue DofusDB vs `dofusdb_id` » par entité (pagination API, batch `scrapping:run`), avec option `--update` pour enchaîner un `sync`.
 2. **Réduire `run`** : migrer progressivement les options rares vers des commandes dédiées, garder `run` comme compatibilité.
-3. **Tests** : feature tests sur `project:data`, `project:deps` (mock `Artisan::call`).
+3. **Tests** : étendre les feature tests aux autres commandes `project:*` si besoin (voir `tests/Feature/Admin/ProjectMaintenanceControllerTest.php` pour l’UI sync).
 
 ---
 

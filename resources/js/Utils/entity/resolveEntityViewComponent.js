@@ -44,6 +44,8 @@ const VIEW_COMPONENT_MAP = {
   'compact': 'ViewCompact',
   'minimal': 'ViewMinimal',
   'text': 'ViewText',
+  /** Vue liste dense (SpellLineRow, ResourceLineRow, …) */
+  'line': 'LineRow',
   'quickedit': 'QuickEdit',
   'QuickEdit': 'QuickEdit',
   'editlarge': 'EditLarge',
@@ -83,9 +85,11 @@ export async function resolveEntityViewComponent(entityType, view = 'large') {
   // Note: Cette approche charge les composants à la demande (lazy loading)
   // Inclure aussi les composants Edit et QuickEdit
   const components = import.meta.glob('@/Pages/Molecules/entity/**/*{View,Edit,QuickEdit}*.vue');
-  
+  const lineRowComponents = import.meta.glob('@/Pages/Molecules/entity/**/*LineRow.vue');
+  const mergedGlobs = { ...components, ...lineRowComponents };
+
   // Chercher le composant correspondant
-  for (const [path, importFn] of Object.entries(components)) {
+  for (const [path, importFn] of Object.entries(mergedGlobs)) {
     if (path.includes(`/${folderName}/`) && path.includes(componentName)) {
       try {
         const module = await importFn();
@@ -130,11 +134,12 @@ export function resolveEntityViewComponentSync(entityType, view = 'large') {
   // Inclure aussi les composants Edit et QuickEdit, ainsi que le composant générique EntityQuickEdit
   // Pattern 1: Composants dans les sous-dossiers (ex: resource/ResourceQuickEdit.vue)
   const components = import.meta.glob('@/Pages/Molecules/entity/**/*{View,Edit,QuickEdit}*.vue', { eager: true });
+  const lineRowComponents = import.meta.glob('@/Pages/Molecules/entity/**/*LineRow.vue', { eager: true });
   // Pattern 2: Composants génériques directement dans entity/ (ex: EntityQuickEdit.vue)
   const genericComponents = import.meta.glob('@/Pages/Molecules/entity/Entity{View,Edit,QuickEdit}*.vue', { eager: true });
   
   // Fusionner les deux résultats
-  const allComponents = { ...components, ...genericComponents };
+  const allComponents = { ...components, ...lineRowComponents, ...genericComponents };
   
   // Chercher le composant spécifique d'abord
   for (const [path, module] of Object.entries(allComponents)) {

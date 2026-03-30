@@ -12,7 +12,7 @@
 import { ref, watch } from "vue";
 
 const STORAGE_PREFIX = "tanstack_table_prefs_";
-const PREFS_VERSION = 2;
+const PREFS_VERSION = 3;
 
 function safeParse(json) {
     try {
@@ -29,15 +29,26 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         ? safeParse(window.localStorage?.getItem(key) || "")
         : null;
 
-    // Migration: les anciennes prefs (v1) contenaient souvent des valeurs explicites pour toutes les colonnes,
-    // ce qui écrase les nouveaux defaults responsive. En v2, on n'applique les overrides que si la colonne a été "touchée".
-    const isV2 = Number(saved?.version) === PREFS_VERSION;
+    // Migration: v1 sans version / version 1 ; v2 touchedColumns ; v3 quickEdit + sorting persisté
+    const savedVer = Number(saved?.version);
+    const hasModernColumnPrefs = savedVer === 2 || savedVer === PREFS_VERSION;
 
-    const visibleColumns = ref(isV2 ? (saved?.visibleColumns || {}) : (defaults.visibleColumns || {}));
-    const touchedColumns = ref(isV2 ? (saved?.touchedColumns || []) : []);
+    const visibleColumns = ref(hasModernColumnPrefs ? (saved?.visibleColumns || {}) : (defaults.visibleColumns || {}));
+    const touchedColumns = ref(hasModernColumnPrefs ? (saved?.touchedColumns || []) : []);
     const pageSize = ref(saved?.pageSize || defaults.pageSize || null);
     /** displayMode: 'table' | 'line' | 'minimal'. Défaut: 'line'. */
     const displayMode = ref(saved?.displayMode ?? defaults.displayMode ?? "line");
+    /** Quick edit panel (liste) : activé par défaut si droit (UI gérée par le parent). */
+    const quickEditEnabled = ref(
+        typeof saved?.quickEditEnabled === "boolean"
+            ? saved.quickEditEnabled
+            : (defaults.quickEditEnabled !== false),
+    );
+    /**
+     * Tri multi (TanStack) persisté : [{ id: string, desc: boolean }, ...]
+     * Ignoré si colonnes inconnues au chargement (filtré côté TanStackTable).
+     */
+    const sorting = ref(Array.isArray(saved?.sorting) ? saved.sorting : (defaults.sorting || []));
 
     const persist = () => {
         if (typeof window === "undefined") return;
@@ -48,6 +59,8 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
                 touchedColumns: touchedColumns.value,
                 pageSize: pageSize.value,
                 displayMode: displayMode.value,
+                quickEditEnabled: quickEditEnabled.value,
+                sorting: sorting.value,
             }));
         } catch {
             // ignore
@@ -58,6 +71,8 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
     watch(touchedColumns, persist, { deep: true });
     watch(pageSize, persist);
     watch(displayMode, persist);
+    watch(quickEditEnabled, persist);
+    watch(sorting, persist, { deep: true });
 
     const setColumnVisible = (columnId, isVisible) => {
         const id = String(columnId || "");
@@ -89,6 +104,14 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         }
     };
 
+    const setQuickEditEnabled = (v) => {
+        quickEditEnabled.value = Boolean(v);
+    };
+
+    const setSorting = (list) => {
+        sorting.value = Array.isArray(list) ? list : [];
+    };
+
     return {
         visibleColumns,
         touchedColumns,
@@ -98,6 +121,10 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         resetColumns,
         displayMode,
         setDisplayMode,
+        quickEditEnabled,
+        setQuickEditEnabled,
+        sorting,
+        setSorting,
     };
 }
 

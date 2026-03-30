@@ -1096,7 +1096,6 @@ erDiagram
     cast_per_target : varchar(255)
     sight_line : tinyint(1)
     number_between_two_cast : varchar(255)
-    number_between_two_cast_editable : tinyint(1)
     element : int(11)
     category : int(11)
     is_magic : tinyint(1)

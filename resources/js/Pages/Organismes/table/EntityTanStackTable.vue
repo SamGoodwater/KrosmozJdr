@@ -17,14 +17,7 @@
 
 import { computed, ref, watch } from "vue";
 import TanStackTable from "@/Pages/Organismes/table/TanStackTable.vue";
-import ResourceLineRow from "@/Pages/Molecules/entity/resource/ResourceLineRow.vue";
-import ItemLineRow from "@/Pages/Molecules/entity/item/ItemLineRow.vue";
-import ConsumableLineRow from "@/Pages/Molecules/entity/consumable/ConsumableLineRow.vue";
-import MonsterLineRow from "@/Pages/Molecules/entity/monster/MonsterLineRow.vue";
-import SpellLineRow from "@/Pages/Molecules/entity/spell/SpellLineRow.vue";
-import BreedLineRow from "@/Pages/Molecules/entity/breed/BreedLineRow.vue";
-import PanoplyLineRow from "@/Pages/Molecules/entity/panoply/PanoplyLineRow.vue";
-import CapabilityLineRow from "@/Pages/Molecules/entity/capability/CapabilityLineRow.vue";
+import { resolveEntityViewComponentSync } from "@/Utils/entity/resolveEntityViewComponent.js";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useTableServerParams } from "@/Composables/table/useTableServerParams";
 
@@ -74,6 +67,10 @@ const emit = defineEmits([
     // Compat: remonter aussi la forme kebab-case si certains parents l'écoutent
     "update:selectedIds",
     "update:selected-ids",
+    "update:quickEditEnabled",
+    "quick-edit-intent",
+    "create-request",
+    "keyboard-intent",
     "loaded",
     "refresh",
     "action", // Émis pour chaque action d'entité
@@ -189,16 +186,9 @@ const isColumnAllowed = (col) => {
 };
 
 const lineRowComponent = computed(() => {
-    const t = String(props.entityType || "").toLowerCase();
-    if (t === "resources") return ResourceLineRow;
-    if (t === "items") return ItemLineRow;
-    if (t === "consumables") return ConsumableLineRow;
-    if (t === "monsters") return MonsterLineRow;
-    if (t === "spells") return SpellLineRow;
-    if (t === "breeds") return BreedLineRow;
-    if (t === "panoplies") return PanoplyLineRow;
-    if (t === "capabilities") return CapabilityLineRow;
-    return null;
+    const et = String(props.entityType || "").trim();
+    if (!et) return null;
+    return resolveEntityViewComponentSync(et, "line");
 });
 
 const resolvedConfig = computed(() => {
@@ -336,8 +326,13 @@ const handleRefresh = async () => {
         :server-side="serverSide"
         :server-pagination-meta="serverPaginationMeta"
         :server-params="serverParams"
+        :quick-edit-allowed="canUpdateAny"
         @update:server-params="handleServerParamsChange"
         @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
+        @update:quick-edit-enabled="(v) => emit('update:quickEditEnabled', v)"
+        @quick-edit-intent="(row) => emit('quick-edit-intent', row)"
+        @create-request="() => emit('create-request')"
+        @keyboard-intent="(p) => emit('keyboard-intent', p)"
         @row-click="handleRowClick"
         @row-dblclick="(row) => emit('row-dblclick', row)"
         @refresh="handleRefresh"

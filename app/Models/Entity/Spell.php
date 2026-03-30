@@ -31,7 +31,6 @@ use Spatie\MediaLibrary\HasMedia;
  * @property string $cast_per_target
  * @property bool $sight_line
  * @property string $number_between_two_cast
- * @property bool $number_between_two_cast_editable
  * @property int $element
  * @property int $category
  * @property bool $is_magic
@@ -87,7 +86,6 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereNumberBetweenTwoCast($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereNumberBetweenTwoCastEditable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePa($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePoMin($value)
@@ -162,7 +160,6 @@ class Spell extends Model implements HasMedia
         'cast_per_target',
         'sight_line',
         'number_between_two_cast',
-        'number_between_two_cast_editable',
         'element',
         'category',
         'is_magic',
@@ -194,7 +191,6 @@ class Spell extends Model implements HasMedia
         'write_level' => 'integer',
         'po_editable' => 'boolean',
         'sight_line' => 'boolean',
-        'number_between_two_cast_editable' => 'boolean',
         'is_magic' => 'boolean',
         'auto_update' => 'boolean',
         'auto_success_if_willing_target' => 'boolean',

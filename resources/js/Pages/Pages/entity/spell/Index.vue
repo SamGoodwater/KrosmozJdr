@@ -33,6 +33,7 @@ import {
     mergeSpellTypesFieldIntoSpellFormConfig,
 } from "@/Entities/spell/spell-form-config";
 import { createFieldsConfigFromDescriptors } from "@/Utils/entity/descriptor-form";
+import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 
 const props = defineProps({
     spells: {
@@ -67,9 +68,14 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
-const quickEditModalOpen = ref(false);
-const quickEditEntity = ref(null);
 const selectedIds = ref([]);
+const {
+    tableQuickEditEnabled,
+    quickEditModalOpen,
+    quickEditEntity,
+    onUpdateTableQuickEdit,
+    onQuickEditIntent,
+} = useEntityIndexQuickEditTable(Spell);
 const tableRows = ref([]);
 const refreshToken = ref(0);
 
@@ -171,6 +177,8 @@ const handleCloseCreateModal = () => {
 
 const handleEntityCreated = () => {
     createModalOpen.value = false;
+    // Tableau alimenté par l’API TanStack : forcer un refetch après création (même si Inertia a déjà rechargé la page).
+    refreshToken.value++;
 };
 
 const closeModal = () => {
@@ -179,6 +187,36 @@ const closeModal = () => {
 };
 
 // Handler pour les actions du tableau
+const handleKeyboardIntent = (payload) => {
+    const { type, row } = payload || {};
+    const raw = row?.rowParams?.entity;
+    if (!raw) return;
+    const model = raw instanceof Spell ? raw : Spell.fromArray([raw])?.[0];
+    if (!model?.id) return;
+    switch (type) {
+        case "open-show-page":
+            router.visit(route("entities.spells.show", { spell: model.id }));
+            break;
+        case "open-edit":
+            quickEditEntity.value = model;
+            quickEditModalOpen.value = true;
+            break;
+        case "open-view":
+            selectedEntity.value = model;
+            modalView.value = "large";
+            modalOpen.value = true;
+            break;
+        default:
+            break;
+    }
+};
+
+const handleCreateRequest = () => {
+    if (canCreate.value) {
+        createModalOpen.value = true;
+    }
+};
+
 const handleTableAction = async (actionKey, entity, row) => {
     const targetEntity = entity || row?.rowParams?.entity;
     if (!targetEntity) return;
@@ -299,7 +337,10 @@ const handleQuickEditSubmit = () => {
         <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
         <div
             class="grid grid-cols-1 gap-4"
-            :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
+            :class="{
+                'xl:grid-cols-[minmax(0,1fr)_380px]':
+                    canModify && selectedEntities.length >= 1 && tableQuickEditEnabled,
+            }"
         >
             <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
@@ -312,12 +353,16 @@ const handleQuickEditSubmit = () => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
+                    @quick-edit-intent="onQuickEditIntent"
+                    @keyboard-intent="handleKeyboardIntent"
+                    @create-request="handleCreateRequest"
                     @action="handleTableAction"
                 />
             </div>
 
             <!-- Quick Edit Panel -->
-            <div v-if="canModify && selectedEntities.length >= 1" class="sticky top-4 self-start">
+            <div v-if="canModify && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
                 <EntityQuickEditPanel
                     entity-type="spells"
                     :selected-entities="selectedEntities"

@@ -106,24 +106,24 @@ return [
             'enabled' => true,
             'entity' => 'panoply',
         ],
-        
+
     ],
 
     // ENTITIES
     'entities' => [
         // ATTRIBUTES
         'attribute' => [
-            'collect' => false
+            'collect' => false,
         ],
 
         // CAMPAIGN
         'Campaing' => [
-            'collect' => false
+            'collect' => false,
         ],
 
         // CAPABILITY
         'capability' => [
-            'collect' => false
+            'collect' => false,
         ],
 
         // BREED (classe jouable)
@@ -650,7 +650,7 @@ return [
                     'convert' => false,
                 ],
                 'is_boss' => [
-                    'field_name' => "is_boss",
+                    'field_name' => 'is_boss',
                     'convert' => false,
                 ],
                 'boss_pa' => [
@@ -666,7 +666,7 @@ return [
 
         // NPC
         'npc' => [
-            'collect' => false
+            'collect' => false,
         ],
 
         // PANOPLY
@@ -749,12 +749,12 @@ return [
 
         // SCENARIO
         'scenario' => [
-            'collect' => false
+            'collect' => false,
         ],
 
         // SHOP
         'shop' => [
-            'collect' => false
+            'collect' => false,
         ],
 
         // SPECIALIZATION
@@ -816,10 +816,6 @@ return [
                 ],
                 'number_between_two_cast' => [
                     'field_name' => 'number_between_two_cast',
-                    'convert' => true,
-                ],
-                'number_between_two_cast_editable' => [
-                    'field_name' => 'number_between_two_cast_editable',
                     'convert' => true,
                 ],
                 'element' => [

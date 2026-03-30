@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Effect;
 
+use App\Rules\ValidAreaNotation;
 use App\Services\Effect\EffectTextSanitizer;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
@@ -29,7 +30,7 @@ class UpdateEffectGroupRequest extends FormRequest
             'degrees' => 'required|array|min:1',
             'degrees.*.id' => 'required|integer|exists:effect_degrees,id',
             'degrees.*.slug' => 'nullable|string|max:64',
-            'degrees.*.area' => 'nullable|string|max:64',
+            'degrees.*.area' => ['nullable', 'string', 'max:64', new ValidAreaNotation],
             'degrees.*.required_creature_level' => 'nullable|integer|min:0',
             'degrees.*.effect_sub_effects' => 'present|array',
             'degrees.*.effect_sub_effects.*.sub_effect_id' => 'required|integer|exists:sub_effects,id',

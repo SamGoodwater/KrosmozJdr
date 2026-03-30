@@ -16,7 +16,7 @@
  *   :validation="{ state: 'error', message: 'Description trop courte' }"
  * />
  */
-import { useSlots, useAttrs } from 'vue'
+import { computed, useSlots, useAttrs } from 'vue'
 import TextareaCore from '@/Pages/Atoms/data-input/TextareaCore.vue'
 import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue'
 import useInputField from '@/Composables/form/useInputField'
@@ -80,6 +80,17 @@ const {
   emit
 })
 
+/**
+ * Attributs pour TextareaCore sans `value` : useInputField ajoute `value` dans inputAttrs,
+ * mais TextareaCore (inheritAttrs: false, pas de prop `value`) l’ignorait — seul `modelValue`
+ * pilote effectiveValue ; sans liaison explicite, le textarea restait figé sur la valeur par défaut.
+ */
+const textareaAttrs = computed(() => {
+  const raw = inputAttrs.value && typeof inputAttrs.value === 'object' ? { ...inputAttrs.value } : {}
+  delete raw.value
+  return raw
+})
+
 // Exposer les méthodes pour contrôle externe
 defineExpose({
   enableValidation,
@@ -105,10 +116,11 @@ defineExpose({
     :helper="props.helper"
   >
     <!-- Slot core spécifique pour TextareaCore -->
-    <template #core="{ inputAttrs, listeners, inputRef }">
+    <template #core="{ listeners: coreListeners }">
       <TextareaCore
-        v-bind="inputAttrs"
-        v-on="listeners"
+        :model-value="currentValue"
+        v-bind="textareaAttrs"
+        v-on="coreListeners"
         ref="inputRef"
       >
         <!-- 🔤 Labels inline start/end -->

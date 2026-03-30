@@ -1480,7 +1480,6 @@ namespace App\Models\Entity{
  * @property string $cast_per_target
  * @property bool $sight_line
  * @property string $number_between_two_cast
- * @property bool $number_between_two_cast_editable
  * @property int $element
  * @property int $category
  * @property bool $is_magic
@@ -1534,7 +1533,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereNumberBetweenTwoCast($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereNumberBetweenTwoCastEditable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePa($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePoMin($value)

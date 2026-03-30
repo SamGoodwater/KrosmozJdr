@@ -211,8 +211,6 @@ const saveCharDef = computed(() => {
 
 const poEditableMeta = computed(() => getByDbColumn('spell', 'po_editable'));
 
-const nbCastEditableMeta = computed(() => getByDbColumn('spell', 'number_between_two_cast_editable'));
-
 const ritualMeta = computed(() => getByDbColumn('spell', 'ritual_available'));
 
 const showRitualBadge = computed(() => props.spell?.isRitual === true);
@@ -519,30 +517,6 @@ const handleAction = async (actionKey) => {
                             <span>{{ poEditableMeta.short_name || poEditableMeta.name || 'Portée modifiable' }}</span>
                         </div>
                         <div class="text-primary-100">{{ boolLabel(Boolean(spell.poEditable)) }}</div>
-                    </div>
-                </Tooltip>
-
-                <Tooltip
-                    v-if="nbCastEditableMeta"
-                    :content="characteristicTooltipText(nbCastEditableMeta) || 'Indique si le délai entre deux lancers peut être modifié.'"
-                    placement="top"
-                >
-                    <div class="p-3 bg-base-200 entity-radius-box space-y-1 cursor-default">
-                        <div class="flex items-center gap-2 text-xs text-primary-400 uppercase font-semibold">
-                            <Icon
-                                v-if="nbCastEditableMeta.icon"
-                                :source="nbCastEditableMeta.icon"
-                                :alt="nbCastEditableMeta.short_name || ''"
-                                size="xs"
-                                :style="
-                                    nbCastEditableMeta.color
-                                        ? getCharacteristicColorStyle(nbCastEditableMeta.color)
-                                        : undefined
-                                "
-                            />
-                            <span>{{ nbCastEditableMeta.short_name || nbCastEditableMeta.name || 'Délai modifiable' }}</span>
-                        </div>
-                        <div class="text-primary-100">{{ boolLabel(Boolean(spell.numberBetweenTwoCastEditable)) }}</div>
                     </div>
                 </Tooltip>
             </div>

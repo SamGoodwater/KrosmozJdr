@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class ItemTypeTableController extends Controller
 {
+    use InterpretsEntityTableSort;
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', ItemType::class);
@@ -34,8 +36,13 @@ class ItemTypeTableController extends Controller
         $limit = (int) $request->integer('limit', 5000);
         $limit = max(1, min($limit, 20000));
 
+        $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
+        if (is_array($sortsPayload) && isset($sortsPayload[0]) && is_array($sortsPayload[0])) {
+            $sort = (string) ($sortsPayload[0]['field'] ?? $sortsPayload[0]['column'] ?? $sort);
+            $order = strtolower((string) ($sortsPayload[0]['dir'] ?? $sortsPayload[0]['order'] ?? $order));
+        }
         if (! in_array($order, ['asc', 'desc'], true)) {
             $order = 'desc';
         }
@@ -74,11 +81,7 @@ class ItemTypeTableController extends Controller
         }
 
         $allowedSort = ['id', 'name', 'state', 'dofusdb_type_id', 'decision', 'items_count', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSort, true)) {
-            $query->orderBy($sort, $order);
-        } else {
-            $query->latest();
-        }
+        $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $rows = $query->limit($limit)->get();
 
@@ -132,6 +135,7 @@ class ItemTypeTableController extends Controller
 
         $tableRows = $rows->map(function (ItemType $t) {
             $showHref = route('entities.item-types.index');
+
             return [
                 'id' => $t->id,
                 'cells' => [

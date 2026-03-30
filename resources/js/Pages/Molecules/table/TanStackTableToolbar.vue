@@ -12,6 +12,7 @@ import Btn from "@/Pages/Atoms/action/Btn.vue";
 import ResponsiveActionButton from "@/Pages/Atoms/action/ResponsiveActionButton.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
+import TanStackTableSortPanel from "@/Pages/Molecules/table/TanStackTableSortPanel.vue";
 import { shiftUiSize } from "@/Utils/atomic-design";
 
 const props = defineProps({
@@ -34,13 +35,12 @@ const props = defineProps({
     visibleColumns: { type: Object, default: () => ({}) },
 
     /**
-     * Colonnes triables (avec sort.enabled). Utilisé pour le dropdown « Trier par ».
-     * Indispensable en vue single-column (line) où les en-têtes de colonnes ne sont pas cliquables.
+     * Colonnes triables (avec sort.enabled).
      */
     sortEnabled: { type: Boolean, default: false },
     sortableColumns: { type: Array, default: () => [] },
-    sortBy: { type: String, default: "" },
-    sortOrder: { type: String, default: "asc" },
+    /** État TanStack multi-tri [{ id, desc }, ...] */
+    sorting: { type: Array, default: () => [] },
 
     exportEnabled: { type: Boolean, default: false },
     refreshEnabled: { type: Boolean, default: false },
@@ -52,7 +52,7 @@ const emit = defineEmits([
     "update:search",
     "toggle-column",
     "reset-columns",
-    "sort",
+    "update:sorting",
     "export",
     "refresh",
     "clear-selection",
@@ -95,17 +95,6 @@ const onSearchInput = (e) => {
     emit("update:search", v);
 };
 
-const onSortChange = (e) => {
-    const val = String(e?.target?.value ?? "").trim();
-    if (!val) {
-        emit("sort", { columnId: "", order: "asc" });
-        return;
-    }
-    const [columnId, order] = val.split("::");
-    if (columnId && (order === "asc" || order === "desc")) {
-        emit("sort", { columnId, order });
-    }
-};
 </script>
 
 <template>
@@ -157,30 +146,14 @@ const onSortChange = (e) => {
                 title="Actualiser les données"
             />
 
-            <select
+            <TanStackTableSortPanel
                 v-if="sortEnabled && sortableColumns.length > 0"
-                :class="['select select-bordered', inputSizeClass]"
-                :value="sortBy ? `${sortBy}::${sortOrder}` : ''"
-                aria-label="Trier par"
-                title="Choisir le tri"
-                @change="onSortChange"
-            >
-                <option value="">Trier par…</option>
-                <option
-                    v-for="col in sortableColumns"
-                    :key="`${col.id}-asc`"
-                    :value="`${col.id}::asc`"
-                >
-                    {{ col.label }} (A→Z)
-                </option>
-                <option
-                    v-for="col in sortableColumns"
-                    :key="`${col.id}-desc`"
-                    :value="`${col.id}::desc`"
-                >
-                    {{ col.label }} (Z→A)
-                </option>
-            </select>
+                :ui-size="uiSize"
+                :ui-color="uiColor"
+                :sortable-columns="sortableColumns"
+                :sorting="sorting"
+                @update:sorting="(v) => emit('update:sorting', v)"
+            />
 
             <Dropdown
                 v-if="columnVisibilityEnabled"

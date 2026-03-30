@@ -228,7 +228,6 @@ Liste des champs présents dans les réponses API **spell** et **spell-levels** 
 | **needVisibleEntity** | Entité visible requise |
 | **needCellWithoutPortal** | Case sans portail |
 | **portalProjectionForbidden** | Projection portail interdite |
-| **minCastIntervalEditable** | Intervalle entre deux lancers éditable (en réserve dans `_mappingUnused`) |
 | **rangeEditable** | Portée éditable (mappé en réserve → `po_editable`) |
 | **isMagic** | Sort magique (en réserve → `is_magic`) |
 | **powerful** | Puissant (en réserve → `powerful`) |
@@ -264,7 +263,7 @@ Liste des champs présents dans les réponses API **spell** et **spell-levels** 
 
 ---
 
-Les entrées en **réserve** (`_mappingUnused` dans spell.json) sont mappées côté config mais pas encore intégrées au payload par défaut : `number_between_two_cast`, `number_between_two_cast_editable`, `po_editable`, `is_magic`, `powerful`. Le payload d’intégration les prend en compte s’ils sont présents dans les données converties.
+Les entrées en **réserve** (`_mappingUnused` dans spell.json) sont mappées côté config mais pas encore intégrées au payload par défaut : `number_between_two_cast`, `po_editable`, `is_magic`, `powerful`. Le payload d’intégration les prend en compte s’ils sont présents dans les données converties.
 
 ---
 

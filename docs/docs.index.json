@@ -557,7 +557,7 @@
   {
     "path": "40-DevGuides/PROJECT_CLI.md",
     "title": "Interface CLI unifiée (project:*)",
-    "description": "Commandes project:deps, project:dev, project:refresh, project:data, project:data:sync, project:super-admin ; lien avec run et setup."
+    "description": "Commandes project:deps, project:dev, project:refresh, project:data, project:data:sync, project:super-admin ; lien avec run et setup ; page super admin /admin/project-maintenance (sync async via queue)."
   },
   {
     "path": "40-DevGuides/UTILISATEUR_SYSTEME.md",

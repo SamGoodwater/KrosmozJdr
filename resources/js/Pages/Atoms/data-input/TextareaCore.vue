@@ -68,19 +68,29 @@ const $attrs = useAttrs()
 const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'textarea', 'core')
 
 /**
- * Valeur effective (compat):
- * - en usage "core" avec v-model : on reçoit `props.modelValue`
- * - en usage via les Molecules (TextareaField/FieldTemplate) : la valeur arrive souvent via `inputAttrs.value`
+ * v-model direct sur le atom : listener présent dans $attrs.
+ * Sans ça, le défaut `modelValue: ''` masque la `value` passée par useInputField (comme {@link InputCore}).
+ */
+const hasVModelListener = computed(
+  () => !!($attrs?.['onUpdate:modelValue'] || $attrs?.['onUpdate:model-value']),
+)
+
+/**
+ * Ordre : v-model direct → `value` HTML (attrs) → `modelValue` explicite (ex. :model-value depuis TextareaField).
  */
 const effectiveValue = computed(() => {
-  // Priorité au v-model standard
-  if (props.modelValue !== null && props.modelValue !== undefined) {
-    return props.modelValue;
+  if (hasVModelListener.value && props.modelValue !== null && props.modelValue !== undefined) {
+    return props.modelValue
   }
-  // Fallback: valeur HTML passée via v-bind="inputAttrs"
-  const v = inputAttrs?.value?.value;
-  return (v !== null && v !== undefined) ? v : '';
-});
+  const fromAttrs = inputAttrs?.value?.value
+  if (fromAttrs !== null && fromAttrs !== undefined) {
+    return fromAttrs
+  }
+  if (props.modelValue !== null && props.modelValue !== undefined) {
+    return props.modelValue
+  }
+  return ''
+})
 
 /**
  * Listener safe pour éviter de gérer deux fois `input` (nous l'utilisons pour v-model).

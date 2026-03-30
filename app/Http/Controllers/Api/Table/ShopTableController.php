@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class ShopTableController extends Controller
 {
+    use InterpretsEntityTableSort;
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Shop::class);
@@ -32,9 +34,14 @@ class ShopTableController extends Controller
         $limit = (int) $request->integer('limit', 5000);
         $limit = max(1, min($limit, 20000));
 
+        $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
-        if (!in_array($order, ['asc', 'desc'], true)) {
+        if (is_array($sortsPayload) && isset($sortsPayload[0]) && is_array($sortsPayload[0])) {
+            $sort = (string) ($sortsPayload[0]['field'] ?? $sortsPayload[0]['column'] ?? $sort);
+            $order = strtolower((string) ($sortsPayload[0]['dir'] ?? $sortsPayload[0]['order'] ?? $order));
+        }
+        if (! in_array($order, ['asc', 'desc'], true)) {
             $order = 'desc';
         }
 
@@ -51,11 +58,7 @@ class ShopTableController extends Controller
         }
 
         $allowedSort = ['id', 'name', 'items_count', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSort, true)) {
-            $query->orderBy($sort, $order);
-        } else {
-            $query->latest();
-        }
+        $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $rows = $query->limit($limit)->get();
 
@@ -80,6 +83,7 @@ class ShopTableController extends Controller
         if ($format === 'entities') {
             $entities = $rows->map(function (Shop $s) {
                 $createdBy = $s->createdBy;
+
                 return $s->toArray() + [
                     'items_count' => $s->items_count ?? 0,
                     'npc' => $s->npc ? ($s->npc->toArray() + [
@@ -220,5 +224,3 @@ class ShopTableController extends Controller
         ]);
     }
 }
-
-

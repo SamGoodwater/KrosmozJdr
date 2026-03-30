@@ -9,13 +9,12 @@
  * console.log(spell.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
-import { BaseFormatter } from '@/Utils/Formatters/BaseFormatter.js';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import { getByCharacteristicKey, getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
 import { isPoCac, PO_CAC_ICON, PO_CAC_LABEL } from '@/Composables/entity/useCharacteristicDisplay';
 import { getElementLabel, getElementIcon, getElementColor, ELEMENT_PRIMARY_ICONS } from '@/Utils/Entity/Elements';
-import { getAreaIcon, getAreaShape } from '@/Utils/Entity/Areas';
+import { getAreaShape, getAreaShortLabel } from '@/Utils/Entity/Areas';
 
 export class Spell extends BaseModel {
     // ============================================
@@ -95,10 +94,6 @@ export class Spell extends BaseModel {
 
     get numberBetweenTwoCast() {
         return this._data.number_between_two_cast || null;
-    }
-
-    get numberBetweenTwoCastEditable() {
-        return this._data.number_between_two_cast_editable || null;
     }
 
     get element() {
@@ -508,16 +503,10 @@ export class Spell extends BaseModel {
         const value = String(area);
         const shape = getAreaShape(area);
         return {
-            type: 'chips',
+            type: 'area',
             value: '',
             params: {
-                items: [
-                    {
-                        icon: getAreaIcon(area),
-                        value,
-                        tooltip: `Zone: ${value}`,
-                    },
-                ],
+                area: value,
                 sortValue: value,
                 searchValue: value,
                 filterValue: shape || value,
@@ -858,10 +847,22 @@ export class Spell extends BaseModel {
             };
         }
 
-        return BaseFormatter.buildTypeBadgeCell(displayValue, {
-            sortValue: displayValue,
-            filterValue: typeIds,
-        });
+        const items = spellTypes.map((t) => ({
+            id: t.id,
+            name: String(t.name ?? t.label ?? '').trim() || '—',
+            color: t.color ?? null,
+        }));
+
+        return {
+            type: 'spell_types',
+            value: '',
+            params: {
+                items,
+                sortValue: displayValue,
+                searchValue: typeNames.join(' '),
+                filterValue: typeIds,
+            },
+        };
     }
 
     /**
@@ -896,9 +897,8 @@ export class Spell extends BaseModel {
                 tooltip: poCac ? PO_CAC_LABEL : (poValue ? `${poLabel}: ${poValue}` : ''),
             },
             {
-                icon: getAreaIcon(this.area),
-                value: areaValue,
-                tooltip: areaValue ? `Zone d'effet: ${areaValue}` : '',
+                area: areaValue,
+                value: areaValue ? getAreaShortLabel(areaValue) : '',
             },
             {
                 icon: ELEMENT_PRIMARY_ICONS[Number(this.element)] ?? ELEMENT_PRIMARY_ICONS[0],
@@ -912,7 +912,9 @@ export class Spell extends BaseModel {
             },
         ].filter((it) => it.value !== null && it.value !== undefined && (String(it.value) !== '' || (it.icon && it.tooltip)));
 
-        const searchValue = items.map((it) => String(it.value)).join(' ');
+        const searchValue = items
+            .map((it) => (it.area != null ? String(it.area) : String(it.value ?? '')))
+            .join(' ');
 
         return {
             type: 'chips',
@@ -1001,7 +1003,6 @@ export class Spell extends BaseModel {
             cast_per_target: this.castPerTarget,
             sight_line: this.sightLine,
             number_between_two_cast: this.numberBetweenTwoCast,
-            number_between_two_cast_editable: this.numberBetweenTwoCastEditable,
             element: this._data.element === undefined ? null : this._data.element,
             spellTypes: (this.spellTypes || []).map((t) => Number(t.id ?? t)).filter((n) => Number.isFinite(n)),
             category: this.category,

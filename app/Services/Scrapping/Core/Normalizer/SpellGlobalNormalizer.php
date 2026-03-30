@@ -39,7 +39,6 @@ final class SpellGlobalNormalizer
         'castTestLos',
         'rangeCanBeBoosted',
         'minCastInterval',
-        'minCastIntervalEditable',
         'isMagic',
         'powerful',
     ];
@@ -47,7 +46,7 @@ final class SpellGlobalNormalizer
     /**
      * Construit l'objet spell_global à partir de raw (spell + levels).
      *
-     * @param array<string, mixed> $raw Données brutes : réponse GET /spells/{id} + raw['levels'] = liste des spell-levels
+     * @param  array<string, mixed>  $raw  Données brutes : réponse GET /spells/{id} + raw['levels'] = liste des spell-levels
      * @return array<string, mixed> Vue plate des paramètres globaux (grade 1) pour le mapping
      */
     public function build(array $raw): array

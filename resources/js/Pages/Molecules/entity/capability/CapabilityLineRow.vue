@@ -5,13 +5,14 @@
  * @description
  * Aligné sur SpellLineRow / PanoplyLineRow : état • image • niveau • nom • élément • PA/PO • effet • description.
  */
-import { ref, computed, onUnmounted } from "vue";
+import { ref, computed, onUnmounted, nextTick } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
 
@@ -70,7 +71,7 @@ const effectItems = computed(() => {
     return cell?.type === "chips" ? cell.params?.items || [] : [];
 });
 
-const handleRowClick = () => emit("row-click", props.row);
+const handleRowClick = (e) => emit("row-click", props.row, e);
 
 const contextMenuVisible = ref(false);
 const contextMenuPosition = ref({ x: 0, y: 0 });
@@ -83,6 +84,7 @@ const handleContextMenu = (e) => {
 };
 const closeContextMenu = () => {
     contextMenuVisible.value = false;
+    nextTick(() => focusTableRowById(props.row?.id));
 };
 const handleContextAction = (actionKey) => {
     closeContextMenu();
@@ -98,11 +100,9 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
     <div
         class="relative rounded-box border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
-        role="button"
-        tabindex="0"
+        data-row-contextmenu-target
         @click="handleRowClick"
         @contextmenu="handleContextMenu"
-        @keydown.enter.space.prevent="handleRowClick"
     >
         <div class="absolute top-2 left-2 z-10" @click.stop>
             <EntityUsableDot :state="stateValue" />
@@ -193,6 +193,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                 :context="{ inPanel: false }"
                 :context-position="contextMenuPosition"
                 :context-visible="contextMenuVisible"
+                @close="closeContextMenu"
                 @action="handleContextAction"
             />
         </Teleport>

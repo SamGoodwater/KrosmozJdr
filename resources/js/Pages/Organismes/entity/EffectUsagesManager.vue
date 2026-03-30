@@ -16,7 +16,7 @@ import {
     formatSpellStateMode,
     getSpellStateDispellableIcon,
 } from '@/Composables/spell/spellStateDisplay';
-import { getAreaIcon } from '@/Utils/Entity/Areas';
+import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 
 const props = defineProps({
     effectUsages: { type: Array, default: () => [] },
@@ -353,15 +353,11 @@ function selectedEffectTargetType(effectDegreeId) {
                         >
                             {{ targetTypeLabel(item.effect?.target_type) }}
                         </span>
-                        <span v-if="item.effect?.area" class="inline-flex items-center gap-1 text-base-content/50 text-xs font-mono" :title="'Zone : ' + item.effect.area">
-                            <Icon
-                                :source="getAreaIcon(item.effect.area)"
-                                :alt="item.effect.area"
-                                size="xs"
-                                class="shrink-0 opacity-80"
-                            />
-                            {{ item.effect.area }}
-                        </span>
+                        <AreaDisplay
+                            v-if="item.effect?.area"
+                            :area="item.effect.area"
+                            class="text-base-content/80"
+                        />
                         <span class="text-base-content/70"> — {{ item.resolved_text || item.description || '—' }}</span>
                     </div>
 

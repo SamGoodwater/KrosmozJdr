@@ -11,8 +11,8 @@ import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
 import EffectGroupEditorForm from '@/Pages/Organismes/entity/EffectGroupEditorForm.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import { getAreaIcon } from '@/Utils/Entity/Areas';
+import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
+import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
 
 const { setPageTitle } = usePageTitle();
 
@@ -67,6 +67,14 @@ function buildFormData(selected) {
 const form = useForm(buildFormData(props.selected));
 const duplicateForm = useForm({});
 
+const initialAreaValidation = computed(() => {
+    const raw = form.initial_area;
+    if (raw == null || String(raw).trim() === '') return undefined;
+    return isValidAreaNotation(raw)
+        ? undefined
+        : { state: 'error', message: `Notation invalide. ${AREA_NOTATION_HELP}` };
+});
+
 watch(
     () => props.selected,
     () => {
@@ -87,6 +95,9 @@ watch(
 
 function submit() {
     if (props.selected === 'new') {
+        if (form.initial_area != null && String(form.initial_area).trim() !== '' && !isValidAreaNotation(form.initial_area)) {
+            return;
+        }
         const payload = {
             name: form.name || null,
             slug: form.slug || null,
@@ -234,15 +245,15 @@ function duplicateEffect() {
                                         v-model="form.initial_area"
                                         label="Zone (D1)"
                                         name="initial_area"
-                                        helper="ex: point, line-1x9…"
+                                        helper="ex: point, line-1x9, shape-99…"
                                         class="flex-1"
+                                        :validation="initialAreaValidation"
                                     />
-                                    <Icon
+                                    <AreaDisplay
                                         v-if="form.initial_area?.trim()"
-                                        :source="getAreaIcon(form.initial_area)"
-                                        :alt="form.initial_area"
-                                        size="sm"
-                                        class="shrink-0 mb-1 opacity-70"
+                                        :area="form.initial_area"
+                                        icon-size="sm"
+                                        class="shrink-0 mb-1"
                                     />
                                 </div>
                             </div>

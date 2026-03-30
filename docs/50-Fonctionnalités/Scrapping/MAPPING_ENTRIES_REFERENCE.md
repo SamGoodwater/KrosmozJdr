@@ -75,7 +75,6 @@ La portée est stockée en **po_min** et **po_max** (string) pour permettre plag
 ### Entrées en réserve (_mappingUnused) — à remettre dans `mapping` si besoin
 
 - **number_between_two_cast** — Intervalle entre deux lancers (levels.0.minCastInterval).
-- **number_between_two_cast_editable** — Indique si l’intervalle est éditable (levels.0.minCastIntervalEditable).
 - **po_editable** — Portée éditable (levels.0.rangeEditable).
 - **is_magic** — Sort magique ou non (levels.0.isMagic).
 - **powerful** — Indicateur “puissant” (levels.0.powerful).

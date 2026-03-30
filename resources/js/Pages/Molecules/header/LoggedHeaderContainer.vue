@@ -349,7 +349,7 @@ onUnmounted(() => {
 });
 
 // Vérifier si l'utilisateur est admin ou super_admin
-const { canAccess } = usePermissions();
+const { canAccess, isSuperAdmin } = usePermissions();
 
 // Vérifier si l'utilisateur est game_master, admin ou super_admin
 const canManagePages = computed(() => canAccess('pagesManager'));
@@ -578,9 +578,12 @@ const logout = () => {
                             </GlassMenuItem>
                         </div>
                         <GlassMenuDivider />
-                        <template v-if="canAccess('adminPanel') || canAccess('effectsAdmin')">
+                        <template v-if="canAccess('adminPanel') || canAccess('effectsAdmin') || isSuperAdmin">
                             <div class="flex flex-col gap-0.5">
                                 <GlassMenuSectionTitle>Administration</GlassMenuSectionTitle>
+                                <GlassMenuItem v-if="isSuperAdmin" route="admin.project-maintenance.index" icon="fa-database" icon-alt="Sync données DofusDB" hover3d>
+                                    Sync données (DofusDB)
+                                </GlassMenuItem>
                                 <GlassMenuItem v-if="canAccess('adminPanel')" route="admin.characteristics.index" icon="fa-sliders" icon-alt="Caractéristiques" hover3d>
                                     Caractéristiques
                                 </GlassMenuItem>

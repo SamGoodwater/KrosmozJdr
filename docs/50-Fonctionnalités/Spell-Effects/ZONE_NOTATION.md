@@ -99,3 +99,25 @@ Les shapes non listés sont renvoyés en `shape-{id}` (et `-param1-param2` si pr
 - **Icônes** : `storage/app/public/images/icons/areas/` — point.svg, line.svg, cross.svg, circle.svg, rect.svg.
 - **Backend** : `App\Support\AreaConstants` — `extractShapeFromNotation()`, `getIconPath()`, `SHAPE_ID_MAP`, `SHAPE_LABELS`.
 - **Frontend** : `@/Utils/Entity/Areas.js` — `getAreaShape()`, `getAreaIcon()`, `AREA_SHAPE_ICONS`.
+
+---
+
+## 7. Validation (saisie et API)
+
+Une valeur **non vide** doit respecter **exactement** l’une des formes du §3 :
+
+| Forme | Contraintes |
+|--------|-------------|
+| `point` | Mot seul |
+| `line-1xL` | `L` entier ≥ 1 |
+| `cross-a-b`, `circle-a-b` | `a`, `b` entiers, **a ≤ b** |
+| `rect-WxH` | `W`, `H` entiers ≥ 1 |
+| `shape-ID` | `ID` entier ≥ 1 |
+| `shape-ID-p1-p2` | `ID` entier ≥ 1 ; `p1`, `p2` entiers (souvent issus de DofusDB) |
+
+Toute autre chaîne (y compris espaces superflus, paramètres manquants, `line-2x3`, `shape-1-2` à deux segments, etc.) est **refusée**.
+
+- **Backend** : `App\Support\AreaNotation::isValid()`, règle `App\Rules\ValidAreaNotation` sur `initial_area` (création effet) et `degrees.*.area` (mise à jour groupe).
+- **Frontend** : `@/Utils/Entity/areaNotation.js` — `isValidAreaNotation()` (même règles), messages sur les champs zone et blocage d’envoi si invalide.
+
+Les notations **`shape-*`** n’ont pas de schéma de grille dans l’UI tant que la forme n’est pas mappée (aperçu « non disponible »).

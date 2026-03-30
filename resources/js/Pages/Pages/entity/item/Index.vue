@@ -27,6 +27,7 @@ import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
+import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 
 // Props Inertia (gardées à titre documentaire, même si non utilisées directement ici)
 const props = defineProps({
@@ -86,8 +87,13 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
-const quickEditModalOpen = ref(false);
-const quickEditEntity = ref(null);
+const {
+    tableQuickEditEnabled,
+    quickEditModalOpen,
+    quickEditEntity,
+    onUpdateTableQuickEdit,
+    onQuickEditIntent,
+} = useEntityIndexQuickEditTable(Item);
 
 // Sécurité UX: si l'utilisateur perd le droit de modifier, on coupe les modes d'édition.
 watch(
@@ -128,6 +134,34 @@ const handleRowDoubleClick = (row) => {
     selectedEntity.value = model;
     modalView.value = 'compact';
     modalOpen.value = true;
+};
+
+const handleKeyboardIntent = (payload) => {
+    const { type, row } = payload || {};
+    const raw = row?.rowParams?.entity;
+    if (!raw) return;
+    const model = raw instanceof Item ? raw : Item.fromArray([raw])?.[0];
+    if (!model?.id) return;
+    switch (type) {
+        case "open-show-page":
+            router.visit(route("entities.items.show", { item: model.id }));
+            break;
+        case "open-edit":
+            quickEditEntity.value = model;
+            quickEditModalOpen.value = true;
+            break;
+        case "open-view":
+            openModal(model);
+            break;
+        default:
+            break;
+    }
+};
+
+const handleCreateRequest = () => {
+    if (canCreate.value) {
+        createModalOpen.value = true;
+    }
 };
 
 // Handler pour les actions du tableau
@@ -285,7 +319,10 @@ const clearSelection = () => {
 
         <div
             class="grid grid-cols-1 gap-4"
-            :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
+            :class="{
+                'xl:grid-cols-[minmax(0,1fr)_380px]':
+                    canModify && selectedEntities.length >= 1 && tableQuickEditEnabled,
+            }"
         >
             <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
@@ -296,11 +333,15 @@ const clearSelection = () => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
+                    @quick-edit-intent="onQuickEditIntent"
+                    @keyboard-intent="handleKeyboardIntent"
+                    @create-request="handleCreateRequest"
                     @action="handleTableAction"
                 />
             </div>
 
-            <div v-if="canModify && selectedEntities.length >= 1" class="sticky top-4 self-start">
+            <div v-if="canModify && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
                 <EntityQuickEditPanel
                     entity-type="items"
                     :selected-entities="selectedEntities"

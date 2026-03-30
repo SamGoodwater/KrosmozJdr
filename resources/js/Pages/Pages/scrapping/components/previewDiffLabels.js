@@ -56,7 +56,6 @@ export const FIELD_LABELS = {
     is_magic: "Magique",
     powerful: "Puissant",
     number_between_two_cast: "Relance (tours)",
-    number_between_two_cast_editable: "Relance modifiable",
     length: "Nombre d’éléments",
     summary: "Résumé",
     state_dofusdb_id: "ID état DofusDB",

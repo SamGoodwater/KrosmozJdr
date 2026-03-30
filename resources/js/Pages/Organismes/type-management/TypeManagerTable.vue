@@ -14,6 +14,7 @@ import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
 import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import SelectField from "@/Pages/Molecules/data-input/SelectField.vue";
@@ -38,6 +39,8 @@ const props = defineProps({
     fieldLabel: { type: String, default: "" },
     /** Incrémenté par le parent (ex. ouverture du modal, fin de recherche) pour forcer un rechargement de la liste. */
     refreshTrigger: { type: Number, default: 0 },
+    /** Colonne « Nom » : badge type de sort (icône + teinte), ex. page admin types de sorts. */
+    spellTypeNameCell: { type: Boolean, default: false },
     /** Base URL pour déplacer un type vers une autre catégorie (ex. /api/scrapping/resource-types). Si vide, pas d'action "Déplacer vers". */
     moveCategoryUrlBase: { type: String, default: "" },
     /** Catégorie courante : resource | consumable | equipment. Requis pour afficher "Déplacer vers". */
@@ -569,7 +572,13 @@ onMounted(async () => {
                         <td class="font-mono">{{ r.id }}</td>
                         <td v-if="String(mode) === 'decision'" class="font-mono">{{ r.dofusdb_type_id }}</td>
                         <td class="min-w-[220px]">
-                            {{ r.name || "—" }}
+                            <SpellTypeBadge
+                                v-if="spellTypeNameCell && r.name"
+                                :name="String(r.name)"
+                                :color="r.color || null"
+                                size="sm"
+                            />
+                            <template v-else>{{ r.name || "—" }}</template>
                         </td>
                         <td v-if="String(mode) === 'decision'">{{ r.seen_count ?? "—" }}</td>
                         <td class="text-right">

@@ -20,6 +20,8 @@ const DEFAULT_PARAMS = {
     search: "",
     sort: "id",
     order: "desc",
+    /** @type {{ field: string, dir: string }[]|null} */
+    sorts: null,
 };
 
 /**
@@ -38,6 +40,16 @@ export function buildFetchUrl(params, baseUrl, refreshToken = 0) {
     searchParams.set("format", "entities");
     searchParams.set("limit", String(p.pageSize || 25));
     searchParams.set("page", String(p.page || 1));
+    const sorts = Array.isArray(p.sorts) ? p.sorts : [];
+    if (sorts.length > 0) {
+        sorts.forEach((item, i) => {
+            const field = item?.field ?? item?.id;
+            if (!field) return;
+            const dir = item?.dir === "desc" ? "desc" : "asc";
+            searchParams.set(`sorts[${i}][field]`, String(field));
+            searchParams.set(`sorts[${i}][dir]`, dir);
+        });
+    }
     searchParams.set("sort", String(p.sort || "id"));
     searchParams.set("order", String(p.order || "desc"));
     if (String(p.search || "").trim()) {

@@ -12,6 +12,7 @@
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import AreaDisplay from "@/Pages/Molecules/entity/spell/AreaDisplay.vue";
 import { getCharacteristicColorStyle } from "@/Composables/entity/useCharacteristicDisplay";
 
 const props = defineProps({
@@ -56,7 +57,13 @@ const showValueAsFallback = computed(
 </script>
 
 <template>
+    <AreaDisplay
+        v-if="item.area != null && String(item.area).trim() !== ''"
+        :area="String(item.area)"
+        :icon-only="labelMode === 'icon-only'"
+    />
     <Tooltip
+        v-else
         :content="tooltipContent"
         placement="top"
         class="inline-flex items-center gap-1"

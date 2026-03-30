@@ -15,7 +15,7 @@
  * <TanStackTable :config="config" :rows="rows" :loading="loading" />
  */
 
-import { computed, ref, watch, onMounted, onUnmounted, toValue, shallowRef } from "vue";
+import { computed, ref, watch, onMounted, onUnmounted, toValue, shallowRef, nextTick } from "vue";
 import { getCoreRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from "@tanstack/vue-table";
 import TanStackTableHeader from "@/Pages/Molecules/table/TanStackTableHeader.vue";
 import TanStackTableRow from "@/Pages/Molecules/table/TanStackTableRow.vue";
@@ -33,7 +33,15 @@ import { BREAKPOINTS } from "@/Utils/Entity/Constants.js";
 import { getEntityConfig, normalizeEntityType } from "@/Entities/entity-registry.js";
 import { resolveEntityViewComponentSync } from "@/Utils/entity/resolveEntityViewComponent.js";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import TanStackTableShortcutsModal from "@/Pages/Molecules/table/TanStackTableShortcutsModal.vue";
+import { matchTableEnterIntent } from "@/Composables/table/useTanStackTableKeyboard.js";
+import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
+import {
+    classifyRowPointerModifiers,
+    isRowInteractiveTarget as isPointerOnInteractiveEl,
+} from "@/Composables/table/useEntityTableRowPointer.js";
 
 /** Mappe entityType → nom de prop attendu par les *ViewMinimal */
 const ENTITY_PROP_MAP = {
@@ -99,6 +107,10 @@ const props = defineProps({
      * Sinon, fallback sur Minimal en colonne unique.
      */
     lineRowComponent: { type: Object, default: null },
+    /**
+     * Droit global d’édition sur l’entité (quick edit). Le toggle n’apparaît que si true.
+     */
+    quickEditAllowed: { type: Boolean, default: false },
 });
 
 const emit = defineEmits([
@@ -110,6 +122,10 @@ const emit = defineEmits([
     "update:selectedIds",
     "update:selected-ids",
     "update:serverParams",
+    "update:quickEditEnabled",
+    "quick-edit-intent",
+    "create-request",
+    "keyboard-intent",
     "action", // Émis pour chaque action d'entité
 ]);
 const { notifySuccess, notifyError, notifyInfo } = useUxFeedback();
@@ -317,12 +333,18 @@ const rowSelectedBgClass = computed(() => {
     return "bg-base-200/50";
 });
 
-// Préférences (colonnes visibles + pageSize + displayMode)
+// Préférences (colonnes visibles + pageSize + displayMode + quick edit + tri)
 const prefs = useTanStackTablePreferences(props.config?.id, {
     visibleColumns: {},
     pageSize: props.config?.features?.pagination?.perPage?.default ?? 25,
     displayMode: "line",
+    quickEditEnabled: true,
+    sorting: [],
 });
+
+/** Ref template (unwrap) pour le toggle quick edit */
+const quickEditEnabledPref = prefs.quickEditEnabled;
+const setQuickEditEnabledPref = prefs.setQuickEditEnabled;
 
 /** Composant Minimal pour la vue grille (flex-wrap) */
 const minimalViewComponent = computed(() => {
@@ -336,6 +358,11 @@ const showMinimalGrid = computed(() => prefs.displayMode.value === "minimal" && 
 
 /** Afficher la vue Ligne (liste dense verticale) */
 const showLineView = computed(() => prefs.displayMode.value === "line" && (props.lineRowComponent || (minimalViewComponent.value && props.entityType)));
+
+/** Colonnes masquables : pertinent uniquement en vue tableau (colonnes). */
+const effectiveColumnVisibilityEnabled = computed(
+    () => Boolean(props.config?.features?.columnVisibility?.enabled) && prefs.displayMode.value === "table",
+);
 
 /** Récupère l'entité depuis une row (rowParams.entity ou fallback via Model) */
 function getEntityFromRow(row, entityType) {
@@ -370,8 +397,10 @@ const handleMinimalContextMenu = (e, row) => {
     minimalContextMenuVisible.value = true;
 };
 const closeMinimalContextMenu = () => {
+    const rid = minimalContextMenuRow.value?.id;
     minimalContextMenuVisible.value = false;
     minimalContextMenuRow.value = null;
+    nextTick(() => focusTableRowById(rid));
 };
 const handleMinimalContextAction = (actionKey, entity, row) => {
     closeMinimalContextMenu();
@@ -1259,6 +1288,9 @@ const emptyState = computed(() => {
 // État de tri : utiliser directement le format TanStack Table
 const sortingState = ref([]);
 
+/** Hydratation unique depuis les prefs (colonnes triables connues). */
+let didHydrateSortFromPrefs = false;
+
 const getSortValue = (row, col) => {
     const cell = getCellFor(row, col);
     const v = cell?.params?.sortValue;
@@ -1405,6 +1437,8 @@ const table = useVueTable({
     ...(props.serverSide ? {} : { getSortedRowModel: getSortedRowModel(), getPaginationRowModel: getPaginationRowModel() }),
     manualPagination: props.serverSide,
     manualSorting: props.serverSide,
+    isMultiSortEvent: (e) => Boolean(e?.shiftKey),
+    maxMultiSortColCount: 8,
     pageCount: props.serverSide ? (props.serverPaginationMeta?.lastPage ?? 1) : undefined,
     state: {
         get sorting() {
@@ -1420,9 +1454,14 @@ const table = useVueTable({
     onSortingChange: (updater) => {
         const next = typeof updater === "function" ? updater(sortingState.value) : updater;
         sortingState.value = next;
+        prefs.setSorting(Array.isArray(next) ? next : []);
         if (props.serverSide) {
             const firstSort = Array.isArray(next) && next.length > 0 ? next[0] : null;
+            const sortsPayload = Array.isArray(next)
+                ? next.map((s) => ({ field: s.id, dir: s.desc ? "desc" : "asc" }))
+                : [];
             emit("update:serverParams", {
+                sorts: sortsPayload,
                 sort: firstSort?.id || "id",
                 order: firstSort?.desc ? "desc" : "asc",
                 page: 1,
@@ -1453,6 +1492,27 @@ const table = useVueTable({
         }
     },
 });
+
+watch(
+    () => sortableColumns.value.map((c) => c.id).join(","),
+    () => {
+        if (didHydrateSortFromPrefs || !sortableColumns.value.length) return;
+        const allowed = new Set(sortableColumns.value.map((c) => c.id));
+        const raw = prefs.sorting.value || [];
+        const merged = raw.filter((s) => s && allowed.has(s.id)).map((s) => ({ id: s.id, desc: Boolean(s.desc) }));
+        didHydrateSortFromPrefs = true;
+        if (!merged.length) return;
+        sortingState.value = merged;
+        nextTick(() => {
+            try {
+                table.setSorting(merged);
+            } catch {
+                /* table pas prêt */
+            }
+        });
+    },
+    { immediate: true },
+);
 
 const rowsToRender = computed(() => {
     return table.getRowModel().rows.map((r) => r.original);
@@ -1493,16 +1553,12 @@ const handleSort = (col) => {
 };
 
 /**
- * Applique le tri depuis le dropdown « Trier par » (utile en vue single-column / line).
- * @param {{ columnId: string, order: 'asc'|'desc' }} payload
+ * Applique le tri depuis le panneau multi-critères (toolbar).
+ * @param {Array<{ id: string, desc: boolean }>} next
  */
-const handleSortFromDropdown = (payload) => {
-    const { columnId, order } = payload || {};
-    if (!columnId || !sortableColumns.value.some((c) => c.id === columnId)) {
-        table.setSorting([]);
-        return;
-    }
-    table.setSorting([{ id: columnId, desc: order === "desc" }]);
+const applySortingFromPanel = (next) => {
+    const list = Array.isArray(next) ? next : [];
+    table.setSorting(list);
 };
 
 const skeletonRows = computed(() => Number(props.config?.ui?.skeletonRows ?? 8));
@@ -1543,6 +1599,14 @@ const paginationCanNext = computed(() => {
 
 // Selection (Phase 1: local Set)
 const selectionEnabled = computed(() => Boolean(props.config?.features?.selection?.enabled));
+const showQuickEditToggle = computed(() => props.quickEditAllowed && selectionEnabled.value);
+
+watch(
+    () => quickEditEnabledPref.value,
+    (v) => emit("update:quickEditEnabled", v),
+    { immediate: true },
+);
+
 const checkboxMode = computed(() => props.config?.features?.selection?.checkboxMode || "auto");
 const clickToSelect = computed(() => Boolean(props.config?.features?.selection?.clickToSelect));
 const selectedIds = ref(new Set());
@@ -1568,7 +1632,10 @@ const showSelectionCheckboxes = computed(() => {
     if (!selectionEnabled.value) return false;
     if (checkboxMode.value === "none") return false;
     if (checkboxMode.value === "always") return true;
-    return selectedCount.value > 0;
+    // « auto » : toujours afficher les cases dès que la sélection est activée.
+    // Sinon, sans sélection préalable on ne peut pas cliquer une ligne « vide » sur des cellules riches
+    // (liens, chips, boutons) — seuls Ctrl+A / raccourcis permettaient la première sélection.
+    return true;
 });
 
 const pageRows = computed(() => table.getRowModel().rows.map((r) => r.original));
@@ -1640,8 +1707,270 @@ watch(
 const handleRowClick = (row) => {
     emit("row-click", row);
     if (!selectionEnabled.value || !clickToSelect.value) return;
-    toggleRow(row, !isSelected(row));
+    const willSelect = !isSelected(row);
+    toggleRow(row, willSelect);
+    if (
+        props.quickEditAllowed
+        && quickEditEnabledPref.value
+        && willSelect
+    ) {
+        emit("quick-edit-intent", row);
+    }
 };
+
+/**
+ * Clic ligne : Ctrl/Méta → page entité, Alt → édition, sinon sélection + quick edit.
+ * @param {object} row
+ * @param {MouseEvent} [event]
+ */
+const handleRowPointer = (row, event) => {
+    if (event && isPointerOnInteractiveEl(event)) return;
+    const mod = classifyRowPointerModifiers(event);
+    if (mod === "show-page") {
+        event?.preventDefault?.();
+        emit("keyboard-intent", { type: "open-show-page", row });
+        return;
+    }
+    if (mod === "edit") {
+        event?.preventDefault?.();
+        emit("keyboard-intent", { type: "open-edit", row });
+        return;
+    }
+    handleRowClick(row);
+};
+
+const tableRootRef = ref(null);
+const shortcutsModalOpen = ref(false);
+
+/**
+ * Déplace le focus entre les blocs `[data-table-row-focus]` (ligne tableau ou carte ligne/minimal).
+ * @param {KeyboardEvent} e
+ * @param {HTMLElement|null} root
+ */
+function moveRowFocusInTable(e, root) {
+    if (!root) return false;
+    const key = String(e.key || "").toLowerCase();
+    if (key !== "arrowdown" && key !== "arrowup") return false;
+    const typing = isKeyboardTypingTarget(e.target);
+    if (typing) return false;
+    const nodes = [...root.querySelectorAll("[data-table-row-focus]")];
+    if (!nodes.length) return false;
+    const rowEl = e.target?.closest?.("[data-table-row-focus]");
+    let idx = rowEl ? nodes.indexOf(rowEl) : -1;
+    if (idx < 0) {
+        idx = key === "arrowdown" ? -1 : nodes.length;
+    }
+    const nextIdx =
+        key === "arrowdown"
+            ? Math.min(nodes.length - 1, idx + 1)
+            : Math.max(0, idx - 1);
+    e.preventDefault();
+    e.stopPropagation();
+    nodes[nextIdx]?.focus?.();
+    return true;
+}
+
+/**
+ * Clavier sur le bloc ligne (vues ligne / minimal) : Espace, Entrée, flèches.
+ * @param {KeyboardEvent} e
+ * @param {object} row
+ */
+function handleLineRowBlockKeydown(e, row) {
+    const root = tableRootRef.value;
+    if (!root) return;
+    if (!root.contains(e.target)) return;
+    const typing = isKeyboardTypingTarget(e.target);
+    if (typing) return;
+
+    const key = String(e.key || "").toLowerCase();
+
+    if (key === " " || e.code === "Space") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (selectionEnabled.value && clickToSelect.value) {
+            toggleRow(row, !isSelected(row));
+        }
+        return;
+    }
+
+    const enterIntent = matchTableEnterIntent(e);
+    if (enterIntent) {
+        e.preventDefault();
+        e.stopPropagation();
+        emit("keyboard-intent", { type: enterIntent, row });
+        return;
+    }
+
+    if (key === "arrowdown" || key === "arrowup") {
+        moveRowFocusInTable(e, root);
+    }
+}
+
+const goPaginationNext = () => {
+    if (!paginationEnabled.value) return;
+    if (props.serverSide) {
+        emit("update:serverParams", {
+            page: Math.min(paginationPageCount.value, (props.serverParams?.page ?? 1) + 1),
+        });
+    } else {
+        table.nextPage();
+    }
+};
+
+const goPaginationPrev = () => {
+    if (!paginationEnabled.value) return;
+    if (props.serverSide) {
+        emit("update:serverParams", { page: Math.max(1, (props.serverParams?.page ?? 1) - 1) });
+    } else {
+        table.previousPage();
+    }
+};
+
+function isKeyboardTypingTarget(target) {
+    const el = target;
+    if (!el || !el.tagName) return false;
+    const tag = el.tagName.toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return true;
+    return Boolean(el.isContentEditable);
+}
+
+function findRowFromTableFocus() {
+    let el = document.activeElement;
+    const root = tableRootRef.value;
+    if (!root) return null;
+    while (el && el !== root) {
+        const id = el?.dataset?.rowId;
+        if (id !== undefined && id !== "") {
+            return pageRows.value.find((r) => String(r?.id) === String(id)) ?? null;
+        }
+        el = el.parentElement;
+    }
+    return null;
+}
+
+/**
+ * Ouvre le menu actions (équivalent clic droit) pour une ligne — utilisé par Alt+O.
+ *
+ * @param {object} row
+ */
+function openRowActionsContextMenu(row) {
+    const idRaw = row?.id;
+    if (idRaw === undefined || idRaw === null) return;
+    const root = tableRootRef.value;
+    if (!root) return;
+    const safeId = String(idRaw);
+    const host = root.querySelector(
+        `[data-table-row-focus][data-row-id="${typeof CSS !== "undefined" && CSS.escape ? CSS.escape(safeId) : safeId.replace(/"/g, "")}"]`,
+    );
+    if (!host) return;
+    const target = host.querySelector("[data-row-contextmenu-target]") || host;
+    const r = target.getBoundingClientRect();
+    const x = r.left + Math.min(120, Math.max(24, r.width * 0.45));
+    const y = r.top + Math.min(48, Math.max(16, r.height * 0.35));
+    target.dispatchEvent(
+        new MouseEvent("contextmenu", {
+            bubbles: true,
+            cancelable: true,
+            clientX: x,
+            clientY: y,
+            view: typeof window !== "undefined" ? window : undefined,
+            button: 2,
+        }),
+    );
+}
+
+/**
+ * Raccourcis lorsque le focus est dans la zone tableau (tabindex sur le conteneur).
+ */
+function handleTableKeydown(e) {
+    const root = tableRootRef.value;
+    if (!root) return;
+    if (!root.contains(e.target) && e.target !== root) return;
+
+    const typing = isKeyboardTypingTarget(e.target);
+    const key = String(e.key || "").toLowerCase();
+
+    if (e.altKey && !e.ctrlKey && !e.metaKey && key === "n") {
+        e.preventDefault();
+        goPaginationNext();
+        return;
+    }
+    if (e.altKey && !e.ctrlKey && !e.metaKey && key === "b") {
+        e.preventDefault();
+        goPaginationPrev();
+        return;
+    }
+    if ((e.ctrlKey || e.metaKey) && key === "n") {
+        e.preventDefault();
+        emit("create-request");
+        return;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && key === "a") {
+        if (typing) return;
+        e.preventDefault();
+        if (selectionEnabled.value) {
+            if (allSelectedOnPage.value) {
+                toggleAllOnPage(false);
+            } else {
+                toggleAllOnPage(true);
+            }
+        }
+        return;
+    }
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && key === "a") {
+        if (typing) return;
+        e.preventDefault();
+        if (selectionEnabled.value) toggleAllOnPage(true);
+        return;
+    }
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && key === "d") {
+        if (typing) return;
+        e.preventDefault();
+        if (selectionEnabled.value) clearSelection();
+        return;
+    }
+
+    if (e.altKey && !e.ctrlKey && !e.metaKey && (key === "o" || e.code === "KeyO")) {
+        if (typing) return;
+        e.preventDefault();
+        const row = findRowFromTableFocus();
+        if (row) openRowActionsContextMenu(row);
+        return;
+    }
+
+    if (key === " " || e.code === "Space") {
+        if (typing) return;
+        const row = findRowFromTableFocus();
+        if (!row || !selectionEnabled.value || !clickToSelect.value) return;
+        e.preventDefault();
+        toggleRow(row, !isSelected(row));
+        return;
+    }
+
+    if (key === "enter") {
+        if (typing) return;
+        const row = findRowFromTableFocus();
+        if (!row) return;
+        const intent = matchTableEnterIntent(e);
+        if (intent) {
+            e.preventDefault();
+            emit("keyboard-intent", { type: intent, row });
+        }
+        return;
+    }
+
+    if (key === "e" && e.altKey && !e.ctrlKey && !e.metaKey) {
+        if (typing) return;
+        e.preventDefault();
+        const row = findRowFromTableFocus();
+        if (row) emit("keyboard-intent", { type: "open-edit", row });
+        return;
+    }
+
+    if (key === "arrowdown" || key === "arrowup") {
+        moveRowFocusInTable(e, root);
+    }
+}
 
 const toggleColumnVisibility = (col, forcedVisible = null) => {
     if (!col?.id) return;
@@ -1720,7 +2049,12 @@ const handleExport = () => {
 </script>
 
 <template>
-    <div class="space-y-2">
+    <div
+        ref="tableRootRef"
+        class="space-y-2 outline-none"
+        tabindex="-1"
+        @keydown="handleTableKeydown"
+    >
         <div class="sr-only" aria-live="polite" aria-atomic="true">{{ ariaLiveMessage }}</div>
         <!-- Toolbar (Header) -->
         <div class="relative px-3 py-2" :class="[bgClass]">
@@ -1730,20 +2064,19 @@ const handleExport = () => {
                 :search-placeholder="searchPlaceholder"
                 :ui-size="uiSize"
                 :ui-color="uiColor"
-                :column-visibility-enabled="Boolean(props.config?.features?.columnVisibility?.enabled)"
+                :column-visibility-enabled="effectiveColumnVisibilityEnabled"
                 :columns="columnsConfig"
                 :visible-columns="effectiveVisibleColumns"
                 :sort-enabled="sortEnabled"
                 :sortable-columns="sortableColumns"
-                :sort-by="sortingState.length > 0 ? sortingState[0].id : ''"
-                :sort-order="sortingState.length > 0 && sortingState[0].desc ? 'desc' : 'asc'"
+                :sorting="sortingState"
                 :export-enabled="exportEnabled"
                 :refresh-enabled="true"
                 :selection-count="selectedCount"
                 @update:search="handleSearchInput"
                 @toggle-column="toggleColumnVisibility"
                 @reset-columns="resetColumnsToDefaults"
-                @sort="handleSortFromDropdown"
+                @update:sorting="applySortingFromPanel"
                 @export="handleExport"
                 @refresh="handleRefresh"
                 @clear-selection="clearSelection"
@@ -1782,6 +2115,16 @@ const handleExport = () => {
                         Colonne
                     </Btn>
                 </div>
+                <div v-if="showQuickEditToggle" class="flex items-center gap-2">
+                    <span class="text-xs text-base-content/70">Quick edit</span>
+                    <input
+                        type="checkbox"
+                        class="toggle toggle-xs"
+                        :checked="quickEditEnabledPref"
+                        aria-label="Activer l’édition rapide au clic sur une ligne"
+                        @change="setQuickEditEnabledPref($event.target.checked)"
+                    />
+                </div>
                 <div class="flex items-center gap-2">
                     <span class="text-xs text-base-content/70">Densité</span>
                     <Btn
@@ -1795,8 +2138,26 @@ const handleExport = () => {
                         {{ option.label }}
                     </Btn>
                 </div>
+                <Btn
+                    size="xs"
+                    variant="ghost"
+                    :color="uiColor"
+                    class="gap-1"
+                    title="Aide — raccourcis clavier et clics"
+                    aria-label="Aide raccourcis tableau"
+                    @click="shortcutsModalOpen = true"
+                >
+                    <Icon source="fa-solid fa-keyboard" size="sm" alt="" />
+                </Btn>
             </div>
         </div>
+
+        <TanStackTableShortcutsModal
+            :open="shortcutsModalOpen"
+            :ui-size="uiSize"
+            :ui-color="uiColor"
+            @close="shortcutsModalOpen = false"
+        />
 
         <!-- Filters -->
         <div
@@ -1985,9 +2346,16 @@ const handleExport = () => {
                 <template v-else-if="rowsToRender.length">
                     <div class="space-y-2 p-2" :class="lineRowComponent ? '' : 'flex flex-col gap-3'">
                         <template v-if="lineRowComponent">
-                            <component
+                            <div
                                 v-for="row in rowsToRender"
                                 :key="row.id"
+                                data-table-row-focus
+                                :data-row-id="String(row.id)"
+                                tabindex="0"
+                                class="rounded-box transition-shadow duration-200 hover:shadow-md outline-none"
+                                @keydown="(e) => handleLineRowBlockKeydown(e, row)"
+                            >
+                            <component
                                 :is="lineRowComponent"
                                 :row="row"
                                 :entity-type="entityType"
@@ -1998,17 +2366,23 @@ const handleExport = () => {
                                 :is-selected="isSelected(row)"
                                 :show-actions="showActionsColumn"
                                 :ui-color="uiColor"
-                                @row-click="handleRowClick"
+                                @row-click="handleRowPointer"
+                                @row-dblclick="(r) => emit('row-dblclick', r)"
                                 @toggle-select="(r, checked) => toggleRow(r, checked)"
                                 @action="(actionKey, entity) => emit('action', actionKey, entity, row)"
                             />
+                            </div>
                         </template>
                         <template v-else>
                             <div
                                 v-for="row in rowsToRender"
                                 :key="row.id"
-                                class="relative w-full"
-                                :class="{ 'ring-2 ring-primary/50 rounded-box': isSelected(row) }"
+                                data-table-row-focus
+                                :data-row-id="String(row.id)"
+                                tabindex="0"
+                                class="relative w-full rounded-box transition-shadow duration-200 hover:shadow-md outline-none"
+                                :class="{ 'ring-2 ring-primary/50': isSelected(row) }"
+                                @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                             >
                                 <div
                                     v-if="showSelectionCheckboxes"
@@ -2024,7 +2398,8 @@ const handleExport = () => {
                                 </div>
                                 <div
                                     class="cursor-pointer w-full"
-                                    @click="handleRowClick(row)"
+                                    data-row-contextmenu-target
+                                    @click="(e) => handleRowPointer(row, e)"
                                     @contextmenu="handleMinimalContextMenu($event, row)"
                                     @dblclick="emit('row-dblclick', row)"
                                 >
@@ -2082,8 +2457,12 @@ const handleExport = () => {
                         <div
                             v-for="row in rowsToRender"
                             :key="row.id"
-                            class="relative flex-[1_1_280px] min-w-[280px] max-w-full"
-                            :class="{ 'ring-2 ring-primary/50 rounded-box': isSelected(row) }"
+                            data-table-row-focus
+                            :data-row-id="String(row.id)"
+                            tabindex="0"
+                            class="relative flex-[1_1_280px] min-w-[280px] max-w-full rounded-box transition-shadow duration-200 hover:shadow-md outline-none"
+                            :class="{ 'ring-2 ring-primary/50': isSelected(row) }"
+                            @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                         >
                             <div
                                 v-if="showSelectionCheckboxes"
@@ -2099,7 +2478,8 @@ const handleExport = () => {
                             </div>
                             <div
                                 class="cursor-pointer h-full"
-                                @click="handleRowClick(row)"
+                                data-row-contextmenu-target
+                                @click="(e) => handleRowPointer(row, e)"
                                 @contextmenu="handleMinimalContextMenu($event, row)"
                                 @dblclick="emit('row-dblclick', row)"
                             >
@@ -2147,6 +2527,7 @@ const handleExport = () => {
                     :context="{ inPanel: false }"
                     :context-position="minimalContextMenuPosition"
                     :context-visible="minimalContextMenuVisible"
+                    @close="closeMinimalContextMenu"
                     @action="(k) => handleMinimalContextAction(k, minimalContextEntity, minimalContextMenuRow)"
                 />
             </Teleport>
@@ -2213,7 +2594,7 @@ const handleExport = () => {
                             :show-actions-column="showActionsColumn"
                             :get-cell-for="getCellFor"
                             @toggle-select="(r, checked) => toggleRow(r, checked)"
-                            @row-click="handleRowClick"
+                            @row-click="handleRowPointer"
                             @row-dblclick="(r) => emit('row-dblclick', r)"
                             @action="(actionKey, entity, row) => emit('action', actionKey, entity, row)"
                         />
@@ -2239,7 +2620,7 @@ const handleExport = () => {
                             :show-actions-column="showActionsColumn"
                             :get-cell-for="getCellFor"
                             @toggle-select="(r, checked) => toggleRow(r, checked)"
-                            @row-click="handleRowClick"
+                            @row-click="handleRowPointer"
                             @row-dblclick="(r) => emit('row-dblclick', r)"
                             @action="(actionKey, entity, row) => emit('action', actionKey, entity, row)"
                         />

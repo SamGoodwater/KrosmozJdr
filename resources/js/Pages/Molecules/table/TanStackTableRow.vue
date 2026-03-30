@@ -7,10 +7,11 @@
  * Supporte la colonne Actions et le menu contextuel (clic droit).
  */
 
-import { ref, computed, onUnmounted } from "vue";
+import { ref, computed, onUnmounted, nextTick } from "vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
 /** Colonnes à contenu riche : max-width pour forcer le wrap et éviter scroll cellule */
@@ -115,27 +116,40 @@ const selectionAriaLabel = computed(() => {
 
 const handleRowKeydown = (event) => {
     if (isInteractiveTarget(event)) return;
-    if (event.key === "Enter" || event.key === " ") {
+    const k = event.key;
+    if (k === " " || k === "Spacebar") {
         event.preventDefault();
-        emit("row-click", props.row);
+        event.stopPropagation();
+        if (props.showSelection) {
+            emit("toggle-select", props.row, !props.isSelected);
+        }
+        return;
+    }
+    // Entrée : laisser remonter au conteneur `tableRootRef` (aperçu / page / édition rapide)
+    if (k === "Enter") {
+        return;
     }
     if (event.key === "Escape") {
         closeContextMenu();
     }
     if (event.key === "ArrowDown") {
         event.preventDefault();
+        event.stopPropagation();
         focusSiblingRow(event, 1);
     }
     if (event.key === "ArrowUp") {
         event.preventDefault();
+        event.stopPropagation();
         focusSiblingRow(event, -1);
     }
     if (event.key === "Home") {
         event.preventDefault();
+        event.stopPropagation();
         focusEdgeRow(event, "first");
     }
     if (event.key === "End") {
         event.preventDefault();
+        event.stopPropagation();
         focusEdgeRow(event, "last");
     }
 };
@@ -159,6 +173,7 @@ const handleContextMenu = (event) => {
 
 const closeContextMenu = () => {
     contextMenuVisible.value = false;
+    nextTick(() => focusTableRowById(props.row?.id));
 };
 
 // Fermer le menu contextuel au clic ailleurs
@@ -254,12 +269,15 @@ const handleAction = (actionKey, entity) => {
 
 <template>
     <tr
-        class="hover:bg-base-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+        data-table-row-focus
+        data-row-contextmenu-target
+        :data-row-id="String(props.row?.id ?? '')"
+        class="hover:bg-base-200 transition-[colors,box-shadow] duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
         :class="isSelected ? selectedBgClass : null"
         tabindex="0"
         :aria-label="rowAriaLabel"
         :aria-selected="showSelection ? String(isSelected) : undefined"
-        @click="(e) => { if (!isInteractiveTarget(e)) emit('row-click', row); }"
+        @click="(e) => { if (!isInteractiveTarget(e)) emit('row-click', row, e); }"
         @dblclick="(e) => { if (!isInteractiveTarget(e)) emit('row-dblclick', row); }"
         @keydown="handleRowKeydown"
         @contextmenu="handleContextMenu"
@@ -339,6 +357,7 @@ const handleAction = (actionKey, entity) => {
             :context="{ inPanel: false }"
             :context-position="contextMenuPosition"
             :context-visible="contextMenuVisible"
+            @close="closeContextMenu"
             @action="handleAction"
         />
     </Teleport>

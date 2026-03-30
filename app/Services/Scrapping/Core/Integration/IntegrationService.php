@@ -485,7 +485,6 @@ final class IntegrationService
             'cast_per_target' => (string) (isset($data['cast_per_target']) ? $data['cast_per_target'] : '0'),
             'sight_line' => (bool) (isset($data['sight_line']) ? (int) $data['sight_line'] : true),
             'number_between_two_cast' => (string) (isset($data['number_between_two_cast']) ? $data['number_between_two_cast'] : '0'),
-            'number_between_two_cast_editable' => (bool) (isset($data['number_between_two_cast_editable']) ? (int) $data['number_between_two_cast_editable'] : true),
             'element' => array_key_exists('element', $data) && $data['element'] !== null && $data['element'] !== ''
                 ? (int) $data['element']
                 : null,

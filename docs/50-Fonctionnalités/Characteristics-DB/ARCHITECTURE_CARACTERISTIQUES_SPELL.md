@@ -29,7 +29,6 @@ Les caractéristiques spell se divisent en **deux types distincts** :
 | cast_per_target_spell | cast_per_target | spells | Lancements max/cible |
 | sight_line_spell | sight_line | spells | Ligne de vue |
 | number_between_two_cast_spell | number_between_two_cast | spells | Délai entre lancers |
-| number_between_two_cast_editable_spell | number_between_two_cast_editable | spells | Délai éditable |
 | category_spell | category | spells | Type de sort |
 | is_magic_spell | is_magic | spells | Magique vs physique |
 | movement_points_spell | pm | spells | Var. PM (rare au niveau sort) |

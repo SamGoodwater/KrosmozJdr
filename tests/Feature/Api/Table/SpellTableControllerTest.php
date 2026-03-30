@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Api\Table;
 
-use App\Models\User;
 use App\Models\Entity\Spell;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -210,5 +210,23 @@ class SpellTableControllerTest extends TestCase
         $this->assertEquals('A Spell', $data['entities'][0]['name']);
         $this->assertEquals('Z Spell', $data['entities'][1]['name']);
     }
-}
 
+    /**
+     * Tri multi : paramètres sorts[i][field] + sorts[i][dir]
+     */
+    public function test_multi_sort_sorts_parameter_applies_order(): void
+    {
+        $user = User::factory()->create();
+        Spell::factory()->create(['name' => 'B', 'level' => '5', 'state' => 'draft']);
+        Spell::factory()->create(['name' => 'A', 'level' => '5', 'state' => 'playable']);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/spells?format=entities&limit=10&sorts[0][field]=level&sorts[0][dir]=asc&sorts[1][field]=name&sorts[1][dir]=asc');
+
+        $response->assertOk();
+        $data = $response->json();
+        $this->assertCount(2, $data['entities']);
+        $this->assertEquals('A', $data['entities'][0]['name']);
+        $this->assertEquals('B', $data['entities'][1]['name']);
+    }
+}

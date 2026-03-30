@@ -79,9 +79,34 @@ class SpellController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSpellRequest $request)
+    public function store(StoreSpellRequest $request): RedirectResponse
     {
-        //
+        $this->authorize('create', Spell::class);
+
+        $data = $request->validated();
+        $spellTypes = $data['spellTypes'] ?? null;
+        unset($data['spellTypes']);
+
+        if (! array_key_exists('description', $data) || $data['description'] === null) {
+            $data['description'] = '';
+        }
+
+        foreach (['element', 'category', 'powerful'] as $intKey) {
+            if (array_key_exists($intKey, $data) && $data[$intKey] === null) {
+                unset($data[$intKey]);
+            }
+        }
+
+        $data['created_by'] = $request->user()?->id;
+
+        $spell = Spell::create($data);
+
+        if (is_array($spellTypes)) {
+            $spell->spellTypes()->sync($spellTypes);
+        }
+
+        return redirect()->route('entities.spells.index')
+            ->with('success', 'Sort créé avec succès.');
     }
 
     /**

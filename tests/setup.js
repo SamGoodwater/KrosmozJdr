@@ -33,15 +33,17 @@ global.route = vi.fn((name, params) => {
   return `/route/${name}`;
 });
 
-// Mock de window.location
-Object.defineProperty(window, 'location', {
-  value: {
-    origin: 'http://localhost:5173',
-    href: 'http://localhost:5173',
-    pathname: '/',
-  },
-  writable: true,
-});
+// Mock de window.location (jsdom / happy-dom uniquement)
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'location', {
+    value: {
+      origin: 'http://localhost:5173',
+      href: 'http://localhost:5173',
+      pathname: '/',
+    },
+    writable: true,
+  });
+}
 
 // Mock de Inertia router
 global.router = {

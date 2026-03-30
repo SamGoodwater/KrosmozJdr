@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class PanoplyTableController extends Controller
 {
+    use InterpretsEntityTableSort;
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Panoply::class);
@@ -32,9 +34,14 @@ class PanoplyTableController extends Controller
         $limit = (int) $request->integer('limit', 5000);
         $limit = max(1, min($limit, 20000));
 
+        $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
-        if (!in_array($order, ['asc', 'desc'], true)) {
+        if (is_array($sortsPayload) && isset($sortsPayload[0]) && is_array($sortsPayload[0])) {
+            $sort = (string) ($sortsPayload[0]['field'] ?? $sortsPayload[0]['column'] ?? $sort);
+            $order = strtolower((string) ($sortsPayload[0]['dir'] ?? $sortsPayload[0]['order'] ?? $order));
+        }
+        if (! in_array($order, ['asc', 'desc'], true)) {
             $order = 'desc';
         }
 
@@ -50,11 +57,7 @@ class PanoplyTableController extends Controller
         }
 
         $allowedSort = ['id', 'name', 'items_count', 'dofusdb_id', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSort, true)) {
-            $query->orderBy($sort, $order);
-        } else {
-            $query->latest();
-        }
+        $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $rows = $query->limit($limit)->get();
 
@@ -70,6 +73,7 @@ class PanoplyTableController extends Controller
         if ($format === 'entities') {
             $entities = $rows->map(function (Panoply $p) {
                 $createdBy = $p->createdBy;
+
                 return $p->toArray() + [
                     'items_count' => $p->items_count ?? 0,
                     'npcs_count' => $p->npcs_count ?? 0,
@@ -205,5 +209,3 @@ class PanoplyTableController extends Controller
         ]);
     }
 }
-
-

@@ -50,6 +50,12 @@ Pour les tableaux avec **beaucoup de données** (10k+ lignes), le mode client de
 
 **Activation** : `server-side` + `server-base-url` sur `EntityTanStackTable`. L'API doit accepter `page`, `limit`, `sort`, `order`, `search`, `filters[key]` et renvoyer `meta.pagination: { total, perPage, currentPage, lastPage }`. Flux : changement params → refetch → affichage de la page courante.
 
+**Tri multi (serveur)** : en plus de `sort` + `order` (premier critère, rétrocompat), le front envoie `sorts[0][field]`, `sorts[0][dir]`, `sorts[1][field]`, etc. (voir `buildFetchUrl` dans `useTableServerParams.js`). Les contrôleurs `*TableController` appliquent la liste via le trait `InterpretsEntityTableSort` (liste blanche par entité).
+
+**UX clavier (zone tableau)** : le conteneur `TanStackTable` écoute les touches lorsque le focus est dans la zone (ligne `[data-table-row-focus]` ou toolbar). **Espace** : sélectionner / désélectionner la ligne focalisée. **Flèches** : ligne précédente / suivante. **Entrée** : aperçu (`keyboard-intent` `open-view` — modal côté page). **Ctrl+Entrée** : page fiche (`open-show-page`). **Alt+Entrée** ou **Alt+E** : édition rapide (`open-edit`). Autres : Alt+N / Alt+B (pagination), Ctrl+N (`create-request`), Ctrl+A / Ctrl+D / Ctrl+Shift+A (sélection page), **Alt+O** (menu contextuel actions sur la ligne focalisée — même rendu que clic droit ; la touche physique **O** est reconnue via `code: KeyO` pour les claviers AZERTY). Un bouton **clavier** à droite de la densité ouvre une **modale d’aide** (liste complète + rappels des clics Ctrl/Alt). Référence exportée : `useTanStackTableKeyboard.js`. Les pages `Index` traitent `keyboard-intent` et `create-request` (ex. sorts et items).
+
+**Ctrl+S / Cmd+S (formulaires)** : un registre global (`registerSaveShortcut` dans `resources/js/Composables/utils/saveShortcutRegistry.js`) tient une pile : le dernier contexte enregistré (ex. modal d’édition rapide au-dessus d’une page) intercepte seul la sauvegarde. `EntityEditForm` et `EntityQuickEditModal` s’y branchent ; les modals dont le corps reste monté fermé utilisent `shortcuts-active` (ex. `CreateEntityModal` lie à `open`) pour ne pas réagir en arrière-plan.
+
 ## Debug panel (diagnostic)
 
 Le composant `TanStackTable` embarque un **debug panel** (opt-in) pour diagnostiquer rapidement :
@@ -259,7 +265,7 @@ Le skeleton peut être configuré via `config.ui` :
 
 Les checkboxes de sélection sont optimisées pour une meilleure UX :
 - **Taille réduite** : `size="xs"` et `w-8` (au lieu de `sm` et `w-12`)
-- **Affichage intelligent** : Les checkboxes apparaissent sur **toutes les lignes** dès qu'au moins une ligne est sélectionnée (mode `auto`)
+- **Mode `auto`** : les checkboxes sont **toujours** affichées lorsque la sélection est activée (permet la première sélection même si les cellules sont cliquables : liens, actions, chips)
 - **Cohérence visuelle** : Pas de décalage des colonnes, toutes les lignes ont la même structure
 
 ### Layout full-width

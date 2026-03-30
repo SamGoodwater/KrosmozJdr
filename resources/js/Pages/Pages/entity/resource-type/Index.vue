@@ -256,6 +256,7 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
                     entity-type="resourceType"
                     :fields-config="fieldsConfig"
                     :is-updating="true"
+                    :shortcuts-active="editOpen"
                     route-name-base="entities.resource-types"
                     route-param-key="resourceType"
                     @submit="closeEdit"

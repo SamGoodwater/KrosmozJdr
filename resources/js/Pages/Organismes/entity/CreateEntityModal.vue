@@ -325,6 +325,7 @@ const handleCancel = () => {
                     :show-state-toolbar="showStateToolbar"
                     :show-access-levels-in-footer="showAccessLevelsInFooter"
                     :characteristics-group="characteristicsGroup"
+                    :shortcuts-active="open"
                     @submit="handleSubmit"
                     @cancel="handleCancel"
                 />

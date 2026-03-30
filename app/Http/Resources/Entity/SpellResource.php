@@ -38,7 +38,6 @@ class SpellResource extends JsonResource
             'cast_per_target' => $this->cast_per_target,
             'sight_line' => $this->sight_line,
             'number_between_two_cast' => $this->number_between_two_cast,
-            'number_between_two_cast_editable' => $this->number_between_two_cast_editable,
             'element' => $this->element,
             'category' => $this->category,
             'is_magic' => $this->is_magic,

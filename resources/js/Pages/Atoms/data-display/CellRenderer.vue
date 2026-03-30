@@ -25,6 +25,8 @@ import { computed, defineAsyncComponent } from "vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
+import AreaDisplay from "@/Pages/Molecules/entity/spell/AreaDisplay.vue";
+import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CharacteristicInlineGroup from "@/Pages/Molecules/data-display/CharacteristicInlineGroup.vue";
@@ -191,6 +193,20 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
         v-bind="customComponentProps"
     />
 
+    <!-- Types de sort (badges icône + teinte) -->
+    <span
+        v-else-if="type === 'spell_types'"
+        class="inline-flex flex-wrap items-center gap-1"
+        data-no-row-select
+    >
+        <SpellTypeBadge
+            v-for="(it, idx) in params.items || []"
+            :key="String(it.id ?? idx)"
+            :name="it.name"
+            :color="it.color"
+        />
+    </span>
+
     <!-- Types standards -->
     <span v-else-if="type === 'badge'">
         <span v-if="isBooleanBadge" class="inline-flex items-center justify-center">
@@ -330,6 +346,12 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
         v-else-if="type === 'element'"
         :element="params.element ?? value ?? 0"
         size="sm"
+    />
+
+    <!-- area : zone d'effet (icône + court + tooltip schéma) -->
+    <AreaDisplay
+        v-else-if="type === 'area'"
+        :area="params.area != null ? String(params.area) : String(value ?? '')"
     />
 
     <!-- spell_effects : effet avec filtre degré D1 / D2+ (Sort) -->

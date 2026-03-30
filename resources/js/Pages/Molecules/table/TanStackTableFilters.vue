@@ -15,6 +15,7 @@ import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import RadioCore from "@/Pages/Atoms/data-input/RadioCore.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
+import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
 import { computed, unref, ref } from "vue";
 import { buildSelectOptionBadgeProps } from "@/Utils/Entity/selectOptionBadge.js";
 
@@ -79,6 +80,7 @@ const getOptionBadgeCfg = (col) => {
     return cfg && typeof cfg === "object" ? cfg : null;
 };
 const isOptionBadgeEnabled = (col) => Boolean(getOptionBadgeCfg(col)?.enabled);
+const isSpellTypeBadgeEnabled = (col) => Boolean(getFilterUi(col).spellTypeBadge);
 const optionBadgeProps = (col, opt) => {
     const cfg = getOptionBadgeCfg(col);
     if (!cfg) return null;
@@ -248,14 +250,20 @@ const activeBadges = computed(() => {
                 if (!vv) continue;
                 const opt = (getOptions(col) || []).find((o) => String(o.value) === vv);
                 const display = opt?.label ? String(opt.label) : vv;
-                        const badgeCfg = isOptionBadgeEnabled(col) ? optionBadgeProps(col, opt || { value: vv, label: display }) : null;
+                const badgeCfg = isOptionBadgeEnabled(col) ? optionBadgeProps(col, opt || { value: vv, label: display }) : null;
+                const stBadge =
+                    !badgeCfg && isSpellTypeBadgeEnabled(col)
+                        ? { name: display, color: opt?.color || null }
+                        : null;
                 badges.push({
                     key: `${f.id}:${vv}`,
                     filterId: f.id,
                     type: "multi",
                     value: vv,
                     label: `${col.label}: ${display}`,
-                            badge: badgeCfg ? { ...badgeCfg } : null,
+                    badge: badgeCfg ? { ...badgeCfg } : null,
+                    spellTypeBadge: stBadge,
+                    filterColumnLabel: getFilterLabel(col),
                 });
             }
             continue;
@@ -303,6 +311,10 @@ const activeBadges = computed(() => {
         const opt = (getOptions(col) || []).find((o) => String(o.value) === vv);
         const display = opt?.label ? String(opt.label) : vv;
         const badgeCfg = isOptionBadgeEnabled(col) ? optionBadgeProps(col, opt || { value: vv, label: display }) : null;
+        const stBadge =
+            !badgeCfg && isSpellTypeBadgeEnabled(col)
+                ? { name: display, color: opt?.color || null }
+                : null;
         badges.push({
             key: `${f.id}`,
             filterId: f.id,
@@ -310,6 +322,8 @@ const activeBadges = computed(() => {
             value: vv,
             label: `${getFilterLabel(col)}: ${display}`,
             badge: badgeCfg ? { ...badgeCfg } : null,
+            spellTypeBadge: stBadge,
+            filterColumnLabel: getFilterLabel(col),
         });
     }
 
@@ -501,6 +515,12 @@ const clearAllActiveFilters = () => {
                                                 {{ opt.label }}
                                             </Badge>
                                         </span>
+                                        <SpellTypeBadge
+                                            v-else-if="isSpellTypeBadgeEnabled(col)"
+                                            :name="String(opt.label ?? opt.value ?? '')"
+                                            :color="opt.color || null"
+                                            size="sm"
+                                        />
                                         <span v-else class="text-sm">{{ opt.label }}</span>
                                     </label>
                                 </div>
@@ -643,6 +663,12 @@ const clearAllActiveFilters = () => {
                                                 {{ opt.label }}
                                             </Badge>
                                         </span>
+                                        <SpellTypeBadge
+                                            v-else-if="isSpellTypeBadgeEnabled(col)"
+                                            :name="String(opt.label ?? opt.value ?? '')"
+                                            :color="opt.color || null"
+                                            size="sm"
+                                        />
                                         <span v-else class="text-sm">{{ opt.label }}</span>
                                     </label>
                                 </div>
@@ -763,7 +789,19 @@ const clearAllActiveFilters = () => {
                     :key="b.key"
                     class="inline-flex items-center gap-1"
                 >
+                    <div
+                        v-if="b.spellTypeBadge"
+                        class="inline-flex max-w-88 min-w-0 items-center gap-1.5 rounded-lg border border-base-300/80 bg-base-100/80 px-1.5 py-0.5"
+                    >
+                        <span class="truncate text-xs opacity-80">{{ b.filterColumnLabel }} :</span>
+                        <SpellTypeBadge
+                            :name="b.spellTypeBadge.name"
+                            :color="b.spellTypeBadge.color"
+                            size="sm"
+                        />
+                    </div>
                     <Badge
+                        v-else
                         :color="b.badge?.color || uiColor"
                         :auto-label="b.badge?.autoLabel || ''"
                         :auto-scheme="b.badge?.autoScheme || undefined"

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Effect;
 
+use App\Rules\ValidAreaNotation;
 use App\Services\Effect\EffectTextSanitizer;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,7 +25,7 @@ class StoreEffectRequest extends FormRequest
             'slug' => 'nullable|string|max:64|unique:effects,slug',
             'description' => 'nullable|string|max:65535',
             'target_type' => 'nullable|string|in:direct,trap,glyph',
-            'initial_area' => 'nullable|string|max:64',
+            'initial_area' => ['nullable', 'string', 'max:64', new ValidAreaNotation],
             'initial_degree_slug' => 'nullable|string|max:64',
             'initial_required_creature_level' => 'nullable|integer|min:0',
         ];

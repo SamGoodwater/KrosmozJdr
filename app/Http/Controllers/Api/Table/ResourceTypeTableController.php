@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class ResourceTypeTableController extends Controller
 {
+    use InterpretsEntityTableSort;
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', ResourceType::class);
@@ -28,7 +30,7 @@ class ResourceTypeTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        if (!array_key_exists('decision', $filters) && $request->has('decision')) {
+        if (! array_key_exists('decision', $filters) && $request->has('decision')) {
             $filters['decision'] = $request->get('decision');
         }
 
@@ -37,9 +39,14 @@ class ResourceTypeTableController extends Controller
         $limit = (int) $request->integer('limit', 5000);
         $limit = max(1, min($limit, 20000));
 
+        $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
-        if (!in_array($order, ['asc', 'desc'], true)) {
+        if (is_array($sortsPayload) && isset($sortsPayload[0]) && is_array($sortsPayload[0])) {
+            $sort = (string) ($sortsPayload[0]['field'] ?? $sortsPayload[0]['column'] ?? $sort);
+            $order = strtolower((string) ($sortsPayload[0]['dir'] ?? $sortsPayload[0]['order'] ?? $order));
+        }
+        if (! in_array($order, ['asc', 'desc'], true)) {
             $order = 'desc';
         }
 
@@ -60,11 +67,7 @@ class ResourceTypeTableController extends Controller
         }
 
         $allowedSort = ['id', 'name', 'dofusdb_type_id', 'decision', 'seen_count', 'last_seen_at', 'resources_count', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSort, true)) {
-            $query->orderBy($sort, $order);
-        } else {
-            $query->latest();
-        }
+        $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $rows = $query->limit($limit)->get();
 
@@ -252,5 +255,3 @@ class ResourceTypeTableController extends Controller
         ]);
     }
 }
-
-

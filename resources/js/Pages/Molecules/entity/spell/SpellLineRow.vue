@@ -5,18 +5,21 @@
  * @description
  * Effets via `resolveSpellEffectsDisplayCell` : résumé API (`SpellEffectChips`) ou fallback `effect` (chips).
  */
-import { ref, computed, onUnmounted } from "vue";
+import { ref, computed, onUnmounted, nextTick } from "vue";
+import { Link } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import {
     resolveSpellEffectsDisplayCell,
     spellEffectsCellHasContent,
 } from "@/Composables/entity/useSpellEffectsDisplayCell";
+import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
 import { getEntityCharacteristicsByDbColumn } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
@@ -31,7 +34,21 @@ const props = defineProps({
     entityType: { type: String, default: "spells" },
 });
 
-const emit = defineEmits(["row-click", "toggle-select", "action"]);
+const emit = defineEmits(["row-click", "row-dblclick", "toggle-select", "action"]);
+
+const isInteractiveTarget = (event) => {
+    const el = event?.target;
+    if (!el || typeof el.closest !== "function") return false;
+    return Boolean(
+        el.closest(
+            'a,button,input,select,textarea,[role="button"],[role="link"],[contenteditable="true"],[data-no-row-select]',
+        ),
+    );
+};
+
+const handleDoubleClick = (e) => {
+    if (!isInteractiveTarget(e)) emit("row-dblclick", props.row);
+};
 
 const entity = computed(() => props.row?.rowParams?.entity ?? props.row);
 
@@ -71,11 +88,13 @@ const effectDisplayCell = computed(() =>
 );
 const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
 
+const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spellTypesCell.value));
+
 const byDbColumn = computed(() => getEntityCharacteristicsByDbColumn(props.tableMeta, "spell"));
 const paMeta = computed(() => byDbColumn.value?.pa || null);
 const poMeta = computed(() => byDbColumn.value?.po || byDbColumn.value?.po_max || null);
 
-const handleRowClick = () => emit("row-click", props.row);
+const handleRowClick = (e) => emit("row-click", props.row, e);
 
 const contextMenuVisible = ref(false);
 const contextMenuPosition = ref({ x: 0, y: 0 });
@@ -88,6 +107,7 @@ const handleContextMenu = (e) => {
 };
 const closeContextMenu = () => {
     contextMenuVisible.value = false;
+    nextTick(() => focusTableRowById(props.row?.id));
 };
 const handleContextAction = (actionKey) => {
     closeContextMenu();
@@ -103,11 +123,10 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
     <div
         class="relative rounded-box border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
-        role="button"
-        tabindex="0"
+        data-row-contextmenu-target
         @click="handleRowClick"
+        @dblclick="handleDoubleClick"
         @contextmenu="handleContextMenu"
-        @keydown.enter.space.prevent="handleRowClick"
     >
         <div class="absolute top-2 left-2 z-10" @click.stop>
             <EntityUsableDot :state="stateValue" />
@@ -130,13 +149,14 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                     <div class="flex items-center gap-2 min-w-0 flex-1">
                         <LevelBadge v-if="levelValue != null" :level="levelValue" size="sm" class="shrink-0" />
                         <div class="min-w-0 flex-1">
-                            <span
+                            <Link
                                 v-if="nameCell?.type === 'route' && nameCell?.params?.href"
-                                class="font-semibold truncate block text-base-content hover:text-base-content no-underline cursor-pointer link link-neutral link-hover"
-                                @click.prevent
+                                :href="nameCell.params.href"
+                                class="font-semibold truncate block text-base-content hover:text-base-content link link-neutral link-hover"
+                                @click.stop
                             >
                                 {{ nameCell.value || "—" }}
-                            </span>
+                            </Link>
                             <span v-else class="font-semibold truncate block">{{ nameCell?.value || "—" }}</span>
                         </div>
                     </div>
@@ -172,7 +192,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                         class="inline-flex items-center"
                     />
                     <CellRenderer
-                        v-if="spellTypesCell?.value && spellTypesCell.value !== '-' && spellTypesCell.value !== '—'"
+                        v-if="showSpellTypesCell"
                         :cell="spellTypesCell"
                         class="inline-flex items-center"
                     />
@@ -237,6 +257,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                 :context="{ inPanel: false }"
                 :context-position="contextMenuPosition"
                 :context-visible="contextMenuVisible"
+                @close="closeContextMenu"
                 @action="handleContextAction"
             />
         </Teleport>

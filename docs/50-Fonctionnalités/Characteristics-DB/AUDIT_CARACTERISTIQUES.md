@@ -18,7 +18,7 @@ Ce document synthétise une **vérification approfondie** des données de caract
 | **helper** | 106/106 renseignés |
 | **descriptions** | Complétées au seed via `characteristic_icons_colors.php` pour les principales |
 | **icon / color** | Complétés au seed via `characteristic_icons_colors.php` (icônes dans `storage/app/public/images/icons/characteristics/`) |
-| **type** | 102 × `int`, 4 × `bool` (`sight_line_spell`, `is_magic_spell`, `po_editable_spell`, `number_between_two_cast_editable_spell`) |
+| **type** | 102 × `int`, 3 × `bool` (`sight_line_spell`, `is_magic_spell`, `po_editable_spell`) |
 | **sort_order** | Présent pour toutes les entrées, pas de doublon par groupe |
 | **unit** | 7 entrées avec unité (ex. kamas, pods) |
 | **linked_to_key** | 1 entrée liée : `level_spell` → `level_creature` |

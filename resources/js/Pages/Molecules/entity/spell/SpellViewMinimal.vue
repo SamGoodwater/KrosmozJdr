@@ -27,6 +27,7 @@ import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import SpellSummonMonsterInline from "@/Pages/Molecules/entity/spell/SpellSummonMonsterInline.vue";
 import { Spell } from "@/Models/Entity/Spell";
+import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
 
 const props = defineProps({
     spell: {
@@ -57,6 +58,7 @@ const cellOpts = () => ({ size: "xs", context: "minimal" });
 const elementCell = computed(() => entity.value?.toCell?.("element", cellOpts()) ?? null);
 const categoryCell = computed(() => entity.value?.toCell?.("category", cellOpts()) ?? null);
 const spellTypesCell = computed(() => entity.value?.toCell?.("spell_types", cellOpts()) ?? null);
+const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spellTypesCell.value));
 
 const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
 
@@ -253,7 +255,7 @@ const handleAction = async (actionKey) => {
                                 </span>
                             </Tooltip>
                             <Tooltip
-                                v-if="spellTypesCell?.value && spellTypesCell.value !== '-' && spellTypesCell.value !== '—'"
+                                v-if="showSpellTypesCell"
                                 :content="fieldUiTooltip('spell_types')"
                                 placement="top"
                             >
@@ -396,7 +398,7 @@ const handleAction = async (actionKey) => {
                                 </span>
                             </Tooltip>
                             <Tooltip
-                                v-if="spellTypesCell?.value && spellTypesCell.value !== '-' && spellTypesCell.value !== '—'"
+                                v-if="showSpellTypesCell"
                                 :content="fieldUiTooltip('spell_types')"
                                 placement="top"
                             >

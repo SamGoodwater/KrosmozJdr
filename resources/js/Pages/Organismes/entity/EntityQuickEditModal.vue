@@ -15,7 +15,8 @@
  * @emit close - Événement émis lors de la fermeture
  * @emit submit - Événement émis lors de la soumission du formulaire avec le payload
  */
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onUnmounted } from 'vue';
+import { registerSaveShortcut } from '@/Composables/utils/saveShortcutRegistry';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -64,16 +65,6 @@ const QuickEditComponent = computed(() => {
     return resolveEntityViewComponentSync(props.entityType, 'quickedit');
 });
 
-// Réinitialiser quand le modal s'ouvre
-watch(() => props.open, (isOpen) => {
-    if (isOpen && quickEditRef.value?.resetFromSelection) {
-        // Petit délai pour s'assurer que le composant est monté
-        setTimeout(() => {
-            quickEditRef.value?.resetFromSelection();
-        }, 100);
-    }
-});
-
 const handleClose = () => {
     emit('close');
 };
@@ -105,6 +96,33 @@ const getEntityName = () => {
 // Vérifier si des champs ont été modifiés
 const canSubmit = computed(() => {
     return quickEditRef.value?.modifiedFieldsCount > 0;
+});
+
+let unregisterSaveShortcut = () => {};
+
+watch(
+    () => props.open,
+    (isOpen) => {
+        unregisterSaveShortcut();
+        unregisterSaveShortcut = () => {};
+        if (isOpen && quickEditRef.value?.resetFromSelection) {
+            setTimeout(() => {
+                quickEditRef.value?.resetFromSelection();
+            }, 100);
+        }
+        if (isOpen) {
+            unregisterSaveShortcut = registerSaveShortcut(() => {
+                if (canSubmit.value) {
+                    handleSubmit();
+                }
+            });
+        }
+    },
+    { immediate: true },
+);
+
+onUnmounted(() => {
+    unregisterSaveShortcut();
 });
 </script>
 

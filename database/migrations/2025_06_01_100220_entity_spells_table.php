@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('cast_per_target')->default('0');
             $table->boolean('sight_line')->default(true);
             $table->string('number_between_two_cast')->default('0');
-            $table->boolean('number_between_two_cast_editable')->default(true);
             $table->integer('element')->default(0);
             $table->integer('category')->default(0);
             $table->boolean('is_magic')->default(true);

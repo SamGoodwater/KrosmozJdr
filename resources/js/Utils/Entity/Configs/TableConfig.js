@@ -186,6 +186,14 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
       f.ui = ui;
     }
 
+    const spellTypesFilterLike = fieldKey === 'spell_types' || f?.id === 'types';
+    if (spellTypesFilterLike) {
+      const ui = f.ui && typeof f.ui === 'object' ? { ...f.ui } : {};
+      ui.spellTypeBadge = true;
+      ui.optionBadge = { enabled: false };
+      f.ui = ui;
+    }
+
     const resourceTypeLike =
       fieldKey === "resource_type" ||
       fieldKey === "item_type" ||
@@ -199,7 +207,7 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
       f?.id === "consumable_type_id" ||
       f?.id === "monster_race_id" ||
       f?.id === "types";
-    if (resourceTypeLike) {
+    if (resourceTypeLike && !spellTypesFilterLike) {
       const ui = (f.ui && typeof f.ui === 'object') ? { ...f.ui } : {};
       const optionBadge = (ui.optionBadge && typeof ui.optionBadge === 'object') ? { ...ui.optionBadge } : {};
       if (typeof optionBadge.enabled === 'undefined') optionBadge.enabled = true;

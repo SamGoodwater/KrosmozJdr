@@ -31,6 +31,7 @@ onMounted(() => setPageTitle("Types de sorts"));
             list-url="/api/types/spell-types"
             bulk-url="/api/types/spell-types/bulk"
             delete-url-base="/api/types/spell-types"
+            :spell-type-name-cell="true"
         />
     </Container>
 </template>

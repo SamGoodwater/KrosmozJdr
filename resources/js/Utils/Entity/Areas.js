@@ -67,3 +67,64 @@ export function getAreaIcon(area) {
 export function getAreaShapeLabel(shape) {
   return AREA_SHAPE_LABELS[shape ?? ''] ?? String(shape ?? '');
 }
+
+/**
+ * Libellé court pour affichage tabulaire (icône + texte compact).
+ *
+ * @param {string|null|undefined} area - Notation zone
+ * @returns {string}
+ */
+export function getAreaShortLabel(area) {
+  if (area == null || typeof area !== 'string') return '';
+  const raw = area.trim();
+  if (!raw) return '';
+
+  const shape = getAreaShape(area);
+  if (!shape) {
+    if (raw.startsWith('shape-')) {
+      return raw.length > 14 ? `${raw.slice(0, 12)}…` : raw;
+    }
+    return raw.length > 14 ? `${raw.slice(0, 12)}…` : raw;
+  }
+
+  const dashIdx = raw.indexOf('-');
+  const params = dashIdx >= 0 ? raw.slice(dashIdx + 1) : '';
+
+  switch (shape) {
+    case 'point':
+      return '1';
+    case 'line': {
+      const m = /^1x(\d+)$/.exec(params);
+      return m ? `L${m[1]}` : params ? `L ${params}` : 'L';
+    }
+    case 'cross': {
+      const m = /^(\d+)-(\d+)$/.exec(params);
+      return m ? `×${m[1]}-${m[2]}` : params ? `× ${params}` : '×';
+    }
+    case 'circle': {
+      const m = /^(\d+)-(\d+)$/.exec(params);
+      return m ? `○${m[1]}-${m[2]}` : params ? `○ ${params}` : '○';
+    }
+    case 'rect': {
+      const m = /^(\d+)x(\d+)$/.exec(params);
+      return m ? `${m[1]}×${m[2]}` : params ? `▭ ${params}` : '▭';
+    }
+    default:
+      return raw;
+  }
+}
+
+/**
+ * Ligne récapitulative pour infobulle (forme lisible + notation complète).
+ *
+ * @param {string|null|undefined} area
+ * @returns {string}
+ */
+export function getAreaSummaryLine(area) {
+  if (area == null || typeof area !== 'string') return '';
+  const raw = area.trim();
+  if (!raw) return '';
+  const shape = getAreaShape(area);
+  const name = getAreaShapeLabel(shape);
+  return name ? `${name} — ${raw}` : raw;
+}

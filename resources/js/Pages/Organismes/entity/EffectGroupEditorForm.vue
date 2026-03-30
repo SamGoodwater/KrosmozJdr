@@ -8,8 +8,8 @@ import { useForm } from '@inertiajs/vue3';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
 import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import { getAreaIcon } from '@/Utils/Entity/Areas';
+import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
+import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
 
 const props = defineProps({
     options: {
@@ -216,6 +216,14 @@ function normalizeCreatureLevel(raw) {
 }
 
 function submitGroup() {
+    for (let i = 0; i < degreeForms.value.length; i += 1) {
+        const raw = degreeForms.value[i]?.area;
+        if (raw != null && String(raw).trim() !== '' && !isValidAreaNotation(raw)) {
+            activeTab.value = i;
+            return;
+        }
+    }
+
     groupSaveForm.common = {
         name: common.name || null,
         description: common.description || null,
@@ -239,6 +247,15 @@ function getActiveEffectId() {
 }
 
 const saving = computed(() => groupSaveForm.processing);
+
+/** Validation du champ zone pour l’onglet degré actif (affiche une erreur si rempli mais invalide). */
+const activeAreaValidation = computed(() => {
+    const raw = degreeForms.value[activeTab.value]?.area;
+    if (raw == null || String(raw).trim() === '') return undefined;
+    return isValidAreaNotation(raw)
+        ? undefined
+        : { state: 'error', message: `Notation invalide. ${AREA_NOTATION_HELP}` };
+});
 
 defineExpose({ getActiveEffectId, degreeForms, activeTab, saving });
 </script>
@@ -309,23 +326,23 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving });
                                     label="Zone (ce degré)"
                                     :name="'area_d' + degreeForms[activeTab].degree"
                                     class="flex-1"
+                                    :validation="activeAreaValidation"
                                 />
-                                <Icon
+                                <AreaDisplay
                                     v-if="degreeForms[activeTab].area?.trim()"
-                                    :source="getAreaIcon(degreeForms[activeTab].area)"
-                                    :alt="degreeForms[activeTab].area"
-                                    size="sm"
-                                    class="shrink-0 mb-1 opacity-70"
+                                    :area="degreeForms[activeTab].area"
+                                    icon-size="sm"
+                                    class="shrink-0 mb-1"
                                 />
                             </div>
                             <p class="text-xs text-base-content/70 leading-relaxed">
                                 <strong>Notation</strong> <code class="text-[0.7rem]">forme[-paramètres]</code> :
                                 <code class="text-[0.7rem]">point</code> ;
-                                <code class="text-[0.7rem]">line-1xL</code> (ligne, L = longueur) ;
-                                <code class="text-[0.7rem]">cross-a-b</code> ou <code class="text-[0.7rem]">circle-a-b</code>
-                                (deux tailles : min puis max ; ex. <code class="text-[0.7rem]">circle-0-2</code> plein,
-                                <code class="text-[0.7rem]">circle-1-2</code> anneau) ;
-                                <code class="text-[0.7rem]">rect-LxH</code>.
+                                <code class="text-[0.7rem]">line-1xL</code> ;
+                                <code class="text-[0.7rem]">cross-a-b</code> / <code class="text-[0.7rem]">circle-a-b</code> (a≤b) ;
+                                <code class="text-[0.7rem]">rect-WxH</code> ;
+                                forme DofusDB non mappée : <code class="text-[0.7rem]">shape-ID</code> ou
+                                <code class="text-[0.7rem]">shape-ID-p1-p2</code>.
                             </p>
                         </div>
                         <div

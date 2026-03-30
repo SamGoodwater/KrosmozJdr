@@ -74,7 +74,7 @@ round(min(30, max(1, 3 + 19 * pow(max(1,[d])/200, 0.5))))
 
 ---
 
-### 3.4 sight_line_spell, is_magic_spell, range_editable_spell, number_between_two_cast_editable_spell
+### 3.4 sight_line_spell, is_magic_spell, range_editable_spell
 
 **Règles** : champs 0/1 (oui/non).
 

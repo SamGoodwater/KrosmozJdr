@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class SpellTableController extends Controller
 {
+    use InterpretsEntityTableSort;
+
     public function __construct(
         private readonly EffectResolutionService $effectResolutionService,
         private readonly SpellEffectDefinitionsSerializer $spellEffectDefinitionsSerializer
@@ -271,8 +273,13 @@ class SpellTableController extends Controller
         $page = max(1, (int) $request->integer('page', 1));
         $offset = ($page - 1) * $limit;
 
+        $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
+        if (is_array($sortsPayload) && isset($sortsPayload[0]) && is_array($sortsPayload[0])) {
+            $sort = (string) ($sortsPayload[0]['field'] ?? $sortsPayload[0]['column'] ?? $sort);
+            $order = strtolower((string) ($sortsPayload[0]['dir'] ?? $sortsPayload[0]['order'] ?? $order));
+        }
         if (! in_array($order, ['asc', 'desc'], true)) {
             $order = 'desc';
         }
@@ -314,11 +321,7 @@ class SpellTableController extends Controller
         }
 
         $allowedSort = ['id', 'name', 'level', 'pa', 'po', 'area', 'element', 'category', 'dofusdb_id', 'created_at', 'updated_at', 'state'];
-        if (in_array($sort, $allowedSort, true)) {
-            $query->orderBy($sort, $order);
-        } else {
-            $query->latest();
-        }
+        $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $total = $query->count();
         $lastPage = (int) max(1, ceil($total / $limit));
@@ -343,8 +346,12 @@ class SpellTableController extends Controller
             'area' => collect(AreaConstants::SHAPES)
                 ->map(fn (string $shape) => ['value' => $shape, 'label' => AreaConstants::getShapeLabel($shape)])
                 ->values()->all(),
-            'types' => SpellType::query()->orderBy('name')->get(['id', 'name'])
-                ->map(fn (SpellType $t) => ['value' => (string) $t->id, 'label' => $t->name])
+            'types' => SpellType::query()->orderBy('name')->get(['id', 'name', 'color'])
+                ->map(fn (SpellType $t) => [
+                    'value' => (string) $t->id,
+                    'label' => $t->name,
+                    'color' => $t->color,
+                ])
                 ->values()->all(),
             'pa' => [
                 ['value' => '1', 'label' => '1'],
@@ -422,7 +429,6 @@ class SpellTableController extends Controller
                     'cast_per_target' => $sp->cast_per_target,
                     'sight_line' => (bool) $sp->sight_line,
                     'number_between_two_cast' => $sp->number_between_two_cast,
-                    'number_between_two_cast_editable' => (bool) $sp->number_between_two_cast_editable,
                     'element' => $sp->element,
                     'category' => $sp->category,
                     'is_magic' => (bool) $sp->is_magic,
@@ -432,7 +438,11 @@ class SpellTableController extends Controller
                     'write_level' => (int) ($sp->write_level ?? 0),
                     'image' => $sp->image,
                     'auto_update' => (bool) $sp->auto_update,
-                    'spellTypes' => $sp->spellTypes?->map(fn ($t) => ['id' => $t->id, 'name' => $t->name])->values()->all() ?? [],
+                    'spellTypes' => $sp->spellTypes?->map(fn ($t) => [
+                        'id' => $t->id,
+                        'name' => $t->name,
+                        'color' => $t->color,
+                    ])->values()->all() ?? [],
                     'spell_types_count' => (int) ($sp->spell_types_count ?? 0),
                     'breeds_count' => (int) ($sp->breeds_count ?? 0),
                     'creatures_count' => (int) ($sp->creatures_count ?? 0),
@@ -586,7 +596,6 @@ class SpellTableController extends Controller
                         'cast_per_target' => $sp->cast_per_target,
                         'sight_line' => (bool) $sp->sight_line,
                         'number_between_two_cast' => $sp->number_between_two_cast,
-                        'number_between_two_cast_editable' => (bool) $sp->number_between_two_cast_editable,
                         'element' => $sp->element,
                         'category' => $sp->category,
                         'is_magic' => (bool) $sp->is_magic,
@@ -596,7 +605,11 @@ class SpellTableController extends Controller
                         'write_level' => (int) ($sp->write_level ?? 0),
                         'image' => $sp->image,
                         'auto_update' => (bool) $sp->auto_update,
-                        'spellTypes' => $sp->spellTypes?->map(fn ($t) => ['id' => $t->id, 'name' => $t->name])->values()->all() ?? [],
+                        'spellTypes' => $sp->spellTypes?->map(fn ($t) => [
+                            'id' => $t->id,
+                            'name' => $t->name,
+                            'color' => $t->color,
+                        ])->values()->all() ?? [],
                         'spell_types_count' => (int) ($sp->spell_types_count ?? 0),
                         'breeds_count' => (int) ($sp->breeds_count ?? 0),
                         'creatures_count' => (int) ($sp->creatures_count ?? 0),

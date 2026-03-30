@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class CampaignTableController extends Controller
 {
+    use InterpretsEntityTableSort;
+
     private const STATE_LABELS = [
         Campaign::STATE_RAW => 'Brut',
         Campaign::STATE_DRAFT => 'Brouillon',
@@ -37,7 +39,7 @@ class CampaignTableController extends Controller
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
         foreach (['state', 'progress_state', 'is_public', 'read_level', 'write_level'] as $k) {
-            if (!array_key_exists($k, $filters) && $request->has($k)) {
+            if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
         }
@@ -47,9 +49,14 @@ class CampaignTableController extends Controller
         $limit = (int) $request->integer('limit', 5000);
         $limit = max(1, min($limit, 20000));
 
+        $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
-        if (!in_array($order, ['asc', 'desc'], true)) {
+        if (is_array($sortsPayload) && isset($sortsPayload[0]) && is_array($sortsPayload[0])) {
+            $sort = (string) ($sortsPayload[0]['field'] ?? $sortsPayload[0]['column'] ?? $sort);
+            $order = strtolower((string) ($sortsPayload[0]['dir'] ?? $sortsPayload[0]['order'] ?? $order));
+        }
+        if (! in_array($order, ['asc', 'desc'], true)) {
             $order = 'desc';
         }
 
@@ -108,11 +115,7 @@ class CampaignTableController extends Controller
         }
 
         $allowedSort = ['id', 'name', 'slug', 'progress_state', 'state', 'read_level', 'write_level', 'is_public', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSort, true)) {
-            $query->orderBy($sort, $order);
-        } else {
-            $query->latest();
-        }
+        $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $rows = $query->limit($limit)->get();
 
@@ -151,6 +154,7 @@ class CampaignTableController extends Controller
         if ($format === 'entities') {
             $entities = $rows->map(function (Campaign $c) {
                 $createdBy = $c->createdBy;
+
                 return [
                     'id' => $c->id,
                     'name' => $c->name,
@@ -310,5 +314,3 @@ class CampaignTableController extends Controller
         ]);
     }
 }
-
-

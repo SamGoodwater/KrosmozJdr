@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class ItemTableController extends Controller
 {
+    use InterpretsEntityTableSort;
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Item::class);
@@ -30,7 +32,7 @@ class ItemTableController extends Controller
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
         foreach (['level', 'rarity', 'item_type_id', 'state'] as $k) {
-            if (!array_key_exists($k, $filters) && $request->has($k)) {
+            if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
         }
@@ -40,9 +42,14 @@ class ItemTableController extends Controller
         $limit = (int) $request->integer('limit', 5000);
         $limit = max(1, min($limit, 20000));
 
+        $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
-        if (!in_array($order, ['asc', 'desc'], true)) {
+        if (is_array($sortsPayload) && isset($sortsPayload[0]) && is_array($sortsPayload[0])) {
+            $sort = (string) ($sortsPayload[0]['field'] ?? $sortsPayload[0]['column'] ?? $sort);
+            $order = strtolower((string) ($sortsPayload[0]['dir'] ?? $sortsPayload[0]['order'] ?? $order));
+        }
+        if (! in_array($order, ['asc', 'desc'], true)) {
             $order = 'desc';
         }
 
@@ -76,11 +83,7 @@ class ItemTableController extends Controller
         }
 
         $allowedSort = ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'state', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSort, true)) {
-            $query->orderBy($sort, $order);
-        } else {
-            $query->latest();
-        }
+        $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $rows = $query->limit($limit)->get();
 
@@ -242,8 +245,8 @@ class ItemTableController extends Controller
                         'value' => $it->effect ?: ($it->bonus ?: '-'),
                         'params' => [
                             'sortValue' => (string) ($it->effect ?? $it->bonus ?? ''),
-                            'searchValue' => trim((string) (($it->effect ?? '') . ' ' . ($it->bonus ?? ''))),
-                            'filterValue' => trim((string) (($it->effect ?? '') . ' ' . ($it->bonus ?? ''))),
+                            'searchValue' => trim((string) (($it->effect ?? '').' '.($it->bonus ?? ''))),
+                            'filterValue' => trim((string) (($it->effect ?? '').' '.($it->bonus ?? ''))),
                         ],
                     ],
                     'rarity' => [
@@ -355,5 +358,3 @@ class ItemTableController extends Controller
         ]);
     }
 }
-
-

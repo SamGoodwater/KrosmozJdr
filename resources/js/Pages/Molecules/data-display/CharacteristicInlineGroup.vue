@@ -26,7 +26,11 @@ const props = defineProps({
 });
 
 const chipItems = computed(() =>
-    (props.items || []).filter((item) => item && item.value != null && item.value !== "")
+    (props.items || []).filter((item) => {
+        if (!item) return false;
+        if (item.area != null && String(item.area).trim() !== '') return true;
+        return item.value != null && item.value !== '';
+    }),
 );
 
 const safeMaxRows = computed(() => {

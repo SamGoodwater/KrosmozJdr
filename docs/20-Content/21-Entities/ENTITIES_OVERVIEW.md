@@ -199,7 +199,6 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | cast_per_target                  | string   | Lancers/cible (default: 0)            |
 | sight_line                       | boolean  | Ligne de vue (default: true)          |
 | number_between_two_cast          | string   | Intervalle entre lancers (default: 0) |
-| number_between_two_cast_editable | boolean  | Intervalle éditable (default: true)   |
 | element                          | integer  | Élément (default: 0)                  |
 | category                         | integer  | Catégorie (default: 0)                |
 | is_magic                         | boolean  | Magique ? (default: true)             |

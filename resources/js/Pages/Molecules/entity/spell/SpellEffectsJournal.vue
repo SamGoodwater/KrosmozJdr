@@ -5,8 +5,7 @@
  * @props {Array<Object>} definitions - `effects_definitions` (SpellResource)
  */
 import { computed, ref, watch } from 'vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import { getAreaIcon, getAreaShape, getAreaShapeLabel } from '@/Utils/Entity/Areas';
+import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 import { segmentSpellEffectRows } from '@/Composables/entity/useSpellEffectRowSegments';
 import SpellSubEffectTypeRouter from '@/Pages/Molecules/entity/spell/SpellSubEffectTypeRouter.vue';
 
@@ -120,13 +119,7 @@ const hasDefinitions = computed(() => Array.isArray(props.definitions) && props.
                         v-if="deg.area"
                         class="flex flex-wrap items-center gap-2 text-sm text-primary-200"
                     >
-                        <Icon
-                            :source="getAreaIcon(deg.area)"
-                            :alt="getAreaShapeLabel(getAreaShape(deg.area))"
-                            size="sm"
-                        />
-                        <span class="font-medium">{{ getAreaShapeLabel(getAreaShape(deg.area)) }}</span>
-                        <span class="text-primary-400 font-mono text-xs break-all">{{ deg.area }}</span>
+                        <AreaDisplay :area="deg.area" icon-size="sm" />
                     </div>
 
                     <div class="space-y-0">
