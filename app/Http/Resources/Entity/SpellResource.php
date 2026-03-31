@@ -48,6 +48,7 @@ class SpellResource extends JsonResource
             'save_dc_formula' => $this->save_dc_formula,
             'save_success_note' => $this->save_success_note,
             'auto_success_if_willing_target' => (bool) ($this->auto_success_if_willing_target ?? false),
+            'allows_reaction' => (bool) ($this->allows_reaction ?? false),
             'is_ritual' => $this->when(
                 array_key_exists('is_ritual', $this->resource->getAttributes()),
                 (bool) $this->resource->getAttribute('is_ritual')

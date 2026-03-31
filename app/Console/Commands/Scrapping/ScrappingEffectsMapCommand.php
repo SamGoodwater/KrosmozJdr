@@ -36,7 +36,7 @@ class ScrappingEffectsMapCommand extends Command
 
     /** Sous-effets Krosmoz connus (slug). */
     private const SUB_EFFECTS = [
-        'frapper', 'soigner', 'protéger', 'voler-vie', 'booster', 'retirer',
+        'frapper', 'soigner', 'protéger', 'booster', 'retirer',
         'voler-caracteristiques', 'invoquer', 'déplacer', 'autre',
     ];
 
@@ -179,9 +179,9 @@ class ScrappingEffectsMapCommand extends Command
                 continue;
             }
 
-            // Vol de vie
-            if (str_contains($desc, 'vol de vie') || str_contains($desc, 'vole') && str_contains($desc, 'vie')) {
-                $mappings[$id] = ['voler-vie', 'element', null];
+            // Vol de vie → même sous-effet que les dommages + life_steal_formula ([dgt]) côté conversion
+            if (str_contains($desc, 'vol de vie') || (str_contains($desc, 'vole') && str_contains($desc, 'vie'))) {
+                $mappings[$id] = ['frapper', 'element', null];
 
                 continue;
             }

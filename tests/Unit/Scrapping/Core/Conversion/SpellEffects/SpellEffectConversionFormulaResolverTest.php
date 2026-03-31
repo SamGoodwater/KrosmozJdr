@@ -20,7 +20,7 @@ class SpellEffectConversionFormulaResolverTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->resolver = new SpellEffectConversionFormulaResolver();
+        $this->resolver = new SpellEffectConversionFormulaResolver;
     }
 
     public function test_frapper_returns_dommages_spell(): void
@@ -34,9 +34,14 @@ class SpellEffectConversionFormulaResolverTest extends TestCase
         $this->assertSame('soin_spell', $this->resolver->resolveCharacteristicKeyForConversion('soigner', []));
     }
 
-    public function test_voler_vie_returns_vol_vie_spell(): void
+    public function test_life_steal_formula_returns_vol_vie_spell_for_conversion(): void
     {
-        $this->assertSame('vol_vie_spell', $this->resolver->resolveCharacteristicKeyForConversion('voler-vie', []));
+        $this->assertSame(
+            'vol_vie_spell',
+            $this->resolver->resolveLifeStealCharacteristicKeyForConversion(['life_steal_formula' => '[dgt]/2'])
+        );
+        $this->assertNull($this->resolver->resolveLifeStealCharacteristicKeyForConversion([]));
+        $this->assertNull($this->resolver->resolveLifeStealCharacteristicKeyForConversion(['life_steal_formula' => '']));
     }
 
     public function test_proteger_returns_bouclier_spell(): void

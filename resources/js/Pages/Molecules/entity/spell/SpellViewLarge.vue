@@ -3,7 +3,7 @@
  * SpellViewLarge — Vue Large pour Spell
  *
  * @description
- * Fiche sort : en-tête (image, niveau, nom), identité (types, catégorie, élément, magie/physique, rituel),
+ * Fiche sort : en-tête (image, niveau, nom), identité (types, catégorie, élément, magie/physique, rituel, réaction),
  * description, utilisation, résolution, effets structurés (journal), puis métadonnées techniques.
  *
  * @props {Spell} spell - Instance du modèle Spell
@@ -219,6 +219,41 @@ const ritualTooltipText = computed(() => {
     const m = ritualMeta.value;
     const t = m?.helper || (Array.isArray(m?.descriptions) ? m.descriptions.join(' ') : m?.descriptions) || '';
     return t || 'Ce sort peut être lancé comme un rituel (incantation prolongée).';
+});
+
+const reactionMeta = computed(() => getByDbColumn('spell', 'allows_reaction'));
+
+const showReactionBadge = computed(() => {
+    const s = props.spell;
+    if (typeof s?.allowsReaction === 'boolean') {
+        return s.allowsReaction === true;
+    }
+    return Boolean(s?._data?.allows_reaction);
+});
+
+/** Contenu structuré pour l’infobulle « réaction » (règles PA / round). */
+const reactionTooltipBlocks = computed(() => {
+    const m = reactionMeta.value;
+    const title = m?.short_name || m?.name || 'Réaction';
+    const helper = typeof m?.helper === 'string' && m.helper.trim() !== '' ? m.helper.trim() : '';
+    const descRaw = m?.descriptions;
+    const desc =
+        Array.isArray(descRaw) ? descRaw.map((p) => String(p).trim()).filter(Boolean).join(' ') : String(descRaw || '').trim();
+    const lines = [];
+    if (helper) {
+        lines.push(helper);
+    }
+    if (desc && desc !== helper) {
+        lines.push(desc);
+    }
+    if (lines.length === 0) {
+        lines.push(
+            'Ce sort peut être lancé en réaction pendant un round de combat.',
+            'Chaque créature dispose d’une réaction par round, utilisable à tout moment du round.',
+            'Les PA dépensés pour une réaction ne sont pas réattribués au début du tour suivant.',
+        );
+    }
+    return { title, lines };
 });
 
 function boolLabel(v) {
@@ -449,6 +484,28 @@ const handleAction = async (actionKey) => {
                                 size="sm"
                             />
                             <span>{{ ritualMeta?.short_name || ritualMeta?.name || 'Rituel' }}</span>
+                        </span>
+                    </Tooltip>
+
+                    <Tooltip v-if="showReactionBadge" placement="top">
+                        <template #content>
+                            <div class="max-w-xs text-left text-sm space-y-2 text-base-content">
+                                <p class="font-semibold leading-snug">{{ reactionTooltipBlocks.title }}</p>
+                                <p v-for="(line, idx) in reactionTooltipBlocks.lines" :key="idx" class="leading-snug">
+                                    {{ line }}
+                                </p>
+                            </div>
+                        </template>
+                        <span
+                            class="inline-flex items-center gap-2 text-sm font-medium cursor-default"
+                            :style="reactionMeta?.color ? getCharacteristicColorStyle(reactionMeta.color) : undefined"
+                        >
+                            <Icon
+                                :source="reactionMeta?.icon || 'icons/caracteristics/is_reaction.webp'"
+                                :alt="reactionMeta?.short_name || 'Réaction'"
+                                size="sm"
+                            />
+                            <span>{{ reactionMeta?.short_name || reactionMeta?.name || 'Réaction' }}</span>
                         </span>
                     </Tooltip>
                 </div>

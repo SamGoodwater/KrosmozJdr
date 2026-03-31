@@ -10,6 +10,7 @@ Les commandes sont chargées **récursivement** depuis `app/Console/Commands/` (
 | `privacy:process-deletion-requests` | Quotidien 02:00 |
 | `SendNotificationDigestsJob` (daily / weekly / monthly) | Voir horaires dans `Kernel` |
 | `project:data:sync` | Si `PROJECT_UPDATE_AUTO_ENABLED=true` (cron `PROJECT_UPDATE_CRON`) ; alias `project:update` |
+| `project:backup` | Si `PROJECT_BACKUP_ENABLED=true` (cron `PROJECT_BACKUP_CRON`, défaut 4h) |
 | `scrapping` (alias de `scrapping:run`) | Si `SCRAPPING_RESOURCES_AUTO_SYNC=true` |
 
 ---
@@ -27,6 +28,7 @@ Les commandes sont chargées **récursivement** depuis `app/Console/Commands/` (
 | `project:data:sync` | `ProjectUpdateCommand` | Entités `auto_update=true` ; **alias** `project:update`. |
 | `project:init` / `init` | `ProjectInitCommand` | Pipeline complet ; option `--deps` pour enchaîner `project:deps`. |
 | `project:super-admin` | `ProjectSuperAdminCommand` | Création du premier super_admin (trait partagé avec `init`). |
+| `project:backup` | `ProjectBackupCommand` | Dump BDD gzip + archive `storage/app`, rétention (env `PROJECT_BACKUP_*`, scheduler optionnel). |
 | `setup` | `SetupCommand` | Install / update système (apt), deps, base MySQL, clean, refresh. |
 | `run` | `ProjectRunCommand` | Boîte à outils bas niveau (kill, clear, update, dev, pipelines effets, …). |
 
@@ -38,6 +40,7 @@ php artisan project:dev --prepare && php artisan project:dev
 php artisan project:data sync --entity=monster
 php artisan project:init --deps --fresh
 php artisan project:super-admin
+php artisan project:backup
 php artisan setup --db
 php artisan run --update:all
 ```

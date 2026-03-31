@@ -64,6 +64,7 @@ class UpdateSpellRequest extends FormRequest
             'save_dc_formula' => ['nullable', 'string', 'max:255'],
             'save_success_note' => ['nullable', 'string'],
             'auto_success_if_willing_target' => ['nullable', 'boolean'],
+            'allows_reaction' => ['nullable', 'boolean'],
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],

@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
 
 /**
  * Seed du référentiel de sous-effets (actions fondamentales).
- * Liste : frapper, soigner, protéger, voler-vie, booster, retirer, voler-caracteristiques, invoquer, déplacer, appliquer-etat, s-appliquer-etat, autre.
+ * Liste : frapper (dommages + vol de vie optionnel via life_steal_formula), soigner, protéger, booster, retirer, voler-caracteristiques, invoquer, déplacer, appliquer-etat, s-appliquer-etat, autre.
  * param_schema décrit les paramètres ; categories sur characteristic filtre la liste (element / toutes caractéristiques / monster / sans option).
  *
  * @see docs/50-Fonctionnalités/Spell-Effects/ARCHITECTURE_EFFETS_3_COUCHES.md
@@ -19,19 +19,20 @@ class SubEffectSeeder extends Seeder
 {
     public function run(): void
     {
-        $sanitizer = new EffectTextSanitizer();
+        $sanitizer = new EffectTextSanitizer;
 
         $rows = [
             [
                 'slug' => 'frapper',
                 'type_slug' => 'frapper',
                 'template_text' => 'Dégâts [value] [characteristic].',
-                'variables_allowed' => ['value', 'characteristic'],
+                'variables_allowed' => ['value', 'characteristic', 'dgt'],
                 'param_schema' => [
                     'action' => 'frapper',
                     'params' => [
                         ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Élément', 'categories' => ['element']],
                         ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
+                        ['key' => 'life_steal_formula', 'type' => 'formula', 'label' => 'PV volés (formule, optionnel)', 'optional' => true],
                     ],
                 ],
             ],
@@ -51,20 +52,12 @@ class SubEffectSeeder extends Seeder
             [
                 'slug' => 'protéger',
                 'type_slug' => 'protéger',
-                'template_text' => 'Protège la cible.',
-                'variables_allowed' => [],
-                'param_schema' => ['action' => 'protéger', 'params' => []],
-            ],
-            [
-                'slug' => 'voler-vie',
-                'type_slug' => 'voler-vie',
-                'template_text' => 'Vol de vie [value] [characteristic].',
-                'variables_allowed' => ['value', 'characteristic'],
+                'template_text' => 'Protège la cible ([value]).',
+                'variables_allowed' => ['value'],
                 'param_schema' => [
-                    'action' => 'voler-vie',
+                    'action' => 'protéger',
                     'params' => [
-                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Élément', 'categories' => ['element']],
-                        ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
+                        ['key' => 'value', 'type' => 'formula', 'label' => 'Protection (formule)'],
                     ],
                 ],
             ],
@@ -122,9 +115,15 @@ class SubEffectSeeder extends Seeder
             [
                 'slug' => 'déplacer',
                 'type_slug' => 'déplacer',
-                'template_text' => 'Déplace la cible.',
-                'variables_allowed' => [],
-                'param_schema' => ['action' => 'déplacer', 'params' => []],
+                'template_text' => 'Déplace la cible de [cells] case(s).',
+                'variables_allowed' => ['cells', 'teleport'],
+                'param_schema' => [
+                    'action' => 'déplacer',
+                    'params' => [
+                        ['key' => 'cells_formula', 'type' => 'formula', 'label' => 'Nombre de cases (formule)'],
+                        ['key' => 'teleport', 'type' => 'bool', 'label' => 'Téléportation'],
+                    ],
+                ],
             ],
             [
                 'slug' => 'appliquer-etat',
@@ -134,10 +133,8 @@ class SubEffectSeeder extends Seeder
                 'param_schema' => [
                     'action' => 'appliquer-etat',
                     'params' => [
-                        ['key' => 'state_dofusdb_id', 'type' => 'number', 'label' => 'ID état DofusDB'],
-                        ['key' => 'state_name', 'type' => 'text', 'label' => 'Nom de l\'état'],
-                        ['key' => 'duration', 'type' => 'number', 'label' => 'Durée (tours)'],
-                        ['key' => 'dispellable', 'type' => 'bool', 'label' => 'Dissipable'],
+                        ['key' => 'spell_state_id', 'type' => 'spell_state', 'label' => 'État'],
+                        ['key' => 'dispellable', 'type' => 'bool', 'label' => 'Dissipable', 'optional' => true],
                     ],
                 ],
             ],
@@ -149,10 +146,8 @@ class SubEffectSeeder extends Seeder
                 'param_schema' => [
                     'action' => 's-appliquer-etat',
                     'params' => [
-                        ['key' => 'state_dofusdb_id', 'type' => 'number', 'label' => 'ID état DofusDB'],
-                        ['key' => 'state_name', 'type' => 'text', 'label' => 'Nom de l\'état'],
-                        ['key' => 'duration', 'type' => 'number', 'label' => 'Durée (tours)'],
-                        ['key' => 'dispellable', 'type' => 'bool', 'label' => 'Dissipable'],
+                        ['key' => 'spell_state_id', 'type' => 'spell_state', 'label' => 'État'],
+                        ['key' => 'dispellable', 'type' => 'bool', 'label' => 'Dissipable', 'optional' => true],
                     ],
                 ],
             ],
@@ -192,7 +187,7 @@ class SubEffectSeeder extends Seeder
         SubEffect::whereNotIn('slug', $allowedSlugs)->delete();
 
         if ($this->command) {
-            $this->command->info('SubEffectSeeder : ' . count($rows) . ' sous-effets créés ou mis à jour.');
+            $this->command->info('SubEffectSeeder : '.count($rows).' sous-effets créés ou mis à jour.');
         }
     }
 }

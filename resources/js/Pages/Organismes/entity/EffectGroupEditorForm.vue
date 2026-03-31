@@ -9,12 +9,47 @@ import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
 import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
+import { getElementIcon } from '@/Utils/Entity/Elements.js';
+import { getByCharacteristicKey } from '@/Composables/store/useCharacteristicsStore';
+import {
+    getCharacteristicColorStyle,
+    getCharacteristicContainerStyle,
+} from '@/Composables/entity/useCharacteristicDisplay';
+
+/** Clés config effet → characteristic_key du groupe spell (store Inertia). */
+const EFFECT_CHAR_TO_SPELL_KEY = Object.freeze({
+    action_points: 'action_points_spell',
+    movement_points: 'movement_points_spell',
+    range: 'range_spell',
+    agility: 'agi_spell',
+    strength: 'strong_spell',
+    intelligence: 'intel_spell',
+    chance: 'chance_spell',
+    wisdom: 'sagesse_spell',
+    vitality: 'vitality_spell',
+    life_points: 'vitality_spell',
+    shield: 'bouclier_spell',
+    earth: 'res_terre_spell',
+    fire: 'res_feu_spell',
+    water: 'res_eau_spell',
+    air: 'res_air_spell',
+    neutral: 'res_neutre_spell',
+});
 
 const props = defineProps({
     options: {
         type: Object,
-        default: () => ({ effect_groups: [], sub_effects: [], scopes: [], characteristics: [], monsters: [] }),
+        default: () => ({
+            effect_groups: [],
+            sub_effects: [],
+            scopes: [],
+            characteristics: [],
+            monsters: [],
+            spell_states: [],
+            characteristics_object: [],
+        }),
     },
     groupEffects: { type: Array, required: true },
     /** Effet courant (onglet initial). */
@@ -49,7 +84,14 @@ function defaultParamsForSubEffect() {
         characteristic: '',
         value_formula: '',
         value_formula_crit: '',
+        life_steal_formula: '',
         monster_id: '',
+        spell_state_id: '',
+        state_dofusdb_id: '',
+        state_name: '',
+        dispellable: false,
+        cells_formula: '',
+        teleport: false,
     };
 }
 
@@ -59,7 +101,51 @@ function getParamSchemaForRow(row) {
     return sub?.param_schema ?? null;
 }
 
+/** Anciennes clés config (effect_sub_effects) → clés BDD groupe object. */
+const LEGACY_CHAR_TO_OBJECT_KEY = Object.freeze({
+    action_points: 'action_points_object',
+    movement_points: 'movement_points_object',
+    range: 'range_object',
+    agility: 'agility_object',
+    strength: 'strength_object',
+    intelligence: 'intelligence_object',
+    chance: 'chance_object',
+    wisdom: 'wisdom_object',
+    vitality: 'vitality_object',
+    life_points: 'life_points_max_object',
+    shield: 'armor_class_object',
+    earth: 'fixed_damage_earth_object',
+    fire: 'fixed_damage_fire_object',
+    water: 'fixed_damage_water_object',
+    air: 'fixed_damage_air_object',
+    neutral: 'fixed_damage_neutral_object',
+});
+
+/**
+ * @param {number|string} subEffectId
+ * @param {object} params
+ */
+function normalizeLegacyCharacteristicKeyForSubEffect(subEffectId, params) {
+    const sub = props.options.sub_effects?.find((s) => s.id === subEffectId);
+    const slug = sub?.slug ?? '';
+    if (!['booster', 'retirer', 'voler-caracteristiques'].includes(slug)) {
+        return;
+    }
+    const ch = params?.characteristic;
+    if (typeof ch !== 'string' || ch === '' || ch.endsWith('_object')) {
+        return;
+    }
+    const mapped = LEGACY_CHAR_TO_OBJECT_KEY[ch];
+    if (mapped) {
+        params.characteristic = mapped;
+    }
+}
+
 function characteristicsForRow(row) {
+    const slug = subEffectSlugForRow(row);
+    if (slug === 'booster' || slug === 'retirer' || slug === 'voler-caracteristiques') {
+        return props.options.characteristics_object ?? [];
+    }
     const schema = getParamSchemaForRow(row);
     const param = schema?.params?.find((p) => p.key === 'characteristic');
     const categories = param?.categories;
@@ -82,10 +168,238 @@ function rowHasMonsterParam(row) {
     return schema?.params?.some((p) => p.type === 'monster') ?? false;
 }
 
+/** @param {object} row */
+function subEffectSlugForRow(row) {
+    const sub = props.options.sub_effects?.find((s) => s.id === row.sub_effect_id);
+    return sub?.slug ?? '';
+}
+
+/** @param {object} row */
+function rowHasSpellStateParam(row) {
+    const slug = subEffectSlugForRow(row);
+    if (slug === 'appliquer-etat' || slug === 's-appliquer-etat') {
+        return true;
+    }
+    const schema = getParamSchemaForRow(row);
+    return schema?.params?.some((p) => p.key === 'spell_state_id' || p.type === 'spell_state') ?? false;
+}
+
+/** @param {object} row */
+function rowHasCellsFormulaParam(row) {
+    const slug = subEffectSlugForRow(row);
+    if (slug === 'déplacer') {
+        return true;
+    }
+    const schema = getParamSchemaForRow(row);
+    return schema?.params?.some((p) => p.key === 'cells_formula') ?? false;
+}
+
+/** @param {object} row */
+function rowHasTeleportParam(row) {
+    const slug = subEffectSlugForRow(row);
+    if (slug === 'déplacer') {
+        return true;
+    }
+    const schema = getParamSchemaForRow(row);
+    return schema?.params?.some((p) => p.key === 'teleport') ?? false;
+}
+
+/**
+ * Métadonnées affichage badge caractéristique (élément, groupe object BDD, ou fallback spell).
+ *
+ * @param {object} c - entrée characteristics (config ou characteristics_object)
+ * @returns {{ kind: string, label: string, primaryId?: number, icon?: string|null, containerStyle?: object, colorStyle?: object }}
+ */
+function characteristicBadgeMeta(c) {
+    const label = c.label ?? c.key;
+    if (c.category === 'element') {
+        return {
+            kind: 'element',
+            label,
+            primaryId: elementKeyToPrimaryId(c.key),
+        };
+    }
+    if (c.category === 'object' || (typeof c.key === 'string' && c.key.endsWith('_object'))) {
+        const def = getByCharacteristicKey('item', c.key);
+        return {
+            kind: 'object',
+            label,
+            icon: def?.icon ?? null,
+            containerStyle: def?.color ? getCharacteristicContainerStyle(def.color) : {},
+            colorStyle: def?.color ? getCharacteristicColorStyle(def.color) : {},
+        };
+    }
+    const sk = EFFECT_CHAR_TO_SPELL_KEY[c.key];
+    const def = sk ? getByCharacteristicKey('spell', sk) : null;
+    return {
+        kind: 'spell',
+        label,
+        icon: def?.icon ?? null,
+        containerStyle: def?.color ? getCharacteristicContainerStyle(def.color) : {},
+        colorStyle: def?.color ? getCharacteristicColorStyle(def.color) : {},
+    };
+}
+
+/**
+ * @param {object} row
+ * @param {object} c
+ */
+function characteristicBadgeButtonClass(row, c) {
+    const meta = characteristicBadgeMeta(c);
+    const sel = row.params.characteristic === c.key;
+    const base =
+        'btn btn-xs h-8 min-h-8 gap-1 font-normal border border-base-300';
+    if (!sel) {
+        return `${base} btn-ghost`;
+    }
+    if (meta.kind === 'element') {
+        return `${base} btn-primary border-primary`;
+    }
+    return `${base} border-primary/40`;
+}
+
+/**
+ * @param {object} row
+ * @param {object} c
+ */
+function characteristicBadgeButtonStyle(row, c) {
+    const meta = characteristicBadgeMeta(c);
+    if (row.params.characteristic !== c.key || (meta.kind !== 'spell' && meta.kind !== 'object')) {
+        return {};
+    }
+    return meta.containerStyle && Object.keys(meta.containerStyle).length ? meta.containerStyle : {};
+}
+
+/**
+ * @param {object} st - entrée spell_states
+ * @returns {string|null}
+ */
+function spellStateIconSource(st) {
+    if (!st?.icon || typeof st.icon !== 'string' || st.icon.trim() === '') {
+        return null;
+    }
+    const t = st.icon.trim();
+    if (t.startsWith('http://') || t.startsWith('https://') || t.startsWith('/') || t.includes('icons/')) {
+        return t;
+    }
+    return `icons/caracteristics/${t}`;
+}
+
+/**
+ * @param {object} row
+ * @returns {Array<object>}
+ */
+function filteredSpellStatesForRow(row) {
+    const list = props.options.spell_states ?? [];
+    const q = String(row._editor_spell_state_q ?? '')
+        .trim()
+        .toLowerCase();
+    let out = list;
+    if (q !== '') {
+        out = list.filter((st) => {
+            const name = String(st.name ?? '').toLowerCase();
+            const idStr = String(st.id ?? '');
+            const dof = String(st.dofusdb_id ?? '');
+            return name.includes(q) || idStr === q || dof === q;
+        });
+    }
+    return out.slice(0, 100);
+}
+
+/**
+ * @param {object} row
+ * @param {object} st
+ */
+function selectSpellState(row, st) {
+    row.params.spell_state_id = st.id;
+    row.params.state_dofusdb_id = st.dofusdb_id;
+    row.params.state_name = st.name ?? '';
+}
+
+/**
+ * @param {object} params
+ */
+function resolveSpellStateIdFromLegacy(params) {
+    if (params == null || typeof params !== 'object') {
+        return;
+    }
+    if (params.spell_state_id != null && params.spell_state_id !== '') {
+        return;
+    }
+    const dof = params.state_dofusdb_id;
+    if (dof == null || dof === '') {
+        return;
+    }
+    const match = (props.options.spell_states ?? []).find((st) => Number(st.dofusdb_id) === Number(dof));
+    if (match) {
+        params.spell_state_id = match.id;
+    }
+}
+
+/** Sous-effet « frapper » (id ou slug), même si param_schema en base n’est pas encore à jour. */
+function isFrapperSubEffectRow(row) {
+    if (!row?.sub_effect_id || !props.options?.sub_effects) {
+        return false;
+    }
+    const sub = props.options.sub_effects.find((s) => s.id === row.sub_effect_id);
+    return sub?.slug === 'frapper' || sub?.type_slug === 'frapper';
+}
+
+function rowHasLifeStealFormulaParam(row) {
+    const schema = getParamSchemaForRow(row);
+    if (schema?.params?.some((p) => p.key === 'life_steal_formula')) {
+        return true;
+    }
+    return isFrapperSubEffectRow(row);
+}
+
 function characteristicLabelForRow(row) {
     const schema = getParamSchemaForRow(row);
     const param = schema?.params?.find((p) => p.key === 'characteristic');
     return param?.label ?? 'Caractéristique';
+}
+
+/** Clés primaires Dofus (config) → id 0–4 pour icônes Éléments. */
+function elementKeyToPrimaryId(key) {
+    const m = { neutral: 0, earth: 1, fire: 2, air: 3, water: 4 };
+    return m[key] ?? 0;
+}
+
+/**
+ * Texte d’aide sous le champ valeur selon l’action.
+ *
+ * @param {object} row
+ * @returns {string}
+ */
+function valueHelpTextForRow(row) {
+    const sub = props.options.sub_effects?.find((s) => s.id === row.sub_effect_id);
+    const slug = sub?.slug ?? '';
+    if (slug === 'frapper') {
+        return 'Dégâts primaires (hors résistances) : ndX, plages [min-max], [level], caractéristiques entre crochets, floor(), etc.';
+    }
+    if (slug === 'soigner') {
+        return 'Montant de soin : formule numérique ou dés (ndX).';
+    }
+    if (slug === 'protéger') {
+        return 'Montant de bouclier / protection absorbée (sans élément), comme un soin.';
+    }
+    if (slug === 'booster' || slug === 'retirer' || slug === 'voler-caracteristiques') {
+        return 'Valeur appliquée à la caractéristique choisie (bonus ou malus selon l’action).';
+    }
+    if (slug === 'autre') {
+        return 'Texte ou formule libre (aperçu / import DofusDB).';
+    }
+    return 'Formule : ndX, [min-max], [level], [agi], floor(), etc.';
+}
+
+/** @param {object} row */
+function durationHelpTextForRow(row) {
+    const sub = props.options.sub_effects?.find((s) => s.id === row.sub_effect_id);
+    const slug = sub?.slug ?? '';
+    if (slug === 'appliquer-etat' || slug === 's-appliquer-etat') {
+        return 'Durée de l’état en tours (combat) ou secondes (hors combat), selon le contexte.';
+    }
+    return 'Durée d’effet : nombre de tours en combat, ou secondes hors combat — selon le contexte de résolution.';
 }
 
 const TARGET_TYPE_OPTIONS = [
@@ -95,24 +409,42 @@ const TARGET_TYPE_OPTIONS = [
 ];
 
 function mapSubEffectsFromApi(subEffects) {
-    return (subEffects || []).map((s) => ({
-        sub_effect_id: s.id,
-        order: s.order ?? 0,
-        scope: s.scope ?? 'general',
-        value_min: s.value_min ?? '',
-        value_max: s.value_max ?? '',
-        dice_num: s.dice_num ?? '',
-        dice_side: s.dice_side ?? '',
-        duration_formula: s.duration_formula ?? '',
-        logic_group: s.logic_group ?? '',
-        logic_operator: s.logic_operator ?? '',
-        logic_condition: s.logic_condition ?? '',
-        crit_only: s.crit_only ?? false,
-        params: {
-            ...defaultParamsForSubEffect(),
-            ...(s.params && typeof s.params === 'object' ? s.params : {}),
-        },
-    }));
+    return (subEffects || []).map((s, idx) => {
+        const rawOp = s.logic_operator ?? '';
+        const logic_operator =
+            idx > 0 && (rawOp === '' || rawOp == null) ? 'AND' : rawOp;
+
+        return {
+            sub_effect_id: s.id,
+            order: s.order ?? 0,
+            scope: s.scope ?? 'general',
+            value_min: s.value_min ?? '',
+            value_max: s.value_max ?? '',
+            dice_num: s.dice_num ?? '',
+            dice_side: s.dice_side ?? '',
+            duration_formula: s.duration_formula ?? '',
+            logic_group: s.logic_group ?? '',
+            logic_operator,
+            logic_condition: s.logic_condition ?? '',
+            crit_only: s.crit_only ?? false,
+            _editor_spell_state_q: '',
+            params: (() => {
+                const merged = {
+                    ...defaultParamsForSubEffect(),
+                    ...(s.params && typeof s.params === 'object' ? s.params : {}),
+                };
+                resolveSpellStateIdFromLegacy(merged);
+                if (merged.dispellable == null) {
+                    merged.dispellable = false;
+                }
+                if (merged.teleport == null) {
+                    merged.teleport = false;
+                }
+                normalizeLegacyCharacteristicKeyForSubEffect(s.id, merged);
+                return merged;
+            })(),
+        };
+    });
 }
 
 function initDegreeFormsFromProps() {
@@ -148,6 +480,7 @@ function addSubEffect() {
     if (!first) return;
     const rows = degreeForms.value[activeTab.value]?.effect_sub_effects;
     if (!rows) return;
+    const isLinked = rows.length > 0;
     rows.push({
         sub_effect_id: first.id,
         order: rows.length,
@@ -156,16 +489,19 @@ function addSubEffect() {
         value_max: '',
         dice_num: '',
         dice_side: '',
+        duration_formula: '',
+        logic_group: '',
+        logic_operator: isLinked ? 'AND' : '',
+        logic_condition: '',
         crit_only: false,
+        _editor_spell_state_q: '',
         params: defaultParamsForSubEffect(),
     });
 }
 
 function onSubEffectChange(row) {
-    row.params = {
-        ...defaultParamsForSubEffect(),
-        ...(row.params || {}),
-    };
+    row.params = { ...defaultParamsForSubEffect() };
+    row._editor_spell_state_q = '';
 }
 
 function removeSubEffect(index) {
@@ -200,7 +536,8 @@ function payloadRows(rows) {
         dice_side: row.dice_side !== '' && row.dice_side != null ? Number(row.dice_side) : null,
         duration_formula: row.duration_formula || null,
         logic_group: row.logic_group || null,
-        logic_operator: row.logic_operator || null,
+        logic_operator:
+            i > 0 ? row.logic_operator || 'AND' : row.logic_operator || null,
         logic_condition: row.logic_condition || null,
         crit_only: Boolean(row.crit_only),
         params: row.params && typeof row.params === 'object' ? row.params : null,
@@ -356,94 +693,312 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving });
                                 :tab-index="activeTab"
                             />
                         </div>
-                        <div class="flex items-center justify-between">
-                            <h3 class="font-semibold">Sous-effets (degré {{ degreeForms[activeTab].degree ?? '?' }})</h3>
-                            <button type="button" class="btn btn-sm btn-outline" @click="addSubEffect">
-                                Ajouter un sous-effet
+                        <div
+                            class="flex flex-wrap items-start justify-between gap-3 border-t border-base-300/80 pt-4"
+                        >
+                            <div>
+                                <h3 class="font-semibold text-base">
+                                    Sous-effets (degré {{ degreeForms[activeTab].degree ?? '?' }})
+                                </h3>
+                                <p class="text-xs text-base-content/60 mt-0.5 max-w-xl">
+                                    Enchaînement : entre deux blocs, définissez le lien avec le précédent (ET = le précédent
+                                    doit s’appliquer ; OU = ce bloc s’applique si la condition &gt; 0).
+                                </p>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary shrink-0" @click="addSubEffect">
+                                + Ajouter un sous-effet
                             </button>
                         </div>
                         <div v-if="!degreeForms[activeTab].effect_sub_effects.length" class="text-sm text-base-content/70 py-4">
-                            Aucun sous-effet. Cliquez sur « Ajouter un sous-effet ».
+                            Aucun sous-effet. Utilisez « Ajouter un sous-effet ».
                         </div>
-                        <div v-else class="space-y-4">
-                            <div
+                        <div v-else class="space-y-3">
+                            <template
                                 v-for="(row, index) in degreeForms[activeTab].effect_sub_effects"
                                 :key="'d' + activeTab + '-r' + index"
-                                class="rounded-box border border-base-300 bg-base-200/30 p-3 space-y-3"
                             >
-                                <div class="flex flex-wrap items-end gap-3">
-                                    <div class="min-w-[160px]">
-                                        <label class="label text-xs">Action</label>
-                                        <select
-                                            v-model="row.sub_effect_id"
-                                            class="select select-bordered select-sm w-full"
-                                            required
-                                            @change="onSubEffectChange(row)"
-                                        >
-                                            <option value="">— Choisir —</option>
-                                            <option
-                                                v-for="s in options.sub_effects"
-                                                :key="s.id"
-                                                :value="s.id"
-                                            >
-                                                {{ s.slug }}
-                                            </option>
-                                        </select>
+                                <!-- Lien logique avec le bloc précédent (hors carte) -->
+                                <div
+                                    v-if="index > 0"
+                                    class="rounded-lg border border-dashed border-primary/25 bg-base-200/50 px-3 py-2"
+                                >
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-primary/80">
+                                        Lien avec le sous-effet précédent
                                     </div>
-                                    <div class="w-28">
-                                        <label class="label text-xs">Contexte</label>
-                                        <select v-model="row.scope" class="select select-bordered select-sm w-full">
-                                            <option
-                                                v-for="sc in options.scopes"
-                                                :key="sc.value"
-                                                :value="sc.value"
+                                    <div class="mt-2 flex flex-wrap items-end gap-2">
+                                        <div class="min-w-[11rem]">
+                                            <label class="label text-xs py-0">Enchaînement</label>
+                                            <select
+                                                v-model="row.logic_operator"
+                                                class="select select-bordered select-sm w-full"
                                             >
-                                                {{ sc.label }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="flex gap-1 ml-auto">
-                                        <button
-                                            type="button"
-                                            class="btn btn-ghost btn-sm btn-square"
-                                            title="Dupliquer ce sous-effet"
-                                            @click="duplicateSubEffect(index)"
-                                        >
-                                            +
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="btn btn-ghost btn-sm btn-square text-error"
-                                            title="Retirer"
-                                            @click="removeSubEffect(index)"
-                                        >
-                                            ×
-                                        </button>
+                                                <option value="AND">ET — le précédent doit s’appliquer</option>
+                                                <option value="OR">OU — si la condition &gt; 0</option>
+                                            </select>
+                                        </div>
+                                        <div v-if="row.logic_operator === 'OR'" class="flex-1 min-w-[12rem] max-w-lg">
+                                            <label class="label text-xs py-0">Condition (formule &gt; 0)</label>
+                                            <input
+                                                v-model="row.logic_condition"
+                                                type="text"
+                                                class="input input-bordered input-sm w-full"
+                                                placeholder="ex: [target_is_ally]"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                                <template v-if="row.sub_effect_id">
-                                    <div class="flex flex-wrap items-end gap-3 border-t border-base-300 pt-3">
-                                        <template v-if="rowHasCharacteristicParam(row)">
-                                            <div class="min-w-[160px]">
-                                                <label class="label text-xs">{{ characteristicLabelForRow(row) }}</label>
-                                                <select
-                                                    v-model="row.params.characteristic"
-                                                    class="select select-bordered select-sm w-full"
+
+                                <div
+                                    class="rounded-box border border-base-300 bg-base-100 overflow-hidden shadow-sm"
+                                >
+                                    <!-- Barre : action, contexte, critique seulement, actions -->
+                                    <div
+                                        class="flex flex-wrap items-end gap-2 gap-y-2 px-3 py-2 border-b border-base-300 bg-base-200/40"
+                                    >
+                                        <div class="min-w-[10rem] flex-1">
+                                            <label class="text-xs font-medium text-base-content/70">Action</label>
+                                            <select
+                                                v-model="row.sub_effect_id"
+                                                class="select select-bordered select-sm w-full mt-0.5"
+                                                required
+                                                @change="onSubEffectChange(row)"
+                                            >
+                                                <option value="">— Choisir —</option>
+                                                <option
+                                                    v-for="s in options.sub_effects"
+                                                    :key="s.id"
+                                                    :value="s.id"
                                                 >
-                                                    <option value="">— Choisir —</option>
-                                                    <option
+                                                    {{ s.slug }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="w-[7.25rem]">
+                                            <label class="text-xs font-medium text-base-content/70">Contexte</label>
+                                            <select
+                                                v-model="row.scope"
+                                                class="select select-bordered select-sm w-full mt-0.5"
+                                            >
+                                                <option
+                                                    v-for="sc in options.scopes"
+                                                    :key="sc.value"
+                                                    :value="sc.value"
+                                                >
+                                                    {{ sc.label }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <label
+                                            class="flex items-center gap-2 cursor-pointer shrink-0 max-w-[14rem] mb-0.5"
+                                        >
+                                            <input v-model="row.crit_only" type="checkbox" class="checkbox checkbox-sm" />
+                                            <span class="text-xs leading-snug">Uniquement si critique</span>
+                                        </label>
+                                        <div class="flex gap-0.5 ml-auto">
+                                            <button
+                                                type="button"
+                                                class="btn btn-ghost btn-sm btn-square"
+                                                title="Dupliquer ce sous-effet"
+                                                @click="duplicateSubEffect(index)"
+                                            >
+                                                +
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-ghost btn-sm btn-square text-error"
+                                                title="Supprimer ce sous-effet"
+                                                @click="removeSubEffect(index)"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div v-if="row.sub_effect_id" class="p-3 space-y-4">
+                                        <!-- État (référentiel local) -->
+                                        <div v-if="rowHasSpellStateParam(row)" class="space-y-2 max-w-xl">
+                                            <label class="text-xs font-medium text-base-content/80">État</label>
+                                            <input
+                                                v-model="row._editor_spell_state_q"
+                                                type="search"
+                                                class="input input-bordered input-sm w-full"
+                                                placeholder="Rechercher par nom ou n°…"
+                                                autocomplete="off"
+                                            />
+                                            <ul
+                                                class="menu menu-xs bg-base-200 rounded-box max-h-48 overflow-y-auto border border-base-300 p-1"
+                                                role="listbox"
+                                            >
+                                                <li v-for="st in filteredSpellStatesForRow(row)" :key="st.id">
+                                                    <button
+                                                        type="button"
+                                                        class="flex items-center gap-2 text-left rounded-btn"
+                                                        :class="
+                                                            Number(row.params.spell_state_id) === Number(st.id)
+                                                                ? 'bg-primary text-primary-content'
+                                                                : ''
+                                                        "
+                                                        @click="selectSpellState(row, st)"
+                                                    >
+                                                        <Icon
+                                                            v-if="spellStateIconSource(st)"
+                                                            :source="spellStateIconSource(st)"
+                                                            :alt="st.name || ''"
+                                                            size="xs"
+                                                        />
+                                                        <span class="truncate">{{ st.name }} ({{ st.dofusdb_id }})</span>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                            <label
+                                                v-if="rowHasSpellStateParam(row)"
+                                                class="flex items-center gap-2 cursor-pointer"
+                                            >
+                                                <input
+                                                    v-model="row.params.dispellable"
+                                                    type="checkbox"
+                                                    class="checkbox checkbox-sm"
+                                                />
+                                                <span class="text-xs">Dissipable</span>
+                                            </label>
+                                        </div>
+
+                                        <!-- Déplacement : cases + téléportation -->
+                                        <div v-if="rowHasCellsFormulaParam(row)" class="space-y-2 max-w-xl">
+                                            <div class="space-y-1">
+                                                <label class="text-xs font-medium text-base-content/80"
+                                                    >Nombre de cases (formule)</label
+                                                >
+                                                <input
+                                                    v-model="row.params.cells_formula"
+                                                    type="text"
+                                                    class="input input-bordered input-sm w-full"
+                                                    placeholder="ex: 3, [level], 1d3+1…"
+                                                />
+                                                <p class="text-[0.7rem] leading-snug text-base-content/55">
+                                                    1 case = 1,5 m. La formule est évaluée en nombre de cases (entier attendu
+                                                    selon le contexte).
+                                                </p>
+                                            </div>
+                                            <label v-if="rowHasTeleportParam(row)" class="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    v-model="row.params.teleport"
+                                                    type="checkbox"
+                                                    class="checkbox checkbox-sm"
+                                                />
+                                                <span class="text-xs">Téléportation (sinon déplacement simple)</span>
+                                            </label>
+                                        </div>
+
+                                        <!-- Caractéristique / élément (au-dessus de la valeur) -->
+                                        <template v-if="rowHasCharacteristicParam(row)">
+                                            <div class="space-y-1.5">
+                                                <label class="text-xs font-medium text-base-content/80">{{
+                                                    characteristicLabelForRow(row)
+                                                }}</label>
+                                                <div
+                                                    class="flex flex-wrap gap-1.5"
+                                                    role="group"
+                                                    :aria-label="characteristicLabelForRow(row)"
+                                                >
+                                                    <button
                                                         v-for="c in characteristicsForRow(row)"
                                                         :key="c.key"
-                                                        :value="c.key"
+                                                        type="button"
+                                                        :class="characteristicBadgeButtonClass(row, c)"
+                                                        :style="characteristicBadgeButtonStyle(row, c)"
+                                                        :title="c.helper || ''"
+                                                        @click="row.params.characteristic = c.key"
                                                     >
-                                                        {{ c.label }}
-                                                    </option>
-                                                </select>
+                                                        <Icon
+                                                            v-if="characteristicBadgeMeta(c).kind === 'element'"
+                                                            :source="getElementIcon(characteristicBadgeMeta(c).primaryId)"
+                                                            :alt="c.label"
+                                                            size="xs"
+                                                        />
+                                                        <Icon
+                                                            v-else-if="characteristicBadgeMeta(c).icon"
+                                                            :source="characteristicBadgeMeta(c).icon"
+                                                            :alt="c.label"
+                                                            size="xs"
+                                                            :style="characteristicBadgeMeta(c).colorStyle"
+                                                        />
+                                                        <span :style="characteristicBadgeMeta(c).colorStyle">{{
+                                                            c.label
+                                                        }}</span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </template>
+
+                                        <!-- Valeur + critique -->
+                                        <div
+                                            v-if="rowHasValueParam(row)"
+                                            class="grid gap-3 sm:grid-cols-2"
+                                        >
+                                            <div class="space-y-1">
+                                                <label class="text-xs font-medium text-base-content/80">Valeur (formule)</label>
+                                                <input
+                                                    v-model="row.params.value_formula"
+                                                    type="text"
+                                                    class="input input-bordered input-sm w-full"
+                                                    placeholder="ex: 2d6, [1-4], [level]*2+[agi]"
+                                                />
+                                                <p class="text-[0.7rem] leading-snug text-base-content/55">
+                                                    {{ valueHelpTextForRow(row) }}
+                                                </p>
+                                            </div>
+                                            <div v-if="!row.crit_only" class="space-y-1">
+                                                <label class="text-xs font-medium text-base-content/80"
+                                                    >Valeur critique (optionnel)</label
+                                                >
+                                                <input
+                                                    v-model="row.params.value_formula_crit"
+                                                    type="text"
+                                                    class="input input-bordered input-sm w-full"
+                                                    placeholder="ex: [value]*2, 3d6…"
+                                                />
+                                                <p class="text-[0.7rem] leading-snug text-base-content/55">
+                                                    Remplace la valeur ci-contre lors d’un coup critique (si vide : même
+                                                    valeur que la colonne de gauche).
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <label class="text-xs font-medium text-base-content/80"
+                                                >Durée (formule, tours ou secondes)</label
+                                            >
+                                            <input
+                                                v-model="row.duration_formula"
+                                                type="text"
+                                                class="input input-bordered input-sm w-full max-w-xl"
+                                                placeholder="ex: 2 (tours), [level]/2, 10 (secondes)…"
+                                            />
+                                            <p class="text-[0.7rem] leading-snug text-base-content/55">
+                                                {{ durationHelpTextForRow(row) }}
+                                            </p>
+                                        </div>
+
+                                        <div v-if="rowHasLifeStealFormulaParam(row)" class="space-y-1 max-w-xl">
+                                            <label class="text-xs font-medium text-base-content/80"
+                                                >PV volés (formule, optionnel)</label
+                                            >
+                                            <input
+                                                v-model="row.params.life_steal_formula"
+                                                type="text"
+                                                class="input input-bordered input-sm w-full"
+                                                placeholder="ex: [dgt]/2, 50%, [dgt]+2d4"
+                                            />
+                                            <p class="text-[0.7rem] leading-snug text-base-content/55">
+                                                Vide = dégâts seuls. Avec formule : vol de vie — [dgt] = dégâts primaires ;
+                                                « 50% » = moitié des dégâts rendus en PV au lanceur.
+                                            </p>
+                                        </div>
+
                                         <template v-if="rowHasMonsterParam(row)">
-                                            <div class="min-w-[220px]">
-                                                <label class="label text-xs">Monstre</label>
+                                            <div class="space-y-1 max-w-md">
+                                                <label class="text-xs font-medium text-base-content/80">Monstre</label>
                                                 <EntityPickerCore
                                                     v-model="row.params.monster_id"
                                                     entity-type="monsters"
@@ -454,78 +1009,9 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving });
                                                 />
                                             </div>
                                         </template>
-                                        <template v-if="rowHasValueParam(row)">
-                                            <div class="flex-1 min-w-[200px]">
-                                                <label class="label text-xs">Valeur (formule)</label>
-                                                <input
-                                                    v-model="row.params.value_formula"
-                                                    type="text"
-                                                    class="input input-bordered input-sm w-full"
-                                                    placeholder="ex: 2d6, [1-4], [level]*2+[agi]"
-                                                />
-                                                <p class="text-xs text-base-content/60 mt-0.5">
-                                                    Formule : ndX, [min-max], [level], [agi], floor(), etc.
-                                                </p>
-                                            </div>
-                                            <div class="flex-1 min-w-[200px]">
-                                                <label class="label text-xs">Valeur critique (formule, optionnel)</label>
-                                                <input
-                                                    v-model="row.params.value_formula_crit"
-                                                    type="text"
-                                                    class="input input-bordered input-sm w-full"
-                                                    placeholder="ex: [value]*2, 3d6…"
-                                                />
-                                                <p class="text-xs text-base-content/60 mt-0.5">
-                                                    Utilisée uniquement en cas de critique.
-                                                </p>
-                                            </div>
-                                        </template>
-                                        <div class="flex flex-col gap-1 min-w-[120px]">
-                                            <label class="label text-xs">Uniquement en critique</label>
-                                            <label class="label cursor-pointer justify-start gap-2">
-                                                <input
-                                                    v-model="row.crit_only"
-                                                    type="checkbox"
-                                                    class="checkbox checkbox-sm"
-                                                />
-                                                <span class="label-text">Ce sous-effet ne s’applique qu’en cas de critique</span>
-                                            </label>
-                                        </div>
-                                        <div class="flex flex-col gap-1 min-w-[220px]">
-                                            <label class="label text-xs">Durée (formule, en tours ou secondes)</label>
-                                            <input
-                                                v-model="row.duration_formula"
-                                                type="text"
-                                                class="input input-bordered input-sm w-full"
-                                                placeholder="ex: 2 (tours), [level]/2, 10 (secondes)…"
-                                            />
-                                            <p class="text-xs text-base-content/60 mt-0.5">
-                                                Formule numérique, interprétée selon le contexte (tours en combat, secondes hors combat).
-                                            </p>
-                                        </div>
-                                        <div class="flex flex-col gap-1 min-w-[220px]">
-                                            <label class="label text-xs">Opérateur avec le précédent</label>
-                                            <select
-                                                v-model="row.logic_operator"
-                                                class="select select-bordered select-sm w-full"
-                                            >
-                                                <option value="">— Aucun (premier) —</option>
-                                                <option value="AND">ET</option>
-                                                <option value="OR">OU (si condition)</option>
-                                            </select>
-                                            <div v-if="row.logic_operator === 'OR'" class="mt-1">
-                                                <label class="label text-xs">Condition pour le OU</label>
-                                                <input
-                                                    v-model="row.logic_condition"
-                                                    type="text"
-                                                    class="input input-bordered input-sm w-full"
-                                                    placeholder="ex: [target_is_ally] == 1"
-                                                />
-                                            </div>
-                                        </div>
                                     </div>
-                                </template>
-                            </div>
+                                </div>
+                            </template>
                         </div>
                     </div>
                 </div>

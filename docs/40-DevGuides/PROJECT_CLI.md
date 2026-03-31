@@ -13,6 +13,7 @@ Objectif : **un vocabulaire stable** (dépendances, dev, données, bootstrap) to
 | `project:data:sync` | Mise à jour des entités déjà en base avec `auto_update=true`. |
 | `project:init` | Pipeline complet d’installation (migrations, seeders, types, scrapping, capacités). |
 | `project:super-admin` | Création interactive du premier super_admin (hors `init`). |
+| `project:backup` | Dump BDD (gzip) + archive `storage/app` (tar.gz, ZIP si besoin), purge > N jours. |
 
 La commande historique **`run`** reste la **moteur bas niveau** (nombreuses options). Les `project:*` la **orchestrent** pour un usage quotidien plus lisible.
 
@@ -167,6 +168,42 @@ Planifiable via `.env` :
 - `PROJECT_UPDATE_CRON="..."`
 
 Le scheduler appelle **`project:data:sync`**.
+
+---
+
+## `project:backup` — sauvegardes locales
+
+| Sortie | Contenu |
+|--------|---------|
+| `…_mysql.sql.gz` | Dump **MySQL / MariaDB** (`mysqldump` + `gzip`) ou copie **SQLite** compressée |
+| `…_storage.tar.gz` | Arborescence **`storage/app`** sans **`app/backups`** (évite récursion) ; **ZIP** si `tar` indisponible (ex. Windows) |
+
+**Rotation :** à chaque exécution (sauf `--no-prune`), suppression des fichiers du même préfixe plus vieux que **`PROJECT_BACKUP_RETENTION_DAYS`** (défaut **30** ≈ 1 mois). Noms reconnus : `*_mysql.sql.gz`, `*_storage.tar.gz`, `*_storage.zip`.
+
+| Option | Effet |
+|--------|--------|
+| `--no-database` / `--no-storage` | Cibler une seule partie |
+| `--path=` | Répertoire de sortie (défaut `storage/app/backups` ou `PROJECT_BACKUP_PATH`) |
+| `--retention-days=` | Surcharge de la rétention |
+| `--no-prune` | Ne pas supprimer les anciennes sauvegardes |
+| `--prune-only` | Uniquement la purge |
+| `--dry-run` | Purge simulée (liste des fichiers qui seraient supprimés) |
+
+**Configuration :** `config/project-backup.php`, variables `.env` :
+
+- `PROJECT_BACKUP_ENABLED` — si `true`, le scheduler exécute `project:backup` selon `PROJECT_BACKUP_CRON` (défaut `0 4 * * *`).
+- `PROJECT_BACKUP_PATH`, `PROJECT_BACKUP_RETENTION_DAYS`, `PROJECT_BACKUP_MYSQLDUMP_PATH`, `PROJECT_BACKUP_PREFIX`.
+
+**Prérequis :** binaire **`mysqldump`** sur le serveur (client MySQL) pour les connexions mysql/mariadb. Les dumps contiennent des données sensibles : protéger le répertoire de sauvegarde et les copies hors site.
+
+**Exemples**
+
+```bash
+php artisan project:backup
+php artisan project:backup --no-storage
+php artisan project:backup --retention-days=14
+php artisan project:backup --prune-only --dry-run
+```
 
 ---
 

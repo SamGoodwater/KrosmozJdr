@@ -316,6 +316,44 @@ export function getSpellFieldDescriptors(ctx = {}) {
         },
       },
     },
+    allows_reaction: {
+      key: "allows_reaction",
+      label: "Réaction",
+      icon: "fa-solid fa-bolt",
+      table: {
+        order: 151,
+        sortable: true,
+        filterable: { id: "allows_reaction", type: "boolean", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: {
+          sizes: {
+            xs: { mode: "badge" },
+            sm: { mode: "badge" },
+            md: { mode: "badge" },
+            lg: { mode: "badge" },
+            xl: { mode: "badge" },
+          },
+        },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
+        },
+      },
+    },
     element: {
       key: "element",
       label: "Élément",

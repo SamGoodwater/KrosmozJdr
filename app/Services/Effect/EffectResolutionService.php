@@ -97,6 +97,8 @@ final class EffectResolutionService
                 'value' => $ctx['value'] ?? null,
                 'value_formula' => $row->params['value_formula'] ?? null,
                 'value_formula_crit' => $row->params['value_formula_crit'] ?? null,
+                'life_steal_formula' => $row->params['life_steal_formula'] ?? null,
+                'life_steal_heal' => $ctx['life_steal_heal'] ?? null,
                 'crit_only' => (bool) ($row->crit_only ?? false),
                 'duration' => $ctx['duration'] ?? null,
                 'duration_formula' => $row->duration_formula,
@@ -144,6 +146,26 @@ final class EffectResolutionService
             if ($numeric !== null) {
                 // On garde la valeur telle quelle (float) dans le contexte ; charge au moteur de combat de trancher int/float
                 $ctx['value'] = $numeric;
+            }
+        }
+
+        // Dégâts primaires (sans résistances) pour le vol de vie : identiques à la valeur résolue pour l’instant.
+        if (isset($ctx['value']) && is_numeric($ctx['value'])) {
+            $ctx['dgt'] = (float) $ctx['value'];
+        }
+
+        $lifeStealRaw = $params['life_steal_formula'] ?? null;
+        if (is_string($lifeStealRaw) && trim($lifeStealRaw) !== '') {
+            $lifeStealNorm = LifeStealFormulaNormalizer::normalize($lifeStealRaw);
+            if (is_string($lifeStealNorm) && trim($lifeStealNorm) !== '') {
+                $numCtx = $this->toNumericContext($ctx);
+                if (isset($ctx['dgt'])) {
+                    $numCtx['dgt'] = (float) $ctx['dgt'];
+                }
+                $heal = $this->formulaService->evaluate($lifeStealNorm, $numCtx);
+                if ($heal !== null) {
+                    $ctx['life_steal_heal'] = $heal;
+                }
             }
         }
 

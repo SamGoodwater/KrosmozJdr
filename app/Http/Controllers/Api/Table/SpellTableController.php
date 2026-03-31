@@ -259,7 +259,7 @@ class SpellTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['level', 'pa', 'category', 'element', 'is_magic', 'powerful', 'state'] as $k) {
+        foreach (['level', 'pa', 'category', 'element', 'is_magic', 'allows_reaction', 'powerful', 'state'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -312,6 +312,9 @@ class SpellTableController extends Controller
         }
         if (array_key_exists('is_magic', $filters) && $filters['is_magic'] !== '' && $filters['is_magic'] !== null) {
             $query->where('is_magic', (int) $filters['is_magic']);
+        }
+        if (array_key_exists('allows_reaction', $filters) && $filters['allows_reaction'] !== '' && $filters['allows_reaction'] !== null) {
+            $query->where('allows_reaction', (int) $filters['allows_reaction']);
         }
         if (array_key_exists('powerful', $filters) && $filters['powerful'] !== '' && $filters['powerful'] !== null) {
             $query->where('powerful', (int) $filters['powerful']);
@@ -387,6 +390,10 @@ class SpellTableController extends Controller
                 ['value' => '1', 'label' => 'Magique'],
                 ['value' => '0', 'label' => 'Physique'],
             ],
+            'allows_reaction' => [
+                ['value' => '1', 'label' => 'Oui'],
+                ['value' => '0', 'label' => 'Non'],
+            ],
             'powerful' => [
                 ['value' => '0', 'label' => 'Normal'],
                 ['value' => '1', 'label' => 'Puissant'],
@@ -432,6 +439,7 @@ class SpellTableController extends Controller
                     'element' => $sp->element,
                     'category' => $sp->category,
                     'is_magic' => (bool) $sp->is_magic,
+                    'allows_reaction' => (bool) ($sp->allows_reaction ?? false),
                     'powerful' => $sp->powerful,
                     'state' => (string) ($sp->state ?? 'draft'),
                     'read_level' => (int) ($sp->read_level ?? 0),
@@ -599,6 +607,7 @@ class SpellTableController extends Controller
                         'element' => $sp->element,
                         'category' => $sp->category,
                         'is_magic' => (bool) $sp->is_magic,
+                        'allows_reaction' => (bool) ($sp->allows_reaction ?? false),
                         'powerful' => $sp->powerful,
                         'state' => (string) ($sp->state ?? 'draft'),
                         'read_level' => (int) ($sp->read_level ?? 0),

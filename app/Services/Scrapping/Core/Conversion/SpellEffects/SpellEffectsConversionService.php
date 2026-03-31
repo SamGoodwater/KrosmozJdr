@@ -26,7 +26,9 @@ use Illuminate\Support\Str;
 final class SpellEffectsConversionService
 {
     private const SAVE_DC_DEFAULT_FORMULA = '10 + modificateur de caractéristique';
+
     private const SUB_EFFECT_SLUG_APPLY_STATE = 'appliquer-etat';
+
     private const SUB_EFFECT_SLUG_SELF_APPLY_STATE = 's-appliquer-etat';
 
     public function __construct(
@@ -37,15 +39,14 @@ final class SpellEffectsConversionService
         private DofusConversionService $dofusConversion,
         private CharacteristicGetterService $characteristicGetter,
         private DiceNotationService $diceNotationService,
-    ) {
-    }
+    ) {}
 
     /**
      * Convertit les effets d'un sort DofusDB (sort brut + spell-levels) en structure KrosmozJDR.
      *
-     * @param array<string, mixed> $spellRaw Réponse GET /spells/{id} (doit contenir id, name, spellLevels)
-     * @param list<array<string, mixed>> $spellLevelsData Liste des réponses GET /spell-levels/{levelId} (grade, effects[], criticalEffect[])
-     * @param array{lang?: string} $options lang pour le catalogue d'effets (défaut fr)
+     * @param  array<string, mixed>  $spellRaw  Réponse GET /spells/{id} (doit contenir id, name, spellLevels)
+     * @param  list<array<string, mixed>>  $spellLevelsData  Liste des réponses GET /spell-levels/{levelId} (grade, effects[], criticalEffect[])
+     * @param  array{lang?: string}  $options  lang pour le catalogue d'effets (défaut fr)
      */
     public function convert(
         array $spellRaw,
@@ -82,7 +83,7 @@ final class SpellEffectsConversionService
     }
 
     /**
-     * @param array<string, mixed> $levelData Un spell-level (effects[], criticalEffect[])
+     * @param  array<string, mixed>  $levelData  Un spell-level (effects[], criticalEffect[])
      * @return array{degree: int, name: string, slug: string, description: string|null, sub_effects: list<array>}
      */
     private function convertOneLevel(
@@ -93,14 +94,14 @@ final class SpellEffectsConversionService
         string $lang
     ): array {
         $degree = $grade > 0 ? $grade : 1;
-        $slug = $baseSlug . '-' . $degree;
+        $slug = $baseSlug.'-'.$degree;
 
         $subEffects = [];
         $effectsList = $levelData['effects'] ?? [];
         $criticalList = $this->indexCriticalEffectsByOrder($levelData['criticalEffect'] ?? []);
 
         foreach ($effectsList as $index => $instance) {
-            if (!is_array($instance)) {
+            if (! is_array($instance)) {
                 continue;
             }
             $effectId = isset($instance['effectId']) ? (int) $instance['effectId'] : 0;
@@ -118,6 +119,7 @@ final class SpellEffectsConversionService
                     'params' => $this->buildParamsForState($instance, $stateData, $effectId),
                     'crit_only' => false,
                 ];
+
                 continue;
             }
 
@@ -178,9 +180,9 @@ final class SpellEffectsConversionService
     }
 
     /**
-     * @param array<string, mixed> $instance
-     * @param array<string, mixed> $definition
-     * @param array<string, mixed> $stateData
+     * @param  array<string, mixed>  $instance
+     * @param  array<string, mixed>  $definition
+     * @param  array<string, mixed>  $stateData
      * @return array<string, mixed>
      */
     private function buildParamsForState(array $instance, array $stateData, int $effectId): array
@@ -210,18 +212,17 @@ final class SpellEffectsConversionService
     /**
      * Extrait la notation zone (point, line-WxL, cross-N, circle-N, rect-WxH) depuis le premier zoneDescr du niveau.
      *
-     * @param array<string, mixed> $levelData spell-level (effects[].zoneDescr)
-     * @return string|null
+     * @param  array<string, mixed>  $levelData  spell-level (effects[].zoneDescr)
      */
     private function extractAreaNotationFromLevel(array $levelData): ?string
     {
         $effectsList = $levelData['effects'] ?? [];
         foreach ($effectsList as $inst) {
-            if (!is_array($inst)) {
+            if (! is_array($inst)) {
                 continue;
             }
             $zone = $inst['zoneDescr'] ?? null;
-            if (!is_array($zone)) {
+            if (! is_array($zone)) {
                 continue;
             }
             $notation = self::zoneDescrToNotation($zone);
@@ -229,6 +230,7 @@ final class SpellEffectsConversionService
                 return $notation;
             }
         }
+
         return null;
     }
 
@@ -238,7 +240,8 @@ final class SpellEffectsConversionService
      * 88 = croix pleine, 81 = croix sans centre, 71 = carré.
      *
      * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
-     * @param array{shape?: int, param1?: int, param2?: int} $zoneDescr
+     *
+     * @param  array{shape?: int, param1?: int, param2?: int}  $zoneDescr
      */
     public static function zoneDescrToNotation(array $zoneDescr): ?string
     {
@@ -249,15 +252,15 @@ final class SpellEffectsConversionService
         return match (true) {
             $shape === 0, $shape === 80 => 'point',  // case unique (CAC)
             $shape === 67, $shape === 79 => self::circleNotation($p1, $p2),  // 67 cercle, 79 anneau sans centre
-            $shape === 76 => 'line-1x' . max(1, $p1 ?: 1),  // ligne
+            $shape === 76 => 'line-1x'.max(1, $p1 ?: 1),  // ligne
             $shape === 88 => self::crossNotation(0, $p1 ?: 1),  // croix pleine (min=0)
             $shape === 81 => self::crossNotation(1, $p1 ?: 1),  // croix sans centre (min=1)
             $shape === 71 => self::rectNotation($p1, $p2),  // carré (ou rect si p2)
             // Anciens IDs (rétrocompat)
-            $shape === 1 => 'line-1x' . max(1, $p1 ?: 1),
+            $shape === 1 => 'line-1x'.max(1, $p1 ?: 1),
             $shape === 2, $shape === 4 => self::crossNotation(0, $p1 ?: 1),
             $shape === 3 => self::circleNotation($p1, $p2),
-            default => $shape > 0 ? 'shape-' . $shape . ($p1 !== 0 || $p2 !== 0 ? '-' . $p1 . '-' . $p2 : '') : null,
+            default => $shape > 0 ? 'shape-'.$shape.($p1 !== 0 || $p2 !== 0 ? '-'.$p1.'-'.$p2 : '') : null,
         };
     }
 
@@ -268,11 +271,13 @@ final class SpellEffectsConversionService
     {
         if ($p2 <= 0) {
             $radius = max(1, $p1);
-            return 'circle-0-' . $radius;
+
+            return 'circle-0-'.$radius;
         }
         $min = max(0, $p1);
         $max = max($min, $p2);
-        return 'circle-' . $min . '-' . $max;
+
+        return 'circle-'.$min.'-'.$max;
     }
 
     /**
@@ -282,7 +287,8 @@ final class SpellEffectsConversionService
     {
         $max = max(1, $max);
         $min = max(0, min($min, $max));
-        return 'cross-' . $min . '-' . $max;
+
+        return 'cross-'.$min.'-'.$max;
     }
 
     /**
@@ -292,20 +298,20 @@ final class SpellEffectsConversionService
     {
         $w = max(1, $p1 ?: 1);
         $h = $p2 > 0 ? max(1, $p2) : $w;
-        return 'rect-' . $w . 'x' . $h;
+
+        return 'rect-'.$w.'x'.$h;
     }
 
     /**
      * Déduit target_type (direct / trap / glyph) depuis le niveau (Dofus : triggers, etc.).
      *
-     * @param array<string, mixed> $levelData
-     * @return string
+     * @param  array<string, mixed>  $levelData
      */
     private function extractTargetTypeFromLevel(array $levelData): string
     {
         $effectsList = $levelData['effects'] ?? [];
         foreach ($effectsList as $inst) {
-            if (!is_array($inst)) {
+            if (! is_array($inst)) {
                 continue;
             }
             $triggers = $inst['triggers'] ?? null;
@@ -316,31 +322,33 @@ final class SpellEffectsConversionService
                 return \App\Models\Effect::TARGET_GLYPH;
             }
         }
+
         return \App\Models\Effect::TARGET_DIRECT;
     }
 
     /**
-     * @param list<array<string, mixed>> $criticalEffect
+     * @param  list<array<string, mixed>>  $criticalEffect
      * @return array<int, array<string, mixed>> order => instance
      */
     private function indexCriticalEffectsByOrder(array $criticalEffect): array
     {
         $indexed = [];
         foreach ($criticalEffect as $inst) {
-            if (!is_array($inst)) {
+            if (! is_array($inst)) {
                 continue;
             }
             $order = isset($inst['order']) ? (int) $inst['order'] : count($indexed);
             $indexed[$order] = $inst;
         }
+
         return $indexed;
     }
 
     /**
      * Params pour le sous-effet "autre" : valeur (formule dés/valeur) + description DofusDB (pour affichage / sous-effets personnalisés).
      *
-     * @param array<string, mixed> $instance Instance d'effet (diceNum, diceSide, value)
-     * @param array<string, mixed> $definition Définition GET /effects/{id} (description multilingue)
+     * @param  array<string, mixed>  $instance  Instance d'effet (diceNum, diceSide, value)
+     * @param  array<string, mixed>  $definition  Définition GET /effects/{id} (description multilingue)
      * @return array{value_formula: ?string, value: string, value_formula_crit: null}
      */
     private function buildParamsForOther(array $instance, array $definition, string $lang): array
@@ -359,13 +367,13 @@ final class SpellEffectsConversionService
     }
 
     /**
-     * @param array<string, mixed> $instance
-     * @param array<string, mixed> $definition
+     * @param  array<string, mixed>  $instance
+     * @param  array<string, mixed>  $definition
      * @return array<string, mixed>|null
      */
     private function resolveSpellStateData(array $instance, array $definition, string $lang): ?array
     {
-        if (!$this->isStateEffectDefinition($definition)) {
+        if (! $this->isStateEffectDefinition($definition)) {
             return null;
         }
 
@@ -383,7 +391,7 @@ final class SpellEffectsConversionService
     }
 
     /**
-     * @param array<string, mixed> $definition
+     * @param  array<string, mixed>  $definition
      */
     private function isStateEffectDefinition(array $definition): bool
     {
@@ -396,7 +404,7 @@ final class SpellEffectsConversionService
     }
 
     /**
-     * @param array<string, mixed> $instance
+     * @param  array<string, mixed>  $instance
      */
     private function extractStateIdFromInstance(array $instance): int
     {
@@ -413,7 +421,7 @@ final class SpellEffectsConversionService
     }
 
     /**
-     * @param array<string, mixed> $instance
+     * @param  array<string, mixed>  $instance
      */
     private function resolveStateSubEffectSlug(array $instance): string
     {
@@ -425,27 +433,28 @@ final class SpellEffectsConversionService
         return self::SUB_EFFECT_SLUG_APPLY_STATE;
     }
 
-    /**
-     * @param mixed $value
-     */
     private function extractLocalizedValue(mixed $value, string $lang): ?string
     {
         if (is_string($value)) {
             $trimmed = trim($value);
+
             return $trimmed !== '' ? $trimmed : null;
         }
         if (is_array($value)) {
             if (isset($value[$lang]) && is_string($value[$lang])) {
                 $trimmed = trim((string) $value[$lang]);
+
                 return $trimmed !== '' ? $trimmed : null;
             }
             if (isset($value['fr']) && is_string($value['fr'])) {
                 $trimmed = trim((string) $value['fr']);
+
                 return $trimmed !== '' ? $trimmed : null;
             }
             $first = reset($value);
             if (is_string($first)) {
                 $trimmed = trim($first);
+
                 return $trimmed !== '' ? $trimmed : null;
             }
         }
@@ -456,12 +465,12 @@ final class SpellEffectsConversionService
     /**
      * Ajoute la durée (tours) aux params si présente dans l'instance (ex. "2 durée" sur la carte sort).
      *
-     * @param array<string, mixed> $instance Instance d'effet (duration)
-     * @param array<string, mixed> $params Params à enrichir — modifié par référence
+     * @param  array<string, mixed>  $instance  Instance d'effet (duration)
+     * @param  array<string, mixed>  $params  Params à enrichir — modifié par référence
      */
     private function addDurationToParams(array $instance, array &$params): void
     {
-        if (!array_key_exists('duration', $instance)) {
+        if (! array_key_exists('duration', $instance)) {
             return;
         }
         $duration = $instance['duration'];
@@ -487,14 +496,16 @@ final class SpellEffectsConversionService
         }
         if (is_array($desc)) {
             $first = reset($desc);
+
             return $first !== false ? (string) $first : '';
         }
+
         return '';
     }
 
     /**
-     * @param array<string, mixed> $instance Instance d'effet (diceNum, diceSide, value, effectElement)
-     * @param array<string, mixed> $definition Définition /effects/{id} (elementId, characteristic)
+     * @param  array<string, mixed>  $instance  Instance d'effet (diceNum, diceSide, value, effectElement)
+     * @param  array<string, mixed>  $definition  Définition /effects/{id} (elementId, characteristic)
      * @return array<string, mixed> params pour le pivot (value_formula, characteristic, value_converted, value_formula_crit si fourni ailleurs)
      */
     private function buildParams(
@@ -503,8 +514,7 @@ final class SpellEffectsConversionService
         string $charSource,
         string $subEffectSlug,
         ?string $mappedCharacteristicKey = null
-    ): array
-    {
+    ): array {
         $params = [
             'value_formula' => $this->buildValueFormula($instance),
             'value_formula_crit' => null,
@@ -538,8 +548,78 @@ final class SpellEffectsConversionService
         }
 
         $this->applyValueConversion($instance, $subEffectSlug, $params);
+        $this->maybeAttachLifeStealFormulaFromDofusDefinition($subEffectSlug, $definition, $params);
+        $this->applyLifeStealValueConversion($instance, $params);
 
         return $params;
+    }
+
+    /**
+     * Détecte un effet « vol de vie » Dofus (texte) et ajoute life_steal_formula = [dgt] si absent.
+     *
+     * @param  array<string, mixed>  $definition  Définition /effects/{id}
+     * @param  array<string, mixed>  $params  Modifié par référence
+     */
+    private function maybeAttachLifeStealFormulaFromDofusDefinition(string $subEffectSlug, array $definition, array &$params): void
+    {
+        if ($subEffectSlug !== 'frapper') {
+            return;
+        }
+        $existing = $params['life_steal_formula'] ?? null;
+        if (is_string($existing) && trim($existing) !== '') {
+            return;
+        }
+
+        $desc = $definition['description'] ?? null;
+        $text = '';
+        if (is_string($desc)) {
+            $text = $desc;
+        } elseif (is_array($desc)) {
+            $text = (string) ($desc['fr'] ?? $desc['en'] ?? '');
+            if ($text === '' && $desc !== []) {
+                $first = reset($desc);
+                $text = is_string($first) ? $first : '';
+            }
+        }
+        $low = mb_strtolower($text);
+        if ($low === '') {
+            return;
+        }
+
+        $volVie = str_contains($low, 'vol de vie')
+            || (str_contains($low, 'vole') && str_contains($low, 'vie'));
+        if ($volVie) {
+            $params['life_steal_formula'] = '[dgt]';
+        }
+    }
+
+    /**
+     * Conversion Dofus → Krosmoz pour les PV volés (même base « d » que les dommages).
+     *
+     * @param  array<string, mixed>  $params  Modifié par référence
+     */
+    private function applyLifeStealValueConversion(array $instance, array &$params): void
+    {
+        $key = $this->formulaResolver->resolveLifeStealCharacteristicKeyForConversion($params);
+        if ($key === null) {
+            return;
+        }
+
+        $d = $this->computeDofusValueForConversion($instance);
+        if ($d === null) {
+            return;
+        }
+
+        $fallback = (float) round($d);
+        $context = ['raw' => $instance];
+        $converted = $this->dofusConversion->convert(
+            $key,
+            ['d' => $d],
+            SpellEffectConversionFormulaResolver::ENTITY_SPELL,
+            $fallback,
+            $context
+        );
+        $params['life_steal_value_converted'] = $converted;
     }
 
     /**
@@ -574,7 +654,7 @@ final class SpellEffectsConversionService
      * Calcule la valeur Dofus « d » (moyenne des dés ou valeur fixe) pour la conversion.
      * Quand diceSide est 0, diceNum porte souvent la valeur (ex. 10 = 10%, 50 = 50).
      *
-     * @param array<string, mixed> $instance Instance d'effet (diceNum, diceSide, value)
+     * @param  array<string, mixed>  $instance  Instance d'effet (diceNum, diceSide, value)
      * @return float|null Moyenne diceNum*(diceSide+1)/2, ou diceNum si diceSide=0, ou value, ou null
      */
     private function computeDofusValueForConversion(array $instance): ?float
@@ -591,14 +671,15 @@ final class SpellEffectsConversionService
         if ($value !== null) {
             return $value;
         }
+
         return null;
     }
 
     /**
      * Applique la conversion BDD (characteristic_spell) et remplit params.value_converted si possible.
      *
-     * @param array<string, mixed> $instance Instance d'effet DofusDB
-     * @param array<string, mixed> $params Params déjà remplis (value_formula, characteristic) — modifié par référence
+     * @param  array<string, mixed>  $instance  Instance d'effet DofusDB
+     * @param  array<string, mixed>  $params  Params déjà remplis (value_formula, characteristic) — modifié par référence
      */
     private function applyValueConversion(array $instance, string $subEffectSlug, array &$params): void
     {
@@ -634,14 +715,14 @@ final class SpellEffectsConversionService
      * Construit la formule de valeur : XdY (dés), ou valeur fixe (diceNum si diceSide=0, sinon value).
      * Quand diceSide est 0, Dofus utilise souvent diceNum pour la valeur (ex. 10 = 10%, 50 = 50).
      *
-     * @param array<string, mixed> $instance
+     * @param  array<string, mixed>  $instance
      */
     private function buildValueFormula(array $instance): ?string
     {
         $diceNum = isset($instance['diceNum']) && is_numeric($instance['diceNum']) ? (int) $instance['diceNum'] : null;
         $diceSide = isset($instance['diceSide']) && is_numeric($instance['diceSide']) ? (int) $instance['diceSide'] : null;
         if ($diceNum !== null && $diceSide !== null && $diceNum > 0 && $diceSide > 0) {
-            return $diceNum . 'd' . $diceSide;
+            return $diceNum.'d'.$diceSide;
         }
         // diceSide 0 ou absent : valeur fixe dans diceNum (ex. 10% bouclier) ou value
         if ($diceNum !== null && $diceNum > 0 && ($diceSide === null || $diceSide === 0)) {
@@ -651,6 +732,7 @@ final class SpellEffectsConversionService
         if ($value !== null) {
             return (string) $value;
         }
+
         return null;
     }
 
@@ -662,8 +744,8 @@ final class SpellEffectsConversionService
      * - Boosts/soins/invocation/soutien => réussite auto.
      * - Placement sans dommage explicite => sauvegarde (cas défensif par défaut).
      *
-     * @param list<array<string, mixed>> $effects
-     * @param array<string, mixed> $spellRaw
+     * @param  list<array<string, mixed>>  $effects
+     * @param  array<string, mixed>  $spellRaw
      * @return array<string, string|null>
      */
     private function inferSpellResolution(array $effects, array $spellRaw): array
@@ -676,12 +758,12 @@ final class SpellEffectsConversionService
 
         foreach ($effects as $effect) {
             $subEffects = $effect['sub_effects'] ?? [];
-            if (!is_array($subEffects)) {
+            if (! is_array($subEffects)) {
                 continue;
             }
 
             foreach ($subEffects as $subEffect) {
-                if (!is_array($subEffect)) {
+                if (! is_array($subEffect)) {
                     continue;
                 }
 
@@ -690,13 +772,15 @@ final class SpellEffectsConversionService
                 $characteristic = isset($params['characteristic']) ? strtolower((string) $params['characteristic']) : '';
                 $valueFormula = isset($params['value_formula']) ? trim((string) $params['value_formula']) : '';
 
-                if (in_array($slug, ['frapper', 'voler-vie'], true)) {
+                if ($slug === 'frapper') {
                     $hasDamage = true;
+
                     continue;
                 }
 
                 if ($slug === 'déplacer') {
                     $hasPlacement = true;
+
                     continue;
                 }
 
@@ -705,6 +789,7 @@ final class SpellEffectsConversionService
                     if ($saveAbilityHint === null) {
                         $saveAbilityHint = $this->inferSaveAbilityFromCharacteristicKey($characteristic);
                     }
+
                     continue;
                 }
 
@@ -744,7 +829,7 @@ final class SpellEffectsConversionService
             }
         }
 
-        if ($hasRemoval || ($hasPlacement && !$hasDamage && !$hasSupport)) {
+        if ($hasRemoval || ($hasPlacement && ! $hasDamage && ! $hasSupport)) {
             return [
                 'resolution_mode' => Spell::RESOLUTION_SAVING_THROW,
                 'attack_characteristic_key' => null,
@@ -766,7 +851,7 @@ final class SpellEffectsConversionService
             ];
         }
 
-        if (!$hasDamage && !$hasRemoval) {
+        if (! $hasDamage && ! $hasRemoval) {
             return [
                 'resolution_mode' => Spell::RESOLUTION_AUTO_SUCCESS,
                 'attack_characteristic_key' => null,
@@ -936,6 +1021,7 @@ final class SpellEffectsConversionService
         if (is_array($name)) {
             return (string) ($name['fr'] ?? reset($name) ?? 'Sans nom');
         }
+
         return 'Sans nom';
     }
 
@@ -945,6 +1031,7 @@ final class SpellEffectsConversionService
         if ($base === '') {
             $base = 'spell';
         }
-        return $spellId > 0 ? $base . '-' . $spellId : $base;
+
+        return $spellId > 0 ? $base.'-'.$spellId : $base;
     }
 }

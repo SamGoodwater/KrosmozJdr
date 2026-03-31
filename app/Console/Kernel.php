@@ -45,6 +45,12 @@ class Kernel extends ConsoleKernel
                 ->command("scrapping --entity=resource --resource-types=allowed --limit={$limit} --max-pages=0 --max-items=20000")
                 ->dailyAt($at);
         }
+
+        // Sauvegardes BDD + storage/app (gzip / tar.gz), purge > PROJECT_BACKUP_RETENTION_DAYS
+        if ((bool) env('PROJECT_BACKUP_ENABLED', false)) {
+            $cron = env('PROJECT_BACKUP_CRON', '0 4 * * *');
+            $schedule->command('project:backup')->cron($cron);
+        }
     }
 
     /**

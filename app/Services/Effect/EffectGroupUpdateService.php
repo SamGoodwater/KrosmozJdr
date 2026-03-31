@@ -83,6 +83,12 @@ final class EffectGroupUpdateService
             if ($params && ! empty($params['value_formula_crit'])) {
                 $params['value_formula_crit'] = $sanitizer->sanitize($params['value_formula_crit']);
             }
+            if ($params && ! empty($params['life_steal_formula'])) {
+                $params['life_steal_formula'] = $sanitizer->sanitize($params['life_steal_formula']);
+            }
+            if ($params && ! empty($params['cells_formula'])) {
+                $params['cells_formula'] = $sanitizer->sanitize($params['cells_formula']);
+            }
             $durationFormula = $row['duration_formula'] ?? null;
             if ($durationFormula) {
                 $durationFormula = $sanitizer->sanitize($durationFormula);

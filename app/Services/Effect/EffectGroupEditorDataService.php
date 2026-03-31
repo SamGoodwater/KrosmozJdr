@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Effect;
 
+use App\Models\Characteristic;
 use App\Models\Effect;
 use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
+use App\Models\SpellState;
 use App\Models\SubEffect;
 use Illuminate\Support\Collection;
 
@@ -17,16 +19,71 @@ use Illuminate\Support\Collection;
  */
 final class EffectGroupEditorDataService
 {
+    /** @var list<string> */
+    private const EXCLUDED_OBJECT_CHARACTERISTIC_KEYS = [
+        'name_object',
+        'level_object',
+        'price_object',
+        'weight_object',
+        'rarity_object',
+    ];
+
+    /**
+     * Caractéristiques du groupe « object » (BDD) pour booster / retirer / voler-caractéristiques.
+     *
+     * @return list<array{key: string, label: string, category: string, helper: string|null, descriptions: mixed}>
+     */
+    public function characteristicsObjectForEffectEditor(): array
+    {
+        return Characteristic::query()
+            ->where('group', 'object')
+            ->whereNull('linked_to_characteristic_id')
+            ->whereNotIn('key', self::EXCLUDED_OBJECT_CHARACTERISTIC_KEYS)
+            ->orderBy('sort_order')
+            ->orderBy('key')
+            ->get()
+            ->map(function (Characteristic $c): array {
+                $eff = $c->effectiveCharacteristic();
+
+                return [
+                    'key' => $eff->key,
+                    'label' => $eff->name ?? $eff->short_name ?? $eff->key,
+                    'category' => 'object',
+                    'helper' => $eff->helper,
+                    'descriptions' => $eff->descriptions,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
     /**
      * @return array<string, mixed>
      */
     public function formOptions(): array
     {
-        $subEffects = SubEffect::orderBy('type_slug')->orderBy('slug')->get(['id', 'slug', 'type_slug', 'template_text', 'variables_allowed', 'param_schema']);
+        /** @deprecated Retiré du référentiel : vol de vie = frapper + life_steal_formula. Exclure tant que d’anciennes lignes BDD peuvent subsister. */
+        $subEffects = SubEffect::query()
+            ->whereNotIn('slug', ['voler-vie'])
+            ->orderBy('type_slug')
+            ->orderBy('slug')
+            ->get(['id', 'slug', 'type_slug', 'template_text', 'variables_allowed', 'param_schema']);
         $monsters = Monster::with('creature:id,name')->orderBy('id')->get()->map(fn ($m) => [
             'value' => $m->id,
             'label' => $m->creature?->name ?? (string) $m->id,
         ])->values()->all();
+
+        $spellStates = SpellState::query()
+            ->orderBy('name')
+            ->get(['id', 'dofusdb_id', 'name', 'icon'])
+            ->map(fn ($st) => [
+                'id' => $st->id,
+                'dofusdb_id' => $st->dofusdb_id,
+                'name' => $st->name,
+                'icon' => $st->icon,
+            ])
+            ->values()
+            ->all();
 
         return [
             'effect_groups' => [],
@@ -39,7 +96,9 @@ final class EffectGroupEditorDataService
                 'param_schema' => $s->param_schema,
             ])->values()->all(),
             'characteristics' => config('effect_sub_effects.characteristics', []),
+            'characteristics_object' => $this->characteristicsObjectForEffectEditor(),
             'monsters' => $monsters,
+            'spell_states' => $spellStates,
             'scopes' => [
                 ['value' => 'general', 'label' => 'Général'],
                 ['value' => 'combat', 'label' => 'Combat'],

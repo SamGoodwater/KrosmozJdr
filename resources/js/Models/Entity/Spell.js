@@ -177,6 +177,13 @@ export class Spell extends BaseModel {
         return false;
     }
 
+    /**
+     * Sort lançable en réaction de combat (1 réaction / round / créature ; PA non récupérés au tour suivant).
+     */
+    get allowsReaction() {
+        return Boolean(this._data.allows_reaction);
+    }
+
     get powerful() {
         return this._data.powerful || null;
     }
@@ -347,6 +354,8 @@ export class Spell extends BaseModel {
                 return this._toNumberBetweenTwoCastCell(format, size, options);
             case 'is_magic':
                 return this._toIsMagicCell(format, size, options);
+            case 'allows_reaction':
+                return this._toAllowsReactionCell(format, size, options);
             case 'powerful':
                 return this._toPowerfulCell(format, size, options);
             case 'image':
@@ -762,6 +771,26 @@ export class Spell extends BaseModel {
     }
 
     /**
+     * Génère une cellule pour allows_reaction
+     * @private
+     */
+    _toAllowsReactionCell(format, size, options) {
+        const on = this.allowsReaction;
+        const label = on ? 'Oui' : 'Non';
+
+        return {
+            type: 'badge',
+            value: label,
+            params: {
+                color: on ? 'success' : 'neutral',
+                sortValue: on ? 1 : 0,
+                searchValue: label,
+                filterValue: on ? 1 : 0,
+            },
+        };
+    }
+
+    /**
      * Génère une cellule pour powerful
      * @private
      */
@@ -1007,6 +1036,7 @@ export class Spell extends BaseModel {
             spellTypes: (this.spellTypes || []).map((t) => Number(t.id ?? t)).filter((n) => Number.isFinite(n)),
             category: this.category,
             is_magic: this.isMagic,
+            allows_reaction: this.allowsReaction,
             powerful: this.powerful,
             resolution_mode: this.resolutionMode,
             attack_characteristic_key: this.attackCharacteristicKey,

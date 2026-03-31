@@ -12,13 +12,15 @@ namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
  */
 final class SpellEffectConversionFormulaResolver
 {
-    /** Mapping action (sub_effect_slug) → characteristic_key pour les Type 2 action (dommages, soin, vol de vie, bouclier). */
+    /** Mapping action (sub_effect_slug) → characteristic_key pour les Type 2 action (dommages, soin, bouclier). */
     private const ACTION_TO_CHARACTERISTIC = [
         'frapper' => 'dommages_spell',
         'soigner' => 'soin_spell',
-        'voler-vie' => 'vol_vie_spell',
         'protéger' => 'bouclier_spell',
     ];
+
+    /** Vol de vie : sous-effet unique « frapper » + params.life_steal_formula (conversion Dofus sur la même base « d »). */
+    public const LIFE_STEAL_CHARACTERISTIC_KEY = 'vol_vie_spell';
 
     /** Actions avec conversion par caractéristique (booster, retirer, voler-caracteristiques). */
     private const PER_CHARACTERISTIC_SLUGS = [
@@ -39,8 +41,8 @@ final class SpellEffectConversionFormulaResolver
     /**
      * Retourne la characteristic_key (groupe spell) pour appliquer la conversion, ou null si pas de conversion.
      *
-     * @param string $subEffectSlug Slug du sous-effet (frapper, soigner, booster, …)
-     * @param array<string, mixed> $params Params du sous-effet (characteristic, value_formula, …)
+     * @param  string  $subEffectSlug  Slug du sous-effet (frapper, soigner, booster, …)
+     * @param  array<string, mixed>  $params  Params du sous-effet (characteristic, value_formula, …)
      * @return string|null Clé pour DofusConversionService (ex. power_spell, pa_spell) ou null
      */
     public function resolveCharacteristicKeyForConversion(string $subEffectSlug, array $params): ?string
@@ -56,12 +58,27 @@ final class SpellEffectConversionFormulaResolver
                 if (in_array($char, self::IGNORED_KEYS, true)) {
                     return null;
                 }
+
                 return $this->normalizeSpellKey($char);
             }
+
             return null;
         }
 
         return null;
+    }
+
+    /**
+     * Clé de conversion pour le montant « PV volés » lorsque `life_steal_formula` est renseignée (frapper).
+     */
+    public function resolveLifeStealCharacteristicKeyForConversion(array $params): ?string
+    {
+        $raw = $params['life_steal_formula'] ?? null;
+        if (! is_string($raw) || trim($raw) === '') {
+            return null;
+        }
+
+        return self::LIFE_STEAL_CHARACTERISTIC_KEY;
     }
 
     /** characteristic_keys désactivées (retirées du groupe spell : echec_critique, prospection). */
@@ -145,6 +162,7 @@ final class SpellEffectConversionFormulaResolver
         if (str_ends_with($key, '_spell')) {
             return $key;
         }
-        return $key . '_spell';
+
+        return $key.'_spell';
     }
 }

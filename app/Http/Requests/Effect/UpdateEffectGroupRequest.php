@@ -48,7 +48,12 @@ class UpdateEffectGroupRequest extends FormRequest
             'degrees.*.effect_sub_effects.*.params.characteristic' => 'nullable|string|max:64',
             'degrees.*.effect_sub_effects.*.params.value_formula' => 'nullable|string|max:500',
             'degrees.*.effect_sub_effects.*.params.value_formula_crit' => 'nullable|string|max:500',
+            'degrees.*.effect_sub_effects.*.params.life_steal_formula' => 'nullable|string|max:500',
+            'degrees.*.effect_sub_effects.*.params.cells_formula' => 'nullable|string|max:500',
             'degrees.*.effect_sub_effects.*.params.monster_id' => 'nullable|integer|exists:monsters,id',
+            'degrees.*.effect_sub_effects.*.params.spell_state_id' => 'nullable|integer|exists:spell_states,id',
+            'degrees.*.effect_sub_effects.*.params.teleport' => 'nullable|boolean',
+            'degrees.*.effect_sub_effects.*.params.dispellable' => 'nullable|boolean',
             'degrees.*.effect_sub_effects.*.crit_only' => 'nullable|boolean',
         ];
     }

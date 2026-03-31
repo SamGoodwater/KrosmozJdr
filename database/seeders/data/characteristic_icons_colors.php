@@ -165,6 +165,7 @@ return [
         'duration_spell' => 'timeBeforeUseAgain.webp',
         'time_before_use_again_spell' => 'timeBeforeUseAgain.webp',
         'ritual_available_spell' => 'heal.webp',
+        'allows_reaction_spell' => 'icons/caracteristics/is_reaction.webp',
         // —— Spell : Type 2 creature (icônes alignées sur *_creature) ——
         'initiative_spell' => 'initiative.webp',
         'armor_class_spell' => 'armorClass.webp',
@@ -336,6 +337,7 @@ return [
         'duration_spell' => '#00acc1',
         'time_before_use_again_spell' => '#757575',
         'ritual_available_spell' => '#5c6bc0',
+        'allows_reaction_spell' => '#624919',
         // —— Spell Type 2 creature (couleurs alignées sur *_creature) ——
         'initiative_spell' => '#ff9800',
         'armor_class_spell' => '#3f51b5',
@@ -496,7 +498,7 @@ return [
         'power_spell' => 'Indice de puissance du sort (dégâts/soins).',
         'dommages_spell' => 'Dommages infligés par le sort (sous-effet frapper). Conversion Dofus → Krosmoz.',
         'soin_spell' => 'Soins prodigués par le sort (sous-effet soigner). Conversion Dofus → Krosmoz.',
-        'vol_vie_spell' => 'Vol de vie (sous-effet voler-vie). Conversion Dofus → Krosmoz.',
+        'vol_vie_spell' => 'Vol de vie (frapper + life_steal_formula). Conversion Dofus → Krosmoz.',
         'bouclier_spell' => 'Bouclier généré par le sort (sous-effet protéger). Conversion Dofus → Krosmoz.',
         'number_between_two_cast_spell' => 'Nombre de tours minimum entre deux lancers du même sort.',
         'sight_line_spell' => 'Le sort nécessite une ligne de vue claire vers la cible (oui/non). Règles 3.3.2.2.',
@@ -509,6 +511,7 @@ return [
         'duration_spell' => 'Durée de l\'effet : combien de temps l\'effet du sort ou de la capacité reste actif (ex. 24h, 3 tours).',
         'time_before_use_again_spell' => 'Temps avant réutilisation : délai minimum avant de pouvoir relancer (ex. 1 tour, 24h, 1 fois avant repos long).',
         'ritual_available_spell' => 'Rituel disponible : la capacité peut être utilisée en mode rituel (incantation prolongée hors combat).',
+        'allows_reaction_spell' => 'Réaction : le sort peut être lancé en réaction pendant un round de combat. Chaque créature dispose d’une réaction par round ; les PA dépensés pour une réaction ne sont pas réattribués au tour suivant.',
         // —— Spell : Type 2 creature (équivalents creature, booster/retirer) ——
         'initiative_spell' => 'Initiative appliquée par les sous-effets de sort (booster, retirer).',
         'armor_class_spell' => 'CA appliquée par les sous-effets de sort (booster, retirer).',

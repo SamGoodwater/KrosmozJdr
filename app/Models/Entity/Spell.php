@@ -41,6 +41,7 @@ use Spatie\MediaLibrary\HasMedia;
  * @property string|null $save_dc_formula
  * @property string|null $save_success_note
  * @property bool $auto_success_if_willing_target Réussite auto si la cible est consentante
+ * @property bool $allows_reaction Utilisable comme réaction de combat (PA non récupérés au tour suivant)
  * @property string $state
  * @property int $read_level
  * @property int $write_level
@@ -170,6 +171,7 @@ class Spell extends Model implements HasMedia
         'save_dc_formula',
         'save_success_note',
         'auto_success_if_willing_target',
+        'allows_reaction',
         'state',
         'read_level',
         'write_level',
@@ -194,6 +196,7 @@ class Spell extends Model implements HasMedia
         'is_magic' => 'boolean',
         'auto_update' => 'boolean',
         'auto_success_if_willing_target' => 'boolean',
+        'allows_reaction' => 'boolean',
     ];
 
     /**

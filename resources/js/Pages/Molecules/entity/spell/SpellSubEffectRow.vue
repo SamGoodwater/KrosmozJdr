@@ -36,21 +36,29 @@ const props = defineProps({
 
 const sub = computed(() => props.row?.sub_effect ?? null);
 
+const params = computed(() =>
+    props.row?.params && typeof props.row.params === 'object' ? props.row.params : {},
+);
+
 const actionLabel = computed(() => {
     const typeSlug = sub.value?.type_slug;
+    const slug = sub.value?.slug;
+    const ls =
+        typeof params.value?.life_steal_formula === 'string' ? params.value.life_steal_formula.trim() : '';
+    if ((slug === 'frapper' || typeSlug === 'frapper') && ls !== '') {
+        return 'Vol de vie';
+    }
+    if (slug === 'frapper' || typeSlug === 'frapper') {
+        return 'Dégâts';
+    }
     if (typeSlug && ACTION_LABELS[typeSlug]) {
         return ACTION_LABELS[typeSlug];
     }
-    const slug = sub.value?.slug;
     if (slug && typeof slug === 'string') {
         return slug.replace(/_/g, ' ');
     }
     return 'Effet';
 });
-
-const params = computed(() =>
-    props.row?.params && typeof props.row.params === 'object' ? props.row.params : {},
-);
 
 /** Résumé monstre (API) ou repli sur `monster_id` pour type invocation. */
 const summonBrief = computed(() => {
@@ -144,6 +152,11 @@ const durationText = computed(() => {
     const d = props.row?.duration_formula;
     return typeof d === 'string' && d.trim() !== '' ? d.trim() : '';
 });
+
+const lifeStealFormulaText = computed(() => {
+    const s = params.value?.life_steal_formula;
+    return typeof s === 'string' && s.trim() !== '' ? s.trim() : '';
+});
 </script>
 
 <template>
@@ -165,6 +178,14 @@ const durationText = computed(() => {
             <span v-if="valueText" class="text-primary-200 tabular-nums">{{ valueText }}</span>
             <span v-if="critFormula" class="text-primary-300 tabular-nums">({{ critFormula }})</span>
         </template>
+
+        <span
+            v-if="lifeStealFormulaText"
+            class="text-xs text-primary-300/90 tabular-nums"
+            :title="'PV volés : ' + lifeStealFormulaText"
+        >
+            → vol {{ lifeStealFormulaText }}
+        </span>
 
         <span
             v-if="charDef"

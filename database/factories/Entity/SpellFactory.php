@@ -47,6 +47,7 @@ class SpellFactory extends Factory
             'element' => fake()->numberBetween(0, 29),
             'category' => fake()->numberBetween(0, 10),
             'is_magic' => fake()->boolean(80),
+            'allows_reaction' => fake()->boolean(15),
             'powerful' => fake()->numberBetween(0, 10),
             'state' => fake()->randomElement([Spell::STATE_DRAFT, Spell::STATE_PLAYABLE]),
             'read_level' => $readLevel,
