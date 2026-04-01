@@ -189,6 +189,10 @@ sequenceDiagram
 - **Organisme** : `CharacteristicsCard.vue` (dans `Pages/Organismes/data-display/`).
 - **Util** : `useCharacteristicLevel.js` (dans `Utils/Entity/`) pour parser `level` (1d4, [5-8], valeur fixe) en options de sélecteur.
 
+### Alignement refonte (caractéristiques « formule »)
+
+Les items `type: 'formula'` au sein des groupes doivent idéalement passer par **`CharacteristicProperty`** + **`useCharacteristicViewModel`** (tooltip riche unique, définitions BDD, optionnellement payload runtime `resolved-stats` pour créature). `CharacteristicFormula` reste un **wrapper** de compatibilité vers ce socle. Voir [PROPERTY_DISPLAY_SYSTEM.md](./PROPERTY_DISPLAY_SYSTEM.md) (section *Baseline* / *Schéma cible*).
+
 ### Exemple d’utilisation (CharacteristicsCard)
 
 ```vue

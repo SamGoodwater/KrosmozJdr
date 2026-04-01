@@ -2,6 +2,9 @@
 
 ## Navigation rapide
 
+- **[PROPERTY_DISPLAY_SYSTEM.md](./PROPERTY_DISPLAY_SYSTEM.md)** — Propriétés / caractéristiques : baseline, flux BDD → Inertia, refonte unifiée (`CharacteristicProperty`, `useCharacteristicViewModel`, runtime créature)
+- **[CHARACTERISTICS_CARD_SCHEMA.md](./CHARACTERISTICS_CARD_SCHEMA.md)** — Carte caractéristiques (Atomic Design) et lien avec l’atome unifié
+- **[Vue propriétés.svg](./Vue%20propriétés.svg)** — Schéma visuel des variantes d’affichage / tooltips (Excalidraw)
 - **[ENTITY_FIELD_DESCRIPTORS_GUIDE.md](./ENTITY_FIELD_DESCRIPTORS_GUIDE.md)** — Guide complet du système Entity Field Descriptors (fonctionnement, architecture, utilisation)
 - **[ENTITY_DESCRIPTORS_MAINTENANCE_GUIDE.md](./ENTITY_DESCRIPTORS_MAINTENANCE_GUIDE.md)** — Guide de maintenance (ajouter un champ, créer un descriptor, etc.)
 - **[ENTITY_ACTIONS_GUIDE.md](./ENTITY_ACTIONS_GUIDE.md)** — Guide d'utilisation du système d'actions pour les entités

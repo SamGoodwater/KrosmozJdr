@@ -8,6 +8,34 @@ Affichage standardisé des propriétés/caractéristiques avec icônes personnal
 
 **Groupes** : creature (monster, class, npc), object (item, consumable, resource, panoply), spell (spell, **capability**).
 
+## Baseline (état du dépôt) — avant refonte unifiée
+
+Cette section fige l’existant pour éviter la dérive documentaire ; la cible est un **pipeline unique** (voir section suivante).
+
+### Source de données
+
+- **Métadonnées** : `CharacteristicMetaByDbColumnService::buildAllForFrontend()` → partage Inertia `props.characteristics` (voir flux ci-dessous).
+- **Store** : [`useCharacteristicsStore.js`](../../resources/js/Composables/store/useCharacteristicsStore.js) — résolution par `byDbColumn`, `byCharacteristicKey`, `byComputedKey`, `byDofusdbId` selon le **groupe** (creature / item / spell…).
+- **Affichage transverse** : [`useCharacteristicDisplay.js`](../../resources/js/Composables/entity/useCharacteristicDisplay.js) — `resolveDef`, `getDisplayValue`, styles couleur / conteneur, cas spéciaux (portée CAC, critique, etc.).
+
+### Chevauchements / duplications
+
+| Zone | Problème |
+|------|----------|
+| Plusieurs atomes | `PropertyDisplay`, `CharacteristicFormula`, `CharacteristicChip`, rendu inline dans `EntityPropertyDisplay` — mêmes besoins (icône, couleur, valeur, tooltip) avec APIs différentes. |
+| Résolution « entité » | [`useEntityPropertyDisplay.js`](../../resources/js/Composables/entity/useEntityPropertyDisplay.js) + `resolveEntityFieldUi` (descriptors) en parallèle du store pur. |
+| Créatures | [`buildCreatureCharacteristicGroups.js`](../../resources/js/Utils/Entity/buildCreatureCharacteristicGroups.js) **recalcule** une partie des valeurs en JS (modificateurs, sauvegardes, etc.) en parallèle du **backend runtime** (`GET /entities/creatures/{id}/resolved-stats`). Risque de divergence tant que les deux coexistent sans fusion. |
+| `EntityPropertyDisplay` | Doc / props mentionnent `PropertyDisplay` et `variant` ; le template actuel n’utilise pas `PropertyDisplay` pour les modes non détaillés (markup dupliqué). |
+
+### Schéma cible (refonte)
+
+- **Composable** : `useCharacteristicViewModel` — assemble définition BDD + valeur + optionnellement payload **runtime** (formule substituée, placeholders par variable).
+- **Composants** : `CharacteristicProperty` (affichage + variantes densité / badge / layout) et `CharacteristicPropertyTooltip` (contenu riche unique).
+- **Wrappers** : `PropertyDisplay`, `CharacteristicFormula`, `CharacteristicChip` restent des points d’entrée **compat** jusqu’à migration complète des imports.
+- **Référence visuelle** : [Vue propriétés.svg](./Vue%20propriétés.svg) (schéma Excalidraw).
+
+Voir aussi [CHARACTERISTICS_CARD_SCHEMA.md](./CHARACTERISTICS_CARD_SCHEMA.md) pour l’organisme carte / groupes.
+
 ## Modes d'affichage des propriétés (PROPERTY_DISPLAY_MODES)
 
 Constantes : `resources/js/Utils/Entity/Constants.js`

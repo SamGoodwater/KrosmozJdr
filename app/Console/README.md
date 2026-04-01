@@ -5,6 +5,19 @@ Les commandes sont chargées **récursivement** depuis `app/Console/Commands/` (
 - **Liste à jour :** `php artisan list`
 - **Aide d’une commande :** `php artisan <nom> --help`
 - **Données DofusDB (sync catalogue / entités, cas limites) :** le détail des règles et exemples avancés reste dans [docs/40-DevGuides/PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md).
+- **Interface web :** tableau de bord `/admin` (sync DofusDB, sauvegarde, mise à jour stack, etc.) — voir la section *Interface web* dans [PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md).
+
+### Tests PHPUnit (extrait)
+
+| Zone | Fichiers |
+|------|----------|
+| `ProjectRunService` (carte d’options) | `tests/Unit/Services/Project/ProjectRunServiceTest.php` |
+| Sauvegarde (purge fichiers) | `tests/Unit/Services/Project/ProjectBackupServiceTest.php` |
+| UI admin sync / backup / `project:deps` web | `tests/Feature/Admin/ProjectMaintenanceControllerTest.php`, `ProjectBackupWebControllerTest.php`, `ProjectDepsWebControllerTest.php`, `AdminDashboardControllerTest.php` |
+| Commande `project:clear` (smoke) | `tests/Feature/Console/ProjectClearCommandTest.php` |
+| Scrapping (Artisan) | `tests/Feature/Scrapping/ScrappingRunCommandTest.php`, effets / seeders export, etc. |
+
+Les tests **Feature** avec `RefreshDatabase` attendent une base MySQL dédiée (ex. `krosmoz_testing` selon `phpunit.xml`). Sans serveur MySQL accessible, PHPUnit échoue à la connexion — lancer les tests sur une machine où la BDD de test est créée.
 
 ---
 

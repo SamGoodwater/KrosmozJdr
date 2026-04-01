@@ -150,19 +150,39 @@ php artisan project:data init --fresh --noimage
 
 Pour le détail des flags : `php artisan project:init -h`, `php artisan project:data:sync -h`, `php artisan project:data -h`.
 
-### Interface web (super admin)
+### Interface web — espace `/admin`
 
-Une page **Inertia** permet de lancer l’équivalent de **`project:data sync`** **sans bloquer le navigateur** : le travail est mis en file (`RunProjectDataSyncJob` → `Artisan::call('project:data', …)`).
+Le **tableau de bord** (`GET /admin`, `admin.dashboard.index`) regroupe la navigation vers les outils (sync, sauvegarde, mise à jour stack, utilisateurs, scrapping, caractéristiques, effets, mappings). **Accès** : meneur de jeu et rôles supérieurs (`admin.area`). Les actions **super admin** (sync, backup, deps) sont listées dans la barre latérale seulement pour ce rôle.
+
+#### Sync données DofusDB (`project:data sync`)
+
+Une page **Inertia** lance l’équivalent de **`project:data sync`** **sans bloquer le navigateur** : le travail est mis en file (`RunProjectDataSyncJob` → `Artisan::call('project:data', …)`).
 
 | Élément | Détail |
 |--------|--------|
-| **URL** | `/admin/project-maintenance` (routes nommées `admin.project-maintenance.index` et `admin.project-maintenance.sync`) |
-| **Accès** | Rôle **super_admin** uniquement ; entrée menu compte : **Sync données (DofusDB)** |
-| **Mot de passe** | Comme **`/scrapping`** : la page **GET** se charge sans redirection ; la porte d’accès utilise **`ConfirmPasswordModal`** + `user.password.confirm`. Le **POST** `/sync` applique **`password.confirm`** (comme les routes API scrapping) |
-| **POST `/sync`** | Validation stricte (`StoreProjectDataSyncRequest`), **throttle** dédié, journalisation `admin.project_maintenance.sync_dispatched` (identifiant utilisateur, IP, options sans secrets) |
-| **Prérequis** | Un **worker de file** doit tourner (`php artisan queue:work`) ; un verrou cache évite deux syncs massives en parallèle |
+| **URL** | `/admin/project-maintenance` (`admin.project-maintenance.index`, POST `admin.project-maintenance.sync`) |
+| **Accès** | **super_admin** uniquement ; menu compte → **Espace administration** → entrée latérale **Sync données** |
+| **Mot de passe** | Comme **`/scrapping`** : **GET** sans `password.confirm` obligatoire ; formulaire avec **`ConfirmPasswordModal`**. Le **POST** applique **`password.confirm`** + throttle |
+| **POST** | `StoreProjectDataSyncRequest`, journalisation `admin.project_maintenance.sync_dispatched` |
+| **Prérequis** | Worker de file (`php artisan queue:work`) ; verrou cache contre deux syncs massives parallèles |
 
-Les options du formulaire (catalogue, entités, `--dry-run`, etc.) suivent les mêmes règles que la CLI décrites ci-dessus.
+Les options du formulaire suivent les mêmes règles que la CLI ci-dessus.
+
+#### Sauvegarde (`project:backup`)
+
+| Élément | Détail |
+|--------|--------|
+| **URL** | `/admin/backup` — POST `admin.backup.run` |
+| **Job** | `RunProjectBackupJob` → `Artisan::call('project:backup', …)` ; verrou cache dédié |
+| **Accès** | **super_admin** ; `password.confirm` sur le POST |
+
+#### Mise à jour stack (`project:deps`)
+
+| Élément | Détail |
+|--------|--------|
+| **URL** | `/admin/project-update` — POST `admin.project-update.run` |
+| **Job** | `RunProjectDepsJob` → `Artisan::call('project:deps', …)` ; **refus si `APP_ENV=production`** (contrôleur + job) |
+| **Accès** | **super_admin** ; `password.confirm` sur le POST |
 
 ---
 
@@ -233,7 +253,7 @@ Crée le **premier** super_admin interactif si aucun super_admin humain n’exis
 
 1. **`project:data fill`** : implémenter un service « catalogue DofusDB vs `dofusdb_id` » par entité (pagination API, batch `scrapping:run`), avec option `--update` pour enchaîner un `sync`.
 2. ~~**`run`**~~ : commande supprimée — équivalents **`project:*`** (voir tableau ci-dessous).
-3. **Tests** : étendre les feature tests aux autres commandes `project:*` si besoin (voir `tests/Feature/Admin/ProjectMaintenanceControllerTest.php` pour l’UI sync).
+3. **Tests** : UI admin sync / backup / mise à jour stack — `tests/Feature/Admin/ProjectMaintenanceControllerTest.php`, `ProjectBackupWebControllerTest.php`, `ProjectDepsWebControllerTest.php` ; smoke `project:clear` — `tests/Feature/Console/ProjectClearCommandTest.php` ; service — `tests/Unit/Services/Project/ProjectRunServiceTest.php`.
 
 ---
 

@@ -55,7 +55,7 @@
 - **Assertions** : Vérifier à la fois le code HTTP et les données retournées
 - **Fixtures** : Utiliser les factories Laravel pour créer les données de test
 - **Transactions** : Utiliser `RefreshDatabase` pour isoler les tests
-- **Base de données** : En PHPUnit, une base dédiée aux tests est **obligatoire**. Dans `phpunit.xml`, les variables `DB_CONNECTION=sqlite` et `DB_DATABASE=:memory:` doivent être définies. Sinon, les tests utilisent la base du `.env` (MySQL) et `RefreshDatabase` vide la base de développement à chaque exécution de `php artisan test`.
+- **Base de données** : une base **dédiée** aux tests est obligatoire pour ne pas toucher la base de dev. Le dépôt configure `phpunit.xml` avec **MySQL** (`DB_DATABASE=krosmoz_testing` par défaut) : le serveur MySQL doit être joignable et la base créée. (Une variante SQLite `:memory:` est possible en local si vous adaptez `phpunit.xml`.) Sans connexion BDD, les tests Feature qui utilisent `RefreshDatabase` échouent avec une erreur de connexion.
 
 ### Tests Frontend
 

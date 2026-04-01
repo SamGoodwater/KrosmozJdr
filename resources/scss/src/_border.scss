@@ -172,6 +172,11 @@ $border-glass-combos: (
   }
 }
 
+// Alias : même rendu que `.border-glass-b-sm` (nommage alternatif côté UI)
+.glass-border-b-sm {
+  @extend .border-glass-b-sm;
+}
+
 // ===============================
 //  FIN DU FICHIER
 //  Pour toute extension :

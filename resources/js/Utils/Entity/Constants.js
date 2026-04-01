@@ -174,6 +174,37 @@ export const LABEL_MODE_TO_PROPERTY_DISPLAY = Object.freeze({
 });
 
 /**
+ * Densité — composant unifié CharacteristicProperty (icône + libellés + valeur).
+ *
+ * @see docs/30-UI/PROPERTY_DISPLAY_SYSTEM.md
+ */
+export const CHARACTERISTIC_PROPERTY_DENSITY = Object.freeze({
+    /** label complet (ou équivalent extended) */
+    full: "full",
+    /** label abrégé */
+    short: "short",
+    /** pas de libellé affiché (icône + valeur selon layout) */
+    iconOnly: "icon-only",
+});
+
+/**
+ * Habillage badge — CharacteristicProperty.
+ */
+export const CHARACTERISTIC_PROPERTY_BADGE = Object.freeze({
+    none: "none",
+    solid: "solid",
+    outline: "outline",
+});
+
+/**
+ * Layout — CharacteristicProperty (inline vs carte).
+ */
+export const CHARACTERISTIC_PROPERTY_LAYOUT = Object.freeze({
+    inline: "inline",
+    card: "card",
+});
+
+/**
  * Formats de champs disponibles
  */
 export const FIELD_FORMATS = Object.freeze({
