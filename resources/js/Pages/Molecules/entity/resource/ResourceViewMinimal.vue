@@ -5,6 +5,7 @@
  * @description
  * Même structure que ResourceLineRow mais condensée : State • Image • Level • Nom • Type • Rareté • Prix • Poids • Description • Effets (icône + valeur).
  * Affiche uniquement les propriétés métier (pas read_level, write_level, id, created_by, etc.).
+ * Prix / poids : `EntityPropertyDisplay` (aligné sur ResourceViewCompact).
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
@@ -15,12 +16,15 @@ import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
 import { getRarityConfig } from "@/Utils/Entity/SharedConstants";
-import { getEntityCharacteristicsByDbColumn } from "@/Utils/Entity/entity-view-ui";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
+import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
 const props = defineProps({
     resource: {
@@ -40,9 +44,40 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    /** Payload runtime (tooltips formules) — même schéma que les vues Compact */
+    characteristicRuntime: { type: Object, default: null },
 });
 
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
+
 const emit = defineEmits(["edit", "view", "delete", "action"]);
+
+const permissions = usePermissions();
+const ctx = computed(() => ({
+    capabilities: {
+        viewAny: permissions.can("resources", "viewAny"),
+        createAny: permissions.can("resources", "createAny"),
+        updateAny: permissions.can("resources", "updateAny"),
+        deleteAny: permissions.can("resources", "deleteAny"),
+        manageAny: permissions.can("resources", "manageAny"),
+    },
+    meta: { capabilities: {} },
+}));
+const descriptors = computed(() => getResourceFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === "function") {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch {
+            return false;
+        }
+    }
+    return true;
+};
 
 const entity = computed(() => props.resource);
 
@@ -56,8 +91,6 @@ const typeName = computed(
         entity.value?._data?.resourceType?.name ??
         "—"
 );
-const priceValue = computed(() => entity.value?.price ?? entity.value?._data?.price ?? null);
-const weightValue = computed(() => entity.value?.weight ?? entity.value?._data?.weight ?? null);
 const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
 );
@@ -77,12 +110,6 @@ const rarityConfig = computed(() => {
     const n = v != null ? Number(v) : null;
     return Number.isFinite(n) ? getRarityConfig(n) : null;
 });
-
-const byDbColumn = computed(
-    () => getEntityCharacteristicsByDbColumn(props.tableMeta, "resource")
-);
-const priceMeta = computed(() => byDbColumn.value?.price || byDbColumn.value?.kamas || null);
-const weightMeta = computed(() => byDbColumn.value?.weight || byDbColumn.value?.pods || null);
 
 const imageUrl = computed(() => entity.value?.image ?? entity.value?._data?.image ?? null);
 
@@ -176,36 +203,28 @@ const handleAction = async (actionKey) => {
                             >
                                 {{ rarityConfig.label }}
                             </Badge>
-                            <Tooltip
-                                v-if="priceValue != null && priceValue !== ''"
-                                :content="`Prix: ${priceValue}`"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center gap-1">
-                                    <Icon
-                                        :source="priceMeta?.icon || 'fa-solid fa-coins'"
-                                        alt="Prix"
-                                        size="xs"
-                                        :style="priceMeta?.color ? { color: `var(--color-${priceMeta.color})` } : undefined"
-                                    />
-                                    <span>{{ priceValue }}</span>
-                                </span>
-                            </Tooltip>
-                            <Tooltip
-                                v-if="weightValue != null && weightValue !== ''"
-                                :content="`Poids: ${weightValue}`"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center gap-1">
-                                    <Icon
-                                        :source="weightMeta?.icon || 'fa-solid fa-weight-hanging'"
-                                        alt="Poids"
-                                        size="xs"
-                                        :style="weightMeta?.color ? { color: `var(--color-${weightMeta.color})` } : undefined"
-                                    />
-                                    <span>{{ weightValue }}</span>
-                                </span>
-                            </Tooltip>
+                            <EntityPropertyDisplay
+                                v-if="canShowField('weight')"
+                                field-key="weight"
+                                :entity="entity"
+                                entity-type="resource"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
+                            <EntityPropertyDisplay
+                                v-if="canShowField('price')"
+                                field-key="price"
+                                :entity="entity"
+                                entity-type="resource"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
                         </div>
                     </div>
                 </div>
@@ -278,36 +297,28 @@ const handleAction = async (actionKey) => {
                             >
                                 {{ rarityConfig.label }}
                             </Badge>
-                            <Tooltip
-                                v-if="priceValue != null && priceValue !== ''"
-                                :content="`Prix: ${priceValue}`"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center gap-1">
-                                    <Icon
-                                        :source="priceMeta?.icon || 'fa-solid fa-coins'"
-                                        alt="Prix"
-                                        size="xs"
-                                        :style="priceMeta?.color ? { color: `var(--color-${priceMeta.color})` } : undefined"
-                                    />
-                                    <span>{{ priceValue }}</span>
-                                </span>
-                            </Tooltip>
-                            <Tooltip
-                                v-if="weightValue != null && weightValue !== ''"
-                                :content="`Poids: ${weightValue}`"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center gap-1">
-                                    <Icon
-                                        :source="weightMeta?.icon || 'fa-solid fa-weight-hanging'"
-                                        alt="Poids"
-                                        size="xs"
-                                        :style="weightMeta?.color ? { color: `var(--color-${weightMeta.color})` } : undefined"
-                                    />
-                                    <span>{{ weightValue }}</span>
-                                </span>
-                            </Tooltip>
+                            <EntityPropertyDisplay
+                                v-if="canShowField('weight')"
+                                field-key="weight"
+                                :entity="entity"
+                                entity-type="resource"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
+                            <EntityPropertyDisplay
+                                v-if="canShowField('price')"
+                                field-key="price"
+                                :entity="entity"
+                                entity-type="resource"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
                         </div>
                         <p
                             v-if="descriptionFull"

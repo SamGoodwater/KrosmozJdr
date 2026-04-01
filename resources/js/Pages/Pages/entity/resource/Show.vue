@@ -27,6 +27,8 @@ const props = defineProps({
 
 const resource = computed(() => new Resource(props.resource || page.props.resource || {}));
 
+const characteristicRuntime = computed(() => page.props.characteristicRuntime ?? null);
+
 setPageTitle(`Ressource : ${resource.value.name || '-'}`);
 
 const goEdit = () => {
@@ -57,7 +59,11 @@ const goEdit = () => {
                     </Btn>
                 </div>
 
-                <ResourceViewLarge :resource="resource" :show-actions="true" />
+                <ResourceViewLarge
+                    :resource="resource"
+                    :show-actions="true"
+                    :characteristic-runtime="characteristicRuntime"
+                />
             </div>
         </EntityViewLargeWrapper>
     </Container>

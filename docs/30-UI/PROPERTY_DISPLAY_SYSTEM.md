@@ -29,9 +29,10 @@ Cette section fige l’existant pour éviter la dérive documentaire ; la cible 
 
 ### Schéma cible (refonte)
 
-- **Composable** : `useCharacteristicViewModel` — assemble définition BDD + valeur + optionnellement payload **runtime** (formule substituée, placeholders par variable).
-- **Composants** : `CharacteristicProperty` (affichage + variantes densité / badge / layout) et `CharacteristicPropertyTooltip` (contenu riche unique).
-- **Wrappers** : `PropertyDisplay`, `CharacteristicFormula`, `CharacteristicChip` restent des points d’entrée **compat** jusqu’à migration complète des imports.
+- **Composable** : [`useCharacteristicViewModel.js`](../../resources/js/Composables/entity/useCharacteristicViewModel.js) — assemble définition BDD + valeur + optionnellement payload **runtime** (formule substituée, placeholders par variable). Helpers : `viewModelFromFormulaGroupItem`, `viewModelFromLegacyProperty`, `viewModelFromChipItem`, `mergeRuntimeIntoViewModel`.
+- **Runtime créature** : [`useCreatureResolvedStats.js`](../../resources/js/Composables/entity/useCreatureResolvedStats.js) — `GET /entities/creatures/{id}/resolved-stats` ; transmis à [`CharacteristicsCard`](../../resources/js/Pages/Organismes/data-display/CharacteristicsCard.vue) → [`CharacteristicGroup`](../../resources/js/Pages/Molecules/data-display/CharacteristicGroup.vue).
+- **Composants** : [`CharacteristicProperty.vue`](../../resources/js/Pages/Atoms/data-display/CharacteristicProperty.vue) (densité `CHARACTERISTIC_PROPERTY_*`, badge, layout) et [`CharacteristicPropertyTooltip.vue`](../../resources/js/Pages/Molecules/data-display/CharacteristicPropertyTooltip.vue) (tooltip riche unique).
+- **Wrappers** : `PropertyDisplay`, `CharacteristicFormula`, `CharacteristicChip` délèguent à `CharacteristicProperty` (API historique conservée).
 - **Référence visuelle** : [Vue propriétés.svg](./Vue%20propriétés.svg) (schéma Excalidraw).
 
 Voir aussi [CHARACTERISTICS_CARD_SCHEMA.md](./CHARACTERISTICS_CARD_SCHEMA.md) pour l’organisme carte / groupes.
@@ -55,29 +56,28 @@ Constantes : `resources/js/Utils/Entity/Constants.js`
 
 `resources/js/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue`
 
-Affichage unifié des propriétés d'entité selon le mode (`minimal`, `compact`, `extended`, `detailed`). Utilise le composable `useEntityPropertyDisplay` pour résoudre les métadonnées (icône, label, unité, couleur) et la valeur.
+Affichage unifié des propriétés d'entité selon le mode (`minimal`, `compact`, `extended`, `detailed`). S’appuie sur **`useCharacteristicViewModel`** (qui encapsule `useEntityPropertyDisplay` + résolution runtime) puis **`CharacteristicProperty`**.
 
-**Props** : `fieldKey`, `entity`, `entityType`, `displayMode`, `descriptors`, `tableMeta`, `size`, `formulaResolved`, `formulaRaw`, `levelTable`.
+**Props** : `fieldKey`, `entity`, `entityType`, `displayMode`, `descriptors`, `tableMeta`, `size`, `variant`, `formulaResolved`, `formulaRaw`, `levelTable`, **`runtime`** (optionnel, même schéma que `resolved-stats` : racine avec `computed` indexé par clé caractéristique).
 
-**Composable** : `resources/js/Composables/entity/useEntityPropertyDisplay.js` — attend un objet réactif (ex. `computed`) pour rester à jour.
+**Fournir le runtime sans le répéter sur chaque composant**
+
+1. **Prop explicite** : `:runtime="payload"` sur un `EntityPropertyDisplay` (prioritaire).
+2. **Contexte Vue** : la vue large (`SpellViewLarge`, `ResourceViewLarge`, etc.) accepte **`characteristicRuntime`** et appelle **`provideCharacteristicRuntime(computed(() => props.characteristicRuntime))`** — tous les `EntityPropertyDisplay` descendants reçoivent le payload si la prop `runtime` n’est pas passée.
+3. **Pages Inertia** : les fiches `spell/Show.vue` et `resource/Show.vue` lisent **`page.props.characteristicRuntime`** et la passent à la vue large — dès qu’un contrôleur ajoutera cette clé au render, les tooltips s’enrichiront sans autre changement front.
+4. **Fetch générique** : [`useCharacteristicRuntimeFetch.js`](../../resources/js/Composables/entity/useCharacteristicRuntimeFetch.js) pour tout `GET` renvoyant le même JSON ; les créatures utilisent [`useCreatureResolvedStats.js`](../../resources/js/Composables/entity/useCreatureResolvedStats.js) (URL Ziggy + query `entity`).
 
 ### PropertyDisplay (Atom)
 
 `resources/js/Pages/Atoms/data-display/PropertyDisplay.vue`
 
-Affichage d'une propriété avec variants :
-
-| Variant | Rendu |
-|---------|-------|
-| `badge` | Badge coloré avec icône + valeur |
-| `icon` | Icône seule avec tooltip |
-| `inline` | Icône + texte (style chip) |
+Wrapper vers **`CharacteristicProperty`** (`viewModelFromLegacyProperty`). Variants inchangés : `badge`, `icon`, `inline`.
 
 **Props** : `property` (icon, label, tooltip, color), `value`, `variant`, `size`.
 
 ### CharacteristicChip (Atom)
 
-Affichage icon + valeur + unité pour les listes (CharacteristicInlineGroup). Utilisé pour les cellules `chips` des tableaux.
+Wrapper vers **`CharacteristicProperty`** avec `viewModelFromChipItem`. Utilisé pour les cellules `chips` des tableaux (CharacteristicInlineGroup).
 
 **Props** : `item` (icon, color, name, shortLabel, value, unit, tooltip), `labelMode` (`full` | `short` | `icon-only`).
 

@@ -1,19 +1,19 @@
 <script setup>
 /**
- * CharacteristicChip — atome d'affichage d'une caractéristique (icône + label + valeur + unité).
+ * CharacteristicChip — wrapper vers CharacteristicProperty (chips tableaux / listes).
  *
- * @description
- * Utilisé pour les rendus "chips" en tableau et cartes.
- * Supporte icônes personnalisées (icons/caracteristics/) et couleurs hex ou token Tailwind.
- * Affiche l'unité (item.unit) après la valeur quand disponible.
- *
- * @props {String} labelMode - 'full' | 'short' | 'icon-only' — full: nom complet, short: abrégé, icon-only: icône + valeur + unité
+ * @props {Object} item — { icon, name, label, shortLabel, value, unit, color, tooltip, area? }
+ * @props {String} labelMode - 'full' | 'short' | 'icon-only'
  */
 import { computed } from "vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import AreaDisplay from "@/Pages/Molecules/entity/spell/AreaDisplay.vue";
-import { getCharacteristicColorStyle } from "@/Composables/entity/useCharacteristicDisplay";
+import CharacteristicProperty from "@/Pages/Atoms/data-display/CharacteristicProperty.vue";
+import { viewModelFromChipItem } from "@/Composables/entity/useCharacteristicViewModel";
+import {
+    CHARACTERISTIC_PROPERTY_BADGE,
+    CHARACTERISTIC_PROPERTY_DENSITY,
+    CHARACTERISTIC_PROPERTY_LAYOUT,
+} from "@/Utils/Entity/Constants";
 
 const props = defineProps({
     item: {
@@ -27,33 +27,13 @@ const props = defineProps({
     },
 });
 
-const colorStyle = computed(() => getCharacteristicColorStyle(props.item?.color));
+const chipModel = computed(() => viewModelFromChipItem(props.item));
 
-/** Valeur affichée avec unité si disponible */
-const displayValue = computed(() => {
-    const v = props.item?.value ?? "";
-    const unit = props.item?.unit;
-    return unit ? `${v} ${unit}` : v;
+const density = computed(() => {
+    if (props.labelMode === "full") return CHARACTERISTIC_PROPERTY_DENSITY.full;
+    if (props.labelMode === "short") return CHARACTERISTIC_PROPERTY_DENSITY.short;
+    return CHARACTERISTIC_PROPERTY_DENSITY.iconOnly;
 });
-
-/** Tooltip: toujours le nom complet (item.tooltip contient "nom: valeur") */
-const tooltipContent = computed(() =>
-    props.item?.tooltip || `${props.item?.name || props.item?.label || ""}: ${displayValue.value}`
-);
-
-/** Label affiché selon labelMode */
-const displayLabel = computed(() => {
-    if (props.labelMode === "full") return props.item?.name ?? props.item?.label ?? "";
-    if (props.labelMode === "short") return props.item?.shortLabel ?? props.item?.name ?? props.item?.label ?? "";
-    return "";
-});
-
-const showLabelAndValue = computed(() => props.labelMode !== "icon-only");
-
-/** Mode icon-only sans icône : fallback sur la valeur pour garder un contenu visible */
-const showValueAsFallback = computed(
-    () => props.labelMode === "icon-only" && !props.item?.icon
-);
 </script>
 
 <template>
@@ -62,23 +42,12 @@ const showValueAsFallback = computed(
         :area="String(item.area)"
         :icon-only="labelMode === 'icon-only'"
     />
-    <Tooltip
+    <CharacteristicProperty
         v-else
-        :content="tooltipContent"
-        placement="top"
-        class="inline-flex items-center gap-1"
-    >
-        <Icon
-            v-if="item.icon"
-            :source="item.icon"
-            :alt="item.tooltip || item.name || item.label || ''"
-            size="xs"
-            class="shrink-0 opacity-80"
-            :style="colorStyle"
-        />
-        <template v-if="showLabelAndValue || showValueAsFallback">
-            <span v-if="showLabelAndValue && displayLabel" class="text-xs" :style="colorStyle">{{ displayLabel }}:</span>
-            <span class="text-xs" :style="colorStyle">{{ displayValue }}</span>
-        </template>
-    </Tooltip>
+        :view-model="chipModel"
+        :density="density"
+        :layout="CHARACTERISTIC_PROPERTY_LAYOUT.inline"
+        :badge="CHARACTERISTIC_PROPERTY_BADGE.none"
+        size="xs"
+    />
 </template>

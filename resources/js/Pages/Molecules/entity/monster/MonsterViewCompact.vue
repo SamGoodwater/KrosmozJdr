@@ -20,6 +20,7 @@ import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.v
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
+import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
@@ -142,6 +143,10 @@ const creatureData = computed(() => {
     const m = props.monster;
     return m?.creature ?? m?.data?.creature ?? null;
 });
+
+const creatureIdForStats = computed(() => creatureData.value?.id ?? null);
+const { runtime: creatureRuntimeStats } = useCreatureResolvedStats(creatureIdForStats);
+
 const creatureCharacteristicsGroups = computed(() =>
     buildCreatureCharacteristicGroups(creatureData.value)
 );
@@ -293,6 +298,7 @@ const handleAction = async (actionKey) => {
                 :entity="creatureData"
                 :groups="creatureCharacteristicsGroups"
                 :dense="true"
+                :runtime="creatureRuntimeStats"
             />
         </section>
 

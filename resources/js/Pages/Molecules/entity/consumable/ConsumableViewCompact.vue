@@ -9,13 +9,13 @@
  *
  * @props {Consumable} consumable - Instance du modèle Consumable
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
+ * @props {Object} [tableMeta] - Meta caractéristiques
+ * @props {Object|null} [characteristicRuntime] - Payload runtime optionnel
  */
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
-import CellRenderer from '@/Pages/Atoms/data-display/CellRenderer.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
@@ -28,12 +28,18 @@ import { getRarityConfig, getEntityStateOptions } from '@/Utils/Entity/SharedCon
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
+import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
+import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
+import { PROPERTY_DISPLAY_MODES } from '@/Utils/Entity/Constants';
 
 const props = defineProps({
     consumable: { type: Object, required: true },
     showActions: { type: Boolean, default: true },
     tableMeta: { type: Object, default: () => ({}) },
+    characteristicRuntime: { type: Object, default: null },
 });
+
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
@@ -71,27 +77,9 @@ const canShowField = (fieldKey) => {
 
 const getFieldUi = (fieldKey) =>
     resolveEntityFieldUi({ fieldKey, descriptors: descriptors.value, tableMeta: props.tableMeta, entityType: 'consumable' });
-const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
-const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
-const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon || 'fa-solid fa-info-circle';
-const getFieldIconStyle = (fieldKey) => {
-    const color = getFieldUi(fieldKey).color;
-    return color ? { color } : undefined;
-};
-const getFieldUnit = (fieldKey) => getFieldUi(fieldKey).characteristic?.unit ?? '';
 
 const getCell = (fieldKey) =>
     props.consumable.toCell(fieldKey, { size: 'md', context: 'compact' });
-
-const asTextCell = (cell) => {
-    if (!cell) return { type: 'text', value: '-', params: {} };
-    const v = cell?.value;
-    return {
-        type: 'text',
-        value: (v === null || typeof v === 'undefined' || String(v) === '') ? '-' : String(v),
-        params: cell?.params || {},
-    };
-};
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
@@ -106,15 +94,6 @@ const getBadgeColor = (fieldKey) => {
         fieldUi: getFieldUi(fieldKey),
         localColorMap: colorMap,
     }).color;
-};
-
-const getBadgeAutoParams = (fieldKey) => {
-    const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
-        fieldKey,
-        cell: getCell(fieldKey),
-        fieldUi: getFieldUi(fieldKey),
-    });
-    return { autoLabel, autoScheme, autoTone };
 };
 
 const stateOptions = computed(() => getEntityStateOptions());
@@ -284,14 +263,17 @@ const handleAction = async (actionKey) => {
                                 {{ (getRarityConfig(consumable.rarity ?? 0))?.label ?? '-' }}
                             </Badge>
                         </template>
-                        <template v-if="canShowField('price')">
-                            <Tooltip :content="getFieldTooltip('price')" placement="top">
-                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('price')">
-                                    <Icon :source="getFieldIcon('price')" :alt="getFieldLabel('price')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ consumable.price ?? '-' }}{{ getFieldUnit('price') ? ' ' + getFieldUnit('price') : '' }}</span>
-                                </span>
-                            </Tooltip>
-                        </template>
+                        <EntityPropertyDisplay
+                            v-if="canShowField('price')"
+                            field-key="price"
+                            :entity="consumable"
+                            entity-type="consumable"
+                            :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            size="xs"
+                            class="max-w-[18rem] min-w-0 text-primary-200"
+                        />
                     </div>
                     <p v-if="consumable.description" class="text-primary-300 text-xs mt-1 line-clamp-2">{{ consumable.description }}</p>
                 </div>

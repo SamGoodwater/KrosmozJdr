@@ -21,6 +21,8 @@ const props = defineProps({
     levelOptions: { type: Array, default: () => [] },
     /** Réduit padding et espacements (ex. dans une cellule de tableau) */
     dense: { type: Boolean, default: false },
+    /** Runtime backend (ex. resolved-stats) pour tooltips / formules */
+    runtime: { type: Object, default: null },
 });
 
 const emit = defineEmits(["update:levelEffective"]);
@@ -94,6 +96,7 @@ const groupsList = computed(() => Array.isArray(props.groups) ? props.groups : [
                 :characteristics="group.characteristics"
                 :level-effective="levelEffective"
                 :compact="dense"
+                :runtime="runtime"
             />
         </div>
     </div>

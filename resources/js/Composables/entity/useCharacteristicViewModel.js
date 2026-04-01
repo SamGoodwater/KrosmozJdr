@@ -130,12 +130,35 @@ export function useCharacteristicViewModel(options) {
 }
 
 /**
- * Vue minimale pour les cas legacy (PropertyDisplay sans entité / descriptor complet).
+ * Enrichit un view model (ex. item formula) avec une entrée `computed` du payload resolved-stats.
  *
- * @param {object} property
- * @param {string|number|boolean|null} value
+ * @param {object} vm
+ * @param {object|null|undefined} rc
  * @returns {object}
  */
+export function mergeRuntimeIntoViewModel(vm, rc) {
+    if (!vm || typeof vm !== "object") {
+        return vm;
+    }
+    if (!rc || typeof rc !== "object") {
+        return vm;
+    }
+    const next = { ...vm };
+    if (rc.formula != null) {
+        next.runtimeFormula = String(rc.formula);
+    }
+    if (rc.substituted != null) {
+        next.substituted = String(rc.substituted);
+    }
+    if (Array.isArray(rc.placeholders) && rc.placeholders.length > 0) {
+        next.placeholders = rc.placeholders;
+    }
+    if (rc.formula_display != null && String(rc.formula_display).trim() !== "") {
+        next.formulaDisplay = String(rc.formula_display);
+    }
+    return next;
+}
+
 /**
  * Construit un view model à partir d'un item `type: 'formula'` (CharacteristicsCard / groupes créature).
  *
@@ -171,6 +194,48 @@ export function viewModelFromFormulaGroupItem(item) {
     };
 }
 
+/**
+ * View model pour les chips inline (CharacteristicChip / tableaux).
+ *
+ * @param {object} item
+ * @returns {object}
+ */
+export function viewModelFromChipItem(item) {
+    const i = item && typeof item === "object" ? item : {};
+    const unit = i.unit || "";
+    const raw = i.value;
+    const v =
+        raw === null || raw === undefined || raw === ""
+            ? "—"
+            : typeof raw === "boolean"
+              ? raw
+                  ? "Oui"
+                  : "Non"
+              : String(raw);
+    const displayValue = unit && v !== "—" ? `${v} ${unit}`.trim() : v;
+    return {
+        key: i.key || "chip",
+        name: i.name || i.label || "",
+        shortName: i.shortLabel || i.short_name || i.name || i.label || "",
+        icon: i.icon || "",
+        color: i.color || "",
+        helper: i.tooltip || "",
+        descriptions: "",
+        unit,
+        displayValue,
+        rawValue: raw,
+        formulaBdd: "",
+        formulaDisplay: "",
+        formulaMetaResolved: "",
+        formulaMetaRaw: "",
+        runtimeFormula: "",
+        substituted: "",
+        placeholders: [],
+        levelTable: [],
+        tooltipLine: i.tooltip || "",
+    };
+}
+
 export function viewModelFromLegacyProperty(property, value) {
     const p = property && typeof property === "object" ? property : {};
     let display = "—";
@@ -194,8 +259,9 @@ export function viewModelFromLegacyProperty(property, value) {
         rawValue: value,
         formulaBdd: "",
         formulaDisplay: "",
-        formulaResolved: "",
-        formulaRaw: "",
+        formulaMetaResolved: "",
+        formulaMetaRaw: "",
+        runtimeFormula: "",
         substituted: "",
         placeholders: [],
         levelTable: [],

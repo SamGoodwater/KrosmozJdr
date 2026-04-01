@@ -26,7 +26,7 @@ defineProps({
             />
             <div class="min-w-0 space-y-1">
                 <div class="font-semibold leading-tight">{{ model.name }}</div>
-                <div class="text-base-content/90 text-lg font-medium">{{ model.displayValue }}</div>
+                <div class="text-base-content/90 text-lg font-medium">{{ model.displayValue ?? "—" }}</div>
             </div>
         </div>
 
@@ -44,6 +44,13 @@ defineProps({
             <span class="font-medium opacity-90">Formule (BDD) :</span>
             <code class="ml-1 block break-all rounded bg-base-200 px-1 py-0.5 font-mono text-[11px]">{{
                 model.formulaBdd
+            }}</code>
+        </div>
+
+        <div v-if="model.runtimeFormula" class="text-xs text-base-content/70">
+            <span class="font-medium opacity-90">Formule (runtime) :</span>
+            <code class="ml-1 block break-all rounded bg-base-200 px-1 py-0.5 font-mono text-[11px]">{{
+                model.runtimeFormula
             }}</code>
         </div>
 

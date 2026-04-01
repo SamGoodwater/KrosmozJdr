@@ -5,6 +5,7 @@
  * @description
  * Affichage dense : State • Image • Level • Nom • Type • Rareté • Prix • Poids • Description • Effets
  * Structure conforme au schéma ENTITY_VIEWS_LINE.
+ * Prix / poids : `EntityPropertyDisplay` (aligné sur ResourceViewCompact).
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import { Link } from "@inertiajs/vue3";
@@ -17,10 +18,13 @@ import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngr
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
 import { getRarityConfig } from "@/Utils/Entity/SharedConstants";
-import { getEntityCharacteristicsByDbColumn } from "@/Utils/Entity/entity-view-ui";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
+import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -32,9 +36,39 @@ const props = defineProps({
     showActions: { type: Boolean, default: true },
     uiColor: { type: String, default: "primary" },
     entityType: { type: String, default: "resources" },
+    characteristicRuntime: { type: Object, default: null },
 });
 
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
+
 const emit = defineEmits(["row-click", "row-dblclick", "toggle-select", "action"]);
+
+const permissions = usePermissions();
+const ctx = computed(() => ({
+    capabilities: {
+        viewAny: permissions.can("resources", "viewAny"),
+        createAny: permissions.can("resources", "createAny"),
+        updateAny: permissions.can("resources", "updateAny"),
+        deleteAny: permissions.can("resources", "deleteAny"),
+        manageAny: permissions.can("resources", "manageAny"),
+    },
+    meta: { capabilities: {} },
+}));
+const descriptors = computed(() => getResourceFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === "function") {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch {
+            return false;
+        }
+    }
+    return true;
+};
 
 const isInteractiveTarget = (event) => {
     const el = event?.target;
@@ -65,8 +99,6 @@ const levelValue = computed(() => entity.value?.level ?? entity.value?._data?.le
 const nameCell = computed(() => getCell("name"));
 const imageCell = computed(() => getCell("image"));
 const typeCell = computed(() => getCell("resource_type"));
-const priceCell = computed(() => getCell("price"));
-const weightCell = computed(() => getCell("weight"));
 /** Description brute (non tronquée) : on lit sur l'entité, pas sur getCell qui tronque à 30-50 car. */
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
 
@@ -85,12 +117,6 @@ const rarityConfig = computed(() => {
     const n = v != null ? Number(v) : null;
     return Number.isFinite(n) ? getRarityConfig(n) : null;
 });
-
-const byDbColumn = computed(
-    () => getEntityCharacteristicsByDbColumn(props.tableMeta, "resource")
-);
-const priceMeta = computed(() => byDbColumn.value?.price || byDbColumn.value?.kamas || null);
-const weightMeta = computed(() => byDbColumn.value?.weight || byDbColumn.value?.pods || null);
 
 /** Ingrédients (ressources) de recette */
 const ingredients = computed(
@@ -202,28 +228,28 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                 >
                     {{ rarityConfig.label }}
                 </Badge>
-                <Tooltip v-if="priceCell?.value != null && priceCell?.value !== '—'" :content="`Prix: ${priceCell.value}`">
-                    <span class="inline-flex items-center gap-1">
-                        <Icon
-                            :source="priceMeta?.icon || 'fa-solid fa-coins'"
-                            alt="Prix"
-                            size="xs"
-                            :style="priceMeta?.color ? { color: `var(--color-${priceMeta.color})` } : undefined"
-                        />
-                        <span>{{ priceCell.value }}</span>
-                    </span>
-                </Tooltip>
-                <Tooltip v-if="weightCell?.value != null && weightCell?.value !== '—'" :content="`Poids: ${weightCell.value}`">
-                    <span class="inline-flex items-center gap-1">
-                        <Icon
-                            :source="weightMeta?.icon || 'fa-solid fa-weight-hanging'"
-                            alt="Poids"
-                            size="xs"
-                            :style="weightMeta?.color ? { color: `var(--color-${weightMeta.color})` } : undefined"
-                        />
-                        <span>{{ weightCell.value }}</span>
-                    </span>
-                </Tooltip>
+                <EntityPropertyDisplay
+                    v-if="canShowField('weight')"
+                    field-key="weight"
+                    :entity="entity"
+                    entity-type="resource"
+                    :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    size="xs"
+                    class="min-w-0"
+                />
+                <EntityPropertyDisplay
+                    v-if="canShowField('price')"
+                    field-key="price"
+                    :entity="entity"
+                    entity-type="resource"
+                    :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    size="xs"
+                    class="min-w-0"
+                />
             </div>
             <!-- Ligne 3 : Description (complète, retour à la ligne) -->
             <p

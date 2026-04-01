@@ -4,6 +4,7 @@
  *
  * @description
  * Effets : `resolveSpellEffectsDisplayCell` (résumé API + SpellEffectChips, ou fallback `effect`).
+ * Méta : `EntityPropertyDisplay` (aligné sur SpellViewCompact).
  *
  * @props {Spell} spell - Instance du modèle Spell
  */
@@ -15,19 +16,19 @@ import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import {
     resolveSpellEffectsDisplayCell,
     spellEffectsCellHasContent,
 } from "@/Composables/entity/useSpellEffectsDisplayCell";
-import { getEntityCharacteristicsByDbColumn, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
-import { getCharacteristicColorStyle, isPoCac, PO_CAC_ICON, PO_CAC_TOOLTIP } from "@/Composables/entity/useCharacteristicDisplay";
-import { getByCharacteristicKey } from "@/Composables/store/useCharacteristicsStore";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import SpellSummonMonsterInline from "@/Pages/Molecules/entity/spell/SpellSummonMonsterInline.vue";
 import { Spell } from "@/Models/Entity/Spell";
 import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
 const props = defineProps({
     spell: {
@@ -47,16 +48,44 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    characteristicRuntime: { type: Object, default: null },
 });
 
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
+
 const emit = defineEmits(["edit", "view", "delete", "action"]);
+
+const permissions = usePermissions();
+const ctx = computed(() => ({
+    capabilities: {
+        viewAny: permissions.can("spells", "viewAny"),
+        createAny: permissions.can("spells", "createAny"),
+        updateAny: permissions.can("spells", "updateAny"),
+        deleteAny: permissions.can("spells", "deleteAny"),
+        manageAny: permissions.can("spells", "manageAny"),
+    },
+    meta: { capabilities: {} },
+}));
+const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === "function") {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch {
+            return false;
+        }
+    }
+    return true;
+};
 
 const entity = computed(() => props.spell);
 
 const cellOpts = () => ({ size: "xs", context: "minimal" });
 
-const elementCell = computed(() => entity.value?.toCell?.("element", cellOpts()) ?? null);
-const categoryCell = computed(() => entity.value?.toCell?.("category", cellOpts()) ?? null);
 const spellTypesCell = computed(() => entity.value?.toCell?.("spell_types", cellOpts()) ?? null);
 const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spellTypesCell.value));
 
@@ -68,28 +97,6 @@ const levelValue = computed(() => {
     const n = Number(lv);
     return Number.isFinite(n) ? n : null;
 });
-
-const paValue = computed(() => entity.value?.pa ?? entity.value?._data?.pa ?? null);
-
-/** Portée affichée « min - max » (aligné modèle Spell / API). */
-const poRangeLabel = computed(() => {
-    const min = entity.value?.poMin ?? entity.value?._data?.po_min;
-    const max = entity.value?.poMax ?? entity.value?._data?.po_max;
-    const hasMin = min != null && String(min).trim() !== "";
-    const hasMax = max != null && String(max).trim() !== "";
-    if (!hasMin && !hasMax) {
-        const fallback = entity.value?.po ?? entity.value?._data?.po ?? "";
-        return fallback !== "" ? String(fallback) : "";
-    }
-    const a = hasMin ? String(min).trim() : "";
-    const b = hasMax ? String(max).trim() : a;
-    if (a === b) {
-        return a;
-    }
-    return `${a} - ${b}`;
-});
-
-const poIsCac = computed(() => isPoCac(poRangeLabel.value));
 
 const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
@@ -113,38 +120,6 @@ const summonMonsterBriefs = computed(() => {
             ? e.effectsDefinitions
             : e?.effects_definitions ?? e?._data?.effects_definitions;
     return Spell.summonMonstersFromEffectsDefinitionsPayload(raw);
-});
-
-const byDbColumn = computed(() => getEntityCharacteristicsByDbColumn(props.tableMeta, "spell"));
-const paMeta = computed(() => byDbColumn.value?.pa || null);
-const rangeSpellMeta = computed(() => getByCharacteristicKey("spell", "range_spell") || null);
-
-const descriptorsMinimal = computed(() => getSpellFieldDescriptors({ meta: {} }));
-
-function fieldUiTooltip(fieldKey) {
-    return resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptorsMinimal.value,
-        tableMeta: props.tableMeta,
-        entityType: "spell",
-    }).tooltip;
-}
-
-const paTooltip = computed(() => {
-    const h = paMeta.value?.helper || paMeta.value?.descriptions?.join?.(" ") || "";
-    return [h || "Coût en points d’action.", paValue.value != null && `Valeur : ${paValue.value}`]
-        .filter(Boolean)
-        .join("\n\n");
-});
-
-const poTooltip = computed(() => {
-    const m = rangeSpellMeta.value;
-    const h = m?.helper || (Array.isArray(m?.descriptions) ? m.descriptions.join(" ") : m?.descriptions) || "";
-    const base = h || "Portée minimale et maximale en cases.";
-    if (poIsCac.value) {
-        return [base, PO_CAC_TOOLTIP].filter(Boolean).join("\n\n");
-    }
-    return [base, poRangeLabel.value && `Affichage : ${poRangeLabel.value}`].filter(Boolean).join("\n\n");
 });
 
 const imageUrl = computed(() => {
@@ -236,63 +211,61 @@ const handleAction = async (actionKey) => {
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Tooltip
-                                v-if="elementCell?.value && elementCell.value !== '—'"
-                                :content="fieldUiTooltip('element')"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center">
-                                    <CellRenderer :cell="elementCell" class="inline-flex items-center" />
-                                </span>
-                            </Tooltip>
-                            <Tooltip
-                                v-if="categoryCell?.value && categoryCell.value !== '-' && categoryCell.value !== '—'"
-                                :content="fieldUiTooltip('category')"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center">
-                                    <CellRenderer :cell="categoryCell" class="inline-flex items-center" />
-                                </span>
-                            </Tooltip>
-                            <Tooltip
-                                v-if="showSpellTypesCell"
-                                :content="fieldUiTooltip('spell_types')"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center">
-                                    <CellRenderer :cell="spellTypesCell" class="inline-flex items-center" />
-                                </span>
-                            </Tooltip>
-                            <Tooltip
-                                v-if="paValue != null && paValue !== ''"
-                                :content="paTooltip"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center gap-1">
-                                    <Icon
-                                        :source="paMeta?.icon || 'fa-solid fa-bolt'"
-                                        alt="PA"
-                                        size="xs"
-                                        :style="paMeta?.color ? getCharacteristicColorStyle(paMeta.color) : undefined"
-                                    />
-                                    <span>{{ paValue }}</span>
-                                </span>
-                            </Tooltip>
-                            <Tooltip v-if="poRangeLabel !== ''" :content="poTooltip" placement="top">
-                                <span class="inline-flex items-center gap-1">
-                                    <Icon
-                                        :source="poIsCac ? PO_CAC_ICON : (rangeSpellMeta?.icon || 'fa-solid fa-crosshairs')"
-                                        alt="Portée"
-                                        size="xs"
-                                        :style="
-                                            rangeSpellMeta?.color
-                                                ? getCharacteristicColorStyle(rangeSpellMeta.color)
-                                                : undefined
-                                        "
-                                    />
-                                    <span v-if="!poIsCac">{{ poRangeLabel }}</span>
-                                </span>
-                            </Tooltip>
+                            <EntityPropertyDisplay
+                                v-if="canShowField('element')"
+                                field-key="element"
+                                :entity="entity"
+                                entity-type="spell"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
+                            <EntityPropertyDisplay
+                                v-if="canShowField('category')"
+                                field-key="category"
+                                :entity="entity"
+                                entity-type="spell"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
+                            <EntityPropertyDisplay
+                                v-if="canShowField('spell_types') && showSpellTypesCell"
+                                field-key="spell_types"
+                                :entity="entity"
+                                entity-type="spell"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
+                            <EntityPropertyDisplay
+                                v-if="canShowField('pa')"
+                                field-key="pa"
+                                :entity="entity"
+                                entity-type="spell"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
+                            <EntityPropertyDisplay
+                                v-if="canShowField('po')"
+                                field-key="po"
+                                :entity="entity"
+                                entity-type="spell"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
                         </div>
                     </div>
                 </div>
@@ -379,63 +352,61 @@ const handleAction = async (actionKey) => {
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Tooltip
-                                v-if="elementCell?.value && elementCell.value !== '—'"
-                                :content="fieldUiTooltip('element')"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center">
-                                    <CellRenderer :cell="elementCell" class="inline-flex items-center" />
-                                </span>
-                            </Tooltip>
-                            <Tooltip
-                                v-if="categoryCell?.value && categoryCell.value !== '-' && categoryCell.value !== '—'"
-                                :content="fieldUiTooltip('category')"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center">
-                                    <CellRenderer :cell="categoryCell" class="inline-flex items-center" />
-                                </span>
-                            </Tooltip>
-                            <Tooltip
-                                v-if="showSpellTypesCell"
-                                :content="fieldUiTooltip('spell_types')"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center">
-                                    <CellRenderer :cell="spellTypesCell" class="inline-flex items-center" />
-                                </span>
-                            </Tooltip>
-                            <Tooltip
-                                v-if="paValue != null && paValue !== ''"
-                                :content="paTooltip"
-                                placement="top"
-                            >
-                                <span class="inline-flex items-center gap-1">
-                                    <Icon
-                                        :source="paMeta?.icon || 'fa-solid fa-bolt'"
-                                        alt="PA"
-                                        size="xs"
-                                        :style="paMeta?.color ? getCharacteristicColorStyle(paMeta.color) : undefined"
-                                    />
-                                    <span>{{ paValue }}</span>
-                                </span>
-                            </Tooltip>
-                            <Tooltip v-if="poRangeLabel !== ''" :content="poTooltip" placement="top">
-                                <span class="inline-flex items-center gap-1">
-                                    <Icon
-                                        :source="poIsCac ? PO_CAC_ICON : (rangeSpellMeta?.icon || 'fa-solid fa-crosshairs')"
-                                        alt="Portée"
-                                        size="xs"
-                                        :style="
-                                            rangeSpellMeta?.color
-                                                ? getCharacteristicColorStyle(rangeSpellMeta.color)
-                                                : undefined
-                                        "
-                                    />
-                                    <span v-if="!poIsCac">{{ poRangeLabel }}</span>
-                                </span>
-                            </Tooltip>
+                            <EntityPropertyDisplay
+                                v-if="canShowField('element')"
+                                field-key="element"
+                                :entity="entity"
+                                entity-type="spell"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
+                            <EntityPropertyDisplay
+                                v-if="canShowField('category')"
+                                field-key="category"
+                                :entity="entity"
+                                entity-type="spell"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
+                            <EntityPropertyDisplay
+                                v-if="canShowField('spell_types') && showSpellTypesCell"
+                                field-key="spell_types"
+                                :entity="entity"
+                                entity-type="spell"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
+                            <EntityPropertyDisplay
+                                v-if="canShowField('pa')"
+                                field-key="pa"
+                                :entity="entity"
+                                entity-type="spell"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
+                            <EntityPropertyDisplay
+                                v-if="canShowField('po')"
+                                field-key="po"
+                                :entity="entity"
+                                entity-type="spell"
+                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                class="min-w-0"
+                            />
                         </div>
                         <p
                             v-if="descriptionFull"

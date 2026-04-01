@@ -9,13 +9,14 @@
  *
  * @props {Item} item - Instance du modèle Item
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
+ * @props {Object} [tableMeta] - Meta caractéristiques
+ * @props {Object|null} [characteristicRuntime] - Payload runtime optionnel
  */
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import CellRenderer from '@/Pages/Atoms/data-display/CellRenderer.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
@@ -28,12 +29,18 @@ import { getRarityConfig, getEntityStateOptions } from '@/Utils/Entity/SharedCon
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
+import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
+import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
+import { PROPERTY_DISPLAY_MODES } from '@/Utils/Entity/Constants';
 
 const props = defineProps({
     item: { type: Object, required: true },
     showActions: { type: Boolean, default: true },
     tableMeta: { type: Object, default: () => ({}) },
+    characteristicRuntime: { type: Object, default: null },
 });
+
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
@@ -53,10 +60,6 @@ const ctx = computed(() => ({
 
 const descriptors = computed(() => getItemFieldDescriptors(ctx.value));
 const stateValue = computed(() => props.item?.state ?? props.item?._data?.state ?? null);
-const autoUpdateValue = computed(() => {
-    const v = props.item?.auto_update ?? props.item?._data?.auto_update;
-    return typeof v === 'boolean' ? v : null;
-});
 const userCanEdit = computed(() => ctx.value.capabilities.updateAny ?? props.item?.can?.update ?? false);
 
 const canShowField = (fieldKey) => {
@@ -75,14 +78,6 @@ const canShowField = (fieldKey) => {
 
 const getFieldUi = (fieldKey) =>
     resolveEntityFieldUi({ fieldKey, descriptors: descriptors.value, tableMeta: props.tableMeta, entityType: 'item' });
-const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
-const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
-const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon || 'fa-solid fa-info-circle';
-const getFieldIconStyle = (fieldKey) => {
-    const color = getFieldUi(fieldKey).color;
-    return color ? { color } : undefined;
-};
-const getFieldUnit = (fieldKey) => getFieldUi(fieldKey).characteristic?.unit ?? '';
 
 const getCell = (fieldKey) =>
     props.item.toCell(fieldKey, { size: 'md', context: 'compact' });
@@ -300,22 +295,28 @@ const handleAction = async (actionKey) => {
                                 {{ (getRarityConfig(item.rarity ?? 0))?.label ?? '-' }}
                             </Badge>
                         </template>
-                        <template v-if="canShowField('weight')">
-                            <Tooltip :content="getFieldTooltip('weight')" placement="top">
-                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('weight')">
-                                    <Icon :source="getFieldIcon('weight')" :alt="getFieldLabel('weight')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('weight') }}</span><span> {{ item.weight ?? '-' }}{{ getFieldUnit('weight') ? ' ' + getFieldUnit('weight') : '' }}</span>
-                                </span>
-                            </Tooltip>
-                        </template>
-                        <template v-if="canShowField('price')">
-                            <Tooltip :content="getFieldTooltip('price')" placement="top">
-                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('price')">
-                                    <Icon :source="getFieldIcon('price')" :alt="getFieldLabel('price')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ item.price ?? '-' }}{{ getFieldUnit('price') ? ' ' + getFieldUnit('price') : '' }}</span>
-                                </span>
-                            </Tooltip>
-                        </template>
+                        <EntityPropertyDisplay
+                            v-if="canShowField('weight')"
+                            field-key="weight"
+                            :entity="item"
+                            entity-type="item"
+                            :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            size="xs"
+                            class="max-w-[18rem] min-w-0 text-primary-200"
+                        />
+                        <EntityPropertyDisplay
+                            v-if="canShowField('price')"
+                            field-key="price"
+                            :entity="item"
+                            entity-type="item"
+                            :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            size="xs"
+                            class="max-w-[18rem] min-w-0 text-primary-200"
+                        />
                     </div>
                     <p v-if="item.description" class="text-primary-300 text-xs mt-1 line-clamp-2">{{ item.description }}</p>
                 </div>

@@ -31,12 +31,17 @@ import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entit
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
 import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
+import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
 
 const props = defineProps({
     resource: { type: Object, required: true },
     showActions: { type: Boolean, default: true },
     tableMeta: { type: Object, default: () => ({}) },
+    /** Payload runtime (ex. Inertia) pour EntityPropertyDisplay */
+    characteristicRuntime: { type: Object, default: null },
 });
+
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 

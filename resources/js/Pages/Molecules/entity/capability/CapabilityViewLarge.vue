@@ -25,6 +25,7 @@ import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 
 const props = defineProps({
     capability: {
@@ -39,7 +40,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    characteristicRuntime: { type: Object, default: null },
 });
+
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
 const emit = defineEmits([
     "edit",

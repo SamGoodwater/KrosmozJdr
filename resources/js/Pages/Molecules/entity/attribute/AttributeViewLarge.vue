@@ -20,6 +20,7 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getAttributeFieldDescriptors } from "@/Entities/attribute/attribute-descriptors";
+import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
 
 const props = defineProps({
     attribute: {
@@ -33,7 +34,8 @@ const props = defineProps({
     tableMeta: {
         type: Object,
         default: () => ({})
-    }
+    },
+    characteristicRuntime: { type: Object, default: null },
 });
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);

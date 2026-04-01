@@ -24,6 +24,7 @@ import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 
 const props = defineProps({
     panoply: {
@@ -38,7 +39,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    characteristicRuntime: { type: Object, default: null },
 });
+
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
 const emit = defineEmits([
     "edit",

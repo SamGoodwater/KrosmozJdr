@@ -21,6 +21,7 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
+import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
 
 const props = defineProps({
     monster: {
@@ -93,6 +94,9 @@ const descriptionFull = computed(() => {
 
 const creatureCharacteristicsGroups = computed(() => buildCreatureCharacteristicGroups(creatureData.value));
 const hasCreatureCharacteristics = computed(() => !!creatureData.value);
+
+const creatureIdForStats = computed(() => creatureData.value?.id ?? null);
+const { runtime: creatureRuntimeStats } = useCreatureResolvedStats(creatureIdForStats);
 
 const showHref = computed(() =>
     entity.value?.id ? route("entities.monsters.show", { monster: entity.value.id }) : null
@@ -275,6 +279,7 @@ const handleAction = async (actionKey) => {
                         :entity="creatureData"
                         :groups="creatureCharacteristicsGroups"
                         :dense="true"
+                        :runtime="creatureRuntimeStats"
                     />
                 </section>
             </div>

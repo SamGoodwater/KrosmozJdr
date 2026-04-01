@@ -1,32 +1,31 @@
 <script setup>
 /**
- * EntityPropertyDisplay — Affichage unifié des propriétés d'entité
+ * EntityPropertyDisplay — façade par `fieldKey` vers CharacteristicProperty + view model unifié.
  *
- * @description
- * Composant dédié et paramétrable pour afficher une propriété selon le mode
- * (minimal, compact, extended, detailed). Utilise le service caractéristiques
- * (slug → couleur, description, icône, unité, nom) et resolveEntityFieldUi.
- *
- * @props {string} fieldKey - Clé du champ
- * @props {Object} entity - Entité (modèle ou objet)
- * @props {string} entityType - Type d'entité (resource, spell, monster, etc.)
- * @props {string} displayMode - minimal | compact | extended | detailed (PROPERTY_DISPLAY_MODES)
- * @props {Object} [descriptors] - Descriptors (getXFieldDescriptors())
- * @props {Object} [tableMeta] - Meta tableau
- * @props {string} [variant] - Override présentation: badge | icon | inline (pour PropertyDisplay)
- * @props {string} [size] - xs | sm | md
- * @props {string} [formulaResolved] - Formule résolue (mode detailed)
- * @props {string} [formulaRaw] - Formule brute (mode detailed)
- * @props {Array} [levelTable] - Tableau niveau→valeur (mode detailed)
+ * @props {string} fieldKey
+ * @props {Object} entity
+ * @props {string} entityType
+ * @props {string} displayMode - minimal | compact | extended | detailed
+ * @props {Object} [descriptors]
+ * @props {Object} [tableMeta]
+ * @props {string} [variant] - badge | icon | inline
+ * @props {string} [size]
+ * @props {string} [formulaResolved]
+ * @props {string} [formulaRaw]
+ * @props {Array} [levelTable]
+ * @props {Object|null|undefined} [runtime] — ex. resolved-stats ; si omis, inject du contexte (provideCharacteristicRuntime)
  */
-import { computed } from "vue";
-import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import CharacteristicFormula from "@/Pages/Atoms/data-display/CharacteristicFormula.vue";
+import { computed, inject, unref } from "vue";
+import { CHARACTERISTIC_RUNTIME_INJECT_KEY } from "@/Composables/entity/characteristicRuntimeContext";
 import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { useEntityPropertyDisplay } from "@/Composables/entity/useEntityPropertyDisplay";
-import { getCharacteristicColorStyle } from "@/Composables/entity/useCharacteristicDisplay";
+import CharacteristicProperty from "@/Pages/Atoms/data-display/CharacteristicProperty.vue";
+import { useCharacteristicViewModel } from "@/Composables/entity/useCharacteristicViewModel";
+import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import {
+    CHARACTERISTIC_PROPERTY_BADGE,
+    CHARACTERISTIC_PROPERTY_DENSITY,
+    CHARACTERISTIC_PROPERTY_LAYOUT,
+} from "@/Utils/Entity/Constants";
 
 const props = defineProps({
     fieldKey: { type: String, required: true },
@@ -58,6 +57,21 @@ const props = defineProps({
     formulaResolved: { type: String, default: "" },
     formulaRaw: { type: String, default: "" },
     levelTable: { type: Array, default: () => [] },
+    /** Prioritaire sur le payload injecté par la page (provideCharacteristicRuntime) */
+    runtime: { type: Object, default: undefined },
+});
+
+const injectedRuntime = inject(CHARACTERISTIC_RUNTIME_INJECT_KEY, null);
+
+/** Prop explicite > contexte fourni par la page fiche */
+const resolvedRuntime = computed(() => {
+    if (props.runtime !== undefined) {
+        return props.runtime;
+    }
+    if (injectedRuntime == null) {
+        return null;
+    }
+    return unref(injectedRuntime);
 });
 
 const displayOptions = computed(() => ({
@@ -69,42 +83,35 @@ const displayOptions = computed(() => ({
     formulaResolved: props.formulaResolved,
     formulaRaw: props.formulaRaw,
     levelTable: props.levelTable,
+    runtime: resolvedRuntime.value,
 }));
 
-const {
-    property,
-    value,
-    displayValue,
-    unit,
-    characteristic,
-    hasFormula,
-    formulaResolved: resolvedFormula,
-    formulaRaw: rawFormula,
-    levelTable: tableLevel,
-} = useEntityPropertyDisplay(displayOptions);
-
-const propertyConfig = computed(() => ({
-    icon: property.value?.icon,
-    label: property.value?.label,
-    shortLabel: property.value?.shortLabel,
-    tooltip: property.value?.tooltip,
-    color: property.value?.color,
-}));
-
-const defForFormula = computed(() => ({
-    key: props.fieldKey,
-    name: property.value?.label,
-    short_name: property.value?.shortLabel,
-    icon: property.value?.icon,
-    color: property.value?.color,
-    unit: unit.value || characteristic.value?.unit,
-    descriptions: property.value?.tooltip,
-}));
+const { viewModel, hasFormula, levelTable: tableLevel } = useCharacteristicViewModel(displayOptions);
 
 const useCharacteristicFormula = computed(
     () =>
         props.displayMode === PROPERTY_DISPLAY_MODES.detailed &&
-        (hasFormula.value || (Array.isArray(tableLevel.value) && tableLevel.value.length > 0))
+        (hasFormula.value || (Array.isArray(tableLevel.value) && tableLevel.value.length > 0)),
+);
+
+const densityForMode = computed(() => {
+    switch (props.displayMode) {
+        case PROPERTY_DISPLAY_MODES.minimal:
+            return CHARACTERISTIC_PROPERTY_DENSITY.iconOnly;
+        case PROPERTY_DISPLAY_MODES.compact:
+            return CHARACTERISTIC_PROPERTY_DENSITY.short;
+        default:
+            return CHARACTERISTIC_PROPERTY_DENSITY.full;
+    }
+});
+
+const badgeForVariant = computed(() =>
+    props.variant === "badge" ? CHARACTERISTIC_PROPERTY_BADGE.solid : CHARACTERISTIC_PROPERTY_BADGE.none,
+);
+
+/** Mode detailed + formule : carte (comme l’ancien CharacteristicFormula), sans badge */
+const effectiveBadge = computed(() =>
+    useCharacteristicFormula.value ? CHARACTERISTIC_PROPERTY_BADGE.none : badgeForVariant.value,
 );
 
 const isElementField = computed(() => props.fieldKey === "element");
@@ -116,56 +123,15 @@ const elementValue = computed(() => {
 </script>
 
 <template>
-    <!-- Champ element : ElementDisplay dédié -->
-    <ElementDisplay
-        v-if="isElementField"
-        :element="elementValue"
+    <ElementDisplay v-if="isElementField" :element="elementValue" :size="size" />
+
+    <CharacteristicProperty
+        v-else
+        :view-model="viewModel"
+        :density="densityForMode"
+        :layout="useCharacteristicFormula ? CHARACTERISTIC_PROPERTY_LAYOUT.card : CHARACTERISTIC_PROPERTY_LAYOUT.inline"
+        :badge="effectiveBadge"
+        :show-value="variant !== 'icon'"
         :size="size"
     />
-
-    <!-- Mode detailed avec formule/levelTable : CharacteristicFormula -->
-    <CharacteristicFormula
-        v-else-if="useCharacteristicFormula"
-        :def="defForFormula"
-        :value="value"
-        :formula-resolved="resolvedFormula"
-        :formula-raw="rawFormula"
-        :level-table="tableLevel"
-        :unit="unit"
-        :display-mode="displayMode"
-    />
-
-    <!-- Modes minimal, compact, extended : PropertyDisplay adapté -->
-    <Tooltip
-        v-else
-        :content="propertyConfig.tooltip ? `${propertyConfig.tooltip}\n${displayValue}` : displayValue"
-        placement="top"
-        class="inline-flex"
-    >
-        <span
-            class="inline-flex items-center gap-1 text-xs"
-            :style="propertyConfig.color ? getCharacteristicColorStyle(propertyConfig.color) : undefined"
-        >
-            <Icon
-                v-if="propertyConfig.icon"
-                :source="propertyConfig.icon"
-                :alt="propertyConfig.label || fieldKey"
-                :size="size === 'md' ? 'sm' : 'xs'"
-                class="shrink-0 opacity-80"
-            />
-            <template v-if="displayMode === PROPERTY_DISPLAY_MODES.compact && propertyConfig.shortLabel">
-                <span class="opacity-80">{{ propertyConfig.shortLabel }}:</span>
-            </template>
-            <template
-                v-else-if="
-                    displayMode === PROPERTY_DISPLAY_MODES.extended &&
-                    propertyConfig.label
-                "
-            >
-                <span class="opacity-80">{{ propertyConfig.label }}:</span>
-            </template>
-            <!-- minimal : pas de label, uniquement icône + valeur + unité -->
-            <span class="font-medium">{{ displayValue }}</span>
-        </span>
-    </Tooltip>
 </template>

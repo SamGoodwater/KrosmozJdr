@@ -4,6 +4,7 @@
  *
  * @description
  * Effets via `resolveSpellEffectsDisplayCell` : résumé API (`SpellEffectChips`) ou fallback `effect` (chips).
+ * Méta (élément, catégorie, types, PA, PO) : `EntityPropertyDisplay` (aligné sur SpellViewCompact).
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import { Link } from "@inertiajs/vue3";
@@ -14,13 +15,16 @@ import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import {
     resolveSpellEffectsDisplayCell,
     spellEffectsCellHasContent,
 } from "@/Composables/entity/useSpellEffectsDisplayCell";
 import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
-import { getEntityCharacteristicsByDbColumn } from "@/Utils/Entity/entity-view-ui";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
+import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -32,9 +36,39 @@ const props = defineProps({
     showActions: { type: Boolean, default: true },
     uiColor: { type: String, default: "primary" },
     entityType: { type: String, default: "spells" },
+    characteristicRuntime: { type: Object, default: null },
 });
 
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
+
 const emit = defineEmits(["row-click", "row-dblclick", "toggle-select", "action"]);
+
+const permissions = usePermissions();
+const ctx = computed(() => ({
+    capabilities: {
+        viewAny: permissions.can("spells", "viewAny"),
+        createAny: permissions.can("spells", "createAny"),
+        updateAny: permissions.can("spells", "updateAny"),
+        deleteAny: permissions.can("spells", "deleteAny"),
+        manageAny: permissions.can("spells", "manageAny"),
+    },
+    meta: { capabilities: {} },
+}));
+const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === "function") {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch {
+            return false;
+        }
+    }
+    return true;
+};
 
 const isInteractiveTarget = (event) => {
     const el = event?.target;
@@ -69,11 +103,7 @@ const levelValue = computed(() => {
 
 const nameCell = computed(() => getCell("name"));
 const imageCell = computed(() => getCell("image"));
-const elementCell = computed(() => getCell("element"));
-const categoryCell = computed(() => getCell("category"));
 const spellTypesCell = computed(() => getCell("spell_types"));
-const paCell = computed(() => getCell("pa"));
-const poCell = computed(() => getCell("po"));
 
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
 
@@ -89,10 +119,6 @@ const effectDisplayCell = computed(() =>
 const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
 
 const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spellTypesCell.value));
-
-const byDbColumn = computed(() => getEntityCharacteristicsByDbColumn(props.tableMeta, "spell"));
-const paMeta = computed(() => byDbColumn.value?.pa || null);
-const poMeta = computed(() => byDbColumn.value?.po || byDbColumn.value?.po_max || null);
 
 const handleRowClick = (e) => emit("row-click", props.row, e);
 
@@ -181,49 +207,61 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                     />
                 </div>
                 <div class="flex flex-wrap items-center gap-2 text-sm">
-                    <CellRenderer
-                        v-if="elementCell?.value && elementCell.value !== '—'"
-                        :cell="elementCell"
-                        class="inline-flex items-center"
+                    <EntityPropertyDisplay
+                        v-if="canShowField('element')"
+                        field-key="element"
+                        :entity="entity"
+                        entity-type="spell"
+                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                        size="xs"
+                        class="min-w-0"
                     />
-                    <CellRenderer
-                        v-if="categoryCell?.value && categoryCell.value !== '-' && categoryCell.value !== '—'"
-                        :cell="categoryCell"
-                        class="inline-flex items-center"
+                    <EntityPropertyDisplay
+                        v-if="canShowField('category')"
+                        field-key="category"
+                        :entity="entity"
+                        entity-type="spell"
+                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                        size="xs"
+                        class="min-w-0"
                     />
-                    <CellRenderer
-                        v-if="showSpellTypesCell"
-                        :cell="spellTypesCell"
-                        class="inline-flex items-center"
+                    <EntityPropertyDisplay
+                        v-if="canShowField('spell_types') && showSpellTypesCell"
+                        field-key="spell_types"
+                        :entity="entity"
+                        entity-type="spell"
+                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                        size="xs"
+                        class="min-w-0"
                     />
-                    <Tooltip
-                        v-if="paCell?.value != null && paCell?.value !== '—'"
-                        :content="`PA: ${paCell.value}`"
-                    >
-                        <span class="inline-flex items-center gap-1">
-                            <Icon
-                                :source="paMeta?.icon || 'fa-solid fa-bolt'"
-                                alt="PA"
-                                size="xs"
-                                :style="paMeta?.color ? { color: `var(--color-${paMeta.color})` } : undefined"
-                            />
-                            <span>{{ paCell.value }}</span>
-                        </span>
-                    </Tooltip>
-                    <Tooltip
-                        v-if="poCell?.value != null && poCell?.value !== '—'"
-                        :content="`Portée: ${poCell.value}`"
-                    >
-                        <span class="inline-flex items-center gap-1">
-                            <Icon
-                                :source="poMeta?.icon || 'fa-solid fa-crosshairs'"
-                                alt="Portée"
-                                size="xs"
-                                :style="poMeta?.color ? { color: `var(--color-${poMeta.color})` } : undefined"
-                            />
-                            <span>{{ poCell.value }}</span>
-                        </span>
-                    </Tooltip>
+                    <EntityPropertyDisplay
+                        v-if="canShowField('pa')"
+                        field-key="pa"
+                        :entity="entity"
+                        entity-type="spell"
+                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                        size="xs"
+                        class="min-w-0"
+                    />
+                    <EntityPropertyDisplay
+                        v-if="canShowField('po')"
+                        field-key="po"
+                        :entity="entity"
+                        entity-type="spell"
+                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                        size="xs"
+                        class="min-w-0"
+                    />
                 </div>
                 <p
                     v-if="descriptionFull"

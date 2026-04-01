@@ -8,6 +8,8 @@
  * 
  * @props {Spell} spell - Instance du modèle Spell
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
+ * @props {Object} [tableMeta] - Meta caractéristiques
+ * @props {Object|null} [characteristicRuntime] - Payload runtime (tooltips formules)
  */
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
@@ -15,7 +17,6 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
@@ -23,7 +24,10 @@ import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
-import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
+import { resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
+import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
 const props = defineProps({
     spell: {
@@ -37,8 +41,11 @@ const props = defineProps({
     tableMeta: {
         type: Object,
         default: () => ({})
-    }
+    },
+    characteristicRuntime: { type: Object, default: null },
 });
+
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
@@ -59,11 +66,6 @@ const ctx = computed(() => {
 const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
 
 const stateValue = computed(() => props.spell?.state ?? props.spell?._data?.state ?? null);
-
-const autoUpdateValue = computed(() => {
-    const v = props.spell?.auto_update ?? props.spell?._data?.auto_update;
-    return typeof v === 'boolean' ? v : null;
-});
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -108,30 +110,6 @@ const technicalFields = computed(() => ([
     'created_at',
     'updated_at',
 ].filter(canShowField)));
-
-const getFieldUi = (fieldKey) =>
-    resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'spell',
-    });
-
-const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
-
-const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
-
-const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
-
-const getFieldIconStyle = (fieldKey) => {
-    const color = resolveEntityFieldUi({
-        fieldKey,
-        descriptors: descriptors.value,
-        tableMeta: props.tableMeta,
-        entityType: 'spell',
-    }).color;
-    return color ? { color } : undefined;
-};
 
 const getCell = (fieldKey) => {
     return props.spell.toCell(fieldKey, {
@@ -278,81 +256,54 @@ const handleAction = async (actionKey) => {
 
             <template #mainInfos>
                 <div v-if="displayMetaFields.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <template v-for="fieldKey in displayMetaFields" :key="fieldKey">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="flex items-start justify-between gap-2 min-w-0">
-                                <div class="flex items-center gap-2 min-w-0">
-                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                                    <span
-                                        v-if="!shouldOmitLabelInMeta(fieldKey)"
-                                        class="text-xs uppercase font-semibold text-primary-300 truncate"
-                                    >
-                                        {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
-                                    </span>
-                                </div>
-                                <div class="min-w-0 max-w-[14rem] flex justify-end">
-                                    <CellRenderer
-                                        :cell="getCell(fieldKey)"
-                                        ui-color="primary"
-                                        class="whitespace-normal wrap-break-word"
-                                    />
-                                </div>
-                            </div>
-                        </Tooltip>
-                    </template>
+                    <EntityPropertyDisplay
+                        v-for="fieldKey in displayMetaFields"
+                        :key="fieldKey"
+                        :field-key="fieldKey"
+                        :entity="spell"
+                        entity-type="spell"
+                        :display-mode="PROPERTY_DISPLAY_MODES.extended"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                        size="xs"
+                        class="min-w-0 max-w-full text-primary-200"
+                    />
                 </div>
             </template>
         </EntityViewHeader>
 
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
             <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
-                <template v-for="fieldKey in technicalFields" :key="fieldKey">
-                    <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                        <div class="inline-flex items-center gap-2 min-w-0">
-                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                            <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
-                            <span class="min-w-0 break-words">
-                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                            </span>
-                        </div>
-                    </Tooltip>
-                </template>
+                <EntityPropertyDisplay
+                    v-for="fieldKey in technicalFields"
+                    :key="fieldKey"
+                    :field-key="fieldKey"
+                    :entity="spell"
+                    entity-type="spell"
+                    :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    size="xs"
+                    class="min-w-0 max-w-[20rem]"
+                />
             </div>
 
             <div v-if="userCanEditFields.length > 0" class="mt-4">
                 <div class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Paramètres</div>
                 <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
-                    <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="inline-flex items-center gap-2 min-w-0">
-                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
-                                <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
-                                <span class="min-w-0 break-words">
-                                    <template v-if="fieldKey === 'auto_update'">
-                                        <Icon
-                                            v-if="autoUpdateValue !== null"
-                                            :source="autoUpdateValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
-                                            :alt="autoUpdateValue ? 'Oui' : 'Non'"
-                                            size="sm"
-                                            :class="autoUpdateValue ? 'text-success-800' : 'text-error-800'"
-                                        />
-                                        <span v-else>—</span>
-                                    </template>
-                                    <template v-else>
-                                        <Badge
-                                            :color="getBadgeColor(fieldKey)"
-                                            :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                                            :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                                            :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
-                                            size="sm"
-                                        >
-                                            <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                                        </Badge>
-                                    </template>
-                                </span>
-                            </div>
-                        </Tooltip>
-                    </template>
+                    <EntityPropertyDisplay
+                        v-for="fieldKey in userCanEditFields"
+                        :key="fieldKey"
+                        :field-key="fieldKey"
+                        :entity="spell"
+                        entity-type="spell"
+                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                        variant="badge"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                        size="sm"
+                        class="min-w-0 max-w-[20rem]"
+                    />
                 </div>
             </div>
         </div>

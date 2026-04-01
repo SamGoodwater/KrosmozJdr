@@ -30,21 +30,13 @@ import { getSpellFieldDescriptors } from '@/Entities/spell/spell-descriptors';
 import { getByCharacteristicKey, getByDbColumn } from '@/Composables/store/useCharacteristicsStore';
 import { getCharacteristicColorStyle } from '@/Composables/entity/useCharacteristicDisplay';
 import { resolveSpellCharacteristicKey } from '@/Composables/entity/useSpellAbilityCharacteristic';
+import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
+import { PROPERTY_DISPLAY_MODES } from '@/Utils/Entity/Constants';
 
 const RESOLUTION_LABELS = Object.freeze({
     attack_roll: "Jet d'attaque (vs CA)",
     saving_throw: 'Jet de sauvegarde',
     auto_success: 'Réussite automatique',
-});
-
-/** Libellés / icônes si le descriptor du champ est absent. */
-const USAGE_FIELD_FALLBACK = Object.freeze({
-    pa: { label: 'PA', icon: 'fa-solid fa-bolt' },
-    po_range: { label: 'Portée (min - max)', icon: 'fa-solid fa-crosshairs' },
-    cast_per_turn: { label: 'Lancers / tour', icon: 'fa-solid fa-rotate' },
-    cast_per_target: { label: 'Lancers / cible', icon: 'fa-solid fa-bullseye' },
-    sight_line: { label: 'Ligne de vue', icon: 'fa-solid fa-eye' },
-    number_between_two_cast: { label: 'Entre deux lancers', icon: 'fa-solid fa-hourglass-half' },
 });
 
 const props = defineProps({
@@ -66,7 +58,14 @@ const props = defineProps({
         default: 'h2',
         validator: (v) => ['h1', 'h2', 'h3'].includes(v),
     },
+    /** Payload runtime (ex. Inertia `characteristicRuntime`) pour tooltips formules — transmis aux EntityPropertyDisplay */
+    characteristicRuntime: {
+        type: Object,
+        default: null,
+    },
 });
+
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
@@ -256,44 +255,6 @@ const reactionTooltipBlocks = computed(() => {
     return { title, lines };
 });
 
-function boolLabel(v) {
-    return v ? 'Oui' : 'Non';
-}
-
-/**
- * Métadonnées caractéristique (BDD) pour les champs d’utilisation.
- * @param {string} usageKey
- * @returns {object|null}
- */
-function usageCharacteristicMeta(usageKey) {
-    switch (usageKey) {
-        case 'pa':
-            return getByDbColumn('spell', 'pa');
-        case 'po_range':
-            return getByCharacteristicKey('spell', 'range_spell') ?? getByDbColumn('spell', 'po_max');
-        case 'cast_per_turn':
-            return getByDbColumn('spell', 'cast_per_turn');
-        case 'cast_per_target':
-            return getByDbColumn('spell', 'cast_per_target');
-        case 'sight_line':
-            return getByDbColumn('spell', 'sight_line');
-        case 'number_between_two_cast':
-            return getByDbColumn('spell', 'number_between_two_cast');
-        default:
-            return null;
-    }
-}
-
-function usageBlockTooltip(usageKey) {
-    const meta = usageCharacteristicMeta(usageKey);
-    const parts = [
-        usageFieldLabel(usageKey),
-        meta?.helper,
-        Array.isArray(meta?.descriptions) ? meta.descriptions.join(' ') : meta?.descriptions,
-    ].filter((p) => p && String(p).trim() !== '');
-    return parts.join('\n\n') || usageFieldLabel(usageKey);
-}
-
 function characteristicTooltipText(meta) {
     if (!meta) return '';
     return (
@@ -311,32 +272,6 @@ const usageFieldKeys = Object.freeze([
     'sight_line',
     'number_between_two_cast',
 ]);
-
-function usageFieldLabel(key) {
-    const m = usageCharacteristicMeta(key);
-    if (m?.short_name || m?.name) {
-        return m.short_name || m.name;
-    }
-    const d = descriptors.value?.[key];
-    return d?.label || USAGE_FIELD_FALLBACK[key]?.label || key;
-}
-
-function usageFieldIcon(key) {
-    const m = usageCharacteristicMeta(key);
-    if (m?.icon) {
-        return m.icon;
-    }
-    const d = descriptors.value?.[key];
-    return d?.icon || USAGE_FIELD_FALLBACK[key]?.icon || 'fa-solid fa-circle-info';
-}
-
-function usageRowIconStyle(usageKey) {
-    const m = usageCharacteristicMeta(usageKey);
-    if (m?.color) {
-        return getCharacteristicColorStyle(m.color);
-    }
-    return getFieldIconStyle(usageKey);
-}
 
 const handleAction = async (actionKey) => {
     const spellId = props.spell.id;
@@ -535,47 +470,35 @@ const handleAction = async (actionKey) => {
         <section class="space-y-3">
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Utilisation</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                <Tooltip
+                <div
                     v-for="fieldKey in usageFieldKeys"
                     :key="fieldKey"
-                    :content="usageBlockTooltip(fieldKey)"
-                    placement="top"
+                    class="p-3 bg-base-200 entity-radius-box min-w-0"
                 >
-                    <div class="p-3 bg-base-200 entity-radius-box space-y-1 cursor-default">
-                        <div class="flex items-center gap-2 text-xs text-primary-400 uppercase font-semibold">
-                            <Icon
-                                :source="usageFieldIcon(fieldKey)"
-                                :alt="usageFieldLabel(fieldKey)"
-                                size="xs"
-                                :style="usageRowIconStyle(fieldKey)"
-                            />
-                            <span>{{ usageFieldLabel(fieldKey) }}</span>
-                        </div>
-                        <div class="text-primary-100 break-words">
-                            <CellRenderer :cell="getCell(fieldKey)" ui-color="primary" />
-                        </div>
-                    </div>
-                </Tooltip>
+                    <EntityPropertyDisplay
+                        :field-key="fieldKey"
+                        :entity="spell"
+                        entity-type="spell"
+                        :display-mode="PROPERTY_DISPLAY_MODES.extended"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                        size="sm"
+                        class="text-primary-100"
+                    />
+                </div>
 
-                <Tooltip
-                    v-if="poEditableMeta"
-                    :content="characteristicTooltipText(poEditableMeta) || 'Indique si la portée du sort peut être ajustée.'"
-                    placement="top"
-                >
-                    <div class="p-3 bg-base-200 entity-radius-box space-y-1 cursor-default">
-                        <div class="flex items-center gap-2 text-xs text-primary-400 uppercase font-semibold">
-                            <Icon
-                                v-if="poEditableMeta.icon"
-                                :source="poEditableMeta.icon"
-                                :alt="poEditableMeta.short_name || ''"
-                                size="xs"
-                                :style="poEditableMeta.color ? getCharacteristicColorStyle(poEditableMeta.color) : undefined"
-                            />
-                            <span>{{ poEditableMeta.short_name || poEditableMeta.name || 'Portée modifiable' }}</span>
-                        </div>
-                        <div class="text-primary-100">{{ boolLabel(Boolean(spell.poEditable)) }}</div>
-                    </div>
-                </Tooltip>
+                <div v-if="poEditableMeta" class="p-3 bg-base-200 entity-radius-box min-w-0">
+                    <EntityPropertyDisplay
+                        field-key="po_editable"
+                        :entity="spell"
+                        entity-type="spell"
+                        :display-mode="PROPERTY_DISPLAY_MODES.extended"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                        size="sm"
+                        class="text-primary-100"
+                    />
+                </div>
             </div>
         </section>
 

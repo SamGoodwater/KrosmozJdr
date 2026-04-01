@@ -8,13 +8,14 @@
  * 
  * @props {Resource} resource - Instance du modèle Resource
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
+ * @props {Object} [tableMeta] - Meta caractéristiques (tableau / Inertia)
+ * @props {Object|null} [characteristicRuntime] - Payload runtime optionnel (même schéma que resolved-stats)
  */
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
@@ -27,6 +28,9 @@ import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngr
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getRarityConfig } from '@/Utils/Entity/SharedConstants';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
+import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
+import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
+import { PROPERTY_DISPLAY_MODES } from '@/Utils/Entity/Constants';
 
 const props = defineProps({
     resource: {
@@ -41,8 +45,12 @@ const props = defineProps({
     tableMeta: {
         type: Object,
         default: () => ({})
-    }
+    },
+    /** Payload runtime (Inertia / futur API) — tooltips formules */
+    characteristicRuntime: { type: Object, default: null },
 });
+
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
@@ -85,19 +93,6 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-const headlineFields = computed(() => ([
-    'resource_type',
-    'level',
-].filter(canShowField)));
-
-const metaFields = computed(() => ([
-    'rarity',
-    'price',
-    'weight',
-].filter(canShowField).filter((k) => !headlineFields.value.includes(k))));
-
-const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
-
 const userCanEditFields = computed(() => ([
     'dofus_version',
     'auto_update',
@@ -126,8 +121,6 @@ const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
 const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
 
 const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
-
-const getFieldUnit = (fieldKey) => getFieldUi(fieldKey).characteristic?.unit ?? '';
 
 const getFieldIconStyle = (fieldKey) => {
     const color = getFieldUi(fieldKey).color;
@@ -320,22 +313,28 @@ const handleAction = async (actionKey) => {
                                 {{ (getRarityConfig(resource.rarity ?? 0))?.label ?? '-' }}
                             </Badge>
                         </template>
-                        <template v-if="canShowField('weight')">
-                            <Tooltip :content="getFieldTooltip('weight')" placement="top">
-                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('weight')">
-                                    <Icon :source="getFieldIcon('weight')" :alt="getFieldLabel('weight')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('weight') }}</span><span> {{ resource.weight ?? '-' }}{{ getFieldUnit('weight') ? ' ' + getFieldUnit('weight') : '' }}</span>
-                                </span>
-                            </Tooltip>
-                        </template>
-                        <template v-if="canShowField('price')">
-                            <Tooltip :content="getFieldTooltip('price')" placement="top">
-                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('price')">
-                                    <Icon :source="getFieldIcon('price')" :alt="getFieldLabel('price')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ resource.price ?? '-' }}{{ getFieldUnit('price') ? ' ' + getFieldUnit('price') : '' }}</span>
-                                </span>
-                            </Tooltip>
-                        </template>
+                        <EntityPropertyDisplay
+                            v-if="canShowField('weight')"
+                            field-key="weight"
+                            :entity="resource"
+                            entity-type="resource"
+                            :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            size="xs"
+                            class="max-w-[18rem] min-w-0 text-primary-200"
+                        />
+                        <EntityPropertyDisplay
+                            v-if="canShowField('price')"
+                            field-key="price"
+                            :entity="resource"
+                            entity-type="resource"
+                            :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            size="xs"
+                            class="max-w-[18rem] min-w-0 text-primary-200"
+                        />
                     </div>
                     <!-- Ligne 3 : Description -->
                     <p v-if="resource.description" class="text-primary-300 text-xs mt-1 line-clamp-2">{{ resource.description }}</p>

@@ -28,6 +28,9 @@ const spell = computed(() => {
     return raw instanceof Spell ? raw : new Spell(raw);
 });
 
+/** Quand le backend exposera un payload (même schéma que resolved-stats), les EntityPropertyDisplay l’utiliseront */
+const characteristicRuntime = computed(() => page.props.characteristicRuntime ?? null);
+
 setPageTitle(`Sort : ${spell.value.name || '-'}`);
 
 const goEdit = () => {
@@ -49,7 +52,12 @@ const goEdit = () => {
                     </Btn>
                 </div>
 
-                <SpellViewLarge :spell="spell" title-tag="h1" :show-actions="true" />
+                <SpellViewLarge
+                    :spell="spell"
+                    title-tag="h1"
+                    :show-actions="true"
+                    :characteristic-runtime="characteristicRuntime"
+                />
             </div>
         </EntityViewLargeWrapper>
     </Container>

@@ -4,7 +4,7 @@
  *
  * @description
  * Même structure que ResourceLineRow : State • Image • Level • Nom • Type • Rareté • Prix • Description • Effets
- * Pas de poids (équipements).
+ * Pas de poids (équipements). Prix : `EntityPropertyDisplay` (aligné sur ItemViewCompact).
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import { Link } from "@inertiajs/vue3";
@@ -17,10 +17,13 @@ import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngr
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
 import { getRarityConfig } from "@/Utils/Entity/SharedConstants";
-import { getEntityCharacteristicsByDbColumn } from "@/Utils/Entity/entity-view-ui";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
+import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -32,9 +35,39 @@ const props = defineProps({
     showActions: { type: Boolean, default: true },
     uiColor: { type: String, default: "primary" },
     entityType: { type: String, default: "items" },
+    characteristicRuntime: { type: Object, default: null },
 });
 
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
+
 const emit = defineEmits(["row-click", "row-dblclick", "toggle-select", "action"]);
+
+const permissions = usePermissions();
+const ctx = computed(() => ({
+    capabilities: {
+        viewAny: permissions.can("items", "viewAny"),
+        createAny: permissions.can("items", "createAny"),
+        updateAny: permissions.can("items", "updateAny"),
+        deleteAny: permissions.can("items", "deleteAny"),
+        manageAny: permissions.can("items", "manageAny"),
+    },
+    meta: { capabilities: {} },
+}));
+const descriptors = computed(() => getItemFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === "function") {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch {
+            return false;
+        }
+    }
+    return true;
+};
 
 const isInteractiveTarget = (event) => {
     const el = event?.target;
@@ -65,7 +98,6 @@ const levelValue = computed(() => entity.value?.level ?? entity.value?._data?.le
 const nameCell = computed(() => getCell("name"));
 const imageCell = computed(() => getCell("image"));
 const typeCell = computed(() => getCell("item_type"));
-const priceCell = computed(() => getCell("price"));
 /** Description brute (non tronquée) */
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
 
@@ -84,11 +116,6 @@ const rarityConfig = computed(() => {
     const n = v != null ? Number(v) : null;
     return Number.isFinite(n) ? getRarityConfig(n) : null;
 });
-
-const byDbColumn = computed(
-    () => getEntityCharacteristicsByDbColumn(props.tableMeta, "item")
-);
-const priceMeta = computed(() => byDbColumn.value?.price || byDbColumn.value?.kamas || null);
 
 /** Ingrédients (ressources) de recette */
 const ingredients = computed(
@@ -199,17 +226,17 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                 >
                     {{ rarityConfig.label }}
                 </Badge>
-                <Tooltip v-if="priceCell?.value != null && priceCell?.value !== '—'" :content="`Prix: ${priceCell.value}`">
-                    <span class="inline-flex items-center gap-1">
-                        <Icon
-                            :source="priceMeta?.icon || 'fa-solid fa-coins'"
-                            alt="Prix"
-                            size="xs"
-                            :style="priceMeta?.color ? { color: `var(--color-${priceMeta.color})` } : undefined"
-                        />
-                        <span>{{ priceCell.value }}</span>
-                    </span>
-                </Tooltip>
+                <EntityPropertyDisplay
+                    v-if="canShowField('price')"
+                    field-key="price"
+                    :entity="entity"
+                    entity-type="item"
+                    :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    size="xs"
+                    class="min-w-0"
+                />
             </div>
             <!-- Ligne 3 : Description (complète, retour à la ligne) -->
             <p
