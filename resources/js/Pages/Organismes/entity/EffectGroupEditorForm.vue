@@ -60,6 +60,10 @@ const props = defineProps({
     heading: { type: String, default: '' },
     /** Libellé du bouton de soumission. */
     submitLabel: { type: String, default: 'Enregistrer le groupe' },
+    /** Admin effets : affiche « Supprimer ce degré » (requiert adminEffectId). */
+    showAdminDegreeDelete: { type: Boolean, default: false },
+    /** ID de la définition d’effet (Effect), pour la route destroy-degree. */
+    adminEffectId: { type: Number, default: null },
 });
 
 const common = reactive({
@@ -75,6 +79,8 @@ const groupSaveForm = useForm({
     common: {},
     degrees: [],
 });
+
+const deleteDegreeForm = useForm({});
 
 const slots = useSlots();
 const hasDegreeExtraSlot = computed(() => Boolean(slots['degree-extra']));
@@ -583,7 +589,46 @@ function getActiveEffectId() {
     return degreeForms.value[activeTab.value]?.id ?? null;
 }
 
-const saving = computed(() => groupSaveForm.processing);
+const saving = computed(() => groupSaveForm.processing || deleteDegreeForm.processing);
+
+/** ID définition d’effet (Effect) exploitable pour la route (évite NaN / valeurs invalides). */
+const adminEffectIdForRoute = computed(() => {
+    const n = Number(props.adminEffectId);
+    return Number.isFinite(n) && n > 0 ? n : null;
+});
+
+/** Affiche le bouton admin (toujours visible si props OK, même avec un seul degré — alors désactivé). */
+const showAdminDegreeDeleteUi = computed(
+    () =>
+        props.showAdminDegreeDelete &&
+        adminEffectIdForRoute.value != null &&
+        degreeForms.value.length > 0
+);
+
+/** Peut réellement supprimer le degré de l’onglet actif (≥ 2 degrés, id connu). */
+const canDeleteActiveDegree = computed(
+    () =>
+        showAdminDegreeDeleteUi.value &&
+        degreeForms.value.length > 1 &&
+        degreeForms.value[activeTab.value]?.id != null
+);
+
+const deleteDegreeDisabledHint =
+    'Au moins deux degrés sont requis pour en supprimer un. Pour retirer toute la définition, utilisez « Supprimer la définition » sous le formulaire.';
+
+function deleteActiveDegree() {
+    if (!canDeleteActiveDegree.value) return;
+    const deg = degreeForms.value[activeTab.value];
+    if (!deg?.id || adminEffectIdForRoute.value == null) return;
+    if (
+        !confirm(
+            `Supprimer le degré ${deg.degree} ? Les sous-effets de ce degré seront supprimés. Cette action est irréversible.`
+        )
+    ) {
+        return;
+    }
+    deleteDegreeForm.delete(route('admin.effects.destroy-degree', [adminEffectIdForRoute.value, deg.id]));
+}
 
 /** Validation du champ zone pour l’onglet degré actif (affiche une erreur si rempli mais invalide). */
 const activeAreaValidation = computed(() => {
@@ -625,7 +670,19 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving });
 
             <div class="card bg-base-100 shadow border border-base-300">
                 <div class="card-body space-y-4">
-                    <h2 class="card-title text-lg">Degrés</h2>
+                    <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+                        <h2 class="card-title text-lg">Degrés</h2>
+                        <button
+                            v-if="showAdminDegreeDeleteUi"
+                            type="button"
+                            class="btn btn-ghost btn-error btn-sm w-full sm:w-auto shrink-0"
+                            :disabled="!canDeleteActiveDegree || saving"
+                            :title="saving || canDeleteActiveDegree ? undefined : deleteDegreeDisabledHint"
+                            @click="deleteActiveDegree"
+                        >
+                            Supprimer ce degré
+                        </button>
+                    </div>
                     <div role="tablist" class="tabs tabs-boxed flex-wrap gap-1">
                         <button
                             v-for="(tab, ti) in degreeForms"
@@ -639,15 +696,22 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving });
                             Degré {{ tab.degree ?? '?' }}
                         </button>
                     </div>
+                    <p
+                        v-if="showAdminDegreeDeleteUi && degreeForms.length === 1"
+                        class="text-xs text-base-content/60"
+                    >
+                        Avec un seul degré, supprimez plutôt toute la définition (bouton sous le formulaire).
+                    </p>
 
                     <div v-if="degreeForms[activeTab]" class="space-y-4 border-t border-base-300 pt-4">
+                        <p
+                            v-if="degreeForms[activeTab].slug"
+                            class="text-[0.65rem] leading-tight text-base-content/40 font-mono tracking-tight -mt-1 mb-1"
+                            title="Identifiant technique du degré (non modifiable depuis cet écran)"
+                        >
+                            {{ degreeForms[activeTab].slug }}
+                        </p>
                         <div class="grid gap-4 sm:grid-cols-2 max-w-3xl">
-                            <InputField
-                                v-model="degreeForms[activeTab].slug"
-                                label="Slug (degré)"
-                                :name="'slug_d' + degreeForms[activeTab].degree"
-                                helper="Optionnel, unique."
-                            />
                             <InputField
                                 v-model="degreeForms[activeTab].required_creature_level"
                                 label="Niveau créature min."
@@ -657,19 +721,21 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving });
                             />
                         </div>
                         <div class="space-y-2 max-w-3xl">
-                            <div class="flex items-end gap-2 max-w-xl">
+                            <div class="flex max-w-xl items-start gap-3">
+                                <!-- Décalage ≈ hauteur du libellé (label top) pour aligner l’icône sur le champ -->
+                                <div class="flex min-h-12 shrink-0 items-center justify-center pt-7">
+                                    <AreaDisplay
+                                        :area="degreeForms[activeTab].area ?? ''"
+                                        icon-size="xl"
+                                        icon-only
+                                    />
+                                </div>
                                 <InputField
                                     v-model="degreeForms[activeTab].area"
                                     label="Zone (ce degré)"
                                     :name="'area_d' + degreeForms[activeTab].degree"
-                                    class="flex-1"
+                                    class="min-w-0 flex-1"
                                     :validation="activeAreaValidation"
-                                />
-                                <AreaDisplay
-                                    v-if="degreeForms[activeTab].area?.trim()"
-                                    :area="degreeForms[activeTab].area"
-                                    icon-size="sm"
-                                    class="shrink-0 mb-1"
                                 />
                             </div>
                             <p class="text-xs text-base-content/70 leading-relaxed">

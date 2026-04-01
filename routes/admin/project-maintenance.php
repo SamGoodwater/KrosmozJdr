@@ -8,15 +8,16 @@ use Illuminate\Support\Facades\Route;
 /**
  * Maintenance projet (super admin uniquement) : sync données DofusDB via file d’attente.
  *
- * `password.confirm` sur tout le groupe : zone sensible (RequirePasswordWithInactivity),
- * même comportement que les routes API scrapping.
+ * Comme `/scrapping` : la page GET est servie sans `password.confirm` ; la porte d’accès UI
+ * utilise `ConfirmPasswordModal` + `user.password.confirm` (session). Le POST `/sync` reste
+ * protégé par `password.confirm` + throttle (équivalent API scrapping).
  */
 Route::prefix('admin/project-maintenance')
     ->name('admin.project-maintenance.')
-    ->middleware(['auth', 'role:super_admin', 'password.confirm'])
+    ->middleware(['auth', 'role:super_admin'])
     ->group(function () {
         Route::get('/', [ProjectMaintenanceController::class, 'index'])->name('index');
         Route::post('/sync', [ProjectMaintenanceController::class, 'store'])
-            ->middleware('throttle:6,1')
+            ->middleware(['password.confirm', 'throttle:6,1'])
             ->name('sync');
     });

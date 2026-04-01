@@ -10,7 +10,7 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
 - **PHP 8.4**
 - **MySQL** (base par défaut). Exemple dev : `DB_DATABASE=krosmoz`, `DB_USERNAME=user`, `DB_PASSWORD=…`, `DB_CHARSET=utf8mb4`, `DB_COLLATION=utf8mb4_unicode_ci`
   - ⚠️ En production, utiliser des variables d'environnement et ne jamais versionner les secrets.
-  - **Commande** `php artisan setup` : paquets apt (dont php-mysql, MySQL), création l’utilisateur et la base si besoin user et base si besoin (root avec `DB_PASSWORD`), puis migrations + seeders. Options : `--install`, `--update`, `--db` (avec `--no-seed`), `--clean`, `--refresh`. La commande `run` délègue à `setup` pour install/update/db/clean/refresh.
+  - **Commande** `php artisan setup` : paquets apt (dont php-mysql, MySQL), création de l’utilisateur et de la base si besoin (root avec `DB_PASSWORD`), puis migrations + seeders. Options : `--install`, `--update`, `--db` (avec `--no-seed`), `--clean`, `--refresh`. Les commandes `project:*` qui en ont besoin appellent `setup` (ou la même logique) pour install/update/db/clean/refresh.
   - Passage possible vers PostgreSQL (voir [Passage à PostgreSQL](MIGRATION_MYSQL_VERS_POSTGRESQL.md)).
 - Les données proviennent d'une source extérieure, avec des données de test initiales.
 - **Gestion des secrets** :

@@ -5,7 +5,7 @@
  */
 import { Head, Link } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
-import Main from '@/Pages/Layouts/Main.vue';
+import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 
 const { setPageTitle } = usePageTitle();
@@ -15,7 +15,7 @@ const props = defineProps({
     subEffects: { type: Array, required: true },
 });
 
-defineOptions({ layout: Main });
+defineOptions({ layout: AdminArea });
 </script>
 
 <template>

@@ -7,7 +7,7 @@
 import { computed, inject, nextTick, onMounted, ref, watch } from 'vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
-import Main from '@/Pages/Layouts/Main.vue';
+import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -222,7 +222,7 @@ function openFormulaHelp(e) {
     });
 }
 
-defineOptions({ layout: Main });
+defineOptions({ layout: AdminArea });
 setPageTitle('Administration des caractéristiques');
 
 /** Lignes par défaut pour le tableau Dofus/Krosmoz (6 paires niveau/valeur). */

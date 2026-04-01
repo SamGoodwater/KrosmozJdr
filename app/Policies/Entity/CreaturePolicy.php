@@ -23,6 +23,14 @@ class CreaturePolicy extends BaseEntityPolicy
         return false;
     }
 
+    /**
+     * Stats runtime (JSON) pour fiches consultables sans compte — route publique.
+     */
+    public function viewResolvedStats(?User $user, Model $model): bool
+    {
+        return true;
+    }
+
     public function create(User $user): bool
     {
         return false;

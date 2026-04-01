@@ -1,11 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Entity\CreatureController;
+use Illuminate\Support\Facades\Route;
 
 // Routes publiques (accessibles sans authentification)
 Route::prefix('entities/creatures')->name('entities.creatures.')->group(function () {
     Route::get('/', [CreatureController::class, 'index'])->name('index');
+    // Avant /{creature} pour éviter que « resolved-stats » soit pris pour un id.
+    Route::get('/{creature}/resolved-stats', [CreatureController::class, 'resolvedStats'])->name('resolvedStats');
     Route::get('/{creature}', [CreatureController::class, 'show'])->name('show');
 });
 

@@ -1,32 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands\Development;
 
 use App\Console\Concerns\GuardsProductionEnvironment;
 use Illuminate\Console\Command;
 
+/**
+ * Bootstrap « machine / IDE » lourd : composer update, ide-helper, pnpm, migrate.
+ * Chevauche partiellement `project:dev --prepare` — voir app/Console/README.md.
+ */
 class PrepareProjectCommand extends Command
 {
     use GuardsProductionEnvironment;
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'server:prepare';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Préparer le projet : framework, migrations, autoload, ide-helper:models, meta PHPStorm';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): int
     {
         if (! $this->guardDevelopmentOnly()) {
             return self::FAILURE;
@@ -60,5 +53,7 @@ class PrepareProjectCommand extends Command
 
         $this->info('Optimisation du framework');
         $this->call('optimize');
+
+        return self::SUCCESS;
     }
 }

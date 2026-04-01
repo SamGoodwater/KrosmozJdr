@@ -581,23 +581,8 @@ const logout = () => {
                         <template v-if="canAccess('adminPanel') || canAccess('effectsAdmin') || isSuperAdmin">
                             <div class="flex flex-col gap-0.5">
                                 <GlassMenuSectionTitle>Administration</GlassMenuSectionTitle>
-                                <GlassMenuItem v-if="isSuperAdmin" route="admin.project-maintenance.index" icon="fa-database" icon-alt="Sync données DofusDB" hover3d>
-                                    Sync données (DofusDB)
-                                </GlassMenuItem>
-                                <GlassMenuItem v-if="canAccess('adminPanel')" route="admin.characteristics.index" icon="fa-sliders" icon-alt="Caractéristiques" hover3d>
-                                    Caractéristiques
-                                </GlassMenuItem>
-                                <GlassMenuItem v-if="canAccess('effectsAdmin')" route="admin.effects.index" icon="fa-bolt" icon-alt="Effets" hover3d>
-                                    Effets
-                                </GlassMenuItem>
-                                <GlassMenuItem v-if="canAccess('effectsAdmin')" route="admin.sub-effects.index" icon="fa-wand-magic-sparkles" icon-alt="Sous-effets" hover3d>
-                                    Sous-effets
-                                </GlassMenuItem>
-                                <GlassMenuItem v-if="canAccess('adminPanel') && canAccess('scrapping')" route="scrapping.index" icon="fa-magnifying-glass" icon-alt="Scrapping" hover3d>
-                                    Scrapping
-                                </GlassMenuItem>
-                                <GlassMenuItem v-if="canAccess('adminPanel')" route="user.index" icon="fa-users" icon-alt="Utilisateurs" hover3d>
-                                    Utilisateurs
+                                <GlassMenuItem route="admin.dashboard.index" icon="fa-screwdriver-wrench" icon-alt="Espace administration" hover3d>
+                                    Espace administration
                                 </GlassMenuItem>
                             </div>
                             <GlassMenuDivider />

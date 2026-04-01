@@ -11,10 +11,13 @@ import { Head, usePage } from "@inertiajs/vue3";
 import { onMounted } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 
+import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import ConfirmPasswordModal from "@/Pages/Molecules/action/ConfirmPasswordModal.vue";
 import ScrappingDashboard from "@/Pages/Organismes/scrapping/ScrappingDashboard.vue";
+
+defineOptions({ layout: AdminArea });
 
 const { setPageTitle } = usePageTitle();
 onMounted(() => setPageTitle("Gestion du Scrapping"));

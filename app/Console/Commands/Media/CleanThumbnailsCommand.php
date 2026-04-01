@@ -1,30 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands\Media;
 
-use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Services\ImageService;
 use Illuminate\Console\Command;
 
+/**
+ * Nettoie les fichiers du répertoire « thumbnails » géré par {@see ImageService} (hors conversions Spatie).
+ *
+ * Planifié quotidiennement dans {@see \App\Console\Kernel::schedule} : doit pouvoir s’exécuter en production.
+ */
 class CleanThumbnailsCommand extends Command
 {
-    use GuardsProductionEnvironment;
-
     protected $signature = 'media:clean-thumbnails {--older-than=86400 : Age en secondes des thumbnails à supprimer}';
 
-    protected $description = 'Nettoie les thumbnails obsolètes';
+    protected $description = 'Nettoie les thumbnails obsolètes (dossier legacy ImageService)';
 
-    public function handle(ImageService $imageService)
+    public function handle(ImageService $imageService): int
     {
-        if (! $this->guardDevelopmentOnly()) {
-            return self::FAILURE;
-        }
-
         $this->info('Début du nettoyage des thumbnails...');
 
-        $olderThan = $this->option('older-than');
+        $olderThan = (int) $this->option('older-than');
         $imageService->cleanThumbnails($olderThan);
 
         $this->info('Nettoyage des thumbnails terminé.');
+
+        return self::SUCCESS;
     }
 }

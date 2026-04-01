@@ -1,44 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands\Development;
 
 use App\Console\Concerns\GuardsProductionEnvironment;
+use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
 
+/**
+ * Alias de confort vers le même flux que `project:dev` (serveur Laravel + Vite).
+ *
+ * Pour lancer aussi la file d’attente et le CSS en parallèle : `composer run dev` (voir composer.json).
+ */
 class LoadDevelopmentServersCommand extends Command
 {
     use GuardsProductionEnvironment;
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    public function __construct(
+        private readonly ProjectRunService $projectRunService
+    ) {
+        parent::__construct();
+    }
+
     protected $signature = 'server:load';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Lancer les servers de développement php et node';
+    protected $description = 'Lance l’environnement dev (optimize + ProjectRunService, comme project:dev)';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): int
     {
-        if (! $this->guardDevelopmentOnly()) {
+        if (! $this->guardNotProduction('Cette commande est interdite en production.')) {
             return self::FAILURE;
         }
 
-        $this->info('Optimisation de Laravel');
+        $this->info('Optimisation Laravel (cache)…');
         $this->call('optimize');
 
-        $this->info('Lancement de vivaldi');
-        exec("start vivaldi 'http://localhost:8000'");
-
-        $this->info('Lancement du serveur PHP');
-        exec('composer run dev');
+        return $this->projectRunService->runOptionMap(['dev' => true], $this);
     }
 }

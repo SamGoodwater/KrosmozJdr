@@ -1,6 +1,10 @@
 # Interface CLI unifiée du projet (`project:*`)
 
-Objectif : **un vocabulaire stable** (dépendances, dev, données, bootstrap) tout en **réutilisant** les implémentations existantes (`run`, `setup`, `project:init`, `scrapping:*`) pour rester **DRY**.
+Objectif : **un vocabulaire stable** (dépendances, dev, données, bootstrap) via les commandes **`project:*`** et le service **`ProjectRunService`**, avec `setup` / `scrapping:*` pour les domaines concernés.
+
+## Ancienne commande `run` (supprimée)
+
+L’ancienne commande **`php artisan run`** a été **retirée**. Tout passe par les commandes **`project:*`** et **`App\Services\Project\ProjectRunService`** (voir tableau de correspondance en fin de fichier).
 
 ## Principes
 
@@ -15,7 +19,9 @@ Objectif : **un vocabulaire stable** (dépendances, dev, données, bootstrap) to
 | `project:super-admin` | Création interactive du premier super_admin (hors `init`). |
 | `project:backup` | Dump BDD (gzip) + archive `storage/app` (tar.gz, ZIP si besoin), purge > N jours. |
 
-La commande historique **`run`** reste la **moteur bas niveau** (nombreuses options). Les `project:*` la **orchestrent** pour un usage quotidien plus lisible.
+La logique commune vit dans **`App\Services\Project\ProjectRunService`** ; les commandes **`project:*`** sont les **entrées** pour le dev local.
+
+**Historique :** l’option **`run --regenerate`** avait été renommée **`run --prepare`** ; l’équivalent actuel est **`project:dev --prepare`** (ou les commandes dédiées `project:clear`, etc.).
 
 **Collision résolue :** l’ancien `project:update` (sync auto_update) devient la commande canonique **`project:data:sync`**. L’alias **`project:update`** est conservé (scheduler, scripts, habitude).
 
@@ -25,7 +31,7 @@ La commande historique **`run`** reste la **moteur bas niveau** (nombreuses opti
 
 Met à jour l’environnement de développement.
 
-| Option | Effet (délègue à `run`) |
+| Option | Effet (via `ProjectRunService`) |
 |--------|-------------------------|
 | *(aucune option)* | Équivalent **`--all`** : apt + composer + pnpm + CSS + doc + dump-autoload + **migrate**. |
 | `--all` | Idem. |
@@ -54,10 +60,10 @@ php artisan project:deps --pnpm --css # ciblé
 
 | Option | Effet |
 |--------|--------|
-| *(défaut)* | `run --dev` (serveur PHP + Vite optimisé). |
-| `--prepare` | Prépare l’environnement (nettoyage, deps de base, optimisations, **migrate**) — en interne : `run --regenerate`. |
-| `--migrate` | `run --migrate` uniquement. |
-| `--watch` | `run --dev:watch` (watch CSS). |
+| *(défaut)* | Serveur PHP + Vite optimisé (équiv. ancien `run --dev`). |
+| `--prepare` | Nettoyage, deps de base, optimisations, **migrate** (équiv. ancien `run --prepare`). |
+| `--migrate` | Migrations uniquement (`setup --db`). |
+| `--watch` | Watch CSS (équiv. ancien `run --dev:watch`). |
 
 ---
 
@@ -69,7 +75,7 @@ php artisan project:deps --pnpm --css # ciblé
 | `--without-seed` | `migrate:fresh` **sans** `--seed`. |
 | `--force` | Pas de confirmation (CI). |
 
-Enchaîne ensuite `run --clear:all`.
+Enchaîne ensuite un nettoyage complet des caches (équiv. `project:clear --all`).
 
 **Attention :** destructif sur la base (sauf si vous annulez la confirmation).
 
@@ -152,7 +158,7 @@ Une page **Inertia** permet de lancer l’équivalent de **`project:data sync`**
 |--------|--------|
 | **URL** | `/admin/project-maintenance` (routes nommées `admin.project-maintenance.index` et `admin.project-maintenance.sync`) |
 | **Accès** | Rôle **super_admin** uniquement ; entrée menu compte : **Sync données (DofusDB)** |
-| **Mot de passe** | Middleware **`password.confirm`** sur **toute la zone** (GET + POST), même logique que les routes API scrapping (`RequirePasswordWithInactivity`, ré-vérification après timeout dans `config/auth.php`) |
+| **Mot de passe** | Comme **`/scrapping`** : la page **GET** se charge sans redirection ; la porte d’accès utilise **`ConfirmPasswordModal`** + `user.password.confirm`. Le **POST** `/sync` applique **`password.confirm`** (comme les routes API scrapping) |
 | **POST `/sync`** | Validation stricte (`StoreProjectDataSyncRequest`), **throttle** dédié, journalisation `admin.project_maintenance.sync_dispatched` (identifiant utilisateur, IP, options sans secrets) |
 | **Prérequis** | Un **worker de file** doit tourner (`php artisan queue:work`) ; un verrou cache évite deux syncs massives en parallèle |
 
@@ -226,7 +232,7 @@ Crée le **premier** super_admin interactif si aucun super_admin humain n’exis
 ## Roadmap / améliorations possibles
 
 1. **`project:data fill`** : implémenter un service « catalogue DofusDB vs `dofusdb_id` » par entité (pagination API, batch `scrapping:run`), avec option `--update` pour enchaîner un `sync`.
-2. **Réduire `run`** : migrer progressivement les options rares vers des commandes dédiées, garder `run` comme compatibilité.
+2. ~~**`run`**~~ : commande supprimée — équivalents **`project:*`** (voir tableau ci-dessous).
 3. **Tests** : étendre les feature tests aux autres commandes `project:*` si besoin (voir `tests/Feature/Admin/ProjectMaintenanceControllerTest.php` pour l’UI sync).
 
 ---
@@ -236,8 +242,13 @@ Crée le **premier** super_admin interactif si aucun super_admin humain n’exis
 | Ancien usage | Préféré |
 |--------------|---------|
 | `project:update` | `project:data:sync` ou `project:data sync` |
-| Mise à jour stack + migrate via `run --update:all --migrate` | `project:deps` |
-| Préparer dev + serveurs via `run --regenerate` puis `run --dev` | `project:dev --prepare` puis `project:dev` |
+| `run --update:all --migrate` (stack + migrate) | `project:deps` |
+| `run --prepare` puis `run --dev` | `project:dev --prepare` puis `project:dev` |
+| `run --clear:*` / `--kill` | `project:clear` |
+| `run --optimise:*` | `project:optimize` |
+| `run --reset:*` | `project:reset` |
+| `run --update:privilege=` | `project:fix-permissions {user}` |
+| Effets (quality / pipeline) | `project:effects` |
 | Création super admin seul | `project:super-admin` |
 
 Référence complète des commandes Artisan : `app/Console/README.md`.

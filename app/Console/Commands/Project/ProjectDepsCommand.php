@@ -4,14 +4,24 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\Concerns\GuardsProductionEnvironment;
+use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
 
 /**
  * Met à jour la stack outil (apt, composer, pnpm), regénère les assets CSS, la doc, dump-autoload, migrations.
- * Délègue à `run` pour rester DRY avec l’implémentation existante.
+ * Délègue à {@see ProjectRunService}.
  */
 class ProjectDepsCommand extends Command
 {
+    use GuardsProductionEnvironment;
+
+    public function __construct(
+        private readonly ProjectRunService $projectRunService
+    ) {
+        parent::__construct();
+    }
+
     protected $signature = 'project:deps
         {--all : apt + composer + pnpm + css + docs + dump + migrate (défaut si aucune cible)}
         {--apt : apt update/upgrade (via setup)}
@@ -24,59 +34,57 @@ class ProjectDepsCommand extends Command
         {--ide : IDE Helper + meta}
         {--laravel-clear : optimize:clear Laravel}';
 
-    protected $description = 'Met à jour apt/composer/pnpm, CSS, doc, autoload, migrations (enveloppe de `run`)';
+    protected $description = 'Met à jour apt/composer/pnpm, CSS, doc, autoload, migrations (via ProjectRunService).';
 
     public function handle(): int
     {
-        if (app()->environment('production')) {
-            $this->error('Utilisez des déploiements contrôlés en production, pas project:deps.');
-
+        if (! $this->guardNotProduction('Utilisez des déploiements contrôlés en production, pas project:deps.')) {
             return self::FAILURE;
         }
 
         if ($this->wantsAll()) {
-            return $this->call('run', [
-                '--update:all' => true,
-                '--migrate' => true,
-            ]);
+            return $this->projectRunService->runOptionMap([
+                'update:all' => true,
+                'migrate' => true,
+            ], $this);
         }
 
-        $args = [];
+        $map = [];
         if ($this->option('apt')) {
-            $args['--update:system'] = true;
+            $map['update:system'] = true;
         }
         if ($this->option('composer')) {
-            $args['--update:composer'] = true;
+            $map['update:composer'] = true;
         }
         if ($this->option('pnpm')) {
-            $args['--update:pnpm'] = true;
+            $map['update:pnpm'] = true;
         }
         if ($this->option('css')) {
-            $args['--update:css'] = true;
+            $map['update:css'] = true;
         }
         if ($this->option('docs')) {
-            $args['--update:docs'] = true;
+            $map['update:docs'] = true;
         }
         if ($this->option('dump')) {
-            $args['--dump'] = true;
+            $map['dump'] = true;
         }
         if ($this->option('migrate')) {
-            $args['--migrate'] = true;
+            $map['migrate'] = true;
         }
         if ($this->option('ide')) {
-            $args['--optimise:ide'] = true;
+            $map['optimise:ide'] = true;
         }
         if ($this->option('laravel-clear')) {
-            $args['--optimise:laravel'] = true;
+            $map['optimise:laravel'] = true;
         }
 
-        if ($args === []) {
+        if ($map === []) {
             $this->warn('Aucune cible : utilisez --all ou au moins une option (--apt, --composer, …).');
 
             return self::FAILURE;
         }
 
-        return $this->call('run', $args);
+        return $this->projectRunService->runOptionMap($map, $this);
     }
 
     private function wantsAll(): bool

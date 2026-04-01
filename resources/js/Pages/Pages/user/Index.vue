@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
+import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -10,6 +11,8 @@ import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
 import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getRoleTranslation } from '@/Utils/user/RoleManager';
+
+defineOptions({ layout: AdminArea });
 
 const props = defineProps({
     users: { type: Object, required: true },

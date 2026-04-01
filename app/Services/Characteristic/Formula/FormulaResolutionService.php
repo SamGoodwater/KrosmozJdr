@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Characteristic\Formula;
 
-use App\Services\Characteristic\Formula\FormulaConfigDecoder;
-
 /**
  * Service central de résolution des formules de caractéristiques.
  *
@@ -26,8 +24,7 @@ final class FormulaResolutionService
 
     public function __construct(
         private readonly SafeExpressionEvaluator $expressionEvaluator
-    ) {
-    }
+    ) {}
 
     /**
      * Valide le format d'une formule (ou table) et retourne la liste d'erreurs.
@@ -40,7 +37,7 @@ final class FormulaResolutionService
      */
     public function validateFormula(?string $formula): array
     {
-        if ($formula === null || trim($formula ?? '') === '') {
+        if ($formula === null || trim($formula) === '') {
             return [];
         }
 
@@ -56,8 +53,8 @@ final class FormulaResolutionService
     /**
      * Évalue une formule (simple ou table JSON) avec les variables fournies.
      *
-     * @param string|null $formula Formule (ex. [vitality]*10+[level]*2) ou JSON table
-     * @param array<string, int|float> $variables Map id => valeur (ex. level => 5, vitality => 12)
+     * @param  string|null  $formula  Formule (ex. [vitality]*10+[level]*2) ou JSON table
+     * @param  array<string, int|float>  $variables  Map id => valeur (ex. level => 5, vitality => 12)
      * @return float|null Résultat ou null si formule invalide / vide
      */
     public function evaluate(?string $formula, array $variables): ?float
@@ -82,11 +79,11 @@ final class FormulaResolutionService
      * Les autres variables restent fixées via $baseVariables. Utile par ex. pour
      * afficher les valeurs level 1→20 d'une formule qui contient [level].
      *
-     * @param string|null $formula Formule ou table JSON
-     * @param string $variableName Nom de la variable à faire varier (ex. "level")
-     * @param int $min Valeur minimale (incluse)
-     * @param int $max Valeur maximale (incluse)
-     * @param array<string, int|float> $baseVariables Variables fixes (ex. vitality => 10)
+     * @param  string|null  $formula  Formule ou table JSON
+     * @param  string  $variableName  Nom de la variable à faire varier (ex. "level")
+     * @param  int  $min  Valeur minimale (incluse)
+     * @param  int  $max  Valeur maximale (incluse)
+     * @param  array<string, int|float>  $baseVariables  Variables fixes (ex. vitality => 10)
      * @return array<int, float> Map valeur_variable => résultat (ex. [1 => 12.0, 2 => 14.0, ...])
      */
     public function evaluateForVariableRange(
@@ -111,6 +108,103 @@ final class FormulaResolutionService
     }
 
     /**
+     * Liste les identifiants [id] présents dans une formule (expression simple ou sous-formules d’une table JSON).
+     * Utile pour la résolution ordonnée ou l’affichage (décomposition, tooltips).
+     *
+     * @return list<string> Identifiants uniques dans l’ordre d’apparition
+     */
+    public function extractVariablePlaceholders(?string $formula): array
+    {
+        if ($formula === null || trim($formula) === '') {
+            return [];
+        }
+
+        $decoded = FormulaConfigDecoder::decode($formula);
+        if ($decoded['type'] === 'table') {
+            return $this->extractPlaceholdersFromTable($decoded);
+        }
+
+        return $this->extractPlaceholdersFromExpression($decoded['expression']);
+    }
+
+    /**
+     * Remplace les [id] par des nombres pour affichage (tooltips). Les variables manquantes deviennent 0.
+     * Ne gère pas les tables JSON (retourne null).
+     *
+     * @param  array<string, int|float>  $variables
+     */
+    public function substitutePlaceholdersForDisplay(?string $formula, array $variables): ?string
+    {
+        if ($formula === null || trim($formula) === '') {
+            return null;
+        }
+
+        $decoded = FormulaConfigDecoder::decode($formula);
+        if ($decoded['type'] === 'table') {
+            return null;
+        }
+
+        return $this->substituteVariables($decoded['expression'], $variables);
+    }
+
+    /**
+     * @param  array{type: 'table', characteristic: string, entries: list<array{from: int, value: int|float|string}>}  $decoded
+     * @return list<string>
+     */
+    private function extractPlaceholdersFromTable(array $decoded): array
+    {
+        /** @var array<string, bool> $seen */
+        $seen = [];
+        $out = [];
+        $charRaw = $decoded['characteristic'] ?? '';
+        $char = is_string($charRaw) ? $charRaw : '';
+        if ($char !== '' && ! isset($seen[$char])) {
+            $seen[$char] = true;
+            $out[] = $char;
+        }
+        foreach ($decoded['entries'] ?? [] as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+            $value = $entry['value'] ?? null;
+            if (is_string($value) && trim($value) !== '') {
+                foreach ($this->extractPlaceholdersFromExpression($value) as $id) {
+                    if (! isset($seen[$id])) {
+                        $seen[$id] = true;
+                        $out[] = $id;
+                    }
+                }
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function extractPlaceholdersFromExpression(string $expression): array
+    {
+        $expr = trim($expression);
+        if ($expr === '') {
+            return [];
+        }
+        /** @var array<string, bool> $seen */
+        $seen = [];
+        $out = [];
+        if (preg_match_all(self::VARIABLE_PATTERN, $expr, $matches)) {
+            foreach ($matches[1] as $id) {
+                if (! isset($seen[$id])) {
+                    $seen[$id] = true;
+                    $out[] = $id;
+                }
+            }
+        }
+
+        return $out;
+    }
+
+    /**
      * Valide une expression (formule simple) : caractères autorisés et syntaxe.
      *
      * @return list<string>
@@ -127,7 +221,7 @@ final class FormulaResolutionService
         // Vérifier que les crochets contiennent uniquement des identifiants sûrs
         if (preg_match_all('/\[([^\]]*)\]/', $expr, $matches)) {
             foreach ($matches[1] as $id) {
-                if ($id === '' || !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $id)) {
+                if ($id === '' || ! preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $id)) {
                     $errors[] = 'Variable invalide dans les crochets (attendu : [id] avec id alphanumérique ou underscore)';
                     break;
                 }
@@ -144,7 +238,7 @@ final class FormulaResolutionService
     }
 
     /**
-     * @param array{type: 'table', characteristic: string, entries: list<array{from: int, value: int|float|string}>} $decoded
+     * @param  array{type: 'table', characteristic: string, entries: list<array{from: int, value: int|float|string}>}  $decoded
      * @return list<string>
      */
     private function validateTable(array $decoded): array
@@ -164,7 +258,7 @@ final class FormulaResolutionService
             $value = $entry['value'] ?? null;
             if (is_string($value) && trim($value) !== '') {
                 foreach ($this->validateExpression($value) as $e) {
-                    $errors[] = 'Table (entrée ' . ($entry['from'] ?? '?') . ') : ' . $e;
+                    $errors[] = 'Table (entrée '.($entry['from'] ?? '?').') : '.$e;
                 }
             }
         }
@@ -176,8 +270,8 @@ final class FormulaResolutionService
      * Évalue une table : prend la valeur de la caractéristique de référence,
      * choisit la tranche (plus grand seuil ≤ valeur), retourne la valeur fixe ou évalue la sous-formule.
      *
-     * @param array{type: 'table', characteristic: string, entries: list<array{from: int, value: int|float|string}>} $decoded
-     * @param array<string, int|float> $variables
+     * @param  array{type: 'table', characteristic: string, entries: list<array{from: int, value: int|float|string}>}  $decoded
+     * @param  array<string, int|float>  $variables
      */
     private function evaluateTable(array $decoded, array $variables): ?float
     {
@@ -212,13 +306,13 @@ final class FormulaResolutionService
     /**
      * Remplace les variables [id] par les valeurs fournies, les [id] restants par 0 (éviter erreurs).
      *
-     * @param array<string, int|float> $variables
+     * @param  array<string, int|float>  $variables
      */
     private function substituteVariables(string $expression, array $variables): string
     {
         $expr = $expression;
         foreach ($variables as $id => $val) {
-            $expr = str_replace('[' . $id . ']', (string) (float) $val, $expr);
+            $expr = str_replace('['.$id.']', (string) (float) $val, $expr);
         }
         // [id] restants (variables non fournies) → 0
         $expr = (string) preg_replace(self::VARIABLE_PATTERN, '0', $expr);
@@ -230,7 +324,7 @@ final class FormulaResolutionService
      * Évalue une expression (formule simple) après substitution des variables.
      * Utilise SafeExpressionEvaluator (sans eval()) pour la sécurité.
      *
-     * @param array<string, int|float> $variables
+     * @param  array<string, int|float>  $variables
      */
     private function evaluateExpression(string $expression, array $variables): ?float
     {

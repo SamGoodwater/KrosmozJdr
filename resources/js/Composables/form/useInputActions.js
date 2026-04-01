@@ -1,4 +1,4 @@
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted, isRef, unref } from 'vue';
 
 /**
  * useInputActions — Composable universel pour la gestion des actions contextuelles sur les champs de saisie
@@ -163,10 +163,13 @@ export default function useInputActions({
   actionOptions = {},
   emit = null, // Ajout du paramètre emit
 } = {}) {
+  /** Doit être une Ref (ex. `toRef(props, 'modelValue')`) pour suivre les mises à jour async du parent. */
+  const modelRef = isRef(modelValue) ? modelValue : ref(modelValue);
+
   // --- ÉTATS RÉACTIFS ---
-  const initialValue = ref(modelValue);
-  const currentValue = ref(modelValue);
-  const previousValue = ref(modelValue);
+  const initialValue = ref(unref(modelRef));
+  const currentValue = ref(unref(modelRef));
+  const previousValue = ref(unref(modelRef));
   const isReadonly = ref(readonly);
   const isDisabled = ref(disabled);
   const inputRef = ref(null);
@@ -185,15 +188,15 @@ export default function useInputActions({
   const isModified = computed(() => currentValue.value !== initialValue.value);
   const hasPreviousValue = computed(() => previousValue.value !== initialValue.value);
 
-  // --- SYNC AVEC v-model ---
+  // --- SYNC AVEC v-model (parent / Inertia / chargement différé) ---
   watch(
-    () => modelValue,
+    modelRef,
     (newVal) => {
       if (newVal !== currentValue.value) {
         // Sync externe (prop -> state local). Ne doit pas re-emit update:modelValue.
         isSyncingFromProp.value = true;
         currentValue.value = newVal;
-        // reset en microtask pour laisser passer la réaction du watcher currentValue
+        initialValue.value = newVal;
         queueMicrotask(() => {
           isSyncingFromProp.value = false;
         });

@@ -193,15 +193,15 @@ Comportement:
 - échoue aussi si `conversion_expected_rows=0` (base vide) sauf si `--allow-empty` est fourni,
 - retourne un JSON exploitable en CI via `--json`.
 
-Raccourcis disponibles via la commande projet `run`:
+Raccourcis via `project:effects` (anciennement `run --check:effects-quality*`).
 
 ```bash
-php artisan run --check:effects-quality
-php artisan run --check:effects-quality:dev
+php artisan project:effects --quality
+php artisan project:effects --quality-dev
 ```
 
-- `--check:effects-quality` = mode strict (échoue si base d'effets vide),
-- `--check:effects-quality:dev` = mode dev (autorise base vide via `--allow-empty`).
+- `--quality` = mode strict (échoue si base d'effets vide),
+- `--quality-dev` = mode dev (autorise base vide via `--allow-empty`).
 
 ### Pipeline import + gate (enchaînement unique)
 
@@ -216,11 +216,11 @@ La commande enchaîne:
 1) `scrapping:run --entity=spell ...`
 2) `scrapping:effects:quality-gate ...`
 
-Raccourcis via `run`:
+Raccourcis via `project:effects` :
 
 ```bash
-php artisan run --pipeline:effects-quality --max-items=300
-php artisan run --pipeline:effects-quality:dev --max-items=300 --simulate
+php artisan project:effects --pipeline --max-items=300
+php artisan project:effects --pipeline-dev --max-items=300 --simulate
 ```
 
 L’orchestrateur ou l’intégration peut injecter `SpellEffectsConversionService`, récupérer les spell-levels (après collecte du sort), appeler `convert()`, puis créer en BDD EffectGroup, Effects, EffectSubEffects et EffectUsages à partir du résultat.

@@ -139,6 +139,29 @@ class EffectController extends Controller
             ->with('success', 'Effet supprimé.');
     }
 
+    /**
+     * Supprime un degré précis (sous-effets en cascade). Interdit si dernier degré ou usages liés.
+     */
+    public function destroyDegree(Effect $effect, EffectDegree $degree): RedirectResponse
+    {
+        abort_unless($degree->effect_id === $effect->id, 404);
+
+        if ($effect->degrees()->count() <= 1) {
+            return redirect()->route('admin.effects.show', $effect)
+                ->with('error', 'Impossible de supprimer le dernier degré. Pour retirer toute la définition, utilisez « Supprimer la définition ».');
+        }
+
+        if ($degree->effectUsages()->exists()) {
+            return redirect()->route('admin.effects.show', $effect)
+                ->with('error', 'Ce degré est encore utilisé (objets, consommables…). Retirez ou réassignez ces usages avant suppression.');
+        }
+
+        $degree->delete();
+
+        return redirect()->route('admin.effects.show', $effect)
+            ->with('success', 'Degré supprimé.');
+    }
+
     public function duplicate(Effect $effect): RedirectResponse
     {
         $effect->load(['degrees.effectSubEffects']);

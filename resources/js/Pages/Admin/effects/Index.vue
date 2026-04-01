@@ -6,7 +6,7 @@
 import { computed, ref, watch } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
-import Main from '@/Pages/Layouts/Main.vue';
+import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
@@ -28,7 +28,7 @@ const props = defineProps({
     },
 });
 
-defineOptions({ layout: Main });
+defineOptions({ layout: AdminArea });
 setPageTitle('Effets');
 
 const isGroupEdit = computed(
@@ -118,9 +118,14 @@ function duplicateDegree() {
     duplicateForm.post(route('admin.effects.duplicate-degree', props.selected.id));
 }
 
-function destroy() {
+/** Supprime toute la définition d’effet (tous les degrés, liaison sorts, etc.). */
+function destroyDefinition() {
     if (!props.selected?.id) return;
-    if (confirm('Supprimer cet effet ?')) {
+    if (
+        confirm(
+            'Supprimer entièrement cette définition d’effet ? Tous les degrés et leurs sous-effets seront supprimés. Les sorts liés perdront cette définition.'
+        )
+    ) {
         form.delete(route('admin.effects.destroy', props.selected.id));
     }
 }
@@ -183,6 +188,8 @@ function duplicateEffect() {
                         :group-effects="groupEffects"
                         :selected-effect-id="Number(groupEffects[0]?.id) || 0"
                         :patch-url="route('admin.effects.group-update', selected.id)"
+                        :show-admin-degree-delete="true"
+                        :admin-effect-id="Number(selected?.id)"
                     />
                     <div class="flex flex-wrap gap-2 items-center mt-4">
                         <button
@@ -205,9 +212,9 @@ function duplicateEffect() {
                             type="button"
                             class="btn btn-ghost btn-error"
                             :disabled="form.processing || groupEditorRef?.saving"
-                            @click="destroy"
+                            @click="destroyDefinition"
                         >
-                            Supprimer
+                            Supprimer la définition
                         </button>
                     </div>
                 </template>

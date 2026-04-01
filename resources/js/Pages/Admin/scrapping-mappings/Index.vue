@@ -6,7 +6,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
-import Main from '@/Pages/Layouts/Main.vue';
+import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
@@ -26,7 +26,7 @@ const props = defineProps({
     characteristicsForSelect: { type: Array, default: () => [] },
 });
 
-defineOptions({ layout: Main });
+defineOptions({ layout: AdminArea });
 setPageTitle('Mapping scrapping DofusDB → Krosmoz');
 
 function selectEntity(val) {

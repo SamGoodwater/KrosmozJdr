@@ -11,6 +11,7 @@
 */
 
 require __DIR__.'/auth.php';
+require __DIR__.'/admin/dashboard.php';
 require __DIR__.'/web/statics.php';
 require __DIR__.'/web/notifications.php';
 require __DIR__.'/web/user.php';

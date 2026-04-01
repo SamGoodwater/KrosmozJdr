@@ -88,6 +88,19 @@ class UserSeeder extends Seeder
             'is_system' => false,
         ], 'Admin (password)');
 
+        // Super Admin
+        $this->createOrRestoreByEmail([
+            'name' => 'Super Admin User',
+            'email' => 'superadmin@test.fr',
+            'role' => User::ROLE_SUPER_ADMIN, // super_admin = 5
+            'password' => Hash::make('password'),
+            'avatar' => User::DEFAULT_AVATAR,
+            'email_verified_at' => now(),
+            'notifications_enabled' => true,
+            'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
+            'is_system' => false,
+        ], 'Super Admin (password)');
+
         // Game Master
         $this->createOrRestoreByEmail([
             'name' => 'Game Master',

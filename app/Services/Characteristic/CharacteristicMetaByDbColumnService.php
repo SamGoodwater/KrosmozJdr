@@ -76,6 +76,42 @@ final class CharacteristicMetaByDbColumnService
                     'save_intelligence_creature',
                     'save_chance_creature',
                     'save_agility_creature',
+                    'athletics_creature',
+                    'intimidation_creature',
+                    'acrobatics_creature',
+                    'stealth_creature',
+                    'sleight_of_hand_creature',
+                    'arcana_creature',
+                    'history_creature',
+                    'investigation_creature',
+                    'nature_creature',
+                    'religion_creature',
+                    'animal_handling_creature',
+                    'medicine_creature',
+                    'perception_creature',
+                    'insight_creature',
+                    'survival_creature',
+                    'persuasion_creature',
+                    'performance_creature',
+                    'deception_creature',
+                    'athletics_passive_creature',
+                    'intimidation_passive_creature',
+                    'acrobatics_passive_creature',
+                    'stealth_passive_creature',
+                    'sleight_of_hand_passive_creature',
+                    'arcana_passive_creature',
+                    'history_passive_creature',
+                    'investigation_passive_creature',
+                    'nature_passive_creature',
+                    'religion_passive_creature',
+                    'animal_handling_passive_creature',
+                    'medicine_passive_creature',
+                    'perception_passive_creature',
+                    'insight_passive_creature',
+                    'survival_passive_creature',
+                    'persuasion_passive_creature',
+                    'performance_passive_creature',
+                    'deception_passive_creature',
                 ]))
                 ->with(['characteristic.masterCharacteristic'])
                 ->get();
@@ -99,7 +135,7 @@ final class CharacteristicMetaByDbColumnService
     /**
      * Mapping db_column → définition pour une entité objet (item, consumable, resource, panoply).
      *
-     * @param string $entity Une des constantes CharacteristicObject::ENTITY_*
+     * @param  string  $entity  Une des constantes CharacteristicObject::ENTITY_*
      * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null, value_available: array|null}>
      */
     public function buildObjectByDbColumn(string $entity): array
@@ -131,7 +167,7 @@ final class CharacteristicMetaByDbColumnService
      * Permet de résoudre les effets items dont les clés sont "vitality", "agility", "critical_hit"
      * (sortie de mapDofusdbEffectsToKrosmozBonuses qui utilise les clés courtes = key sans suffixe _object).
      *
-     * @param string $entity Une des constantes CharacteristicObject::ENTITY_*
+     * @param  string  $entity  Une des constantes CharacteristicObject::ENTITY_*
      * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
      */
     public function buildObjectByCharacteristicKey(string $entity): array
@@ -171,7 +207,7 @@ final class CharacteristicMetaByDbColumnService
      * Mapping dofusdb_characteristic_id → définition pour une entité objet.
      * Permet de résoudre les effets items dont les clés sont des IDs DofusDB (ex. 11, 48, 85).
      *
-     * @param string $entity Une des constantes CharacteristicObject::ENTITY_*
+     * @param  string  $entity  Une des constantes CharacteristicObject::ENTITY_*
      * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
      */
     public function buildObjectByDofusdbId(string $entity): array
@@ -288,7 +324,7 @@ final class CharacteristicMetaByDbColumnService
 
         $icon = $c->icon;
         if (is_string($icon) && $icon !== '' && ! str_starts_with($icon, 'fa-') && ! str_contains($icon, '/')) {
-            $icon = 'icons/caracteristics/' . $icon;
+            $icon = 'icons/caracteristics/'.$icon;
         }
 
         return array_merge([
@@ -321,8 +357,8 @@ final class CharacteristicMetaByDbColumnService
         $c = $characteristic->effectiveCharacteristic();
 
         $icon = $c->icon;
-        if (is_string($icon) && $icon !== '' && !str_starts_with($icon, 'fa-') && !str_contains($icon, '/')) {
-            $icon = 'icons/caracteristics/' . $icon;
+        if (is_string($icon) && $icon !== '' && ! str_starts_with($icon, 'fa-') && ! str_contains($icon, '/')) {
+            $icon = 'icons/caracteristics/'.$icon;
         }
 
         return array_merge([

@@ -6,7 +6,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
-import Main from '@/Pages/Layouts/Main.vue';
+import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
@@ -22,7 +22,7 @@ const props = defineProps({
     characteristicsForSelect: { type: Array, default: () => [] },
 });
 
-defineOptions({ layout: Main });
+defineOptions({ layout: AdminArea });
 setPageTitle('Mapping effets DofusDB → Krosmoz');
 
 const showModal = ref(false);

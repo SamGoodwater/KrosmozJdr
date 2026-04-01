@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
 
 /**
@@ -11,6 +12,12 @@ use Illuminate\Console\Command;
  */
 class ProjectRefreshCommand extends Command
 {
+    public function __construct(
+        private readonly ProjectRunService $projectRunService
+    ) {
+        parent::__construct();
+    }
+
     protected $signature = 'project:refresh
         {--hard : Exécuter setup --refresh (vendor + node_modules) avant migrate:fresh}
         {--without-seed : Ne pas passer --seed à migrate:fresh}
@@ -53,8 +60,11 @@ class ProjectRefreshCommand extends Command
             return $code;
         }
 
-        $this->info('→ run --clear:all');
-        $this->call('run', ['--clear:all' => true]);
+        $this->info('→ project:clear --all');
+        $code = $this->projectRunService->runOptionMap(['clear:all' => true], $this);
+        if ($code !== 0) {
+            return $code;
+        }
 
         $this->info('✅ project:refresh terminé.');
 

@@ -99,7 +99,7 @@
 // ------------------------------------------
 // 🧩 Importation des dépendances
 // ------------------------------------------
-import { useSlots, useAttrs } from 'vue'
+import { useSlots, useAttrs, toRef } from 'vue'
 import InputCore from '@/Pages/Atoms/data-input/InputCore.vue'
 
 import useInputField from '@/Composables/form/useInputField'
@@ -158,7 +158,8 @@ const {
   // Helpers
   handleAction
 } = useInputField({
-  modelValue: props.modelValue,
+  /** Ref réactive : sinon la valeur reste figée au 1er rendu (props async / Inertia). */
+  modelValue: toRef(props, 'modelValue'),
   type: 'input',
   mode: 'field',
   props,

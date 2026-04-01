@@ -30,22 +30,11 @@ class ProjectMaintenanceControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_super_admin_redirects_to_password_confirm_without_recent_confirmation(): void
+    public function test_super_admin_can_view_index_without_full_page_password_redirect(): void
     {
         $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
 
         $response = $this->actingAs($super)->get(route('admin.project-maintenance.index'));
-
-        $response->assertRedirect(route('password.confirm'));
-    }
-
-    public function test_super_admin_can_view_index_when_password_recently_confirmed(): void
-    {
-        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
-
-        $response = $this->actingAs($super)
-            ->withSession(['auth.password_confirmed_at' => time()])
-            ->get(route('admin.project-maintenance.index'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page

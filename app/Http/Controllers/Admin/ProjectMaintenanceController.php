@@ -15,7 +15,8 @@ use Inertia\Response as InertiaResponse;
 /**
  * Super admin : lancement asynchrone de `project:data sync` (file d’attente).
  *
- * Sécurité : `role:super_admin` + `password.confirm` (routes) ; validation stricte (FormRequest) ;
+ * Sécurité : `role:super_admin` ; page protégée comme le scrapping (modale mot de passe côté UI) ;
+ * POST `/sync` : `password.confirm` + validation stricte (FormRequest) ;
  * job isolé ; journalisation des déclenchements.
  */
 class ProjectMaintenanceController extends Controller
