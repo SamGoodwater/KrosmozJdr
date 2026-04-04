@@ -9,15 +9,16 @@
 * - Responsive, glassmorphism, accessibilité
 * - Notifications centralisées via l'organism NotificationContainer (plus de slots de notifications)
 *
-* @see Container, Header, Aside, Footer, NotificationContainer
+* @see Container, Header, AppSidebarShell, Aside, Footer, NotificationContainer
 *
 * @slot default - Contenu principal de la page
 */
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 
 // Composants
 import Header from "@/Pages/Layouts/Header.vue";
 import Aside from "@/Pages/Layouts/Aside.vue";
+import AppSidebarShell from "@/Pages/Layouts/AppSidebarShell.vue";
 import Footer from "@/Pages/Layouts/Footer.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import NotificationContainer from "@/Pages/Organismes/feedback/NotificationContainer.vue";
@@ -25,17 +26,18 @@ import ToggleSidebar from "@/Pages/Molecules/layout/ToggleSidebar.vue";
 import { useHeader } from "@/Composables/layout/useHeader";
 import { useSidebar } from "@/Composables/layout/useSidebar";
 import { useDevice } from "@/Composables/layout/useDevice";
+import { useDismissiblePanel } from "@/Composables/layout/useDismissiblePanel";
 import ToggleHeader from "@/Pages/Molecules/layout/ToggleHeader.vue";
 import { useNotificationProvider } from "@/Composables/providers/useNotificationProvider";
 import { useFlashNotifications } from "@/Composables/notifications/useFlashNotifications";
 import CookieConsentBanner from "@/Pages/Molecules/privacy/CookieConsentBanner.vue";
 import PendingErasureBanner from "@/Pages/Molecules/privacy/PendingErasureBanner.vue";
 import FeedbackFab from "@/Pages/Organismes/feedback/FeedbackFab.vue";
+import { LAYOUT_APP_SIDEBAR_OFFSET_LEFT_CLASS } from "@/Composables/layout/viewport-breakpoints";
 
 // Centralisation des classes Tailwind pour le layout
-const ASIDE_WIDTH_CLASS = 'w-64'      // 16rem = 256px
 const HEADER_HEIGHT_CLASS = 'h-18'    // 
-const OFFSET_LEFT_CLASS = 'left-64'
+const OFFSET_LEFT_CLASS = LAYOUT_APP_SIDEBAR_OFFSET_LEFT_CLASS
 const OFFSET_TOP_CLASS = 'top-18'
 const PADDING_TOP_CLASS = 'pt-18'
 
@@ -52,17 +54,6 @@ useFlashNotifications(notificationStore);
 // Computed pour déterminer le comportement responsive
 const isDesktopMode = computed(() => isDesktop.value);
 const isMobileMode = computed(() => isMobile.value || isTablet.value);
-
-// Computed pour les classes conditionnelles
-const asideClasses = computed(() => {
-    if (isDesktopMode.value) {
-        // Desktop : Aside fixe à gauche
-        return ['fixed z-40 top-0 left-0 bottom-0', ASIDE_WIDTH_CLASS];
-    } else {
-        // Mobile/Tablette : Aside en overlay (au-dessus de l'overlay)
-        return ['fixed z-50 top-0 left-0 bottom-0', ASIDE_WIDTH_CLASS, 'bg-base-100/95 backdrop-blur-sm'];
-    }
-});
 
 const mainClasses = computed(() => {
     const baseClasses = [
@@ -125,23 +116,11 @@ const headerToggleClasses = computed(() => {
     }
 });
 
-// Gestion du clic extérieur pour fermer l'Aside en mode superposition
-// Note: Cette fonction n'est plus nécessaire car nous utilisons un overlay dédié
-// mais nous la gardons pour la compatibilité et les clics sur d'autres éléments
-const handleClickOutside = (event) => {
-    // Seulement en mode mobile/tablette et si l'Aside est ouvert
-    if (!isMobileMode.value || !isSidebarOpen.value) {
-        return;
-    }
-    
-    // Vérifier si le clic est sur le bouton toggle (pour éviter la fermeture)
-    const toggleElement = event.target.closest('[data-toggle-sidebar]');
-    
-    // Si le clic n'est pas sur le bouton toggle, fermer l'Aside
-    if (!toggleElement) {
-        closeSidebar();
-    }
-};
+useDismissiblePanel({
+    isOpen: isSidebarOpen,
+    isEnabled: isMobileMode,
+    onDismiss: closeSidebar,
+});
 
 // Gestion du resize avec logique responsive
 function handleResize() {
@@ -160,27 +139,11 @@ watch([isDesktop, isMobile, isTablet], () => {
     handleResize();
 }, { immediate: false });
 
-// Watcher pour gérer les événements de clic selon l'état de l'Aside
-// Note: Avec l'overlay, cette logique est moins critique mais gardée pour la compatibilité
-watch(isSidebarOpen, (newValue) => {
-    nextTick(() => {
-        if (newValue && isMobileMode.value) {
-            // Ajouter l'écouteur de clic quand l'Aside s'ouvre en mode mobile
-            document.addEventListener('click', handleClickOutside);
-        } else {
-            // Retirer l'écouteur quand l'Aside se ferme ou en mode desktop
-            document.removeEventListener('click', handleClickOutside);
-        }
-    });
-}, { immediate: true });
-
 onMounted(() => {
     window.addEventListener('resize', handleResize)
 })
 onUnmounted(() => {
     window.removeEventListener('resize', handleResize)
-    // Nettoyer l'écouteur de clic au démontage
-    document.removeEventListener('click', handleClickOutside);
 })
 </script>
 
@@ -202,28 +165,21 @@ onUnmounted(() => {
         />
 
         <!-- Toggle Aside -->
-        <ToggleSidebar :class="toggleClasses" data-toggle-sidebar />
+        <ToggleSidebar :class="toggleClasses" />
 
         <!-- Toggle Header -->
         <ToggleHeader :class="headerToggleClasses" data-toggle-header />
 
-        <!-- Overlay pour mobile/tablette (seulement quand Aside est ouvert) -->
-        <div 
-            v-if="isMobileMode && isSidebarOpen" 
-            class="fixed inset-0 backdrop-blur-[4px] brightness-80 z-30 transition-all duration-300 ease-in-out overlay-animated"
-            @click="closeSidebar"
-            aria-hidden="true"
-        ></div>
+        <AppSidebarShell
+            :sidebar-open="isSidebarOpen"
+            :is-desktop-mode="isDesktopMode"
+            @overlay-dismiss="closeSidebar"
+        >
+            <Aside />
+        </AppSidebarShell>
 
-        <!-- Sidebar (comportement responsive) -->
-        <Aside 
-            :class="asideClasses" 
-            :data-sidebar-open="isSidebarOpen"
-            class="sidebar-animated"
-        />
-
-        <!-- Main content -->
-        <main :class="mainClasses" class="main-animated">
+        <!-- Main content (z-index sous la sidebar pour que le drawer reste au-dessus) -->
+        <main :class="mainClasses" class="main-animated z-20">
             <div class="min-h-full flex flex-col">
                 <!-- Contenu principal - utilise toute la largeur disponible -->
                 <div class="flex-1 w-full p-4">
@@ -290,44 +246,6 @@ onUnmounted(() => {
     }
 }
 
-/* Animation personnalisée pour l'Aside */
-.sidebar-animated {
-    position: fixed !important;
-    transition: none; /* Désactiver les transitions par défaut */
-    
-    /* État initial : caché et flou */
-    transform: translateX(-100%);
-    filter: blur(8px);
-    opacity: 0;
-    visibility: hidden;
-    
-    /* Animation d'entrée */
-    &[data-sidebar-open="true"] {
-        transform: translateX(0);
-        filter: blur(0px);
-        opacity: 1;
-        visibility: visible;
-        transition: 
-            transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            filter 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            visibility 0s;
-    }
-    
-    /* Animation de sortie */
-    &[data-sidebar-open="false"] {
-        transform: translateX(-100%);
-        filter: blur(8px);
-        opacity: 0;
-        visibility: hidden;
-        transition: 
-            transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-            filter 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-            visibility 0s 0.3s; /* Délai pour la visibilité */
-    }
-}
-
 /* Animation personnalisée pour le Header */
 .header-animated {
     position: fixed !important;
@@ -368,13 +286,6 @@ onUnmounted(() => {
     transition: 
         padding-top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
         left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Animation de l'overlay */
-.overlay-animated {
-    transition: 
-        backdrop-filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-        background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Styles pour le bouton toggle header */

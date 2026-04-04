@@ -11,8 +11,7 @@
 * - Molecule Dock + atom DockItem pour le footer
 * - Atom Icon pour toutes les icônes
 * - Molecules ToggleSidebar et SearchInput
-* - Structure layout dans
-<aside>, tout le contenu est atomique/moleculaire
+ * - Contenu injecté dans `AppSidebarShell` (le `<aside>` et l’overlay sont dans le shell)
  * - Accessibilité et props transmises via les helpers du design system
  *
  * @see Menu, MenuItem, Dock, DockItem, Route, Image, Icon, ToggleSidebar, SearchInput
@@ -59,7 +58,10 @@ const footerItems = [
 </script>
 
 <template>
-    <aside class="h-full min-h-full flex flex-col justify-between flex-nowrap border-glass-r-xs bd-blur-md">
+    <div
+        class="flex h-full min-h-full w-full flex-col flex-nowrap justify-between"
+        role="presentation"
+    >
         <div class="flex flex-col justify-start flex-nowrap items-center flex-1 min-h-0 overflow-hidden">
             <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-3 shrink-0">
                 <template v-if="!logoError">
@@ -111,7 +113,7 @@ const footerItems = [
                 </Tooltip>
             </Dock>
         </div>
-    </aside>
+    </div>
 </template>
 
 <style scoped>

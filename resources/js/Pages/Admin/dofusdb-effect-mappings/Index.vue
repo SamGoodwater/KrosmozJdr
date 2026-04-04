@@ -150,7 +150,7 @@ onMounted(() => {
 
 <template>
     <Head title="Mapping effets DofusDB" />
-    <div class="flex h-full min-h-0 w-full">
+    <div class="flex h-full min-h-0 w-full flex-col lg:flex-row">
         <main class="min-w-0 flex-1 overflow-y-auto p-6">
             <div class="mb-4">
                 <Btn color="neutral" variant="ghost" size="sm" class="gap-2 mb-2" @click="goBackToEffects">

@@ -490,10 +490,31 @@
   },
   {
     "name": "SidebarNav",
-    "description": "SidebarNav Organism",
+    "description": "Menu secondaire liste + détail : colonne ≥ lg, dropdown mobile/tablette.",
     "props": [],
     "slots": [],
     "file": "layout/SidebarNav.vue"
+  },
+  {
+    "name": "SidebarNavPanel",
+    "description": "Corps SidebarNav (en-tête, recherche, liste) — partagé colonne / dropdown.",
+    "props": [],
+    "slots": [],
+    "file": "layout/SidebarNavPanel.vue"
+  },
+  {
+    "name": "SidebarNavItem",
+    "description": "Ligne d’item SidebarNav (lien ou bouton, accent glass, sous-texte).",
+    "props": [],
+    "slots": [],
+    "file": "layout/SidebarNavItem.vue"
+  },
+  {
+    "name": "HorizontalOverflowNav",
+    "description": "Barre nav horizontale glass, overflow en dropdown, mode mobile tout-menu.",
+    "props": [],
+    "slots": [],
+    "file": "layout/HorizontalOverflowNav.vue"
   },
   {
     "name": "NotificationContainer",

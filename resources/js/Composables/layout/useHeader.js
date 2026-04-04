@@ -1,16 +1,20 @@
 import { ref, onMounted, onUnmounted } from "vue";
+import {
+    MEDIA_QUERY_MOBILE_MAX,
+    MEDIA_QUERY_DESKTOP_MIN,
+} from "@/Composables/layout/viewport-breakpoints";
 
 const isHeaderOpen = ref(true);
 
 export function useHeader() {
-    // Détection desktop (lg+)
     const isDesktop = () => {
-        return window.matchMedia('(min-width: 1024px)').matches;
+        if (typeof window === "undefined") return true;
+        return window.matchMedia(MEDIA_QUERY_DESKTOP_MIN).matches;
     };
-    
-    // Détection mobile (< 768px)
+
     const isMobile = () => {
-        return window.innerWidth < 768;
+        if (typeof window === "undefined") return false;
+        return window.matchMedia(MEDIA_QUERY_MOBILE_MAX).matches;
     };
     
     // Charger l'état depuis localStorage

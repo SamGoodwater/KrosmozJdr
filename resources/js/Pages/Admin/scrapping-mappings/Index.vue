@@ -213,7 +213,7 @@ onMounted(() => {
 
 <template>
     <Head title="Mapping scrapping" />
-    <div class="flex h-full min-h-0 w-full">
+    <div class="flex h-full min-h-0 w-full flex-col lg:flex-row">
         <!-- Panneau gauche : liste des entités -->
         <SidebarNav
             title="Mapping DofusDB → Krosmoz"

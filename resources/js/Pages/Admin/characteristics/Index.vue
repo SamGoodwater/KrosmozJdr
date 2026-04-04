@@ -751,7 +751,7 @@ function submitConvertToLinked() {
 
 <template>
     <Head title="Caractéristiques" />
-    <div class="flex h-full min-h-0 w-full">
+    <div class="flex h-full min-h-0 w-full flex-col lg:flex-row">
         <!-- Liste à gauche (vue par caractéristique) -->
         <SidebarNav
             title="Caractéristiques"

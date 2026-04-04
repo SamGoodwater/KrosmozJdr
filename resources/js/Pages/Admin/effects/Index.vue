@@ -138,7 +138,7 @@ function duplicateEffect() {
 
 <template>
     <Head title="Effets" />
-    <div class="flex h-full min-h-0 w-full">
+    <div class="flex h-full min-h-0 w-full flex-col lg:flex-row">
         <SidebarNav
             title="Effets"
             description="Une entrée par définition d’effet ; le libellé secondaire indique le nombre de degrés."

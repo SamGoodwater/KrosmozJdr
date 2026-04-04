@@ -1,4 +1,5 @@
 import { ref, computed, nextTick } from 'vue';
+import { BREAKPOINT_MD_PX } from '@/Composables/layout/viewport-breakpoints';
 
 /**
  * Composable pour le positionnement intelligent d'éléments flottants
@@ -170,7 +171,7 @@ export function usePositioning(options = {}) {
 
   // Ajustements pour mobile
   const adjustForMobile = (position, trigger, content, viewport) => {
-    const isMobile = viewport.width < 768;
+    const isMobile = viewport.width < BREAKPOINT_MD_PX;
     
     if (!isMobile) return position;
 

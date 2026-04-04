@@ -3,74 +3,47 @@
  * SidebarNav Organism
  *
  * @description
- * Sous-menu latéral réutilisable pour pages type liste + détail.
- * - Scroll sur la zone nav si contenu long
- * - Recherche optionnelle (filtre items, conserve groupes visibles)
- * - Modes : plat, ou groupé (collapse)
- * - Items : couleur optionnelle (getItemCssClasses avec color-{key}-500, shadow-from-color ou shadow-box-shadow-glass-* ; getItemColor pour hex ; --color)
- * - Icônes optionnelles : FontAwesome (getItemIcon), image (getItemIconUrl)
- * - Mode lien ou bouton : getItemClick + href vide → <button>
+ * Sous-menu liste + détail. Desktop (≥ lg) : colonne fixe. Mobile / tablette : même contenu
+ * dans un menu déroulant en tête (pleine largeur en xs ; à partir de sm : largeur max + alignement à gauche).
  *
- * @example
- * <SidebarNav
- *   title="Caractéristiques"
- *   :items-by-group="{ creature: [...], object: [...] }"
- *   :group-labels="{ creature: 'Créature', object: 'Objet' }"
- *   searchable
- *   groups-mode="collapse"
- *   :get-item-href="c => route('admin.characteristics.show', c.id)"
- *   :is-active="c => selected?.id === c.id"
- *   :get-item-css-classes="c => c.color && !c.color.startsWith('#') ? `color-${c.color}-500 box-shadow-glass-xs` : ''"
- * />
+ * @see SidebarNavPanel.vue, SidebarNavItem.vue
  */
 import { computed, ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import InputField from '@/Pages/Molecules/data-input/InputField.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
+import SidebarNavPanel from '@/Pages/Organismes/layout/SidebarNavPanel.vue';
+import { useDevice } from '@/Composables/layout/useDevice';
+import { LAYOUT_APP_SIDEBAR_WIDTH_CLASS } from '@/Composables/layout/viewport-breakpoints';
 
 const props = defineProps({
-    /** Titre du panneau */
     title: { type: String, default: '' },
-    /** Description courte sous le titre */
     description: { type: String, default: '' },
-    /** Items groupés : { groupKey: [items] } */
     itemsByGroup: { type: Object, default: () => ({}) },
-    /** Labels des groupes : { groupKey: label } */
     groupLabels: { type: Object, default: () => ({}) },
-    /** Items plats (si pas de groups). Priorité sur itemsByGroup si les deux fournis et groupsMode=false */
     items: { type: Array, default: () => [] },
-    /** Mode groupes: 'collapse' | 'flat' | false. false = liste plate */
     groupsMode: { type: [String, Boolean], default: false },
-    /** Afficher le champ de recherche */
     searchable: { type: Boolean, default: false },
-    /** Placeholder du champ recherche */
     searchPlaceholder: { type: String, default: 'Rechercher…' },
-    /** Clés pour filtrer (ex: ['name', 'key']). Si vide, utilise label */
     searchKeys: { type: Array, default: () => ['name', 'label', 'key', 'id'] },
-    /** Fonction (item) => href ou string (nom de champ) */
     getItemHref: { type: [Function, String], default: null },
-    /** Fonction (item) => boolean */
     isItemActive: { type: Function, default: () => false },
-    /** Fonction (item) => string - classes CSS (ex: color-breed-500 box-shadow-glass-xs) */
     getItemCssClasses: { type: Function, default: () => '' },
-    /** Fonction (item) => string - couleur hex pour bordure inline */
     getItemColor: { type: Function, default: () => null },
-    /** Fonction (item) => string - icône FontAwesome (fa-xxx) ou null */
     getItemIcon: { type: Function, default: () => null },
-    /** Fonction (item) => string - URL image pour icône (si pas FontAwesome) */
     getItemIconUrl: { type: Function, default: () => null },
-    /** Fonction (item) => string - label principal */
     getItemLabel: { type: Function, default: (item) => item.name || item.label || item.id || '' },
-    /** Fonction (item) => string - label secondaire (sous le principal) */
     getItemLabelSecondary: { type: Function, default: () => null },
-    /** Fonction (item) => string - clé unique */
     getItemKey: { type: Function, default: (item) => item.id ?? item.key ?? JSON.stringify(item) },
-    /** Fonction (item) => void - si fournie et href vide, rend un bouton au lieu d'un lien */
     getItemClick: { type: Function, default: null },
-    /** Chemin de base pour les icônes image */
     iconBasePath: { type: String, default: '/storage/images/icons/caracteristics' },
+    accentGlassBorder: {
+        type: String,
+        default: 'md',
+        validator: (v) => ['sm', 'md'].includes(v),
+    },
 });
 
+const { isDesktop } = useDevice();
 const searchQuery = ref('');
 
 const hasGroups = computed(() => {
@@ -103,7 +76,9 @@ const filteredItemsByGroup = computed(() => {
     if (!q) return byGroup;
     const result = {};
     for (const groupKey of Object.keys(byGroup)) {
-        const items = (byGroup[groupKey] || []).filter((item) => itemMatchesSearch(item, q));
+        const items = (byGroup[groupKey] || []).filter((item) =>
+            itemMatchesSearch(item, q)
+        );
         if (items.length > 0) result[groupKey] = items;
     }
     return result;
@@ -116,274 +91,138 @@ const filteredFlatItems = computed(() => {
     return list.filter((item) => itemMatchesSearch(item, q));
 });
 
-function resolveHref(item) {
-    if (typeof props.getItemHref === 'function') return props.getItemHref(item);
-    if (typeof props.getItemHref === 'string') return item[props.getItemHref];
-    return item.href ?? null;
-}
+const panelBind = computed(() => ({
+    title: props.title,
+    description: props.description,
+    searchable: props.searchable,
+    searchPlaceholder: props.searchPlaceholder,
+    hasGroups: hasGroups.value,
+    groups: groups.value,
+    groupLabels: props.groupLabels,
+    groupsMode: props.groupsMode,
+    filteredFlatItems: filteredFlatItems.value,
+    filteredItemsByGroup: filteredItemsByGroup.value,
+    getItemHref: props.getItemHref,
+    getItemClick: props.getItemClick,
+    isItemActive: props.isItemActive,
+    getItemCssClasses: props.getItemCssClasses,
+    getItemColor: props.getItemColor,
+    getItemIcon: props.getItemIcon,
+    getItemIconUrl: props.getItemIconUrl,
+    getItemLabel: props.getItemLabel,
+    getItemLabelSecondary: props.getItemLabelSecondary,
+    getItemKey: props.getItemKey,
+    iconBasePath: props.iconBasePath,
+    accentGlassBorder: props.accentGlassBorder,
+}));
 
-function resolveCssClasses(item) {
-    const base = 'sidebar-nav-item';
-    const extra = props.getItemCssClasses(item);
-    return extra ? `${base} ${extra}`.trim() : base;
-}
-
-function resolveIconUrl(item) {
-    const url = props.getItemIconUrl(item);
-    if (url) return url;
-    const icon = props.getItemIcon(item);
-    if (!icon || typeof icon !== 'string') return null;
-    if (icon.startsWith('fa-') || icon.startsWith('http')) return null;
-    const base = props.iconBasePath || '/storage/images/icons/caracteristics';
-    return `${base}/${icon.includes('/') ? icon.split('/').pop() : icon}`;
-}
-
-function isFaIcon(item) {
-    const icon = props.getItemIcon(item);
-    return icon && typeof icon === 'string' && icon.startsWith('fa-');
-}
+const mobileTriggerLabel = computed(() => {
+    if (!hasGroups.value) {
+        const active = filteredFlatItems.value.find((i) => props.isItemActive(i));
+        if (active) return props.getItemLabel(active);
+    } else {
+        for (const g of groups.value) {
+            const arr = filteredItemsByGroup.value[g] || [];
+            const active = arr.find((i) => props.isItemActive(i));
+            if (active) return props.getItemLabel(active);
+        }
+    }
+    return props.title || 'Liste';
+});
 </script>
 
 <template>
-    <aside class="sidebar-nav flex w-64 shrink-0 flex-col border-r border-base-300 bg-base-200/50 overflow-hidden">
-        <div class="sidebar-nav-header shrink-0 p-3">
-            <h2 v-if="title" class="font-semibold text-base-content">{{ title }}</h2>
-            <p v-if="description" class="mt-1 text-xs text-base-content/70">{{ description }}</p>
-            <div v-if="searchable" class="mt-2">
-                <InputField
-                    v-model="searchQuery"
-                    type="search"
-                    :placeholder="searchPlaceholder"
-                    size="sm"
-                    class="input-sm"
-                />
-            </div>
-        </div>
-
-        <nav class="sidebar-nav-list flex-1 min-h-0 overflow-y-auto p-2">
-            <slot name="nav-before" />
-
-            <!-- Liste plate -->
-            <template v-if="!hasGroups">
-                <div v-if="filteredFlatItems.length === 0" class="px-3 py-4 text-sm text-base-content/70">
-                    <slot name="empty">Aucun élément.</slot>
-                </div>
-                <template v-else>
-                    <component
-                        v-for="item in filteredFlatItems"
-                        :key="getItemKey(item)"
-                        :is="getItemClick && !resolveHref(item) ? 'button' : Link"
-                        :href="getItemClick && !resolveHref(item) ? undefined : resolveHref(item)"
-                        :type="getItemClick && !resolveHref(item) ? 'button' : undefined"
-                        :class="[
-                            'sidebar-nav-item flex items-center gap-2 rounded-box border-l-4 border-transparent px-3 py-2 text-left text-sm transition-colors w-full',
-                            resolveCssClasses(item),
-                            isItemActive(item) && 'sidebar-nav-item-active'
-                        ]"
-                        :style="getItemColor(item) ? { borderLeftColor: getItemColor(item) } : {}"
-                        @click="getItemClick && !resolveHref(item) ? getItemClick(item) : undefined"
-                    >
-                        <img
-                            v-if="resolveIconUrl(item)"
-                            :src="resolveIconUrl(item)"
-                            :alt="getItemLabel(item)"
-                            class="h-5 w-5 shrink-0 object-contain"
-                            @error="($e) => ($e.target.style.display = 'none')"
-                        />
-                        <Icon
-                            v-else-if="isFaIcon(item)"
-                            :source="getItemIcon(item)"
-                            :alt="getItemLabel(item)"
-                            size="sm"
-                            class="shrink-0"
-                        />
-                        <span
-                            v-else-if="getItemColor(item)"
-                            class="h-2.5 w-2.5 shrink-0 rounded-full"
-                            :style="{ backgroundColor: getItemColor(item) }"
-                        />
-                        <span class="min-w-0 flex flex-col flex-1 truncate">
-                            <span class="truncate">{{ getItemLabel(item) }}</span>
-                            <span
-                                v-if="getItemLabelSecondary(item)"
-                                class="truncate text-xs italic opacity-70"
-                            >
-                                {{ getItemLabelSecondary(item) }}
-                            </span>
-                        </span>
-                        <slot name="item-suffix" :item="item" />
-                    </component>
+    <div class="sidebar-nav-root w-full shrink-0 lg:w-64 lg:shrink-0">
+        <aside
+            v-if="isDesktop"
+            :class="[
+                'sidebar-nav hidden h-full min-h-0 shrink-0 flex-col overflow-hidden border-r border-base-300 bg-base-200/50 lg:flex',
+                LAYOUT_APP_SIDEBAR_WIDTH_CLASS,
+            ]"
+        >
+            <SidebarNavPanel v-bind="panelBind" v-model:search-query="searchQuery">
+                <template #nav-before>
+                    <slot name="nav-before" />
                 </template>
-            </template>
-
-            <!-- Liste groupée -->
-            <template v-else>
-                <div
-                    v-if="Object.keys(filteredItemsByGroup).every((g) => !(filteredItemsByGroup[g] || []).length)"
-                    class="px-3 py-4 text-sm text-base-content/70"
+                <template #empty>
+                    <slot name="empty">Aucun élément.</slot>
+                </template>
+                <template #nav-after>
+                    <slot name="nav-after" />
+                </template>
+                <template #item-suffix="slotProps">
+                    <slot name="item-suffix" v-bind="slotProps" />
+                </template>
+                <template
+                    v-for="g in groups"
+                    :key="'d-' + g"
+                    #[`group-${g}`]="slotProps"
                 >
-                    <slot name="empty">Aucun résultat.</slot>
-                </div>
-                <template v-else>
-                    <div
-                        v-for="groupKey in groups"
-                        :key="groupKey"
-                        v-show="(filteredItemsByGroup[groupKey] || []).length > 0"
-                        :class="[
-                            'sidebar-nav-group',
-                            groupsMode === 'collapse' && 'collapse collapse-arrow rounded-box border border-base-300 bg-base-100'
-                        ]"
+                    <slot :name="`group-${g}`" v-bind="slotProps" />
+                </template>
+            </SidebarNavPanel>
+        </aside>
+
+        <div
+            v-else
+            class="sidebar-nav-mobile mb-3 w-full max-w-full self-start sm:max-w-md lg:hidden"
+        >
+            <Dropdown
+                class="w-full"
+                placement="bottom-start"
+                variant="glass"
+                size="sm"
+                :aria-label="title || 'Liste de navigation'"
+            >
+                <template #trigger>
+                    <Btn
+                        variant="glass"
+                        color="neutral"
+                        size="md"
+                        class="w-full min-h-10 justify-between gap-2"
                     >
-                        <template v-if="groupsMode === 'collapse'">
-                            <input
-                                type="checkbox"
-                                :checked="(filteredItemsByGroup[groupKey] || []).some((i) => isItemActive(i))"
-                                class="peer"
-                            />
-                            <div class="collapse-title min-h-0 py-2 font-medium peer-checked:min-h-0">
-                                {{ groupLabels[groupKey] || groupKey }}
-                            </div>
-                            <div class="collapse-content">
-                                <div class="flex flex-col gap-0.5 pb-2">
-                                    <component
-                                        v-for="item in (filteredItemsByGroup[groupKey] || [])"
-                                        :key="getItemKey(item)"
-                                        :is="getItemClick && !resolveHref(item) ? 'button' : Link"
-                                        :href="getItemClick && !resolveHref(item) ? undefined : resolveHref(item)"
-                                        :type="getItemClick && !resolveHref(item) ? 'button' : undefined"
-                                        :class="[
-                                            'flex items-center gap-2 rounded-box border-l-4 border-transparent px-3 py-2 text-left text-sm transition-colors w-full',
-                                            resolveCssClasses(item),
-                                            isItemActive(item) && 'sidebar-nav-item-active'
-                                        ]"
-                                        :style="getItemColor(item) ? { borderLeftColor: getItemColor(item) } : {}"
-                                        @click="getItemClick && !resolveHref(item) ? getItemClick(item) : undefined"
-                                    >
-                                        <img
-                                            v-if="resolveIconUrl(item)"
-                                            :src="resolveIconUrl(item)"
-                                            :alt="getItemLabel(item)"
-                                            class="h-5 w-5 shrink-0 object-contain"
-                                            @error="($e) => ($e.target.style.display = 'none')"
-                                        />
-                                        <Icon
-                                            v-else-if="isFaIcon(item)"
-                                            :source="getItemIcon(item)"
-                                            :alt="getItemLabel(item)"
-                                            size="sm"
-                                            class="shrink-0"
-                                        />
-                                        <span
-                                            v-else-if="getItemColor(item)"
-                                            class="h-2.5 w-2.5 shrink-0 rounded-full"
-                                            :style="{ backgroundColor: getItemColor(item) }"
-                                        />
-                                        <span class="min-w-0 flex flex-col flex-1 truncate">
-                                            <span class="truncate">{{ getItemLabel(item) }}</span>
-                                            <span
-                                                v-if="getItemLabelSecondary(item)"
-                                                class="truncate text-xs italic opacity-70"
-                                                :title="getItemLabelSecondary(item)"
-                                            >
-                                                {{ getItemLabelSecondary(item) }}
-                                            </span>
-                                        </span>
-                                        <slot name="item-suffix" :item="item" />
-                                    </component>
-                                    <slot :name="`group-${groupKey}`" :group="groupKey" :items="filteredItemsByGroup[groupKey]" />
-                                </div>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <div class="sidebar-nav-group-title py-1.5 font-medium text-base-content/80">
-                                {{ groupLabels[groupKey] || groupKey }}
-                            </div>
-                            <div class="flex flex-col gap-0.5">
-                                <component
-                                    v-for="item in (filteredItemsByGroup[groupKey] || [])"
-                                    :key="getItemKey(item)"
-                                    :is="getItemClick && !resolveHref(item) ? 'button' : Link"
-                                    :href="getItemClick && !resolveHref(item) ? undefined : resolveHref(item)"
-                                    :type="getItemClick && !resolveHref(item) ? 'button' : undefined"
-                                    :class="[
-                                        'flex items-center gap-2 rounded-box border-l-4 border-transparent px-3 py-2 text-left text-sm transition-colors w-full',
-                                        resolveCssClasses(item),
-                                        isItemActive(item) && 'sidebar-nav-item-active'
-                                    ]"
-                                    :style="getItemColor(item) ? { borderLeftColor: getItemColor(item) } : {}"
-                                    @click="getItemClick && !resolveHref(item) ? getItemClick(item) : undefined"
-                                >
-                                    <img
-                                        v-if="resolveIconUrl(item)"
-                                        :src="resolveIconUrl(item)"
-                                        :alt="getItemLabel(item)"
-                                        class="h-5 w-5 shrink-0 object-contain"
-                                        @error="($e) => ($e.target.style.display = 'none')"
-                                    />
-                                    <Icon
-                                        v-else-if="isFaIcon(item)"
-                                        :source="getItemIcon(item)"
-                                        :alt="getItemLabel(item)"
-                                        size="sm"
-                                        class="shrink-0"
-                                    />
-                                    <span
-                                        v-else-if="getItemColor(item)"
-                                        class="h-2.5 w-2.5 shrink-0 rounded-full"
-                                        :style="{ backgroundColor: getItemColor(item) }"
-                                    />
-                                    <span class="min-w-0 flex flex-col flex-1 truncate">
-                                        <span class="truncate">{{ getItemLabel(item) }}</span>
-                                        <span
-                                            v-if="getItemLabelSecondary(item)"
-                                            class="truncate text-xs italic opacity-70"
-                                        >
-                                            {{ getItemLabelSecondary(item) }}
-                                        </span>
-                                    </span>
-                                    <slot name="item-suffix" :item="item" />
-                                </component>
-                                <slot :name="`group-${groupKey}`" :group="groupKey" :items="filteredItemsByGroup[groupKey]" />
-                            </div>
-                        </template>
+                        <span class="min-w-0 truncate">{{ mobileTriggerLabel }}</span>
+                        <span
+                            class="fa-solid fa-chevron-down shrink-0 opacity-70"
+                            aria-hidden="true"
+                        />
+                    </Btn>
+                </template>
+                <template #content>
+                    <div
+                        class="max-h-[min(70vh,28rem)] w-[min(calc(100vw-2rem),24rem)] overflow-hidden rounded-box border border-base-300 bg-base-200/50"
+                    >
+                        <SidebarNavPanel v-bind="panelBind" v-model:search-query="searchQuery">
+                            <template #nav-before>
+                                <slot name="nav-before" />
+                            </template>
+                            <template #empty>
+                                <slot name="empty">Aucun élément.</slot>
+                            </template>
+                            <template #nav-after>
+                                <slot name="nav-after" />
+                            </template>
+                            <template #item-suffix="slotProps">
+                                <slot name="item-suffix" v-bind="slotProps" />
+                            </template>
+                            <template
+                                v-for="g in groups"
+                                :key="'m-' + g"
+                                #[`group-${g}`]="slotProps"
+                            >
+                                <slot :name="`group-${g}`" v-bind="slotProps" />
+                            </template>
+                        </SidebarNavPanel>
                     </div>
                 </template>
-            </template>
-
-            <slot name="nav-after" />
-        </nav>
-    </aside>
+            </Dropdown>
+        </div>
+    </div>
 </template>
 
 <style scoped lang="scss">
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-}
-
-.sidebar-nav-list {
-    scrollbar-width: thin;
-}
-
-.sidebar-nav-item {
-    &:hover {
-        background: color-mix(in srgb, var(--color-base-300) 60%, transparent);
-    }
-}
-
-.sidebar-nav-item-active {
-    background: color-mix(in srgb, var(--color, var(--color-primary)) 18%, var(--color-base-100));
-    color: var(--color-base-content);
-}
-
-.sidebar-nav-group-title {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-/* Collapse DaisyUI : éviter hauteur minimale excessive */
-:deep(.collapse-title) {
-    min-height: 0;
 }
 </style>

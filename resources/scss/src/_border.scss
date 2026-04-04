@@ -177,6 +177,15 @@ $border-glass-combos: (
   @extend .border-glass-b-sm;
 }
 
+// Alias bordure gauche (accent items SidebarNav, etc.)
+.glass-border-l-sm {
+  @extend .border-glass-l-sm;
+}
+
+.glass-border-l-md {
+  @extend .border-glass-l-md;
+}
+
 // ===============================
 //  FIN DU FICHIER
 //  Pour toute extension :

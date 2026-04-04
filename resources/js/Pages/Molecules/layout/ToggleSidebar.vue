@@ -100,7 +100,9 @@ onUnmounted(() => {
             <Kbd size="xs" class="ml-2">{{ shortcut }}</Kbd>
         </template>
         
-        <button 
+        <button
+            type="button"
+            data-kz-nav-toggle-sidebar
             @click="toggleSidebar"
             class="transition-all duration-300 ease-in-out hover:scale-110 focus:scale-95"
             :aria-label="tooltipContent"

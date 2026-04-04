@@ -85,7 +85,13 @@ const footerItems = [
     <div class="fixed bottom-0 left-0 right-0 z-50 max-sm:block hidden">
         <Dock size="md" class="px-1 py-2 flex justify-between box-glass-md">
             <!-- Bouton sidebar -->
-            <DockItem icon="fa-bars" pack="solid" label="Menu" @click="toggleSidebar()" />
+            <DockItem
+                icon="fa-bars"
+                pack="solid"
+                label="Menu"
+                data-kz-nav-toggle-sidebar
+                @click="toggleSidebar()"
+            />
             <!-- Bouton recherche (placeholder) -->
             <DockItem icon="fa-magnifying-glass" pack="solid" label="Recherche" />
             <!-- Bouton compte/utilisateur (placeholder dropdown) -->
