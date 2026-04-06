@@ -16,6 +16,7 @@ defineOptions({ inheritAttrs: false });
  * @props {String} sectionId - Identifiant pour persistance (sessionStorage)
  * @props {Boolean} defaultOpen - Ouvert par défaut (si pas de valeur persistée)
  * @props {Boolean} compact - Réduit la hauteur du titre
+ * @props {('group'|'parent')} variant - `group` : libellé de section (majuscules, gris, centré). `parent` : ligne comme une entrée de navigation (alignée à gauche, titre naturel).
  */
 import { ref, watch, computed, onMounted } from 'vue';
 import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
@@ -48,6 +49,17 @@ const props = defineProps({
     sectionId: { type: String, default: '' },
     defaultOpen: { type: Boolean, default: true },
     compact: { type: Boolean, default: false },
+    variant: {
+        type: String,
+        default: 'group',
+        validator: (v) => ['group', 'parent'].includes(v),
+    },
+});
+
+const contentDomId = computed(() => {
+    const raw = props.sectionId || 'menu-section';
+    const slug = String(raw).replace(/[^a-zA-Z0-9_-]/g, '-');
+    return `glass-menu-collapsible-content-${slug}`;
 });
 
 const isOpen = ref(true); // valeur temporaire, corrigée dans onMounted
@@ -88,19 +100,25 @@ const headerClasses = computed(() =>
     mergeClasses(
         [
             'glass-menu-collapsible-section-header',
-            props.compact && 'glass-menu-collapsible-section-header-compact',
+            props.variant === 'group' && 'glass-menu-collapsible-section-header--group',
+            props.variant === 'parent' && 'glass-menu-collapsible-section-header--parent',
+            props.compact && 'glass-menu-collapsible-section-header--compact',
         ],
         props.class
     )
 );
+
+const rootClasses = computed(() => [
+    'glass-menu-collapsible-section',
+    props.variant === 'parent' && 'glass-menu-collapsible-section--parent',
+]);
 
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
     <div
-        class="glass-menu-collapsible-section"
-        :class="{ 'is-open': isOpen }"
+        :class="[...rootClasses, { 'is-open': isOpen }]"
         v-bind="attrs"
         v-on="$attrs"
     >
@@ -108,10 +126,15 @@ const attrs = computed(() => getCommonAttrs(props));
             type="button"
             :class="headerClasses"
             :aria-expanded="isOpen"
-            aria-controls="collapsible-content"
+            :aria-controls="contentDomId"
             @click="toggle"
         >
-            <span class="glass-menu-collapsible-section-title">
+            <span
+                class="glass-menu-collapsible-section-title"
+                :class="{
+                    'glass-menu-collapsible-section-title--parent': variant === 'parent',
+                }"
+            >
                 <slot name="title" />
             </span>
             <span
@@ -123,9 +146,12 @@ const attrs = computed(() => getCommonAttrs(props));
         </button>
         <div
             v-show="isOpen"
-            id="collapsible-content"
+            :id="contentDomId"
             class="glass-menu-collapsible-section-content"
-            :class="{ 'glass-menu-collapsible-section-content-compact': props.compact }"
+            :class="{
+                'glass-menu-collapsible-section-content-compact': props.compact,
+                'glass-menu-collapsible-section-content--parent': props.variant === 'parent',
+            }"
         >
             <slot />
         </div>
@@ -142,29 +168,67 @@ const attrs = computed(() => getCommonAttrs(props));
 .glass-menu-collapsible-section-header {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.35rem;
     width: 100%;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-base-content) 55%, transparent);
-    text-align: center;
-    padding: 0.25rem 0.5rem;
     background: transparent;
     border: none;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition:
+        color 0.2s ease,
+        background 0.18s ease;
 }
 
-.glass-menu-collapsible-section-header:hover {
-    color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
+/* Section menu (regroupement thématique) : plus lisible, gris, majuscules, intermédiaire / léger */
+.glass-menu-collapsible-section-header--group {
+    justify-content: center;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-base-content) 52%, transparent);
+    padding: 0.32rem 0.55rem;
 }
 
-.glass-menu-collapsible-section-header-compact {
-    font-size: 0.65rem;
-    padding: 0.15rem 0.45rem;
+.glass-menu-collapsible-section-header--group:hover {
+    color: color-mix(in srgb, var(--color-base-content) 68%, transparent);
+}
+
+.glass-menu-collapsible-section-header--group.glass-menu-collapsible-section-header--compact {
+    font-size: 0.74rem;
+    padding: 0.26rem 0.48rem;
+    letter-spacing: 0.1em;
+}
+
+/* Page parente : même famille visuelle qu’un lien du menu, ligne cliquable */
+.glass-menu-collapsible-section-header--parent {
+    justify-content: space-between;
+    text-align: left;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: color-mix(in srgb, var(--color-base-content) 88%, transparent);
+    padding: 0.3rem 0.5rem;
+    min-height: 1.85rem;
+    border-radius: var(--radius-field, 0.25rem);
+}
+
+.glass-menu-collapsible-section-header--parent:hover {
+    background: color-mix(in srgb, var(--color-base-100) 32%, transparent);
+    color: var(--color-base-content);
+}
+
+.glass-menu-collapsible-section-header--parent.glass-menu-collapsible-section-header--compact {
+    font-size: 0.8rem;
+    min-height: 1.75rem;
+    padding: 0.24rem 0.45rem;
+}
+
+.glass-menu-collapsible-section-title--parent {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
 }
 
 /* Flèche visible : toujours pour indiquer la rétractabilité */
@@ -206,5 +270,26 @@ const attrs = computed(() => getCommonAttrs(props));
 .glass-menu-collapsible-section-content-compact {
     gap: 0.25rem;
     padding-left: 0.4rem;
+}
+
+.glass-menu-collapsible-section-content--parent {
+    gap: 0.28rem;
+    padding-left: 0.55rem;
+    margin-left: 0.25rem;
+    border-left: 1px solid color-mix(in srgb, var(--color-base-content) 14%, transparent);
+}
+
+.glass-menu-collapsible-section-content--parent.glass-menu-collapsible-section-content-compact {
+    gap: 0.22rem;
+    padding-left: 0.5rem;
+}
+
+/* Chevron un peu plus discret sur les groupes */
+.glass-menu-collapsible-section-header--group .glass-menu-collapsible-section-caret {
+    opacity: 0.45;
+}
+
+.glass-menu-collapsible-section-header--parent .glass-menu-collapsible-section-caret {
+    opacity: 0.55;
 }
 </style>

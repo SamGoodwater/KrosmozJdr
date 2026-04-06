@@ -335,6 +335,11 @@
         "name": "compact",
         "type": "Boolean",
         "desc": "- Réduit la hauteur du titre"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- `group` (section menu, majuscules) ou `parent` (page avec sous-pages)"
       }
     ],
     "slots": [],

@@ -103,16 +103,21 @@ const groupedMenuItems = computed(() => {
                     v-if="menuItem.type === 'parent'"
                     :section-id="`parent-${menuItem.item.id}`"
                     :default-open="menuItem.isOpen"
+                    variant="parent"
                     compact
                     class="main-menu-collapsible"
                 >
-                    <template #title>{{ menuItem.item.title.toUpperCase() }}</template>
+                    <template #title>{{ menuItem.item.title }}</template>
                     <GlassMenuItem
                         v-for="child in menuItem.children"
                         :key="child.item.id"
                         :href="child.item.url"
                         :icon="getEntityIconPath(child.item.entity_key) || child.item.icon || ''"
-                        :class="['main-menu-item', child.item.menu_item_css_classes]"
+                        :class="[
+                            'main-menu-item',
+                            'main-menu-item-child',
+                            child.item.menu_item_css_classes
+                        ]"
                         compact
                         :active="child.isActive"
                     >
@@ -124,7 +129,7 @@ const groupedMenuItems = computed(() => {
                     v-else
                     :href="menuItem.item.url"
                     :active="menuItem.isActive"
-                    :class="['main-menu-item', menuItem.item.menu_item_css_classes]"
+                    :class="['main-menu-item', 'main-menu-item-leaf', menuItem.item.menu_item_css_classes]"
                     compact
                 >
                     {{ menuItem.item.title }}
@@ -132,31 +137,25 @@ const groupedMenuItems = computed(() => {
             </template>
 
             <template v-for="group in groupedMenuItems.groups" :key="group.title">
-                <div
-                    :class="[
-                        'dynamic-menu-group',
-                        { 'dynamic-menu-group-legales': group.title === 'Informations' }
-                    ]"
-                >
+                <div class="dynamic-menu-group">
                     <GlassMenuCollapsibleSection
                         :section-id="`group-${group.title}`"
                         :default-open="group.isOpen"
+                        variant="group"
                         compact
-                        :class="[
-                            'main-menu-collapsible',
-                            { 'main-menu-collapsible-legales': group.title === 'Informations' }
-                        ]"
+                        class="main-menu-collapsible"
                     >
-                        <template #title>{{ group.title.toUpperCase() }}</template>
+                        <template #title>{{ group.title }}</template>
                         <template v-for="child in group.children" :key="child.item.id">
                             <GlassMenuCollapsibleSection
                                 v-if="child.type === 'parent'"
                                 :section-id="`parent-${child.item.id}`"
                                 :default-open="child.isOpen"
+                                variant="parent"
                                 compact
-                                :class="['main-menu-collapsible', 'main-menu-collapsible-nested']"
+                                class="main-menu-collapsible"
                             >
-                                <template #title>{{ child.item.title.toUpperCase() }}</template>
+                                <template #title>{{ child.item.title }}</template>
                                 <GlassMenuItem
                                     v-for="grandchild in child.children"
                                     :key="grandchild.item.id"
@@ -164,7 +163,7 @@ const groupedMenuItems = computed(() => {
                                     :icon="getEntityIconPath(grandchild.item.entity_key) || grandchild.item.icon || ''"
                                     :class="[
                                         'main-menu-item',
-                                        'main-menu-item-legales',
+                                        'main-menu-item-child',
                                         grandchild.item.menu_item_css_classes
                                     ]"
                                     compact
@@ -179,7 +178,7 @@ const groupedMenuItems = computed(() => {
                                 :icon="getEntityIconPath(child.item.entity_key) || child.item.icon || ''"
                                 :class="[
                                     'main-menu-item',
-                                    { 'main-menu-item-legales': group.title === 'Informations' },
+                                    'main-menu-item-leaf',
                                     child.item.menu_item_css_classes
                                 ]"
                                 compact
@@ -220,38 +219,24 @@ const groupedMenuItems = computed(() => {
     gap: 0.2rem;
 }
 
-.dynamic-menu-group-legales {
-    opacity: 0.8;
+/* Taille et graisse homogènes pour toutes les entrées « page » */
+.dynamic-menu :deep(.main-menu-item) {
+    font-size: 0.8125rem;
+    font-weight: 500;
 }
 
-.dynamic-menu :deep(.main-menu-collapsible-legales .glass-menu-collapsible-section-header) {
-    font-size: 0.6rem;
-    padding: 0.1rem 0.35rem;
-    color: color-mix(in srgb, var(--color-base-content) 48%, transparent);
+/* Feuille : proche du parent, légèrement plus marquée */
+.dynamic-menu :deep(.main-menu-item-leaf) {
+    font-weight: 600;
 }
 
-.dynamic-menu :deep(.main-menu-item-legales) {
-    min-height: 1.65rem;
-    padding: 0.22rem 0.45rem;
-    font-size: 0.78rem;
-    color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
+/* Sous-page : même corps, un peu plus doux */
+.dynamic-menu :deep(.main-menu-item-child) {
+    font-weight: 500;
+    color: color-mix(in srgb, var(--color-base-content) 82%, transparent);
 }
 
-.dynamic-menu :deep(.main-menu-collapsible-legales .glass-menu-collapsible-section-content) {
-    padding-left: 0.5rem;
-    padding-top: 0.15rem;
-    gap: 0.18rem;
-}
-
-.dynamic-menu :deep(.main-menu-collapsible-nested .glass-menu-collapsible-section-header) {
-    font-size: 0.65rem;
-    padding: 0.12rem 0.4rem;
-    color: color-mix(in srgb, var(--color-base-content) 60%, transparent);
-}
-
-.dynamic-menu :deep(.main-menu-collapsible-nested .glass-menu-collapsible-section-content) {
-    padding-left: 0.6rem;
-    padding-top: 0.12rem;
-    gap: 0.15rem;
+.dynamic-menu :deep(.main-menu-item-child.glass-menu-item-active) {
+    color: var(--color-base-content);
 }
 </style>
