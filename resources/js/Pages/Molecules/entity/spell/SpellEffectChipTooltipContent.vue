@@ -14,7 +14,11 @@ import {
 } from "@/Composables/entity/useCharacteristicDisplay";
 import { getElementIcon, getElementLabel, getElementPrimaries } from "@/Utils/Entity/Elements";
 import { colord } from "colord";
-import { resolvePresentationActionSlug } from "@/Composables/entity/useSpellSubEffectPresentation";
+import {
+    resolvePresentationActionSlug,
+    subEffectDurationSegment,
+} from "@/Composables/entity/useSpellSubEffectPresentation";
+import SpellZonePreview from "@/Pages/Molecules/entity/spell/SpellZonePreview.vue";
 
 const props = defineProps({
     model: {
@@ -166,6 +170,11 @@ const critBadgeText = computed(() => {
     return typeof c === "string" && c.trim() !== "" ? c.trim() : "";
 });
 
+/** Durée affichée à côté de la valeur (formule pivot ou libellé chip). */
+const durationBesideValue = computed(() =>
+    subEffectDurationSegment(m.value.durationFormula, m.value.durationLabel),
+);
+
 const stateLine = computed(() => {
     const n = m.value.stateName;
     if (typeof n === "string" && n.trim() !== "") {
@@ -178,14 +187,26 @@ const detail = computed(() => {
     const t = props.detailText != null ? String(props.detailText).trim() : "";
     return t !== "" ? t : "";
 });
+
+/** Notation zone (schéma damier à droite). */
+const areaNotation = computed(() => {
+    const a = m.value.area;
+    if (a == null || String(a).trim() === "") {
+        return "";
+    }
+    return String(a).trim();
+});
+
+const hasAreaSchema = computed(() => areaNotation.value !== "");
 </script>
 
 <template>
     <div
-        class="spell-effect-chip-tooltip tooltip-floating-surface max-w-[min(20rem,calc(100vw-2rem))] text-left"
+        class="spell-effect-chip-tooltip tooltip-floating-surface max-w-[min(28rem,calc(100vw-2rem))] text-left"
         :style="accentStyle"
     >
-        <div class="flex gap-3.5">
+        <!-- Ligne 1 : visuel | action (au-dessus) + valeur | schéma de zone -->
+        <div class="flex items-start gap-3">
             <div
                 class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-black/35 ring-1 ring-white/10"
             >
@@ -215,15 +236,27 @@ const detail = computed(() => {
                     class="opacity-95"
                 />
             </div>
-            <div class="min-w-0 flex-1 space-y-2">
+
+            <div class="flex min-w-0 flex-1 flex-col gap-1.5">
                 <div class="text-base font-bold leading-tight tracking-tight">
                     {{ actionTitle }}
                 </div>
-                <div v-if="mainBadgeText || critBadgeText" class="flex flex-wrap items-center gap-1.5">
+                <p v-if="stateLine" class="text-sm font-medium leading-snug text-white/85">
+                    {{ stateLine }}
+                </p>
+                <div
+                    v-if="mainBadgeText || durationBesideValue || critBadgeText"
+                    class="flex flex-wrap items-center gap-x-2 gap-y-1"
+                >
                     <span
                         v-if="mainBadgeText"
                         class="badge badge-md border-0 bg-white/15 font-semibold tabular-nums text-inherit"
                         >{{ mainBadgeText }}</span
+                    >
+                    <span
+                        v-if="durationBesideValue"
+                        class="shrink-0 text-sm font-medium tabular-nums text-white/70"
+                        >{{ durationBesideValue }}</span
                     >
                     <template v-if="critBadgeText">
                         <Icon
@@ -238,16 +271,37 @@ const detail = computed(() => {
                         >
                     </template>
                 </div>
-                <p v-if="stateLine" class="text-sm font-medium text-white/90">
-                    {{ stateLine }}
-                </p>
-                <p
-                    v-if="detail"
-                    class="whitespace-pre-wrap border-t border-white/15 pt-2 text-xs leading-snug text-white/55"
-                >
-                    {{ detail }}
-                </p>
+            </div>
+
+            <div v-if="hasAreaSchema" class="spell-effect-chip-tooltip__zone shrink-0 self-start">
+                <SpellZonePreview :area="areaNotation" :max-viewport-px="100" :cell-size-min-px="10" />
             </div>
         </div>
+
+        <!-- Ligne 2 : description (méta, durée, etc.) -->
+        <p
+            v-if="detail"
+            class="mt-3 whitespace-pre-wrap border-t border-white/15 pt-3 text-xs leading-snug text-white/55"
+        >
+            {{ detail }}
+        </p>
     </div>
 </template>
+
+<style scoped lang="scss">
+/* Schéma de zone lisible sur la surface tooltip sombre */
+.spell-effect-chip-tooltip__zone {
+    :deep(.spell-zone-preview__frame) {
+        border-color: rgb(255 255 255 / 0.22);
+        background-color: rgb(255 255 255 / 0.06);
+    }
+
+    :deep(.spell-zone-preview__cell) {
+        border-color: rgb(255 255 255 / 0.2);
+    }
+
+    :deep(p) {
+        color: rgb(255 255 255 / 0.55);
+    }
+}
+</style>
