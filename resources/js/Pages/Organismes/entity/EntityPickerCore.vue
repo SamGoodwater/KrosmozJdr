@@ -16,6 +16,7 @@ import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import InputCore from '@/Pages/Atoms/data-input/InputCore.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { useEntitySearch } from '@/Composables/entity/useEntitySearch';
 
 const props = defineProps({
@@ -283,28 +284,25 @@ const showError = computed(() => !!error.value);
                         />
 
                         <!-- Icône filtre (placeholder pour filtres avancés, tooltips) -->
-                        <Btn
-                            variant="ghost"
-                            size="xs"
-                            class="tooltip"
-                            :data-tip="hasFilters ? 'Filtres actifs' : 'Filtres'"
-                        >
-                            <i class="fa-solid fa-filter" :class="hasFilters ? 'text-primary' : 'text-base-content/60'"></i>
-                        </Btn>
+                        <Tooltip :content="hasFilters ? 'Filtres actifs' : 'Filtres'">
+                            <Btn variant="ghost" size="xs">
+                                <i class="fa-solid fa-filter" :class="hasFilters ? 'text-primary' : 'text-base-content/60'"></i>
+                            </Btn>
+                        </Tooltip>
 
                         <!-- Icône tri (inverse l'ordre) -->
-                        <Btn
-                            variant="ghost"
-                            size="xs"
-                            class="tooltip"
-                            data-tip="Inverser le tri"
-                            @click.stop="setSort(currentSort, currentOrder === 'asc' ? 'desc' : 'asc')"
-                        >
-                            <i
-                                class="fa-solid fa-arrow-up-a-z"
-                                :class="currentOrder === 'asc' ? 'rotate-0' : 'rotate-180'"
-                            ></i>
-                        </Btn>
+                        <Tooltip content="Inverser le tri">
+                            <Btn
+                                variant="ghost"
+                                size="xs"
+                                @click.stop="setSort(currentSort, currentOrder === 'asc' ? 'desc' : 'asc')"
+                            >
+                                <i
+                                    class="fa-solid fa-arrow-up-a-z"
+                                    :class="currentOrder === 'asc' ? 'rotate-0' : 'rotate-180'"
+                                ></i>
+                            </Btn>
+                        </Tooltip>
                     </div>
 
                     <!-- Liste des résultats -->
@@ -368,27 +366,24 @@ const showError = computed(() => !!error.value);
                 @update:model-value="(v) => (query = v)"
             />
 
-            <Btn
-                variant="ghost"
-                size="sm"
-                class="tooltip"
-                :data-tip="hasFilters ? 'Filtres actifs' : 'Filtres'"
-            >
-                <i class="fa-solid fa-filter" :class="hasFilters ? 'text-primary' : 'text-base-content/60'"></i>
-            </Btn>
+            <Tooltip :content="hasFilters ? 'Filtres actifs' : 'Filtres'">
+                <Btn variant="ghost" size="sm">
+                    <i class="fa-solid fa-filter" :class="hasFilters ? 'text-primary' : 'text-base-content/60'"></i>
+                </Btn>
+            </Tooltip>
 
-            <Btn
-                variant="ghost"
-                size="sm"
-                class="tooltip"
-                data-tip="Inverser le tri"
-                @click.stop="setSort(currentSort, currentOrder === 'asc' ? 'desc' : 'asc')"
-            >
-                <i
-                    class="fa-solid fa-arrow-up-a-z"
-                    :class="currentOrder === 'asc' ? 'rotate-0' : 'rotate-180'"
-                ></i>
-            </Btn>
+            <Tooltip content="Inverser le tri">
+                <Btn
+                    variant="ghost"
+                    size="sm"
+                    @click.stop="setSort(currentSort, currentOrder === 'asc' ? 'desc' : 'asc')"
+                >
+                    <i
+                        class="fa-solid fa-arrow-up-a-z"
+                        :class="currentOrder === 'asc' ? 'rotate-0' : 'rotate-180'"
+                    ></i>
+                </Btn>
+            </Tooltip>
         </div>
 
         <div class="border border-base-300 rounded-xl bg-base-100/60 max-h-80 overflow-y-auto divide-y divide-base-200">

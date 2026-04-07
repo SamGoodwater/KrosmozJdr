@@ -17,6 +17,7 @@ import {
     PO_CAC_ICON,
     PO_CAC_LABEL,
     resolveDef,
+    SPELL_EFFECT_CHIP_SOURCE_GROUPS,
 } from '@/Composables/entity/useCharacteristicDisplay';
 import { getElementLabel, getElementIcon, getElementColor, ELEMENT_PRIMARY_ICONS } from '@/Utils/Entity/Elements';
 import { getAreaShape, getAreaShortLabel } from '@/Utils/Entity/Areas';
@@ -37,7 +38,7 @@ function effectUsageChipIconAndColor(chip) {
     const fallbackColor = getElementColor(elementIndex);
     if (charKey) {
         const def = resolveDef(charKey, undefined, {
-            sourceGroups: ['spell', 'capability', 'creature'],
+            sourceGroups: [...SPELL_EFFECT_CHIP_SOURCE_GROUPS],
         });
         if (def) {
             const icon = def._resolvedIcon ?? def.icon ?? fallbackIcon;
@@ -530,6 +531,41 @@ export class Spell extends BaseModel {
                         ? String(chip.area)
                         : null,
                 summon_monster: summonMonster,
+                action_slug:
+                    chip.action_slug != null && String(chip.action_slug).trim() !== ''
+                        ? String(chip.action_slug).trim()
+                        : null,
+                crit_only: Boolean(chip.crit_only),
+                scope: chip.scope ?? null,
+                value_formula:
+                    chip.value_formula != null && String(chip.value_formula).trim() !== ''
+                        ? String(chip.value_formula).trim()
+                        : null,
+                value_formula_crit:
+                    chip.value_formula_crit != null && String(chip.value_formula_crit).trim() !== ''
+                        ? String(chip.value_formula_crit).trim()
+                        : null,
+                life_steal_formula:
+                    chip.life_steal_formula != null && String(chip.life_steal_formula).trim() !== ''
+                        ? String(chip.life_steal_formula).trim()
+                        : null,
+                state_name:
+                    chip.state_name != null && String(chip.state_name).trim() !== ''
+                        ? String(chip.state_name).trim()
+                        : null,
+                cells_display:
+                    chip.cells_display != null && String(chip.cells_display).trim() !== ''
+                        ? String(chip.cells_display).trim()
+                        : null,
+                teleport: Boolean(chip.teleport),
+                duration_formula:
+                    chip.duration_formula != null && String(chip.duration_formula).trim() !== ''
+                        ? String(chip.duration_formula).trim()
+                        : null,
+                duration_label:
+                    chip.duration_label != null && String(chip.duration_label).trim() !== ''
+                        ? String(chip.duration_label).trim()
+                        : null,
             };
         });
         const subEffectSlugs = this._data.effect_sub_effect_slugs ?? [];

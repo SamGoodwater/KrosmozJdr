@@ -14,6 +14,7 @@ import CharacteristicInlineGroup from "@/Pages/Molecules/data-display/Characteri
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import SpellEffectUsageMinimalLine from "@/Pages/Molecules/entity/spell/SpellEffectUsageMinimalLine.vue";
+import SpellEffectUsageActionLine from "@/Pages/Molecules/entity/spell/SpellEffectUsageActionLine.vue";
 
 const props = defineProps({
     /** Chips avec { icon, color, value, tooltip, degree, requiredCreatureLevel } */
@@ -140,10 +141,19 @@ function minimalRowHasContent(it) {
     const sm = it?.summon_monster;
     const hasSummon =
         sm && typeof sm === "object" && sm.id != null && Number.isFinite(Number(sm.id));
-    return text !== "" || area !== "" || char !== "" || hasElement || hasSummon;
+    const hasAction = it?.action_slug != null && String(it.action_slug).trim() !== "";
+    return text !== "" || area !== "" || char !== "" || hasElement || hasSummon || hasAction;
 }
 
 const visibleMinimalItems = computed(() => visibleItems.value.filter(minimalRowHasContent));
+
+/** Ligne structurée (API avec `action_slug`) : `minimal` vs `line` selon le layout des chips. */
+const structuredLineDensity = computed(() => (props.layout === "minimal" ? "minimal" : "line"));
+
+function itemUsesStructuredAction(it) {
+    const s = it?.action_slug;
+    return s != null && String(s).trim() !== "";
+}
 </script>
 
 <template>
@@ -188,12 +198,15 @@ const visibleMinimalItems = computed(() => visibleItems.value.filter(minimalRowH
             </button>
         </div>
         <div v-if="layout === 'minimal'" class="flex min-w-0 max-w-full flex-col gap-1">
-            <SpellEffectUsageMinimalLine
-                v-for="(it, idx) in visibleMinimalItems"
-                :key="idx"
-                :item="it"
-                class="min-w-0"
-            />
+            <template v-for="(it, idx) in visibleMinimalItems" :key="idx">
+                <SpellEffectUsageActionLine
+                    v-if="itemUsesStructuredAction(it)"
+                    :item="it"
+                    :density="structuredLineDensity"
+                    class="min-w-0"
+                />
+                <SpellEffectUsageMinimalLine v-else :item="it" class="min-w-0" />
+            </template>
         </div>
         <CharacteristicInlineGroup
             v-else

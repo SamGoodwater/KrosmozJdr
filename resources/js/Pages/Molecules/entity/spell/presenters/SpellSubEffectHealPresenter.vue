@@ -11,9 +11,17 @@ defineProps({
         type: Object,
         required: true,
     },
+    layout: {
+        type: String,
+        default: "large",
+    },
+    degreeArea: {
+        type: [String, null],
+        default: null,
+    },
 });
 </script>
 
 <template>
-    <SpellSubEffectRow :row="row" />
+    <SpellSubEffectRow :row="row" :layout="layout" :degree-area="degreeArea" />
 </template>

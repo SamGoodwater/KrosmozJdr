@@ -9,7 +9,9 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 import SpellSummonMonsterInline from '@/Pages/Molecules/entity/spell/SpellSummonMonsterInline.vue';
+import SpellEffectChipTooltipContent from '@/Pages/Molecules/entity/spell/SpellEffectChipTooltipContent.vue';
 import { buildEffectUsageMinimalParts } from '@/Composables/entity/buildEffectUsageMinimalParts';
+import { buildUnifiedSubEffectModel } from '@/Composables/entity/useSpellSubEffectPresentation';
 
 const props = defineProps({
     item: {
@@ -20,17 +22,25 @@ const props = defineProps({
 
 const parts = computed(() => buildEffectUsageMinimalParts(props.item));
 
+const tooltipModel = computed(() =>
+    buildUnifiedSubEffectModel({
+        source: 'chip',
+        chip: props.item,
+        layout: 'minimal',
+    }),
+);
+
+const tooltipDetail = computed(() => {
+    const t = parts.value?.tooltip;
+    return t != null && String(t).trim() !== '' ? String(t).trim() : '';
+});
+
 const lineInnerClass =
     'inline-flex min-w-0 max-w-full flex-wrap items-center gap-x-1 gap-y-0.5 text-left text-xs leading-snug text-base-content';
 </script>
 
 <template>
-    <Tooltip
-        class="inline-flex max-w-full min-w-0"
-        :content="parts.tooltip"
-        :disabled="!parts.tooltip"
-        placement="top"
-    >
+    <Tooltip class="inline-flex max-w-full min-w-0" placement="top" :glass="false">
         <span :class="lineInnerClass">
             <template v-if="parts.elementBlock">
                 <Icon
@@ -70,5 +80,8 @@ const lineInnerClass =
                 <AreaDisplay :area="parts.area" icon-only icon-size="sm" class="shrink-0" />
             </template>
         </span>
+        <template #content>
+            <SpellEffectChipTooltipContent :model="tooltipModel" :detail-text="tooltipDetail" />
+        </template>
     </Tooltip>
 </template>

@@ -14,6 +14,15 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    layout: {
+        type: String,
+        default: "large",
+        validator: (v) => ["large", "compact", "line", "minimal"].includes(v),
+    },
+    degreeArea: {
+        type: [String, null],
+        default: null,
+    },
 });
 
 const presenters = {
@@ -29,5 +38,5 @@ const resolved = computed(() => {
 </script>
 
 <template>
-    <component :is="resolved" :row="row" />
+    <component :is="resolved" :row="row" :layout="layout" :degree-area="degreeArea" />
 </template>

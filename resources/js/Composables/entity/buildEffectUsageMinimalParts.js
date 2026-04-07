@@ -16,6 +16,7 @@
 import {
     resolveDef,
     getCharacteristicColorStyle,
+    SPELL_EFFECT_CHIP_SOURCE_GROUPS,
 } from '@/Composables/entity/useCharacteristicDisplay';
 import { getElementLabel, getElementIcon, getElementColor } from '@/Utils/Entity/Elements';
 
@@ -28,9 +29,6 @@ const SLUG_TO_ELEMENT_ID = Object.freeze({
     air: 3,
     water: 4,
 });
-
-/** Ordre de résolution aligné sur les effets de sort (BDD spell / capacités / créature). */
-const EFFECT_CHARACTERISTIC_SOURCE_GROUPS = Object.freeze(['spell', 'capability', 'creature']);
 
 /**
  * Partie du texte résolu située avant le nom du monstre (ex. « Invocation de », « Invocation »).
@@ -103,7 +101,7 @@ export function buildEffectUsageMinimalParts(item) {
     let characteristicBlock = null;
     if (charKeyTrimmed && !ELEMENT_SLUGS.has(charKeyNorm)) {
         const def = resolveDef(charKeyTrimmed, undefined, {
-            sourceGroups: [...EFFECT_CHARACTERISTIC_SOURCE_GROUPS],
+            sourceGroups: [...SPELL_EFFECT_CHIP_SOURCE_GROUPS],
         });
         const icon = def?._resolvedIcon ?? def?.icon ?? '';
         const color = def?._resolvedColor ?? def?.color;

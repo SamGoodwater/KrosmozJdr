@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\Effect;
 
+use App\Models\Characteristic;
 use App\Models\Effect;
 use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
 use App\Models\Entity\Monster;
+use App\Models\SpellState;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 
 /**
@@ -30,6 +32,16 @@ final class EffectResolutionService
     /** Cache brief monstre (id, name, image) aligné sur SpellEffectDefinitionsSerializer::summonMonsterBrief. */
     /** @var array<int, array{id: int, name: string, image: string|null}> */
     private array $monsterBriefCache = [];
+
+    /** Cache libellé caractéristique (clé machine → name BDD) pour une résolution d’effect. */
+    /** @var array<string, string> */
+    private array $characteristicLabelByKeyCache = [];
+
+    /** @var array<int, string> id spell_states */
+    private array $spellStateNameByIdCache = [];
+
+    /** @var array<int, string> dofusdb_id */
+    private array $spellStateNameByDofusdbIdCache = [];
 
     /** Aligné sur l’UI sorts (id élément → slug config). */
     private const ELEMENT_ID_TO_SLUG = [
@@ -87,6 +99,9 @@ final class EffectResolutionService
         $lastGroup = null;
         $this->monsterNameCache = [];
         $this->monsterBriefCache = [];
+        $this->characteristicLabelByKeyCache = [];
+        $this->spellStateNameByIdCache = [];
+        $this->spellStateNameByDofusdbIdCache = [];
 
         foreach ($rows as $row) {
             // Nouveau groupe logique → on réinitialise l'état précédent
@@ -103,14 +118,28 @@ final class EffectResolutionService
             }
 
             $sub = $row->subEffect;
+            $params = is_array($row->params) ? $row->params : [];
+
             $text = '';
+            $templateCtx = null;
             if ($sub !== null && $sub->template_text) {
                 $templateCtx = $this->buildDisplayContextForTemplate($row, $ctx);
                 $text = $this->textResolver->resolveEffectText($sub->template_text, $templateCtx);
                 $text = $this->textResolver->formatDiceInText($text, $formatDiceHuman);
             }
 
-            $params = is_array($row->params) ? $row->params : [];
+            $stateNameResolved = null;
+            $cellsDisplay = null;
+            if (is_array($templateCtx)) {
+                if (isset($templateCtx['state_name']) && is_string($templateCtx['state_name'])) {
+                    $sn = trim($templateCtx['state_name']);
+                    $stateNameResolved = $sn !== '' ? $sn : null;
+                }
+                if (isset($templateCtx['cells']) && is_scalar($templateCtx['cells'])) {
+                    $cd = trim((string) $templateCtx['cells']);
+                    $cellsDisplay = $cd !== '' ? $cd : null;
+                }
+            }
 
             $resolved[] = [
                 'id' => $row->id,
@@ -132,6 +161,9 @@ final class EffectResolutionService
                 'text' => $text,
                 'context' => $ctx,
                 'summon_monster' => $this->summonMonsterBriefFromParams($params),
+                'state_name' => $stateNameResolved,
+                'cells_display' => $cellsDisplay,
+                'teleport' => (bool) ($params['teleport'] ?? false),
             ];
         }
 
@@ -236,6 +268,11 @@ final class EffectResolutionService
             $out['monster'] = $monster;
         }
 
+        $stateName = $this->resolveStateNameForTemplate($params, $out);
+        if ($stateName !== null && $stateName !== '') {
+            $out['state_name'] = $stateName;
+        }
+
         return $out;
     }
 
@@ -301,7 +338,59 @@ final class EffectResolutionService
             }
         }
 
-        return '';
+        if (array_key_exists($key, $this->characteristicLabelByKeyCache)) {
+            return $this->characteristicLabelByKeyCache[$key];
+        }
+
+        $name = Characteristic::query()->where('key', $key)->value('name');
+        $label = ($name !== null && $name !== '') ? (string) $name : '';
+        $this->characteristicLabelByKeyCache[$key] = $label;
+
+        return $label;
+    }
+
+    /**
+     * Nom d’état pour [state_name] : params explicites ou résolution spell_states.
+     *
+     * @param  array<string, mixed>  $params
+     * @param  array<string, int|float|string>  $displayCtx
+     */
+    private function resolveStateNameForTemplate(array $params, array $displayCtx): ?string
+    {
+        $existing = isset($displayCtx['state_name']) ? trim((string) $displayCtx['state_name']) : '';
+        if ($existing !== '') {
+            return $existing;
+        }
+
+        $sid = $params['spell_state_id'] ?? null;
+        if ($sid !== null && $sid !== '' && is_numeric($sid)) {
+            $id = (int) $sid;
+            if ($id > 0) {
+                if (! array_key_exists($id, $this->spellStateNameByIdCache)) {
+                    $n = SpellState::query()->whereKey($id)->value('name');
+                    $this->spellStateNameByIdCache[$id] = ($n !== null && $n !== '') ? (string) $n : '';
+                }
+                $resolved = $this->spellStateNameByIdCache[$id];
+
+                return $resolved !== '' ? $resolved : null;
+            }
+        }
+
+        $dofusId = $params['state_dofusdb_id'] ?? null;
+        if ($dofusId !== null && $dofusId !== '' && is_numeric($dofusId)) {
+            $dId = (int) $dofusId;
+            if ($dId > 0) {
+                if (! array_key_exists($dId, $this->spellStateNameByDofusdbIdCache)) {
+                    $n = SpellState::query()->where('dofusdb_id', $dId)->value('name');
+                    $this->spellStateNameByDofusdbIdCache[$dId] = ($n !== null && $n !== '') ? (string) $n : '';
+                }
+                $resolved = $this->spellStateNameByDofusdbIdCache[$dId];
+
+                return $resolved !== '' ? $resolved : null;
+            }
+        }
+
+        return null;
     }
 
     private function elementIdToSlug(int $elementId): string

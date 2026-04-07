@@ -22,8 +22,9 @@
  *   <a :href="...">Bois</a>
  * </EntityMinimalTooltip>
  */
-import { ref, computed, onUnmounted } from "vue";
+import { ref, computed, watch, onUnmounted } from "vue";
 import { useFloating, offset, flip, shift, autoUpdate } from "@floating-ui/vue";
+import { allocateTooltipZIndex } from "@/Composables/ui/allocateTooltipZIndex";
 import { useEntityHoverCard } from "@/Composables/entity/useEntityHoverCard";
 import ResourceViewMinimal from "@/Pages/Molecules/entity/resource/ResourceViewMinimal.vue";
 import ItemViewMinimal from "@/Pages/Molecules/entity/item/ItemViewMinimal.vue";
@@ -86,9 +87,26 @@ const propName = computed(() => propNameByType[props.entityType] ?? "entity");
 const { floatingStyles } = useFloating(triggerRef, floatingRef, {
     open,
     placement: props.placement,
+    strategy: "fixed",
     middleware: [offset(8), flip(), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
 });
+
+const stackZIndex = ref(1100);
+watch(
+    () => open.value,
+    (isOpen, wasOpen) => {
+        if (isOpen && wasOpen !== true) {
+            stackZIndex.value = allocateTooltipZIndex();
+        }
+    },
+    { immediate: true },
+);
+
+const floatingStylesWithZ = computed(() => ({
+    ...floatingStyles.value,
+    zIndex: stackZIndex.value,
+}));
 
 // Délais : ouverture après 250 ms, fermeture après 120 ms (permet de bouger vers la carte)
 const OPEN_DELAY_MS = 250;
@@ -160,12 +178,12 @@ onUnmounted(clearTimers);
                 v-if="open"
                 ref="floatingRef"
                 role="tooltip"
-                class="entity-minimal-tooltip z-[1100] overflow-hidden shadow-xl border border-base-300 bg-base-100 min-w-[260px] max-w-[320px] backdrop-blur-xl"
-                :style="floatingStyles"
+                class="entity-minimal-tooltip tooltip-floating-surface color-neutral flex min-w-[260px] max-w-[320px] flex-col overflow-hidden p-0"
+                :style="floatingStylesWithZ"
                 @mouseenter="onFloatingEnter"
                 @mouseleave="onFloatingLeave"
             >
-                <div class="p-0">
+                <div class="max-h-[min(70vh,520px)] overflow-y-auto p-3">
                     <div
                         v-if="loading"
                         class="flex items-center justify-center gap-2 p-6 text-base-content/70 text-sm"
@@ -186,9 +204,3 @@ onUnmounted(clearTimers);
         </Teleport>
     </div>
 </template>
-
-<style scoped>
-.entity-minimal-tooltip {
-    border-radius: var(--rounded-box, 0.1rem);
-}
-</style>

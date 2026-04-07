@@ -565,7 +565,11 @@ const handleAction = async (actionKey) => {
 
         <section class="space-y-3">
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
-            <SpellEffectsJournal v-if="effectsDefinitions.length > 0" :definitions="effectsDefinitions" />
+            <SpellEffectsJournal
+                v-if="effectsDefinitions.length > 0"
+                :definitions="effectsDefinitions"
+                sub-effect-layout="large"
+            />
             <p
                 v-else-if="spell.effect && String(spell.effect).trim() !== ''"
                 class="text-sm text-primary-200 whitespace-pre-wrap wrap-break-word"

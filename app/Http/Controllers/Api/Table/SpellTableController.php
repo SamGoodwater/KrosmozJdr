@@ -48,7 +48,7 @@ class SpellTableController extends Controller
     /**
      * Construit le résumé texte (pour recherche/tri) et les chips structurés (pour affichage).
      *
-     * @return array{summary: string, chips: list<array{text: string, degree: int|null, element: int, element_label: string, characteristic: string|null, target_type: string, target_label: string, area: string|null, duration: int|null, duration_label: string, tooltip: string, required_creature_level: int|null, creature_level_label: string|null, creature_level_requirement: array{value: int|null, label: string|null}, summon_monster: array{id: int, name: string, image: string|null}|null}>}
+     * @return array{summary: string, chips: list<array<string, mixed>>}
      */
     private function buildEffectUsagesData(Spell $spell): array
     {
@@ -90,10 +90,15 @@ class SpellTableController extends Controller
                         $mName = trim((string) ($summonMonster['name'] ?? ''));
                         $text = $mName !== '' ? 'Invocation '.$mName.'.' : 'Invocation.';
                     }
-                    if ($text === '') {
+                    $actionSlugRaw = $sub['action_slug'] ?? null;
+                    $hasActionSlug = is_string($actionSlugRaw) && trim($actionSlugRaw) !== '';
+                    if ($text === '' && ! $hasSummon && ! $hasActionSlug) {
                         continue;
                     }
                     $text = $this->humanizeEffectText($text);
+                    if ($text === '' && $hasActionSlug) {
+                        $text = '['.trim($actionSlugRaw).']';
+                    }
                     $parts[] = $text;
 
                     $charSlug = $this->resolveCharacteristicSlugForChip($sub);
@@ -118,6 +123,9 @@ class SpellTableController extends Controller
                     $displayText = $text;
                     $tooltip = $displayText.(\count($details) > 0 ? ' — '.implode(', ', $details) : '');
 
+                    $durationFormula = $sub['duration_formula'] ?? null;
+                    $durationFormulaStr = is_string($durationFormula) ? trim($durationFormula) : '';
+
                     $chips[] = [
                         'text' => $displayText,
                         'degree' => $degreeNum,
@@ -129,6 +137,7 @@ class SpellTableController extends Controller
                         'area' => $area,
                         'duration' => $duration,
                         'duration_label' => $durationLabel,
+                        'duration_formula' => $durationFormulaStr !== '' ? $durationFormulaStr : null,
                         'tooltip' => $tooltip,
                         'required_creature_level' => $degreeRow->required_creature_level,
                         'creature_level_label' => $creatureLevelLabel !== '' ? $creatureLevelLabel : null,
@@ -137,6 +146,15 @@ class SpellTableController extends Controller
                             'label' => $creatureLevelLabel !== '' ? $creatureLevelLabel : null,
                         ],
                         'summon_monster' => $hasSummon ? $summonMonster : null,
+                        'action_slug' => $sub['action_slug'] ?? null,
+                        'crit_only' => (bool) ($sub['crit_only'] ?? false),
+                        'scope' => $sub['scope'] ?? null,
+                        'value_formula' => is_string($sub['value_formula'] ?? null) ? trim((string) $sub['value_formula']) : null,
+                        'value_formula_crit' => is_string($sub['value_formula_crit'] ?? null) ? trim((string) $sub['value_formula_crit']) : null,
+                        'life_steal_formula' => is_string($sub['life_steal_formula'] ?? null) ? trim((string) $sub['life_steal_formula']) : null,
+                        'state_name' => is_string($sub['state_name'] ?? null) && trim((string) $sub['state_name']) !== '' ? trim((string) $sub['state_name']) : null,
+                        'cells_display' => is_string($sub['cells_display'] ?? null) && trim((string) $sub['cells_display']) !== '' ? trim((string) $sub['cells_display']) : null,
+                        'teleport' => (bool) ($sub['teleport'] ?? false),
                     ];
                 }
             }

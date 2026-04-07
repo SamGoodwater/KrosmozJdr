@@ -6,6 +6,7 @@ namespace App\Services\Effect;
 
 use App\Models\Effect;
 use App\Models\Entity\Monster;
+use App\Models\SpellState;
 use Illuminate\Support\Collection;
 
 /**
@@ -27,20 +28,22 @@ final class SpellEffectDefinitionsSerializer
 
         $monsterIds = $this->collectMonsterIdsFromPivots($effects);
         $monstersById = $this->loadMonstersById($monsterIds);
+        $spellStateIds = $this->collectSpellStateIdsFromPivots($effects);
+        $spellStatesById = $this->loadSpellStatesById($spellStateIds);
 
-        return $effects->map(function (Effect $effect) use ($monstersById) {
+        return $effects->map(function (Effect $effect) use ($monstersById, $spellStatesById) {
             return [
                 'id' => $effect->id,
                 'name' => $effect->name,
                 'description' => $effect->description,
                 'target_type' => $effect->target_type ?? Effect::TARGET_DIRECT,
-                'degrees' => $effect->degrees->sortBy('degree')->values()->map(function ($degree) use ($monstersById) {
+                'degrees' => $effect->degrees->sortBy('degree')->values()->map(function ($degree) use ($monstersById, $spellStatesById) {
                     return [
                         'id' => $degree->id,
                         'degree' => $degree->degree,
                         'required_creature_level' => $degree->required_creature_level,
                         'area' => $degree->area,
-                        'rows' => $degree->effectSubEffects->sortBy('order')->values()->map(function ($pivot) use ($monstersById) {
+                        'rows' => $degree->effectSubEffects->sortBy('order')->values()->map(function ($pivot) use ($monstersById, $spellStatesById) {
                             $sub = $pivot->subEffect;
                             $params = is_array($pivot->params) ? $pivot->params : [];
 
@@ -58,6 +61,7 @@ final class SpellEffectDefinitionsSerializer
                                 'crit_only' => (bool) ($pivot->crit_only ?? false),
                                 'params' => $params,
                                 'summon_monster' => $this->summonMonsterBrief($params, $monstersById),
+                                'spell_state' => $this->spellStateBrief($params, $spellStatesById),
                                 'sub_effect' => $sub ? [
                                     'id' => $sub->id,
                                     'slug' => $sub->slug,
@@ -96,6 +100,76 @@ final class SpellEffectDefinitionsSerializer
         }
 
         return array_keys($monsterIds);
+    }
+
+    /**
+     * @param  Collection<int, Effect>  $effects
+     * @return list<int>
+     */
+    private function collectSpellStateIdsFromPivots(Collection $effects): array
+    {
+        $ids = [];
+        foreach ($effects as $effect) {
+            foreach ($effect->degrees as $degree) {
+                foreach ($degree->effectSubEffects as $pivot) {
+                    $params = $pivot->params;
+                    if (! is_array($params)) {
+                        continue;
+                    }
+                    $sid = $params['spell_state_id'] ?? null;
+                    if ($sid === null || $sid === '' || ! is_numeric($sid)) {
+                        continue;
+                    }
+                    $ids[(int) $sid] = true;
+                }
+            }
+        }
+
+        return array_keys($ids);
+    }
+
+    /**
+     * @param  list<int>  $ids
+     * @return Collection<int, SpellState>
+     */
+    private function loadSpellStatesById(array $ids): Collection
+    {
+        if ($ids === []) {
+            return collect();
+        }
+
+        return SpellState::query()
+            ->whereIn('id', $ids)
+            ->get()
+            ->keyBy('id');
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @param  Collection<int, SpellState>  $byId
+     * @return array{id: int, name: string, icon: string|null}|null
+     */
+    private function spellStateBrief(array $params, Collection $byId): ?array
+    {
+        $sid = $params['spell_state_id'] ?? null;
+        if ($sid === null || $sid === '' || ! is_numeric($sid)) {
+            return null;
+        }
+        $id = (int) $sid;
+        $st = $byId->get($id);
+        if ($st === null) {
+            return [
+                'id' => $id,
+                'name' => 'État #'.$id,
+                'icon' => null,
+            ];
+        }
+
+        return [
+            'id' => $st->id,
+            'name' => $st->name !== '' ? $st->name : ('État #'.$st->id),
+            'icon' => $st->icon,
+        ];
     }
 
     /**

@@ -21,6 +21,12 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    /** Présentation des lignes : `large` (vue détail) ou `compact` (fiche compacte). */
+    subEffectLayout: {
+        type: String,
+        default: "large",
+        validator: (v) => ["large", "compact"].includes(v),
+    },
 });
 
 const activeTabByEffect = ref({});
@@ -137,11 +143,21 @@ const hasDefinitions = computed(() => Array.isArray(props.definitions) && props.
                                     >
                                         Soit
                                     </p>
-                                    <SpellSubEffectTypeRouter :row="r" />
+                                    <SpellSubEffectTypeRouter
+                                        :row="r"
+                                        :layout="subEffectLayout"
+                                        :degree-area="deg.area"
+                                    />
                                 </template>
                             </div>
                             <div v-else class="space-y-0">
-                                <SpellSubEffectTypeRouter v-for="r in seg.rows" :key="`seq-${r.order}`" :row="r" />
+                                <SpellSubEffectTypeRouter
+                                    v-for="r in seg.rows"
+                                    :key="`seq-${r.order}`"
+                                    :row="r"
+                                    :layout="subEffectLayout"
+                                    :degree-area="deg.area"
+                                />
                             </div>
                         </template>
                     </div>

@@ -1,0 +1,53 @@
+// =============================================================================
+// Surfaces des tooltips flottants (Tooltip.vue, contenus riches alignés)
+// — fond sombre semi-transparent, fort flou, ombre / bordure teintées par --color
+// — --color : utilitaires .color-* (_color.scss) ou style inline (ex. hex)
+// =============================================================================
+
+.tooltip-floating-surface {
+    position: relative;
+    isolation: isolate;
+    box-sizing: border-box;
+    /* Thème Daisy (--radius-box) ; sinon alias éventuel ; défaut maquette projet */
+    border-radius: var(--radius-box, var(--rounded-box, 0.1rem));
+    padding: 0.75rem 1rem;
+    margin: 0;
+    max-width: min(24rem, calc(100vw - 1rem));
+
+    /* Fond sombre + transparence (rgba d’abord = fallback si oklch/color-mix ignorés) */
+    background-color: rgba(12, 14, 22, 0.9);
+    background-color: color-mix(in oklch, oklch(0.18 0.03 265) 88%, transparent);
+
+    /* Glassmorphisme : gros flou */
+    backdrop-filter: blur(40px) saturate(1.18) brightness(1.07);
+    -webkit-backdrop-filter: blur(40px) saturate(1.18) brightness(1.07);
+
+    /* Texte lisible sur fond sombre (hérité par le contenu slot) */
+    color: rgba(248, 250, 252, 0.96);
+    color: oklch(0.97 0.01 265);
+
+    /* Accent : thème sémantique ou surcharge inline */
+    border: 1px solid color-mix(in oklch, var(--color) 38%, transparent);
+    box-shadow:
+        0 0 0 1px color-mix(in oklch, var(--color) 24%, transparent),
+        0 22px 56px -14px color-mix(in oklch, var(--color) 42%, transparent),
+        inset 0 1px 0 0 color-mix(in oklch, oklch(1 0 0) 14%, transparent);
+}
+
+/**
+ * Enveloppe sans chrome : le slot fournit tout le visuel (ex. SpellEffectChipTooltipContent).
+ */
+.tooltip-floating-chromeless {
+    position: relative;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    max-width: none;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    color: inherit;
+    border-radius: 0;
+}

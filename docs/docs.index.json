@@ -435,6 +435,11 @@
     "description": "Standardiser l’affichage des entités (ressources, items, monstres, sorts, etc.) afin d’obtenir des “cards” cohérentes dans les modales et les listes, et limiter la duplication de logique."
   },
   {
+    "path": "30-UI/SPELL_SUB_EFFECTS_DISPLAY.md",
+    "title": "Sous-effets de sort — ordre d’affichage et actions",
+    "description": "Préfixes (scope, critique), libellés par slug d’action, layouts journal (large/compact) vs chips table (minimal/line), données API et limites connues."
+  },
+  {
     "path": "30-UI/FRONTEND_MODELS.md",
     "title": "Modèles Frontend JS — KrosmozJDR",
     "description": "Les modèles frontend JS sont des classes qui normalisent et encapsulent les données des entités côté client. Ils fournissent une interface cohérente pour accéder aux propriétés, relations et méthodes utilitaires, indépendamment de la structure des données brutes (Proxies Vue, objets Inertia, etc.)."

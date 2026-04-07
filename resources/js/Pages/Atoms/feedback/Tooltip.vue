@@ -3,55 +3,28 @@
 defineOptions({ inheritAttrs: false });
 
 /**
- * Tooltip Atom (DaisyUI)
+ * Tooltip Atom (DaisyUI + Floating UI)
  *
  * @description
- * Composant atomique Tooltip conforme DaisyUI (v5.x) et Atomic Design.
- * - Slot par défaut : élément déclencheur (trigger)
- * - Slot #content : contenu complexe du tooltip (optionnel, sinon prop content)
- * - Prop content : string simple pour le tooltip (fallback si pas de slot)
- * - Props DaisyUI : placement, color, open, responsive
- * - Props utilitaires custom : shadow, backdrop, opacity (via getCustomUtilityProps)
- * - Props d'accessibilité et HTML natif héritées de commonProps (sauf tooltip/tooltip_placement)
- * - Toutes les classes DaisyUI sont écrites en toutes lettres (aucune concaténation dynamique)
- * - Accessibilité renforcée (role, aria, etc.)
- * - Seul atome à ne pas intégrer Tooltip (pas de récursivité)
+ * Info-bulle : trigger en slot par défaut, contenu string (`content`) ou slot `#content`.
+ * Le positionnement utilise **Floating UI** (`strategy: fixed`) et **Teleport vers `body`**
+ * pour rester visible dans les zones scroll / `overflow-hidden` (ex. TanStackTable).
+ * Plusieurs tooltips : **z-index incrémental** (`allocateTooltipZIndex`) — le dernier ouvert passe au-dessus.
+ * Style : surface globale `tooltip-floating-surface` (SCSS) + utilitaire `color-*` pour l’accent.
  *
  * @see https://daisyui.com/components/tooltip/
- * @version DaisyUI v5.x (5.0.43)
+ * @see https://floating-ui.com/docs/vue
  *
- * @example
- * <Tooltip content="Info-bulle simple">
- *   <button>Survois-moi</button>
- * </Tooltip>
- *
- * <Tooltip placement="right" color="primary" open>
- *   <template #default>
- *     <i class="fa fa-info-circle"></i>
- *   </template>
- *   <template #content>
- *     <div>
- *       <strong>Info-bulle riche</strong>
- *       <p>Texte détaillé, <a href="#">lien</a>, etc.</p>
- *     </div>
- *   </template>
- * </Tooltip>
- *
- * @props {String} content - Texte simple du tooltip (optionnel, sinon slot #content)
- * @props {String} placement - Position du tooltip ('top', 'right', 'bottom', 'left'), défaut 'top'
- * @props {String} color - Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')
- * @props {Boolean} open - Force l'ouverture du tooltip
- * @props {String} responsive - Breakpoint responsive DaisyUI ('sm', 'md', 'lg', 'xl', '2xl')
- * @props {String} shadow, backdrop, opacity - utilitaires custom ('' | 'xs' | ...)
- * @props {String} id, ariaLabel, role, tabindex, class, style, disabled - hérités de commonProps (sauf tooltip/tooltip_placement)
- * @slot default - Élément déclencheur (trigger)
- * @slot content - Contenu HTML complexe du tooltip (optionnel, prioritaire sur prop content)
- *
- * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
- * @note Accessibilité : role="tooltip" sur .tooltip-content, aria-label, tabindex, etc. transmis.
- * @note Seul atome à ne pas intégrer Tooltip (pas de récursivité).
+ * @props {String} content - Texte simple (si pas de slot #content)
+ * @props {String} placement - top | right | bottom | left | end | start
+ * @props {String} color - neutral | primary | … (atomMap)
+ * @props {Boolean} open - Force l’ouverture
+ * @props {String} responsive - sm | md | lg | xl | 2xl : tooltip actif seulement à partir du breakpoint (matchMedia)
+ * @slot default - Trigger
+ * @slot content - Contenu riche
  */
-import { computed } from "vue";
+import { computed, nextTick, onUnmounted, ref, useSlots, watch } from "vue";
+import { useFloating, offset, flip, shift, autoUpdate } from "@floating-ui/vue";
 import {
     getCommonProps,
     getCommonAttrs,
@@ -60,28 +33,25 @@ import {
     mergeClasses,
 } from "@/Utils/atomic-design/uiHelper";
 import { colorList } from "@/Pages/Atoms/atomMap";
+import { allocateTooltipZIndex } from "@/Composables/ui/allocateTooltipZIndex";
 
 const props = defineProps({
     ...getCommonProps({ exclude: ["tooltip", "tooltip_placement"] }),
     ...getCustomUtilityProps(),
-    // Contenu du tooltip (string simple)
     content: {
         type: String,
         default: "",
     },
-    // Placement DaisyUI : top, right, bottom, left
     placement: {
         type: String,
         default: "top",
         validator: (v) => ["top", "right", "bottom", "left", "end", "start"].includes(v),
     },
-    // Couleur DaisyUI : neutral, primary, secondary, accent, info, success, warning, error
     color: {
         type: String,
         default: "",
         validator: (v) => colorList.includes(v),
     },
-    // Forcer l'ouverture
     open: {
         type: Boolean,
         default: false,
@@ -90,116 +60,263 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    // Responsive (ex: lg)
     responsive: {
         type: String,
         default: "",
     },
 });
 
-const contentClasses = computed(() => {
-    let classes = "tooltip-content";
-    if (props.glass) {
-        classes += " tooltip-glass";
+const slots = useSlots();
+
+const hasTooltip = computed(() => {
+    if (slots.content?.()?.length) {
+        return true;
     }
-    switch (props.color) {
-        case "neutral":
-            classes += " color-neutral";
-            break;
-        case "primary":
-            classes += " color-primary";
-            break;
-        case "secondary":
-            classes += " color-secondary";
-            break;
-        case "accent":
-            classes += " color-accent";
-            break;
-        case "info":
-            classes += " color-info";
-            break;
-        case "success":
-            classes += " color-success";
-            break;
-        case "warning":
-            classes += " color-warning";
-            break;
-        case "error":
-            classes += " color-error";
-            break;
-        default:
-            classes += " color-neutral";
-            break;
-    }
-    return classes;
+    const c = props.content;
+    return typeof c === "string" && c.trim() !== "";
 });
 
-const atomClasses = computed(() =>
-    mergeClasses(
-        [
-            props.responsive === "sm" && "sm:tooltip",
-            props.responsive === "md" && "md:tooltip",
-            props.responsive === "lg" && "lg:tooltip",
-            props.responsive === "xl" && "xl:tooltip",
-            props.responsive === "2xl" && "2xl:tooltip",
-            !props.responsive && "tooltip",
-            props.placement === "end" && "tooltip-end",
-            props.placement === "start" && "tooltip-start",
-            props.placement === "top" && "tooltip-top",
-            props.placement === "right" && "tooltip-right",
-            props.placement === "bottom" && "tooltip-bottom",
-            props.placement === "left" && "tooltip-left",
-            props.color === "neutral" && "tooltip-neutral",
-            props.color === "primary" && "tooltip-primary",
-            props.color === "secondary" && "tooltip-secondary",
-            props.color === "accent" && "tooltip-accent",
-            props.color === "info" && "tooltip-info",
-            props.color === "success" && "tooltip-success",
-            props.color === "warning" && "tooltip-warning",
-            props.color === "error" && "tooltip-error", 
-            props.open && "tooltip-open",
-            props.glass && "tooltip-glass-tip",
-        ].filter(Boolean),
-        getCustomUtilityClasses(props),
-        props.class,
-    ),
+const triggerRef = ref(null);
+const floatingRef = ref(null);
+const internalOpen = ref(false);
+
+/** Breakpoint Daisy → min-width (px) pour `responsive` */
+const RESPONSIVE_MIN_PX = Object.freeze({
+    sm: 640,
+    md: 768,
+    lg: 1024,
+    xl: 1280,
+    "2xl": 1536,
+});
+
+const responsiveAllow = ref(true);
+let removeMediaListener = null;
+
+function teardownMediaQuery() {
+    if (typeof removeMediaListener === "function") {
+        removeMediaListener();
+        removeMediaListener = null;
+    }
+}
+
+watch(
+    () => props.responsive,
+    (r) => {
+        teardownMediaQuery();
+        if (!r || typeof window === "undefined") {
+            responsiveAllow.value = true;
+            return;
+        }
+        const minW = RESPONSIVE_MIN_PX[r];
+        if (minW == null) {
+            responsiveAllow.value = true;
+            return;
+        }
+        const mq = window.matchMedia(`(min-width: ${minW}px)`);
+        const sync = () => {
+            responsiveAllow.value = mq.matches;
+        };
+        sync();
+        mq.addEventListener("change", sync);
+        removeMediaListener = () => mq.removeEventListener("change", sync);
+    },
+    { immediate: true },
 );
+
+onUnmounted(() => {
+    teardownMediaQuery();
+    clearTimers();
+});
+
+const isOpen = computed(() => {
+    if (props.disabled) {
+        return false;
+    }
+    if (props.responsive && !responsiveAllow.value) {
+        return false;
+    }
+    if (props.open) {
+        return true;
+    }
+    return internalOpen.value;
+});
+
+const floatingPlacement = computed(() => {
+    const p = props.placement;
+    if (p === "end") {
+        return "right";
+    }
+    if (p === "start") {
+        return "left";
+    }
+    return p;
+});
+
+const { floatingStyles } = useFloating(triggerRef, floatingRef, {
+    open: isOpen,
+    placement: floatingPlacement,
+    strategy: "fixed",
+    middleware: [offset(8), flip(), shift({ padding: 8 })],
+    whileElementsMounted: autoUpdate,
+});
+
+/** Dernier tooltip ouvert au-dessus des autres (pile globale). */
+const stackZIndex = ref(1100);
+watch(
+    () => isOpen.value,
+    (open, wasOpen) => {
+        if (open && wasOpen !== true) {
+            stackZIndex.value = allocateTooltipZIndex();
+        }
+    },
+    { immediate: true },
+);
+
+const floatingStylesWithZ = computed(() => ({
+    ...floatingStyles.value,
+    zIndex: stackZIndex.value,
+}));
+
+/** Accent sémantique (variable `--color` pour bordure / ombre, voir `_tooltip.scss`). */
+const surfaceColorClass = computed(() => {
+    switch (props.color) {
+        case "neutral":
+            return "color-neutral";
+        case "primary":
+            return "color-primary";
+        case "secondary":
+            return "color-secondary";
+        case "accent":
+            return "color-accent";
+        case "info":
+            return "color-info";
+        case "success":
+            return "color-success";
+        case "warning":
+            return "color-warning";
+        case "error":
+            return "color-error";
+        default:
+            return "color-neutral";
+    }
+});
+
+const floatingPanelClasses = computed(() => {
+    const base = "pointer-events-auto";
+    if (!props.glass) {
+        return mergeClasses(base, "tooltip-floating-chromeless");
+    }
+    return mergeClasses(base, "tooltip-floating-surface", surfaceColorClass.value);
+});
+
+/** Trigger : pas de classes `tooltip-*` Daisy (évite le pseudo ::before clippé). */
+const triggerClasses = computed(() =>
+    mergeClasses("inline-flex max-w-full min-w-0", getCustomUtilityClasses(props), props.class),
+);
+
 const attrs = computed(() => getCommonAttrs(props));
+
+let closeTimer = null;
+
+function clearTimers() {
+    if (closeTimer != null) {
+        clearTimeout(closeTimer);
+        closeTimer = null;
+    }
+}
+
+function onTriggerEnter() {
+    if (props.disabled || props.open) {
+        return;
+    }
+    if (props.responsive && !responsiveAllow.value) {
+        return;
+    }
+    clearTimers();
+    internalOpen.value = true;
+}
+
+function onTriggerLeave() {
+    if (props.open) {
+        return;
+    }
+    clearTimers();
+    closeTimer = window.setTimeout(() => {
+        closeTimer = null;
+        internalOpen.value = false;
+    }, 100);
+}
+
+function onFloatingEnter() {
+    clearTimers();
+}
+
+function onFloatingLeave() {
+    if (props.open) {
+        return;
+    }
+    clearTimers();
+    closeTimer = window.setTimeout(() => {
+        closeTimer = null;
+        internalOpen.value = false;
+    }, 100);
+}
+
+function onTriggerFocusIn() {
+    if (props.disabled || props.open) {
+        return;
+    }
+    if (props.responsive && !responsiveAllow.value) {
+        return;
+    }
+    clearTimers();
+    internalOpen.value = true;
+}
+
+function onTriggerFocusOut(ev) {
+    if (props.open) {
+        return;
+    }
+    nextTick(() => {
+        const panel = floatingRef.value;
+        const next = ev.relatedTarget;
+        if (panel && next instanceof Node && panel.contains(next)) {
+            return;
+        }
+        internalOpen.value = false;
+    });
+}
 </script>
 
 <template>
     <div
-        :class="atomClasses"
+        v-if="hasTooltip"
+        ref="triggerRef"
+        :class="triggerClasses"
         v-bind="attrs"
-        :data-tip="!$slots.content && content ? content : undefined"
+        @mouseenter="onTriggerEnter"
+        @mouseleave="onTriggerLeave"
+        @focusin="onTriggerFocusIn"
+        @focusout="onTriggerFocusOut"
     >
         <slot />
-        <template v-if="$slots.content">
-            <div :class="contentClasses" role="tooltip">
-                <slot name="content" />
+        <Teleport to="body">
+            <div
+                v-if="isOpen"
+                ref="floatingRef"
+                :class="floatingPanelClasses"
+                role="tooltip"
+                :style="floatingStylesWithZ"
+                @mouseenter="onFloatingEnter"
+                @mouseleave="onFloatingLeave"
+            >
+                <slot v-if="$slots.content" name="content" />
+                <template v-else>{{ content }}</template>
             </div>
-        </template>
+        </Teleport>
+    </div>
+    <div v-else :class="triggerClasses" v-bind="attrs">
+        <slot />
     </div>
 </template>
 
-<style scoped lang="scss">
-.tooltip-content, [data-tip]::before {
-    z-index: 1000 !important;
-    backdrop-filter: blur(24px);
-}
-.tooltip-glass {
-    background-color: color-mix(in oklch, var(--color) 5%, transparent);
-    border: 1px solid color-mix(in oklch, var(--color) 15%, transparent);
-    box-shadow: 0 0 10px 0 color-mix(in oklch, var(--color) 20%, transparent) inset,
-                1px 2px 3px 0 rgba(0, 0, 0, 0.1) inset;
-}
-
-// Appliquer le style glass aussi au contenu généré par data-tip (tooltip natif DaisyUI)
-[data-tip][class*="tooltip-glass-tip"]::before,
-[data-tip][class~="tooltip-glass-tip"]::before {
-    background-color: color-mix(in oklch, var(--color) 5%, transparent) !important;
-    border: 1px solid color-mix(in oklch, var(--color) 15%, transparent) !important;
-    box-shadow: 0 0 30px 5px color-mix(in oklch, var(--color) 20%, transparent) inset,
-                1px 2px 3px 0 rgba(0, 0, 0, 0.1) inset !important;
-}
-</style>

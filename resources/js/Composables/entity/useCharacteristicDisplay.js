@@ -85,6 +85,19 @@ export function getDisplayValue(dbColumn, value, def = {}) {
   return String(value);
 }
 
+/**
+ * Groupes pour les chips « effets de sort » (table / minimal) : inclut équipement (*_object).
+ */
+export const SPELL_EFFECT_CHIP_SOURCE_GROUPS = Object.freeze([
+    "spell",
+    "capability",
+    "creature",
+    "item",
+    "resource",
+    "consumable",
+    "panoply",
+]);
+
 /** Groupes par défaut pour la résolution (ordre de priorité). */
 const DEFAULT_SOURCE_GROUPS = {
     creature: ["creature"],
