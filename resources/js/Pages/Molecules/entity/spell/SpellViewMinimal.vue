@@ -5,6 +5,8 @@
  * @description
  * Effets : `resolveSpellEffectsDisplayCell` (résumé API + SpellEffectChips, ou fallback `effect`).
  * Méta : `EntityPropertyDisplay` (aligné sur SpellViewCompact).
+ * Invocations : {@link SpellSummonMonstersTextSection} (vue texte monstre, identique à la vue line).
+ * Types + catégorie : masqués par défaut, visibles au survol ; types = icônes seules, catégorie = icône + libellé.
  *
  * @props {Spell} spell - Instance du modèle Spell
  */
@@ -22,7 +24,7 @@ import {
 } from "@/Composables/entity/useSpellEffectsDisplayCell";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
-import SpellSummonMonsterInline from "@/Pages/Molecules/entity/spell/SpellSummonMonsterInline.vue";
+import SpellSummonMonstersTextSection from "@/Pages/Molecules/entity/spell/SpellSummonMonstersTextSection.vue";
 import { Spell } from "@/Models/Entity/Spell";
 import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
@@ -223,28 +225,6 @@ const handleAction = async (actionKey) => {
                                 class="min-w-0"
                             />
                             <EntityPropertyDisplay
-                                v-if="canShowField('category')"
-                                field-key="category"
-                                :entity="entity"
-                                entity-type="spell"
-                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="xs"
-                                class="min-w-0"
-                            />
-                            <EntityPropertyDisplay
-                                v-if="canShowField('spell_types') && showSpellTypesCell"
-                                field-key="spell_types"
-                                :entity="entity"
-                                entity-type="spell"
-                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="xs"
-                                class="min-w-0"
-                            />
-                            <EntityPropertyDisplay
                                 v-if="canShowField('pa')"
                                 field-key="pa"
                                 :entity="entity"
@@ -266,6 +246,45 @@ const handleAction = async (actionKey) => {
                                 size="xs"
                                 class="min-w-0"
                             />
+                            <div
+                                v-if="
+                                    (canShowField('spell_types') && showSpellTypesCell) ||
+                                    canShowField('category')
+                                "
+                                class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover:grid-rows-[1fr]"
+                            >
+                                <div
+                                    class="min-h-0 overflow-hidden group-hover:overflow-visible"
+                                >
+                                    <div class="inline-flex max-w-full flex-wrap items-center gap-1.5">
+                                        <EntityPropertyDisplay
+                                            v-if="canShowField('spell_types') && showSpellTypesCell"
+                                            field-key="spell_types"
+                                            presentation="spell-types-icons-only"
+                                            :entity="entity"
+                                            entity-type="spell"
+                                            :display-mode="PROPERTY_DISPLAY_MODES.minimal"
+                                            :descriptors="descriptors"
+                                            :table-meta="tableMeta"
+                                            size="xs"
+                                            class="min-w-0"
+                                        />
+                                        <EntityPropertyDisplay
+                                            v-if="canShowField('category')"
+                                            field-key="category"
+                                            :entity="entity"
+                                            entity-type="spell"
+                                            :display-mode="PROPERTY_DISPLAY_MODES.minimal"
+                                            variant="inline"
+                                            hide-field-label
+                                            :descriptors="descriptors"
+                                            :table-meta="tableMeta"
+                                            size="xs"
+                                            class="min-w-0"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -279,21 +298,7 @@ const handleAction = async (actionKey) => {
                         class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
                     />
                 </div>
-                <div
-                    v-if="summonMonsterBriefs.length > 0"
-                    class="spell-summon-monsters w-full pt-1.5 mt-1 border-t border-base-300 flex flex-col gap-1.5"
-                >
-                    <span class="text-[10px] font-semibold uppercase tracking-wide text-base-content/55">
-                        Invocation{{ summonMonsterBriefs.length > 1 ? "s" : "" }}
-                    </span>
-                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <SpellSummonMonsterInline
-                            v-for="m in summonMonsterBriefs"
-                            :key="m.id"
-                            :monster-brief="m"
-                        />
-                    </div>
-                </div>
+                <SpellSummonMonstersTextSection :monsters="summonMonsterBriefs" />
             </div>
         </template>
         <template #expanded>
@@ -364,28 +369,6 @@ const handleAction = async (actionKey) => {
                                 class="min-w-0"
                             />
                             <EntityPropertyDisplay
-                                v-if="canShowField('category')"
-                                field-key="category"
-                                :entity="entity"
-                                entity-type="spell"
-                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="xs"
-                                class="min-w-0"
-                            />
-                            <EntityPropertyDisplay
-                                v-if="canShowField('spell_types') && showSpellTypesCell"
-                                field-key="spell_types"
-                                :entity="entity"
-                                entity-type="spell"
-                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="xs"
-                                class="min-w-0"
-                            />
-                            <EntityPropertyDisplay
                                 v-if="canShowField('pa')"
                                 field-key="pa"
                                 :entity="entity"
@@ -407,6 +390,45 @@ const handleAction = async (actionKey) => {
                                 size="xs"
                                 class="min-w-0"
                             />
+                            <div
+                                v-if="
+                                    (canShowField('spell_types') && showSpellTypesCell) ||
+                                    canShowField('category')
+                                "
+                                class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover:grid-rows-[1fr]"
+                            >
+                                <div
+                                    class="min-h-0 overflow-hidden group-hover:overflow-visible"
+                                >
+                                    <div class="inline-flex max-w-full flex-wrap items-center gap-1.5">
+                                        <EntityPropertyDisplay
+                                            v-if="canShowField('spell_types') && showSpellTypesCell"
+                                            field-key="spell_types"
+                                            presentation="spell-types-icons-only"
+                                            :entity="entity"
+                                            entity-type="spell"
+                                            :display-mode="PROPERTY_DISPLAY_MODES.minimal"
+                                            :descriptors="descriptors"
+                                            :table-meta="tableMeta"
+                                            size="xs"
+                                            class="min-w-0"
+                                        />
+                                        <EntityPropertyDisplay
+                                            v-if="canShowField('category')"
+                                            field-key="category"
+                                            :entity="entity"
+                                            entity-type="spell"
+                                            :display-mode="PROPERTY_DISPLAY_MODES.minimal"
+                                            variant="inline"
+                                            hide-field-label
+                                            :descriptors="descriptors"
+                                            :table-meta="tableMeta"
+                                            size="xs"
+                                            class="min-w-0"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <p
                             v-if="descriptionFull"
@@ -427,21 +449,7 @@ const handleAction = async (actionKey) => {
                         class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
                     />
                 </div>
-                <div
-                    v-if="summonMonsterBriefs.length > 0"
-                    class="spell-summon-monsters w-full pt-1.5 mt-1 border-t border-base-300 flex flex-col gap-1.5"
-                >
-                    <span class="text-[10px] font-semibold uppercase tracking-wide text-base-content/55">
-                        Invocation{{ summonMonsterBriefs.length > 1 ? "s" : "" }}
-                    </span>
-                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <SpellSummonMonsterInline
-                            v-for="m in summonMonsterBriefs"
-                            :key="m.id"
-                            :monster-brief="m"
-                        />
-                    </div>
-                </div>
+                <SpellSummonMonstersTextSection :monsters="summonMonsterBriefs" />
             </div>
         </template>
     </EntityMinimalCard>

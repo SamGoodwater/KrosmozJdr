@@ -253,7 +253,11 @@ const activeBadges = computed(() => {
                 const badgeCfg = isOptionBadgeEnabled(col) ? optionBadgeProps(col, opt || { value: vv, label: display }) : null;
                 const stBadge =
                     !badgeCfg && isSpellTypeBadgeEnabled(col)
-                        ? { name: display, color: opt?.color || null }
+                        ? {
+                              name: display,
+                              color: opt?.color || null,
+                              icon: opt?.icon ?? null,
+                          }
                         : null;
                 badges.push({
                     key: `${f.id}:${vv}`,
@@ -313,7 +317,11 @@ const activeBadges = computed(() => {
         const badgeCfg = isOptionBadgeEnabled(col) ? optionBadgeProps(col, opt || { value: vv, label: display }) : null;
         const stBadge =
             !badgeCfg && isSpellTypeBadgeEnabled(col)
-                ? { name: display, color: opt?.color || null }
+                ? {
+                      name: display,
+                      color: opt?.color || null,
+                      icon: opt?.icon ?? null,
+                  }
                 : null;
         badges.push({
             key: `${f.id}`,
@@ -519,6 +527,7 @@ const clearAllActiveFilters = () => {
                                             v-else-if="isSpellTypeBadgeEnabled(col)"
                                             :name="String(opt.label ?? opt.value ?? '')"
                                             :color="opt.color || null"
+                                            :icon-hint="opt.icon ?? null"
                                             size="sm"
                                         />
                                         <span v-else class="text-sm">{{ opt.label }}</span>
@@ -667,6 +676,7 @@ const clearAllActiveFilters = () => {
                                             v-else-if="isSpellTypeBadgeEnabled(col)"
                                             :name="String(opt.label ?? opt.value ?? '')"
                                             :color="opt.color || null"
+                                            :icon-hint="opt.icon ?? null"
                                             size="sm"
                                         />
                                         <span v-else class="text-sm">{{ opt.label }}</span>
@@ -797,6 +807,7 @@ const clearAllActiveFilters = () => {
                         <SpellTypeBadge
                             :name="b.spellTypeBadge.name"
                             :color="b.spellTypeBadge.color"
+                            :icon-hint="b.spellTypeBadge.icon ?? null"
                             size="sm"
                         />
                     </div>

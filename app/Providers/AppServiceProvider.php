@@ -2,19 +2,24 @@
 
 namespace App\Providers;
 
+use App\Models\Characteristic;
+use App\Models\CharacteristicCreature;
+use App\Models\CharacteristicObject;
+use App\Models\CharacteristicSpell;
+use App\Models\DofusdbEffectMapping;
+use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Characteristic\Limit\CharacteristicLimitService;
+use App\Services\Media\EnsureDirectoryMediaFilesystem;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
-use App\Models\DofusdbEffectMapping;
-use App\Services\Media\EnsureDirectoryMediaFilesystem;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -72,12 +77,34 @@ class AppServiceProvider extends ServiceProvider
 
         $this->configureRateLimiting();
         $this->registerConversionFunctions();
+        $this->registerCharacteristicFrontendCacheInvalidation();
+    }
+
+    /**
+     * Évite un décalage de 5 min entre BDD et share Inertia après édition caractéristiques / seeders.
+     */
+    private function registerCharacteristicFrontendCacheInvalidation(): void
+    {
+        $flush = static function (): void {
+            app(CharacteristicMetaByDbColumnService::class)->forgetFrontendCache();
+        };
+        foreach (
+            [
+                Characteristic::class,
+                CharacteristicSpell::class,
+                CharacteristicCreature::class,
+                CharacteristicObject::class,
+            ] as $modelClass
+        ) {
+            $modelClass::saved($flush);
+            $modelClass::deleted($flush);
+        }
     }
 
     private function configureRateLimiting(): void
     {
         RateLimiter::for('privacy-actions', function (\Illuminate\Http\Request $request) {
-            $key = ($request->user()?->id ?? 'guest') . '|' . $request->ip();
+            $key = ($request->user()?->id ?? 'guest').'|'.$request->ip();
 
             return Limit::perMinutes(15, 10)->by($key);
         });

@@ -26,6 +26,7 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import SpellEffectsJournal from "@/Pages/Molecules/entity/spell/SpellEffectsJournal.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
@@ -110,6 +111,19 @@ const technicalFields = computed(() => ([
     'created_at',
     'updated_at',
 ].filter(canShowField)));
+
+const effectsDefinitions = computed(() =>
+    Array.isArray(props.spell?.effectsDefinitions)
+        ? props.spell.effectsDefinitions
+        : Array.isArray(props.spell?._data?.effects_definitions)
+          ? props.spell._data.effects_definitions
+          : [],
+);
+
+const effectPlainText = computed(() => {
+    const e = props.spell?.effect ?? props.spell?._data?.effect;
+    return e != null && String(e).trim() !== '' ? String(e).trim() : '';
+});
 
 const getCell = (fieldKey) => {
     return props.spell.toCell(fieldKey, {
@@ -271,6 +285,18 @@ const handleAction = async (actionKey) => {
                 </div>
             </template>
         </EntityViewHeader>
+
+        <section class="space-y-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
+            <SpellEffectsJournal v-if="effectsDefinitions.length > 0" :definitions="effectsDefinitions" />
+            <p
+                v-else-if="effectPlainText"
+                class="text-sm text-primary-200 whitespace-pre-wrap wrap-break-word"
+            >
+                {{ effectPlainText }}
+            </p>
+            <p v-else class="text-sm text-primary-400 italic">Aucun effet structuré ni texte associé.</p>
+        </section>
 
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
             <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">

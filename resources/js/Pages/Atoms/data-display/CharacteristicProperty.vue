@@ -20,6 +20,7 @@
  * @props {string} badge — none | solid | outline
  * @props {string} layout — inline | card
  * @props {boolean} [showValue] — Afficher la valeur dans le déclencheur (désactiver pour l’ancien variant `icon` de PropertyDisplay)
+ * @props {boolean} [showLabel] — Afficher le libellé court / complet (Cat., Types, etc.)
  * @props {string} size — xs | sm | md
  *
  * @example
@@ -72,6 +73,7 @@ const props = defineProps({
         validator: (v) => Object.values(CHARACTERISTIC_PROPERTY_LAYOUT).includes(v),
     },
     showValue: { type: Boolean, default: true },
+    showLabel: { type: Boolean, default: true },
     size: {
         type: String,
         default: "sm",
@@ -195,7 +197,7 @@ const badgeVariant = computed(() =>
                     :style="valueStyle"
                 />
             </div>
-            <p v-if="model.name" class="mt-0.5 text-xs opacity-80">{{ model.name }}</p>
+            <p v-if="showLabel && model.name" class="mt-0.5 text-xs opacity-80">{{ model.name }}</p>
         </div>
 
         <!-- Inline -->
@@ -213,14 +215,14 @@ const badgeVariant = computed(() =>
                 :style="valueStyle"
             />
             <template v-if="isShort">
-                <span v-if="model.shortName" class="truncate opacity-80">{{ model.shortName }}:</span>
+                <span v-if="showLabel && model.shortName" class="truncate opacity-80">{{ model.shortName }}:</span>
                 <span v-if="showValue" class="truncate font-medium" :style="valueStyle">{{ displayText }}</span>
             </template>
             <template v-else-if="isIconOnly">
                 <span v-if="showValue" class="truncate font-medium" :style="valueStyle">{{ displayText }}</span>
             </template>
             <template v-else>
-                <span v-if="model.name" class="truncate opacity-80">{{ model.name }}:</span>
+                <span v-if="showLabel && model.name" class="truncate opacity-80">{{ model.name }}:</span>
                 <span v-if="showValue" class="truncate font-medium" :style="valueStyle">{{ displayText }}</span>
             </template>
         </span>

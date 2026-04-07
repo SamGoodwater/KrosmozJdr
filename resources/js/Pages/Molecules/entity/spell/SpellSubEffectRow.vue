@@ -1,13 +1,16 @@
 <script setup>
 /**
  * Ligne de sous-effet (pivot effect_sub_effect) — action, valeurs, critique, durée.
+ * Invocation : même vue texte que les monstres (`SpellSummonMonsterInline` / `EntityViewTextLink`) sur la ligne des badges.
  *
  * @props {Object} row - Objet sérialisé (SpellResource)
  */
 import { computed } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import { getByCharacteristicKey } from '@/Composables/store/useCharacteristicsStore';
-import { getCharacteristicColorStyle } from '@/Composables/entity/useCharacteristicDisplay';
+import {
+    resolveDef,
+    getCharacteristicColorStyle,
+} from '@/Composables/entity/useCharacteristicDisplay';
 import { getElementLabel, getElementIcon, getElementColor } from '@/Utils/Entity/Elements';
 import SpellSummonMonsterInline from '@/Pages/Molecules/entity/spell/SpellSummonMonsterInline.vue';
 
@@ -128,7 +131,28 @@ const charDef = computed(() => {
     if (!key || typeof key !== 'string') {
         return null;
     }
-    return getByCharacteristicKey('spell', key) ?? getByCharacteristicKey('creature', key);
+    const trimmed = key.trim();
+    if (!trimmed) {
+        return null;
+    }
+    return resolveDef(trimmed, undefined, {
+        sourceGroups: ['spell', 'capability', 'creature'],
+    });
+});
+
+/** Icône / couleur effectives (service `resolveDef`, variantes value_available / bool). */
+const charDefDisplay = computed(() => {
+    const d = charDef.value;
+    if (!d) {
+        return null;
+    }
+    const icon = d._resolvedIcon ?? d.icon ?? '';
+    const color = d._resolvedColor ?? d.color;
+    const label = d.short_name || d.name || '';
+    if (!icon && !label) {
+        return null;
+    }
+    return { icon, color, label };
 });
 
 const elementParam = computed(() => {
@@ -160,10 +184,8 @@ const lifeStealFormulaText = computed(() => {
 </script>
 
 <template>
-    <div class="py-2 border-b border-base-300/50 last:border-b-0 space-y-2">
-    <div
-        class="flex flex-wrap items-baseline gap-x-2 gap-y-1"
-    >
+    <div class="overflow-visible py-2 border-b border-base-300/50 last:border-b-0">
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 overflow-visible">
         <span
             v-if="row.crit_only"
             class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide bg-warning/20 text-warning"
@@ -172,33 +194,54 @@ const lifeStealFormulaText = computed(() => {
             Critique
         </span>
 
-        <span class="font-semibold text-primary-100 capitalize">{{ actionLabel }}</span>
+        <span
+            class="badge badge-sm badge-outline shrink-0 border-primary-400/45 text-primary-100 font-semibold normal-case capitalize"
+        >
+            {{ actionLabel }}
+        </span>
 
         <template v-if="valueText || critFormula">
-            <span v-if="valueText" class="text-primary-200 tabular-nums">{{ valueText }}</span>
-            <span v-if="critFormula" class="text-primary-300 tabular-nums">({{ critFormula }})</span>
+            <span
+                v-if="valueText"
+                class="badge badge-sm shrink-0 border-0 bg-primary-300/20 text-primary-100 tabular-nums font-medium"
+            >
+                {{ valueText }}
+            </span>
+            <span
+                v-if="critFormula"
+                class="badge badge-sm badge-outline shrink-0 border-warning/50 text-warning tabular-nums font-medium"
+            >
+                crit {{ critFormula }}
+            </span>
         </template>
 
         <span
             v-if="lifeStealFormulaText"
-            class="text-xs text-primary-300/90 tabular-nums"
+            class="badge badge-sm badge-ghost shrink-0 text-xs tabular-nums text-primary-300"
             :title="'PV volés : ' + lifeStealFormulaText"
         >
-            → vol {{ lifeStealFormulaText }}
+            vol {{ lifeStealFormulaText }}
         </span>
 
+        <!-- Vue texte monstre (icône + nom, survol → MonsterViewMinimal), alignée sur EntityViewTextLink -->
+        <SpellSummonMonsterInline
+            v-if="summonBrief"
+            :monster-brief="summonBrief"
+            class="min-w-0 max-w-full"
+        />
+
         <span
-            v-if="charDef"
+            v-if="charDefDisplay"
             class="inline-flex items-center gap-1 text-sm"
-            :style="charDef.color ? getCharacteristicColorStyle(charDef.color) : undefined"
+            :style="charDefDisplay.color ? getCharacteristicColorStyle(charDefDisplay.color) : undefined"
         >
             <Icon
-                v-if="charDef.icon"
-                :source="charDef.icon"
-                :alt="charDef.short_name || charDef.name || ''"
+                v-if="charDefDisplay.icon"
+                :source="charDefDisplay.icon"
+                :alt="charDefDisplay.label"
                 size="xs"
             />
-            <span>{{ charDef.short_name || charDef.name }}</span>
+            <span>{{ charDefDisplay.label }}</span>
         </span>
 
         <span
@@ -217,9 +260,6 @@ const lifeStealFormulaText = computed(() => {
             <Icon source="fa-solid fa-clock" alt="Durée" size="xs" />
             <span class="tabular-nums">{{ durationText }}</span>
         </span>
-    </div>
-    <div v-if="summonBrief" class="pl-2 ml-1 border-l-2 border-primary/25 text-sm">
-        <SpellSummonMonsterInline :monster-brief="summonBrief" />
-    </div>
+        </div>
     </div>
 </template>

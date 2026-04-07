@@ -9,7 +9,7 @@ const props = defineProps({
   modelValue: { type: Array, default: () => [] },
   label: { type: [String, Object], default: '' },
   helper: { type: [String, Object], default: '' },
-  /** @type {Array<{ value: number, label: string, color?: string|null }>} */
+  /** @type {Array<{ value: number, label: string, color?: string|null, icon?: string|null }>} */
   options: { type: Array, default: () => [] },
   disabled: { type: Boolean, default: false },
   validation: { type: [String, Object, Boolean], default: undefined },
@@ -80,7 +80,12 @@ function chipClass(opt) {
         :aria-pressed="isOn(opt.value)"
         @click="toggle(opt.value)"
       >
-        <SpellTypeBadge :name="String(opt.label)" :color="opt.color || null" size="md" />
+        <SpellTypeBadge
+          :name="String(opt.label)"
+          :color="opt.color || null"
+          :icon-hint="opt.icon ?? null"
+          size="md"
+        />
       </button>
     </div>
     <p v-if="hasError && validationMessage" class="mt-1.5 text-sm text-error">

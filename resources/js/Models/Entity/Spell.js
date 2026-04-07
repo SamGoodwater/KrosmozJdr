@@ -12,9 +12,44 @@ import { BaseModel } from '../BaseModel';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import { getByCharacteristicKey, getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
-import { isPoCac, PO_CAC_ICON, PO_CAC_LABEL } from '@/Composables/entity/useCharacteristicDisplay';
+import {
+    isPoCac,
+    PO_CAC_ICON,
+    PO_CAC_LABEL,
+    resolveDef,
+} from '@/Composables/entity/useCharacteristicDisplay';
 import { getElementLabel, getElementIcon, getElementColor, ELEMENT_PRIMARY_ICONS } from '@/Utils/Entity/Elements';
 import { getAreaShape, getAreaShortLabel } from '@/Utils/Entity/Areas';
+
+/**
+ * Icône / couleur d’un chip `effect_usages_chips` : store caractéristiques (spell puis creature), sinon élément.
+ *
+ * @param {object} chip
+ * @returns {{ icon: string, color: string|null }}
+ */
+function effectUsageChipIconAndColor(chip) {
+    const charKey =
+        chip.characteristic != null && String(chip.characteristic).trim() !== ''
+            ? String(chip.characteristic).trim()
+            : null;
+    const elementIndex = Number(chip.element ?? 0);
+    const fallbackIcon = getElementIcon(elementIndex);
+    const fallbackColor = getElementColor(elementIndex);
+    if (charKey) {
+        const def = resolveDef(charKey, undefined, {
+            sourceGroups: ['spell', 'capability', 'creature'],
+        });
+        if (def) {
+            const icon = def._resolvedIcon ?? def.icon ?? fallbackIcon;
+            const color = def._resolvedColor ?? def.color ?? fallbackColor;
+            return {
+                icon: icon || fallbackIcon,
+                color: color ?? fallbackColor,
+            };
+        }
+    }
+    return { icon: fallbackIcon, color: fallbackColor };
+}
 
 export class Spell extends BaseModel {
     // ============================================
@@ -462,27 +497,49 @@ export class Spell extends BaseModel {
                     ? chip.creature_level_requirement
                     : null;
             const requiredCreatureLevel = {
-                min: req?.min ?? chip.level_min ?? null,
+                min: req?.min ?? req?.value ?? chip.required_creature_level ?? chip.level_min ?? null,
                 max: req?.max ?? chip.level_max ?? null,
                 label: req?.label ?? chip.creature_level_label ?? null,
             };
+            const { icon, color } = effectUsageChipIconAndColor(chip);
+            const elRaw = chip.element;
+            const elementNum =
+                elRaw !== null && elRaw !== undefined && elRaw !== '' && Number.isFinite(Number(elRaw))
+                    ? Number(elRaw)
+                    : null;
+            const summonMonster =
+                chip.summon_monster &&
+                typeof chip.summon_monster === 'object' &&
+                chip.summon_monster.id != null
+                    ? chip.summon_monster
+                    : null;
             return {
-                icon: getElementIcon(chip.element ?? 0),
-                color: getElementColor(chip.element ?? 0),
+                icon,
+                color,
+                characteristic:
+                    chip.characteristic != null && String(chip.characteristic).trim() !== ''
+                        ? String(chip.characteristic).trim()
+                        : null,
+                element: elementNum,
                 value: chip.text ?? '',
                 tooltip: chip.tooltip ?? chip.text ?? '',
                 degree: chip.degree ?? null,
                 requiredCreatureLevel,
+                area:
+                    chip.area != null && String(chip.area).trim() !== ''
+                        ? String(chip.area)
+                        : null,
+                summon_monster: summonMonster,
             };
         });
         const subEffectSlugs = this._data.effect_sub_effect_slugs ?? [];
         const ctx = options?.context || 'table';
-        const labelMode =
-            ctx === 'minimal' || size === 'xs'
-                ? 'icon-only'
-                : ctx === 'compact' || size === 'sm'
-                  ? 'short'
-                  : 'full';
+        const isMinimalLayout = ctx === 'minimal' || size === 'xs';
+        const labelMode = isMinimalLayout
+            ? 'icon-only'
+            : ctx === 'compact' || size === 'sm'
+              ? 'short'
+              : 'full';
         return {
             type: 'spell_effects',
             value: '',
@@ -491,7 +548,10 @@ export class Spell extends BaseModel {
                 sortValue: this.effectUsagesSummary || '',
                 searchValue: this.effectUsagesSummary || '',
                 filterValue: subEffectSlugs,
-                chipsLayout: { labelMode },
+                chipsLayout: {
+                    labelMode,
+                    layout: isMinimalLayout ? 'minimal' : 'default',
+                },
             },
         };
     }
@@ -880,6 +940,7 @@ export class Spell extends BaseModel {
             id: t.id,
             name: String(t.name ?? t.label ?? '').trim() || '—',
             color: t.color ?? null,
+            icon: t.icon != null && String(t.icon).trim() !== '' ? String(t.icon) : null,
         }));
 
         return {

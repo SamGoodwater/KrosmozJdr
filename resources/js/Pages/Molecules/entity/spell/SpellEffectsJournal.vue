@@ -6,6 +6,7 @@
  */
 import { computed, ref, watch } from 'vue';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
+import { getAreaHumanReadable } from '@/Utils/Entity/Areas';
 import { segmentSpellEffectRows } from '@/Composables/entity/useSpellEffectRowSegments';
 import SpellSubEffectTypeRouter from '@/Pages/Molecules/entity/spell/SpellSubEffectTypeRouter.vue';
 
@@ -113,13 +114,14 @@ const hasDefinitions = computed(() => Array.isArray(props.definitions) && props.
                     v-for="(deg, idx) in def.degrees"
                     v-show="activeTabByEffect[tabKey(def.id)] === idx"
                     :key="`panel-${def.id}-${deg.id ?? idx}`"
-                    class="rounded-box border border-base-300 bg-base-200/30 p-4 space-y-4"
+                    class="rounded-box border border-base-300 bg-base-200/30 p-4 space-y-4 overflow-visible"
                 >
                     <div
                         v-if="deg.area"
                         class="flex flex-wrap items-center gap-2 text-sm text-primary-200"
                     >
                         <AreaDisplay :area="deg.area" icon-size="sm" />
+                        <span class="text-primary-300">{{ getAreaHumanReadable(deg.area) }}</span>
                     </div>
 
                     <div class="space-y-0">

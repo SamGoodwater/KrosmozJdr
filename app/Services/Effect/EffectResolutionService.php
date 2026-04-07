@@ -7,6 +7,7 @@ namespace App\Services\Effect;
 use App\Models\Effect;
 use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
+use App\Models\Entity\Monster;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 
 /**
@@ -22,6 +23,23 @@ use App\Services\Characteristic\Formula\CharacteristicFormulaService;
  */
 final class EffectResolutionService
 {
+    /** Cache noms monstre par requête (évite requêtes répétées sur un même sort). */
+    /** @var array<int, string> */
+    private array $monsterNameCache = [];
+
+    /** Cache brief monstre (id, name, image) aligné sur SpellEffectDefinitionsSerializer::summonMonsterBrief. */
+    /** @var array<int, array{id: int, name: string, image: string|null}> */
+    private array $monsterBriefCache = [];
+
+    /** Aligné sur l’UI sorts (id élément → slug config). */
+    private const ELEMENT_ID_TO_SLUG = [
+        0 => 'neutral',
+        1 => 'earth',
+        2 => 'fire',
+        3 => 'air',
+        4 => 'water',
+    ];
+
     public function __construct(
         private readonly EffectTextResolver $textResolver,
         private readonly CharacteristicFormulaService $formulaService
@@ -67,6 +85,8 @@ final class EffectResolutionService
         $resolved = [];
         $lastApplied = true;
         $lastGroup = null;
+        $this->monsterNameCache = [];
+        $this->monsterBriefCache = [];
 
         foreach ($rows as $row) {
             // Nouveau groupe logique → on réinitialise l'état précédent
@@ -85,19 +105,22 @@ final class EffectResolutionService
             $sub = $row->subEffect;
             $text = '';
             if ($sub !== null && $sub->template_text) {
-                $text = $this->textResolver->resolveEffectText($sub->template_text, $ctx);
+                $templateCtx = $this->buildDisplayContextForTemplate($row, $ctx);
+                $text = $this->textResolver->resolveEffectText($sub->template_text, $templateCtx);
                 $text = $this->textResolver->formatDiceInText($text, $formatDiceHuman);
             }
+
+            $params = is_array($row->params) ? $row->params : [];
 
             $resolved[] = [
                 'id' => $row->id,
                 'sub_effect_id' => $row->sub_effect_id,
                 'action_slug' => $sub?->slug,
-                'characteristic' => $row->params['characteristic'] ?? null,
+                'characteristic' => $params['characteristic'] ?? null,
                 'value' => $ctx['value'] ?? null,
-                'value_formula' => $row->params['value_formula'] ?? null,
-                'value_formula_crit' => $row->params['value_formula_crit'] ?? null,
-                'life_steal_formula' => $row->params['life_steal_formula'] ?? null,
+                'value_formula' => $params['value_formula'] ?? null,
+                'value_formula_crit' => $params['value_formula_crit'] ?? null,
+                'life_steal_formula' => $params['life_steal_formula'] ?? null,
                 'life_steal_heal' => $ctx['life_steal_heal'] ?? null,
                 'crit_only' => (bool) ($row->crit_only ?? false),
                 'duration' => $ctx['duration'] ?? null,
@@ -108,6 +131,7 @@ final class EffectResolutionService
                 'logic_condition' => $row->logic_condition,
                 'text' => $text,
                 'context' => $ctx,
+                'summon_monster' => $this->summonMonsterBriefFromParams($params),
             ];
         }
 
@@ -178,6 +202,209 @@ final class EffectResolutionService
         }
 
         return $ctx;
+    }
+
+    /**
+     * Complète le contexte pour {@see EffectTextResolver::resolveEffectText} : libellés
+     * ([characteristic], [element]), [cells] depuis cells_formula, [monster] depuis monster_id.
+     *
+     * @param  array<string, int|float|string>  $ctx
+     * @return array<string, int|float|string>
+     */
+    private function buildDisplayContextForTemplate(EffectSubEffect $row, array $ctx): array
+    {
+        $params = is_array($row->params ?? null) ? $row->params : [];
+        $out = $ctx;
+
+        $charLabel = $this->lookupCharacteristicLabelFromParams($params);
+        if ($charLabel !== '') {
+            $out['characteristic'] = $charLabel;
+        }
+
+        $elementLabel = $this->lookupElementLabelForTemplate($params);
+        if ($elementLabel !== '') {
+            $out['element'] = $elementLabel;
+        }
+
+        $cells = $this->resolveCellsTemplateValue($params, $ctx);
+        if ($cells !== null) {
+            $out['cells'] = $cells;
+        }
+
+        $monster = $this->resolveMonsterTemplateValue($params);
+        if ($monster !== null) {
+            $out['monster'] = $monster;
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     */
+    private function lookupCharacteristicLabelFromParams(array $params): string
+    {
+        $k = isset($params['characteristic']) ? trim((string) $params['characteristic']) : '';
+        if ($k !== '') {
+            $label = $this->labelForEffectCharacteristicKey($k);
+
+            return $label !== '' ? $label : '';
+        }
+
+        $el = $params['element'] ?? null;
+        if ($el !== null && $el !== '' && is_numeric($el)) {
+            $slug = $this->elementIdToSlug((int) $el);
+            if ($slug !== '') {
+                $label = $this->labelForEffectCharacteristicKey($slug);
+
+                return $label !== '' ? $label : '';
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Libellé pour la variable [element] dans le template.
+     *
+     * @param  array<string, mixed>  $params
+     */
+    private function lookupElementLabelForTemplate(array $params): string
+    {
+        $el = $params['element'] ?? null;
+        if ($el === null || $el === '') {
+            return '';
+        }
+        if (is_numeric($el)) {
+            $slug = $this->elementIdToSlug((int) $el);
+            if ($slug === '') {
+                return '';
+            }
+
+            return $this->labelForEffectCharacteristicKey($slug);
+        }
+
+        $k = trim((string) $el);
+
+        return $this->labelForEffectCharacteristicKey($k) ?: $k;
+    }
+
+    private function labelForEffectCharacteristicKey(string $key): string
+    {
+        if ($key === '') {
+            return '';
+        }
+        $list = config('effect_sub_effects.characteristics', []);
+        foreach ($list as $row) {
+            if (isset($row['key']) && $row['key'] === $key) {
+                return (string) ($row['label'] ?? '');
+            }
+        }
+
+        return '';
+    }
+
+    private function elementIdToSlug(int $elementId): string
+    {
+        return self::ELEMENT_ID_TO_SLUG[$elementId] ?? '';
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @param  array<string, int|float|string>  $ctx
+     */
+    private function resolveCellsTemplateValue(array $params, array $ctx): ?string
+    {
+        $formula = isset($params['cells_formula']) ? trim((string) $params['cells_formula']) : '';
+        if ($formula === '') {
+            return null;
+        }
+        $evaluated = $this->formulaService->evaluate($formula, $this->toNumericContext($ctx));
+        if ($evaluated !== null) {
+            return $this->formatNumericForTemplate($evaluated);
+        }
+
+        return $formula;
+    }
+
+    private function formatNumericForTemplate(int|float $n): string
+    {
+        if (is_int($n) || $n === floor($n)) {
+            return (string) (int) $n;
+        }
+
+        return rtrim(rtrim(sprintf('%.4F', $n), '0'), '.');
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     */
+    private function resolveMonsterTemplateValue(array $params): ?string
+    {
+        $mid = $params['monster_id'] ?? null;
+        if ($mid === null || $mid === '' || ! is_numeric($mid)) {
+            return null;
+        }
+        $id = (int) $mid;
+        if ($id <= 0) {
+            return null;
+        }
+
+        $this->ensureMonsterCaches($id);
+
+        return $this->monsterNameCache[$id];
+    }
+
+    /**
+     * Résumé monstre invoqué pour l’UI (chips sous-effets, aligné serializer sorts).
+     *
+     * @param  array<string, mixed>  $params
+     * @return array{id: int, name: string, image: string|null}|null
+     */
+    private function summonMonsterBriefFromParams(array $params): ?array
+    {
+        $mid = $params['monster_id'] ?? null;
+        if ($mid === null || $mid === '' || ! is_numeric($mid)) {
+            return null;
+        }
+        $id = (int) $mid;
+        if ($id <= 0) {
+            return null;
+        }
+
+        $this->ensureMonsterCaches($id);
+
+        return $this->monsterBriefCache[$id];
+    }
+
+    /**
+     * Charge créature + remplit caches nom / brief pour un id monstre.
+     */
+    private function ensureMonsterCaches(int $id): void
+    {
+        if (array_key_exists($id, $this->monsterNameCache)) {
+            return;
+        }
+
+        $monster = Monster::query()->with('creature:id,name,image')->find($id);
+        if ($monster === null) {
+            $this->monsterNameCache[$id] = 'Monstre #'.$id;
+            $this->monsterBriefCache[$id] = [
+                'id' => $id,
+                'name' => 'Monstre #'.$id,
+                'image' => null,
+            ];
+
+            return;
+        }
+
+        $name = $monster->creature?->name ?? ('Monstre #'.$monster->id);
+        $this->monsterNameCache[$id] = $name;
+        $this->monsterBriefCache[$id] = [
+            'id' => $monster->id,
+            'name' => $name,
+            'image' => $monster->creature?->image,
+        ];
     }
 
     /**

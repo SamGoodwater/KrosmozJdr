@@ -14,11 +14,15 @@
  * @props {string} [formulaRaw]
  * @props {Array} [levelTable]
  * @props {Object|null|undefined} [runtime] — ex. resolved-stats ; si omis, inject du contexte (provideCharacteristicRuntime)
+ * @props {string} [presentation] - `default` | `spell-types-icons-only` (types de sort : icônes seules, via toCell)
+ * @props {boolean} [hideFieldLabel] — masque « Cat. », « Types », etc. sur {@link CharacteristicProperty}
+ * @props {Object} [toCellOptions] — fusionné dans les options passées à `entity.toCell` / cellOptions du composable
  */
 import { computed, inject, unref } from "vue";
 import { CHARACTERISTIC_RUNTIME_INJECT_KEY } from "@/Composables/entity/characteristicRuntimeContext";
 import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
 import CharacteristicProperty from "@/Pages/Atoms/data-display/CharacteristicProperty.vue";
+import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
 import { useCharacteristicViewModel } from "@/Composables/entity/useCharacteristicViewModel";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 import {
@@ -59,6 +63,13 @@ const props = defineProps({
     levelTable: { type: Array, default: () => [] },
     /** Prioritaire sur le payload injecté par la page (provideCharacteristicRuntime) */
     runtime: { type: Object, default: undefined },
+    presentation: {
+        type: String,
+        default: "default",
+        validator: (v) => ["default", "spell-types-icons-only"].includes(v),
+    },
+    hideFieldLabel: { type: Boolean, default: false },
+    toCellOptions: { type: Object, default: () => ({}) },
 });
 
 const injectedRuntime = inject(CHARACTERISTIC_RUNTIME_INJECT_KEY, null);
@@ -74,6 +85,18 @@ const resolvedRuntime = computed(() => {
     return unref(injectedRuntime);
 });
 
+const mergedCellOptions = computed(() => ({
+    size: props.size,
+    context:
+        props.displayMode === PROPERTY_DISPLAY_MODES.minimal
+            ? "minimal"
+            : props.displayMode === PROPERTY_DISPLAY_MODES.compact
+              ? "compact"
+              : "extended",
+    ctx: props.tableMeta && typeof props.tableMeta === "object" ? props.tableMeta : {},
+    ...props.toCellOptions,
+}));
+
 const displayOptions = computed(() => ({
     fieldKey: props.fieldKey,
     entity: props.entity,
@@ -84,7 +107,27 @@ const displayOptions = computed(() => ({
     formulaRaw: props.formulaRaw,
     levelTable: props.levelTable,
     runtime: resolvedRuntime.value,
+    cellOptions: mergedCellOptions.value,
 }));
+
+const spellTypesIconItems = computed(() => {
+    if (props.presentation !== "spell-types-icons-only" || props.fieldKey !== "spell_types") {
+        return [];
+    }
+    const ent = props.entity;
+    if (!ent || typeof ent.toCell !== "function") {
+        return [];
+    }
+    try {
+        const c = ent.toCell("spell_types", mergedCellOptions.value);
+        if (c?.type !== "spell_types" || !Array.isArray(c.params?.items)) {
+            return [];
+        }
+        return c.params.items;
+    } catch {
+        return [];
+    }
+});
 
 const { viewModel, hasFormula, levelTable: tableLevel } = useCharacteristicViewModel(displayOptions);
 
@@ -125,6 +168,23 @@ const elementValue = computed(() => {
 <template>
     <ElementDisplay v-if="isElementField" :element="elementValue" :size="size" />
 
+    <template v-else-if="fieldKey === 'spell_types' && presentation === 'spell-types-icons-only'">
+        <span
+            v-if="spellTypesIconItems.length > 0"
+            class="inline-flex min-w-0 max-w-full flex-wrap items-center gap-1"
+        >
+            <SpellTypeBadge
+                v-for="(it, idx) in spellTypesIconItems"
+                :key="String(it.id ?? idx)"
+                :name="it.name"
+                :color="it.color"
+                :icon-hint="it.icon ?? null"
+                :show-label="false"
+                size="xs"
+            />
+        </span>
+    </template>
+
     <CharacteristicProperty
         v-else
         :view-model="viewModel"
@@ -132,6 +192,7 @@ const elementValue = computed(() => {
         :layout="useCharacteristicFormula ? CHARACTERISTIC_PROPERTY_LAYOUT.card : CHARACTERISTIC_PROPERTY_LAYOUT.inline"
         :badge="effectiveBadge"
         :show-value="variant !== 'icon'"
+        :show-label="!hideFieldLabel"
         :size="size"
     />
 </template>

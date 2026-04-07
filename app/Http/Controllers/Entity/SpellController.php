@@ -57,7 +57,7 @@ class SpellController extends Controller
 
         $spells = $query->paginate(20)->withQueryString();
         $spellTypes = SpellType::query()
-            ->select(['id', 'name'])
+            ->select(['id', 'name', 'color', 'icon'])
             ->orderBy('name')
             ->get();
 
@@ -140,7 +140,7 @@ class SpellController extends Controller
             ->orderBy('name')
             ->get();
 
-        $availableSpellTypes = \App\Models\Type\SpellType::select('id', 'name', 'description', 'color')
+        $availableSpellTypes = \App\Models\Type\SpellType::select('id', 'name', 'description', 'color', 'icon')
             ->orderBy('name')
             ->get();
 

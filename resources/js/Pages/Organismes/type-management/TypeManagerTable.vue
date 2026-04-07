@@ -576,6 +576,7 @@ onMounted(async () => {
                                 v-if="spellTypeNameCell && r.name"
                                 :name="String(r.name)"
                                 :color="r.color || null"
+                                :icon-hint="r.icon ? String(r.icon) : null"
                                 size="sm"
                             />
                             <template v-else>{{ r.name || "—" }}</template>

@@ -193,7 +193,7 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
         v-bind="customComponentProps"
     />
 
-    <!-- Types de sort (badges icône + teinte) -->
+    <!-- Types de sort (badges icône + teinte ; PNG breed_orientations via spellTypeVisual) -->
     <span
         v-else-if="type === 'spell_types'"
         class="inline-flex flex-wrap items-center gap-1"
@@ -204,6 +204,7 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
             :key="String(it.id ?? idx)"
             :name="it.name"
             :color="it.color"
+            :icon-hint="it.icon ?? null"
         />
     </span>
 
@@ -354,11 +355,12 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
         :area="params.area != null ? String(params.area) : String(value ?? '')"
     />
 
-    <!-- spell_effects : effet avec filtre degré D1 / D2+ (Sort) -->
+    <!-- spell_effects : effets du sort avec onglets par palier (niveau créature / degré) -->
     <SpellEffectChips
         v-else-if="type === 'spell_effects'"
         :items="params.items || []"
         :label-mode="params.chipsLayout?.labelMode || 'full'"
+        :layout="params.chipsLayout?.layout === 'minimal' ? 'minimal' : 'default'"
     />
 
     <!-- chips : colonnes résumées (icône + valeur avec tooltip par item) -->

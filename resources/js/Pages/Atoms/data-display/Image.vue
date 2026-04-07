@@ -178,12 +178,14 @@ const wrapperClasses = computed(() =>
         "items-center",
         props.ratio && ratioMap[props.ratio],
         ...(!props.width && !props.height && props.size ? sizeMap[props.size] : []),
+        props.class,
     ]),
 );
 
 // Classes de l'image (fit, position, rounded, mask, filter)
 const imageClasses = computed(() =>
     mergeClasses([
+        !props.width && !props.height ? "h-full w-full" : "",
         props.fit && fitMap[props.fit],
         props.position && positionMap[props.position],
         props.rounded && roundedMap[props.rounded],

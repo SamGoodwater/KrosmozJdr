@@ -43,7 +43,7 @@ function onLeave() {
 
 <template>
     <div
-        class="entity-minimal-card relative w-full"
+        class="entity-minimal-card group relative w-full"
         :class="{ 'entity-minimal-card--expanded': showExpanded && canHover }"
         @mouseenter="onEnter"
         @mouseleave="onLeave"

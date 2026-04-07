@@ -20,7 +20,7 @@ use Spatie\MediaLibrary\HasMedia;
  * @property string|null $official_id
  * @property string|null $dofusdb_id
  * @property string $name
- * @property string $description
+ * @property string $description Toujours non null en base ; une valeur API `null` est normalisée en chaîne vide.
  * @property string|null $effect
  * @property string $level
  * @property string|null $po_min Portée min (valeur ou formule, ex. "0", "[level]")
@@ -142,6 +142,36 @@ class Spell extends Model implements HasMedia
     const ELEMENT = ElementConstants::ELEMENT;
 
     /**
+     * Colonnes NOT NULL : les FormRequest acceptent souvent `nullable` alors que MySQL refuse NULL.
+     * Valeurs alignées sur les défauts du schéma (migrations `entity_spells` et colonnes ajoutées ensuite).
+     *
+     * @var array<string, bool|int|string>
+     */
+    private const ATTRIBUTE_FALLBACK_WHEN_NULL = [
+        'description' => '',
+        'level' => '1',
+        'po_min' => '1',
+        'po_max' => '1',
+        'pa' => '3',
+        'cast_per_turn' => '1',
+        'cast_per_target' => '0',
+        'number_between_two_cast' => '0',
+        'po_editable' => true,
+        'sight_line' => true,
+        'element' => 0,
+        'category' => 0,
+        'is_magic' => true,
+        'powerful' => 0,
+        'resolution_mode' => self::RESOLUTION_ATTACK_ROLL,
+        'state' => self::STATE_DRAFT,
+        'read_level' => 0,
+        'write_level' => 3,
+        'auto_update' => true,
+        'auto_success_if_willing_target' => false,
+        'allows_reaction' => false,
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -198,6 +228,27 @@ class Spell extends Model implements HasMedia
         'auto_success_if_willing_target' => 'boolean',
         'allows_reaction' => 'boolean',
     ];
+
+    /**
+     * @param  mixed  $value
+     * @return $this
+     */
+    public function setAttribute($key, $value)
+    {
+        if ($value === null && array_key_exists($key, self::ATTRIBUTE_FALLBACK_WHEN_NULL)) {
+            $value = self::ATTRIBUTE_FALLBACK_WHEN_NULL[$key];
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
+    /**
+     * Stockage texte : évite les types non string et les avertissements PHP 8.4+ sur (string) null.
+     */
+    public function setDescriptionAttribute(mixed $value): void
+    {
+        $this->attributes['description'] = $value === null ? '' : (string) $value;
+    }
 
     /**
      * Get the user that created the spell.

@@ -322,7 +322,7 @@ export const SPELL_FORM_FIELD_SECTIONS_CREATE = [
  * Fusionne le champ `spellTypes` (IDs multiples) pour les formulaires sort.
  *
  * @param {Record<string, object>} baseConfig
- * @param {Array<{ id: number, name: string, color?: string|null }>} availableSpellTypes
+ * @param {Array<{ id: number, name: string, color?: string|null, icon?: string|null }>} availableSpellTypes
  * @returns {Record<string, object>}
  */
 export function mergeSpellTypesFieldIntoSpellFormConfig(baseConfig, availableSpellTypes = []) {
@@ -330,6 +330,7 @@ export function mergeSpellTypesFieldIntoSpellFormConfig(baseConfig, availableSpe
         value: Number(t.id),
         label: String(t.name ?? `#${t.id}`),
         color: t.color ?? null,
+        icon: t.icon != null && String(t.icon).trim() !== '' ? String(t.icon) : null,
     }));
     return {
         ...baseConfig,

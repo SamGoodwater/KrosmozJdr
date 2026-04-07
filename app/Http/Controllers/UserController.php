@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserResource;
+use App\Models\User;
+use App\Services\NotificationService;
 use App\Support\OAuthConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use App\Http\Resources\UserResource;
-use App\Services\NotificationService;
 
 /**
  * Contrôleur de gestion des utilisateurs.
@@ -28,7 +27,6 @@ class UserController extends Controller
     /**
      * Affiche la liste paginée des utilisateurs.
      *
-     * @param Request $request
      * @return \Inertia\Response
      */
     public function index(Request $request)
@@ -74,18 +72,18 @@ class UserController extends Controller
         ]);
     }
 
-        /**
+    /**
      * Affiche le détail d'un utilisateur.
      * Si aucun utilisateur n'est spécifié, affiche le profil de l'utilisateur connecté.
      *
-     * @param User|null $user
      * @return \Inertia\Response
      */
-    public function show(User $user = null)
+    public function show(?User $user = null)
     {
         $user = $user ?? Auth::user();
         $this->authorize('view', $user);
         $user->load(['scenarios', 'campaigns', 'pages', 'sections']);
+
         return Inertia::render('Pages/user/Show', [
             'user' => new UserResource($user),
         ]);
@@ -124,6 +122,7 @@ class UserController extends Controller
     public function create()
     {
         $this->authorize('create', User::class);
+
         return Inertia::render('Pages/user/Create', [
             'roles' => User::ROLES,
             'notificationChannels' => User::NOTIFICATION_CHANNELS,
@@ -133,7 +132,6 @@ class UserController extends Controller
     /**
      * Crée un nouvel utilisateur (profil complet, avatar inclus si fourni).
      *
-     * @param StoreUserRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreUserRequest $request)
@@ -145,13 +143,15 @@ class UserController extends Controller
             return back()->withErrors(['role' => 'Impossible de créer directement un super administrateur.']);
         }
 
-        if (!isset($data['role']) || !array_key_exists((int) $data['role'], User::ROLES)) {
+        if (! isset($data['role']) || ! array_key_exists((int) $data['role'], User::ROLES)) {
             $data['role'] = User::ROLE_USER;
         }
 
         if ($request->hasFile('avatar')) {
             unset($data['avatar']);
         }
+        // Champ de validation uniquement ; avec Model::unguard() global, il serait sinon envoyé en SQL.
+        unset($data['password_confirmation']);
         $data['notifications_enabled'] = $data['notifications_enabled'] ?? true;
         $data['notification_channels'] = $data['notification_channels'] ?? ['database'];
         $user = User::create($data);
@@ -165,6 +165,7 @@ class UserController extends Controller
             $media = $adder->toMediaCollection('avatars');
             $user->update(['avatar' => $media->getUrl()]);
         }
+
         return redirect()->route('user.admin.edit', $user)->with('success', 'Utilisateur créé avec succès.');
     }
 
@@ -172,14 +173,14 @@ class UserController extends Controller
      * Affiche le formulaire d'édition d'utilisateur.
      * Si aucun utilisateur n'est spécifié, affiche le formulaire pour l'utilisateur connecté.
      *
-     * @param User|null $user
      * @return \Inertia\Response
      */
-    public function edit(User $user = null)
+    public function edit(?User $user = null)
     {
         $user = $user ?? Auth::user();
         $this->authorize('update', $user);
         $user->load(['scenarios', 'campaigns', 'pages', 'sections']);
+
         return Inertia::render('Pages/user/Edit', [
             'user' => new UserResource($user),
             'roles' => User::ROLES,
@@ -201,6 +202,7 @@ class UserController extends Controller
         $user = Auth::user();
         $this->authorize('update', $user);
         $user->load(['oauthAccounts']);
+
         return Inertia::render('Pages/user/Settings', [
             'user' => (new UserResource($user))->toArray(request()),
             'oauthProviders' => OAuthConfig::enabledProviders(),
@@ -213,11 +215,9 @@ class UserController extends Controller
     /**
      * Met à jour un utilisateur (profil courant ou admin).
      *
-     * @param UpdateUserRequest $request
-     * @param User|null $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(UpdateUserRequest $request, User $user = null)
+    public function update(UpdateUserRequest $request, ?User $user = null)
     {
         $user = $user ?? Auth::user();
         $this->authorize('update', $user);
@@ -244,7 +244,7 @@ class UserController extends Controller
                 $data['notification_preferences'] = [];
                 foreach (array_intersect_key($prefs, array_flip($allowedTypes)) as $type => $val) {
                     $channels = [];
-                    $frequency = config('notifications.types.' . $type . '.frequency_default', 'instant');
+                    $frequency = config('notifications.types.'.$type.'.frequency_default', 'instant');
                     if (is_array($val)) {
                         if (isset($val['channels']) && is_array($val['channels'])) {
                             $channels = array_values(array_intersect($val['channels'], ['database', 'mail']));
@@ -268,13 +268,13 @@ class UserController extends Controller
         if ($user->id === Auth::id()) {
             return redirect()->route('user.show', $user)->with('success', 'Profil mis à jour.');
         }
+
         return redirect()->route('user.admin.edit', $user)->with('success', 'Utilisateur mis à jour.');
     }
 
     /**
      * Supprime (soft delete) un utilisateur.
      *
-     * @param User $user
      * @return \Illuminate\Http\RedirectResponse
      */
     public function delete(User $user)
@@ -286,6 +286,7 @@ class UserController extends Controller
             report($e);
         }
         $user->delete();
+
         return redirect()->route('user.index')->with('success', 'Utilisateur supprimé.');
     }
 
@@ -293,7 +294,6 @@ class UserController extends Controller
      * Supprime définitivement un utilisateur (admin only).
      * Supprime aussi l'avatar physique si présent.
      *
-     * @param User $user
      * @return \Illuminate\Http\RedirectResponse
      */
     public function forceDelete(User $user)
@@ -301,13 +301,14 @@ class UserController extends Controller
         $this->authorize('forceDelete', $user);
         $user->clearMediaCollection('avatars');
         $user->forceDelete();
+
         return redirect()->route('user.index')->with('success', 'Utilisateur supprimé définitivement.');
     }
 
     /**
      * Restaure un utilisateur supprimé.
      *
-     * @param User $user
+     * @param  User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
     public function restore(int $user)
@@ -315,6 +316,7 @@ class UserController extends Controller
         $model = User::withTrashed()->findOrFail($user);
         $this->authorize('restore', $model);
         $model->restore();
+
         return redirect()->route('user.index')->with('success', 'Utilisateur restauré.');
     }
 
@@ -322,20 +324,18 @@ class UserController extends Controller
      * Met à jour uniquement l'avatar de l'utilisateur (endpoint dédié, UX moderne).
      * Si aucun utilisateur n'est spécifié, utilise l'utilisateur connecté.
      *
-     * @param Request $request
-     * @param User|null $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateAvatar(Request $request, User $user = null)
+    public function updateAvatar(Request $request, ?User $user = null)
     {
         $user = $user ?? Auth::user();
         $this->authorize('update', $user);
-        
+
         // Vérifier que le fichier est présent
-        if (!$request->hasFile('avatar')) {
+        if (! $request->hasFile('avatar')) {
             return redirect()->back()->withErrors(['avatar' => 'Aucun fichier n\'a été téléchargé.']);
         }
-        
+
         $request->validate([
             'avatar' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp,svg', 'max:5120'], // 5MB max
         ]);
@@ -349,10 +349,10 @@ class UserController extends Controller
         }
         $media = $adder->toMediaCollection('avatars');
         $user->update(['avatar' => $media->getUrl()]);
-        
+
         // Recharger l'utilisateur avec les relations pour retourner les données complètes
         $user->refresh();
-        
+
         return redirect()->back()->with('success', 'Avatar mis à jour.');
     }
 
@@ -360,23 +360,21 @@ class UserController extends Controller
      * Supprime uniquement l'avatar de l'utilisateur (endpoint dédié, UX moderne).
      * Si aucun utilisateur n'est spécifié, utilise l'utilisateur connecté.
      *
-     * @param User|null $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteAvatar(User $user = null)
+    public function deleteAvatar(?User $user = null)
     {
         $user = $user ?? Auth::user();
         $this->authorize('update', $user);
         $user->clearMediaCollection('avatars');
         $user->update(['avatar' => null]);
+
         return redirect()->back()->with('success', 'Avatar supprimé.');
     }
 
     /**
      * Met à jour le rôle d'un utilisateur (seul le super_admin peut promouvoir en admin, personne ne peut promouvoir en super_admin).
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\User $user
      * @return \Illuminate\Http\RedirectResponse
      */
     public function updateRole(\Illuminate\Http\Request $request, \App\Models\User $user)
@@ -388,10 +386,10 @@ class UserController extends Controller
         ]);
 
         // Convertir le rôle en entier si c'est une string (pour compatibilité)
-        $roleValue = is_numeric($request->input('role')) 
-            ? (int) $request->input('role') 
+        $roleValue = is_numeric($request->input('role'))
+            ? (int) $request->input('role')
             : array_search($request->input('role'), User::ROLES, true);
-        
+
         if ($roleValue === false) {
             return back()->withErrors(['role' => 'Rôle invalide.']);
         }
@@ -417,11 +415,10 @@ class UserController extends Controller
      * - Si l'utilisateur modifie son propre mot de passe : current_password requis
      * - Si un admin modifie le mot de passe d'un autre utilisateur : current_password non requis
      *
-     * @param \Illuminate\Http\Request $request
-     * @param User|null $user Utilisateur dont on modifie le mot de passe (null = utilisateur connecté)
+     * @param  User|null  $user  Utilisateur dont on modifie le mot de passe (null = utilisateur connecté)
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updatePassword(\Illuminate\Http\Request $request, User $user = null)
+    public function updatePassword(\Illuminate\Http\Request $request, ?User $user = null)
     {
         $user = $user ?? Auth::user();
         $isSelfUpdate = $user->id === Auth::id();
@@ -453,7 +450,6 @@ class UserController extends Controller
     /**
      * Convertit un compte OAuth-only en compte classique (ajout d'un mot de passe).
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function convertToClassicAccount(\Illuminate\Http\Request $request)
@@ -479,7 +475,6 @@ class UserController extends Controller
     /**
      * Délie un provider OAuth du compte (si au moins une autre méthode de connexion reste).
      *
-     * @param string $provider
      * @return \Illuminate\Http\RedirectResponse
      */
     public function unlinkOAuthProvider(string $provider)
@@ -497,6 +492,6 @@ class UserController extends Controller
 
         $user->oauthAccounts()->provider($provider)->delete();
 
-        return back()->with('success', 'Compte ' . $provider . ' délié.');
+        return back()->with('success', 'Compte '.$provider.' délié.');
     }
 }

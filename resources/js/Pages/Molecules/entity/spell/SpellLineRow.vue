@@ -4,6 +4,7 @@
  *
  * @description
  * Effets via `resolveSpellEffectsDisplayCell` : résumé API (`SpellEffectChips`) ou fallback `effect` (chips).
+ * Invocations : {@link SpellSummonMonstersTextSection} (identique à la vue minimal du sort).
  * Méta (élément, catégorie, types, PA, PO) : `EntityPropertyDisplay` (aligné sur SpellViewCompact).
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
@@ -25,6 +26,8 @@ import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import { Spell } from "@/Models/Entity/Spell";
+import SpellSummonMonstersTextSection from "@/Pages/Molecules/entity/spell/SpellSummonMonstersTextSection.vue";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -110,14 +113,23 @@ const descriptionFull = computed(() => entity.value?.description ?? entity.value
 /** Effets : `effect_summary` (SpellEffectChips) si dispo, sinon fallback `effect` */
 const effectDisplayCell = computed(() =>
     resolveSpellEffectsDisplayCell(entity.value, {
-        size: "sm",
-        context: "compact",
+        size: "xs",
+        context: "minimal",
         ctx: props.tableMeta,
         maxEffectRows: 5,
     }),
 );
 const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
 
+/** Monstres invoqués (payload `effects_definitions`), aligné sur SpellViewMinimal. */
+const summonMonsterBriefs = computed(() => {
+    const e = entity.value;
+    const raw =
+        e instanceof Spell
+            ? e.effectsDefinitions
+            : e?.effects_definitions ?? e?._data?.effects_definitions;
+    return Spell.summonMonstersFromEffectsDefinitionsPayload(raw);
+});
 const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spellTypesCell.value));
 
 const handleRowClick = (e) => emit("row-click", props.row, e);
@@ -147,7 +159,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
 
 <template>
     <div
-        class="relative rounded-box border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
+        class="group relative flex flex-col gap-2 rounded-box border border-base-300 bg-base-100/50 p-3 transition-colors hover:bg-glass-sm"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         data-row-contextmenu-target
         @click="handleRowClick"
@@ -219,28 +231,6 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                         class="min-w-0"
                     />
                     <EntityPropertyDisplay
-                        v-if="canShowField('category')"
-                        field-key="category"
-                        :entity="entity"
-                        entity-type="spell"
-                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                        :descriptors="descriptors"
-                        :table-meta="tableMeta"
-                        size="xs"
-                        class="min-w-0"
-                    />
-                    <EntityPropertyDisplay
-                        v-if="canShowField('spell_types') && showSpellTypesCell"
-                        field-key="spell_types"
-                        :entity="entity"
-                        entity-type="spell"
-                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                        :descriptors="descriptors"
-                        :table-meta="tableMeta"
-                        size="xs"
-                        class="min-w-0"
-                    />
-                    <EntityPropertyDisplay
                         v-if="canShowField('pa')"
                         field-key="pa"
                         :entity="entity"
@@ -262,6 +252,45 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                         size="xs"
                         class="min-w-0"
                     />
+                    <div
+                        v-if="
+                            (canShowField('spell_types') && showSpellTypesCell) ||
+                            canShowField('category')
+                        "
+                        class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover:grid-rows-[1fr]"
+                    >
+                        <div
+                            class="min-h-0 overflow-hidden group-hover:overflow-visible"
+                        >
+                            <div class="inline-flex max-w-full flex-wrap items-center gap-2">
+                                <EntityPropertyDisplay
+                                    v-if="canShowField('spell_types') && showSpellTypesCell"
+                                    field-key="spell_types"
+                                    presentation="spell-types-icons-only"
+                                    :entity="entity"
+                                    entity-type="spell"
+                                    :display-mode="PROPERTY_DISPLAY_MODES.minimal"
+                                    :descriptors="descriptors"
+                                    :table-meta="tableMeta"
+                                    size="xs"
+                                    class="min-w-0"
+                                />
+                                <EntityPropertyDisplay
+                                    v-if="canShowField('category')"
+                                    field-key="category"
+                                    :entity="entity"
+                                    entity-type="spell"
+                                    :display-mode="PROPERTY_DISPLAY_MODES.minimal"
+                                    variant="inline"
+                                    hide-field-label
+                                    :descriptors="descriptors"
+                                    :table-meta="tableMeta"
+                                    size="xs"
+                                    class="min-w-0"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <p
                     v-if="descriptionFull"
@@ -282,6 +311,10 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                 class="leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
             />
         </div>
+        <SpellSummonMonstersTextSection
+            :monsters="summonMonsterBriefs"
+            wrapper-class="spell-summon-line"
+        />
 
         <Teleport to="body">
             <EntityActions

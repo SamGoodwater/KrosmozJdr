@@ -1,16 +1,30 @@
 /**
  * Thème visuel des types de sort (icônes + couleurs).
- * Fichiers : storage/app/public/images/icons/spell_type/*.svg
+ * Icônes PNG : `storage/app/public/images/icons/breed_orientations/{clé}.png`
+ * (orientations de classe : dégâts, soin, tank, etc.)
  *
  * @see docs (types de sorts Krosmoz)
  */
 
-/** Base publique (lien storage) */
-export const SPELL_TYPE_ICON_BASE = '/storage/images/icons/spell_type';
+/** Base publique (fichiers servis via `/storage/...`) */
+export const SPELL_TYPE_ICON_BASE = '/storage/images/icons/breed_orientations';
+
+/** Fichiers présents dans `breed_orientations` (sans extension). */
+export const BREED_ORIENTATION_ICON_KEYS = Object.freeze([
+    'amelioration',
+    'degats',
+    'entrave',
+    'invocation',
+    'placement',
+    'protection',
+    'soin',
+    'tank',
+]);
+
+const ORIENTATION_KEY_SET = new Set(BREED_ORIENTATION_ICON_KEYS);
 
 /**
- * Couleurs par clé normalisée du nom (sans accent, minuscules).
- * Aligné sur les assets fournis (8 familles).
+ * Couleurs par clé d’orientation (fichier PNG).
  */
 export const SPELL_TYPE_THEME_HEX = Object.freeze({
     amelioration: '42bffd',
@@ -23,8 +37,61 @@ export const SPELL_TYPE_THEME_HEX = Object.freeze({
     tank: 'f36702',
 });
 
-/** Nom de fichier sans .svg (identique à la clé normalisée pour ces 8 types). */
-const THEME_KEYS = new Set(Object.keys(SPELL_TYPE_THEME_HEX));
+/**
+ * Libellés / synonymes (normalisés) → clé fichier orientation.
+ * Couvre les noms du {@link Database\Seeders\Type\SpellTypeSeeder} et les orientations métier.
+ */
+const NORMALIZED_LABEL_TO_ORIENTATION = Object.freeze({
+    // Orientations (noms directs)
+    amelioration: 'amelioration',
+    amlioration: 'amelioration',
+    degats: 'degats',
+    dommages: 'degats',
+    dommage: 'degats',
+    entrave: 'entrave',
+    invocation: 'invocation',
+    placement: 'placement',
+    protection: 'protection',
+    soin: 'soin',
+    soins: 'soin',
+    tank: 'tank',
+    // Types seedés (fr)
+    offensif: 'degats',
+    offensifs: 'degats',
+    defensif: 'protection',
+    buff: 'amelioration',
+    buffs: 'amelioration',
+    debuff: 'entrave',
+    debuffs: 'entrave',
+    teleportation: 'placement',
+    transformation: 'tank',
+    // Anglais courants
+    offensive: 'degats',
+    defensive: 'protection',
+    healing: 'soin',
+    heal: 'soin',
+    damage: 'degats',
+    damages: 'degats',
+    support: 'amelioration',
+    control: 'entrave',
+    utility: 'placement',
+    summon: 'invocation',
+    summoning: 'invocation',
+});
+
+/**
+ * Anciens slugs `spell_types.icon` (FontAwesome / mot-clé) → orientation.
+ */
+const LEGACY_DB_ICON_TO_ORIENTATION = Object.freeze({
+    sword: 'degats',
+    shield: 'protection',
+    heart: 'soin',
+    arrowup: 'amelioration',
+    arrowdown: 'entrave',
+    magic: 'invocation',
+    locationarrow: 'placement',
+    exchangealt: 'entrave',
+});
 
 /**
  * @param {string|null|undefined} name
@@ -53,19 +120,53 @@ function normalizeDbColor(raw) {
 }
 
 /**
- * Résout couleur d’affichage + URL d’icône pour un type de sort.
+ * Résout la clé orientation (nom de fichier sans `.png`).
  *
- * @param {string} name - Libellé (ex. « Dégâts », « Amélioration »)
- * @param {string|null|undefined} [dbColor] - Couleur éventuelle en base (#rrggbb)
- * @returns {{ hex: string, iconUrl: string|null }}
+ * @param {string} nameNorm
+ * @param {string} iconNorm - `icon` BDD normalisé (peut être vide)
+ * @returns {string|null}
  */
-export function resolveSpellTypeVisual(name, dbColor = null) {
-    const key = normalizeSpellTypeKey(name);
-    const themeHex = key && THEME_KEYS.has(key) ? SPELL_TYPE_THEME_HEX[key] : null;
-    const hex = themeHex ? `#${themeHex}` : normalizeDbColor(dbColor) || '#737373';
-    const iconUrl = key && THEME_KEYS.has(key) ? `${SPELL_TYPE_ICON_BASE}/${key}.svg` : null;
+function resolveOrientationFileKey(nameNorm, iconNorm) {
+    if (iconNorm) {
+        if (ORIENTATION_KEY_SET.has(iconNorm)) {
+            return iconNorm;
+        }
+        const fromLegacy = LEGACY_DB_ICON_TO_ORIENTATION[iconNorm];
+        if (fromLegacy) {
+            return fromLegacy;
+        }
+    }
+    if (nameNorm) {
+        const fromLabel = NORMALIZED_LABEL_TO_ORIENTATION[nameNorm];
+        if (fromLabel) {
+            return fromLabel;
+        }
+        if (ORIENTATION_KEY_SET.has(nameNorm)) {
+            return nameNorm;
+        }
+    }
+    return null;
+}
 
-    return { hex, iconUrl };
+/**
+ * Résout couleur d’affichage + URL PNG orientation pour un type de sort.
+ *
+ * @param {string} name - Libellé affiché (ex. « Offensif », « Dégâts »)
+ * @param {string|null|undefined} [dbColor] - Couleur BDD (#rrggbb)
+ * @param {string|null|undefined} [dbIconHint] - Colonne `spell_types.icon` (slug orientation ou ancien mot-clé)
+ * @returns {{ hex: string, iconUrl: string|null, orientationKey: string|null }}
+ */
+export function resolveSpellTypeVisual(name, dbColor = null, dbIconHint = null) {
+    const nameNorm = normalizeSpellTypeKey(name);
+    const iconNorm = dbIconHint != null && String(dbIconHint).trim() !== ''
+        ? normalizeSpellTypeKey(String(dbIconHint))
+        : '';
+    const orientationKey = resolveOrientationFileKey(nameNorm, iconNorm);
+    const themeHex = orientationKey && SPELL_TYPE_THEME_HEX[orientationKey] ? SPELL_TYPE_THEME_HEX[orientationKey] : null;
+    const hex = themeHex ? `#${themeHex}` : normalizeDbColor(dbColor) || '#737373';
+    const iconUrl = orientationKey ? `${SPELL_TYPE_ICON_BASE}/${orientationKey}.png` : null;
+
+    return { hex, iconUrl, orientationKey };
 }
 
 /**

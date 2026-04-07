@@ -77,27 +77,28 @@ const minimalBind = computed(() => ({
 </script>
 
 <template>
-  <div class="relative inline-flex items-center gap-2 cursor-pointer group">
-    <!-- Icône/image à la même taille que le texte -->
-    <div class="flex-shrink-0" :class="imageSrc ? 'w-4 h-4' : ''">
-      <Image
-        v-if="imageSrc"
-        :src="imageSrc"
-        :alt="entityName || 'Image'"
-        size="xs"
-        class="w-4 h-4 object-cover rounded"
-      />
-      <Icon
-        v-else
-        :source="fallbackIcon"
-        :alt="entityName"
-        size="sm"
-        class="text-primary-300 group-hover:text-primary-100 transition-colors"
-      />
-    </div>
+  <div class="relative inline-flex min-w-0 items-center gap-2 cursor-pointer group">
+    <!-- Miniature alignée sur le texte (éviter size="xs" sur Image = w-16 h-16 qui déborde sur le nom) -->
+    <Image
+      v-if="imageSrc"
+      :src="imageSrc"
+      :alt="entityName || 'Image'"
+      fit="cover"
+      rounded="sm"
+      class="h-4 w-4 shrink-0 overflow-hidden"
+    />
+    <Icon
+      v-else
+      :source="fallbackIcon"
+      :alt="entityName"
+      size="sm"
+      class="h-4 w-4 shrink-0 text-primary-300 group-hover:text-primary-100 transition-colors"
+    />
 
-    <!-- Nom -->
-    <CellRenderer :cell="nameCell" :ui-color="uiColor" />
+    <!-- Nom (min-w-0 : troncature correcte en flex à côté de la vignette) -->
+    <span class="min-w-0">
+      <CellRenderer :cell="nameCell" :ui-color="uiColor" />
+    </span>
 
     <!-- Hover : Vue minimal -->
     <div class="absolute left-0 top-full mt-2 z-50 hidden group-hover:block" :class="hoverWidthClass">

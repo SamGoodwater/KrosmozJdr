@@ -31,7 +31,6 @@ import {
     resolveEntityFieldUi,
     getEntityCharacteristicsByDbColumn,
 } from "@/Utils/Entity/entity-view-ui";
-import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
 export function useEntityPropertyDisplay(options = {}) {
     const opts = computed(() => toValue(options));
@@ -40,9 +39,17 @@ export function useEntityPropertyDisplay(options = {}) {
     const entityType = computed(() => String(opts.value?.entityType || ""));
     const descriptors = computed(() => opts.value?.descriptors || {});
     const tableMeta = computed(() => opts.value?.tableMeta || {});
-    const cellOptions = computed(
-        () => opts.value?.cellOptions || { size: "md", context: "extended" }
-    );
+    const cellOptions = computed(() => {
+        const raw = opts.value?.cellOptions;
+        if (raw && typeof raw === "object") {
+            return {
+                size: "md",
+                context: "extended",
+                ...raw,
+            };
+        }
+        return { size: "md", context: "extended" };
+    });
 
     const property = computed(() =>
         resolveEntityFieldUi({

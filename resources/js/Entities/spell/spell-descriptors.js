@@ -671,7 +671,15 @@ export function getSpellFieldDescriptors(ctx = {}) {
           required: false,
           showInCompact: false,
           multiple: true,
-          options: () => [{ value: "", label: "—" }, ...spellTypes.map((t) => ({ value: t.id, label: t.name }))],
+          options: () => [
+            { value: "", label: "—" },
+            ...spellTypes.map((t) => ({
+              value: t.id,
+              label: t.name,
+              color: t.color ?? null,
+              icon: t.icon ?? null,
+            })),
+          ],
           bulk: { enabled: false },
         },
       },

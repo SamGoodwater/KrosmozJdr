@@ -48,7 +48,7 @@ class SpellTableController extends Controller
     /**
      * Construit le résumé texte (pour recherche/tri) et les chips structurés (pour affichage).
      *
-     * @return array{summary: string, chips: list<array{text: string, degree: int|null, element: int, element_label: string, target_type: string, target_label: string, area: string|null, duration: int|null, duration_label: string, tooltip: string, required_creature_level: int|null, creature_level_label: string|null, creature_level_requirement: array{value: int|null, label: string|null}>}
+     * @return array{summary: string, chips: list<array{text: string, degree: int|null, element: int, element_label: string, characteristic: string|null, target_type: string, target_label: string, area: string|null, duration: int|null, duration_label: string, tooltip: string, required_creature_level: int|null, creature_level_label: string|null, creature_level_requirement: array{value: int|null, label: string|null}, summon_monster: array{id: int, name: string, image: string|null}|null}>}
      */
     private function buildEffectUsagesData(Spell $spell): array
     {
@@ -77,21 +77,26 @@ class SpellTableController extends Controller
                 ->values();
             foreach ($degrees as $degreeRow) {
                 $degreeNum = $degreeRow->degree;
-                $degreePrefix = 'D'.$degreeNum.' ';
                 $targetType = $definition->target_type ?? 'direct';
                 $targetLabel = self::TARGET_TYPE_LABELS[$targetType] ?? 'Direct';
                 $area = $degreeRow->area;
 
                 $resolved = $this->effectResolutionService->resolveEffect($degreeRow, $baseContext, null, false, false);
                 foreach ($resolved['sub_effects'] ?? [] as $sub) {
+                    $summonMonster = $sub['summon_monster'] ?? null;
+                    $hasSummon = is_array($summonMonster) && isset($summonMonster['id']);
                     $text = trim((string) ($sub['text'] ?? ''));
+                    if ($text === '' && $hasSummon) {
+                        $mName = trim((string) ($summonMonster['name'] ?? ''));
+                        $text = $mName !== '' ? 'Invocation '.$mName.'.' : 'Invocation.';
+                    }
                     if ($text === '') {
                         continue;
                     }
                     $text = $this->humanizeEffectText($text);
-                    $parts[] = $degreePrefix.$text;
+                    $parts[] = $text;
 
-                    $charSlug = strtolower((string) ($sub['characteristic'] ?? ''));
+                    $charSlug = $this->resolveCharacteristicSlugForChip($sub);
                     $elementId = self::ELEMENT_SLUG_TO_ID[$charSlug] ?? 0;
                     $elementLabel = $this->elementIdToLabel($elementId);
 
@@ -99,7 +104,6 @@ class SpellTableController extends Controller
                     $durationLabel = $this->formatDurationLabel($duration);
 
                     $details = [];
-                    $details[] = 'Degré '.$degreeNum;
                     $creatureLevelLabel = $this->formatCreatureLevelRequirement($degreeRow->required_creature_level);
                     if ($creatureLevelLabel !== '') {
                         $details[] = $creatureLevelLabel;
@@ -111,7 +115,7 @@ class SpellTableController extends Controller
                         $details[] = "zone {$area}";
                     }
                     $details[] = $durationLabel;
-                    $displayText = $degreePrefix.$text;
+                    $displayText = $text;
                     $tooltip = $displayText.(\count($details) > 0 ? ' — '.implode(', ', $details) : '');
 
                     $chips[] = [
@@ -119,6 +123,7 @@ class SpellTableController extends Controller
                         'degree' => $degreeNum,
                         'element' => $elementId,
                         'element_label' => $elementLabel,
+                        'characteristic' => $charSlug !== '' ? $charSlug : null,
                         'target_type' => $targetType,
                         'target_label' => $targetLabel,
                         'area' => $area,
@@ -131,6 +136,7 @@ class SpellTableController extends Controller
                             'value' => $degreeRow->required_creature_level,
                             'label' => $creatureLevelLabel !== '' ? $creatureLevelLabel : null,
                         ],
+                        'summon_monster' => $hasSummon ? $summonMonster : null,
                     ];
                 }
             }
@@ -140,6 +146,39 @@ class SpellTableController extends Controller
             'summary' => implode(' • ', $parts),
             'chips' => $chips,
         ];
+    }
+
+    /**
+     * Slug caractéristique / élément pour l’UI (store spell) : params ou contexte pivot (ex. element numérique).
+     *
+     * @param  array<string, mixed>  $sub
+     */
+    private function resolveCharacteristicSlugForChip(array $sub): string
+    {
+        $raw = strtolower(trim((string) ($sub['characteristic'] ?? '')));
+        if ($raw !== '') {
+            return $raw;
+        }
+        $ctx = $sub['context'] ?? null;
+        if (! is_array($ctx)) {
+            return '';
+        }
+        $el = $ctx['element'] ?? null;
+        if ($el === null || $el === '') {
+            return '';
+        }
+        if (is_numeric($el)) {
+            $id = (int) $el;
+            foreach (self::ELEMENT_SLUG_TO_ID as $slug => $eid) {
+                if ($eid === $id) {
+                    return $slug;
+                }
+            }
+
+            return '';
+        }
+
+        return strtolower(trim((string) $el));
     }
 
     /**
@@ -349,11 +388,12 @@ class SpellTableController extends Controller
             'area' => collect(AreaConstants::SHAPES)
                 ->map(fn (string $shape) => ['value' => $shape, 'label' => AreaConstants::getShapeLabel($shape)])
                 ->values()->all(),
-            'types' => SpellType::query()->orderBy('name')->get(['id', 'name', 'color'])
+            'types' => SpellType::query()->orderBy('name')->get(['id', 'name', 'color', 'icon'])
                 ->map(fn (SpellType $t) => [
                     'value' => (string) $t->id,
                     'label' => $t->name,
                     'color' => $t->color,
+                    'icon' => $t->icon,
                 ])
                 ->values()->all(),
             'pa' => [
@@ -450,6 +490,7 @@ class SpellTableController extends Controller
                         'id' => $t->id,
                         'name' => $t->name,
                         'color' => $t->color,
+                        'icon' => $t->icon,
                     ])->values()->all() ?? [],
                     'spell_types_count' => (int) ($sp->spell_types_count ?? 0),
                     'breeds_count' => (int) ($sp->breeds_count ?? 0),
@@ -618,6 +659,7 @@ class SpellTableController extends Controller
                             'id' => $t->id,
                             'name' => $t->name,
                             'color' => $t->color,
+                            'icon' => $t->icon,
                         ])->values()->all() ?? [],
                         'spell_types_count' => (int) ($sp->spell_types_count ?? 0),
                         'breeds_count' => (int) ($sp->breeds_count ?? 0),

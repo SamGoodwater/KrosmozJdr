@@ -128,3 +128,62 @@ export function getAreaSummaryLine(area) {
   const name = getAreaShapeLabel(shape);
   return name ? `${name} — ${raw}` : raw;
 }
+
+/**
+ * Libellé lisible joueur (fiches sort, journal d’effets) — « cible unique », « ligne de N cases », etc.
+ *
+ * @param {string|null|undefined} area
+ * @returns {string}
+ */
+export function getAreaHumanReadable(area) {
+  if (area == null || typeof area !== 'string') return '';
+  const raw = area.trim();
+  if (!raw) return '';
+
+  if (raw === 'point') {
+    return 'Cible unique';
+  }
+
+  const shape = getAreaShape(area);
+  const dashIdx = raw.indexOf('-');
+  const params = dashIdx >= 0 ? raw.slice(dashIdx + 1) : '';
+
+  if (shape === 'line') {
+    const m = /^1x(\d+)$/.exec(params);
+    if (m) {
+      const n = parseInt(m[1], 10);
+      return `Ligne de ${n} case${n > 1 ? 's' : ''}`;
+    }
+    return params ? `Ligne (${params})` : 'Ligne';
+  }
+
+  if (shape === 'cross') {
+    const m = /^(\d+)-(\d+)$/.exec(params);
+    if (m) {
+      return `Croix, portées ${m[1]} à ${m[2]} cases`;
+    }
+    return params ? `Croix (${params})` : 'Croix';
+  }
+
+  if (shape === 'circle') {
+    const m = /^(\d+)-(\d+)$/.exec(params);
+    if (m) {
+      return `Cercle, rayons ${m[1]} à ${m[2]} cases`;
+    }
+    return params ? `Cercle (${params})` : 'Cercle';
+  }
+
+  if (shape === 'rect') {
+    const m = /^(\d+)x(\d+)$/.exec(params);
+    if (m) {
+      return `Rectangle ${m[1]}×${m[2]} cases`;
+    }
+    return params ? `Rectangle (${params})` : 'Rectangle';
+  }
+
+  if (raw.startsWith('shape-')) {
+    return `Forme DofusDB : ${raw}`;
+  }
+
+  return raw;
+}

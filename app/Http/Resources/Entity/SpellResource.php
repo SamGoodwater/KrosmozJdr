@@ -81,6 +81,7 @@ class SpellResource extends JsonResource
                     'name' => $spellType->name,
                     'description' => $spellType->description,
                     'color' => $spellType->color ?? null,
+                    'icon' => $spellType->icon ?? null,
                 ];
             })->values()->all() : [],
             'spellEffects' => ($this->relationLoaded('spellEffects') || isset($this->spellEffects)) ? $this->spellEffects->map(function ($effect) {

@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Cache;
  */
 final class CharacteristicMetaByDbColumnService
 {
+    /** Clé de cache pour le share Inertia `characteristics` (invalidée à la sauvegarde des pivots / masters). */
+    public const FRONTEND_CACHE_KEY = 'characteristics:frontend';
+
     /**
      * Mapping db_column → définition pour l'entité créature (monster, class, npc ou créature standalone).
      * Utilise entity '*' puis overlay monster (même champs que la créature d'un monstre).
@@ -270,9 +273,17 @@ final class CharacteristicMetaByDbColumnService
      *
      * @return array<string, array{byDbColumn: array, byComputedKey?: array, byCharacteristicKey?: array, byDofusdbId?: array}>
      */
+    /**
+     * Invalide le cache des métadonnées caractéristiques (icônes, couleurs, libellés) exposé au frontend.
+     */
+    public function forgetFrontendCache(): void
+    {
+        Cache::forget(self::FRONTEND_CACHE_KEY);
+    }
+
     public function buildAllForFrontend(): array
     {
-        return Cache::remember('characteristics:frontend', 300, function () {
+        return Cache::remember(self::FRONTEND_CACHE_KEY, 300, function () {
             return [
                 'creature' => [
                     'byDbColumn' => $this->buildCreatureByDbColumn(),
