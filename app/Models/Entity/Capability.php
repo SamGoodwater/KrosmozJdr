@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Creature;
 use App\Models\Concerns\HasEntityImageMedia;
-use App\Support\ElementConstants;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
@@ -92,8 +91,6 @@ class Capability extends Model implements HasMedia
     public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[slug]';
 
     /** Référentiel éléments (0-29) — partagé avec Spell. */
-    public const ELEMENT = ElementConstants::ELEMENT;
-
     /**
      * The attributes that are mass assignable.
      *

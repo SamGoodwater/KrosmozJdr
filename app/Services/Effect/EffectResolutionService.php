@@ -50,6 +50,8 @@ final class EffectResolutionService
         2 => 'fire',
         3 => 'air',
         4 => 'water',
+        5 => 'element_wisdom',
+        6 => 'element_vitality',
     ];
 
     public function __construct(

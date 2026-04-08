@@ -10,125 +10,14 @@
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
   border: none;
 }
-.element-badge--0 {
-  background-color: var(--color-slate-500);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
+.element-badge--empty {
+  background-color: color-mix(in srgb, var(--color-base-content) 14%, transparent);
+  color: var(--color-base-content);
+  text-shadow: none;
+  box-shadow: none;
 }
-.element-badge--1 {
-  background-color: var(--color-amber-700);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-amber-700) 40%, transparent);
-}
-.element-badge--2 {
-  background-color: var(--color-red-600);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-red-600) 40%, transparent);
-}
-.element-badge--3 {
-  background-color: var(--color-emerald-600);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-emerald-600) 40%, transparent);
-}
-.element-badge--4 {
-  background-color: var(--color-blue-600);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-blue-600) 40%, transparent);
-}
-.element-badge--5 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-amber-700) 50%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--6 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-red-600) 50%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--7 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-emerald-600) 50%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--8 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-blue-600) 50%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--9 {
-  background: linear-gradient(90deg, var(--color-amber-700) 0%, var(--color-red-600) 50%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-amber-700) 40%, transparent);
-}
-.element-badge--10 {
-  background: linear-gradient(90deg, var(--color-amber-700) 0%, var(--color-emerald-600) 50%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-amber-700) 40%, transparent);
-}
-.element-badge--11 {
-  background: linear-gradient(90deg, var(--color-amber-700) 0%, var(--color-blue-600) 50%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-amber-700) 40%, transparent);
-}
-.element-badge--12 {
-  background: linear-gradient(90deg, var(--color-red-600) 0%, var(--color-emerald-600) 50%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-red-600) 40%, transparent);
-}
-.element-badge--13 {
-  background: linear-gradient(90deg, var(--color-red-600) 0%, var(--color-blue-600) 50%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-red-600) 40%, transparent);
-}
-.element-badge--14 {
-  background: linear-gradient(90deg, var(--color-emerald-600) 0%, var(--color-blue-600) 50%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-emerald-600) 40%, transparent);
-}
-.element-badge--15 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-amber-700) 33.3333333333%, var(--color-red-600) 66.6666666667%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--16 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-amber-700) 33.3333333333%, var(--color-emerald-600) 66.6666666667%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--17 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-amber-700) 33.3333333333%, var(--color-blue-600) 66.6666666667%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--18 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-red-600) 33.3333333333%, var(--color-emerald-600) 66.6666666667%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--19 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-red-600) 33.3333333333%, var(--color-blue-600) 66.6666666667%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--20 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-emerald-600) 33.3333333333%, var(--color-blue-600) 66.6666666667%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--21 {
-  background: linear-gradient(90deg, var(--color-amber-700) 0%, var(--color-red-600) 33.3333333333%, var(--color-emerald-600) 66.6666666667%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-amber-700) 40%, transparent);
-}
-.element-badge--22 {
-  background: linear-gradient(90deg, var(--color-amber-700) 0%, var(--color-red-600) 33.3333333333%, var(--color-blue-600) 66.6666666667%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-amber-700) 40%, transparent);
-}
-.element-badge--23 {
-  background: linear-gradient(90deg, var(--color-amber-700) 0%, var(--color-emerald-600) 33.3333333333%, var(--color-blue-600) 66.6666666667%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-amber-700) 40%, transparent);
-}
-.element-badge--24 {
-  background: linear-gradient(90deg, var(--color-red-600) 0%, var(--color-emerald-600) 33.3333333333%, var(--color-blue-600) 66.6666666667%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-red-600) 40%, transparent);
-}
-.element-badge--25 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-amber-700) 25%, var(--color-red-600) 50%, var(--color-emerald-600) 75%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--26 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-amber-700) 25%, var(--color-red-600) 50%, var(--color-blue-600) 75%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--27 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-amber-700) 25%, var(--color-emerald-600) 50%, var(--color-blue-600) 75%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--28 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-red-600) 25%, var(--color-emerald-600) 50%, var(--color-blue-600) 75%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
-}
-.element-badge--29 {
-  background: linear-gradient(90deg, var(--color-slate-500) 0%, var(--color-amber-700) 20%, var(--color-red-600) 40%, var(--color-emerald-600) 60%, var(--color-blue-600) 80%);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-slate-500) 40%, transparent);
+.element-badge--dynamic {
+  /* dégradé / halo : inline depuis ElementDisplay.vue */
 }
 
 .box-shadow-glass-xs {

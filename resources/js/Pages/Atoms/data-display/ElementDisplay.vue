@@ -6,7 +6,7 @@
  * Affiche un élément (Spell, Capability) avec badge dégradé et icône.
  * Utilise les icônes de storage/app/public/images/icons/caracteristics/.
  *
- * @props {Number} element - Valeur élément 0-29
+ * @props {Number} element - Masque 7 bits (1–127) ou ancien code 0–29 (normalisé côté util).
  * @props {String} size - Taille du badge (xs, sm, md, lg, xl)
  * @props {Boolean} showIcon - Afficher l'icône (défaut: true)
  * @props {Boolean} showLabel - Afficher le libellé (défaut: true)
@@ -20,8 +20,9 @@ import { computed } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import {
   getElementLabel,
-  getElementPrimaries,
-  ELEMENT_PRIMARY_ICONS,
+  getElementIconForValue,
+  normalizeElementStorageValue,
+  getElementBadgeStyle,
 } from '@/Utils/Entity/Elements.js';
 
 const props = defineProps({
@@ -54,24 +55,23 @@ const isUnset = computed(() => {
   return v === null || v === undefined || v === '';
 });
 
-const numValue = computed(() => {
+const maskValue = computed(() => {
   if (isUnset.value) return null;
-  const v = props.element;
-  const n = typeof v === 'string' ? parseInt(v, 10) : Number(v);
-  return Number.isFinite(n) && n >= 0 && n <= 29 ? n : 0;
+  const m = normalizeElementStorageValue(props.element);
+  return m === 0 ? null : m;
 });
 
-const label = computed(() => (numValue.value === null ? '' : getElementLabel(numValue.value) ?? 'Neutre'));
+const label = computed(() => (maskValue.value === null ? '' : getElementLabel(maskValue.value) ?? ''));
 
 const iconSource = computed(() => {
-  if (numValue.value === null) return ELEMENT_PRIMARY_ICONS[0];
-  const primaries = getElementPrimaries(numValue.value);
-  const first = primaries[0] ?? 0;
-  return ELEMENT_PRIMARY_ICONS[first] ?? ELEMENT_PRIMARY_ICONS[0];
+  if (maskValue.value === null) return getElementIconForValue(1);
+  return getElementIconForValue(maskValue.value);
 });
 
+const badgeStyle = computed(() => (maskValue.value === null ? {} : getElementBadgeStyle(maskValue.value)));
+
 const badgeClass = computed(() =>
-  numValue.value === null ? 'element-badge element-badge--empty' : `element-badge element-badge--${numValue.value}`,
+  maskValue.value === null ? 'element-badge element-badge--empty' : 'element-badge element-badge--dynamic',
 );
 
 const sizeClass = computed(() => {
@@ -90,6 +90,7 @@ const sizeClass = computed(() => {
       'badge inline-flex items-center gap-1',
       variant === 'inline' && 'badge-ghost px-0',
     ]"
+    :style="badgeStyle"
   >
     <Icon
       v-if="showIcon"

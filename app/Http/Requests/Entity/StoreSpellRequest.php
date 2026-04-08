@@ -47,7 +47,7 @@ class StoreSpellRequest extends FormRequest
             'number_between_two_cast' => ['nullable', 'string', 'max:255'],
             'element' => array_merge(
                 ['nullable', 'integer'],
-                $this->characteristicMinMaxRules('element', 'spell') ?: ['min:0', 'max:29']
+                $this->characteristicMinMaxRules('element', 'spell') ?: ['min:0', 'max:127']
             ),
             'spellTypes' => ['nullable', 'array'],
             'spellTypes.*' => ['integer', 'exists:spell_types,id'],

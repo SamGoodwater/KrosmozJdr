@@ -32,7 +32,7 @@ class CapabilityBulkController extends Controller
             'level' => ['sometimes', 'nullable', 'string', 'max:255'],
             'pa' => ['sometimes', 'nullable', 'string', 'max:255'],
             'po' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'element' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:29'],
+            'element' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:127'],
             'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],

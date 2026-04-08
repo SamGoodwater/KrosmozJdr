@@ -292,7 +292,7 @@ final class IntegrationService
             'created_by' => $createdBy,
         ];
 
-        $optional = ['pa', 'pm', 'kamas', 'po', 'dodge_pa', 'dodge_pm', 'ini', 'vitality', 'res_neutre', 'res_terre', 'res_feu', 'res_air', 'res_eau'];
+        $optional = ['pa', 'pm', 'kamas', 'po', 'dodge_pa', 'dodge_pm', 'ini', 'vitality', 'res_neutre', 'res_terre', 'res_feu', 'res_air', 'res_eau', 'res_sagesse', 'res_vitalite', 'do_sagesse', 'do_vitalite'];
         foreach ($optional as $key) {
             if (array_key_exists($key, $creatureData) && $creatureData[$key] !== null) {
                 $attrs[$key] = (string) $creatureData[$key];
@@ -1575,6 +1575,10 @@ final class IntegrationService
                     'res_feu' => $c?->res_feu,
                     'res_air' => $c?->res_air,
                     'res_eau' => $c?->res_eau,
+                    'res_sagesse' => $c?->res_sagesse,
+                    'res_vitalite' => $c?->res_vitalite,
+                    'do_sagesse' => $c?->do_sagesse,
+                    'do_vitalite' => $c?->do_vitalite,
                     'ini' => $c?->ini,
                 ],
                 [

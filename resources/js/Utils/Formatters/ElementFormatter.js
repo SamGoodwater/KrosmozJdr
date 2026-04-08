@@ -1,13 +1,15 @@
 /**
  * ElementFormatter — Formatter pour les éléments (Spell, Capability)
  *
- * @description
- * Formate les valeurs d'élément (0-29) en badges colorés.
- * Aligné avec App\Support\ElementConstants.
+ * Masque 7 bits (0–127), aligné avec App\Support\ElementBitmask.
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
-import { getElementLabel, getElementColor } from '@/Utils/Entity/Elements.js';
+import {
+  getElementLabel,
+  normalizeElementStorageValue,
+  ELEMENT_MASK_MAX,
+} from '@/Utils/Entity/Elements.js';
 
 export class ElementFormatter extends BaseFormatter {
   static name = 'ElementFormatter';
@@ -15,46 +17,41 @@ export class ElementFormatter extends BaseFormatter {
 
   static isValid(value) {
     if (value === null || value === undefined) return false;
-    const num = typeof value === 'string' ? parseInt(value, 10) : Number(value);
-    return Number.isFinite(num) && num >= 0 && num <= 29;
+    const mask = normalizeElementStorageValue(value);
+    return mask > 0 && mask <= ELEMENT_MASK_MAX;
   }
 
   /**
-   * Formate une valeur d'élément en label
-   *
-   * @param {number|string|null} value - Valeur d'élément (0-29)
-   * @param {Object} [options={}] - Options de formatage
-   * @returns {string|null} Label formaté ou null si valeur invalide
+   * @param {number|string|null} value
+   * @param {Object} [options={}]
+   * @returns {string|null}
    */
-  static format(value, options = {}) {
+  static format(value, _options = {}) {
     if (!this.isValid(value)) {
       return null;
     }
 
-    const label = getElementLabel(value);
-    return label ?? `Élément ${value}`;
+    const mask = normalizeElementStorageValue(value);
+    return getElementLabel(mask) ?? `Élément ${mask}`;
   }
 
   /**
-   * Génère une cellule element pour un tableau (rendue par ElementDisplay)
-   *
-   * @param {number|string|null} value - Valeur d'élément (0-29)
-   * @param {Object} [options={}] - Options de formatage
-   * @param {string} [options.size='md'] - Taille d'écran (xs, sm, md, lg, xl)
-   * @returns {Object|null} Objet Cell {type: 'element', value, params} ou null si valeur invalide
+   * @param {number|string|null} value
+   * @param {Object} [options={}]
+   * @returns {Object|null}
    */
-  static toCell(value, options = {}) {
+  static toCell(value, _options = {}) {
     if (!this.isValid(value)) {
       return null;
     }
 
-    const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
-    const label = getElementLabel(numValue);
+    const mask = normalizeElementStorageValue(value);
+    const label = getElementLabel(mask);
 
     if (!label) {
-      return this.buildTextCell(`Élément ${numValue}`, {
-        sortValue: numValue,
-        filterValue: numValue,
+      return this.buildTextCell(`Élément ${mask}`, {
+        sortValue: mask,
+        filterValue: mask,
       });
     }
 
@@ -62,9 +59,9 @@ export class ElementFormatter extends BaseFormatter {
       type: 'element',
       value: label,
       params: {
-        element: numValue,
-        sortValue: numValue,
-        filterValue: numValue,
+        element: mask,
+        sortValue: mask,
+        filterValue: mask,
         searchValue: label,
       },
     };

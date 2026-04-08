@@ -326,6 +326,10 @@ export class Npc extends BaseModel {
                     if (v != null && String(v) !== '') filterParts.push(String(v));
                 });
             }
+            for (const db of ['res_sagesse', 'res_vitalite', 'do_sagesse', 'do_vitalite']) {
+                const v = c[db];
+                if (v != null && String(v) !== '') filterParts.push(String(v));
+            }
         }
         const filterValue = filterParts.join(' ');
         return {
@@ -344,12 +348,12 @@ export class Npc extends BaseModel {
 
     /** @private */
     _toSummaryResistanceCell(_options) {
-        return this._toSummaryGroupCell(_options, 'Résistances', ['res_fixe_neutre', 'res_neutre', 'res_fixe_terre', 'res_terre', 'res_fixe_feu', 'res_feu', 'res_fixe_air', 'res_air', 'res_fixe_eau', 'res_eau']);
+        return this._toSummaryGroupCell(_options, 'Résistances', ['res_fixe_neutre', 'res_neutre', 'res_fixe_terre', 'res_terre', 'res_fixe_feu', 'res_feu', 'res_fixe_air', 'res_air', 'res_fixe_eau', 'res_eau', 'res_sagesse', 'res_vitalite']);
     }
 
     /** @private */
     _toSummaryDamageCell(_options) {
-        return this._toSummaryGroupCell(_options, 'Dommages', ['touch', 'do_fixe_neutre', 'do_fixe_terre', 'do_fixe_feu', 'do_fixe_air', 'do_fixe_eau']);
+        return this._toSummaryGroupCell(_options, 'Dommages', ['touch', 'do_fixe_neutre', 'do_fixe_terre', 'do_fixe_feu', 'do_fixe_air', 'do_fixe_eau', 'do_sagesse', 'do_vitalite']);
     }
 
     /** @private */

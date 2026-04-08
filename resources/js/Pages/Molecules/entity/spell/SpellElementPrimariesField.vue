@@ -1,7 +1,7 @@
 <script setup>
 /**
  * Multi-sélection des 5 éléments primaires (Neutre → Eau) avec icônes / couleurs.
- * `v-model` : `null` = aucun élément ; sinon entier 0–29 (combinaison).
+ * `v-model` : `null` = aucun élément ; sinon masque 1–127 (combinaison de primaires).
  */
 import { computed } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -10,6 +10,7 @@ import {
   primariesToElementValue,
   SPELL_PRIMARY_ELEMENT_OPTIONS,
   ELEMENT_PRIMARY_ICONS,
+  normalizeElementStorageValue,
 } from '@/Utils/Entity/Elements';
 
 const props = defineProps({
@@ -40,8 +41,8 @@ const hasError = computed(() => {
 const encoded = computed(() => {
   const v = props.modelValue;
   if (v === null || v === undefined || v === '') return null;
-  const n = typeof v === 'string' ? parseInt(v, 10) : Number(v);
-  return Number.isFinite(n) && n >= 0 && n <= 29 ? n : null;
+  const mask = normalizeElementStorageValue(v);
+  return mask === 0 ? null : mask;
 });
 
 const isNone = computed(() => encoded.value === null);
@@ -71,6 +72,8 @@ function chipClass(primaryIndex) {
     2: on ? 'border-red-500 bg-red-900/25 shadow-[inset_0_0_0_1px_rgba(239,68,68,0.4)]' : 'border-base-300/70',
     3: on ? 'border-emerald-500 bg-emerald-900/25 shadow-[inset_0_0_0_1px_rgba(16,185,129,0.4)]' : 'border-base-300/70',
     4: on ? 'border-blue-500 bg-blue-900/25 shadow-[inset_0_0_0_1px_rgba(59,130,246,0.4)]' : 'border-base-300/70',
+    5: on ? 'border-violet-500 bg-violet-900/25 shadow-[inset_0_0_0_1px_rgba(139,92,246,0.4)]' : 'border-base-300/70',
+    6: on ? 'border-lime-500 bg-lime-900/20 shadow-[inset_0_0_0_1px_rgba(132,204,22,0.45)]' : 'border-base-300/70',
   };
   const base =
     'inline-flex min-w-0 items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left text-sm transition-colors';

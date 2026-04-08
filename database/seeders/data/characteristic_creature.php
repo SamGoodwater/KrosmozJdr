@@ -2031,4 +2031,92 @@ return array (
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
   ),
+  104 =>
+  array (
+    'characteristic_key' => 'resistance_sagesse_creature',
+    'entity' => '*',
+    'db_column' => 'res_sagesse',
+    'min' => '0',
+    'max' => '100',
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' =>
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
+  ),
+  105 =>
+  array (
+    'characteristic_key' => 'resistance_vitalite_creature',
+    'entity' => '*',
+    'db_column' => 'res_vitalite',
+    'min' => '0',
+    'max' => '100',
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' =>
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
+  ),
+  106 =>
+  array (
+    'characteristic_key' => 'fixed_damage_sagesse_creature',
+    'entity' => '*',
+    'db_column' => 'do_sagesse',
+    'min' => '0',
+    'max' => '10',
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' =>
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
+  ),
+  107 =>
+  array (
+    'characteristic_key' => 'fixed_damage_vitalite_creature',
+    'entity' => '*',
+    'db_column' => 'do_vitalite',
+    'min' => '0',
+    'max' => '10',
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' =>
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
+  ),
 );

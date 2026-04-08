@@ -9,7 +9,6 @@ use App\Models\SpellState;
 use App\Models\Type\SpellType;
 use App\Models\User;
 use App\Support\AreaConstants;
-use App\Support\ElementConstants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -140,9 +139,6 @@ class Spell extends Model implements HasMedia
     /** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */
     public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[name]';
 
-    /** @deprecated Utiliser ElementConstants::ELEMENT */
-    const ELEMENT = ElementConstants::ELEMENT;
-
     /**
      * Colonnes NOT NULL : les FormRequest acceptent souvent `nullable` alors que MySQL refuse NULL.
      * Valeurs alignées sur les défauts du schéma (migrations `entity_spells` et colonnes ajoutées ensuite).
@@ -160,7 +156,7 @@ class Spell extends Model implements HasMedia
         'number_between_two_cast' => '0',
         'po_editable' => true,
         'sight_line' => true,
-        'element' => 0,
+        'element' => 1,
         'category' => 0,
         'is_magic' => true,
         'powerful' => 0,

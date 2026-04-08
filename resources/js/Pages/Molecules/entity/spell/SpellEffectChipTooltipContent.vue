@@ -33,13 +33,15 @@ const props = defineProps({
 
 const m = computed(() => props.model ?? {});
 
-/** Couleurs d’accent pour halo (éléments primaires 0–4). */
+/** Couleurs d’accent pour halo (indices primaires 0–6 : N,T,F,A,E,Sag,Vit). */
 const ELEMENT_ACCENT_HEX = Object.freeze({
     0: "#94a3b8",
     1: "#d97706",
     2: "#ef4444",
     3: "#34d399",
     4: "#3b82f6",
+    5: "#a855f7",
+    6: "#84cc16",
 });
 
 const TOOLTIP_ACTION_LABELS = Object.freeze({

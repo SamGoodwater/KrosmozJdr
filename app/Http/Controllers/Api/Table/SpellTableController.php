@@ -450,10 +450,7 @@ class SpellTableController extends Controller
                 ['value' => '2', 'label' => 'Sort apprenable'],
                 ['value' => '3', 'label' => 'Sort consommable'],
             ],
-            'element' => collect(\App\Models\Entity\Spell::ELEMENT)
-                ->map(fn (string $label, int $value) => ['value' => (string) $value, 'label' => $label])
-                ->values()
-                ->all(),
+            'element' => \App\Support\ElementBitmask::allFilterOptions(),
             'is_magic' => [
                 ['value' => '1', 'label' => 'Wakfu'],
                 ['value' => '0', 'label' => 'Physique'],

@@ -86,7 +86,7 @@ export function buildSpellFormFieldsConfig(options = {}) {
             type: 'elementPrimaries',
             label: 'Élément(s)',
             required: false,
-            help: '« Aucun » : sort non lié à un élément. Sinon, cochez les primaires ; la valeur enregistrée est la combinaison 0–29.',
+            help: '« Aucun » : sort non lié à un élément. Sinon, cochez les primaires (dont Sagesse et Vitalité) ; la valeur enregistrée est un masque 1–127.',
         },
         is_magic: {
             type: 'physiqueWakfu',

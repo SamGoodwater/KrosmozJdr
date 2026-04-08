@@ -98,10 +98,7 @@ class CapabilityTableController extends Controller
                 ['value' => 'playable', 'label' => 'Jouable'],
                 ['value' => 'archived', 'label' => 'Archivé'],
             ],
-            'element' => collect(ElementConstants::ELEMENT)
-                ->map(fn (string $label, int $value) => ['value' => (string) $value, 'label' => $label])
-                ->values()
-                ->all(),
+            'element' => \App\Support\ElementBitmask::allFilterOptions(),
         ];
 
         // Mode "entities" : retourner les entités brutes

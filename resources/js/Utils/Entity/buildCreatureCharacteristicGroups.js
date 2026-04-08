@@ -117,6 +117,20 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
             formulaRaw: "",
         });
     }
+    // Résistances % Sagesse / Vitalité (éléments JDR, colonnes res_sagesse / res_vitalite)
+    for (const percentDb of ["res_sagesse", "res_vitalite"]) {
+        const percent = creature[percentDb];
+        const hasPercent = percent !== null && percent !== undefined && String(percent) !== "";
+        if (!hasPercent) continue;
+        const def = getDef(percentDb);
+        resItems.push({
+            type: "formula",
+            def: { ...def, key: def.key || percentDb },
+            value: `${percent}%`,
+            formulaResolved: "",
+            formulaRaw: "",
+        });
+    }
     if (resItems.length > 0) {
         groups.push({ title: "Résistances", characteristics: resItems });
     }
@@ -127,6 +141,10 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
     if (touchItem) dmgItems.push(touchItem);
     for (const el of els) {
         const item = makeFormula(`do_fixe_${el}`);
+        if (item) dmgItems.push(item);
+    }
+    for (const db of ["do_sagesse", "do_vitalite"]) {
+        const item = makeFormula(db);
         if (item) dmgItems.push(item);
     }
     if (dmgItems.length > 0) {

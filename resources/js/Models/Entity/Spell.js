@@ -19,7 +19,7 @@ import {
     resolveDef,
     SPELL_EFFECT_CHIP_SOURCE_GROUPS,
 } from '@/Composables/entity/useCharacteristicDisplay';
-import { getElementLabel, getElementIcon, getElementColor, ELEMENT_PRIMARY_ICONS } from '@/Utils/Entity/Elements';
+import { getElementLabel, getElementIcon, getElementColor, getElementIconForValue } from '@/Utils/Entity/Elements';
 import { getAreaShape, getAreaShortLabel } from '@/Utils/Entity/Areas';
 
 /**
@@ -1050,7 +1050,7 @@ export class Spell extends BaseModel {
                 value: areaValue ? getAreaShortLabel(areaValue) : '',
             },
             {
-                icon: ELEMENT_PRIMARY_ICONS[Number(this.element)] ?? ELEMENT_PRIMARY_ICONS[0],
+                icon: getElementIconForValue(this.element),
                 value: elementValue,
                 tooltip: elementValue ? `Élément: ${elementValue}` : '',
             },

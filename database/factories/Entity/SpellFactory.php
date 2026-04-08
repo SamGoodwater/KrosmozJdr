@@ -44,7 +44,7 @@ class SpellFactory extends Factory
             'cast_per_target' => (string) fake()->numberBetween(0, 3),
             'sight_line' => fake()->boolean(70),
             'number_between_two_cast' => (string) fake()->numberBetween(0, 5),
-            'element' => fake()->numberBetween(0, 29),
+            'element' => fake()->numberBetween(1, 127),
             'category' => fake()->numberBetween(0, 10),
             'is_magic' => fake()->boolean(80),
             'allows_reaction' => fake()->boolean(15),

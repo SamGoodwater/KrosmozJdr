@@ -36,6 +36,8 @@ const EFFECT_CHAR_TO_SPELL_KEY = Object.freeze({
     water: 'res_eau_spell',
     air: 'res_air_spell',
     neutral: 'res_neutre_spell',
+    element_wisdom: 'res_sagesse_spell',
+    element_vitality: 'res_vitalite_spell',
 });
 
 const props = defineProps({
@@ -367,9 +369,17 @@ function characteristicLabelForRow(row) {
     return param?.label ?? 'Caractéristique';
 }
 
-/** Clés primaires Dofus (config) → id 0–4 pour icônes Éléments. */
+/** Clés primaires (config) → indice 0–6 pour icônes / pastilles Éléments. */
 function elementKeyToPrimaryId(key) {
-    const m = { neutral: 0, earth: 1, fire: 2, air: 3, water: 4 };
+    const m = {
+        neutral: 0,
+        earth: 1,
+        fire: 2,
+        air: 3,
+        water: 4,
+        element_wisdom: 5,
+        element_vitality: 6,
+    };
     return m[key] ?? 0;
 }
 

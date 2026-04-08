@@ -35,5 +35,7 @@ return [
         ['key' => 'water', 'label' => 'Eau', 'category' => 'element'],
         ['key' => 'air', 'label' => 'Air', 'category' => 'element'],
         ['key' => 'neutral', 'label' => 'Neutre', 'category' => 'element'],
+        ['key' => 'element_wisdom', 'label' => 'Sagesse', 'category' => 'element'],
+        ['key' => 'element_vitality', 'label' => 'Vitalité', 'category' => 'element'],
     ],
 ];

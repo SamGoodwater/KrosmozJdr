@@ -50,6 +50,8 @@ use Spatie\MediaLibrary\HasMedia;
  * @property string $do_fixe_feu
  * @property string $do_fixe_air
  * @property string $do_fixe_eau
+ * @property string $do_sagesse
+ * @property string $do_vitalite
  * @property string $res_fixe_neutre
  * @property string $res_fixe_terre
  * @property string $res_fixe_feu
@@ -60,6 +62,8 @@ use Spatie\MediaLibrary\HasMedia;
  * @property string $res_feu
  * @property string $res_air
  * @property string $res_eau
+ * @property string $res_sagesse
+ * @property string $res_vitalite
  * @property string $acrobatie_bonus
  * @property string $discretion_bonus
  * @property string $escamotage_bonus
@@ -289,6 +293,8 @@ class Creature extends Model implements HasMedia
         'do_fixe_feu',
         'do_fixe_air',
         'do_fixe_eau',
+        'do_sagesse',
+        'do_vitalite',
         'res_fixe_neutre',
         'res_fixe_terre',
         'res_fixe_feu',
@@ -299,6 +305,8 @@ class Creature extends Model implements HasMedia
         'res_feu',
         'res_air',
         'res_eau',
+        'res_sagesse',
+        'res_vitalite',
         'acrobatie_bonus',
         'discretion_bonus',
         'escamotage_bonus',
