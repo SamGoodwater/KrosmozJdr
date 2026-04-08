@@ -36,6 +36,8 @@ export function buildSpellFormFieldsConfig(options = {}) {
             label: 'Image',
             required: false,
             showInCompact: false,
+            accept: 'image/*',
+            help: 'Illustration du sort. Formats courants : JPEG, PNG, WebP, GIF.',
         },
         category: {
             type: 'select',

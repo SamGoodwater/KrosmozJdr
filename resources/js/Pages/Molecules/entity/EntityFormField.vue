@@ -97,10 +97,14 @@ const isSelectField = computed(() => fieldType.value === 'select');
 // Vérifier si c'est un champ de type file
 const isFileField = computed(() => fieldType.value === 'file');
 
-/** Même logique que {@link EntityEditFormFieldBody} : zone image compacte si `accept` image. */
+/** Même logique que {@link EntityEditFormFieldBody} : champ image par clé / label / accept. */
 const fileFieldPresentation = computed(() => {
+    const key = String(props.fieldKey || '').toLowerCase();
+    const lbl = String(props.fieldConfig?.label || '').toLowerCase();
     const a = String(props.fieldConfig?.accept || '');
-    return a.includes('image') ? 'imageHero' : 'default';
+    const looksImage =
+        a.includes('image') || key.includes('image') || key.includes('thumbnail') || lbl.includes('image');
+    return looksImage ? 'imageHero' : 'default';
 });
 
 // Upload (optionnel) pour les FileFields: si fieldConfig.uploadUrl est fourni, on upload immédiatement

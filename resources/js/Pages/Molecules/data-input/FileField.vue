@@ -34,7 +34,7 @@
  *   </template>
  * </FileField>
  */
-import { useSlots, useAttrs, computed, ref, unref } from 'vue'
+import { useSlots, useAttrs, computed, ref, unref, nextTick } from 'vue'
 import FileCore from '@/Pages/Atoms/data-input/FileCore.vue'
 import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue'
 import FilePreview from '@/Pages/Atoms/data-display/FilePreview.vue'
@@ -94,6 +94,11 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'delete', 'error', 'update:currentFile'])
+
+/** Évite v-model sur la prop `modelValue` (règle eslint vue/no-mutating-props). */
+function emitModelValue(value) {
+  emit('update:modelValue', value)
+}
 const $attrs = useAttrs()
 const $slots = useSlots()
 
@@ -101,44 +106,22 @@ const $slots = useSlots()
 // 🎯 Utilisation du composable unifié useInputField
 // ------------------------------------------
 const {
-  // V-model et actions
-  currentValue,
   actionsToDisplay,
   inputRef,
   focus,
-  isModified,
   isReadonly,
-  showPassword,
-  
-  // Attributs et événements
   inputAttrs,
   listeners,
-  
-  // Labels
   labelConfig,
-  
-  // Validation
   validationState,
   validationMessage,
-  hasInteracted,
   validate,
   setInteracted,
   resetValidation,
-  isValid,
-  hasError,
-  hasWarning,
-  hasSuccess,
-  
-  // Méthodes de contrôle de validation
   enableValidation,
   disableValidation,
-
-  // Style
   styleProperties,
   containerClasses,
-  
-  // Helpers
-  handleAction,
 } = useInputField({
   modelValue: props.modelValue,
   type: 'file',
@@ -157,12 +140,10 @@ const modelValueRef = computed(() => props.modelValue)
 const {
   fileToDisplay,
   previewUrls,
-  hasFileToDisplay,
   hasPreview,
   canDeleteFile,
-  getFileType,
   reset: resetFileUpload,
-  deleteFile: deleteFileUpload
+  deleteFile: deleteFileUpload,
 } = useFileUpload({
   modelValue: modelValueRef,
   currentPath: computed(() => props.currentPath),
@@ -198,14 +179,8 @@ const { isDragging, dragHandlers } = useDragAndDrop({
   accept: props.accept
 })
 
-const isImageAccept = computed(() => {
-  const a = String(props.accept || '')
-  return a.includes('image')
-})
-
-const useImageHeroLayout = computed(
-  () => props.presentation === 'imageHero' && isImageAccept.value,
-)
+/** Le parent choisit `imageHero` ; ne pas exiger `accept` non vide (défaut FileField = ''). */
+const useImageHeroLayout = computed(() => props.presentation === 'imageHero')
 
 const heroInputRef = ref(null)
 
@@ -227,16 +202,6 @@ const heroDisplayName = computed(() => {
     return fileToDisplay.value.name
   }
   return ''
-})
-
-const heroDisplaySize = computed(() => {
-  if (previewUrls.value?.length && previewUrls.value[0]?.size != null) {
-    return previewUrls.value[0].size
-  }
-  if (fileToDisplay.value?.size != null) {
-    return fileToDisplay.value.size
-  }
-  return null
 })
 
 /** URL directe (blob, http, /…) vs chemin logique pour {@link Image}. */
@@ -286,6 +251,39 @@ function onHeroZoneClick() {
   openHeroFilePicker()
 }
 
+/**
+ * Supprime l’image puis ouvre l’explorateur (demande utilisateur).
+ */
+async function onHeroDeleteThenBrowse() {
+  if (canDeleteFile.value) {
+    handleDelete()
+    await nextTick()
+  }
+  openHeroFilePicker()
+}
+
+/** Texte d’aide sous le bloc : limites + texte métier. */
+const effectiveHelper = computed(() => {
+  if (props.presentation !== 'imageHero') {
+    return props.helper
+  }
+  const parts = []
+  const base = props.helper && String(props.helper).trim()
+  if (base) {
+    parts.push(base)
+  }
+  const acc = String(props.accept || '').trim()
+  if (!acc || acc.includes('image')) {
+    parts.push('Formats acceptés : images (JPEG, PNG, WebP, GIF, etc.).')
+  } else {
+    parts.push(`Formats acceptés : ${acc}.`)
+  }
+  if (props.maxSize) {
+    parts.push(`Taille maximale : ${formatHeroFileSize(props.maxSize)}.`)
+  }
+  return parts.join(' ')
+})
+
 // ------------------------------------------
 // 📤 Exposer les méthodes pour contrôle externe
 // ------------------------------------------
@@ -315,7 +313,7 @@ defineExpose({
     <Transition name="drag-overlay">
       <div
         v-if="isDragging"
-        class="drag-overlay absolute inset-0 z-[100] flex items-center justify-center rounded-box"
+        class="drag-overlay absolute inset-0 z-100 flex items-center justify-center rounded-box"
         @dragenter.prevent
         @dragover.prevent
         @drop.prevent
@@ -340,93 +338,97 @@ defineExpose({
       :style-properties="styleProperties"
       :validation-state="validationState"
       :validation-message="validationMessage"
-      :helper="props.helper"
+      :helper="effectiveHelper"
       input-type="textarea"
     >
       <template #core>
-        <div
-          class="group relative w-full max-w-md cursor-pointer overflow-hidden rounded-xl border border-base-300/75 bg-base-200/20 shadow-sm outline-none ring-primary/25 transition-[box-shadow] focus-visible:ring-2"
-          :class="{ 'pointer-events-none opacity-60': isReadonly }"
-          role="button"
-          tabindex="0"
-          @click="onHeroZoneClick"
-          @keydown="onHeroKeydown"
-        >
-          <input
-            ref="heroInputRef"
-            type="file"
-            v-bind="heroInputBind"
-            @change="onHeroNativeInput"
-          />
-          <div class="relative aspect-[16/10] max-h-40 w-full bg-base-300/15">
-            <Image
-              v-if="heroDisplayUrl && heroImageUseSrc"
-              :src="heroDisplayUrl"
-              :alt="heroDisplayName || 'Aperçu image'"
-              fit="contain"
-              rounded="none"
-              class="h-full w-full [&_img]:max-h-40 [&_img]:object-contain"
+        <div class="flex w-full max-w-md flex-col gap-2">
+          <div
+            class="group/hero rounded-xl border-2 border-base-300/50 bg-base-200/15 p-3 transition-[border-color,box-shadow] duration-200 hover:border-primary/60 focus-within:border-primary/50"
+            :class="{
+              'pointer-events-none opacity-60': isReadonly,
+              'cursor-pointer': !isReadonly,
+            }"
+            role="button"
+            tabindex="0"
+            @click="!isReadonly && onHeroZoneClick()"
+            @keydown="onHeroKeydown"
+          >
+            <input
+              ref="heroInputRef"
+              type="file"
+              v-bind="heroInputBind"
+              @change="onHeroNativeInput"
             />
-            <Image
-              v-else-if="heroDisplayUrl"
-              :source="heroDisplayUrl"
-              :alt="heroDisplayName || 'Aperçu image'"
-              fit="contain"
-              rounded="none"
-              class="h-full w-full [&_img]:max-h-40 [&_img]:object-contain"
-            />
-            <div
-              v-else
-              class="flex h-full min-h-[6.5rem] flex-col items-center justify-center gap-1.5 px-4 text-center text-base-content/50"
-            >
-              <i class="fa-solid fa-cloud-arrow-up text-3xl opacity-75" aria-hidden="true"></i>
-              <span class="text-sm font-medium">Glisser-déposer ou cliquer</span>
-              <span class="text-xs text-base-content/40">Image (PNG, WebP, JPG…)</span>
-            </div>
 
             <div
-              class="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              class="relative aspect-4/3 max-h-52 w-full overflow-hidden rounded-lg bg-base-300/20"
             >
-              <div class="p-3 text-xs text-white/95">
-                <p v-if="heroDisplayName" class="truncate font-medium">{{ heroDisplayName }}</p>
-                <p v-if="formatHeroFileSize(heroDisplaySize)" class="mt-0.5 text-white/75">
-                  {{ formatHeroFileSize(heroDisplaySize) }}
-                </p>
-                <p class="mt-1.5 text-[11px] leading-snug text-white/65">
-                  Cliquer ou déposer un fichier pour remplacer
+              <template v-if="heroDisplayUrl">
+                <div
+                  class="hero-image-frame h-full w-full [&_img]:max-h-52 [&_img]:object-contain [&_img]:transition-[filter] [&_img]:duration-200 group-hover/hero:[&_img]:grayscale"
+                >
+                  <Image
+                    v-if="heroImageUseSrc"
+                    :src="heroDisplayUrl"
+                    :alt="heroDisplayName || 'Aperçu image'"
+                    fit="contain"
+                    rounded="none"
+                    class="h-full w-full"
+                  />
+                  <Image
+                    v-else
+                    :source="heroDisplayUrl"
+                    :alt="heroDisplayName || 'Aperçu image'"
+                    fit="contain"
+                    rounded="none"
+                    class="h-full w-full"
+                  />
+                </div>
+              </template>
+              <div
+                v-else
+                class="flex h-full min-h-32 flex-col items-center justify-center gap-2 px-4 text-center text-base-content/45"
+              >
+                <i class="fa-solid fa-image text-3xl opacity-60" aria-hidden="true"></i>
+                <span class="text-sm">Aucune image</span>
+              </div>
+
+              <div
+                class="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover/hero:bg-black/50"
+              >
+                <p
+                  class="max-w-[90%] px-2 text-center text-sm font-semibold leading-snug text-white opacity-0 drop-shadow-md transition-opacity duration-200 group-hover/hero:opacity-100"
+                >
+                  Cliquer ou déposer la nouvelle image
                 </p>
               </div>
             </div>
 
-            <div class="pointer-events-none absolute bottom-2 right-2 z-10">
-              <button
-                type="button"
-                class="btn btn-circle btn-sm pointer-events-auto border-0 bg-primary text-primary-content shadow-md hover:bg-primary/90"
-                title="Choisir une image"
-                @click.stop="openHeroFilePicker"
-              >
-                <i class="fa-solid fa-pen text-sm" aria-hidden="true"></i>
-              </button>
-            </div>
+            <p
+              v-if="heroDisplayName"
+              class="mt-2.5 truncate text-sm font-medium text-base-content"
+            >
+              {{ heroDisplayName }}
+            </p>
+            <p v-else class="mt-2.5 text-sm italic text-base-content/50">Aucun fichier sélectionné</p>
 
             <div
-              v-if="canDeleteFile && heroDisplayUrl"
-              class="pointer-events-none absolute left-2 top-2 z-10 opacity-0 transition-opacity group-hover:opacity-100"
+              v-if="!isReadonly && heroDisplayUrl"
+              class="mt-2 flex flex-wrap items-center gap-2"
             >
               <button
                 type="button"
-                class="btn btn-circle btn-ghost btn-sm pointer-events-auto border border-white/20 bg-black/45 text-white hover:bg-error/90"
-                title="Supprimer l’image"
-                @click.stop="handleDelete"
+                class="btn btn-outline btn-error btn-xs gap-1"
+                title="Retire l’image actuelle puis ouvre l’explorateur pour en choisir une autre"
+                @click.stop="onHeroDeleteThenBrowse"
               >
-                <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+                Supprimer et remplacer
               </button>
             </div>
           </div>
         </div>
-      </template>
-      <template #helper>
-        <slot name="helper" />
       </template>
     </FieldTemplate>
   </div>
@@ -444,7 +446,7 @@ defineExpose({
     <Transition name="drag-overlay">
       <div
         v-if="isDragging"
-        class="drag-overlay absolute inset-0 z-[100] flex items-center justify-center rounded-box"
+        class="drag-overlay absolute inset-0 z-100 flex items-center justify-center rounded-box"
         @dragenter.prevent
         @dragover.prevent
         @drop.prevent
@@ -531,36 +533,29 @@ defineExpose({
       :style-properties="styleProperties"
       :validation-state="validationState"
       :validation-message="validationMessage"
-      :helper="props.helper"
+      :helper="effectiveHelper"
     >
       <!-- Slot core spécifique pour FileCore -->
-      <template #core="{ inputAttrs, inputRef: slotInputRef }">
+      <template #core="{ inputAttrs: coreInputAttrs, inputRef: slotInputRef }">
         <FileCore
-          v-bind="inputAttrs"
-          v-model="props.modelValue"
-          @update:modelValue="(value) => emit('update:modelValue', value)"
-          :ref="(el) => { 
+          v-bind="coreInputAttrs"
+          :model-value="props.modelValue"
+          @update:model-value="emitModelValue"
+          :ref="(el) => {
             if (el) {
-              // Mettre à jour la ref locale si elle existe
               if (inputRef) {
                 if (typeof inputRef === 'function') {
-                  inputRef(el);
+                  inputRef(el)
                 } else if (inputRef.value !== undefined) {
-                  inputRef.value = el;
+                  inputRef.value = el
                 }
               }
-              // Mettre à jour la ref du slot si elle existe
               if (slotInputRef && typeof slotInputRef === 'function') {
-                slotInputRef(el);
+                slotInputRef(el)
               }
             }
           }"
         />
-      </template>
-      
-      <!-- Slots personnalisés -->
-      <template #helper>
-        <slot name="helper" />
       </template>
     </FieldTemplate>
   </div>

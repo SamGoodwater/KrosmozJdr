@@ -119,13 +119,17 @@ const textFieldAccentStyle = computed(() => {
 const fieldLabelText = computed(() => props.getFieldLabel(props.field.key, props.field.config));
 const fieldHelperText = computed(() => props.getFieldHelper(props.field.key, props.field.config) || '');
 
-/** Présentation compacte type « carte image » pour les uploads image (ex. sort). */
+/** Présentation « carte image » : clé / label image ou accept image (évite accept vide côté FileField). */
 const fileFieldPresentation = computed(() => {
-    const accept = props.getFileAccept(props.field.key, props.field.config) || '';
-    if (typeof accept === 'string' && accept.includes('image')) {
-        return 'imageHero';
-    }
-    return 'default';
+    const key = String(props.field.key || '').toLowerCase();
+    const lbl = String(props.field.config?.label || '').toLowerCase();
+    const accept = String(props.getFileAccept(props.field.key, props.field.config) || '');
+    const looksImage =
+        accept.includes('image') ||
+        key.includes('image') ||
+        key.includes('thumbnail') ||
+        lbl.includes('image');
+    return looksImage ? 'imageHero' : 'default';
 });
 
 /** `is_magic` : conflit multi-édition (indéterminé tant que l’utilisateur n’a pas choisi). */
