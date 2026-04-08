@@ -575,6 +575,24 @@ class SpellControllerTest extends TestCase
     }
 
     /**
+     * Test : redirect_after_update=edit renvoie vers l’éditeur (page fiche sort).
+     */
+    public function test_spell_update_redirects_to_edit_when_requested(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create();
+
+        $response = $this->actingAs($admin)
+            ->from(route('entities.spells.edit', $spell))
+            ->patch(route('entities.spells.update', $spell), [
+                'name' => 'Nom éditeur '.$spell->id,
+                'redirect_after_update' => 'edit',
+            ]);
+
+        $response->assertRedirect(route('entities.spells.edit', $spell));
+    }
+
+    /**
      * Test : La synchronisation des breeds fonctionne avec plusieurs breeds
      */
     public function test_sync_breeds_works_with_multiple_breeds(): void

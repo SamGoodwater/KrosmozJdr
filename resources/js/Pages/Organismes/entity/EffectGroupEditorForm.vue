@@ -60,6 +60,8 @@ const props = defineProps({
     heading: { type: String, default: '' },
     /** Libellé du bouton de soumission. */
     submitLabel: { type: String, default: 'Enregistrer le groupe' },
+    /** Masque le bouton primaire (sauvegarde déclenchée par le parent, ex. fiche sort). */
+    hideSubmitButton: { type: Boolean, default: false },
     /** Admin effets : affiche « Supprimer ce degré » (requiert adminEffectId). */
     showAdminDegreeDelete: { type: Boolean, default: false },
     /** ID de la définition d’effet (Effect), pour la route destroy-degree. */
@@ -558,15 +560,19 @@ function normalizeCreatureLevel(raw) {
     return Number.isFinite(n) ? n : null;
 }
 
-function submitGroup() {
+/** @returns {boolean} false si une zone est renseignée mais invalide (onglet basculé sur le degré fautif). */
+function validateDegreeAreas() {
     for (let i = 0; i < degreeForms.value.length; i += 1) {
         const raw = degreeForms.value[i]?.area;
         if (raw != null && String(raw).trim() !== '' && !isValidAreaNotation(raw)) {
             activeTab.value = i;
-            return;
+            return false;
         }
     }
+    return true;
+}
 
+function applyGroupPayloadToForm() {
     groupSaveForm.common = {
         name: common.name || null,
         description: common.description || null,
@@ -579,9 +585,39 @@ function submitGroup() {
         required_creature_level: normalizeCreatureLevel(d.required_creature_level),
         effect_sub_effects: payloadRows(d.effect_sub_effects),
     }));
+}
 
+function submitGroup() {
+    if (!validateDegreeAreas()) {
+        return;
+    }
+    applyGroupPayloadToForm();
     groupSaveForm.patch(props.patchUrl, {
         preserveScroll: true,
+    });
+}
+
+/**
+ * Même logique que {@link submitGroup}, en Promise (enchaînement depuis le formulaire parent).
+ *
+ * @returns {Promise<{ ok: true } | { ok: false, reason: 'validation_area' }>}
+ */
+function submitGroupAsync() {
+    return new Promise((resolve, reject) => {
+        if (!validateDegreeAreas()) {
+            resolve({ ok: false, reason: 'validation_area' });
+            return;
+        }
+        applyGroupPayloadToForm();
+        groupSaveForm.patch(props.patchUrl, {
+            preserveScroll: true,
+            onSuccess: () => resolve({ ok: true }),
+            onError: (errors) => {
+                const err = new Error('Effect group validation failed');
+                err.errors = errors;
+                reject(err);
+            },
+        });
     });
 }
 
@@ -639,7 +675,7 @@ const activeAreaValidation = computed(() => {
         : { state: 'error', message: `Notation invalide. ${AREA_NOTATION_HELP}` };
 });
 
-defineExpose({ getActiveEffectId, degreeForms, activeTab, saving });
+defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, submitGroupAsync });
 </script>
 
 <template>
@@ -1083,7 +1119,7 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving });
                 </div>
             </div>
 
-            <div class="flex flex-wrap gap-2 items-center">
+            <div v-if="!hideSubmitButton" class="flex flex-wrap gap-2 items-center">
                 <button type="submit" class="btn btn-primary" :disabled="groupSaveForm.processing">
                     {{ groupSaveForm.processing ? 'Enregistrement…' : submitLabel }}
                 </button>

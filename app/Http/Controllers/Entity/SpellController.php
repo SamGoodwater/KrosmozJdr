@@ -256,6 +256,11 @@ class SpellController extends Controller
                 ->with('success', 'Sort mis à jour avec succès.');
         }
 
+        if ($redirectAfter === 'edit') {
+            return redirect()->route('entities.spells.edit', $spell)
+                ->with('success', 'Sort mis à jour avec succès.');
+        }
+
         return redirect()->route('entities.spells.show', $spell)
             ->with('success', 'Sort mis à jour avec succès.');
     }

@@ -254,7 +254,7 @@ export function buildSpellFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (fiche). */
+/** Sections formulaire — édition (fiche). Ordre des colonnes (grille sort) : généralités, portée/coût/résolution, spécificités, admin. */
 export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
@@ -263,29 +263,14 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
         fieldKeys: ['name', 'description', 'image', 'category', 'state', 'element', 'spellTypes'],
     },
     {
-        id: 'gameplay',
-        title: 'Spécificités du sort',
-        subtitle: 'Niveau, PA, élément, lancers, ligne de vue. La zone d’impact se définit dans les effets (degrés).',
+        id: 'range_resolution',
+        title: 'Portée, coût et résolution au combat',
+        subtitle:
+            'Niveau, coût PA, description texte des effets ; PO min / max et portée modifiable en jeu ; jets d’attaque, sauvegarde ou réussite automatique (cible consentante).',
         fieldKeys: [
             'level',
             'pa',
             'effect',
-            'is_magic',
-            'sight_line',
-            'allows_reaction',
-            'casting_time',
-            'ritual_available',
-            'cast_per_turn',
-            'cast_per_target',
-            'number_between_two_cast',
-        ],
-    },
-    {
-        id: 'range_resolution',
-        title: 'Portée et résolution au combat',
-        subtitle:
-            'PO min / max et portée modifiable en jeu ; jets d’attaque, sauvegarde ou réussite automatique (cible consentante).',
-        fieldKeys: [
             'po_min',
             'po_max',
             'po_editable',
@@ -295,6 +280,22 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
             'save_dc_formula',
             'save_success_note',
             'auto_success_if_willing_target',
+        ],
+    },
+    {
+        id: 'gameplay',
+        title: 'Spécificités du sort',
+        subtitle:
+            'Physique ou Wakfu, lancers, ligne de vue, réaction, temps d’incantation, rituel. La zone d’impact se définit dans les effets (degrés).',
+        fieldKeys: [
+            'is_magic',
+            'sight_line',
+            'allows_reaction',
+            'casting_time',
+            'ritual_available',
+            'cast_per_turn',
+            'cast_per_target',
+            'number_between_two_cast',
         ],
     },
     {

@@ -5,6 +5,8 @@
 import { computed, ref, watch } from 'vue';
 import axios from 'axios';
 import { Link, router } from '@inertiajs/vue3';
+import { useNotificationStore } from '@/Composables/store/useNotificationStore';
+import { AREA_NOTATION_HELP } from '@/Utils/Entity/areaNotation.js';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -25,7 +27,14 @@ const props = defineProps({
     spellEffectGroups: { type: Array, default: () => [] },
     entityId: { type: Number, required: true },
     entityType: { type: String, default: 'spell' },
+    /**
+     * Masque le bouton « Enregistrer les effets » : sauvegarde via le parent (ex. « Mettre à jour » du sort).
+     */
+    hideEffectGroupSubmitButton: { type: Boolean, default: false },
 });
+
+const notificationStore = useNotificationStore();
+const effectEditorFormRef = ref(null);
 
 const selectedAnchorId = ref(null);
 const effectLinkSearch = ref('');
@@ -231,6 +240,39 @@ const patchUrlForSelectedGroup = computed(() => {
         effect: selectedGroup.value.anchor_effect_id,
     });
 });
+
+/**
+ * Enregistre le groupe d’effets sélectionné avant le PATCH du sort (si l’éditeur est monté).
+ *
+ * @returns {Promise<boolean>} true pour poursuivre la soumission du formulaire entité
+ */
+async function flushEffectGroupSave() {
+    if (!effectEditorFormRef.value?.submitGroupAsync) {
+        return true;
+    }
+    try {
+        const result = await effectEditorFormRef.value.submitGroupAsync();
+        if (!result.ok) {
+            if (result.reason === 'validation_area') {
+                notificationStore.error(`Notation de zone invalide. ${AREA_NOTATION_HELP}`, {
+                    duration: 8000,
+                    placement: 'top-right',
+                });
+            }
+            return false;
+        }
+        return true;
+    } catch (e) {
+        notificationStore.error('Impossible d’enregistrer les effets du sort.', {
+            duration: 5000,
+            placement: 'top-right',
+        });
+        console.error(e);
+        return false;
+    }
+}
+
+defineExpose({ flushEffectGroupSave });
 </script>
 
 <template>
@@ -240,6 +282,13 @@ const patchUrlForSelectedGroup = computed(() => {
             <p class="text-sm text-base-content/70 mt-2">
                 Liez une ou plusieurs <strong>définitions</strong> d’effet (pivot <code class="text-xs">effect_spell</code>). Chaque
                 définition porte ses degrés : zone, seuil de niveau créature et sous-effets s’éditent dans le bloc ci-dessous.
+            </p>
+            <p
+                v-if="hideEffectGroupSubmitButton"
+                class="mt-2 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2 text-xs text-base-content/80"
+            >
+                Les changements du bloc d’effets sélectionné sont enregistrés avec le bouton
+                <strong>Mettre à jour</strong> du formulaire du sort (pied de page, au-dessus de cette section).
             </p>
         </div>
 
@@ -297,6 +346,7 @@ const patchUrlForSelectedGroup = computed(() => {
 
         <EffectGroupEditorForm
             v-if="selectedGroup && patchUrlForSelectedGroup && selectedDegreeIdForEditor > 0"
+            ref="effectEditorFormRef"
             :key="selectedGroup.anchor_effect_id"
             :options="effectFormOptions"
             :group-effects="selectedGroup.group_effects"
@@ -304,6 +354,7 @@ const patchUrlForSelectedGroup = computed(() => {
             :patch-url="patchUrlForSelectedGroup"
             :heading="selectedGroup.label"
             submit-label="Enregistrer les effets"
+            :hide-submit-button="hideEffectGroupSubmitButton"
         />
 
         <div v-if="selectedGroup && patchUrlForSelectedGroup" class="mt-3">

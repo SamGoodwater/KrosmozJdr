@@ -74,8 +74,10 @@ class UpdateSpellRequest extends FormRequest
             'auto_update' => ['nullable', 'boolean'],
             'official_id' => ['nullable', 'string', 'max:255'],
             'dofusdb_id' => ['nullable', 'string', 'max:255'],
-            /** Utilisé par l’éditeur en modal liste : redirection vers l’index au lieu de la fiche. */
-            'redirect_after_update' => ['nullable', 'string', 'in:index,show'],
+            /**
+             * `index` : modal liste ; `edit` : rester sur l’éditeur ; `show` : fiche lecture (défaut si absent).
+             */
+            'redirect_after_update' => ['nullable', 'string', 'in:index,show,edit'],
         ];
     }
 }

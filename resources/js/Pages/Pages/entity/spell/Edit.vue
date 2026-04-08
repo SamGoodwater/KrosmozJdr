@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Page d’édition d’un sort — formulaire structuré par sections (généralités, gameplay, PO, résolution, admin).
+ * Page d’édition d’un sort — formulaire structuré par sections (généralités, portée/coût/résolution, spécificités, admin).
  *
  * @props {Object} spell - Données du sort à éditer
  */

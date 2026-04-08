@@ -105,14 +105,14 @@ const props = defineProps({
         default: false,
     },
     /**
-     * Envoyé au PATCH (ex. sort depuis la liste) pour choisir la redirection serveur (`index` | `show`).
+     * Envoyé au PATCH (ex. sort) pour la redirection Laravel : `index`, `show` ou `edit`.
      */
     redirectAfterUpdate: {
         type: String,
         default: null,
     },
     /**
-     * Mise en page dense multi-colonnes (`spell` : sections en grille, champs 3 cols sur xl).
+     * Mise en page dense multi-colonnes (`spell` : 1 col mobile, 2×2 tablette, 3+pleine largeur laptop, 4 cols xl).
      */
     layoutProfile: {
         type: String,
@@ -132,6 +132,15 @@ const props = defineProps({
         type: String,
         default: 'left-0 right-0 lg:left-64',
     },
+    /**
+     * Exécuté avant le POST/PATCH Inertia du formulaire. Si la Promise est rejetée ou résout `false`, la soumission est annulée.
+     * @example Sauvegarde des effets du sort puis mise à jour de la fiche.
+     * @type {(() => Promise<boolean|void>) | null}
+     */
+    beforeSubmitAsync: {
+        type: Function,
+        default: null,
+    },
 });
 
 const emit = defineEmits(['submit', 'cancel']);
@@ -144,12 +153,15 @@ const sectionsContainerClass = computed(() => {
         return '';
     }
     return isSpellLayout.value
-        ? 'grid gap-4 lg:grid-cols-2 xl:grid-cols-3'
+        ? 'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
         : 'space-y-5';
 });
 
 /**
  * Portée de colonnes pour une section (profil sort).
+ * — md : 2 colonnes (2×2).
+ * — lg : 3 colonnes ; la section admin occupe toute la ligne du bas.
+ * — xl : 4 colonnes égales sur une ligne.
  *
  * @param {{ id?: string }} sec
  * @returns {string}
@@ -158,15 +170,8 @@ function spellSectionColClass(sec) {
     if (!isSpellLayout.value || !sec?.id) {
         return '';
     }
-    if (sec.id === 'general') {
-        return 'xl:col-span-2';
-    }
-    /** Portée + résolution : première colonne de la grille (sous Généralités). */
-    if (sec.id === 'range_resolution') {
-        return 'xl:col-start-1 xl:col-span-1';
-    }
     if (sec.id === 'admin') {
-        return 'lg:col-span-2 xl:col-span-3';
+        return 'lg:col-span-3 xl:col-span-1';
     }
     return '';
 }
@@ -726,7 +731,7 @@ const getFieldWrapperClass = (fieldKey) => ([
 ].filter(Boolean));
 
 // Soumission du formulaire
-const submit = () => {
+const submit = async () => {
     // Si l'entité n'a pas d'ID (édition multiple), émettre directement les données
     const entityId = props.entity?.id ?? null;
     if (!entityId && props.isUpdating) {
@@ -743,6 +748,22 @@ const submit = () => {
         }
         emit('submit', data);
         return;
+    }
+
+    if (typeof props.beforeSubmitAsync === 'function') {
+        try {
+            const pre = await props.beforeSubmitAsync();
+            if (pre === false) {
+                return;
+            }
+        } catch (e) {
+            notificationStore.error(
+                e?.message || 'Une erreur est survenue avant l’enregistrement du formulaire.',
+                { duration: 5000, placement: 'top-right' },
+            );
+            console.error(e);
+            return;
+        }
     }
 
     // Construction du nom de route selon le type d'entité
@@ -936,40 +957,33 @@ const cancel = () => {
                         </div>
                     </div>
 
-                    <div class="footer-actions flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-                        <Btn
-                            type="button"
-                            variant="outline"
-                            class="order-1"
-                            @click="cancel"
-                        >
-                            Annuler
-                        </Btn>
-
-                        <Tooltip
-                            content="Réinitialise le formulaire : revient aux valeurs chargées au moment de l’ouverture (ou dernière synchro). En multi‑édition, remet les champs ‘valeurs différentes’ en mode ‘ne pas modifier’."
-                            placement="top"
-                        >
-                            <Btn
-                                type="button"
-                                variant="outline"
-                                class="order-2"
-                                @click="resetForm"
-                            >
-                                <i class="fa-solid fa-arrow-rotate-left mr-2"></i>
-                                Reset
+                    <div
+                        class="footer-actions flex w-full min-w-0 flex-wrap items-center justify-between gap-3"
+                    >
+                        <div class="footer-actions__start flex flex-wrap items-center gap-2 sm:gap-3">
+                            <Btn type="button" variant="outline" @click="cancel">
+                                Annuler
                             </Btn>
-                        </Tooltip>
-
-                        <Btn
-                            type="submit"
-                            color="primary"
-                            class="order-3"
-                            :disabled="form.processing"
-                        >
-                            <i class="fa-solid fa-save mr-2"></i>
-                            {{ form.processing ? 'Enregistrement...' : (isUpdating ? 'Mettre à jour' : 'Créer') }}
-                        </Btn>
+                            <Tooltip
+                                content="Réinitialise le formulaire : revient aux valeurs chargées au moment de l’ouverture (ou dernière synchro). En multi‑édition, remet les champs ‘valeurs différentes’ en mode ‘ne pas modifier’."
+                                placement="top"
+                            >
+                                <Btn type="button" variant="outline" @click="resetForm">
+                                    <i class="fa-solid fa-arrow-rotate-left mr-2"></i>
+                                    Reset
+                                </Btn>
+                            </Tooltip>
+                        </div>
+                        <div class="footer-actions__end flex flex-wrap items-center gap-2 sm:gap-3">
+                            <Btn
+                                type="submit"
+                                color="primary"
+                                :disabled="form.processing"
+                            >
+                                <i class="fa-solid fa-save mr-2"></i>
+                                {{ form.processing ? 'Enregistrement...' : (isUpdating ? 'Mettre à jour' : 'Créer') }}
+                            </Btn>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1009,6 +1023,11 @@ const cancel = () => {
 
     .footer-actions {
         width: 100%;
+    }
+
+    .footer-actions__start,
+    .footer-actions__end {
+        min-width: 0;
     }
 
     .access-levels {
@@ -1063,9 +1082,9 @@ const cancel = () => {
         }
 
         .footer-actions {
-            width: auto;
-            flex: 0 0 auto;
-            justify-content: flex-end;
+            flex: 1 1 auto;
+            min-width: 0;
+            justify-content: space-between;
         }
     }
 

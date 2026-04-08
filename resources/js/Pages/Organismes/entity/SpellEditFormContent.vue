@@ -5,10 +5,10 @@
  * @description
  * Partagé entre la page {@link Pages/entity/spell/Edit} et {@link SpellEditModal}.
  * — Barre d’options en haut (fiche, suppression, retour liste).
- * — Formulaire en grille responsive + pied d’actions fixe via {@link EntityEditForm}.
+ * — Formulaire en grille responsive + pied d’actions fixe via {@link EntityEditForm} (lecture / écriture dans la carte Métadonnées ; effets enregistrés sur le même « Mettre à jour »).
  * — Les classes liées au sort se gèrent depuis la fiche classe (pas depuis ici).
  */
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 import { Spell } from "@/Models/Entity/Spell";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
@@ -32,10 +32,10 @@ const props = defineProps({
     /** Quand true : annulation sans redirection vers la fiche lecture. */
     embeddedInModal: { type: Boolean, default: false },
     /**
-     * Redirection après PATCH réussi : `index` = liste des sorts (modal / même onglet).
-     * @type {"index"|"show"|null}
+     * Redirection après PATCH réussi : `edit` = rester sur l’éditeur (page fiche) ; `index` = liste (modal).
+     * @type {"index"|"show"|"edit"|null}
      */
-    redirectAfterUpdate: { type: String, default: null },
+    redirectAfterUpdate: { type: String, default: "edit" },
 });
 
 const emit = defineEmits(["cancel", "saved"]);
@@ -59,6 +59,17 @@ const spellModel = computed(() =>
 const fixedFooterInsetClass = computed(() =>
     props.embeddedInModal ? "left-0 right-0" : "left-0 right-0 lg:left-64",
 );
+
+const spellEffectsSectionRef = ref(null);
+
+/** PATCH groupe d’effets sélectionné puis le formulaire entité (via {@link EntityEditForm}). */
+async function beforeSpellSubmitAsync() {
+    const fn = spellEffectsSectionRef.value?.flushEffectGroupSave;
+    if (typeof fn !== "function") {
+        return true;
+    }
+    return fn();
+}
 
 function goToShow() {
     const id = spellModel.value?.id;
@@ -139,19 +150,22 @@ function confirmDelete() {
             :hidden-field-keys="['dofus_version']"
             :field-sections="fieldSections"
             :show-state-toolbar="true"
-            :show-access-levels-in-footer="true"
+            :show-access-levels-in-footer="false"
             characteristics-group="spell"
             layout-profile="spell"
             :fixed-footer-actions="true"
             :fixed-footer-inset-class="fixedFooterInsetClass"
             :embedded-in-modal="embeddedInModal"
             :redirect-after-update="redirectAfterUpdate || undefined"
+            :before-submit-async="beforeSpellSubmitAsync"
             @cancel="emit('cancel')"
             @submit="emit('saved')"
         />
 
         <div class="space-y-6">
             <SpellEffectsUnifiedSection
+                ref="spellEffectsSectionRef"
+                hide-effect-group-submit-button
                 :available-effects="availableEffects"
                 :effect-form-options="effectFormOptions"
                 :spell-effect-groups="spellEffectGroups"
