@@ -5,7 +5,7 @@
  * @description
  * Effets : `resolveSpellEffectsDisplayCell` (résumé API + SpellEffectChips, ou fallback `effect`).
  * Méta : `EntityPropertyDisplay` (aligné sur SpellViewCompact).
- * Invocations : {@link SpellSummonMonstersTextSection} (vue texte monstre, identique à la vue line).
+ * Invocations : portées par les sous-effets / chips (pas de bloc séparé).
  * Types + catégorie : masqués par défaut, visibles au survol ; types = icônes seules, catégorie = icône + libellé.
  *
  * @props {Spell} spell - Instance du modèle Spell
@@ -24,8 +24,6 @@ import {
 } from "@/Composables/entity/useSpellEffectsDisplayCell";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
-import SpellSummonMonstersTextSection from "@/Pages/Molecules/entity/spell/SpellSummonMonstersTextSection.vue";
-import { Spell } from "@/Models/Entity/Spell";
 import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
@@ -114,16 +112,6 @@ const effectDisplayCell = computed(() =>
 );
 const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
 
-/** Monstres invoqués (instance Spell ou objet brut table / Inertia avec `effects_definitions`). */
-const summonMonsterBriefs = computed(() => {
-    const e = entity.value;
-    const raw =
-        e instanceof Spell
-            ? e.effectsDefinitions
-            : e?.effects_definitions ?? e?._data?.effects_definitions;
-    return Spell.summonMonstersFromEffectsDefinitionsPayload(raw);
-});
-
 const imageUrl = computed(() => {
     const u = entity.value?.image ?? entity.value?._data?.image;
     return u && String(u).trim() ? String(u) : null;
@@ -141,6 +129,9 @@ const handleAction = async (actionKey) => {
         case "view":
             router.visit(route("entities.spells.show", { spell: spellId }));
             emit("view", props.spell);
+            break;
+        case "quick-view":
+            emit("action", "quick-view", props.spell);
             break;
         case "edit":
             router.visit(route("entities.spells.edit", { spell: spellId }));
@@ -207,7 +198,7 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    :whitelist="['pin', 'quick-view', 'view', 'edit', 'quick-edit', 'delete', 'copy-link']"
                                     @action="(k) => handleAction(k)"
                                 />
                             </div>
@@ -298,7 +289,6 @@ const handleAction = async (actionKey) => {
                         class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
                     />
                 </div>
-                <SpellSummonMonstersTextSection :monsters="summonMonsterBriefs" />
             </div>
         </template>
         <template #expanded>
@@ -351,7 +341,7 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    :whitelist="['pin', 'quick-view', 'view', 'edit', 'quick-edit', 'delete', 'copy-link']"
                                     @action="(k) => handleAction(k)"
                                 />
                             </div>
@@ -449,7 +439,6 @@ const handleAction = async (actionKey) => {
                         class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
                     />
                 </div>
-                <SpellSummonMonstersTextSection :monsters="summonMonsterBriefs" />
             </div>
         </template>
     </EntityMinimalCard>

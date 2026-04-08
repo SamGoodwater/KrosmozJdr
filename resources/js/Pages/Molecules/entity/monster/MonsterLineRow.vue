@@ -112,7 +112,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
 
 <template>
     <div
-        class="relative rounded-box border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
+        class="group relative rounded-box border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         data-row-contextmenu-target
         @click="handleRowClick"
@@ -206,20 +206,24 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
 
             <!-- Actions : dernier bloc = toujours à droite (desktop), aligné à droite en colonne (mobile) -->
             <div
-                v-if="showActions || showSelection"
+                v-if="showActions || (showSelection && isSelected)"
                 class="flex w-full shrink-0 items-center justify-end gap-2 self-start pt-0.5 lg:w-auto lg:pt-0"
                 @click.stop
             >
-                <EntityActions
+                <div
                     v-if="showActions"
-                    entity-type="monsters"
-                    :entity="entity || row"
-                    format="dropdown"
-                    :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh']"
-                    @action="(k, e) => emit('action', k, e, row)"
-                />
+                    class="entity-row-actions-hover-reveal"
+                >
+                    <EntityActions
+                        entity-type="monsters"
+                        :entity="entity || row"
+                        format="dropdown"
+                        :whitelist="['pin', 'quick-view', 'view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh']"
+                        @action="(k, e) => emit('action', k, e, row)"
+                    />
+                </div>
                 <CheckboxCore
-                    v-if="showSelection"
+                    v-if="showSelection && isSelected"
                     :model-value="isSelected"
                     size="xs"
                     :color="uiColor"

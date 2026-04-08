@@ -10,7 +10,8 @@ defineOptions({ inheritAttrs: false });
  * Le positionnement utilise **Floating UI** (`strategy: fixed`) et **Teleport vers `body`**
  * pour rester visible dans les zones scroll / `overflow-hidden` (ex. TanStackTable).
  * Plusieurs tooltips : **z-index incrémental** (`allocateTooltipZIndex`) — le dernier ouvert passe au-dessus.
- * Style : surface globale `tooltip-floating-surface` (SCSS) + utilitaire `color-*` pour l’accent.
+ * Style : surface `tooltip-floating-surface` + `color-*` pour `var(--color)` (bordure / box-shadow).
+ * **`accentClass`** (ex. `color-life_points_creature`) ou **`accentStyle`** (`--color` hex) priment sur `color` pour les cas métier (caractéristiques).
  *
  * @see https://daisyui.com/components/tooltip/
  * @see https://floating-ui.com/docs/vue
@@ -18,6 +19,8 @@ defineOptions({ inheritAttrs: false });
  * @props {String} content - Texte simple (si pas de slot #content)
  * @props {String} placement - top | right | bottom | left | end | start
  * @props {String} color - neutral | primary | … (atomMap)
+ * @props {String} [accentClass] - classe `color-*` additionnelle (prioritaire sur `color` pour l’accent)
+ * @props {Object} [accentStyle] - styles inline sur le panneau (ex. `--color` en hex)
  * @props {Boolean} open - Force l’ouverture
  * @props {String} responsive - sm | md | lg | xl | 2xl : tooltip actif seulement à partir du breakpoint (matchMedia)
  * @slot default - Trigger
@@ -63,6 +66,14 @@ const props = defineProps({
     responsive: {
         type: String,
         default: "",
+    },
+    accentClass: {
+        type: String,
+        default: "",
+    },
+    accentStyle: {
+        type: Object,
+        default: () => ({}),
     },
 });
 
@@ -172,10 +183,17 @@ watch(
     { immediate: true },
 );
 
-const floatingStylesWithZ = computed(() => ({
-    ...floatingStyles.value,
-    zIndex: stackZIndex.value,
-}));
+const floatingStylesWithZ = computed(() => {
+    const extra =
+        props.accentStyle && typeof props.accentStyle === "object" && !Array.isArray(props.accentStyle)
+            ? props.accentStyle
+            : {};
+    return {
+        ...floatingStyles.value,
+        zIndex: stackZIndex.value,
+        ...extra,
+    };
+});
 
 /** Accent sémantique (variable `--color` pour bordure / ombre, voir `_tooltip.scss`). */
 const surfaceColorClass = computed(() => {
@@ -201,12 +219,18 @@ const surfaceColorClass = computed(() => {
     }
 });
 
+/** `accentClass` (ex. thème caracs) remplace la couleur Daisy pour l’ombre / bordure. */
+const tooltipAccentColorClass = computed(() => {
+    const a = props.accentClass != null ? String(props.accentClass).trim() : "";
+    return a !== "" ? a : surfaceColorClass.value;
+});
+
 const floatingPanelClasses = computed(() => {
     const base = "pointer-events-auto";
     if (!props.glass) {
         return mergeClasses(base, "tooltip-floating-chromeless");
     }
-    return mergeClasses(base, "tooltip-floating-surface", surfaceColorClass.value);
+    return mergeClasses(base, "tooltip-floating-surface", tooltipAccentColorClass.value);
 });
 
 /** Trigger : pas de classes `tooltip-*` Daisy (évite le pseudo ::before clippé). */

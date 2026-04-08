@@ -126,7 +126,7 @@ const handleRowDoubleClick = (row) => {
     const model = raw instanceof Shop ? raw : Shop.fromArray([raw])[0] || null;
     if (!model) return;
     selectedEntity.value = model;
-    modalView.value = 'compact';
+    modalView.value = "large";
     modalOpen.value = true;
 };
 

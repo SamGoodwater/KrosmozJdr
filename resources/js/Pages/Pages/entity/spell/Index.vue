@@ -74,7 +74,6 @@ const {
     quickEditModalOpen,
     quickEditEntity,
     onUpdateTableQuickEdit,
-    onQuickEditIntent,
 } = useEntityIndexQuickEditTable(Spell);
 const tableRows = ref([]);
 const refreshToken = ref(0);
@@ -163,7 +162,7 @@ const handleRowDoubleClick = (row) => {
     const model = Spell.fromArray([raw])[0] || null;
     if (!model) return;
     selectedEntity.value = model;
-    modalView.value = 'compact';
+    modalView.value = "large";
     modalOpen.value = true;
 };
 
@@ -354,7 +353,6 @@ const handleQuickEditSubmit = () => {
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
                     @update:quick-edit-enabled="onUpdateTableQuickEdit"
-                    @quick-edit-intent="onQuickEditIntent"
                     @keyboard-intent="handleKeyboardIntent"
                     @create-request="handleCreateRequest"
                     @action="handleTableAction"

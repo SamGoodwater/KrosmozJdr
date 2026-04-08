@@ -4,7 +4,7 @@
  *
  * @description
  * Effets via `resolveSpellEffectsDisplayCell` : résumé API (`SpellEffectChips`) ou fallback `effect` (chips).
- * Invocations : {@link SpellSummonMonstersTextSection} (identique à la vue minimal du sort).
+ * Invocations : dans les chips / sous-effets uniquement (pas de section texte séparée).
  * Méta (élément, catégorie, types, PA, PO) : `EntityPropertyDisplay` (aligné sur SpellViewCompact).
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
@@ -26,8 +26,6 @@ import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
-import { Spell } from "@/Models/Entity/Spell";
-import SpellSummonMonstersTextSection from "@/Pages/Molecules/entity/spell/SpellSummonMonstersTextSection.vue";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -121,15 +119,6 @@ const effectDisplayCell = computed(() =>
 );
 const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
 
-/** Monstres invoqués (payload `effects_definitions`), aligné sur SpellViewMinimal. */
-const summonMonsterBriefs = computed(() => {
-    const e = entity.value;
-    const raw =
-        e instanceof Spell
-            ? e.effectsDefinitions
-            : e?.effects_definitions ?? e?._data?.effects_definitions;
-    return Spell.summonMonstersFromEffectsDefinitionsPayload(raw);
-});
 const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spellTypesCell.value));
 
 const handleRowClick = (e) => emit("row-click", props.row, e);
@@ -198,17 +187,21 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                             <span v-else class="font-semibold truncate block">{{ nameCell?.value || "—" }}</span>
                         </div>
                     </div>
-                    <div v-if="showActions" class="shrink-0" @click.stop>
+                    <div
+                        v-if="showActions"
+                        class="entity-row-actions-hover-reveal"
+                        @click.stop
+                    >
                         <EntityActions
                             entity-type="spells"
                             :entity="entity || row"
                             format="dropdown"
-                            :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh']"
+                            :whitelist="['pin', 'quick-view', 'view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh']"
                             @action="(k, e) => emit('action', k, e, row)"
                         />
                     </div>
                     <CheckboxCore
-                        v-if="showSelection"
+                        v-if="showSelection && isSelected"
                         :model-value="isSelected"
                         size="xs"
                         :color="uiColor"
@@ -311,10 +304,6 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                 class="leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
             />
         </div>
-        <SpellSummonMonstersTextSection
-            :monsters="summonMonsterBriefs"
-            wrapper-class="spell-summon-line"
-        />
 
         <Teleport to="body">
             <EntityActions

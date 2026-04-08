@@ -157,6 +157,15 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     requiresEntity: true,
     group: "tools",
   },
+  pin: {
+    key: "pin",
+    label: "Épingler",
+    tooltip: "Épingler cette fiche (mémorisé sur cet appareil)",
+    icon: "fa-solid fa-thumbtack",
+    permission: null,
+    requiresEntity: true,
+    group: "tools",
+  },
   "download-pdf": {
     key: "download-pdf",
     label: "Télécharger PDF",

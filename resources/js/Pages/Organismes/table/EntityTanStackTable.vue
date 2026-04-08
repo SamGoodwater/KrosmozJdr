@@ -68,7 +68,6 @@ const emit = defineEmits([
     "update:selectedIds",
     "update:selected-ids",
     "update:quickEditEnabled",
-    "quick-edit-intent",
     "create-request",
     "keyboard-intent",
     "loaded",
@@ -330,7 +329,6 @@ const handleRefresh = async () => {
         @update:server-params="handleServerParamsChange"
         @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
         @update:quick-edit-enabled="(v) => emit('update:quickEditEnabled', v)"
-        @quick-edit-intent="(row) => emit('quick-edit-intent', row)"
         @create-request="() => emit('create-request')"
         @keyboard-intent="(p) => emit('keyboard-intent', p)"
         @row-click="handleRowClick"

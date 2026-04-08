@@ -152,9 +152,47 @@ watch(contentRef, (newRef) => {
   positioning.contentRef.value = newRef;
 });
 
+/**
+ * Coordonnées pointer pour mousedown / touchstart (fermeture au clic extérieur).
+ * @param {MouseEvent|TouchEvent} event
+ * @returns {{ x: number, y: number }|null}
+ */
+function getEventClientCoords(event) {
+  if ("clientX" in event && typeof event.clientX === "number") {
+    return { x: event.clientX, y: event.clientY };
+  }
+  const t = event.touches?.[0] || event.changedTouches?.[0];
+  if (t) return { x: t.clientX, y: t.clientY };
+  return null;
+}
+
+/**
+ * Le contenu est téléporté : l’espace entre trigger et panneau n’a pas `data-dropdown-id`.
+ * Sans ce test, un mousedown dans le vide entre les deux ferme le menu avant d’atteindre le contenu.
+ *
+ * @param {MouseEvent|TouchEvent} event
+ * @returns {boolean}
+ */
+function isPointerInsideDropdownBridge(event) {
+  const coords = getEventClientCoords(event);
+  if (!coords || !isOpen.value) return false;
+  const t = triggerRef.value?.getBoundingClientRect?.();
+  const c = contentRef.value?.getBoundingClientRect?.();
+  if (!t || !c) return false;
+  const pad = 14;
+  const left = Math.min(t.left, c.left) - pad;
+  const right = Math.max(t.right, c.right) + pad;
+  const top = Math.min(t.top, c.top) - pad;
+  const bottom = Math.max(t.bottom, c.bottom) + pad;
+  return coords.x >= left && coords.x <= right && coords.y >= top && coords.y <= bottom;
+}
+
 // Composable de clic extérieur
 const { enable: enableClickOutside, disable: disableClickOutside } = useClickOutside(
-  () => close(),
+  (event) => {
+    if (isPointerInsideDropdownBridge(event)) return;
+    close();
+  },
   {
     enabled: true,
     escapeKey: true,
@@ -175,6 +213,7 @@ const open = () => {
     teleportTarget.value = typeof document !== 'undefined' ? document.body : 'body';
     zIndex.value = 1000 + (Date.now() % 1000);
   }
+  containerRef.value?.setAttribute?.("data-dropdown-open", "true");
   enableClickOutside();
   updatePosition();
 };
@@ -182,6 +221,7 @@ const open = () => {
 const close = () => {
   if (!isOpen.value) return;
   isOpen.value = false;
+  containerRef.value?.removeAttribute?.("data-dropdown-open");
   disableClickOutside();
 };
 
@@ -362,10 +402,9 @@ defineExpose({ open, close, toggle, isOpen });
         {{ trigger }}
       </Btn>
       
-      <!-- Trigger custom via slot -->
+      <!-- Trigger custom via slot (ref unique sur le parent trigger-container pour le positionnement) -->
       <div
         v-else
-        ref="triggerRef"
         :class="['dropdown-trigger-' + props.variant]"
         :aria-expanded="isOpen"
         aria-haspopup="true"

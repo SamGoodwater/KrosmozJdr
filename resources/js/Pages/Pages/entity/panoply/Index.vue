@@ -130,7 +130,7 @@ const handleRowDoubleClick = (row) => {
     const model = raw instanceof Panoply ? raw : Panoply.fromArray([raw])[0] || null;
     if (!model) return;
     selectedEntity.value = model;
-    modalView.value = 'compact';
+    modalView.value = "large";
     modalOpen.value = true;
 };
 

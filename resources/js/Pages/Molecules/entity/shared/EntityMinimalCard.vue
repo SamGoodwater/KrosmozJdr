@@ -106,19 +106,26 @@ function onLeave() {
     box-shadow: 0 8px 24px oklch(0 0 0 / 0.15);
 }
 
-/* Masquer les actions par défaut (aucune place), les afficher au survol */
+/* Actions masquées par défaut, visibles au survol / focus de la carte */
 .entity-minimal-card :deep([data-entity-actions]) {
     max-width: 0;
     min-width: 0;
     overflow: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: max-width 0.15s ease, opacity 0.15s ease;
+    transition:
+        max-width 0.15s ease,
+        opacity 0.15s ease;
 }
-.entity-minimal-card:hover :deep([data-entity-actions]) {
-    max-width: 3rem;
+.entity-minimal-card:hover :deep([data-entity-actions]),
+.entity-minimal-card:focus-within :deep([data-entity-actions]),
+/* Menu téléporté : survol perdu entre trigger et panneau */
+.entity-minimal-card :deep([data-entity-actions]:has([data-dropdown-open="true"])),
+.entity-minimal-card :deep([data-entity-actions]:has([aria-expanded="true"])) {
+    max-width: 12rem;
     opacity: 1;
     pointer-events: auto;
+    overflow: visible;
 }
 
 .entity-minimal-expand-enter-active,

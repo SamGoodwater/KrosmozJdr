@@ -5349,3 +5349,28 @@
 .k-truncate-extended {
   max-width: 18rem;
 }
+
+/**
+ * Actions sur les lignes entité (vue line) : zone masquée par défaut.
+ * Le contenu du Dropdown est téléporté dans `body` : le survol de la ligne
+ * n’est plus actif entre le trigger et le menu. On garde la zone visible
+ * tant qu’un dropdown actions est ouvert (`data-dropdown-open` / `aria-expanded` sur le conteneur).
+ */
+.entity-row-actions-hover-reveal {
+  flex-shrink: 0;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: max-width 0.15s ease, opacity 0.15s ease;
+}
+
+.group:hover .entity-row-actions-hover-reveal,
+.group:focus-within .entity-row-actions-hover-reveal,
+.group:has(.entity-row-actions-hover-reveal [data-dropdown-open=true]) .entity-row-actions-hover-reveal,
+.group:has(.entity-row-actions-hover-reveal [aria-expanded=true]) .entity-row-actions-hover-reveal {
+  max-width: 12rem;
+  overflow: visible;
+  opacity: 1;
+  pointer-events: auto;
+}

@@ -113,7 +113,7 @@ const handleRowDoubleClick = (row) => {
     const model = raw instanceof Capability ? raw : Capability.fromArray([raw])[0] || null;
     if (!model) return;
     selectedEntity.value = model;
-    modalView.value = 'compact';
+    modalView.value = "large";
     modalOpen.value = true;
 };
 

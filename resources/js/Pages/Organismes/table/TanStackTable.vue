@@ -123,7 +123,6 @@ const emit = defineEmits([
     "update:selected-ids",
     "update:serverParams",
     "update:quickEditEnabled",
-    "quick-edit-intent",
     "create-request",
     "keyboard-intent",
     "action", // Émis pour chaque action d'entité
@@ -1709,17 +1708,11 @@ const handleRowClick = (row) => {
     if (!selectionEnabled.value || !clickToSelect.value) return;
     const willSelect = !isSelected(row);
     toggleRow(row, willSelect);
-    if (
-        props.quickEditAllowed
-        && quickEditEnabledPref.value
-        && willSelect
-    ) {
-        emit("quick-edit-intent", row);
-    }
 };
 
 /**
- * Clic ligne : Ctrl/Méta → page entité, Alt → édition, sinon sélection + quick edit.
+ * Clic ligne : Ctrl/Méta → page entité, Alt → édition, sinon sélection (toggle si `clickToSelect`).
+ * Le panneau quick edit éventuel est piloté par la page via `selectedIds` + toggle tableau.
  * @param {object} row
  * @param {MouseEvent} [event]
  */
@@ -2385,7 +2378,7 @@ const handleExport = () => {
                                 @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                             >
                                 <div
-                                    v-if="showSelectionCheckboxes"
+                                    v-if="showSelectionCheckboxes && isSelected(row)"
                                     class="absolute top-2 left-2 z-10"
                                     @click.stop="toggleRow(row, !isSelected(row))"
                                 >
@@ -2465,7 +2458,7 @@ const handleExport = () => {
                             @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                         >
                             <div
-                                v-if="showSelectionCheckboxes"
+                                v-if="showSelectionCheckboxes && isSelected(row)"
                                 class="absolute top-2 left-2 z-10"
                                 @click.stop="toggleRow(row, !isSelected(row))"
                             >

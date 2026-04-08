@@ -28,10 +28,12 @@
  * <CharacteristicProperty field-key="pa" :entity="monster" entity-type="monster" density="full" layout="card" />
  */
 import { computed } from "vue";
+import { colord } from "colord";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CharacteristicPropertyTooltip from "@/Pages/Molecules/data-display/CharacteristicPropertyTooltip.vue";
+import { colorList } from "@/Pages/Atoms/atomMap";
 import { useCharacteristicViewModel } from "@/Composables/entity/useCharacteristicViewModel";
 import {
     getCharacteristicColorStyle,
@@ -128,6 +130,49 @@ const effectiveBadgeColor = computed(() => {
     return c.trim();
 });
 
+/** Couleurs Daisy uniquement pour la prop `color` du Tooltip. */
+const characteristicTooltipColor = computed(() => {
+    const c = model.value?.color;
+    if (!c || typeof c !== "string") return "";
+    const s = c.trim();
+    return s !== "" && colorList.includes(s) ? s : "";
+});
+
+/**
+ * Hex / rgb / oklch / tokens Tailwind-Daisy (`amber-700`) → `--color` pour le box-shadow du tooltip.
+ * Aligné sur {@link getCharacteristicColorStyle} : les chips élément (vue minimal) n’ont pas de hex.
+ */
+const characteristicTooltipAccentStyle = computed(() => {
+    const c = model.value?.color;
+    if (!c || typeof c !== "string") return {};
+    const s = c.trim();
+    if (s === "" || colorList.includes(s)) return {};
+    if (s.startsWith("#")) {
+        const co = colord(s);
+        if (!co.isValid()) return {};
+        return { "--color": co.toHex() };
+    }
+    if (s.includes("-")) {
+        return { "--color": `var(--color-${s})` };
+    }
+    const co = colord(s);
+    if (co.isValid()) return { "--color": co.toHex() };
+    return {};
+});
+
+/** Clé sémantique (ex. `life_points_creature`) → classe `color-*` (characteristic-colors.css). */
+const characteristicTooltipAccentClass = computed(() => {
+    const c = model.value?.color;
+    if (!c || typeof c !== "string") return "";
+    const s = c.trim();
+    if (s === "" || colorList.includes(s)) return "";
+    if (characteristicTooltipAccentStyle.value && characteristicTooltipAccentStyle.value["--color"]) {
+        return "";
+    }
+    if (!/^[a-z][a-z0-9_]*$/i.test(s)) return "";
+    return `color-${s}`;
+});
+
 const badgeSize = computed(() => {
     const map = { xs: "xs", sm: "sm", md: "md" };
     return map[props.size] ?? "sm";
@@ -157,7 +202,13 @@ const badgeVariant = computed(() =>
 </script>
 
 <template>
-    <Tooltip placement="top" class="inline-flex max-w-full min-w-0">
+    <Tooltip
+        placement="top"
+        class="inline-flex max-w-full min-w-0"
+        :color="characteristicTooltipColor"
+        :accent-class="characteristicTooltipAccentClass"
+        :accent-style="characteristicTooltipAccentStyle"
+    >
         <template #content>
             <CharacteristicPropertyTooltip :model="model" />
         </template>

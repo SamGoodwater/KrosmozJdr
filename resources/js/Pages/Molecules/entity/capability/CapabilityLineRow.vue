@@ -98,7 +98,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
 
 <template>
     <div
-        class="relative rounded-box border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
+        class="group relative rounded-box border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         data-row-contextmenu-target
         @click="handleRowClick"
@@ -128,17 +128,21 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                             <span class="font-semibold truncate block">{{ nameCell?.value || "—" }}</span>
                         </div>
                     </div>
-                    <div v-if="showActions" class="shrink-0" @click.stop>
+                    <div
+                        v-if="showActions"
+                        class="entity-row-actions-hover-reveal"
+                        @click.stop
+                    >
                         <EntityActions
                             entity-type="capabilities"
                             :entity="entity || row"
                             format="dropdown"
-                            :whitelist="['view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh']"
+                            :whitelist="['pin', 'quick-view', 'view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh']"
                             @action="(k, e) => emit('action', k, e, row)"
                         />
                     </div>
                     <CheckboxCore
-                        v-if="showSelection"
+                        v-if="showSelection && isSelected"
                         :model-value="isSelected"
                         size="xs"
                         :color="uiColor"

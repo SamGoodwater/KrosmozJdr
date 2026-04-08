@@ -92,7 +92,6 @@ const {
     quickEditModalOpen,
     quickEditEntity,
     onUpdateTableQuickEdit,
-    onQuickEditIntent,
 } = useEntityIndexQuickEditTable(Item);
 
 // Sécurité UX: si l'utilisateur perd le droit de modifier, on coupe les modes d'édition.
@@ -131,9 +130,7 @@ const handleRowDoubleClick = (row) => {
     if (!raw) return;
     const model = Item.fromArray([raw])[0] || null;
     if (!model) return;
-    selectedEntity.value = model;
-    modalView.value = 'compact';
-    modalOpen.value = true;
+    openModal(model);
 };
 
 const handleKeyboardIntent = (payload) => {
@@ -334,7 +331,6 @@ const clearSelection = () => {
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
                     @update:quick-edit-enabled="onUpdateTableQuickEdit"
-                    @quick-edit-intent="onQuickEditIntent"
                     @keyboard-intent="handleKeyboardIntent"
                     @create-request="handleCreateRequest"
                     @action="handleTableAction"

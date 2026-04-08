@@ -92,6 +92,19 @@ const props = defineProps({
     default: "bottom-end",
   },
   /**
+   * Clés d’actions affichées en raccourcis à côté du menu (si `showInlineShortcuts` et assez de place).
+   * Ordre conservé. Par défaut : épingler, lien, page, édition rapide.
+   */
+  inlineActionKeys: {
+    type: Array,
+    default: () => ["pin", "copy-link", "view", "quick-edit"],
+  },
+  /** Activer les raccourcis inline (désactiver ex. barre d’outils déjà chargée). */
+  showInlineShortcuts: {
+    type: Boolean,
+    default: true,
+  },
+  /**
    * Pour le format 'context' : position fixe (x, y)
    */
   contextPosition: {
@@ -248,6 +261,7 @@ const contextMenuStyle = computed(() => {
   <!-- Format : dropdown (colonne Actions) -->
   <EntityActionsDropdown
     v-else-if="format === 'dropdown'"
+    :entity-type="entityType"
     :actions="availableActions"
     :grouped-actions="groupedActions"
     :entity="entity"
@@ -256,6 +270,8 @@ const contextMenuStyle = computed(() => {
     :color="color"
     :placement="placement"
     :icon-only-trigger="true"
+    :inline-action-keys="inlineActionKeys"
+    :show-inline-shortcuts="showInlineShortcuts"
     @action="handleAction"
   />
 

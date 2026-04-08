@@ -291,6 +291,7 @@ const handleAction = (actionKey, entity) => {
                 />
             </Tooltip>
             <CheckboxCore
+                v-if="isSelected"
                 :model-value="isSelected"
                 size="xs"
                 :color="uiColor"
