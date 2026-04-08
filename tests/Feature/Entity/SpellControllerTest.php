@@ -505,16 +505,15 @@ class SpellControllerTest extends TestCase
     }
 
     /**
-     * Test : La page d'édition charge les breeds et types de sort disponibles
+     * Test : La page d'édition charge les types de sort disponibles et les breeds déjà liés sur la ressource sort.
      */
-    public function test_edit_page_loads_available_breeds_and_spell_types(): void
+    public function test_edit_page_loads_spell_types_and_spell_includes_linked_breeds(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $user->id,
         ]);
         $breed1 = Breed::factory()->create(['name' => 'Classe 1']);
-        $breed2 = Breed::factory()->create(['name' => 'Classe 2']);
         $spellType1 = SpellType::factory()->create(['name' => 'Type 1']);
         $spell->breeds()->attach($breed1->id);
         $spell->spellTypes()->attach($spellType1->id);
@@ -526,11 +525,53 @@ class SpellControllerTest extends TestCase
         $response->assertInertia(fn ($page) => $page
             ->component('Pages/entity/spell/Edit')
             ->has('spell')
-            ->has('availableBreeds')
             ->has('availableSpellTypes')
             ->where('spell.data.breeds.0.id', $breed1->id)
             ->where('spell.data.spellTypes.0.id', $spellType1->id)
         );
+    }
+
+    /**
+     * Test : La charge utile JSON pour l’éditeur modal expose les mêmes blocs que la page Edit.
+     */
+    public function test_edit_payload_returns_json_for_authorized_user(): void
+    {
+        $user = User::factory()->create();
+        $spell = Spell::factory()->create([
+            'created_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson(route('entities.spells.edit-payload', $spell));
+
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'spell' => ['id', 'name'],
+            'availableSpellTypes',
+            'availableEffects',
+            'effectEntityType',
+            'effectFormOptions',
+            'spellEffectGroups',
+        ]);
+        $response->assertJsonPath('effectEntityType', 'spell');
+    }
+
+    /**
+     * Test : redirect_after_update=index renvoie vers la liste (éditeur modal).
+     */
+    public function test_spell_update_redirects_to_index_when_requested(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create();
+
+        $response = $this->actingAs($admin)
+            ->from(route('entities.spells.index'))
+            ->patch(route('entities.spells.update', $spell), [
+                'name' => 'Nom modal '.$spell->id,
+                'redirect_after_update' => 'index',
+            ]);
+
+        $response->assertRedirect(route('entities.spells.index'));
     }
 
     /**

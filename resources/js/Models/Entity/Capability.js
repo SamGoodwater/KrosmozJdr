@@ -491,8 +491,10 @@ export class Capability extends BaseModel {
             {
                 icon: isMagicDef?.icon || 'fa-solid fa-wand-magic',
                 color: isMagicDef?.color || null,
-                value: `Magique: ${isMagic ? 'Oui' : 'Non'}`,
-                tooltip: `Magique : ${isMagic ? 'Oui' : 'Non'}`,
+                value: isMagic ? 'Wakfu' : 'Physique',
+                tooltip: isMagic
+                    ? 'Wakfu : puise dans le Wakfu (magique côté Dofus).'
+                    : 'Physique : puise dans la force physique.',
             },
             ...(ritualAvailable
                 ? [{
@@ -563,10 +565,9 @@ export class Capability extends BaseModel {
      * Génère une cellule pour is_magic
      * @private
      */
-    _toIsMagicCell(format, size, options) {
+    _toIsMagicCell(_format, _size, _options) {
         const isMagic = this.isMagic ?? false;
-        const label = isMagic ? 'Oui' : 'Non';
-        
+        const label = isMagic ? 'Wakfu' : 'Physique';
         return {
             type: 'badge',
             value: label,

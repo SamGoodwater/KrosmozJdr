@@ -14,6 +14,7 @@ Route::prefix('entities/spells')->name('entities.spells.')->middleware('auth')->
     Route::get('/create', [SpellController::class, 'create'])->name('create');
     Route::post('/', [SpellController::class, 'store'])->name('store');
     Route::get('/{spell}/edit', [SpellController::class, 'edit'])->name('edit');
+    Route::get('/{spell}/edit-payload', [SpellController::class, 'editPayload'])->name('edit-payload');
     // Routes spécifiques pour les relations (doivent être avant la route update générique)
     Route::patch('/{spell}/breeds', [SpellController::class, 'updateBreeds'])->name('updateBreeds');
     Route::patch('/{spell}/spell-types', [SpellController::class, 'updateSpellTypes'])->name('updateSpellTypes');

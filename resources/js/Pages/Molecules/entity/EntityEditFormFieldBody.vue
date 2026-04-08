@@ -13,8 +13,10 @@ import SpellElementPrimariesField from '@/Pages/Molecules/entity/spell/SpellElem
 import SpellTypesMultiField from '@/Pages/Molecules/entity/spell/SpellTypesMultiField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Image from '@/Pages/Atoms/data-display/Image.vue';
 import { getByDbColumn } from '@/Composables/store/useCharacteristicsStore';
 import { getCharacteristicColorStyle, getCharacteristicContainerStyle } from '@/Utils/color/Color';
+import { resolveSpellUsageCharacteristicVisual } from '@/Utils/Entity/spellUsageCharacteristicVisual';
 
 const props = defineProps({
     field: { type: Object, required: true },
@@ -53,19 +55,25 @@ const charMeta = computed(() => {
     return getByDbColumn(props.characteristicsGroup, props.field.key);
 });
 
-const checkboxColorHex = computed(() => {
+/** Couleur hex caractéristique (BDD ou override formulaire). */
+const characteristicHex = computed(() => {
     const fromDb = charMeta.value?.color;
     const fromCfg = props.field?.config?.uiColor;
     const raw = (typeof fromDb === 'string' && fromDb.startsWith('#') ? fromDb : null) || fromCfg || null;
     return raw;
 });
 
-const checkboxIconUrl = computed(() => {
+/** Source {@link Image} (chemin logique `icons/caracteristics/…`). */
+const characteristicImageSource = computed(() => {
     const icon = charMeta.value?.icon;
     if (!icon || typeof icon !== 'string') return null;
     if (icon.startsWith('fa-') || icon.includes('fa-')) return null;
-    const name = icon.includes('/') ? icon.split('/').pop() : icon;
-    return `/storage/images/icons/caracteristics/${name}`;
+    const s = icon.trim();
+    if (s.startsWith('icons/caracteristics/')) {
+        return s;
+    }
+    const name = s.includes('/') ? s.split('/').pop() : s;
+    return name ? `icons/caracteristics/${name}` : null;
 });
 
 const checkboxFaSource = computed(() => {
@@ -81,19 +89,110 @@ const checkboxFaSource = computed(() => {
 });
 
 const checkboxContainerStyle = computed(() => {
-    const hex = checkboxColorHex.value;
+    const hex = characteristicHex.value;
     if (!hex || !hex.startsWith('#')) return {};
     return getCharacteristicContainerStyle(hex);
 });
 
 const checkboxLabelStyle = computed(() => {
-    const hex = checkboxColorHex.value;
+    const hex = characteristicHex.value;
     if (!hex) return {};
     return getCharacteristicColorStyle(hex) || {};
 });
 
+/** Bordure gauche teintée pour champs liés à une caractéristique (texte / nombre). */
+const textFieldAccentClass = computed(() =>
+    props.characteristicsGroup && characteristicHex.value?.startsWith('#')
+        ? 'rounded-lg border border-base-300/55 bg-base-100/30 py-1 pl-2.5 pr-1'
+        : '',
+);
+
+const textFieldAccentStyle = computed(() => {
+    const hex = characteristicHex.value;
+    if (!hex?.startsWith('#')) return {};
+    return {
+        borderLeftWidth: '3px',
+        borderLeftColor: hex,
+    };
+});
+
 const fieldLabelText = computed(() => props.getFieldLabel(props.field.key, props.field.config));
 const fieldHelperText = computed(() => props.getFieldHelper(props.field.key, props.field.config) || '');
+
+/** Présentation compacte type « carte image » pour les uploads image (ex. sort). */
+const fileFieldPresentation = computed(() => {
+    const accept = props.getFileAccept(props.field.key, props.field.config) || '';
+    if (typeof accept === 'string' && accept.includes('image')) {
+        return 'imageHero';
+    }
+    return 'default';
+});
+
+/** `is_magic` : conflit multi-édition (indéterminé tant que l’utilisateur n’a pas choisi). */
+const isPhysiqueWakfuConflict = computed(
+    () =>
+        props.isMultiEdit &&
+        props.differentFields.includes(props.field.key) &&
+        props.field.key === 'is_magic' &&
+        !props.checkboxDirty?.[props.field.key],
+);
+
+const physiqueWakfuVisual = computed(() => {
+    if (props.field.key !== 'is_magic') {
+        return resolveSpellUsageCharacteristicVisual('is_magic');
+    }
+    if (isPhysiqueWakfuConflict.value) {
+        return resolveSpellUsageCharacteristicVisual('is_magic');
+    }
+    return resolveSpellUsageCharacteristicVisual('is_magic', Boolean(props.form[props.field.key]));
+});
+
+const physiqueWakfuImageSource = computed(() => {
+    const raw = physiqueWakfuVisual.value.source;
+    if (!raw || String(raw).startsWith('fa-')) return null;
+    const s = String(raw).trim();
+    if (s.startsWith('icons/caracteristics/')) return s;
+    const name = s.includes('/') ? s.split('/').pop() : s;
+    return name ? `icons/caracteristics/${name}` : null;
+});
+
+const physiqueWakfuFaIcon = computed(() => {
+    if (isPhysiqueWakfuConflict.value) return 'fa-solid fa-layer-group';
+    return props.form[props.field.key] ? 'fa-solid fa-wand-magic-sparkles' : 'fa-solid fa-hand-fist';
+});
+
+const physiqueWakfuContainerStyle = computed(() => {
+    if (isPhysiqueWakfuConflict.value) return {};
+    const hex = physiqueWakfuVisual.value.color;
+    if (!hex || !hex.startsWith('#')) return {};
+    return getCharacteristicContainerStyle(hex);
+});
+
+const physiqueWakfuAccentStyle = computed(() => {
+    if (isPhysiqueWakfuConflict.value) return {};
+    const hex = physiqueWakfuVisual.value.color;
+    if (!hex || !hex.startsWith('#')) return {};
+    return getCharacteristicColorStyle(hex) || {};
+});
+
+/**
+ * @param {boolean} wantsWakfu - `true` = Wakfu (magique), `false` = Physique
+ */
+function physiqueWakfuBtnClass(wantsWakfu) {
+    if (isPhysiqueWakfuConflict.value) {
+        return 'btn-outline border-base-300/60 bg-base-100/40 hover:bg-base-200/50';
+    }
+    const on = Boolean(props.form[props.field.key]);
+    const selected = wantsWakfu ? on : !on;
+    return selected ? 'btn-primary' : 'btn-ghost border border-base-300/50';
+}
+
+/**
+ * @param {boolean} wantsWakfu
+ */
+function pickPhysiqueWakfu(wantsWakfu) {
+    props.onCheckboxUpdate(props.field.key, wantsWakfu);
+}
 
 /** Options select : support `options` fonction (résolution lazy après chargement Inertia). */
 const resolvedSelectOptions = computed(() => {
@@ -123,73 +222,162 @@ const resolvedSelectOptions = computed(() => {
         </div>
     </div>
 
+    <!-- Sort `is_magic` : Physique vs Wakfu (booléen), icône / teinte selon la valeur -->
+    <div
+        v-else-if="field?.config && getFieldRenderType(field.key, field.config) === 'physiqueWakfu'"
+        class="w-full"
+    >
+        <div
+            class="flex gap-2 rounded-lg border border-base-300/70 p-2 sm:p-2.5"
+            :style="physiqueWakfuContainerStyle"
+        >
+            <Image
+                v-if="physiqueWakfuImageSource"
+                :source="physiqueWakfuImageSource"
+                :alt="isPhysiqueWakfuConflict ? fieldLabelText : Boolean(form[field.key]) ? 'Wakfu' : 'Physique'"
+                width="28"
+                height="28"
+                fit="contain"
+                class="mt-0.5 h-7 w-7 shrink-0"
+            />
+            <Icon
+                v-else
+                :source="physiqueWakfuFaIcon"
+                :alt="isPhysiqueWakfuConflict ? fieldLabelText : Boolean(form[field.key]) ? 'Wakfu' : 'Physique'"
+                size="md"
+                class="mt-0.5 shrink-0 self-start opacity-90"
+                :style="physiqueWakfuAccentStyle"
+            />
+            <div class="min-w-0 flex-1">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                    <div class="min-w-0 flex-1">
+                        <div
+                            class="text-sm font-semibold leading-snug text-base-content"
+                            :style="physiqueWakfuAccentStyle"
+                        >
+                            {{ fieldLabelText }}
+                        </div>
+                        <p
+                            v-if="isPhysiqueWakfuConflict"
+                            class="mt-0.5 flex items-center gap-1 text-xs font-semibold text-warning"
+                        >
+                            <Icon source="fa-solid fa-exclamation-triangle" alt="" size="xs" />
+                            Valeurs différentes — choisir Physique ou Wakfu
+                        </p>
+                    </div>
+                    <div class="flex shrink-0 flex-wrap items-center gap-2">
+                        <div class="join join-horizontal">
+                            <button
+                                type="button"
+                                class="btn btn-sm join-item min-w-21"
+                                :class="physiqueWakfuBtnClass(false)"
+                                @click="pickPhysiqueWakfu(false)"
+                            >
+                                Physique
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-sm join-item min-w-21"
+                                :class="physiqueWakfuBtnClass(true)"
+                                @click="pickPhysiqueWakfu(true)"
+                            >
+                                Wakfu
+                            </button>
+                        </div>
+                        <Btn
+                            v-if="isMultiEdit && differentFields.includes(field.key) && checkboxDirty?.[field.key]"
+                            size="xs"
+                            variant="ghost"
+                            title="Annuler la modification (ne pas modifier ce champ)"
+                            @click.stop="resetBoolMultiEdit(field.key)"
+                        >
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </Btn>
+                    </div>
+                </div>
+                <p v-if="fieldHelperText" class="mt-1 text-xs leading-snug text-base-content/75">
+                    {{ fieldHelperText }}
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Booléen : libellé visible + métadonnées Characteristics -->
     <div
         v-else-if="field?.config && getFieldRenderType(field.key, field.config) === 'checkbox'"
         class="w-full"
     >
         <div
-            class="flex flex-col gap-2 rounded-lg border border-base-300/70 p-2.5 sm:flex-row sm:items-center sm:justify-between"
+            class="flex gap-2 rounded-lg border border-base-300/70 p-2 sm:p-2.5"
             :style="checkboxContainerStyle"
         >
-            <div class="flex min-w-0 flex-1 items-start gap-2.5">
-                <img
-                    v-if="checkboxIconUrl"
-                    :src="checkboxIconUrl"
-                    :alt="fieldLabelText"
-                    class="h-9 w-9 shrink-0 object-contain"
-                />
-                <Icon
-                    v-else
-                    :source="checkboxFaSource"
-                    :alt="fieldLabelText"
-                    size="lg"
-                    class="shrink-0 opacity-90"
-                    :style="checkboxLabelStyle"
-                />
-                <div class="min-w-0 flex-1">
-                    <div class="text-sm font-semibold leading-snug text-base-content" :style="checkboxLabelStyle">
+            <Image
+                v-if="characteristicImageSource"
+                :source="characteristicImageSource"
+                :alt="fieldLabelText"
+                width="28"
+                height="28"
+                fit="contain"
+                class="mt-0.5 h-7 w-7 shrink-0"
+            />
+            <Icon
+                v-else
+                :source="checkboxFaSource"
+                :alt="fieldLabelText"
+                size="md"
+                class="mt-0.5 shrink-0 self-start opacity-90"
+                :style="checkboxLabelStyle"
+            />
+            <div class="min-w-0 flex-1">
+                <div class="flex items-start gap-2">
+                    <div
+                        class="min-w-0 flex-1 text-sm font-semibold leading-snug text-base-content"
+                        :style="checkboxLabelStyle"
+                    >
                         {{ fieldLabelText }}
                     </div>
-                    <p v-if="fieldHelperText" class="mt-0.5 text-xs leading-snug text-base-content/75">
-                        {{ fieldHelperText }}
-                    </p>
+                    <div class="flex shrink-0 items-center gap-2 pt-0.5 sm:gap-2.5">
+                        <ToggleCore
+                            variant="glass"
+                            size="sm"
+                            color="primary"
+                            :model-value="Boolean(form[field.key])"
+                            :indeterminate="differentFields.includes(field.key) && !checkboxDirty?.[field.key]"
+                            @update:model-value="(v) => onCheckboxUpdate(field.key, v)"
+                        />
+                        <span
+                            class="flex min-w-10 items-center gap-1 text-sm transition-colors duration-200"
+                            :class="{
+                                'opacity-80': !(differentFields.includes(field.key) && !checkboxDirty?.[field.key]),
+                                'text-warning font-semibold':
+                                    differentFields.includes(field.key) && !checkboxDirty?.[field.key],
+                            }"
+                        >
+                            <template v-if="differentFields.includes(field.key) && !checkboxDirty?.[field.key]">
+                                <Icon source="fa-solid fa-exclamation-triangle" alt="Valeurs différentes" size="xs" />
+                                Valeurs différentes
+                            </template>
+                            <template v-else>
+                                {{ Boolean(form[field.key]) ? 'Oui' : 'Non' }}
+                            </template>
+                        </span>
+                        <Btn
+                            v-if="differentFields.includes(field.key) && checkboxDirty?.[field.key]"
+                            size="xs"
+                            variant="ghost"
+                            title="Annuler la modification (ne pas modifier ce champ)"
+                            @click.stop="resetBoolMultiEdit(field.key)"
+                        >
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </Btn>
+                    </div>
                 </div>
-            </div>
-            <div class="flex shrink-0 items-center justify-end gap-3 sm:pl-2">
-                <ToggleCore
-                    variant="glass"
-                    size="sm"
-                    color="primary"
-                    :model-value="Boolean(form[field.key])"
-                    :indeterminate="differentFields.includes(field.key) && !checkboxDirty?.[field.key]"
-                    @update:model-value="(v) => onCheckboxUpdate(field.key, v)"
-                />
-                <span
-                    class="text-sm transition-colors duration-200 flex min-w-[2.5rem] items-center gap-1"
-                    :class="{
-                        'opacity-80': !(differentFields.includes(field.key) && !checkboxDirty?.[field.key]),
-                        'text-warning font-semibold':
-                            differentFields.includes(field.key) && !checkboxDirty?.[field.key],
-                    }"
+                <p
+                    v-if="fieldHelperText"
+                    class="mt-1 text-xs leading-snug text-base-content/75"
                 >
-                    <template v-if="differentFields.includes(field.key) && !checkboxDirty?.[field.key]">
-                        <Icon source="fa-solid fa-exclamation-triangle" alt="Valeurs différentes" size="xs" />
-                        Valeurs différentes
-                    </template>
-                    <template v-else>
-                        {{ Boolean(form[field.key]) ? 'Oui' : 'Non' }}
-                    </template>
-                </span>
-                <Btn
-                    v-if="differentFields.includes(field.key) && checkboxDirty?.[field.key]"
-                    size="xs"
-                    variant="ghost"
-                    title="Annuler la modification (ne pas modifier ce champ)"
-                    @click.stop="resetBoolMultiEdit(field.key)"
-                >
-                    <i class="fa-solid fa-rotate-left"></i>
-                </Btn>
+                    {{ fieldHelperText }}
+                </p>
             </div>
         </div>
     </div>
@@ -248,36 +436,50 @@ const resolvedSelectOptions = computed(() => {
         </div>
 
         <!-- InputField -->
-        <InputField
+        <div
             v-else-if="
                 getFieldRenderType(field.key, field.config) === 'text' ||
-                !['textarea', 'select', 'file', 'number', 'checkbox', 'display', 'elementPrimaries', 'spellTypesMulti'].includes(
-                    getFieldRenderType(field.key, field.config),
-                )
+                ![
+                    'textarea',
+                    'select',
+                    'file',
+                    'number',
+                    'checkbox',
+                    'physiqueWakfu',
+                    'display',
+                    'elementPrimaries',
+                    'spellTypesMulti',
+                ].includes(getFieldRenderType(field.key, field.config))
             "
-            v-model="form[field.key]"
-            @update:model-value="() => markDirty(field.key)"
-            :label="getFieldLabel(field.key, field.config)"
-            :type="field.config.type || 'text'"
-            :required="field.config.required"
-            :helper="getFieldHelper(field.key, field.config)"
-            :validation="getFieldValidation(field.key)"
-            :placeholder="getFieldPlaceholder(field.key, field.config)"
+            class="w-full min-w-0"
+            :class="textFieldAccentClass"
+            :style="textFieldAccentStyle"
         >
-            <template
-                v-if="isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key]"
-                #overEnd
+            <InputField
+                v-model="form[field.key]"
+                @update:model-value="() => markDirty(field.key)"
+                :label="getFieldLabel(field.key, field.config)"
+                :type="field.config.type || 'text'"
+                :required="field.config.required"
+                :helper="getFieldHelper(field.key, field.config)"
+                :validation="getFieldValidation(field.key)"
+                :placeholder="getFieldPlaceholder(field.key, field.config)"
             >
-                <Btn
-                    size="xs"
-                    variant="ghost"
-                    title="Annuler la modification (ne pas modifier ce champ)"
-                    @click.stop="resetFieldMultiEdit(field.key, field.config.type || 'text')"
+                <template
+                    v-if="isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key]"
+                    #overEnd
                 >
-                    <i class="fa-solid fa-rotate-left"></i>
-                </Btn>
-            </template>
-        </InputField>
+                    <Btn
+                        size="xs"
+                        variant="ghost"
+                        title="Annuler la modification (ne pas modifier ce champ)"
+                        @click.stop="resetFieldMultiEdit(field.key, field.config.type || 'text')"
+                    >
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </Btn>
+                </template>
+            </InputField>
+        </div>
 
         <TextareaField
             v-else-if="getFieldRenderType(field.key, field.config) === 'textarea'"
@@ -340,32 +542,39 @@ const resolvedSelectOptions = computed(() => {
             :required="field.config.required"
             :helper="getFieldHelper(field.key, field.config)"
             :validation="getFieldValidation(field.key)"
+            :presentation="fileFieldPresentation"
         />
 
-        <InputField
+        <div
             v-else-if="getFieldRenderType(field.key, field.config) === 'number'"
-            v-model="form[field.key]"
-            @update:model-value="() => markDirty(field.key)"
-            :label="getFieldLabel(field.key, field.config)"
-            type="number"
-            :required="field.config.required"
-            :helper="getFieldHelper(field.key, field.config)"
-            :validation="getFieldValidation(field.key)"
-            :placeholder="getFieldPlaceholder(field.key, field.config)"
+            class="w-full min-w-0"
+            :class="textFieldAccentClass"
+            :style="textFieldAccentStyle"
         >
-            <template
-                v-if="isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key]"
-                #overEnd
+            <InputField
+                v-model="form[field.key]"
+                @update:model-value="() => markDirty(field.key)"
+                :label="getFieldLabel(field.key, field.config)"
+                type="number"
+                :required="field.config.required"
+                :helper="getFieldHelper(field.key, field.config)"
+                :validation="getFieldValidation(field.key)"
+                :placeholder="getFieldPlaceholder(field.key, field.config)"
             >
-                <Btn
-                    size="xs"
-                    variant="ghost"
-                    title="Annuler la modification (ne pas modifier ce champ)"
-                    @click.stop="resetFieldMultiEdit(field.key, 'number')"
+                <template
+                    v-if="isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key]"
+                    #overEnd
                 >
-                    <i class="fa-solid fa-rotate-left"></i>
-                </Btn>
-            </template>
-        </InputField>
+                    <Btn
+                        size="xs"
+                        variant="ghost"
+                        title="Annuler la modification (ne pas modifier ce champ)"
+                        @click.stop="resetFieldMultiEdit(field.key, 'number')"
+                    >
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </Btn>
+                </template>
+            </InputField>
+        </div>
     </div>
 </template>

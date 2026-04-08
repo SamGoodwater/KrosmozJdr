@@ -437,7 +437,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
     },
     is_magic: {
       key: "is_magic",
-      label: "Magique",
+      label: "Physique / Wakfu",
       icon: "fa-solid fa-wand-magic",
       table: {
         sortable: true,

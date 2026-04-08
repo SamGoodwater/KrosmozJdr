@@ -83,7 +83,7 @@ const magicUsageVisual = computed(() =>
         ? resolveSpellUsageCharacteristicVisual("is_magic", isMagicOn.value)
         : resolveSpellUsageCharacteristicVisual("is_magic"),
 );
-const magicKindLabel = computed(() => (isMagicOn.value ? "Magique" : "Physique"));
+const magicKindLabel = computed(() => (isMagicOn.value ? "Wakfu" : "Physique"));
 
 const poEditableStatusLabel = computed(() =>
     !poEditableDefined.value
@@ -105,7 +105,7 @@ const magicStatusLabel = computed(() =>
     !isMagicDefined.value
         ? ""
         : isMagicOn.value
-          ? "Sort magique : le sort puise dans le Wakfu du lanceur ou de la lanceuse."
+          ? "Sort Wakfu : le sort puise dans le Wakfu du lanceur ou de la lanceuse (équivalent du magique côté Dofus)."
           : "Sort physique : le sort puise dans la force physique.",
 );
 

@@ -99,9 +99,111 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    /** Éditeur dans une modal : annulation sans redirection vers la fiche lecture. */
+    embeddedInModal: {
+        type: Boolean,
+        default: false,
+    },
+    /**
+     * Envoyé au PATCH (ex. sort depuis la liste) pour choisir la redirection serveur (`index` | `show`).
+     */
+    redirectAfterUpdate: {
+        type: String,
+        default: null,
+    },
+    /**
+     * Mise en page dense multi-colonnes (`spell` : sections en grille, champs 3 cols sur xl).
+     */
+    layoutProfile: {
+        type: String,
+        default: null,
+        validator: (v) => v == null || v === '' || v === 'spell',
+    },
+    /** Pied d’actions fixe (enregistrer / annuler / reset) visible au scroll. */
+    fixedFooterActions: {
+        type: Boolean,
+        default: false,
+    },
+    /**
+     * Positionnement horizontal du pied fixe (sidebar desktop).
+     * @example 'left-0 right-0 lg:left-64'
+     */
+    fixedFooterInsetClass: {
+        type: String,
+        default: 'left-0 right-0 lg:left-64',
+    },
 });
 
 const emit = defineEmits(['submit', 'cancel']);
+
+const isSpellLayout = computed(() => props.layoutProfile === 'spell');
+
+/** Conteneur des sections (grille ou empilé). */
+const sectionsContainerClass = computed(() => {
+    if (!props.fieldSections?.length) {
+        return '';
+    }
+    return isSpellLayout.value
+        ? 'grid gap-4 lg:grid-cols-2 xl:grid-cols-3'
+        : 'space-y-5';
+});
+
+/**
+ * Portée de colonnes pour une section (profil sort).
+ *
+ * @param {{ id?: string }} sec
+ * @returns {string}
+ */
+function spellSectionColClass(sec) {
+    if (!isSpellLayout.value || !sec?.id) {
+        return '';
+    }
+    if (sec.id === 'general') {
+        return 'xl:col-span-2';
+    }
+    /** Portée + résolution : première colonne de la grille (sous Généralités). */
+    if (sec.id === 'range_resolution') {
+        return 'xl:col-start-1 xl:col-span-1';
+    }
+    if (sec.id === 'admin') {
+        return 'lg:col-span-2 xl:col-span-3';
+    }
+    return '';
+}
+
+const sectionCardClass = computed(() =>
+    isSpellLayout.value
+        ? 'rounded-xl border border-base-300/70 bg-base-100/25 p-3 shadow-sm md:p-3.5'
+        : 'rounded-xl border border-base-300/70 bg-base-100/30 p-3 shadow-sm md:p-4',
+);
+
+const sectionTitleClass = computed(() =>
+    isSpellLayout.value
+        ? 'text-sm font-semibold tracking-tight text-base-content'
+        : 'text-base font-semibold tracking-tight text-base-content',
+);
+
+const sectionSubtitleClass = computed(() =>
+    isSpellLayout.value
+        ? 'mt-0.5 text-[11px] leading-snug text-base-content/70 md:text-xs'
+        : 'mt-0.5 text-xs leading-snug text-base-content/70 md:text-sm',
+);
+
+const rootFormClass = computed(() => {
+    const parts = ['entity-edit-form'];
+    if (isSpellLayout.value) {
+        parts.push('entity-edit-form--spell-layout');
+    }
+    if (props.fixedFooterActions) {
+        parts.push('entity-edit-form--fixed-footer');
+    }
+    return parts.join(' ');
+});
+
+/** Espace sous le formulaire pour ne pas masquer le dernier champ derrière le pied fixe. */
+const formScrollPaddingClass = computed(() =>
+    props.fixedFooterActions ? 'pb-28 md:pb-32 lg:pb-36' : '',
+);
 
 const notificationStore = useNotificationStore();
 
@@ -315,7 +417,9 @@ const initializeForm = () => {
 const getDefaultValue = (type) => {
     switch (type) {
         case 'number': return null;
-        case 'checkbox': return false;
+        case 'checkbox':
+        case 'physiqueWakfu':
+            return false;
         case 'select': return null;
         case 'elementPrimaries': return null;
         case 'spellTypesMulti': return [];
@@ -548,6 +652,7 @@ const getFieldRenderType = (fieldKey, fieldConfig) => {
     if (fieldConfig?.type === 'text' && isImageField(fieldKey, fieldConfig)) return 'file';
     if (fieldConfig?.type === 'elementPrimaries') return 'elementPrimaries';
     if (fieldConfig?.type === 'spellTypesMulti') return 'spellTypesMulti';
+    if (fieldConfig?.type === 'physiqueWakfu') return 'physiqueWakfu';
     return fieldConfig?.type || 'text';
 };
 
@@ -630,7 +735,7 @@ const submit = () => {
         const data = form.data();
         for (const key of (props.differentFields || [])) {
             const type = fieldsConfig.value?.[key]?.type;
-            if (type === 'checkbox') {
+            if (type === 'checkbox' || type === 'physiqueWakfu') {
                 if (!checkboxDirty.value?.[key]) delete data[key];
             } else {
                 if (!fieldDirty.value?.[key]) delete data[key];
@@ -651,7 +756,11 @@ const submit = () => {
     const routeParams = props.isUpdating ? { [routeParamKey]: entityId } : {};
 
     const method = props.isUpdating ? 'patch' : 'post';
-    
+
+    if (props.redirectAfterUpdate && method === 'patch') {
+        form.redirect_after_update = props.redirectAfterUpdate;
+    }
+
     form[method](route(routeName, routeParams), {
         preserveScroll: true,
         onSuccess: () => {
@@ -667,15 +776,22 @@ const submit = () => {
                 { duration: 5000, placement: 'top-right' }
             );
             console.error('Erreurs de validation:', errors);
-        }
+        },
+        onFinish: () => {
+            if (props.redirectAfterUpdate && Object.prototype.hasOwnProperty.call(form, 'redirect_after_update')) {
+                delete form.redirect_after_update;
+            }
+        },
     });
 };
 
 // Annulation
 const cancel = () => {
     emit('cancel');
-    // Ne pas rediriger si c'est dans un modal (le modal gère la fermeture)
-    // Seulement rediriger si c'est une page d'édition
+    if (props.embeddedInModal) {
+        return;
+    }
+    // Seulement rediriger si c'est une page d'édition hors modal
     if (props.isUpdating) {
         const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
         const entityId = props.entity?.id ?? null;
@@ -688,7 +804,7 @@ const cancel = () => {
 </script>
 
 <template>
-    <Container class="entity-edit-form">
+    <Container :class="rootFormClass">
         <div class="flex flex-col gap-3 mb-4">
             <div class="top-tools-row">
                 <div class="top-tools-row__formula rounded-(--radius-field) border border-base-300 bg-base-100/60 px-3 py-2">
@@ -713,18 +829,18 @@ const cancel = () => {
         </div>
 
         <!-- Formulaire -->
-        <form @submit.prevent="submit" class="space-y-5">
-            <div v-if="mainFieldSections?.length" class="space-y-5">
+        <form @submit.prevent="submit" :class="['space-y-5', formScrollPaddingClass]">
+            <div v-if="mainFieldSections?.length" :class="sectionsContainerClass">
                 <section
                     v-for="sec in mainFieldSections"
                     :key="sec.id"
-                    class="rounded-xl border border-base-300/70 bg-base-100/30 p-3 shadow-sm md:p-4"
+                    :class="[sectionCardClass, spellSectionColClass(sec)]"
                 >
-                    <div class="mb-3 border-b border-base-300/50 pb-2">
-                        <h2 class="text-base font-semibold tracking-tight text-base-content">
+                    <div class="mb-2.5 border-b border-base-300/50 pb-2 md:mb-3">
+                        <h2 :class="sectionTitleClass">
                             {{ sec.title }}
                         </h2>
-                        <p v-if="sec.subtitle" class="mt-0.5 text-xs leading-snug text-base-content/70 md:text-sm">
+                        <p v-if="sec.subtitle" :class="sectionSubtitleClass">
                             {{ sec.subtitle }}
                         </p>
                     </div>
@@ -786,8 +902,19 @@ const cancel = () => {
             </div>
 
             <!-- Actions -->
-            <div class="pt-6 border-glass-t-md">
-                <div class="footer-tools-row">
+            <div
+                :class="[
+                    fixedFooterActions
+                        ? `fixed bottom-0 z-40 border-t border-base-300/80 bg-base-100/95 shadow-[0_-6px_24px_-8px_rgba(0,0,0,0.18)] backdrop-blur-md ${fixedFooterInsetClass}`
+                        : 'border-glass-t-md pt-6',
+                ]"
+            >
+                <div
+                    :class="[
+                        'footer-tools-row',
+                        fixedFooterActions ? 'mx-auto max-w-7xl px-3 py-3 sm:px-4' : '',
+                    ]"
+                >
                     <div
                         v-if="accessLevelFields.length"
                         class="access-levels"
@@ -810,39 +937,39 @@ const cancel = () => {
                     </div>
 
                     <div class="footer-actions flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-                    <Btn
-                        type="button"
-                        variant="outline"
-                        class="order-1"
-                        @click="cancel"
-                    >
-                        Annuler
-                    </Btn>
-
-                    <Tooltip
-                        content="Réinitialise le formulaire : revient aux valeurs chargées au moment de l’ouverture (ou dernière synchro). En multi‑édition, remet les champs ‘valeurs différentes’ en mode ‘ne pas modifier’."
-                        placement="top"
-                    >
                         <Btn
                             type="button"
                             variant="outline"
-                            class="order-2"
-                            @click="resetForm"
+                            class="order-1"
+                            @click="cancel"
                         >
-                            <i class="fa-solid fa-arrow-rotate-left mr-2"></i>
-                            Reset
+                            Annuler
                         </Btn>
-                    </Tooltip>
 
-                    <Btn
-                        type="submit"
-                        color="primary"
-                        class="order-3"
-                        :disabled="form.processing"
-                    >
-                        <i class="fa-solid fa-save mr-2"></i>
-                        {{ form.processing ? 'Enregistrement...' : (isUpdating ? 'Mettre à jour' : 'Créer') }}
-                    </Btn>
+                        <Tooltip
+                            content="Réinitialise le formulaire : revient aux valeurs chargées au moment de l’ouverture (ou dernière synchro). En multi‑édition, remet les champs ‘valeurs différentes’ en mode ‘ne pas modifier’."
+                            placement="top"
+                        >
+                            <Btn
+                                type="button"
+                                variant="outline"
+                                class="order-2"
+                                @click="resetForm"
+                            >
+                                <i class="fa-solid fa-arrow-rotate-left mr-2"></i>
+                                Reset
+                            </Btn>
+                        </Tooltip>
+
+                        <Btn
+                            type="submit"
+                            color="primary"
+                            class="order-3"
+                            :disabled="form.processing"
+                        >
+                            <i class="fa-solid fa-save mr-2"></i>
+                            {{ form.processing ? 'Enregistrement...' : (isUpdating ? 'Mettre à jour' : 'Créer') }}
+                        </Btn>
                     </div>
                 </div>
             </div>
@@ -997,6 +1124,42 @@ const cancel = () => {
         min-height: 2rem;
         height: 2rem;
         font-size: 0.8rem;
+    }
+
+    /**
+     * Sort : champs empilés verticalement dans chaque section.
+     * Évite les labels longs (ex. « Coût PA ») qui empiètent sur la colonne suivante
+     * quand plusieurs .form-field étaient côte à côte (50 % / 33 %).
+     */
+    &--spell-layout {
+        .form-fields {
+            flex-direction: column;
+            flex-wrap: nowrap;
+        }
+
+        .form-field,
+        .form-field--meta-pair,
+        .form-field--wide,
+        .form-field--full {
+            width: 100%;
+            max-width: 100%;
+            flex: 1 1 100%;
+        }
+    }
+
+    &--fixed-footer {
+        .footer-tools-row {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 768px) {
+            .footer-tools-row {
+                flex-direction: row;
+                align-items: flex-end;
+                justify-content: space-between;
+            }
+        }
     }
 }
 </style>

@@ -455,7 +455,7 @@ class SpellTableController extends Controller
                 ->values()
                 ->all(),
             'is_magic' => [
-                ['value' => '1', 'label' => 'Magique'],
+                ['value' => '1', 'label' => 'Wakfu'],
                 ['value' => '0', 'label' => 'Physique'],
             ],
             'allows_reaction' => [

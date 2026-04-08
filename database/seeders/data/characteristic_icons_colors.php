@@ -718,7 +718,7 @@ return [
         'bouclier_spell' => 'Bouclier généré par le sort (sous-effet protéger). Conversion Dofus → Krosmoz.',
         'number_between_two_cast_spell' => 'Nombre de tours minimum entre deux lancers du même sort.',
         'sight_line_spell' => 'Oui : ligne de vue obligatoire vers la zone cible. Non : aucune ligne de vue requise. Règles 3.3.2.2.',
-        'is_magic_spell' => 'Magique : le sort puise dans le Wakfu du lanceur ou de la lanceuse. Physique : le sort puise dans la force physique (la résolution au combat peut varier selon les sorts).',
+        'is_magic_spell' => 'Wakfu : le sort puise dans le Wakfu (magique côté Dofus). Physique : le sort puise dans la force physique (la résolution au combat peut varier selon les sorts).',
         'category_spell' => 'Catégorie du sort (offensif, soin, etc.).',
         'range_editable_spell' => 'Indique si la portée peut être modifiée par le PO du lanceur (3.3.2.2).',
         'spell_range_min_spell' => 'Portée minimale du sort en cases (DofusDB levels.0.minRange).',

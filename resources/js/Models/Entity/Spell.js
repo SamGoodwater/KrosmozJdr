@@ -871,12 +871,22 @@ export class Spell extends BaseModel {
     }
 
     /**
-     * Génère une cellule pour is_magic
+     * Génère une cellule pour is_magic (Wakfu = magique Dofus, Physique = non magique).
      * @private
      */
-    _toIsMagicCell(format, size, options) {
-        // Utiliser le BooleanFormatter via la méthode de base
-        return super.toCell('is_magic', options);
+    _toIsMagicCell(_format, _size, _options) {
+        const on = Boolean(this.isMagic);
+        const label = on ? 'Wakfu' : 'Physique';
+        return {
+            type: 'badge',
+            value: label,
+            params: {
+                color: on ? 'success' : 'neutral',
+                sortValue: on ? 1 : 0,
+                searchValue: label,
+                filterValue: on ? 1 : 0,
+            },
+        };
     }
 
     /**

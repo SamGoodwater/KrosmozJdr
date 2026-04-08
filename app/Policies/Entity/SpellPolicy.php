@@ -4,7 +4,6 @@ namespace App\Policies\Entity;
 
 use App\Models\Entity\Spell;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class SpellPolicy
 {
@@ -55,6 +54,14 @@ class SpellPolicy
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, Spell $spell): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
+     * Suppression depuis l’UI liste / fiche (exposition {@link EntityPermissionService} → deleteAny).
+     */
+    public function deleteAny(User $user): bool
     {
         return $user->isAdmin();
     }

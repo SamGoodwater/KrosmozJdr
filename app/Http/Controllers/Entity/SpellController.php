@@ -13,6 +13,7 @@ use App\Models\Type\SpellType;
 use App\Services\Effect\EffectGroupEditorDataService;
 use App\Services\Effect\EffectGroupUpdateService;
 use App\Services\PdfService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
@@ -128,19 +129,23 @@ class SpellController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Données partagées page / modal d’édition (évite la duplication).
+     *
+     * @return array{
+     *     spell: Spell,
+     *     availableSpellTypes: \Illuminate\Database\Eloquent\Collection,
+     *     availableEffects: array<int, array<string, mixed>>,
+     *     effectEntityType: string,
+     *     effectFormOptions: array<string, mixed>,
+     *     spellEffectGroups: array<int, mixed>
+     * }
      */
-    public function edit(Spell $spell)
+    protected function buildSpellEditPayload(Spell $spell): array
     {
-        $this->authorize('update', $spell);
-
         $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes', 'effects.degrees']);
 
-        $availableBreeds = \App\Models\Entity\Breed::select('id', 'name', 'description')
-            ->orderBy('name')
-            ->get();
-
-        $availableSpellTypes = \App\Models\Type\SpellType::select('id', 'name', 'description', 'color', 'icon')
+        $availableSpellTypes = SpellType::query()
+            ->select(['id', 'name', 'description', 'color', 'icon'])
             ->orderBy('name')
             ->get();
 
@@ -163,14 +168,51 @@ class SpellController extends Controller
 
         $editorData = app(EffectGroupEditorDataService::class);
 
-        return Inertia::render('Pages/entity/spell/Edit', [
-            'spell' => new SpellResource($spell),
-            'availableBreeds' => $availableBreeds,
+        return [
+            'spell' => $spell,
             'availableSpellTypes' => $availableSpellTypes,
             'availableEffects' => $availableEffects,
             'effectEntityType' => 'spell',
             'effectFormOptions' => $editorData->formOptions(),
             'spellEffectGroups' => $editorData->distinctGroupsForSpell($spell),
+        ];
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Spell $spell)
+    {
+        $this->authorize('update', $spell);
+
+        $payload = $this->buildSpellEditPayload($spell);
+
+        return Inertia::render('Pages/entity/spell/Edit', [
+            'spell' => new SpellResource($payload['spell']),
+            'availableSpellTypes' => $payload['availableSpellTypes'],
+            'availableEffects' => $payload['availableEffects'],
+            'effectEntityType' => $payload['effectEntityType'],
+            'effectFormOptions' => $payload['effectFormOptions'],
+            'spellEffectGroups' => $payload['spellEffectGroups'],
+        ]);
+    }
+
+    /**
+     * Charge utile JSON pour l’éditeur complet en modal (liste des sorts).
+     */
+    public function editPayload(Spell $spell): JsonResponse
+    {
+        $this->authorize('update', $spell);
+
+        $payload = $this->buildSpellEditPayload($spell);
+
+        return response()->json([
+            'spell' => (new SpellResource($payload['spell']))->toArray(request()),
+            'availableSpellTypes' => $payload['availableSpellTypes']->toArray(),
+            'availableEffects' => $payload['availableEffects'],
+            'effectEntityType' => $payload['effectEntityType'],
+            'effectFormOptions' => $payload['effectFormOptions'],
+            'spellEffectGroups' => $payload['spellEffectGroups'],
         ]);
     }
 
@@ -195,6 +237,9 @@ class SpellController extends Controller
         $this->authorize('update', $spell);
 
         $data = $request->validated();
+        $redirectAfter = $data['redirect_after_update'] ?? null;
+        unset($data['redirect_after_update']);
+
         $spellTypes = $data['spellTypes'] ?? null;
         unset($data['spellTypes']);
 
@@ -206,12 +251,18 @@ class SpellController extends Controller
 
         $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes']);
 
+        if ($redirectAfter === 'index') {
+            return redirect()->route('entities.spells.index')
+                ->with('success', 'Sort mis à jour avec succès.');
+        }
+
         return redirect()->route('entities.spells.show', $spell)
             ->with('success', 'Sort mis à jour avec succès.');
     }
 
     /**
-     * Update the breeds (affichées « Classes ») of a spell.
+     * Synchronise les classes (breeds) liées au sort.
+     * L’UI principale pour lier un sort à une classe est la fiche classe ; cette route reste pour tests / usages programmatiques.
      */
     public function updateBreeds(\Illuminate\Http\Request $request, Spell $spell)
     {
@@ -253,9 +304,13 @@ class SpellController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Spell $spell)
+    public function delete(Spell $spell): RedirectResponse
     {
-        //
+        $this->authorize('delete', $spell);
+        $spell->delete();
+
+        return redirect()->route('entities.spells.index')
+            ->with('success', 'Sort supprimé (corbeille).');
     }
 
     /**

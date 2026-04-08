@@ -97,6 +97,12 @@ const isSelectField = computed(() => fieldType.value === 'select');
 // Vérifier si c'est un champ de type file
 const isFileField = computed(() => fieldType.value === 'file');
 
+/** Même logique que {@link EntityEditFormFieldBody} : zone image compacte si `accept` image. */
+const fileFieldPresentation = computed(() => {
+    const a = String(props.fieldConfig?.accept || '');
+    return a.includes('image') ? 'imageHero' : 'default';
+});
+
 // Upload (optionnel) pour les FileFields: si fieldConfig.uploadUrl est fourni, on upload immédiatement
 const uploading = ref(false);
 const uploadError = ref(null);
@@ -292,6 +298,7 @@ const handleFileUpdate = async (v) => {
             :disabled="disabled || fieldConfig?.disabled"
             :validation="error ? { state: 'error', message: error } : null"
             :current-path="currentFilePath"
+            :presentation="fileFieldPresentation"
             @update:model-value="handleFileUpdate"
         />
 

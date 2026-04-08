@@ -412,7 +412,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
     },
     is_magic: {
       key: "is_magic",
-      label: "Magique / physique",
+      label: "Physique / Wakfu",
       icon: "fa-solid fa-wand-magic",
       table: {
         sortable: true,
@@ -431,7 +431,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "checkbox",
+          type: "physiqueWakfu",
           group: "Métier",
           required: false,
           showInCompact: true,

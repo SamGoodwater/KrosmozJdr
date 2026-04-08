@@ -2605,10 +2605,10 @@ return array (
   173 => 
   array (
     'key' => 'is_magic_spell',
-    'name' => 'Sort magique',
-    'short_name' => 'Magique',
-    'helper' => 'Sort magique : le sort puise dans le Wakfu du lanceur ou de la lanceuse. Sort physique : le sort puise dans la force physique.',
-    'descriptions' => 'Magique vs physique décrit la ressource ou la nature du sort (Wakfu côté magie, force physique côté physique), pas un type de jet unique.',
+    'name' => 'Physique ou Wakfu',
+    'short_name' => 'Phys. / Wakfu',
+    'helper' => 'Physique : le sort puise dans la force physique. Wakfu : le sort puise dans le Wakfu (équivalent du « magique » côté Dofus).',
+    'descriptions' => 'Physique vs Wakfu décrit la ressource ou la nature du sort (Wakfu côté magie Dofus, force physique côté physique), pas un type de jet unique.',
     'icon' => 'spellMagic.webp',
     'icon_false' => 'spellPhysic.webp',
     'color' => '#79f0fa',

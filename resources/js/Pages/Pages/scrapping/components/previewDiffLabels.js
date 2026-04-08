@@ -53,7 +53,7 @@ export const FIELD_LABELS = {
     dofusdb_id: "ID DofusDB",
     element: "Élément",
     category: "Catégorie",
-    is_magic: "Magique",
+    is_magic: "Wakfu / Physique",
     powerful: "Puissant",
     number_between_two_cast: "Relance (tours)",
     length: "Nombre d’éléments",

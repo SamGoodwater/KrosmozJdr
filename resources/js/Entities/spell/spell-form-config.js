@@ -87,8 +87,9 @@ export function buildSpellFormFieldsConfig(options = {}) {
             help: '« Aucun » : sort non lié à un élément. Sinon, cochez les primaires ; la valeur enregistrée est la combinaison 0–29.',
         },
         is_magic: {
-            type: 'checkbox',
-            label: 'Magique',
+            type: 'physiqueWakfu',
+            label: 'Physique ou Wakfu',
+            help: 'Physique : le sort puise dans la force physique. Wakfu : le sort puise dans le Wakfu (équivalent du « magique » côté Dofus).',
             required: false,
             showInCompact: true,
         },
@@ -278,16 +279,14 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
         ],
     },
     {
-        id: 'range',
-        title: 'Portée (PO)',
-        subtitle: 'Min, max et possibilité de modifier la portée en jeu.',
-        fieldKeys: ['po_min', 'po_max', 'po_editable'],
-    },
-    {
-        id: 'resolution',
-        title: 'Résolution au combat',
-        subtitle: 'Jets d’attaque, sauvegarde ou réussite automatique ; option si la cible est consentante.',
+        id: 'range_resolution',
+        title: 'Portée et résolution au combat',
+        subtitle:
+            'PO min / max et portée modifiable en jeu ; jets d’attaque, sauvegarde ou réussite automatique (cible consentante).',
         fieldKeys: [
+            'po_min',
+            'po_max',
+            'po_editable',
             'resolution_mode',
             'attack_characteristic_key',
             'save_characteristic_key',
@@ -318,7 +317,6 @@ export const SPELL_FORM_FIELD_SECTIONS_CREATE = [
     SPELL_FORM_FIELD_SECTIONS_EDIT[0],
     SPELL_FORM_FIELD_SECTIONS_EDIT[1],
     SPELL_FORM_FIELD_SECTIONS_EDIT[2],
-    SPELL_FORM_FIELD_SECTIONS_EDIT[3],
     {
         id: 'admin',
         title: 'Métadonnées & droits',
