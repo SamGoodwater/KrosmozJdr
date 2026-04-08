@@ -42,6 +42,8 @@ use Spatie\MediaLibrary\HasMedia;
  * @property string|null $save_success_note
  * @property bool $auto_success_if_willing_target Réussite auto si la cible est consentante
  * @property bool $allows_reaction Utilisable comme réaction de combat (PA non récupérés au tour suivant)
+ * @property string|null $casting_time Temps d'incantation (texte libre)
+ * @property bool|null $ritual_available Utilisable en mode rituel (null = non renseigné)
  * @property string $state
  * @property int $read_level
  * @property int $write_level
@@ -187,6 +189,8 @@ class Spell extends Model implements HasMedia
         'po_max',
         'po_editable',
         'pa',
+        'casting_time',
+        'ritual_available',
         'cast_per_turn',
         'cast_per_target',
         'sight_line',
@@ -227,6 +231,7 @@ class Spell extends Model implements HasMedia
         'auto_update' => 'boolean',
         'auto_success_if_willing_target' => 'boolean',
         'allows_reaction' => 'boolean',
+        'ritual_available' => 'boolean',
     ];
 
     /**

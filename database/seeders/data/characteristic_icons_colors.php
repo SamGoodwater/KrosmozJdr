@@ -228,7 +228,7 @@ return [
         'bouclier_spell' => 'shield.webp',
         'number_between_two_cast_spell' => 'timeBeforeUseAgain.webp',
         'sight_line_spell' => 'sightLine.webp',
-        'is_magic_spell' => 'spell_wakfu.webp',
+        'is_magic_spell' => 'spellMagic.webp',
         'category_spell' => 'heal.webp',
         'range_editable_spell' => 'rangeEditable.webp',
         'spell_range_min_spell' => 'range.webp',
@@ -236,7 +236,7 @@ return [
         'casting_time_spell' => 'castingTime.webp',
         'duration_spell' => 'timeBeforeUseAgain.webp',
         'time_before_use_again_spell' => 'timeBeforeUseAgain.webp',
-        'ritual_available_spell' => 'heal.webp',
+        'ritual_available_spell' => 'ritual.webp',
         'allows_reaction_spell' => 'icons/caracteristics/is_reaction.webp',
         // —— Spell : Type 2 creature (icônes alignées sur *_creature) ——
         'initiative_spell' => 'initiative.webp',
@@ -717,8 +717,8 @@ return [
         'vol_vie_spell' => 'Vol de vie (frapper + life_steal_formula). Conversion Dofus → Krosmoz.',
         'bouclier_spell' => 'Bouclier généré par le sort (sous-effet protéger). Conversion Dofus → Krosmoz.',
         'number_between_two_cast_spell' => 'Nombre de tours minimum entre deux lancers du même sort.',
-        'sight_line_spell' => 'Le sort nécessite une ligne de vue claire vers la cible (oui/non). Règles 3.3.2.2.',
-        'is_magic_spell' => 'Magique : jet de sauvegarde (DD 8 + mod + maîtrise). Physique : jet de touche contre CA. Règles 3.3.2.3.',
+        'sight_line_spell' => 'Oui : ligne de vue obligatoire vers la zone cible. Non : aucune ligne de vue requise. Règles 3.3.2.2.',
+        'is_magic_spell' => 'Magique : le sort puise dans le Wakfu du lanceur ou de la lanceuse. Physique : le sort puise dans la force physique (la résolution au combat peut varier selon les sorts).',
         'category_spell' => 'Catégorie du sort (offensif, soin, etc.).',
         'range_editable_spell' => 'Indique si la portée peut être modifiée par le PO du lanceur (3.3.2.2).',
         'spell_range_min_spell' => 'Portée minimale du sort en cases (DofusDB levels.0.minRange).',
@@ -747,5 +747,23 @@ return [
         'save_agility_spell' => 'Bonus jet sauvegarde Agilité appliqué par les sous-effets de sort (booster, retirer).',
         'wakfu_reserve_spell' => 'Réserve Wakfu appliquée par les sous-effets de sort (booster, retirer).',
         'mastery_bonus_spell' => 'Bonus de maîtrise appliqué par les sous-effets de sort (booster, retirer).',
+    ],
+
+    /**
+     * Icônes pour l’état « faux » des booléens (complément de icon_false en BDD).
+     * Utilisé par CharacteristicSeeder quand la ligne characteristics.php ne définit pas icon_false.
+     */
+    'icons_false' => [
+        'is_magic_spell' => 'spellPhysic.webp',
+        'ritual_available_spell' => 'notRitual.webp',
+        'sight_line_spell' => 'noSightLine.webp',
+        'range_editable_spell' => 'noPoEditable.webp',
+    ],
+
+    /** Couleurs hex pour l’état « faux » (aligné sur characteristics.php / migration color_false). */
+    'colors_false' => [
+        'is_magic_spell' => '#ff8a65',
+        'ritual_available_spell' => '#78909c',
+        'range_editable_spell' => '#78909c',
     ],
 ];

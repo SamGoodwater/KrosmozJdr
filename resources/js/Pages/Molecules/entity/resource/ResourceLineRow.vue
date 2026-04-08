@@ -208,16 +208,25 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                         @action="(k, e) => emit('action', k, e, row)"
                     />
                 </div>
-                <CheckboxCore
-                    v-if="showSelection && isSelected"
-                    :model-value="isSelected"
-                    size="xs"
-                    :color="uiColor"
-                    aria-label="Sélectionner"
-                    class="shrink-0"
-                    @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
+                <div
+                    v-if="showSelection"
+                    class="flex shrink-0 items-center transition-[max-width,opacity] duration-150 ease-out"
+                    :class="
+                        isSelected
+                            ? 'max-w-10 overflow-visible opacity-100 pointer-events-auto'
+                            : 'max-w-0 overflow-hidden opacity-0 pointer-events-none group-hover:max-w-10 group-hover:overflow-visible group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:max-w-10 group-focus-within:overflow-visible group-focus-within:opacity-100 group-focus-within:pointer-events-auto'
+                    "
                     @click.stop
-                />
+                >
+                    <CheckboxCore
+                        :model-value="isSelected"
+                        size="xs"
+                        :color="uiColor"
+                        aria-label="Sélectionner"
+                        class="shrink-0"
+                        @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
+                    />
+                </div>
             </div>
             <!-- Ligne 2 : Type • Rareté • Prix • Poids -->
             <div class="flex flex-wrap items-center gap-2 text-sm">

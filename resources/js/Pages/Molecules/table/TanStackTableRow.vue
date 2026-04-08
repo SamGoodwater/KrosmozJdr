@@ -272,7 +272,7 @@ const handleAction = (actionKey, entity) => {
         data-table-row-focus
         data-row-contextmenu-target
         :data-row-id="String(props.row?.id ?? '')"
-        class="hover:bg-base-200 transition-[colors,box-shadow] duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+        class="group hover:bg-base-200 transition-[colors,box-shadow] duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
         :class="isSelected ? selectedBgClass : null"
         tabindex="0"
         :aria-label="rowAriaLabel"
@@ -290,15 +290,23 @@ const handleAction = (actionKey, entity) => {
                     :class="[dotBgClass]"
                 />
             </Tooltip>
-            <CheckboxCore
-                v-if="isSelected"
-                :model-value="isSelected"
-                size="xs"
-                :color="uiColor"
-                :aria-label="selectionAriaLabel"
-                @click.stop
-                @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
-            />
+            <div
+                class="inline-flex items-center justify-center transition-opacity duration-150"
+                :class="
+                    isSelected
+                        ? 'opacity-100 pointer-events-auto'
+                        : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
+                "
+            >
+                <CheckboxCore
+                    :model-value="isSelected"
+                    size="xs"
+                    :color="uiColor"
+                    :aria-label="selectionAriaLabel"
+                    @click.stop
+                    @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
+                />
+            </div>
         </td>
         <!-- Colonne Actions - au début -->
         <td v-if="showActionsColumn && entityType" class="w-12 relative">

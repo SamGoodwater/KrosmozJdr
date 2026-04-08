@@ -116,6 +116,15 @@ export class Spell extends BaseModel {
         return this._data.pa || null;
     }
 
+    /** Temps d'incantation (texte libre), chaîne vide si absent. */
+    get castingTime() {
+        const v = this._data.casting_time;
+        if (v == null || v === "") {
+            return "";
+        }
+        return String(v);
+    }
+
     get castPerTurn() {
         return this._data.cast_per_turn || null;
     }
@@ -125,7 +134,11 @@ export class Spell extends BaseModel {
     }
 
     get sightLine() {
-        return this._data.sight_line || null;
+        const v = this._data.sight_line;
+        if (v === null || v === undefined) {
+            return null;
+        }
+        return Boolean(v);
     }
 
     get numberBetweenTwoCast() {
@@ -1134,6 +1147,11 @@ export class Spell extends BaseModel {
             category: this.category,
             is_magic: this.isMagic,
             allows_reaction: this.allowsReaction,
+            casting_time: this.castingTime,
+            ritual_available:
+                this._data.ritual_available !== null && this._data.ritual_available !== undefined
+                    ? Boolean(this._data.ritual_available)
+                    : Boolean(this._data.is_ritual),
             powerful: this.powerful,
             resolution_mode: this.resolutionMode,
             attack_characteristic_key: this.attackCharacteristicKey,

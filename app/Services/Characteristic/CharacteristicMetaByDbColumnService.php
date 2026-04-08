@@ -337,6 +337,10 @@ final class CharacteristicMetaByDbColumnService
         if (is_string($icon) && $icon !== '' && ! str_starts_with($icon, 'fa-') && ! str_contains($icon, '/')) {
             $icon = 'icons/caracteristics/'.$icon;
         }
+        $iconFalse = $c->icon_false ?? null;
+        if (is_string($iconFalse) && $iconFalse !== '' && ! str_starts_with($iconFalse, 'fa-') && ! str_contains($iconFalse, '/')) {
+            $iconFalse = 'icons/caracteristics/'.$iconFalse;
+        }
 
         return array_merge([
             'key' => $key,
@@ -346,7 +350,9 @@ final class CharacteristicMetaByDbColumnService
             'helper' => $c->helper,
             'descriptions' => $c->descriptions,
             'icon' => $icon,
+            'icon_false' => $iconFalse,
             'color' => $c->color,
+            'color_false' => $c->color_false ?? null,
             'unit' => $c->unit,
             'type' => $c->type,
         ], array_filter($extra, fn ($v) => $v !== null));
@@ -371,6 +377,10 @@ final class CharacteristicMetaByDbColumnService
         if (is_string($icon) && $icon !== '' && ! str_starts_with($icon, 'fa-') && ! str_contains($icon, '/')) {
             $icon = 'icons/caracteristics/'.$icon;
         }
+        $iconFalse = $c->icon_false ?? null;
+        if (is_string($iconFalse) && $iconFalse !== '' && ! str_starts_with($iconFalse, 'fa-') && ! str_contains($iconFalse, '/')) {
+            $iconFalse = 'icons/caracteristics/'.$iconFalse;
+        }
 
         return array_merge([
             'key' => $c->key,
@@ -380,7 +390,9 @@ final class CharacteristicMetaByDbColumnService
             'helper' => $c->helper,
             'descriptions' => $c->descriptions,
             'icon' => $icon,
+            'icon_false' => $iconFalse,
             'color' => $c->color,
+            'color_false' => $c->color_false ?? null,
             'unit' => $c->unit,
             'type' => $c->type,
         ], array_filter($extra, fn ($v) => $v !== null));

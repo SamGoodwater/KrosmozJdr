@@ -9,6 +9,7 @@ use App\Models\Type\SpellType;
 use App\Services\Effect\EffectResolutionService;
 use App\Services\Effect\SpellEffectDefinitionsSerializer;
 use App\Support\AreaConstants;
+use App\Support\AreaNotation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -117,7 +118,10 @@ class SpellTableController extends Controller
                         $details[] = $targetLabel;
                     }
                     if ($area !== null && (string) $area !== '') {
-                        $details[] = "zone {$area}";
+                        $zoneLabel = AreaNotation::describeInFrench((string) $area);
+                        if ($zoneLabel !== '') {
+                            $details[] = $zoneLabel;
+                        }
                     }
                     $details[] = $durationLabel;
                     $displayText = $text;
@@ -220,6 +224,12 @@ class SpellTableController extends Controller
             'effects_definitions' => $this->spellEffectDefinitionsSerializer->serialize($spell->effects ?? collect()),
             'po_min' => $spell->po_min,
             'po_max' => $spell->po_max,
+            'resolution_mode' => (string) ($spell->resolution_mode ?? 'attack_roll'),
+            'attack_characteristic_key' => $spell->attack_characteristic_key,
+            'save_characteristic_key' => $spell->save_characteristic_key,
+            'save_dc_formula' => $spell->save_dc_formula,
+            'save_success_note' => $spell->save_success_note,
+            'auto_success_if_willing_target' => (bool) ($spell->auto_success_if_willing_target ?? false),
         ];
     }
 
@@ -490,6 +500,8 @@ class SpellTableController extends Controller
                     'po' => $sp->po_display,
                     'po_editable' => (bool) $sp->po_editable,
                     'pa' => $sp->pa,
+                    'casting_time' => $sp->casting_time,
+                    'ritual_available' => $sp->ritual_available,
                     'cast_per_turn' => $sp->cast_per_turn,
                     'cast_per_target' => $sp->cast_per_target,
                     'sight_line' => (bool) $sp->sight_line,
@@ -659,6 +671,8 @@ class SpellTableController extends Controller
                         'po' => $sp->po_display,
                         'po_editable' => (bool) $sp->po_editable,
                         'pa' => $sp->pa,
+                        'casting_time' => $sp->casting_time,
+                        'ritual_available' => $sp->ritual_available,
                         'cast_per_turn' => $sp->cast_per_turn,
                         'cast_per_target' => $sp->cast_per_target,
                         'sight_line' => (bool) $sp->sight_line,

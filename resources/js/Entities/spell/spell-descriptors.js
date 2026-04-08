@@ -354,6 +354,92 @@ export function getSpellFieldDescriptors(ctx = {}) {
         },
       },
     },
+    casting_time: {
+      key: "casting_time",
+      label: "Temps d'incantation",
+      icon: "fa-solid fa-hourglass-half",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    ritual_available: {
+      key: "ritual_available",
+      label: "Rituel disponible",
+      icon: "fa-solid fa-book",
+      table: {
+        sortable: true,
+        filterable: { id: "ritual_available", type: "boolean", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" || v === null ? null : Boolean(v)) },
+        },
+      },
+    },
+    is_magic: {
+      key: "is_magic",
+      label: "Magique / physique",
+      icon: "fa-solid fa-wand-magic",
+      table: {
+        sortable: true,
+        filterable: { id: "is_magic", type: "boolean", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          defaultValue: true,
+          bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
+        },
+      },
+    },
     element: {
       key: "element",
       label: "Élément",

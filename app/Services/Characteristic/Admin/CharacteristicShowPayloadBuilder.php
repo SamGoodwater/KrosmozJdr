@@ -11,6 +11,7 @@ use App\Models\CharacteristicSpell;
 use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Core\Config\ScrappingMappingService;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Construit le payload Inertia pour la page « show » d'une caractéristique (selected, mappings, etc.).
@@ -37,8 +38,7 @@ final class CharacteristicShowPayloadBuilder
         private readonly CharacteristicGetterService $getter,
         private readonly ScrappingMappingService $mappingService,
         private readonly ConversionFunctionRegistry $conversionFunctionRegistry
-    ) {
-    }
+    ) {}
 
     /**
      * Payload pour la vue show : selected, scrappingMappingsUsingThis, characteristicsForConvertToLinked.
@@ -57,6 +57,9 @@ final class CharacteristicShowPayloadBuilder
         $entityOverrideKeys = $buildResult['entity_override_keys'];
         $conversionFormulas = $this->buildConversionFormulas($characteristic->key, $entitiesForGroup);
 
+        $hasIconFalse = Schema::hasColumn('characteristics', 'icon_false');
+        $hasColorFalse = Schema::hasColumn('characteristics', 'color_false');
+
         $selected = [
             'id' => $characteristic->key,
             'name' => $effective->name,
@@ -64,7 +67,9 @@ final class CharacteristicShowPayloadBuilder
             'description' => $effective->descriptions,
             'helper' => $effective->helper,
             'icon' => $effective->icon,
+            'icon_false' => $hasIconFalse ? $effective->icon_false : null,
             'color' => $effective->color,
+            'color_false' => $hasColorFalse ? $effective->color_false : null,
             'type' => $effective->type,
             'unit' => $effective->unit,
             'sort_order' => $characteristic->sort_order,
@@ -200,6 +205,7 @@ final class CharacteristicShowPayloadBuilder
                 'handler_name' => '',
             ];
         }
+
         return $out;
     }
 
@@ -214,11 +220,12 @@ final class CharacteristicShowPayloadBuilder
         if (CharacteristicSpell::where('characteristic_id', $characteristic->id)->exists()) {
             return 'spell';
         }
+
         return 'creature';
     }
 
     /**
-     * @param array<string, mixed> $def
+     * @param  array<string, mixed>  $def
      * @return array<string, mixed>
      */
     private function definitionToEntityRow(array $def): array
@@ -253,11 +260,11 @@ final class CharacteristicShowPayloadBuilder
         if (array_key_exists('rune_price_per_unit', $def)) {
             $out['rune_price_per_unit'] = $def['rune_price_per_unit'];
         }
+
         return $out;
     }
 
     /**
-     * @param CharacteristicCreature|CharacteristicObject|CharacteristicSpell $row
      * @return array<string, mixed>
      */
     private function groupRowToEntity(CharacteristicCreature|CharacteristicObject|CharacteristicSpell $row, Characteristic $characteristic): array
@@ -286,6 +293,7 @@ final class CharacteristicShowPayloadBuilder
             $out['base_price_per_unit'] = $row->base_price_per_unit;
             $out['rune_price_per_unit'] = $row->rune_price_per_unit;
         }
+
         return $out;
     }
 }

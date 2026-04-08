@@ -44,7 +44,11 @@ export class Capability extends BaseModel {
     }
 
     get poEditable() {
-        return this._data.po_editable || null;
+        const v = this._data.po_editable;
+        if (v === null || v === undefined) {
+            return null;
+        }
+        return Boolean(v);
     }
 
     get timeBeforeUseAgain() {

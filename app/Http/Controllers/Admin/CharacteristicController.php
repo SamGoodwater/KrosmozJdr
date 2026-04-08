@@ -9,21 +9,22 @@ use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
-use App\Services\Characteristic\Admin\CharacteristicShowPayloadBuilder;
-use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
-use App\Services\Characteristic\Conversion\ConversionFormulaGenerator;
-use App\Services\Characteristic\Formula\CharacteristicFormulaService;
-use App\Services\Characteristic\Formula\FormulaConfigDecoder;
-use App\Services\Characteristic\CharacteristicColorCssGenerator;
-use App\Services\Characteristic\Getter\CharacteristicGetterService;
-use App\Services\Scrapping\Core\Config\ConfigLoader;
-use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\Scrapping\ScrappingEntityMappingTarget;
 use App\Models\User;
+use App\Services\Characteristic\Admin\CharacteristicShowPayloadBuilder;
+use App\Services\Characteristic\CharacteristicColorCssGenerator;
+use App\Services\Characteristic\Conversion\ConversionFormulaGenerator;
+use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
+use App\Services\Characteristic\Formula\CharacteristicFormulaService;
+use App\Services\Characteristic\Formula\FormulaConfigDecoder;
+use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -33,6 +34,20 @@ use Inertia\Response as InertiaResponse;
  */
 class CharacteristicController extends Controller
 {
+    /**
+     * La migration `2026_03_27_160000_add_icon_false_to_characteristics_table` ajoute la colonne.
+     * Tant qu’elle n’est pas passée, on n’inclut pas `icon_false` dans les requêtes SQL.
+     */
+    private function characteristicsTableHasIconFalseColumn(): bool
+    {
+        return Schema::hasColumn('characteristics', 'icon_false');
+    }
+
+    private function characteristicsTableHasColorFalseColumn(): bool
+    {
+        return Schema::hasColumn('characteristics', 'color_false');
+    }
+
     /** Entités possibles + '*' = toutes les entités du groupe (défaut). */
     private const ENTITIES = ['*', 'monster', 'class', 'npc', 'item', 'consumable', 'resource', 'panoply', 'spell'];
 
@@ -59,8 +74,7 @@ class CharacteristicController extends Controller
         private readonly CharacteristicShowPayloadBuilder $showPayloadBuilder,
         private readonly ScrappingMappingService $scrappingMappingService,
         private readonly ConfigLoader $configLoader
-    ) {
-    }
+    ) {}
 
     public function index(): InertiaResponse
     {
@@ -168,7 +182,9 @@ class CharacteristicController extends Controller
             'descriptions' => $characteristic->descriptions,
             'helper' => $characteristic->helper,
             'icon' => $characteristic->icon,
+            'icon_false' => $this->characteristicsTableHasIconFalseColumn() ? $characteristic->icon_false : null,
             'color' => $characteristic->color,
+            'color_false' => $this->characteristicsTableHasColorFalseColumn() ? $characteristic->color_false : null,
             'type' => $characteristic->type,
             'unit' => $characteristic->unit,
             'sort_order' => $characteristic->sort_order,
@@ -196,7 +212,9 @@ class CharacteristicController extends Controller
             'description' => 'nullable|string',
             'helper' => 'nullable|string',
             'icon' => 'nullable|string|max:64',
+            'icon_false' => 'nullable|string|max:64',
             'color' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
+            'color_false' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
             'type' => 'required|in:int,string,array,bool',
             'unit' => 'nullable|string|max:64',
             'sort_order' => 'nullable|integer',
@@ -228,7 +246,7 @@ class CharacteristicController extends Controller
             return in_array($ent['entity'] ?? '', $allowedEntities, true);
         });
 
-        $characteristic = Characteristic::create([
+        $createPayload = [
             'key' => $key,
             'name' => $data['name'],
             'short_name' => $data['short_name'] ?? null,
@@ -240,7 +258,15 @@ class CharacteristicController extends Controller
             'unit' => $data['unit'] ?? null,
             'sort_order' => (int) ($data['sort_order'] ?? 0),
             'group' => $data['group'],
-        ]);
+        ];
+        if ($this->characteristicsTableHasIconFalseColumn()) {
+            $createPayload['icon_false'] = $data['icon_false'] ?? null;
+        }
+        if ($this->characteristicsTableHasColorFalseColumn()) {
+            $createPayload['color_false'] = $data['color_false'] ?? null;
+        }
+
+        $characteristic = Characteristic::create($createPayload);
 
         foreach ($entities as $ent) {
             $this->updateGroupRow($characteristic->id, $ent['entity'], $ent);
@@ -307,13 +333,14 @@ class CharacteristicController extends Controller
      */
     private function deriveLinkedKey(string $masterKey, string $group): string
     {
-        $suffix = '_' . $group;
+        $suffix = '_'.$group;
         foreach (['_creature', '_object', '_spell'] as $s) {
             if (str_ends_with($masterKey, $s)) {
-                return substr($masterKey, 0, -strlen($s)) . $suffix;
+                return substr($masterKey, 0, -strlen($s)).$suffix;
             }
         }
-        return $masterKey . $suffix;
+
+        return $masterKey.$suffix;
     }
 
     public function show(string $characteristic_key): InertiaResponse
@@ -321,6 +348,7 @@ class CharacteristicController extends Controller
         $characteristic = Characteristic::where('key', $characteristic_key)->first();
         if ($characteristic === null) {
             session()->flash('error', 'Caractéristique introuvable.');
+
             return Inertia::render('Admin/characteristics/Index', [
                 'characteristicsByGroup' => $this->buildCharacteristicsByGroup(),
                 'selected' => null,
@@ -381,6 +409,7 @@ class CharacteristicController extends Controller
                     'label' => $this->configLoader->getEntityLabel('dofusdb', $e),
                 ];
             }
+
             return response()->json(['entities' => $entities]);
         }
 
@@ -392,6 +421,7 @@ class CharacteristicController extends Controller
         } catch (\Throwable) {
             return response()->json(['message' => 'Config entité introuvable.'], 422);
         }
+
         return response()->json(['paths' => $paths]);
     }
 
@@ -430,6 +460,7 @@ class CharacteristicController extends Controller
                     $entry = $e;
                     break;
                 }
+
                 continue;
             }
             $entry = $e;
@@ -484,6 +515,7 @@ class CharacteristicController extends Controller
         }
 
         $mapping->load('targets');
+
         return response()->json([
             'success' => true,
             'message' => 'Mapping enregistré.',
@@ -510,6 +542,7 @@ class CharacteristicController extends Controller
         if ($linkedViaColumn) {
             $mapping->update(['characteristic_id' => null]);
         }
+
         return response()->json(['success' => true, 'message' => 'Règle déliée.']);
     }
 
@@ -526,11 +559,13 @@ class CharacteristicController extends Controller
             $exitCode = Artisan::call('scrapping:seeders:export');
             if ($exitCode !== 0) {
                 $out = trim(Artisan::output());
+
                 return response()->json([
                     'success' => false,
                     'message' => $out ?: 'La commande est désactivée en production ou a échoué.',
                 ], 422);
             }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Fichiers seeders mis à jour depuis la BDD.',
@@ -538,7 +573,7 @@ class CharacteristicController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur : ' . $e->getMessage(),
+                'message' => 'Erreur : '.$e->getMessage(),
             ], 500);
         }
     }
@@ -554,6 +589,7 @@ class CharacteristicController extends Controller
         }
         try {
             Artisan::call('db:seed', ['--force' => true]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Seeders exécutés.',
@@ -561,7 +597,7 @@ class CharacteristicController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur : ' . $e->getMessage(),
+                'message' => 'Erreur : '.$e->getMessage(),
             ], 500);
         }
     }
@@ -580,6 +616,7 @@ class CharacteristicController extends Controller
         if (CharacteristicSpell::where('characteristic_id', $characteristic->id)->exists()) {
             return 'spell';
         }
+
         return 'creature';
     }
 
@@ -667,6 +704,7 @@ class CharacteristicController extends Controller
                 422
             );
         }
+
         return response()->json([
             'formula' => $result['formula'],
             'r2' => $result['r2'],
@@ -674,7 +712,7 @@ class CharacteristicController extends Controller
     }
 
     /**
-     * @param array<string, mixed> $sample
+     * @param  array<string, mixed>  $sample
      * @return array<int|string, float>
      */
     private function normalizeSampleKeys(array $sample): array
@@ -684,13 +722,13 @@ class CharacteristicController extends Controller
             $key = is_numeric($k) ? (int) $k : $k;
             $out[$key] = (float) $v;
         }
+
         return $out;
     }
 
     /**
      * Normalise les échantillons pour la sauvegarde (null ou tableau clé → valeur numérique).
      *
-     * @param mixed $value
      * @return array<int|string, float>|null
      */
     private function normalizeSampleForSave(mixed $value): ?array
@@ -707,13 +745,13 @@ class CharacteristicController extends Controller
                 $out[is_numeric($k) ? (int) $k : (string) $k] = (float) $v;
             }
         }
+
         return $out ?: null;
     }
 
     /**
      * Normalise conversion_sample_rows pour la sauvegarde (liste de {dofus_level, dofus_value, krosmoz_level, krosmoz_value}).
      *
-     * @param mixed $value
      * @return list<array{dofus_level: int|float, dofus_value: int|float, krosmoz_level: int|float, krosmoz_value: int|float}>|null
      */
     private function normalizeSampleRowsForSave(mixed $value): ?array
@@ -740,13 +778,14 @@ class CharacteristicController extends Controller
                 'krosmoz_value' => $krosmozValue,
             ];
         }
+
         return $out ?: null;
     }
 
     /**
      * Dérive un échantillon (niveau → valeur) à partir des lignes, pour compatibilité avec les lecteurs existants.
      *
-     * @param list<array{dofus_level: int|float, dofus_value: int|float, krosmoz_level: int|float, krosmoz_value: int|float}>|null $rows
+     * @param  list<array{dofus_level: int|float, dofus_value: int|float, krosmoz_level: int|float, krosmoz_value: int|float}>|null  $rows
      * @return array<int|string, float>|null
      */
     private function deriveSampleFromRows(?array $rows, string $which): ?array
@@ -767,6 +806,7 @@ class CharacteristicController extends Controller
                 $out[is_numeric($key) ? (int) $key : (string) $key] = (float) $val;
             }
         }
+
         return $out ?: null;
     }
 
@@ -791,12 +831,14 @@ class CharacteristicController extends Controller
             'description' => 'nullable|string',
             'helper' => 'nullable|string',
             'icon' => 'nullable|string|max:64',
+            'icon_false' => 'nullable|string|max:64',
             'color' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
+            'color_false' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
             'type' => 'required|in:int,string,array,bool',
             'unit' => 'nullable|string|max:64',
             'sort_order' => 'nullable|integer',
             'entities' => 'array',
-            'entities.*.entity' => 'required|in:' . implode(',', self::ENTITIES),
+            'entities.*.entity' => 'required|in:'.implode(',', self::ENTITIES),
             'entities.*.db_column' => 'nullable|string|max:64',
             'entities.*.min' => 'nullable|string|max:512',
             'entities.*.max' => 'nullable|string|max:512',
@@ -822,7 +864,7 @@ class CharacteristicController extends Controller
             'entity_override_keys.*' => 'string|max:32',
         ]);
 
-        $characteristic->update([
+        $updatePayload = [
             'name' => $data['name'],
             'short_name' => $data['short_name'] ?? null,
             'descriptions' => $data['description'] ?? null,
@@ -832,7 +874,15 @@ class CharacteristicController extends Controller
             'type' => $data['type'],
             'unit' => $data['unit'] ?? null,
             'sort_order' => $data['sort_order'] ?? $characteristic->sort_order,
-        ]);
+        ];
+        if ($this->characteristicsTableHasIconFalseColumn()) {
+            $updatePayload['icon_false'] = $data['icon_false'] ?? null;
+        }
+        if ($this->characteristicsTableHasColorFalseColumn()) {
+            $updatePayload['color_false'] = $data['color_false'] ?? null;
+        }
+
+        $characteristic->update($updatePayload);
 
         $group = $this->inferPrimaryGroup($characteristic);
         $allowedForGroup = self::ENTITIES_BY_GROUP[$group] ?? [];
@@ -963,6 +1013,7 @@ class CharacteristicController extends Controller
                 'master_key' => $c->isLinked() ? $effective->key : null,
             ];
         }
+
         return $byGroup;
     }
 
@@ -992,11 +1043,11 @@ class CharacteristicController extends Controller
             $chars = Characteristic::whereIn('id', $characteristicIds)->orderBy('sort_order')->orderBy('key')->get();
             $byEntity[$entity] = $chars->map(fn ($c) => ['id' => $c->key, 'name' => $c->name ?? $c->key])->all();
         }
+
         return $byEntity;
     }
 
     /**
-     * @param CharacteristicCreature|CharacteristicObject|CharacteristicSpell $row
      * @return array<string, mixed>
      */
     private function groupRowToEntity(CharacteristicCreature|CharacteristicObject|CharacteristicSpell $row, Characteristic $characteristic): array
@@ -1025,13 +1076,14 @@ class CharacteristicController extends Controller
             $out['base_price_per_unit'] = $row->base_price_per_unit;
             $out['rune_price_per_unit'] = $row->rune_price_per_unit;
         }
+
         return $out;
     }
 
     /**
      * Construit les variables par défaut pour la prévisualisation (autres que la variable d’axe).
      *
-     * @param array{type: string, characteristic?: string, entries?: list<array{value?: string}>} $decoded
+     * @param  array{type: string, characteristic?: string, entries?: list<array{value?: string}>}  $decoded
      * @return array<string, int|float>
      */
     private function buildDefaultVariablesForPreview(string $formula, array $decoded, string $axisVar, string $entity): array
@@ -1097,6 +1149,7 @@ class CharacteristicController extends Controller
                 'rune_price_per_unit' => null,
             ];
         }
+
         return $out;
     }
 
@@ -1106,11 +1159,12 @@ class CharacteristicController extends Controller
      */
     private function normalizeCharacteristicKey(string $key, string $group): string
     {
-        $suffix = '_' . $group;
+        $suffix = '_'.$group;
         if (strlen($key) >= strlen($suffix) && str_ends_with($key, $suffix)) {
             return $key;
         }
-        return $key . $suffix;
+
+        return $key.$suffix;
     }
 
     private function updateGroupRow(int $characteristicId, string $entity, array $data): void

@@ -23,7 +23,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $helper
  * @property string|null $descriptions
  * @property string|null $icon
+ * @property string|null $icon_false
  * @property string|null $color
+ * @property string|null $color_false
  * @property string|null $unit
  * @property string $type
  * @property int $sort_order
@@ -32,8 +34,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Characteristic extends Model implements HasMedia
 {
-    use InteractsWithMedia;
     use HasMediaCustomNaming;
+    use InteractsWithMedia;
 
     /** Répertoire Media Library pour ce modèle. */
     public const MEDIA_PATH = 'images/entity/characteristics';
@@ -51,7 +53,9 @@ class Characteristic extends Model implements HasMedia
         'helper',
         'descriptions',
         'icon',
+        'icon_false',
         'color',
+        'color_false',
         'unit',
         'type',
         'sort_order',

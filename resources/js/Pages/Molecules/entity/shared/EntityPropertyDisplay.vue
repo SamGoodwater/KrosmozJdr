@@ -16,6 +16,7 @@
  * @props {Object|null|undefined} [runtime] — ex. resolved-stats ; si omis, inject du contexte (provideCharacteristicRuntime)
  * @props {string} [presentation] - `default` | `spell-types-icons-only` (types de sort : icônes seules, via toCell)
  * @props {boolean} [hideFieldLabel] — masque « Cat. », « Types », etc. sur {@link CharacteristicProperty}
+ * @props {boolean} [hideCharacteristicIcon] — masque l’icône BDD (ex. PO remplacée par une icône externe)
  * @props {Object} [toCellOptions] — fusionné dans les options passées à `entity.toCell` / cellOptions du composable
  */
 import { computed, inject, unref } from "vue";
@@ -69,6 +70,7 @@ const props = defineProps({
         validator: (v) => ["default", "spell-types-icons-only"].includes(v),
     },
     hideFieldLabel: { type: Boolean, default: false },
+    hideCharacteristicIcon: { type: Boolean, default: false },
     toCellOptions: { type: Object, default: () => ({}) },
 });
 
@@ -193,6 +195,7 @@ const elementValue = computed(() => {
         :badge="effectiveBadge"
         :show-value="variant !== 'icon'"
         :show-label="!hideFieldLabel"
+        :show-icon="!hideCharacteristicIcon"
         :size="size"
     />
 </template>

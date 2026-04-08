@@ -2373,13 +2373,18 @@ const handleExport = () => {
                                 data-table-row-focus
                                 :data-row-id="String(row.id)"
                                 tabindex="0"
-                                class="relative w-full rounded-box transition-shadow duration-200 hover:shadow-md outline-none"
+                                class="group relative w-full rounded-box transition-shadow duration-200 hover:shadow-md outline-none"
                                 :class="{ 'ring-2 ring-primary/50': isSelected(row) }"
                                 @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                             >
                                 <div
-                                    v-if="showSelectionCheckboxes && isSelected(row)"
-                                    class="absolute top-2 left-2 z-10"
+                                    v-if="showSelectionCheckboxes"
+                                    class="absolute top-2 left-2 z-30 flex items-center justify-center transition-opacity duration-150"
+                                    :class="
+                                        isSelected(row)
+                                            ? 'pointer-events-auto opacity-100'
+                                            : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
+                                    "
                                     @click.stop="toggleRow(row, !isSelected(row))"
                                 >
                                     <input
@@ -2453,13 +2458,18 @@ const handleExport = () => {
                             data-table-row-focus
                             :data-row-id="String(row.id)"
                             tabindex="0"
-                            class="relative flex-[1_1_280px] min-w-[280px] max-w-full rounded-box transition-shadow duration-200 hover:shadow-md outline-none"
+                            class="group relative flex-[1_1_280px] min-w-[280px] max-w-full rounded-box transition-shadow duration-200 hover:shadow-md outline-none"
                             :class="{ 'ring-2 ring-primary/50': isSelected(row) }"
                             @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                         >
                             <div
-                                v-if="showSelectionCheckboxes && isSelected(row)"
-                                class="absolute top-2 left-2 z-10"
+                                v-if="showSelectionCheckboxes"
+                                class="absolute top-2 left-2 z-30 flex items-center justify-center transition-opacity duration-150"
+                                :class="
+                                    isSelected(row)
+                                        ? 'pointer-events-auto opacity-100'
+                                        : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
+                                "
                                 @click.stop="toggleRow(row, !isSelected(row))"
                             >
                                 <input

@@ -5,7 +5,7 @@
  * @description
  * Effets via `resolveSpellEffectsDisplayCell` : résumé API (`SpellEffectChips`) ou fallback `effect` (chips).
  * Invocations : dans les chips / sous-effets uniquement (pas de section texte séparée).
- * Méta (élément, catégorie, types, PA, PO) : `EntityPropertyDisplay` (aligné sur SpellViewCompact).
+ * Méta : `SpellMinimalUsageMetaRow` ; résolution au-dessus des effets.
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import { Link } from "@inertiajs/vue3";
@@ -23,9 +23,9 @@ import {
 import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
-import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import SpellMinimalUsageMetaRow from "@/Pages/Molecules/entity/spell/SpellMinimalUsageMetaRow.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
-import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import { buildResolutionSummary } from "@/Utils/Entity/spellMinimalUsageDisplay";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -119,6 +119,8 @@ const effectDisplayCell = computed(() =>
 );
 const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
 
+const resolutionUsage = computed(() => buildResolutionSummary(entity.value));
+
 const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spellTypesCell.value));
 
 const handleRowClick = (e) => emit("row-click", props.row, e);
@@ -200,91 +202,36 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                             @action="(k, e) => emit('action', k, e, row)"
                         />
                     </div>
-                    <CheckboxCore
-                        v-if="showSelection && isSelected"
-                        :model-value="isSelected"
-                        size="xs"
-                        :color="uiColor"
-                        aria-label="Sélectionner"
-                        class="shrink-0"
-                        @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
-                        @click.stop
-                    />
-                </div>
-                <div class="flex flex-wrap items-center gap-2 text-sm">
-                    <EntityPropertyDisplay
-                        v-if="canShowField('element')"
-                        field-key="element"
-                        :entity="entity"
-                        entity-type="spell"
-                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                        :descriptors="descriptors"
-                        :table-meta="tableMeta"
-                        size="xs"
-                        class="min-w-0"
-                    />
-                    <EntityPropertyDisplay
-                        v-if="canShowField('pa')"
-                        field-key="pa"
-                        :entity="entity"
-                        entity-type="spell"
-                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                        :descriptors="descriptors"
-                        :table-meta="tableMeta"
-                        size="xs"
-                        class="min-w-0"
-                    />
-                    <EntityPropertyDisplay
-                        v-if="canShowField('po')"
-                        field-key="po"
-                        :entity="entity"
-                        entity-type="spell"
-                        :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                        :descriptors="descriptors"
-                        :table-meta="tableMeta"
-                        size="xs"
-                        class="min-w-0"
-                    />
                     <div
-                        v-if="
-                            (canShowField('spell_types') && showSpellTypesCell) ||
-                            canShowField('category')
+                        v-if="showSelection"
+                        class="flex shrink-0 items-center transition-[max-width,opacity] duration-150 ease-out"
+                        :class="
+                            isSelected
+                                ? 'max-w-10 overflow-visible opacity-100 pointer-events-auto'
+                                : 'max-w-0 overflow-hidden opacity-0 pointer-events-none group-hover:max-w-10 group-hover:overflow-visible group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:max-w-10 group-focus-within:overflow-visible group-focus-within:opacity-100 group-focus-within:pointer-events-auto'
                         "
-                        class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover:grid-rows-[1fr]"
+                        @click.stop
                     >
-                        <div
-                            class="min-h-0 overflow-hidden group-hover:overflow-visible"
-                        >
-                            <div class="inline-flex max-w-full flex-wrap items-center gap-2">
-                                <EntityPropertyDisplay
-                                    v-if="canShowField('spell_types') && showSpellTypesCell"
-                                    field-key="spell_types"
-                                    presentation="spell-types-icons-only"
-                                    :entity="entity"
-                                    entity-type="spell"
-                                    :display-mode="PROPERTY_DISPLAY_MODES.minimal"
-                                    :descriptors="descriptors"
-                                    :table-meta="tableMeta"
-                                    size="xs"
-                                    class="min-w-0"
-                                />
-                                <EntityPropertyDisplay
-                                    v-if="canShowField('category')"
-                                    field-key="category"
-                                    :entity="entity"
-                                    entity-type="spell"
-                                    :display-mode="PROPERTY_DISPLAY_MODES.minimal"
-                                    variant="inline"
-                                    hide-field-label
-                                    :descriptors="descriptors"
-                                    :table-meta="tableMeta"
-                                    size="xs"
-                                    class="min-w-0"
-                                />
-                            </div>
-                        </div>
+                        <CheckboxCore
+                            :model-value="isSelected"
+                            size="xs"
+                            :color="uiColor"
+                            aria-label="Sélectionner"
+                            class="shrink-0"
+                            @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
+                        />
                     </div>
                 </div>
+                <SpellMinimalUsageMetaRow
+                    :entity="entity"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    :can-show-field="canShowField"
+                    :show-spell-types-cell="showSpellTypesCell"
+                    property-size="xs"
+                    row-class="gap-2 text-sm"
+                    hover-inner-gap-class="gap-2"
+                />
                 <p
                     v-if="descriptionFull"
                     class="text-xs text-base-content/80 whitespace-normal wrap-break-word"
@@ -295,10 +242,17 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
             </div>
         </div>
         <div
-            v-if="hasEffects"
+            v-if="hasEffects || resolutionUsage.show"
             class="spell-effects-line w-full pt-2 mt-1 border-t border-base-300"
         >
+            <p
+                v-if="resolutionUsage.show"
+                class="mb-1 text-sm text-base-content/75"
+            >
+                {{ resolutionUsage.text }}
+            </p>
             <CellRenderer
+                v-if="hasEffects"
                 :cell="effectDisplayCell"
                 ui-color="primary"
                 class="leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"

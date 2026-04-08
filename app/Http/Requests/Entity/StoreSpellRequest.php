@@ -39,6 +39,8 @@ class StoreSpellRequest extends FormRequest
             'po_max' => ['nullable', 'string', 'max:64'],
             'po_editable' => ['nullable', 'boolean'],
             'pa' => ['nullable', 'string', 'max:255'],
+            'casting_time' => ['nullable', 'string', 'max:255'],
+            'ritual_available' => ['nullable', 'boolean'],
             'cast_per_turn' => ['nullable', 'string', 'max:255'],
             'cast_per_target' => ['nullable', 'string', 'max:255'],
             'sight_line' => ['nullable', 'boolean'],

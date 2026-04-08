@@ -4,9 +4,9 @@
  *
  * @description
  * Effets : `resolveSpellEffectsDisplayCell` (résumé API + SpellEffectChips, ou fallback `effect`).
- * Méta : `EntityPropertyDisplay` (aligné sur SpellViewCompact).
+ * Méta : `SpellMinimalUsageMetaRow` (PA, PO + icônes portée/ligne de vue, lancers avec tooltip, élément au survol, types/catégorie au survol).
+ * Résolution : ligne au-dessus des effets (`buildResolutionSummary`).
  * Invocations : portées par les sous-effets / chips (pas de bloc séparé).
- * Types + catégorie : masqués par défaut, visibles au survol ; types = icônes seules, catégorie = icône + libellé.
  *
  * @props {Spell} spell - Instance du modèle Spell
  */
@@ -26,9 +26,9 @@ import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import SpellMinimalUsageMetaRow from "@/Pages/Molecules/entity/spell/SpellMinimalUsageMetaRow.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
-import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import { buildResolutionSummary } from "@/Utils/Entity/spellMinimalUsageDisplay";
 
 const props = defineProps({
     spell: {
@@ -111,6 +111,8 @@ const effectDisplayCell = computed(() =>
     }),
 );
 const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
+
+const resolutionUsage = computed(() => buildResolutionSummary(entity.value));
 
 const imageUrl = computed(() => {
     const u = entity.value?.image ?? entity.value?._data?.image;
@@ -203,87 +205,29 @@ const handleAction = async (actionKey) => {
                                 />
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <EntityPropertyDisplay
-                                v-if="canShowField('element')"
-                                field-key="element"
-                                :entity="entity"
-                                entity-type="spell"
-                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="xs"
-                                class="min-w-0"
-                            />
-                            <EntityPropertyDisplay
-                                v-if="canShowField('pa')"
-                                field-key="pa"
-                                :entity="entity"
-                                entity-type="spell"
-                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="xs"
-                                class="min-w-0"
-                            />
-                            <EntityPropertyDisplay
-                                v-if="canShowField('po')"
-                                field-key="po"
-                                :entity="entity"
-                                entity-type="spell"
-                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="xs"
-                                class="min-w-0"
-                            />
-                            <div
-                                v-if="
-                                    (canShowField('spell_types') && showSpellTypesCell) ||
-                                    canShowField('category')
-                                "
-                                class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover:grid-rows-[1fr]"
-                            >
-                                <div
-                                    class="min-h-0 overflow-hidden group-hover:overflow-visible"
-                                >
-                                    <div class="inline-flex max-w-full flex-wrap items-center gap-1.5">
-                                        <EntityPropertyDisplay
-                                            v-if="canShowField('spell_types') && showSpellTypesCell"
-                                            field-key="spell_types"
-                                            presentation="spell-types-icons-only"
-                                            :entity="entity"
-                                            entity-type="spell"
-                                            :display-mode="PROPERTY_DISPLAY_MODES.minimal"
-                                            :descriptors="descriptors"
-                                            :table-meta="tableMeta"
-                                            size="xs"
-                                            class="min-w-0"
-                                        />
-                                        <EntityPropertyDisplay
-                                            v-if="canShowField('category')"
-                                            field-key="category"
-                                            :entity="entity"
-                                            entity-type="spell"
-                                            :display-mode="PROPERTY_DISPLAY_MODES.minimal"
-                                            variant="inline"
-                                            hide-field-label
-                                            :descriptors="descriptors"
-                                            :table-meta="tableMeta"
-                                            size="xs"
-                                            class="min-w-0"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <SpellMinimalUsageMetaRow
+                            :entity="entity"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            :can-show-field="canShowField"
+                            :show-spell-types-cell="showSpellTypesCell"
+                            property-size="xs"
+                            row-class="gap-1.5 text-xs"
+                        />
                     </div>
                 </div>
                 <div
-                    v-if="hasEffects"
+                    v-if="hasEffects || resolutionUsage.show"
                     class="spell-effects-minimal w-full pt-1.5 mt-1 border-t border-base-300"
                 >
+                    <p
+                        v-if="resolutionUsage.show"
+                        class="mb-1 text-xs text-base-content/75"
+                    >
+                        {{ resolutionUsage.text }}
+                    </p>
                     <CellRenderer
+                        v-if="hasEffects"
                         :cell="effectDisplayCell"
                         ui-color="primary"
                         class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
@@ -346,80 +290,15 @@ const handleAction = async (actionKey) => {
                                 />
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <EntityPropertyDisplay
-                                v-if="canShowField('element')"
-                                field-key="element"
-                                :entity="entity"
-                                entity-type="spell"
-                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="xs"
-                                class="min-w-0"
-                            />
-                            <EntityPropertyDisplay
-                                v-if="canShowField('pa')"
-                                field-key="pa"
-                                :entity="entity"
-                                entity-type="spell"
-                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="xs"
-                                class="min-w-0"
-                            />
-                            <EntityPropertyDisplay
-                                v-if="canShowField('po')"
-                                field-key="po"
-                                :entity="entity"
-                                entity-type="spell"
-                                :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="xs"
-                                class="min-w-0"
-                            />
-                            <div
-                                v-if="
-                                    (canShowField('spell_types') && showSpellTypesCell) ||
-                                    canShowField('category')
-                                "
-                                class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover:grid-rows-[1fr]"
-                            >
-                                <div
-                                    class="min-h-0 overflow-hidden group-hover:overflow-visible"
-                                >
-                                    <div class="inline-flex max-w-full flex-wrap items-center gap-1.5">
-                                        <EntityPropertyDisplay
-                                            v-if="canShowField('spell_types') && showSpellTypesCell"
-                                            field-key="spell_types"
-                                            presentation="spell-types-icons-only"
-                                            :entity="entity"
-                                            entity-type="spell"
-                                            :display-mode="PROPERTY_DISPLAY_MODES.minimal"
-                                            :descriptors="descriptors"
-                                            :table-meta="tableMeta"
-                                            size="xs"
-                                            class="min-w-0"
-                                        />
-                                        <EntityPropertyDisplay
-                                            v-if="canShowField('category')"
-                                            field-key="category"
-                                            :entity="entity"
-                                            entity-type="spell"
-                                            :display-mode="PROPERTY_DISPLAY_MODES.minimal"
-                                            variant="inline"
-                                            hide-field-label
-                                            :descriptors="descriptors"
-                                            :table-meta="tableMeta"
-                                            size="xs"
-                                            class="min-w-0"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <SpellMinimalUsageMetaRow
+                            :entity="entity"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            :can-show-field="canShowField"
+                            :show-spell-types-cell="showSpellTypesCell"
+                            property-size="xs"
+                            row-class="gap-1.5 text-xs"
+                        />
                         <p
                             v-if="descriptionFull"
                             class="text-xs text-base-content/80 line-clamp-3"
@@ -430,10 +309,17 @@ const handleAction = async (actionKey) => {
                     </div>
                 </div>
                 <div
-                    v-if="hasEffects"
+                    v-if="hasEffects || resolutionUsage.show"
                     class="spell-effects-minimal w-full pt-1.5 mt-1 border-t border-base-300"
                 >
+                    <p
+                        v-if="resolutionUsage.show"
+                        class="mb-1 text-xs text-base-content/75"
+                    >
+                        {{ resolutionUsage.text }}
+                    </p>
                     <CellRenderer
+                        v-if="hasEffects"
                         :cell="effectDisplayCell"
                         ui-color="primary"
                         class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"

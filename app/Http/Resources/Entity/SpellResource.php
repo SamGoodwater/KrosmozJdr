@@ -34,6 +34,8 @@ class SpellResource extends JsonResource
             'po_max' => $this->po_max,
             'po_editable' => $this->po_editable,
             'pa' => $this->pa,
+            'casting_time' => $this->casting_time,
+            'ritual_available' => $this->ritual_available,
             'cast_per_turn' => $this->cast_per_turn,
             'cast_per_target' => $this->cast_per_target,
             'sight_line' => $this->sight_line,

@@ -21,6 +21,7 @@
  * @props {string} layout — inline | card
  * @props {boolean} [showValue] — Afficher la valeur dans le déclencheur (désactiver pour l’ancien variant `icon` de PropertyDisplay)
  * @props {boolean} [showLabel] — Afficher le libellé court / complet (Cat., Types, etc.)
+ * @props {boolean} [showIcon] — Afficher l’icône caractéristique (désactiver si une icône externe la remplace)
  * @props {string} size — xs | sm | md
  *
  * @example
@@ -76,6 +77,7 @@ const props = defineProps({
     },
     showValue: { type: Boolean, default: true },
     showLabel: { type: Boolean, default: true },
+    showIcon: { type: Boolean, default: true },
     size: {
         type: String,
         default: "sm",
@@ -222,7 +224,7 @@ const badgeVariant = computed(() =>
             class="inline-flex max-w-full min-w-0 items-center gap-1"
         >
             <Icon
-                v-if="model.icon"
+                v-if="showIcon && model.icon"
                 :source="model.icon"
                 :alt="model.name || ''"
                 :size="iconSize"
@@ -240,7 +242,7 @@ const badgeVariant = computed(() =>
             <div class="flex items-center justify-between gap-2">
                 <span class="min-w-0 truncate font-medium" :style="valueStyle">{{ displayText }}</span>
                 <Icon
-                    v-if="model.icon"
+                    v-if="showIcon && model.icon"
                     :source="model.icon"
                     :alt="model.name || ''"
                     :size="iconSize"
@@ -258,7 +260,7 @@ const badgeVariant = computed(() =>
             :class="textSizeClass"
         >
             <Icon
-                v-if="model.icon"
+                v-if="showIcon && model.icon"
                 :source="model.icon"
                 :alt="model.name || ''"
                 :size="iconSize"
