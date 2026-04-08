@@ -7,8 +7,9 @@ defineOptions({ inheritAttrs: false });
  *
  * @description
  * Info-bulle : trigger en slot par défaut, contenu string (`content`) ou slot `#content`.
- * Le positionnement utilise **Floating UI** (`strategy: fixed`) et **Teleport vers `body`**
- * pour rester visible dans les zones scroll / `overflow-hidden` (ex. TanStackTable).
+ * Le positionnement utilise **Floating UI** (`strategy: fixed`) et **Teleport** : vers le `<dialog>`
+ * parent ouvert si le trigger est dans un modal (`showModal` / top layer), sinon vers `body`
+ * (voir {@link resolveTooltipTeleportTarget}) — ainsi le tooltip reste au-dessus du contenu du modal.
  * Plusieurs tooltips : **z-index incrémental** (`allocateTooltipZIndex`) — le dernier ouvert passe au-dessus.
  * Style : surface `tooltip-floating-surface` + `color-*` pour `var(--color)` (bordure / box-shadow).
  * **`accentClass`** (ex. `color-life_points_creature`) ou **`accentStyle`** (`--color` hex) priment sur `color` pour les cas métier (caractéristiques).
@@ -37,6 +38,7 @@ import {
 } from "@/Utils/atomic-design/uiHelper";
 import { colorList } from "@/Pages/Atoms/atomMap";
 import { allocateTooltipZIndex } from "@/Composables/ui/allocateTooltipZIndex";
+import { resolveTooltipTeleportTarget } from "@/Composables/ui/resolveTooltipTeleportTarget";
 
 const props = defineProps({
     ...getCommonProps({ exclude: ["tooltip", "tooltip_placement"] }),
@@ -169,6 +171,14 @@ const { floatingStyles } = useFloating(triggerRef, floatingRef, {
     strategy: "fixed",
     middleware: [offset(8), flip(), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
+});
+
+/** `body` hors modal ; `dialog` ouvert si le trigger est dans un modal (top layer navigateur). */
+const teleportTarget = computed(() => {
+    if (!isOpen.value) {
+        return typeof document !== "undefined" ? document.body : "body";
+    }
+    return resolveTooltipTeleportTarget(triggerRef.value);
 });
 
 /** Dernier tooltip ouvert au-dessus des autres (pile globale). */
@@ -324,7 +334,7 @@ function onTriggerFocusOut(ev) {
         @focusout="onTriggerFocusOut"
     >
         <slot />
-        <Teleport to="body">
+        <Teleport :to="teleportTarget">
             <div
                 v-if="isOpen"
                 ref="floatingRef"

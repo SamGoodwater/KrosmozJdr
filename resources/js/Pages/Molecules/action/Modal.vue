@@ -6,7 +6,10 @@ defineOptions({ inheritAttrs: false });
  *
  * @description
  * Molécule Modal stylée DaisyUI, conforme Atomic Design et KrosmozJDR, version dialog native (accessible).
- * - Utilise <dialog class="modal"> pour l'accessibilité
+ * - Utilise <dialog class="modal"> pour l'accessibilité (`showModal` → **top layer** : pile native
+ *   du navigateur pour plusieurs modals ouverts ; le dernier ouvert est au-dessus).
+ * - Tooltips / menus téléportés : préférer un Teleport **dans** ce `dialog` si le trigger est
+ *   dans le modal (voir {@link resolveTooltipTeleportTarget}), sinon ils restent derrière la top layer.
  * - Gère le drag & drop via le header
  * - Gère le redimensionnement (si activé)
  * - Gère la fermeture via Échap et clic sur overlay (configurable)

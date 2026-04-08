@@ -25,6 +25,7 @@
 import { ref, computed, watch, onUnmounted } from "vue";
 import { useFloating, offset, flip, shift, autoUpdate } from "@floating-ui/vue";
 import { allocateTooltipZIndex } from "@/Composables/ui/allocateTooltipZIndex";
+import { resolveTooltipTeleportTarget } from "@/Composables/ui/resolveTooltipTeleportTarget";
 import { useEntityHoverCard } from "@/Composables/entity/useEntityHoverCard";
 import ResourceViewMinimal from "@/Pages/Molecules/entity/resource/ResourceViewMinimal.vue";
 import ItemViewMinimal from "@/Pages/Molecules/entity/item/ItemViewMinimal.vue";
@@ -90,6 +91,13 @@ const { floatingStyles } = useFloating(triggerRef, floatingRef, {
     strategy: "fixed",
     middleware: [offset(8), flip(), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
+});
+
+const teleportTarget = computed(() => {
+    if (!open.value) {
+        return typeof document !== "undefined" ? document.body : "body";
+    }
+    return resolveTooltipTeleportTarget(triggerRef.value);
 });
 
 const stackZIndex = ref(1100);
@@ -173,7 +181,7 @@ onUnmounted(clearTimers);
     >
         <slot />
 
-        <Teleport to="body">
+        <Teleport :to="teleportTarget">
             <div
                 v-if="open"
                 ref="floatingRef"

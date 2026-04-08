@@ -206,7 +206,7 @@ const open = () => {
   if (isOpen.value || props.disabled) return;
   isOpen.value = true;
   const dialog = containerRef.value?.closest?.('dialog');
-  if (dialog) {
+  if (dialog instanceof HTMLDialogElement && dialog.open) {
     teleportTarget.value = dialog;
     zIndex.value = 9999;
   } else {
