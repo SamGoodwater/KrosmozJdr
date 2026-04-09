@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 /**
- * resource_types – Ressources (superType 9). Régénéré par : php artisan scrapping:seeders:export --item-types
+ * resource_types – Ressources (superTypes 9, 14) - typeIds.
+ * Généré par : php artisan scrapping:types:extract
+ * Régénéré depuis la BDD par : php artisan scrapping:seeders:export --item-types
  */
 
 return array (
@@ -13,8 +15,6 @@ return array (
     'name' => 'Ressource diverse',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   1 => 
   array (
@@ -22,8 +22,6 @@ return array (
     'name' => 'Divers',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   2 => 
   array (
@@ -31,8 +29,6 @@ return array (
     'name' => 'Potion de forgemagie',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   3 => 
   array (
@@ -40,8 +36,6 @@ return array (
     'name' => 'Céréale',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   4 => 
   array (
@@ -49,8 +43,6 @@ return array (
     'name' => 'Fleur',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   5 => 
   array (
@@ -58,8 +50,6 @@ return array (
     'name' => 'Plante',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   6 => 
   array (
@@ -67,8 +57,6 @@ return array (
     'name' => 'Bois',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   7 => 
   array (
@@ -76,8 +64,6 @@ return array (
     'name' => 'Minerai',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   8 => 
   array (
@@ -85,8 +71,6 @@ return array (
     'name' => 'Alliage',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   9 => 
   array (
@@ -94,8 +78,6 @@ return array (
     'name' => 'Poisson',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   10 => 
   array (
@@ -103,8 +85,6 @@ return array (
     'name' => 'Fruit',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   11 => 
   array (
@@ -112,8 +92,6 @@ return array (
     'name' => 'Os',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   12 => 
   array (
@@ -121,8 +99,6 @@ return array (
     'name' => 'Poudre',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   13 => 
   array (
@@ -130,8 +106,6 @@ return array (
     'name' => 'Pierre précieuse',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   14 => 
   array (
@@ -139,8 +113,6 @@ return array (
     'name' => 'Pierre brute',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   15 => 
   array (
@@ -148,8 +120,6 @@ return array (
     'name' => 'Plume',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   16 => 
   array (
@@ -157,8 +127,6 @@ return array (
     'name' => 'Poil',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   17 => 
   array (
@@ -166,8 +134,6 @@ return array (
     'name' => 'Étoffe',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   18 => 
   array (
@@ -175,8 +141,6 @@ return array (
     'name' => 'Cuir',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   19 => 
   array (
@@ -184,8 +148,6 @@ return array (
     'name' => 'Laine',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   20 => 
   array (
@@ -193,8 +155,6 @@ return array (
     'name' => 'Graine',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   21 => 
   array (
@@ -202,8 +162,6 @@ return array (
     'name' => 'Peau',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   22 => 
   array (
@@ -211,8 +169,6 @@ return array (
     'name' => 'Huile',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   23 => 
   array (
@@ -220,8 +176,6 @@ return array (
     'name' => 'Peluche',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   24 => 
   array (
@@ -229,8 +183,6 @@ return array (
     'name' => 'Viande',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   25 => 
   array (
@@ -238,8 +190,6 @@ return array (
     'name' => 'Queue',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   26 => 
   array (
@@ -247,8 +197,6 @@ return array (
     'name' => 'Métaria',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   27 => 
   array (
@@ -256,8 +204,6 @@ return array (
     'name' => 'Légume',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   28 => 
   array (
@@ -265,8 +211,6 @@ return array (
     'name' => 'Teinture',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   29 => 
   array (
@@ -274,8 +218,6 @@ return array (
     'name' => 'Matériel d\'alchimie',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   30 => 
   array (
@@ -283,8 +225,6 @@ return array (
     'name' => 'Rune de forgemagie',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   31 => 
   array (
@@ -292,8 +232,6 @@ return array (
     'name' => 'Clef',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   32 => 
   array (
@@ -301,8 +239,6 @@ return array (
     'name' => 'Planche',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   33 => 
   array (
@@ -310,8 +246,6 @@ return array (
     'name' => 'Écorce',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   34 => 
   array (
@@ -319,8 +253,6 @@ return array (
     'name' => 'Racine',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   35 => 
   array (
@@ -328,8 +260,6 @@ return array (
     'name' => 'Patte',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   36 => 
   array (
@@ -337,8 +267,6 @@ return array (
     'name' => 'Aile',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   37 => 
   array (
@@ -346,8 +274,6 @@ return array (
     'name' => 'Œuf',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   38 => 
   array (
@@ -355,8 +281,6 @@ return array (
     'name' => 'Oreille',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   39 => 
   array (
@@ -364,8 +288,6 @@ return array (
     'name' => 'Carapace',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   40 => 
   array (
@@ -373,8 +295,6 @@ return array (
     'name' => 'Bourgeon',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   41 => 
   array (
@@ -382,8 +302,6 @@ return array (
     'name' => 'Œil',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   42 => 
   array (
@@ -391,8 +309,6 @@ return array (
     'name' => 'Gelée',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   43 => 
   array (
@@ -400,8 +316,6 @@ return array (
     'name' => 'Coquille',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   44 => 
   array (
@@ -409,8 +323,6 @@ return array (
     'name' => 'Champignon',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   45 => 
   array (
@@ -418,8 +330,6 @@ return array (
     'name' => 'Souvenir',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   46 => 
   array (
@@ -427,8 +337,6 @@ return array (
     'name' => 'Quêtes principales',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   47 => 
   array (
@@ -436,8 +344,6 @@ return array (
     'name' => 'Quêtes de temple',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   48 => 
   array (
@@ -445,8 +351,6 @@ return array (
     'name' => 'Avis de recherche',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   49 => 
   array (
@@ -454,8 +358,6 @@ return array (
     'name' => 'Alignement',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   50 => 
   array (
@@ -463,8 +365,6 @@ return array (
     'name' => 'Événements',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   51 => 
   array (
@@ -472,8 +372,6 @@ return array (
     'name' => 'Archipel de Vulkania',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   52 => 
   array (
@@ -481,8 +379,6 @@ return array (
     'name' => 'Astrub',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   53 => 
   array (
@@ -490,8 +386,6 @@ return array (
     'name' => 'Camps des Bworks et des Gobelins',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   54 => 
   array (
@@ -499,8 +393,6 @@ return array (
     'name' => 'Cania',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   55 => 
   array (
@@ -508,8 +400,6 @@ return array (
     'name' => 'Île de Frigost',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   56 => 
   array (
@@ -517,8 +407,6 @@ return array (
     'name' => 'Île d\'Otomaï',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   57 => 
   array (
@@ -526,8 +414,6 @@ return array (
     'name' => 'Île de Nowel',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   58 => 
   array (
@@ -535,8 +421,6 @@ return array (
     'name' => 'Incarnam',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   59 => 
   array (
@@ -544,8 +428,6 @@ return array (
     'name' => 'Montagne des Koalaks',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   60 => 
   array (
@@ -553,8 +435,6 @@ return array (
     'name' => 'Pandala',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   61 => 
   array (
@@ -562,8 +442,6 @@ return array (
     'name' => 'Royaume d\'Amakna',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   62 => 
   array (
@@ -571,8 +449,6 @@ return array (
     'name' => 'Krosmoz',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   63 => 
   array (
@@ -580,8 +456,6 @@ return array (
     'name' => 'Jetons',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   64 => 
   array (
@@ -589,8 +463,6 @@ return array (
     'name' => 'Île de Moon',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   65 => 
   array (
@@ -598,8 +470,6 @@ return array (
     'name' => 'Îles des Wabbits',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   66 => 
   array (
@@ -607,8 +477,6 @@ return array (
     'name' => 'Galet',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   67 => 
   array (
@@ -616,8 +484,6 @@ return array (
     'name' => 'Nowel',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   68 => 
   array (
@@ -625,8 +491,6 @@ return array (
     'name' => 'Emballage',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   69 => 
   array (
@@ -634,8 +498,6 @@ return array (
     'name' => 'Sufokia',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   70 => 
   array (
@@ -643,8 +505,6 @@ return array (
     'name' => 'Almanax',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   71 => 
   array (
@@ -652,8 +512,6 @@ return array (
     'name' => 'Vêtement',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   72 => 
   array (
@@ -661,8 +519,6 @@ return array (
     'name' => 'Essence de gardien de donjon',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   73 => 
   array (
@@ -670,8 +526,6 @@ return array (
     'name' => 'Justiciers',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   74 => 
   array (
@@ -679,8 +533,6 @@ return array (
     'name' => 'Dimensions Divines',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   75 => 
   array (
@@ -688,8 +540,6 @@ return array (
     'name' => 'Carte',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   76 => 
   array (
@@ -697,8 +547,6 @@ return array (
     'name' => 'Fragment de carte',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   77 => 
   array (
@@ -706,8 +554,6 @@ return array (
     'name' => 'Préparation',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   78 => 
   array (
@@ -715,8 +561,6 @@ return array (
     'name' => 'Substrat',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   79 => 
   array (
@@ -724,8 +568,6 @@ return array (
     'name' => 'Sève',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   80 => 
   array (
@@ -733,8 +575,6 @@ return array (
     'name' => 'Orbe de forgemagie',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   81 => 
   array (
@@ -742,8 +582,6 @@ return array (
     'name' => 'Matériel d\'exploration',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   82 => 
   array (
@@ -751,8 +589,6 @@ return array (
     'name' => 'Caution',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   83 => 
   array (
@@ -760,8 +596,6 @@ return array (
     'name' => 'Saharach',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   84 => 
   array (
@@ -769,8 +603,6 @@ return array (
     'name' => 'Nimotopia',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   85 => 
   array (
@@ -778,8 +610,6 @@ return array (
     'name' => 'Sidimote',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   86 => 
   array (
@@ -787,8 +617,6 @@ return array (
     'name' => 'Tours de la Fratrie',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   87 => 
   array (
@@ -796,8 +624,6 @@ return array (
     'name' => 'Nourriture pour familier',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   88 => 
   array (
@@ -805,8 +631,6 @@ return array (
     'name' => 'Rune de transcendance',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   89 => 
   array (
@@ -814,8 +638,6 @@ return array (
     'name' => 'Île de Pwâk',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   90 => 
   array (
@@ -823,268 +645,201 @@ return array (
     'name' => 'Archipel des Écailles',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
   91 => 
-  array (
-    'dofusdb_type_id' => 219,
-    'name' => 'Ressource des Songes',
-    'decision' => 'pending',
-    'state' => 'playable',
-    'read_level' => 0,
-    'write_level' => 3,
-  ),
-  92 => 
   array (
     'dofusdb_type_id' => 220,
     'name' => 'Eliocalypse',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  93 => 
+  92 => 
   array (
     'dofusdb_type_id' => 225,
     'name' => 'Temporis',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  94 => 
+  93 => 
   array (
     'dofusdb_type_id' => 228,
     'name' => 'Liquide',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  95 => 
+  94 => 
   array (
     'dofusdb_type_id' => 229,
     'name' => 'Ressource de combat',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  96 => 
+  95 => 
   array (
     'dofusdb_type_id' => 230,
     'name' => 'Obsolète',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  97 => 
+  96 => 
   array (
     'dofusdb_type_id' => 231,
     'name' => 'Rabmablague',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  98 => 
+  97 => 
   array (
     'dofusdb_type_id' => 232,
     'name' => 'Haïku',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  99 => 
+  98 => 
   array (
     'dofusdb_type_id' => 233,
     'name' => 'Rune astrale',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  100 => 
+  99 => 
   array (
     'dofusdb_type_id' => 241,
     'name' => 'Ressource de Temporis',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  101 => 
+  100 => 
   array (
     'dofusdb_type_id' => 242,
     'name' => 'Atoll des Possédés',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  102 => 
+  101 => 
   array (
     'dofusdb_type_id' => 253,
     'name' => 'Cauchemar des Ravageurs',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  103 => 
+  102 => 
   array (
     'dofusdb_type_id' => 254,
     'name' => 'Bonta & Brakmar',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  104 => 
+  103 => 
   array (
     'dofusdb_type_id' => 258,
     'name' => 'Gravure de forgemagie',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  105 => 
+  104 => 
   array (
     'dofusdb_type_id' => 260,
     'name' => 'Forêt Maléfique',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  106 => 
+  105 => 
   array (
     'dofusdb_type_id' => 262,
     'name' => 'Matériel de mégaltération',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  107 => 
+  106 => 
   array (
     'dofusdb_type_id' => 266,
     'name' => 'Ressource des Anomalies Temporelles',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  108 => 
+  107 => 
   array (
     'dofusdb_type_id' => 268,
     'name' => 'Expéditions',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  109 => 
+  108 => 
   array (
     'dofusdb_type_id' => 272,
     'name' => 'Archipel de Valonia',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  110 => 
+  109 => 
   array (
     'dofusdb_type_id' => 278,
     'name' => 'Ressource de Percepteur',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  111 => 
+  110 => 
   array (
     'dofusdb_type_id' => 287,
     'name' => 'Porte-signe de Compagnon',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  112 => 
+  111 => 
   array (
     'dofusdb_type_id' => 289,
     'name' => 'Idoles de Quêtes',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  113 => 
+  112 => 
   array (
     'dofusdb_type_id' => 305,
     'name' => 'Foire du Trool',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  114 => 
+  113 => 
   array (
     'dofusdb_type_id' => 307,
     'name' => 'Pierre d\'âme spéciale',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  115 => 
+  114 => 
   array (
     'dofusdb_type_id' => 308,
     'name' => 'Pierre d\'âme spéciale pleine',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  116 => 
+  115 => 
   array (
     'dofusdb_type_id' => 309,
     'name' => 'Pierre d\'âme spéciale non transformée',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  117 => 
+  116 => 
   array (
     'dofusdb_type_id' => 312,
     'name' => 'Ressource de quête',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  118 => 
+  117 => 
   array (
     'dofusdb_type_id' => 323,
     'name' => 'Makina',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
-  119 => 
+  118 => 
   array (
     'dofusdb_type_id' => 326,
     'name' => 'Carburant d\'enclos',
     'decision' => 'pending',
     'state' => 'draft',
-    'read_level' => 0,
-    'write_level' => 4,
   ),
 );

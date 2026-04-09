@@ -426,6 +426,16 @@ const TARGET_TYPE_OPTIONS = [
     { value: 'glyph', label: 'Glyphe' },
 ];
 
+/** Badge Piège / Glyphe uniquement (pas « Direct ») — aligné sur SpellEffectsUnifiedSection. */
+function targetTypeLabel(type) {
+    const m = { direct: 'Direct', trap: 'Piège', glyph: 'Glyphe' };
+    return m[String(type || 'direct')] || type;
+}
+
+function showTargetTypeBadge(type) {
+    return type === 'trap' || type === 'glyph';
+}
+
 function mapSubEffectsFromApi(subEffects) {
     return (subEffects || []).map((s, idx) => {
         const rawOp = s.logic_operator ?? '';
@@ -690,11 +700,29 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
 
 <template>
     <div class="space-y-6">
-        <h3 v-if="heading" class="text-lg font-semibold">{{ heading }}</h3>
+        <div v-if="heading" class="flex flex-wrap items-center gap-2">
+            <h3 class="text-lg font-semibold">{{ heading }}</h3>
+            <span
+                v-if="showTargetTypeBadge(common.target_type)"
+                class="badge badge-sm badge-primary badge-outline shrink-0"
+                :title="'Type de cible : ' + targetTypeLabel(common.target_type)"
+            >
+                {{ targetTypeLabel(common.target_type) }}
+            </span>
+        </div>
         <form class="space-y-6" @submit.prevent="submitGroup">
             <div class="card bg-base-100 shadow border border-base-300">
                 <div class="card-body">
-                    <h2 class="card-title text-lg">Données communes au groupe</h2>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h2 class="card-title text-lg">Données communes au groupe</h2>
+                        <span
+                            v-if="!heading && showTargetTypeBadge(common.target_type)"
+                            class="badge badge-sm badge-primary badge-outline shrink-0"
+                            :title="'Type de cible : ' + targetTypeLabel(common.target_type)"
+                        >
+                            {{ targetTypeLabel(common.target_type) }}
+                        </span>
+                    </div>
                     <p class="text-sm text-base-content/70 mb-2">
                         Appliquées à chaque degré : nom, description, type de cible. La zone et le seuil de niveau créature se règlent dans chaque onglet de degré.
                     </p>

@@ -282,6 +282,21 @@ return array (
   ),
   17 => 
   array (
+    'characteristic_key' => 'allows_reaction_spell',
+    'entity' => '*',
+    'db_column' => 'allows_reaction',
+    'min' => '0',
+    'max' => '1',
+    'formula' => NULL,
+    'formula_display' => 'Le sort peut être lancé en réaction (1 réaction / round / créature ; PA non récupérés au tour suivant).',
+    'default_value' => '0',
+    'conversion_formula' => 'min(1,max(0,round([d])))',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'value_available' => NULL,
+  ),
+  18 => 
+  array (
     'characteristic_key' => 'bouclier_spell',
     'entity' => '*',
     'db_column' => NULL,
@@ -295,7 +310,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  18 => 
+  19 => 
   array (
     'characteristic_key' => 'dommages_spell',
     'entity' => '*',
@@ -310,7 +325,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  19 => 
+  20 => 
   array (
     'characteristic_key' => 'soin_spell',
     'entity' => '*',
@@ -325,7 +340,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  20 => 
+  21 => 
   array (
     'characteristic_key' => 'vol_vie_spell',
     'entity' => '*',
@@ -340,7 +355,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  21 => 
+  22 => 
   array (
     'characteristic_key' => 'agi_spell',
     'entity' => '*',
@@ -355,7 +370,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  22 => 
+  23 => 
   array (
     'characteristic_key' => 'armor_class_spell',
     'entity' => '*',
@@ -383,7 +398,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  23 => 
+  24 => 
   array (
     'characteristic_key' => 'chance_spell',
     'entity' => '*',
@@ -398,7 +413,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  24 => 
+  25 => 
   array (
     'characteristic_key' => 'critical_damage_reduction_spell',
     'entity' => '*',
@@ -413,7 +428,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  25 => 
+  26 => 
   array (
     'characteristic_key' => 'critical_spell',
     'entity' => '*',
@@ -428,7 +443,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  26 => 
+  27 => 
   array (
     'characteristic_key' => 'do_fixe_multiple_spell',
     'entity' => '*',
@@ -443,7 +458,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  27 => 
+  28 => 
   array (
     'characteristic_key' => 'dodge_action_points_spell',
     'entity' => '*',
@@ -458,7 +473,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  28 => 
+  29 => 
   array (
     'characteristic_key' => 'dodge_movement_points_spell',
     'entity' => '*',
@@ -473,7 +488,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  29 => 
+  30 => 
   array (
     'characteristic_key' => 'dodge_spell',
     'entity' => '*',
@@ -494,7 +509,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  30 => 
+  31 => 
   array (
     'characteristic_key' => 'fixed_damage_air_spell',
     'entity' => '*',
@@ -509,7 +524,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  31 => 
+  32 => 
   array (
     'characteristic_key' => 'fixed_damage_earth_spell',
     'entity' => '*',
@@ -524,7 +539,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  32 => 
+  33 => 
   array (
     'characteristic_key' => 'fixed_damage_fire_spell',
     'entity' => '*',
@@ -539,7 +554,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  33 => 
+  34 => 
   array (
     'characteristic_key' => 'fixed_damage_neutral_spell',
     'entity' => '*',
@@ -554,7 +569,37 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  34 => 
+  35 => 
+  array (
+    'characteristic_key' => 'fixed_damage_sagesse_spell',
+    'entity' => '*',
+    'db_column' => 'do_sagesse',
+    'min' => '0',
+    'max' => '5',
+    'formula' => NULL,
+    'formula_display' => 'Bonus dégâts fixe Sagesse (effet temporaire, aligné autres éléments).',
+    'default_value' => '0',
+    'conversion_formula' => 'round(min(5,max(0,0.2*[d])))',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'value_available' => NULL,
+  ),
+  36 => 
+  array (
+    'characteristic_key' => 'fixed_damage_vitalite_spell',
+    'entity' => '*',
+    'db_column' => 'do_vitalite',
+    'min' => '0',
+    'max' => '5',
+    'formula' => NULL,
+    'formula_display' => 'Bonus dégâts fixe Vitalité (effet temporaire, aligné autres éléments).',
+    'default_value' => '0',
+    'conversion_formula' => 'round(min(5,max(0,0.2*[d])))',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'value_available' => NULL,
+  ),
+  37 => 
   array (
     'characteristic_key' => 'fixed_damage_water_spell',
     'entity' => '*',
@@ -569,7 +614,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  35 => 
+  38 => 
   array (
     'characteristic_key' => 'fixed_resistance_air_spell',
     'entity' => '*',
@@ -584,7 +629,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  36 => 
+  39 => 
   array (
     'characteristic_key' => 'fixed_resistance_eau_spell',
     'entity' => '*',
@@ -599,7 +644,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  37 => 
+  40 => 
   array (
     'characteristic_key' => 'fixed_resistance_feu_spell',
     'entity' => '*',
@@ -614,7 +659,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  38 => 
+  41 => 
   array (
     'characteristic_key' => 'fixed_resistance_neutre_spell',
     'entity' => '*',
@@ -629,7 +674,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  39 => 
+  42 => 
   array (
     'characteristic_key' => 'fixed_resistance_terre_spell',
     'entity' => '*',
@@ -644,7 +689,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  40 => 
+  43 => 
   array (
     'characteristic_key' => 'heal_bonus_spell',
     'entity' => '*',
@@ -673,7 +718,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  41 => 
+  44 => 
   array (
     'characteristic_key' => 'hit_bonus_spell',
     'entity' => '*',
@@ -701,7 +746,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  42 => 
+  45 => 
   array (
     'characteristic_key' => 'initiative_spell',
     'entity' => '*',
@@ -730,7 +775,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  43 => 
+  46 => 
   array (
     'characteristic_key' => 'intel_spell',
     'entity' => '*',
@@ -745,7 +790,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  44 => 
+  47 => 
   array (
     'characteristic_key' => 'mastery_bonus_spell',
     'entity' => '*',
@@ -760,7 +805,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  45 => 
+  48 => 
   array (
     'characteristic_key' => 'movement_points_spell',
     'entity' => '*',
@@ -775,7 +820,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  46 => 
+  49 => 
   array (
     'characteristic_key' => 'push_damage_reduction_spell',
     'entity' => '*',
@@ -790,7 +835,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  47 => 
+  50 => 
   array (
     'characteristic_key' => 'range_spell',
     'entity' => '*',
@@ -805,7 +850,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  48 => 
+  51 => 
   array (
     'characteristic_key' => 'res_air_spell',
     'entity' => '*',
@@ -820,7 +865,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  49 => 
+  52 => 
   array (
     'characteristic_key' => 'res_eau_spell',
     'entity' => '*',
@@ -835,7 +880,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  50 => 
+  53 => 
   array (
     'characteristic_key' => 'res_feu_spell',
     'entity' => '*',
@@ -850,7 +895,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  51 => 
+  54 => 
   array (
     'characteristic_key' => 'res_neutre_spell',
     'entity' => '*',
@@ -865,7 +910,22 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  52 => 
+  55 => 
+  array (
+    'characteristic_key' => 'res_sagesse_spell',
+    'entity' => '*',
+    'db_column' => 'res_sagesse',
+    'min' => '0',
+    'max' => '50',
+    'formula' => NULL,
+    'formula_display' => 'Résistance Sagesse (dégâts / soins de ce type) appliquée par un sous-effet de sort.',
+    'default_value' => '0',
+    'conversion_formula' => 'round(min(50,max(0,0.8*[d])))',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'value_available' => NULL,
+  ),
+  56 => 
   array (
     'characteristic_key' => 'res_terre_spell',
     'entity' => '*',
@@ -880,7 +940,22 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  53 => 
+  57 => 
+  array (
+    'characteristic_key' => 'res_vitalite_spell',
+    'entity' => '*',
+    'db_column' => 'res_vitalite',
+    'min' => '0',
+    'max' => '50',
+    'formula' => NULL,
+    'formula_display' => 'Résistance Vitalité (dégâts / soins de ce type) appliquée par un sous-effet de sort.',
+    'default_value' => '0',
+    'conversion_formula' => 'round(min(50,max(0,0.8*[d])))',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'value_available' => NULL,
+  ),
+  58 => 
   array (
     'characteristic_key' => 'sagesse_spell',
     'entity' => '*',
@@ -895,7 +970,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  54 => 
+  59 => 
   array (
     'characteristic_key' => 'save_agility_spell',
     'entity' => '*',
@@ -910,7 +985,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  55 => 
+  60 => 
   array (
     'characteristic_key' => 'save_chance_spell',
     'entity' => '*',
@@ -925,7 +1000,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  56 => 
+  61 => 
   array (
     'characteristic_key' => 'save_intelligence_spell',
     'entity' => '*',
@@ -940,7 +1015,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  57 => 
+  62 => 
   array (
     'characteristic_key' => 'save_strength_spell',
     'entity' => '*',
@@ -955,7 +1030,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  58 => 
+  63 => 
   array (
     'characteristic_key' => 'save_vitality_spell',
     'entity' => '*',
@@ -970,7 +1045,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  59 => 
+  64 => 
   array (
     'characteristic_key' => 'save_wisdom_spell',
     'entity' => '*',
@@ -985,7 +1060,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  60 => 
+  65 => 
   array (
     'characteristic_key' => 'strong_spell',
     'entity' => '*',
@@ -1000,7 +1075,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  61 => 
+  66 => 
   array (
     'characteristic_key' => 'summoning_spell',
     'entity' => '*',
@@ -1029,7 +1104,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  62 => 
+  67 => 
   array (
     'characteristic_key' => 'tackle_spell',
     'entity' => '*',
@@ -1050,7 +1125,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  63 => 
+  68 => 
   array (
     'characteristic_key' => 'vitality_spell',
     'entity' => '*',
@@ -1065,7 +1140,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  64 => 
+  69 => 
   array (
     'characteristic_key' => 'wakfu_reserve_spell',
     'entity' => '*',
@@ -1076,81 +1151,6 @@ return array (
     'formula_display' => 'Réserve Wakfu appliquée par un sous-effet de sort.',
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
-  65 => 
-  array (
-    'characteristic_key' => 'allows_reaction_spell',
-    'entity' => '*',
-    'db_column' => 'allows_reaction',
-    'min' => '0',
-    'max' => '1',
-    'formula' => NULL,
-    'formula_display' => 'Le sort peut être lancé en réaction (1 réaction / round / créature ; PA non récupérés au tour suivant).',
-    'default_value' => '0',
-    'conversion_formula' => 'min(1,max(0,round([d])))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
-  66 =>
-  array (
-    'characteristic_key' => 'res_sagesse_spell',
-    'entity' => '*',
-    'db_column' => 'res_sagesse',
-    'min' => '0',
-    'max' => '50',
-    'formula' => NULL,
-    'formula_display' => 'Résistance Sagesse (dégâts / soins de ce type) appliquée par un sous-effet de sort.',
-    'default_value' => '0',
-    'conversion_formula' => 'round(min(50,max(0,0.8*[d])))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
-  67 =>
-  array (
-    'characteristic_key' => 'res_vitalite_spell',
-    'entity' => '*',
-    'db_column' => 'res_vitalite',
-    'min' => '0',
-    'max' => '50',
-    'formula' => NULL,
-    'formula_display' => 'Résistance Vitalité (dégâts / soins de ce type) appliquée par un sous-effet de sort.',
-    'default_value' => '0',
-    'conversion_formula' => 'round(min(50,max(0,0.8*[d])))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
-  68 =>
-  array (
-    'characteristic_key' => 'fixed_damage_sagesse_spell',
-    'entity' => '*',
-    'db_column' => 'do_sagesse',
-    'min' => '0',
-    'max' => '5',
-    'formula' => NULL,
-    'formula_display' => 'Bonus dégâts fixe Sagesse (effet temporaire, aligné autres éléments).',
-    'default_value' => '0',
-    'conversion_formula' => 'round(min(5,max(0,0.2*[d])))',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
-  69 =>
-  array (
-    'characteristic_key' => 'fixed_damage_vitalite_spell',
-    'entity' => '*',
-    'db_column' => 'do_vitalite',
-    'min' => '0',
-    'max' => '5',
-    'formula' => NULL,
-    'formula_display' => 'Bonus dégâts fixe Vitalité (effet temporaire, aligné autres éléments).',
-    'default_value' => '0',
-    'conversion_formula' => 'round(min(5,max(0,0.2*[d])))',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,

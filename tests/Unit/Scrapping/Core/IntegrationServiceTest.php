@@ -10,9 +10,11 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
+use App\Models\Type\SpellType;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
+use App\Support\ElementBitmask;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -193,6 +195,239 @@ class IntegrationServiceTest extends TestCase
         $this->assertNotNull($spell);
         $this->assertSame('Sort Integration Test', $spell->name);
         $this->assertSame('54321', $spell->dofusdb_id);
+    }
+
+    public function test_integrate_spell_infere_element_et_types_depuis_sous_effets(): void
+    {
+        $this->createSystemUser();
+
+        $typeDegats = SpellType::factory()->create(['name' => 'Dégâts']);
+        $typeSoin = SpellType::factory()->create(['name' => 'Soin']);
+        $typePlacement = SpellType::factory()->create(['name' => 'Placement']);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '554433',
+                'name' => 'Sort Inférence',
+                'description' => 'Desc',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+                'element' => 1, // valeur initiale (sera recalculée depuis les sous-effets)
+            ],
+            'spell_effects' => [
+                'effect_group' => [
+                    'name' => 'Sort Inférence',
+                    'slug' => 'sort-inference',
+                ],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Sort Inférence',
+                        'slug' => 'sort-inference-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'frapper',
+                                'params' => [
+                                    'characteristic' => 'fixed_damage_sagesse_spell',
+                                    'value_formula' => '10',
+                                ],
+                                'crit_only' => false,
+                            ],
+                            [
+                                'order' => 1,
+                                'sub_effect_slug' => 'soigner',
+                                'params' => [
+                                    'characteristic' => 'res_vitalite_spell',
+                                    'value_formula' => '5',
+                                ],
+                                'crit_only' => false,
+                            ],
+                            [
+                                'order' => 2,
+                                'sub_effect_slug' => 'deplacer',
+                                'params' => [
+                                    'value_formula' => '2',
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+
+        $expectedMask = ElementBitmask::fromPrimaries([5, 6]); // Sagesse + Vitalité
+        $this->assertSame($expectedMask, (int) $spell->element);
+
+        $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
+        $this->assertContains($typeDegats->id, $attachedTypeIds);
+        $this->assertContains($typeSoin->id, $attachedTypeIds);
+        $this->assertContains($typePlacement->id, $attachedTypeIds);
+    }
+
+    public function test_integrate_spell_booster_negatif_associe_entrave_sans_buff(): void
+    {
+        $this->createSystemUser();
+
+        $typeDebuff = SpellType::factory()->create(['name' => 'Debuff']);
+        $typeBuff = SpellType::factory()->create(['name' => 'Buff']);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '600001',
+                'name' => 'Malus booster',
+                'description' => 'Desc',
+                'pa' => '3',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Malus booster', 'slug' => 'malus-booster'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Malus booster',
+                        'slug' => 'malus-booster-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'booster',
+                                'params' => [
+                                    'characteristic' => 'pa_spell',
+                                    'value_formula' => '-2',
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+
+        $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
+        $this->assertContains($typeDebuff->id, $attachedTypeIds);
+        $this->assertNotContains($typeBuff->id, $attachedTypeIds);
+    }
+
+    public function test_integrate_spell_booster_positif_associe_buff(): void
+    {
+        $this->createSystemUser();
+
+        $typeBuff = SpellType::factory()->create(['name' => 'Buff']);
+        $typeDebuff = SpellType::factory()->create(['name' => 'Debuff']);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '600002',
+                'name' => 'Bonus booster',
+                'description' => 'Desc',
+                'pa' => '3',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Bonus booster', 'slug' => 'bonus-booster'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Bonus booster',
+                        'slug' => 'bonus-booster-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'booster',
+                                'params' => [
+                                    'characteristic' => 'strong_spell',
+                                    'value_formula' => '3',
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+
+        $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
+        $this->assertContains($typeBuff->id, $attachedTypeIds);
+        $this->assertNotContains($typeDebuff->id, $attachedTypeIds);
+    }
+
+    public function test_integrate_spell_sous_effet_autre_detecte_invocation_et_dommages_via_texte(): void
+    {
+        $this->createSystemUser();
+
+        $typeInvocation = SpellType::factory()->create(['name' => 'Invocation']);
+        $typeDegats = SpellType::factory()->create(['name' => 'Dégâts']);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '600003',
+                'name' => 'Effet autre',
+                'description' => 'Desc',
+                'pa' => '3',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Effet autre', 'slug' => 'effet-autre'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Effet autre',
+                        'slug' => 'effet-autre-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'autre',
+                                'params' => [
+                                    'value' => 'Invoque une créature et inflige des dommages de feu.',
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+
+        $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
+        $this->assertContains($typeInvocation->id, $attachedTypeIds);
+        $this->assertContains($typeDegats->id, $attachedTypeIds);
     }
 
     public function test_integrate_spell_incomplete_returns_fail(): void

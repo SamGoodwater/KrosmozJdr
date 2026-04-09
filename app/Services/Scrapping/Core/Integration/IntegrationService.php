@@ -16,6 +16,8 @@ use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\SpellState;
 use App\Models\SubEffect;
+use App\Models\Type\SpellType;
+use App\Support\ElementBitmask;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
 use App\Models\Type\ResourceType;
@@ -521,6 +523,15 @@ final class IntegrationService
             $spellEffectsPayload = $convertedData['spell_effects'] ?? null;
             if (is_array($spellEffectsPayload)) {
                 $this->integrateSpellEffectsForSpell($spell, $spellEffectsPayload);
+                $inferredElementMask = $this->inferSpellElementMaskFromEffectsPayload($spellEffectsPayload);
+                if ($inferredElementMask !== null) {
+                    $spell->element = $inferredElementMask;
+                    $spell->save();
+                }
+                $inferredTypeIds = $this->inferSpellTypeIdsFromEffectsPayload($spellEffectsPayload);
+                if ($inferredTypeIds !== []) {
+                    $spell->spellTypes()->sync($inferredTypeIds);
+                }
             }
 
             DB::commit();
@@ -1043,6 +1054,226 @@ final class IntegrationService
                 'target_mask' => isset($params['target_mask']) && is_string($params['target_mask']) ? $params['target_mask'] : null,
             ],
         ]);
+    }
+
+    /**
+     * Déduit le masque d'éléments d'un sort à partir des caractéristiques de ses sous-effets.
+     *
+     * @param  array{
+     *   effects?: list<array{sub_effects?: list<array{params?: array<string, mixed>}>}>
+     * }  $payload
+     */
+    private function inferSpellElementMaskFromEffectsPayload(array $payload): ?int
+    {
+        $effects = $payload['effects'] ?? [];
+        if (! is_array($effects) || $effects === []) {
+            return null;
+        }
+
+        $primaries = [];
+        foreach ($effects as $effect) {
+            if (! is_array($effect)) {
+                continue;
+            }
+            $subEffects = $effect['sub_effects'] ?? [];
+            if (! is_array($subEffects)) {
+                continue;
+            }
+            foreach ($subEffects as $subEffect) {
+                if (! is_array($subEffect)) {
+                    continue;
+                }
+                $params = is_array($subEffect['params'] ?? null) ? $subEffect['params'] : [];
+                $characteristic = isset($params['characteristic']) ? (string) $params['characteristic'] : '';
+                $primary = $this->inferElementPrimaryFromCharacteristic($characteristic);
+                if ($primary !== null) {
+                    $primaries[$primary] = true;
+                }
+            }
+        }
+
+        if ($primaries === []) {
+            return null;
+        }
+
+        return ElementBitmask::fromPrimaries(array_map('intval', array_keys($primaries)));
+    }
+
+    private function inferElementPrimaryFromCharacteristic(string $characteristic): ?int
+    {
+        $key = $this->normalizeTextKey($characteristic);
+        if ($key === '') {
+            return null;
+        }
+
+        if (str_contains($key, 'neutral') || str_contains($key, 'neutre')) {
+            return 0;
+        }
+        if (str_contains($key, 'earth') || str_contains($key, 'terre')) {
+            return 1;
+        }
+        if (str_contains($key, 'fire') || str_contains($key, 'feu')) {
+            return 2;
+        }
+        if (str_contains($key, 'air')) {
+            return 3;
+        }
+        if (str_contains($key, 'water') || str_contains($key, 'eau')) {
+            return 4;
+        }
+        if (str_contains($key, 'sagesse') || str_contains($key, 'wisdom')) {
+            return 5;
+        }
+        if (str_contains($key, 'vitalite') || str_contains($key, 'vitality')) {
+            return 6;
+        }
+
+        return null;
+    }
+
+    /**
+     * Déduit les types de sort à partir des actions de sous-effets.
+     *
+     * @param  array{
+     *   effects?: list<array{sub_effects?: list<array{sub_effect_slug?: string, params?: array<string, mixed>}>}>
+     * }  $payload
+     * @return list<int>
+     */
+    private function inferSpellTypeIdsFromEffectsPayload(array $payload): array
+    {
+        $effects = $payload['effects'] ?? [];
+        if (! is_array($effects) || $effects === []) {
+            return [];
+        }
+
+        $concepts = [];
+        foreach ($effects as $effect) {
+            if (! is_array($effect)) {
+                continue;
+            }
+            $subEffects = $effect['sub_effects'] ?? [];
+            if (! is_array($subEffects)) {
+                continue;
+            }
+            foreach ($subEffects as $subEffect) {
+                if (! is_array($subEffect)) {
+                    continue;
+                }
+                $slug = $this->normalizeTextKey((string) ($subEffect['sub_effect_slug'] ?? ''));
+                $params = is_array($subEffect['params'] ?? null) ? $subEffect['params'] : [];
+                $valueText = $this->normalizeTextKey((string) ($params['value'] ?? ''));
+
+                if ($slug === 'frapper' || str_contains($slug, 'attaque')) {
+                    $concepts['degats'] = true;
+                }
+                if ($slug === 'soigner') {
+                    $concepts['soin'] = true;
+                }
+                if ($slug === 'proteger') {
+                    $concepts['protection'] = true;
+                    $concepts['tank'] = true;
+                }
+                if ($slug === 'invoquer') {
+                    $concepts['invocation'] = true;
+                }
+                if ($slug === 'booster') {
+                    $valueFormula = isset($params['value_formula']) ? trim((string) $params['value_formula']) : '';
+                    if ($valueFormula !== '' && str_starts_with($valueFormula, '-')) {
+                        $concepts['entrave'] = true;
+                    } else {
+                        $concepts['amelioration'] = true;
+                    }
+                }
+                if ($slug === 'retirer' || $slug === 'voler-caracteristiques') {
+                    $concepts['entrave'] = true;
+                }
+                if ($slug === 'deplacer' || str_contains($slug, 'teleport') || str_contains($slug, 'position')) {
+                    $concepts['placement'] = true;
+                }
+
+                if ($slug === 'autre' && $valueText !== '') {
+                    if (preg_match('/\b(invoque|invocation)\b/u', $valueText) === 1) {
+                        $concepts['invocation'] = true;
+                    }
+                    if (preg_match('/\b(soin|soigne)\b/u', $valueText) === 1) {
+                        $concepts['soin'] = true;
+                    }
+                    if (preg_match('/\b(dommage|dommages|degat|degats|frappe)\b/u', $valueText) === 1) {
+                        $concepts['degats'] = true;
+                    }
+                    if (preg_match('/\b(bouclier|protection|armure)\b/u', $valueText) === 1) {
+                        $concepts['protection'] = true;
+                        $concepts['tank'] = true;
+                    }
+                    if (preg_match('/\b(booste|augmente|bonus)\b/u', $valueText) === 1) {
+                        $concepts['amelioration'] = true;
+                    }
+                    if (preg_match('/\b(retire|retrait|vole|malus)\b/u', $valueText) === 1) {
+                        $concepts['entrave'] = true;
+                    }
+                    if (preg_match('/\b(deplace|attire|repousse|teleporte|position)\b/u', $valueText) === 1) {
+                        $concepts['placement'] = true;
+                    }
+                }
+            }
+        }
+
+        if ($concepts === []) {
+            return [];
+        }
+
+        $byName = SpellType::query()->pluck('id', 'name')->all();
+        if ($byName === []) {
+            return [];
+        }
+
+        $normalizedToId = [];
+        foreach ($byName as $name => $id) {
+            $normalizedToId[$this->normalizeTextKey((string) $name)] = (int) $id;
+        }
+
+        $conceptToCandidates = [
+            'invocation' => ['Invocation'],
+            'degats' => ['Dégâts', 'Degats', 'Offensif'],
+            'soin' => ['Soin'],
+            'protection' => ['Protection', 'Défensif', 'Defensif'],
+            'tank' => ['Tank', 'Défensif', 'Defensif'],
+            'amelioration' => ['Amélioration', 'Amelioration', 'Buff'],
+            'entrave' => ['Entrave', 'Débuff', 'Debuff'],
+            'placement' => ['Placement', 'Téléportation', 'Teleportation'],
+        ];
+
+        $ids = [];
+        foreach (array_keys($concepts) as $concept) {
+            $candidates = $conceptToCandidates[$concept] ?? [];
+            foreach ($candidates as $candidate) {
+                $norm = $this->normalizeTextKey($candidate);
+                if (isset($normalizedToId[$norm])) {
+                    $ids[$normalizedToId[$norm]] = true;
+                    break;
+                }
+            }
+        }
+
+        return array_map('intval', array_keys($ids));
+    }
+
+    private function normalizeTextKey(string $value): string
+    {
+        $v = trim(mb_strtolower($value));
+        if ($v === '') {
+            return '';
+        }
+
+        $v = str_replace(
+            ['é', 'è', 'ê', 'ë', 'à', 'â', 'ä', 'î', 'ï', 'ô', 'ö', 'ù', 'û', 'ü', 'ç', '’', '\''],
+            ['e', 'e', 'e', 'e', 'a', 'a', 'a', 'i', 'i', 'o', 'o', 'u', 'u', 'u', 'c', '-', '-'],
+            $v
+        );
+        $v = preg_replace('/[^a-z0-9\-_\s]/', '', $v) ?? $v;
+        $v = preg_replace('/\s+/', '-', $v) ?? $v;
+
+        return trim($v, '-');
     }
 
     /**

@@ -822,6 +822,116 @@ return array (
   ),
   26 => 
   array (
+    'characteristic_key' => 'acrobatics_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  27 => 
+  array (
+    'characteristic_key' => 'animal_handling_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  28 => 
+  array (
+    'characteristic_key' => 'arcana_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  29 => 
+  array (
+    'characteristic_key' => 'athletics_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  30 => 
+  array (
+    'characteristic_key' => 'deception_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  31 => 
+  array (
     'characteristic_key' => 'fixed_damage_air_object',
     'entity' => '*',
     'db_column' => NULL,
@@ -842,7 +952,7 @@ return array (
     array (
     ),
   ),
-  27 => 
+  32 => 
   array (
     'characteristic_key' => 'fixed_damage_earth_object',
     'entity' => '*',
@@ -864,7 +974,7 @@ return array (
     array (
     ),
   ),
-  28 => 
+  33 => 
   array (
     'characteristic_key' => 'fixed_damage_fire_object',
     'entity' => '*',
@@ -886,7 +996,7 @@ return array (
     array (
     ),
   ),
-  29 => 
+  34 => 
   array (
     'characteristic_key' => 'fixed_damage_multiple_object',
     'entity' => '*',
@@ -924,7 +1034,7 @@ return array (
     array (
     ),
   ),
-  30 => 
+  35 => 
   array (
     'characteristic_key' => 'fixed_damage_neutral_object',
     'entity' => '*',
@@ -962,7 +1072,7 @@ return array (
     array (
     ),
   ),
-  31 => 
+  36 => 
   array (
     'characteristic_key' => 'fixed_damage_water_object',
     'entity' => '*',
@@ -991,7 +1101,293 @@ return array (
     array (
     ),
   ),
-  32 => 
+  37 => 
+  array (
+    'characteristic_key' => 'history_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  38 => 
+  array (
+    'characteristic_key' => 'insight_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  39 => 
+  array (
+    'characteristic_key' => 'intimidation_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  40 => 
+  array (
+    'characteristic_key' => 'investigation_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  41 => 
+  array (
+    'characteristic_key' => 'medicine_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  42 => 
+  array (
+    'characteristic_key' => 'nature_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  43 => 
+  array (
+    'characteristic_key' => 'perception_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  44 => 
+  array (
+    'characteristic_key' => 'performance_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  45 => 
+  array (
+    'characteristic_key' => 'persuasion_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  46 => 
+  array (
+    'characteristic_key' => 'religion_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  47 => 
+  array (
+    'characteristic_key' => 'sleight_of_hand_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  48 => 
+  array (
+    'characteristic_key' => 'stealth_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  49 => 
+  array (
+    'characteristic_key' => 'survival_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '8',
+    'formula' => NULL,
+    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
+    'default_value' => '0',
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => true,
+    'forgemagie_max' => 3,
+    'base_price_per_unit' => '400.00',
+    'rune_price_per_unit' => '800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  50 => 
   array (
     'characteristic_key' => 'fixed_resistance_air_object',
     'entity' => '*',
@@ -1029,7 +1425,7 @@ return array (
     array (
     ),
   ),
-  33 => 
+  51 => 
   array (
     'characteristic_key' => 'fixed_resistance_earth_object',
     'entity' => '*',
@@ -1067,7 +1463,7 @@ return array (
     array (
     ),
   ),
-  34 => 
+  52 => 
   array (
     'characteristic_key' => 'fixed_resistance_fire_object',
     'entity' => '*',
@@ -1105,7 +1501,7 @@ return array (
     array (
     ),
   ),
-  35 => 
+  53 => 
   array (
     'characteristic_key' => 'fixed_resistance_neutral_object',
     'entity' => '*',
@@ -1143,7 +1539,7 @@ return array (
     array (
     ),
   ),
-  36 => 
+  54 => 
   array (
     'characteristic_key' => 'fixed_resistance_water_object',
     'entity' => '*',
@@ -1181,7 +1577,7 @@ return array (
     array (
     ),
   ),
-  37 => 
+  55 => 
   array (
     'characteristic_key' => 'invulnerability_100_percent_object',
     'entity' => '*',
@@ -1203,7 +1599,7 @@ return array (
     array (
     ),
   ),
-  38 => 
+  56 => 
   array (
     'characteristic_key' => 'resistance_50_percent_object',
     'entity' => '*',
@@ -1241,7 +1637,7 @@ return array (
     array (
     ),
   ),
-  39 => 
+  57 => 
   array (
     'characteristic_key' => 'critical_hit_object',
     'entity' => '*',
@@ -1263,7 +1659,7 @@ return array (
     array (
     ),
   ),
-  40 => 
+  58 => 
   array (
     'characteristic_key' => 'heal_bonus_object',
     'entity' => '*',
@@ -1285,7 +1681,7 @@ return array (
     array (
     ),
   ),
-  41 => 
+  59 => 
   array (
     'characteristic_key' => 'wakfu_recharge_object',
     'entity' => '*',
@@ -1302,402 +1698,6 @@ return array (
     'forgemagie_max' => 0,
     'base_price_per_unit' => '1500.00',
     'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  42 => 
-  array (
-    'characteristic_key' => 'athletics_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  43 => 
-  array (
-    'characteristic_key' => 'intimidation_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  44 => 
-  array (
-    'characteristic_key' => 'acrobatics_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  45 => 
-  array (
-    'characteristic_key' => 'stealth_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  46 => 
-  array (
-    'characteristic_key' => 'sleight_of_hand_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  47 => 
-  array (
-    'characteristic_key' => 'arcana_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  48 => 
-  array (
-    'characteristic_key' => 'history_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  49 => 
-  array (
-    'characteristic_key' => 'investigation_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  50 => 
-  array (
-    'characteristic_key' => 'nature_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  51 => 
-  array (
-    'characteristic_key' => 'religion_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  52 => 
-  array (
-    'characteristic_key' => 'animal_handling_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  53 => 
-  array (
-    'characteristic_key' => 'medicine_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  54 => 
-  array (
-    'characteristic_key' => 'perception_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  55 => 
-  array (
-    'characteristic_key' => 'insight_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  56 => 
-  array (
-    'characteristic_key' => 'survival_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  57 => 
-  array (
-    'characteristic_key' => 'persuasion_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  58 => 
-  array (
-    'characteristic_key' => 'performance_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  59 => 
-  array (
-    'characteristic_key' => 'deception_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '8',
-    'formula' => NULL,
-    'formula_display' => 'Bonus équip. max +5, forgemagie max +3 (2.2.2)',
-    'default_value' => '0',
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => true,
-    'forgemagie_max' => 3,
-    'base_price_per_unit' => '400.00',
-    'rune_price_per_unit' => '800.00',
     'value_available' => NULL,
     'item_type_ids' => 
     array (
