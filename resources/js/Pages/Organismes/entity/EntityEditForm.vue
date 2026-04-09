@@ -125,14 +125,6 @@ const props = defineProps({
         default: false,
     },
     /**
-     * Positionnement horizontal du pied fixe (sidebar desktop).
-     * @example 'left-0 right-0 lg:left-64'
-     */
-    fixedFooterInsetClass: {
-        type: String,
-        default: 'left-0 right-0 lg:left-64',
-    },
-    /**
      * Exécuté avant le POST/PATCH Inertia du formulaire. Si la Promise est rejetée ou résout `false`, la soumission est annulée.
      * @example Sauvegarde des effets du sort puis mise à jour de la fiche.
      * @type {(() => Promise<boolean|void>) | null}
@@ -207,7 +199,7 @@ const rootFormClass = computed(() => {
 
 /** Espace sous le formulaire pour ne pas masquer le dernier champ derrière le pied fixe. */
 const formScrollPaddingClass = computed(() =>
-    props.fixedFooterActions ? 'pb-28 md:pb-32 lg:pb-36' : '',
+    props.fixedFooterActions ? 'pb-2 md:pb-3 lg:pb-4' : '',
 );
 
 const notificationStore = useNotificationStore();
@@ -924,17 +916,10 @@ const cancel = () => {
 
             <!-- Actions -->
             <div
-                :class="[
-                    fixedFooterActions
-                        ? `fixed bottom-0 z-40 border-t border-base-300/80 bg-base-100/95 shadow-[0_-6px_24px_-8px_rgba(0,0,0,0.18)] backdrop-blur-md ${fixedFooterInsetClass}`
-                        : 'border-glass-t-md pt-6',
-                ]"
+                class="fixed bottom-0 z-40 left-0 right-0 w-full"
             >
                 <div
-                    :class="[
-                        'footer-tools-row',
-                        fixedFooterActions ? 'mx-auto max-w-7xl px-3 py-3 sm:px-4' : '',
-                    ]"
+                    class="footer-tools-row bg-base-100/80 backdrop-blur-md border-glass-t-md w-full px-6 py-2"
                 >
                     <div
                         v-if="accessLevelFields.length"

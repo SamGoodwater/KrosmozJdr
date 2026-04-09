@@ -97,11 +97,11 @@ function confirmDelete() {
 <template>
     <div class="spell-edit-form-content space-y-6">
         <div
-            class="sticky top-0 z-20 rounded-xl border border-base-300/70 bg-base-100/90 px-3 py-3 shadow-sm backdrop-blur-md sm:px-4"
+            class="sticky top-0 z-20 px-3 py-1 bg-base-100/80 backdrop-blur-md border-glass-b-md sm:px-4"
         >
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="min-w-0 flex-1">
-                    <h1 class="truncate text-lg font-bold text-base-content sm:text-xl">
+                    <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
                         {{ spellModel.name || "Sort sans nom" }}
                     </h1>
                     <p class="text-xs text-base-content/60">
@@ -110,7 +110,7 @@ function confirmDelete() {
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <Route v-if="!embeddedInModal" route="entities.spells.index">
-                        <Btn color="neutral" variant="ghost" size="sm" type="button" class="gap-1.5">
+                        <Btn color="neutral" variant="ghost" size="xs" type="button" class="gap-1.5">
                             <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                             Liste
                         </Btn>
@@ -118,7 +118,7 @@ function confirmDelete() {
                     <Btn
                         color="neutral"
                         variant="outline"
-                        size="sm"
+                        size="xs"
                         type="button"
                         class="gap-1.5"
                         @click="goToShow"
@@ -130,7 +130,7 @@ function confirmDelete() {
                         v-if="canDeleteSpell"
                         color="error"
                         variant="outline"
-                        size="sm"
+                        size="xs"
                         type="button"
                         class="gap-1.5"
                         @click="confirmDelete"
