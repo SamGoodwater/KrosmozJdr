@@ -2,20 +2,18 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Spell;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
+use App\Models\Entity\Spell;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Spell
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class SpellModelTest extends TestCase
 {
@@ -27,7 +25,7 @@ class SpellModelTest extends TestCase
     public function test_spell_factory_creates_valid_spell(): void
     {
         $user = User::factory()->create();
-        
+
         $spell = Spell::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -104,6 +102,42 @@ class SpellModelTest extends TestCase
     }
 
     /**
+     * Portée affichable (po_display) : pas d’imputation max=min, tiret seulement si deux bornes distinctes.
+     */
+    public function test_po_display_formats_min_max_range(): void
+    {
+        $user = User::factory()->create();
+
+        $bothEqual = Spell::factory()->create([
+            'created_by' => $user->id,
+            'po_min' => '2',
+            'po_max' => '2',
+        ]);
+        $this->assertSame('2', $bothEqual->po_display);
+
+        $range = Spell::factory()->create([
+            'created_by' => $user->id,
+            'po_min' => '2',
+            'po_max' => '6',
+        ]);
+        $this->assertSame('2 - 6', $range->po_display);
+
+        $minOnly = Spell::factory()->create([
+            'created_by' => $user->id,
+            'po_min' => '3',
+            'po_max' => '',
+        ]);
+        $this->assertSame('3', $minOnly->fresh()->po_display);
+
+        $maxOnly = Spell::factory()->create([
+            'created_by' => $user->id,
+            'po_min' => '',
+            'po_max' => '5',
+        ]);
+        $this->assertSame('5', $maxOnly->fresh()->po_display);
+    }
+
+    /**
      * Test de la relation avec les monstres invoqués (many-to-many via spell_invocation)
      */
     public function test_spell_can_have_invoked_monsters(): void
@@ -129,4 +163,3 @@ class SpellModelTest extends TestCase
         $this->assertTrue($spell->monsters->contains($monster));
     }
 }
-

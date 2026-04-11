@@ -25,24 +25,76 @@ import {
 // Ré-exports pour usage direct
 export { hexToRgba, getCharacteristicColorStyle, getCharacteristicContainerStyle };
 
-/** Icône CAC (corps à corps) pour portée 1 ou 1-1. */
-export const PO_CAC_ICON = 'icons/areas/samples/cac.svg';
+/**
+ * Icône CàC (corps à corps).
+ * Fichier : `storage/app/public/images/icons/caracteristics/cac.webp`
+ * → URL `/storage/images/icons/caracteristics/cac.webp` (dossier **caracteristics**, sans « h » après le « c » initial).
+ * Variante anglaise `…/icons/characteristics/…` est acceptée (`ImageService.normalizeIconsSubpath` + lien symbolique).
+ */
+export const PO_CAC_ICON = "icons/caracteristics/cac.webp";
 
 /** Tooltip / label corps à corps. */
 export const PO_CAC_TOOLTIP = 'Corps à corps';
 
-/** @deprecated Alias pour PO_CAC_TOOLTIP */
+/** @deprecated Alias pour PO_CàC_TOOLTIP */  
 export const PO_CAC_LABEL = PO_CAC_TOOLTIP;
 
 /**
- * Indique si une valeur de portée (po) représente le corps à corps (1 ou 1-1).
+ * Partie PO normalisée (trim) ou null si vide / absente.
+ *
+ * @param {unknown} raw
+ * @returns {string|null}
+ */
+export function normalizePoPart(raw) {
+  if (raw == null) return null;
+  const s = String(raw).trim();
+  return s === "" ? null : s;
+}
+
+/**
+ * Chaîne affichée pour une plage po_min / po_max : pas de tiret si une seule borne,
+ * pas d’imputation max=min ; espaces autour du tiret si les deux sont renseignées et différentes.
+ *
+ * @param {unknown} minRaw
+ * @param {unknown} maxRaw
+ * @returns {string|null} null si min et max sont vides
+ */
+export function formatPoRangeDisplay(minRaw, maxRaw) {
+  const min = normalizePoPart(minRaw);
+  const max = normalizePoPart(maxRaw);
+  if (min == null && max == null) return null;
+  if (min != null && max != null) {
+    return min === max ? min : `${min} - ${max}`;
+  }
+  return min ?? max;
+}
+
+/**
+ * Retire les segments « - » en fin de chaîne (ex. ancien affichage ou collage UI « 0 - 6 - »).
+ *
+ * @param {unknown} raw
+ * @returns {string|null}
+ */
+export function trimTrailingPoSeparators(raw) {
+  if (raw == null) return null;
+  let t = String(raw).trim();
+  while (/\s*-\s*$/.test(t)) {
+    t = t.replace(/\s*-\s*$/, "").trim();
+  }
+  return t === "" ? null : t;
+}
+
+/**
+ * Indique si une valeur de portée (po) représente le corps à corps : littéral « 1 »
+ * (min seul, max seul, ou min=max) ou ancienne forme « 1-1 ». Les formules type « [level] » ne matchent pas.
+ *
  * @param {string|number|null} po
  * @returns {boolean}
  */
 export function isPoCac(po) {
   if (po == null) return false;
-  const s = String(po).trim().replace(/\s+/g, '');
-  return s === '1' || s === '1-1';
+  const s = String(po).trim().replace(/\s+/g, "");
+  return s === "1" || s === "1-1";
 }
 
 /**
@@ -62,10 +114,10 @@ export function getDisplayValue(dbColumn, value, def = {}) {
     return v === 0 ? 'Nat 20' : `Dès ${20 - v}`;
   }
 
-  // Portée 1 ou 1-1 → CAC (corps à corps) : pas de nombre affiché, icône CAC, tooltip "corps à corps"
+  // Portée 1 ou 1-1 → CàC (corps à corps) : pas de nombre affiché, icône CàC, tooltip "corps à corps"
   const strVal = String(value).trim();
   if ((dbColumn === 'po' || dbColumn === 'po_max' || dbColumn === 'po_min' || dbColumn === 'range_spell') && (strVal === '1' || strVal === '1-1')) {
-    return 'CAC';
+    return 'CàC';
   }
 
   // Booléen

@@ -17,6 +17,9 @@
  * @props {string} [presentation] - `default` | `spell-types-icons-only` (types de sort : icônes seules, via toCell)
  * @props {boolean} [hideFieldLabel] — masque « Cat. », « Types », etc. sur {@link CharacteristicProperty}
  * @props {boolean} [hideCharacteristicIcon] — masque l’icône BDD (ex. PO remplacée par une icône externe)
+ * @props {string} [characteristicLabelImageSource] — remplace le libellé texte (ex. icône CàC à la place de « PO : »)
+ * @props {string} [characteristicLabelImageAlt] — alt de l’image libellé
+ * @props {string} [characteristicValueTextClass] — classes sur la valeur (ex. text-red-600)
  * @props {Object} [toCellOptions] — fusionné dans les options passées à `entity.toCell` / cellOptions du composable
  */
 import { computed, inject, unref } from "vue";
@@ -71,6 +74,9 @@ const props = defineProps({
     },
     hideFieldLabel: { type: Boolean, default: false },
     hideCharacteristicIcon: { type: Boolean, default: false },
+    characteristicLabelImageSource: { type: String, default: "" },
+    characteristicLabelImageAlt: { type: String, default: "" },
+    characteristicValueTextClass: { type: String, default: "" },
     toCellOptions: { type: Object, default: () => ({}) },
 });
 
@@ -197,5 +203,8 @@ const elementValue = computed(() => {
         :show-label="!hideFieldLabel"
         :show-icon="!hideCharacteristicIcon"
         :size="size"
+        :label-image-source="characteristicLabelImageSource"
+        :label-image-alt="characteristicLabelImageAlt"
+        :value-text-class="characteristicValueTextClass"
     />
 </template>

@@ -105,6 +105,13 @@ export function buildUnifiedSubEffectModel(input) {
                 ? params.cells_formula.trim()
                 : "";
         const valueDisplay = formatPivotRowValue(row);
+        const slugNorm = normalizeSubEffectSlug(sub.slug);
+        const moveCells =
+            cellsF !== ""
+                ? cellsF
+                : slugNorm === "déplacer" && String(valueDisplay).trim() !== ""
+                  ? String(valueDisplay).trim()
+                  : "";
         return {
             layout,
             actionSlug: normalizeSubEffectSlug(sub.slug),
@@ -152,7 +159,7 @@ export function buildUnifiedSubEffectModel(input) {
                     : null,
             cellsFormula: cellsF !== "" ? cellsF : null,
             cellsDisplay: null,
-            moveCellsDisplay: cellsF !== "" ? cellsF : "",
+            moveCellsDisplay: moveCells,
             teleport: Boolean(params.teleport),
             textFallback: null,
             rawTextValue: null,
@@ -174,6 +181,13 @@ export function buildUnifiedSubEffectModel(input) {
             ? chip.cells_display.trim()
             : "";
     const valueDisplay = vf !== "" ? vf : rawText;
+    const slugChip = normalizeSubEffectSlug(chip.action_slug);
+    const moveCellsChip =
+        cd !== ""
+            ? cd
+            : slugChip === "déplacer" && String(valueDisplay).trim() !== ""
+              ? String(valueDisplay).trim()
+              : "";
     return {
         layout,
         actionSlug: normalizeSubEffectSlug(chip.action_slug),
@@ -219,7 +233,7 @@ export function buildUnifiedSubEffectModel(input) {
                 : null,
         cellsFormula: null,
         cellsDisplay: cd !== "" ? cd : null,
-        moveCellsDisplay: cd,
+        moveCellsDisplay: moveCellsChip,
         teleport: Boolean(chip.teleport),
         textFallback: rawText,
         rawTextValue: rawText,

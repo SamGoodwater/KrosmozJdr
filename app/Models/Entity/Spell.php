@@ -336,15 +336,32 @@ class Spell extends Model implements HasMedia
     }
 
     /**
-     * Portée affichable : "min-max" ou valeur unique à partir de po_min/po_max.
-     * 0 = soi-même, 1-1 = cac, 2-6 = plage.
+     * Portée affichable à partir de po_min / po_max : une seule valeur si une borne est vide ou si min = max ;
+     * sinon « min - max » (espaces). Chaîne vide si les deux sont vides. 1 seul (ou 1 et 1) = CàC côté UI.
      */
     public function getPoDisplayAttribute(): string
     {
-        $min = $this->po_min ?? '1';
-        $max = $this->po_max ?? $this->po_min ?? '1';
+        $trimPart = static function ($value): ?string {
+            if ($value === null) {
+                return null;
+            }
+            $s = trim((string) $value);
 
-        return $min === $max ? $min : $min.' - '.$max;
+            return $s === '' ? null : $s;
+        };
+
+        $min = $trimPart($this->po_min);
+        $max = $trimPart($this->po_max);
+
+        if ($min === null && $max === null) {
+            return '';
+        }
+
+        if ($min !== null && $max !== null) {
+            return $min === $max ? $min : $min.' - '.$max;
+        }
+
+        return $min ?? $max;
     }
 
     /**

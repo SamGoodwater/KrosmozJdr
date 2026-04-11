@@ -10,6 +10,7 @@ use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
+use App\Support\DofusDbElementId;
 
 /**
  * Applique les formatters utilisés par la conversion.
@@ -69,6 +70,21 @@ final class FormatterApplicator
             'pickLang' => fn (mixed $v, array $a): string => $this->pickLang($v, (string) ($a['lang'] ?? 'fr'), (string) ($a['fallback'] ?? 'fr')),
             'toInt' => fn (mixed $v): int => is_numeric($v) ? (int) $v : 0,
             'nullableInt' => fn (mixed $v): ?int => $v === null ? null : (is_numeric($v) ? (int) $v : null),
+            /**
+             * spell_global.elementId Dofus (0–4, ou -1) → masque Krosmoz (7 bits), pas les codes legacy 0–29.
+             *
+             * @see DofusDbElementId
+             */
+            'dofusSpellElementIdToKrosmozMask' => function (mixed $v): ?int {
+                if ($v === null || $v === '') {
+                    return null;
+                }
+                if (! is_numeric($v)) {
+                    return null;
+                }
+
+                return DofusDbElementId::spellGlobalElementIdToMask((int) $v);
+            },
             'clampInt' => fn (mixed $v, array $a): int => $this->clampInt($v, (int) ($a['min'] ?? 0), (int) ($a['max'] ?? 0)),
             'criticalHitFromDofus' => fn (mixed $v): int => $this->criticalHitFromDofus($v),
             'clampToCharacteristic' => function (mixed $v, array $a, array $r, array $c): int {

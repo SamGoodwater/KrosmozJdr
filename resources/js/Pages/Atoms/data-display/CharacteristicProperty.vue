@@ -31,6 +31,7 @@
 import { computed } from "vue";
 import { colord } from "colord";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CharacteristicPropertyTooltip from "@/Pages/Molecules/data-display/CharacteristicPropertyTooltip.vue";
@@ -83,6 +84,11 @@ const props = defineProps({
         default: "sm",
         validator: (v) => ["xs", "sm", "md"].includes(v),
     },
+    /** Chemin MediaManager (ex. icons/caracteristics/cac.webp) : remplace le libellé texte court / long. */
+    labelImageSource: { type: String, default: "" },
+    labelImageAlt: { type: String, default: "" },
+    /** Classes Tailwind pour la valeur (ex. text-red-600) ; désactive la couleur carac. sur la valeur. */
+    valueTextClass: { type: String, default: "" },
 });
 
 const entityOpts = computed(() => ({
@@ -120,6 +126,14 @@ const displayText = computed(() => {
 });
 
 const valueStyle = computed(() => getCharacteristicColorStyle(model.value?.color) ?? {});
+
+/** Couleur issue de la carac. : masquée si `valueTextClass` impose le style (ex. CàC en rouge). */
+const valueColorStyle = computed(() => (props.valueTextClass ? {} : valueStyle.value));
+
+const labelImagePx = computed(() => {
+    const map = { xs: "14", sm: "16", md: "18" };
+    return map[props.size] ?? "16";
+});
 const containerStyle = computed(() =>
     props.layout === CHARACTERISTIC_PROPERTY_LAYOUT.card
         ? getCharacteristicContainerStyle(model.value?.color) ?? {}
@@ -230,7 +244,12 @@ const badgeVariant = computed(() =>
                 :size="iconSize"
                 class="shrink-0 opacity-90"
             />
-            <span v-if="showValue" class="truncate font-medium" :style="valueStyle">{{ displayText }}</span>
+            <span
+                v-if="showValue"
+                class="truncate font-medium"
+                :class="valueTextClass"
+                :style="valueColorStyle"
+            >{{ displayText }}</span>
         </Badge>
 
         <!-- Carte (hors badge) -->
@@ -240,7 +259,11 @@ const badgeVariant = computed(() =>
             :style="containerStyle"
         >
             <div class="flex items-center justify-between gap-2">
-                <span class="min-w-0 truncate font-medium" :style="valueStyle">{{ displayText }}</span>
+                <span
+                    class="min-w-0 truncate font-medium"
+                    :class="valueTextClass"
+                    :style="valueColorStyle"
+                >{{ displayText }}</span>
                 <Icon
                     v-if="showIcon && model.icon"
                     :source="model.icon"
@@ -268,15 +291,48 @@ const badgeVariant = computed(() =>
                 :style="valueStyle"
             />
             <template v-if="isShort">
-                <span v-if="showLabel && model.shortName" class="truncate opacity-80">{{ model.shortName }}:</span>
-                <span v-if="showValue" class="truncate font-medium" :style="valueStyle">{{ displayText }}</span>
+                <Image
+                    v-if="showLabel && labelImageSource"
+                    :source="labelImageSource"
+                    :alt="labelImageAlt || model.shortName || model.name || ''"
+                    :width="labelImagePx"
+                    :height="labelImagePx"
+                    fit="contain"
+                    class="inline-block shrink-0 opacity-90"
+                />
+                <span v-else-if="showLabel && model.shortName" class="truncate opacity-80">{{ model.shortName }}:</span>
+                <span
+                    v-if="showValue"
+                    class="truncate font-medium"
+                    :class="valueTextClass"
+                    :style="valueColorStyle"
+                >{{ displayText }}</span>
             </template>
             <template v-else-if="isIconOnly">
-                <span v-if="showValue" class="truncate font-medium" :style="valueStyle">{{ displayText }}</span>
+                <span
+                    v-if="showValue"
+                    class="truncate font-medium"
+                    :class="valueTextClass"
+                    :style="valueColorStyle"
+                >{{ displayText }}</span>
             </template>
             <template v-else>
-                <span v-if="showLabel && model.name" class="truncate opacity-80">{{ model.name }}:</span>
-                <span v-if="showValue" class="truncate font-medium" :style="valueStyle">{{ displayText }}</span>
+                <Image
+                    v-if="showLabel && labelImageSource"
+                    :source="labelImageSource"
+                    :alt="labelImageAlt || model.name || ''"
+                    :width="labelImagePx"
+                    :height="labelImagePx"
+                    fit="contain"
+                    class="inline-block shrink-0 opacity-90"
+                />
+                <span v-else-if="showLabel && model.name" class="truncate opacity-80">{{ model.name }}:</span>
+                <span
+                    v-if="showValue"
+                    class="truncate font-medium"
+                    :class="valueTextClass"
+                    :style="valueColorStyle"
+                >{{ displayText }}</span>
             </template>
         </span>
     </Tooltip>

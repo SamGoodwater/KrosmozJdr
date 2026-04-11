@@ -31,11 +31,17 @@ final class DiceNotationService
     /** Seuil au-dessus duquel on privilégie petit n / grand X (fort aléatoire). */
     private const SPREAD_THRESHOLD_RANDOM = 0.30;
 
+    /** Au-delà de ce modificateur, on préfère du « ndX » pur (évite 1d4+26). */
+    private const MAX_STATIC_MODIFIER = 8;
+
+    /** Nombre max de dés pour coller à une cible (ex. 10d8). */
+    private const MAX_DICE_COUNT = 12;
+
     /**
      * Convertit une valeur unique ou une plage min–max en notation ndX ou ndX+y.
      *
-     * @param float $min Valeur minimale (ou valeur unique si max = null).
-     * @param float|null $max Valeur maximale ; si null, une seule valeur cible (min = max).
+     * @param  float  $min  Valeur minimale (ou valeur unique si max = null).
+     * @param  float|null  $max  Valeur maximale ; si null, une seule valeur cible (min = max).
      * @return string Notation "ndX" ou "ndX+y" (ex. "2d6", "2d4+4").
      */
     public function toDiceNotation(float $min, ?float $max = null): string
@@ -54,6 +60,7 @@ final class DiceNotationService
         if ($spreadRatio > self::SPREAD_THRESHOLD_RANDOM) {
             return $this->formatWideRandom((int) round($min), (int) round($max), $avg);
         }
+
         return $this->formatMediumSpread((int) round($min), (int) round($max), $avg);
     }
 
@@ -65,9 +72,12 @@ final class DiceNotationService
         if ($target <= 0) {
             return '1d4';
         }
+        if ($target <= 3) {
+            return (string) max(1, $target);
+        }
         $best = ['n' => 1, 'X' => 4, 'y' => 0, 'diff' => (float) $target];
         foreach (self::SIDES as $X) {
-            for ($n = 1; $n <= 8; $n++) {
+            for ($n = 1; $n <= self::MAX_DICE_COUNT; $n++) {
                 $diceAvg = $n * ($X + 1) / 2.0;
                 $y = (int) round($target - $diceAvg);
                 if ($y < 0) {
@@ -80,9 +90,32 @@ final class DiceNotationService
                 }
             }
         }
+        if ($best['y'] > self::MAX_STATIC_MODIFIER) {
+            return $this->approximatePureNdX($target);
+        }
+
         return $best['y'] > 0
-            ? $best['n'] . 'd' . $best['X'] . '+' . $best['y']
-            : $best['n'] . 'd' . $best['X'];
+            ? $best['n'].'d'.$best['X'].'+'.$best['y']
+            : $best['n'].'d'.$best['X'];
+    }
+
+    /**
+     * ndX seul (n ≤ 12, faces standard), moyenne la plus proche de la cible — pour gros montants sans +y énorme.
+     */
+    private function approximatePureNdX(int $target): string
+    {
+        $best = ['n' => 1, 'X' => 4, 'diff' => INF];
+        foreach (self::SIDES as $X) {
+            for ($n = 1; $n <= self::MAX_DICE_COUNT; $n++) {
+                $avg = $n * ($X + 1) / 2.0;
+                $diff = abs($avg - $target);
+                if ($diff < $best['diff']) {
+                    $best = ['n' => $n, 'X' => $X, 'diff' => $diff];
+                }
+            }
+        }
+
+        return $best['n'].'d'.$best['X'];
     }
 
     /**
@@ -92,7 +125,7 @@ final class DiceNotationService
     {
         $best = null;
         foreach (array_reverse(self::SIDES) as $X) {
-            for ($n = 1; $n <= 3; $n++) {
+            for ($n = 1; $n <= 10; $n++) {
                 $rangeMin = $n;
                 $rangeMax = $n * $X;
                 $diceAvg = $n * ($X + 1) / 2.0;
@@ -108,7 +141,8 @@ final class DiceNotationService
         if ($best === null) {
             $best = ['n' => 2, 'X' => 12, 'score' => 0];
         }
-        return $best['n'] . 'd' . $best['X'];
+
+        return $best['n'].'d'.$best['X'];
     }
 
     /**
@@ -118,7 +152,7 @@ final class DiceNotationService
     {
         $best = null;
         foreach (self::SIDES as $X) {
-            for ($n = 2; $n <= 6; $n++) {
+            for ($n = 2; $n <= self::MAX_DICE_COUNT; $n++) {
                 $rangeMin = $n;
                 $rangeMax = $n * $X;
                 $diceAvg = $n * ($X + 1) / 2.0;
@@ -134,6 +168,7 @@ final class DiceNotationService
         if ($best === null) {
             $best = ['n' => 2, 'X' => 6, 'score' => 0];
         }
-        return $best['n'] . 'd' . $best['X'];
+
+        return $best['n'].'d'.$best['X'];
     }
 }

@@ -16,14 +16,15 @@ use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\SpellState;
 use App\Models\SubEffect;
-use App\Models\Type\SpellType;
-use App\Support\ElementBitmask;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
 use App\Models\Type\ResourceType;
+use App\Models\Type\SpellType;
 use App\Models\User;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
+use App\Support\DofusDbElementId;
+use App\Support\ElementBitmask;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -487,9 +488,12 @@ final class IntegrationService
             'cast_per_target' => (string) (isset($data['cast_per_target']) ? $data['cast_per_target'] : '0'),
             'sight_line' => (bool) (isset($data['sight_line']) ? (int) $data['sight_line'] : true),
             'number_between_two_cast' => (string) (isset($data['number_between_two_cast']) ? $data['number_between_two_cast'] : '0'),
-            'element' => array_key_exists('element', $data) && $data['element'] !== null && $data['element'] !== ''
-                ? (int) $data['element']
-                : null,
+            /**
+             * Pas de mapping depuis spell_global.elementId : côté Dofus ce champ sert au jet d’attaque
+             * (intel / chance / force / agi), pas à l’élément des dégâts — voir inferAttackCharacteristicFromSpellRaw.
+             * L’élément affiché est déduit uniquement des sous-effets (inferSpellElementMaskFromEffectsPayload).
+             */
+            'element' => null,
             'category' => (int) ($options['spell_category_hint'] ?? $data['category'] ?? Spell::CATEGORY_CREATURE),
             'is_magic' => (bool) (isset($data['is_magic']) ? (int) $data['is_magic'] : true),
             'powerful' => (int) ($data['powerful'] ?? 0),
@@ -524,14 +528,15 @@ final class IntegrationService
             if (is_array($spellEffectsPayload)) {
                 $this->integrateSpellEffectsForSpell($spell, $spellEffectsPayload);
                 $inferredElementMask = $this->inferSpellElementMaskFromEffectsPayload($spellEffectsPayload);
-                if ($inferredElementMask !== null) {
-                    $spell->element = $inferredElementMask;
-                    $spell->save();
-                }
+                $spell->element = $inferredElementMask;
+                $spell->save();
                 $inferredTypeIds = $this->inferSpellTypeIdsFromEffectsPayload($spellEffectsPayload);
                 if ($inferredTypeIds !== []) {
                     $spell->spellTypes()->sync($inferredTypeIds);
                 }
+            } else {
+                $spell->element = null;
+                $spell->save();
             }
 
             DB::commit();
@@ -1057,7 +1062,8 @@ final class IntegrationService
     }
 
     /**
-     * Déduit le masque d'éléments d'un sort à partir des caractéristiques de ses sous-effets.
+     * Masque élémentaire du sort : uniquement params.dofus_element_id sur chaque sous-effet
+     * (conversion : spell-level effectElement DofusDB, 0–4). Pas d’inférence depuis characteristic.
      *
      * @param  array{
      *   effects?: list<array{sub_effects?: list<array{params?: array<string, mixed>}>}>
@@ -1084,10 +1090,17 @@ final class IntegrationService
                     continue;
                 }
                 $params = is_array($subEffect['params'] ?? null) ? $subEffect['params'] : [];
-                $characteristic = isset($params['characteristic']) ? (string) $params['characteristic'] : '';
-                $primary = $this->inferElementPrimaryFromCharacteristic($characteristic);
-                if ($primary !== null) {
-                    $primaries[$primary] = true;
+                $dofusEl = $params['dofus_element_id'] ?? null;
+                if (! is_numeric($dofusEl)) {
+                    continue;
+                }
+                $el = (int) $dofusEl;
+                if ($el < 0 || $el > 4) {
+                    continue;
+                }
+                $p = DofusDbElementId::toKrosmozElementPrimaryIndex($el);
+                if ($p !== null && $p >= 0 && $p <= 4) {
+                    $primaries[$p] = true;
                 }
             }
         }
@@ -1097,38 +1110,6 @@ final class IntegrationService
         }
 
         return ElementBitmask::fromPrimaries(array_map('intval', array_keys($primaries)));
-    }
-
-    private function inferElementPrimaryFromCharacteristic(string $characteristic): ?int
-    {
-        $key = $this->normalizeTextKey($characteristic);
-        if ($key === '') {
-            return null;
-        }
-
-        if (str_contains($key, 'neutral') || str_contains($key, 'neutre')) {
-            return 0;
-        }
-        if (str_contains($key, 'earth') || str_contains($key, 'terre')) {
-            return 1;
-        }
-        if (str_contains($key, 'fire') || str_contains($key, 'feu')) {
-            return 2;
-        }
-        if (str_contains($key, 'air')) {
-            return 3;
-        }
-        if (str_contains($key, 'water') || str_contains($key, 'eau')) {
-            return 4;
-        }
-        if (str_contains($key, 'sagesse') || str_contains($key, 'wisdom')) {
-            return 5;
-        }
-        if (str_contains($key, 'vitalite') || str_contains($key, 'vitality')) {
-            return 6;
-        }
-
-        return null;
     }
 
     /**

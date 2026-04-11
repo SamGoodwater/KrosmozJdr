@@ -11,6 +11,10 @@ import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
+import { METERS_PER_CASE, previewMetersFromCellsFormula } from '@/Utils/Entity/displacementFormat.js';
+
+/** Exposé au template (règle 1 case = 1,5 m). */
+const CASE_SIZE_METERS = METERS_PER_CASE;
 import { getElementIcon } from '@/Utils/Entity/Elements.js';
 import { getByCharacteristicKey } from '@/Composables/store/useCharacteristicsStore';
 import {
@@ -212,6 +216,28 @@ function rowHasTeleportParam(row) {
     }
     const schema = getParamSchemaForRow(row);
     return schema?.params?.some((p) => p.key === 'teleport') ?? false;
+}
+
+/** Garde value_formula alignée sur cells_formula pour le sous-effet déplacement (même source que le scrapping). */
+function syncDeplacementValueFormula(row) {
+    if (subEffectSlugForRow(row) !== 'déplacer') {
+        return;
+    }
+    const c = row.params?.cells_formula;
+    row.params.value_formula = typeof c === 'string' ? c : '';
+}
+
+/**
+ * Aperçu mètres sous le champ cases (littéral numérique uniquement).
+ *
+ * @param {object} row
+ * @returns {string|null}
+ */
+function deplacementMetersPreview(row) {
+    if (subEffectSlugForRow(row) !== 'déplacer') {
+        return null;
+    }
+    return previewMetersFromCellsFormula(row.params?.cells_formula);
 }
 
 /**
@@ -437,7 +463,7 @@ function showTargetTypeBadge(type) {
 }
 
 function mapSubEffectsFromApi(subEffects) {
-    return (subEffects || []).map((s, idx) => {
+    const rows = (subEffects || []).map((s, idx) => {
         const rawOp = s.logic_operator ?? '';
         const logic_operator =
             idx > 0 && (rawOp === '' || rawOp == null) ? 'AND' : rawOp;
@@ -473,6 +499,8 @@ function mapSubEffectsFromApi(subEffects) {
             })(),
         };
     });
+    rows.forEach((row) => syncDeplacementValueFormula(row));
+    return rows;
 }
 
 function initDegreeFormsFromProps() {
@@ -1012,12 +1040,21 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                                                 <input
                                                     v-model="row.params.cells_formula"
                                                     type="text"
+                                                    inputmode="decimal"
                                                     class="input input-bordered input-sm w-full"
-                                                    placeholder="ex: 3, [level], 1d3+1…"
+                                                    placeholder="ex: 3, 0,33, [level], 1d3+1…"
+                                                    @update:model-value="syncDeplacementValueFormula(row)"
                                                 />
                                                 <p class="text-[0.7rem] leading-snug text-base-content/55">
-                                                    1 case = 1,5 m. La formule est évaluée en nombre de cases (entier attendu
-                                                    selon le contexte).
+                                                    Distance en <span class="font-medium">cases</span>                                                     (1 case =
+                                                    {{ CASE_SIZE_METERS }} m). Décimales autorisées (ex. 0,33 ≈ 0,5 m). Les
+                                                    formules avec dés ou variables n’affichent pas de conversion automatique.
+                                                </p>
+                                                <p
+                                                    v-if="deplacementMetersPreview(row)"
+                                                    class="text-[0.7rem] font-medium tabular-nums text-primary"
+                                                >
+                                                    {{ deplacementMetersPreview(row) }}
                                                 </p>
                                             </div>
                                             <label v-if="rowHasTeleportParam(row)" class="flex items-center gap-2 cursor-pointer">

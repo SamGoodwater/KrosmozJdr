@@ -10,11 +10,10 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
-use App\Models\Type\SpellType;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
-use App\Support\ElementBitmask;
+use App\Models\Type\SpellType;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,7 +33,7 @@ class IntegrationServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new IntegrationService();
+        $this->service = new IntegrationService;
     }
 
     public function test_integrate_unknown_entity_returns_fail(): void
@@ -213,7 +212,6 @@ class IntegrationServiceTest extends TestCase
                 'pa' => '4',
                 'po' => '1',
                 'level' => '1',
-                'element' => 1, // valeur initiale (sera recalculée depuis les sous-effets)
             ],
             'spell_effects' => [
                 'effect_group' => [
@@ -266,13 +264,64 @@ class IntegrationServiceTest extends TestCase
         $spell = Spell::find($result->getPrimaryId());
         $this->assertNotNull($spell);
 
-        $expectedMask = ElementBitmask::fromPrimaries([5, 6]); // Sagesse + Vitalité
-        $this->assertSame($expectedMask, (int) $spell->element);
+        // Masque élémentaire : uniquement dofus_element_id (effectElement API) — pas depuis les clés carac.
+        $this->assertNull($spell->element);
 
         $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
         $this->assertContains($typeDegats->id, $attachedTypeIds);
         $this->assertContains($typeSoin->id, $attachedTypeIds);
         $this->assertContains($typePlacement->id, $attachedTypeIds);
+    }
+
+    public function test_integrate_spell_element_uniquement_si_dofus_element_id_dans_sous_effets(): void
+    {
+        $this->createSystemUser();
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '554434',
+                'name' => 'Sort Élément eau',
+                'description' => 'Desc',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => [
+                    'name' => 'Sort Élément eau',
+                    'slug' => 'sort-element-eau',
+                ],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Sort Élément eau',
+                        'slug' => 'sort-element-eau-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'frapper',
+                                'params' => [
+                                    'dofus_element_id' => 2,
+                                    'characteristic' => 'water',
+                                    'value_formula' => '10',
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+        // Dofus 2 = eau → primaire Krosmoz 4 (Eau)
+        $this->assertSame(1 << 4, (int) $spell->element);
     }
 
     public function test_integrate_spell_booster_negatif_associe_entrave_sans_buff(): void

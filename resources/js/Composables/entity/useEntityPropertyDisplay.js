@@ -79,6 +79,13 @@ export function useEntityPropertyDisplay(options = {}) {
 
     const value = computed(() => {
         const c = cell.value;
+        if (c?.type === "chips" && Array.isArray(c.params?.items)) {
+            for (const it of c.params.items) {
+                if (it != null && it.value != null && String(it.value).trim() !== "") {
+                    return it.value;
+                }
+            }
+        }
         if (c && c.value != null && c.value !== "") {
             return c.value;
         }

@@ -329,7 +329,7 @@ export class Capability extends BaseModel {
                         {
                             icon: cac ? PO_CAC_ICON : (poDef.icon || 'fa-solid fa-crosshairs'),
                             color: poDef.color || null,
-                            value: cac ? '' : String(po),
+                            value: cac ? 'CàC' : String(po),
                             tooltip: cac ? PO_CAC_LABEL : `${poLabel}: ${po}`,
                         },
                     ],

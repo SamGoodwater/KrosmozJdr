@@ -18,6 +18,7 @@ import {
     resolvePresentationActionSlug,
     subEffectDurationSegment,
 } from "@/Composables/entity/useSpellSubEffectPresentation";
+import { formatDisplacementForDisplay } from "@/Utils/Entity/displacementFormat";
 import SpellZonePreview from "@/Pages/Molecules/entity/spell/SpellZonePreview.vue";
 
 const props = defineProps({
@@ -156,6 +157,12 @@ const visual = computed(() => {
 });
 
 const mainBadgeText = computed(() => {
+    if (actionKey.value === "déplacer") {
+        const mv = m.value.moveCellsDisplay;
+        if (mv != null && String(mv).trim() !== "") {
+            return formatDisplacementForDisplay(String(mv).trim());
+        }
+    }
     const v = m.value.valueDisplay;
     if (v != null && String(v).trim() !== "") {
         return String(v).trim();

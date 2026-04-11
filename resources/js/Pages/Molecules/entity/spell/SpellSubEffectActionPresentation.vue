@@ -22,6 +22,7 @@ import {
     subEffectCritShowsWord,
     subEffectDurationSegment,
 } from "@/Composables/entity/useSpellSubEffectPresentation";
+import { formatDisplacementForDisplay } from "@/Utils/Entity/displacementFormat";
 
 const props = defineProps({
     model: {
@@ -140,7 +141,10 @@ const isFrapperWithLifeSteal = computed(
 
 const moveValue = computed(() => {
     const d = m.value.moveCellsDisplay;
-    return d != null && String(d).trim() !== "" ? String(d).trim() : "";
+    if (d == null || String(d).trim() === "") {
+        return "";
+    }
+    return formatDisplacementForDisplay(String(d).trim());
 });
 
 const KNOWN_ACTIONS = new Set([

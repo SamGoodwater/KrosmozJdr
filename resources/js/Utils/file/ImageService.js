@@ -35,6 +35,21 @@ export class ImageService {
     static #STATIC_PATH_PREFIX = 'icons/';
 
     /**
+     * Dossier réel sous `storage/app/public/images/icons/` : **caracteristics** (sans « h »).
+     * Normalise les variantes `characteristics` (anglais) ou anciennes typos pour l’URL `/storage/images/...`.
+     *
+     * @param {string} path
+     * @returns {string}
+     */
+    static normalizeIconsSubpath(path) {
+        if (!path || typeof path !== "string") return path;
+        let p = path.replace(/\\/g, "/");
+        p = p.replace(/^icons\/characteristics\//i, "icons/caracteristics/");
+        p = p.replace(/^icons\/caracteristiques\//i, "icons/caracteristics/");
+        return p;
+    }
+
+    /**
      * Récupère l'URL d'une image avec cache
      *
      * @param {string} path - Chemin de l'image
@@ -42,6 +57,8 @@ export class ImageService {
      */
     static async getImageUrl(path) {
         if (!path) return "";
+
+        path = this.normalizeIconsSubpath(path);
 
         // Vérifier le cache
         const cacheKey = `image_${path}`;
@@ -106,6 +123,8 @@ export class ImageService {
      */
     static async getThumbnailUrl(path, options = {}) {
         if (!path) return "";
+
+        path = this.normalizeIconsSubpath(path);
 
         // Vérifier le cache
         const cacheKey = `thumbnail_${path}_${JSON.stringify(options)}`;

@@ -23,6 +23,13 @@ import {
     spellUsageIconBackdropStyle,
     spellUsageTextColorStyle,
 } from "@/Utils/Entity/spellUsageCharacteristicVisual";
+import {
+    formatPoRangeDisplay,
+    isPoCac,
+    PO_CAC_ICON,
+    PO_CAC_LABEL,
+    trimTrailingPoSeparators,
+} from "@/Composables/entity/useCharacteristicDisplay";
 
 /** Accent tooltip Daisy (ombre / bordure) quand la carac expose un hex. */
 function tooltipAccentFromVisual(visual) {
@@ -139,6 +146,20 @@ const castingRitualTooltipAccent = computed(() => {
         : castingRitual.value.ritualVisual?.color;
     return typeof c === "string" && c.startsWith("#") ? { "--color": c } : {};
 });
+
+/** Portée effective pour détecter le CàC (aligné sur Spell._toPoCell / formatPoRangeDisplay). */
+const poDisplayForCac = computed(() => {
+    const min = readSpellField(props.entity, "poMin", "po_min");
+    const max = readSpellField(props.entity, "poMax", "po_max");
+    const fromParts = formatPoRangeDisplay(min, max);
+    if (fromParts != null) {
+        return fromParts;
+    }
+    const raw = readSpellField(props.entity, "po", "po");
+    return trimTrailingPoSeparators(raw != null ? String(raw) : null) ?? "";
+});
+
+const spellPoIsCac = computed(() => isPoCac(poDisplayForCac.value));
 </script>
 
 <template>
@@ -200,14 +221,13 @@ const castingRitualTooltipAccent = computed(() => {
                 :descriptors="descriptors"
                 :table-meta="tableMeta"
                 :size="propertySize"
-                :hide-characteristic-icon="poUsageVisual.hasIcon"
+                :hide-characteristic-icon="poUsageVisual.hasIcon || spellPoIsCac"
+                :characteristic-label-image-source="spellPoIsCac ? PO_CAC_ICON : ''"
+                :characteristic-label-image-alt="PO_CAC_LABEL"
+                :characteristic-value-text-class="spellPoIsCac ? 'text-red-600' : ''"
                 class="min-w-0"
             />
             <template v-if="sightUsageVisual.hasIcon">
-                <span
-                    class="text-base-content/35 select-none"
-                    aria-hidden="true"
-                >-</span>
                 <Tooltip
                     placement="top"
                     color="neutral"

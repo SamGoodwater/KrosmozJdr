@@ -145,7 +145,7 @@ final class SpellEffectsConversionService
             $order = isset($instance['order']) ? (int) $instance['order'] : $index;
             $params = $subEffectSlug === DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER
                 ? $this->buildParamsForOther($instance, $definition, $lang)
-                : $this->buildParams($instance, $definition, $charSource ?? 'none', $subEffectSlug, $mappedCharacteristicKey);
+                : $this->buildParams($instance, $definition, $charSource ?? 'none', $subEffectSlug, $mappedCharacteristicKey, $degree);
             $params['dofus_effect_id'] = $effectId;
             $critOnly = false;
 
@@ -205,6 +205,7 @@ final class SpellEffectsConversionService
             ],
         ];
         $this->addDurationToParams($instance, $params);
+        $this->attachDofusElementIdFromSpellEffectInstance($instance, $params);
 
         return $params;
     }
@@ -362,6 +363,7 @@ final class SpellEffectsConversionService
             'value_formula_crit' => null,
         ];
         $this->addDurationToParams($instance, $params);
+        $this->attachDofusElementIdFromSpellEffectInstance($instance, $params);
 
         return $params;
     }
@@ -506,6 +508,7 @@ final class SpellEffectsConversionService
     /**
      * @param  array<string, mixed>  $instance  Instance d'effet (diceNum, diceSide, value, effectElement)
      * @param  array<string, mixed>  $definition  Définition /effects/{id} (elementId, characteristic)
+     * @param  int  $spellGrade  Grade du spell-level Dofus (1–6+), injecté comme [level] dans les formules conversion.
      * @return array<string, mixed> params pour le pivot (value_formula, characteristic, value_converted, value_formula_crit si fourni ailleurs)
      */
     private function buildParams(
@@ -513,7 +516,8 @@ final class SpellEffectsConversionService
         array $definition,
         string $charSource,
         string $subEffectSlug,
-        ?string $mappedCharacteristicKey = null
+        ?string $mappedCharacteristicKey = null,
+        int $spellGrade = 1
     ): array {
         $params = [
             'value_formula' => $this->buildValueFormula($instance),
@@ -547,11 +551,53 @@ final class SpellEffectsConversionService
             }
         }
 
-        $this->applyValueConversion($instance, $subEffectSlug, $params);
+        $this->applyValueConversion($instance, $subEffectSlug, $params, $spellGrade);
         $this->maybeAttachLifeStealFormulaFromDofusDefinition($subEffectSlug, $definition, $params);
-        $this->applyLifeStealValueConversion($instance, $params);
+        $this->applyLifeStealValueConversion($instance, $params, $spellGrade);
+        $this->attachDofusElementIdFromSpellEffectInstance($instance, $params);
+        $this->syncCellsFormulaForDeplacement($subEffectSlug, $params);
 
         return $params;
+    }
+
+    /**
+     * Le sous-effet « déplacer » attend {@see cells_formula} pour le template [cells] et l’UI ;
+     * le scrapping ne remplissait que value_formula — on aligne les deux.
+     *
+     * @param  array<string, mixed>  $params
+     */
+    private function syncCellsFormulaForDeplacement(string $subEffectSlug, array &$params): void
+    {
+        if ($subEffectSlug !== 'déplacer') {
+            return;
+        }
+        $cf = isset($params['cells_formula']) ? trim((string) $params['cells_formula']) : '';
+        if ($cf !== '') {
+            return;
+        }
+        $vf = isset($params['value_formula']) ? trim((string) $params['value_formula']) : '';
+        if ($vf === '') {
+            return;
+        }
+        $params['cells_formula'] = $vf;
+    }
+
+    /**
+     * Renseigne dofus_element_id dans params uniquement si l’instance d’effet DofusDB expose effectElement (0–4).
+     * Pas de repli sur la définition /effects (évite les biais type elementId par défaut).
+     *
+     * @param  array<string, mixed>  $params
+     */
+    private function attachDofusElementIdFromSpellEffectInstance(array $instance, array &$params): void
+    {
+        if (! isset($instance['effectElement']) || ! is_numeric($instance['effectElement'])) {
+            return;
+        }
+        $el = (int) $instance['effectElement'];
+        if ($el < 0 || $el > 4) {
+            return;
+        }
+        $params['dofus_element_id'] = $el;
     }
 
     /**
@@ -598,7 +644,7 @@ final class SpellEffectsConversionService
      *
      * @param  array<string, mixed>  $params  Modifié par référence
      */
-    private function applyLifeStealValueConversion(array $instance, array &$params): void
+    private function applyLifeStealValueConversion(array $instance, array &$params, int $spellGrade = 1): void
     {
         $key = $this->formulaResolver->resolveLifeStealCharacteristicKeyForConversion($params);
         if ($key === null) {
@@ -614,12 +660,25 @@ final class SpellEffectsConversionService
         $context = ['raw' => $instance];
         $converted = $this->dofusConversion->convert(
             $key,
-            ['d' => $d],
+            $this->conversionVariablesForSpell($d, $spellGrade),
             SpellEffectConversionFormulaResolver::ENTITY_SPELL,
             $fallback,
             $context
         );
         $params['life_steal_value_converted'] = $converted;
+    }
+
+    /**
+     * Variables pour les formules conversion (spell) : [d] brut Dofus, [level] = grade du sort-level.
+     *
+     * @return array<string, float|int>
+     */
+    private function conversionVariablesForSpell(float $d, int $spellGrade): array
+    {
+        return [
+            'd' => $d,
+            'level' => max(1, $spellGrade),
+        ];
     }
 
     /**
@@ -659,17 +718,37 @@ final class SpellEffectsConversionService
      */
     private function computeDofusValueForConversion(array $instance): ?float
     {
+        $bounds = $this->computeDofusEffectDiceBounds($instance);
+
+        return $bounds !== null ? $bounds['mean'] : null;
+    }
+
+    /**
+     * Borne min / max / moyenne Dofus pour un effet (dés ou valeur fixe).
+     * Sert à convertir séparément min et max puis à produire une notation dés réaliste (écart fort = n petit, X grand).
+     *
+     * @return array{min: float, max: float, mean: float}|null
+     */
+    private function computeDofusEffectDiceBounds(array $instance): ?array
+    {
         $diceNum = isset($instance['diceNum']) && is_numeric($instance['diceNum']) ? (int) $instance['diceNum'] : null;
         $diceSide = isset($instance['diceSide']) && is_numeric($instance['diceSide']) ? (int) $instance['diceSide'] : null;
+
         if ($diceNum !== null && $diceSide !== null && $diceNum > 0 && $diceSide > 0) {
-            return $diceNum * ($diceSide + 1) / 2.0;
+            return [
+                'min' => (float) $diceNum,
+                'max' => (float) ($diceNum * $diceSide),
+                'mean' => $diceNum * ($diceSide + 1) / 2.0,
+            ];
         }
         if ($diceNum !== null && $diceNum > 0 && ($diceSide === null || $diceSide === 0)) {
-            return (float) $diceNum;
+            $v = (float) $diceNum;
+
+            return ['min' => $v, 'max' => $v, 'mean' => $v];
         }
         $value = isset($instance['value']) && is_numeric($instance['value']) ? (float) $instance['value'] : null;
         if ($value !== null) {
-            return $value;
+            return ['min' => $value, 'max' => $value, 'mean' => $value];
         }
 
         return null;
@@ -681,7 +760,7 @@ final class SpellEffectsConversionService
      * @param  array<string, mixed>  $instance  Instance d'effet DofusDB
      * @param  array<string, mixed>  $params  Params déjà remplis (value_formula, characteristic) — modifié par référence
      */
-    private function applyValueConversion(array $instance, string $subEffectSlug, array &$params): void
+    private function applyValueConversion(array $instance, string $subEffectSlug, array &$params, int $spellGrade = 1): void
     {
         $characteristicKey = $this->formulaResolver->resolveCharacteristicKeyForConversion($subEffectSlug, $params);
         if ($characteristicKey === null) {
@@ -695,7 +774,7 @@ final class SpellEffectsConversionService
         $context = ['raw' => $instance];
         $converted = $this->dofusConversion->convert(
             $characteristicKey,
-            ['d' => $d],
+            $this->conversionVariablesForSpell($d, $spellGrade),
             SpellEffectConversionFormulaResolver::ENTITY_SPELL,
             $fallback,
             $context
@@ -706,9 +785,35 @@ final class SpellEffectsConversionService
             $characteristicKey,
             SpellEffectConversionFormulaResolver::ENTITY_SPELL
         );
-        if ($conversionFunctionId === 'convertToDice') {
-            $params['dice_formula'] = $this->diceNotationService->toDiceNotation((float) $converted);
+        if ($conversionFunctionId !== 'convertToDice') {
+            return;
         }
+
+        $bounds = $this->computeDofusEffectDiceBounds($instance);
+        if ($bounds !== null) {
+            $kMin = $this->dofusConversion->convert(
+                $characteristicKey,
+                $this->conversionVariablesForSpell($bounds['min'], $spellGrade),
+                SpellEffectConversionFormulaResolver::ENTITY_SPELL,
+                (float) round($bounds['min']),
+                $context
+            );
+            $kMax = $this->dofusConversion->convert(
+                $characteristicKey,
+                $this->conversionVariablesForSpell($bounds['max'], $spellGrade),
+                SpellEffectConversionFormulaResolver::ENTITY_SPELL,
+                (float) round($bounds['max']),
+                $context
+            );
+            if ($kMin > $kMax) {
+                [$kMin, $kMax] = [$kMax, $kMin];
+            }
+            $params['dice_formula'] = $this->diceNotationService->toDiceNotation((float) $kMin, (float) $kMax);
+
+            return;
+        }
+
+        $params['dice_formula'] = $this->diceNotationService->toDiceNotation((float) $converted);
     }
 
     /**

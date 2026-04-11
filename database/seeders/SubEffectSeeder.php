@@ -120,7 +120,7 @@ class SubEffectSeeder extends Seeder
                 'param_schema' => [
                     'action' => 'déplacer',
                     'params' => [
-                        ['key' => 'cells_formula', 'type' => 'formula', 'label' => 'Nombre de cases (formule)'],
+                        ['key' => 'cells_formula', 'type' => 'formula', 'label' => 'Nombre de cases (formule, décimales autorisées ; 1 case = 1,5 m)'],
                         ['key' => 'teleport', 'type' => 'bool', 'label' => 'Téléportation'],
                     ],
                 ],

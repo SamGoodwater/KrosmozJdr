@@ -14,6 +14,8 @@ import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacter
 import { getByCharacteristicKey, getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
 import {
     isPoCac,
+    formatPoRangeDisplay,
+    trimTrailingPoSeparators,
     PO_CAC_ICON,
     PO_CAC_LABEL,
     resolveDef,
@@ -637,26 +639,19 @@ export class Spell extends BaseModel {
      * @private
      */
     /**
-     * Portée affichée à partir de po_min / po_max : « min - max » (une seule valeur si égales).
+     * Portée affichée à partir de po_min / po_max : tiret seulement si les deux bornes sont renseignées et différentes.
      * @private
      */
     _toPoRangeCell(format, size, options) {
-        const minRaw = this.poMin;
-        const maxRaw = this.poMax;
-        const min =
-            minRaw != null && String(minRaw).trim() !== '' ? String(minRaw).trim() : null;
-        const max =
-            maxRaw != null && String(maxRaw).trim() !== '' ? String(maxRaw).trim() : min;
+        const display = formatPoRangeDisplay(this.poMin, this.poMax);
 
-        if (min == null && max == null) {
+        if (display == null) {
             return {
                 type: 'text',
                 value: '—',
                 params: { sortValue: '', searchValue: '' },
             };
         }
-
-        const display = min === max ? min : `${min} - ${max}`;
         const poDef =
             this._getCharacteristicDef(options, ['po_max', 'po_min', 'po']) ||
             getByCharacteristicKey('spell', 'range_spell');
@@ -697,7 +692,9 @@ export class Spell extends BaseModel {
     }
 
     _toPoCell(format, size, options) {
-        const po = this.po || '-';
+        const fromMinMax = formatPoRangeDisplay(this.poMin, this.poMax);
+        const poLegacy = trimTrailingPoSeparators(this.po != null ? String(this.po) : null);
+        const po = fromMinMax ?? poLegacy ?? '-';
         const poDef = this._getCharacteristicDef(options, ['po', 'po_max', 'po_min']);
         const poLabel = poDef?.short_name || poDef?.name || 'PO';
 
@@ -712,7 +709,8 @@ export class Spell extends BaseModel {
                         {
                             icon: cac ? PO_CAC_ICON : (poDef.icon || 'fa-solid fa-crosshairs'),
                             color: poDef.color || null,
-                            value: cac ? '' : String(po),
+                            /** Texte « CàC » pour l’inline (useEntityPropertyDisplay lit les chips). */
+                            value: cac ? 'CàC' : String(po),
                             tooltip: cac ? PO_CAC_LABEL : `${poLabel}: ${po}`,
                         },
                     ],

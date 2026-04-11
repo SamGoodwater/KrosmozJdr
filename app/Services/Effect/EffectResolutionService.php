@@ -125,7 +125,7 @@ final class EffectResolutionService
             $text = '';
             $templateCtx = null;
             if ($sub !== null && $sub->template_text) {
-                $templateCtx = $this->buildDisplayContextForTemplate($row, $ctx);
+                $templateCtx = $this->buildDisplayContextForTemplate($row, $ctx, $isCrit);
                 $text = $this->textResolver->resolveEffectText($sub->template_text, $templateCtx);
                 $text = $this->textResolver->formatDiceInText($text, $formatDiceHuman);
             }
@@ -141,6 +141,10 @@ final class EffectResolutionService
                     $cd = trim((string) $templateCtx['cells']);
                     $cellsDisplay = $cd !== '' ? $cd : null;
                 }
+            }
+
+            if ($sub !== null && $sub->slug === 'déplacer' && $text !== '' && $cellsDisplay !== null && $cellsDisplay !== '') {
+                $text = $this->appendDisplacementMetersSuffix($text, $cellsDisplay);
             }
 
             $resolved[] = [
@@ -245,7 +249,7 @@ final class EffectResolutionService
      * @param  array<string, int|float|string>  $ctx
      * @return array<string, int|float|string>
      */
-    private function buildDisplayContextForTemplate(EffectSubEffect $row, array $ctx): array
+    private function buildDisplayContextForTemplate(EffectSubEffect $row, array $ctx, bool $isCrit = false): array
     {
         $params = is_array($row->params ?? null) ? $row->params : [];
         $out = $ctx;
@@ -260,7 +264,8 @@ final class EffectResolutionService
             $out['element'] = $elementLabel;
         }
 
-        $cells = $this->resolveCellsTemplateValue($params, $ctx);
+        $subSlug = $row->subEffect !== null ? (string) ($row->subEffect->slug ?? '') : '';
+        $cells = $this->resolveCellsTemplateValue($params, $ctx, $subSlug, $isCrit);
         if ($cells !== null) {
             $out['cells'] = $cells;
         }
@@ -404,9 +409,20 @@ final class EffectResolutionService
      * @param  array<string, mixed>  $params
      * @param  array<string, int|float|string>  $ctx
      */
-    private function resolveCellsTemplateValue(array $params, array $ctx): ?string
+    private function resolveCellsTemplateValue(array $params, array $ctx, string $subEffectSlug = '', bool $isCrit = false): ?string
     {
         $formula = isset($params['cells_formula']) ? trim((string) $params['cells_formula']) : '';
+        if ($formula === '' && $subEffectSlug === 'déplacer') {
+            if ($isCrit) {
+                $crit = isset($params['value_formula_crit']) ? trim((string) $params['value_formula_crit']) : '';
+                if ($crit !== '') {
+                    $formula = $crit;
+                }
+            }
+            if ($formula === '') {
+                $formula = isset($params['value_formula']) ? trim((string) $params['value_formula']) : '';
+            }
+        }
         if ($formula === '') {
             return null;
         }
@@ -554,5 +570,50 @@ final class EffectResolutionService
         }
 
         return $out;
+    }
+
+    /**
+     * Ajoute « (X m) » au texte résolu du déplacement quand le nombre de cases affiché est un littéral numérique.
+     * Règle Krosmoz : 1 case = 1,5 m ; une décimale pour les mètres.
+     */
+    private function appendDisplacementMetersSuffix(string $text, string $cellsDisplay): string
+    {
+        $n = $this->parseFloatLiteralCellCount($cellsDisplay);
+        if ($n === null) {
+            return $text;
+        }
+        $meters = round($n * 1.5, 1);
+
+        return $text.' ('.$this->formatFrenchDisplacementMeters($meters).' m)';
+    }
+
+    /**
+     * @return float|null Littéral positif/négatif sans dés ni variable (aligné sur le front).
+     */
+    private function parseFloatLiteralCellCount(string $cellsDisplay): ?float
+    {
+        $t = trim(str_replace(' ', '', $cellsDisplay));
+        if ($t === '') {
+            return null;
+        }
+        if (preg_match('/[dD\[]/', $t) || preg_match('/\p{L}/u', $t)) {
+            return null;
+        }
+        $normalized = str_replace(',', '.', $t);
+        if (! is_numeric($normalized)) {
+            return null;
+        }
+
+        return (float) $normalized;
+    }
+
+    private function formatFrenchDisplacementMeters(float $meters): string
+    {
+        $r = round($meters, 1);
+        if (abs($r - (float) (int) $r) < 1e-6) {
+            return (string) (int) $r;
+        }
+
+        return str_replace('.', ',', sprintf('%.1F', $r));
     }
 }
