@@ -9,12 +9,12 @@
  * @props {Monster} monster - Instance du modèle Monster
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
-import { computed } from 'vue';
+import { computed } from "vue";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import PropertyDisplay from "@/Pages/Atoms/data-display/PropertyDisplay.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
@@ -42,8 +42,12 @@ const props = defineProps({
     tableMeta: {
         type: Object,
         default: () => ({})
-    }
+    },
+    /** Runtime caractéristiques / formules (optionnel, aligné autres entités). */
+    characteristicRuntime: { type: Object, default: null },
 });
+
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
@@ -84,22 +88,28 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-const headlineFields = computed(() => ([
-    'monster_race',
-    'size',
-    'is_boss',
-].filter(canShowField)));
+const headlineFields = computed(() =>
+    ["creature_level", "monster_race", "size", "is_boss", "state"].filter(canShowField),
+);
 
-const metaFields = computed(() => ([
-    'boss_pa',
-].filter(canShowField).filter((k) => !headlineFields.value.includes(k))));
+const metaFields = computed(() =>
+    ["creature_hostility", "boss_pa"].filter(canShowField).filter((k) => !headlineFields.value.includes(k)),
+);
 
 const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
 
-const userCanEditFields = computed(() => ([
-    'dofus_version',
-    'auto_update',
-].filter(canShowField)));
+const userCanEditFields = computed(() =>
+    ["read_level", "write_level", "dofus_version", "auto_update"].filter(canShowField),
+);
+
+const hasRelationsChips = computed(() => {
+    const cell = props.monster.toCell("monster_summary_relations", {
+        size: "lg",
+        context: "extended",
+    });
+    const items = cell?.params?.items;
+    return Array.isArray(items) && items.length > 0;
+});
 
 const technicalFields = computed(() => ([
     'dofusdb_id',
@@ -166,16 +176,21 @@ const hasCreatureCharacteristics = computed(() => !!creatureData.value);
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
-        monster_race: 'info',
-        size: 'secondary',
-        is_boss: 'warning',
-        boss_pa: 'warning',
-        dofus_version: 'secondary',
-        auto_update: 'warning',
-        dofusdb_id: 'neutral',
-        official_id: 'neutral',
-        created_at: 'neutral',
-        updated_at: 'neutral',
+        creature_level: "warning",
+        monster_race: "info",
+        size: "secondary",
+        is_boss: "warning",
+        state: "neutral",
+        creature_hostility: "neutral",
+        boss_pa: "warning",
+        read_level: "primary",
+        write_level: "secondary",
+        dofus_version: "secondary",
+        auto_update: "warning",
+        dofusdb_id: "neutral",
+        official_id: "neutral",
+        created_at: "neutral",
+        updated_at: "neutral",
     };
     return resolveEntityBadgeUi({
         fieldKey,
@@ -300,16 +315,27 @@ const handleAction = async (actionKey) => {
                                         {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
                                     </span>
                                 </div>
-                                <PropertyDisplay
-                                    :property="getFieldUi(fieldKey)"
-                                    :value="getCell(fieldKey)?.value"
-                                    variant="badge"
-                                    size="sm"
-                                    class="max-w-[18rem] whitespace-normal break-words"
+                                <CellRenderer
+                                    :cell="getCell(fieldKey)"
+                                    ui-color="primary"
+                                    class="max-w-[18rem] whitespace-normal break-words [&_.inline-flex]:min-w-0"
                                 />
                             </div>
                         </Tooltip>
                     </template>
+                </div>
+                <div
+                    v-if="canShowField('monster_summary_relations') && hasRelationsChips"
+                    class="mt-3 rounded-lg border border-base-300/50 bg-base-100/15 p-2.5"
+                >
+                    <p class="text-[11px] font-semibold uppercase tracking-wide text-primary-400 mb-2">
+                        Relations & contenus
+                    </p>
+                    <CellRenderer
+                        :cell="getCell('monster_summary_relations')"
+                        ui-color="primary"
+                        class="text-sm [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
+                    />
                 </div>
             </template>
 

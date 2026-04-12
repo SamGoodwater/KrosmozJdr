@@ -12,6 +12,8 @@ import MonsterViewMinimal from "./MonsterViewMinimal.vue";
 
 defineProps({
   monster: { type: Object, required: true },
+  tableMeta: { type: Object, default: () => ({}) },
+  characteristicRuntime: { type: Object, default: null },
 });
 </script>
 
@@ -22,5 +24,7 @@ defineProps({
     :minimal-component="MonsterViewMinimal"
     fallback-icon="fa-solid fa-dragon"
     name-field="creature_name"
+    :table-meta="tableMeta"
+    :characteristic-runtime="characteristicRuntime"
   />
 </template>

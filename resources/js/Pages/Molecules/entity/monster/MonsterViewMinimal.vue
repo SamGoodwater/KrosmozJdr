@@ -3,25 +3,31 @@
  * MonsterViewMinimal — Vue Minimal pour Monster
  *
  * @description
- * Alignée sur ResourceViewMinimal : EntityMinimalCard, État • Image créature • Niveau • Nom • Race • Taille • Boss • Description,
- * caractéristiques créature en zone étendue.
+ * Identité et méta toujours visibles ; description discrète au survol (modes compact / hover) ;
+ * résumés combat / stats / etc. en blocs compacts avec expansion au survol du bloc ;
+ * relations (invocations, loot…) en une ligne de chips ; carte Compétences après les blocs résumé,
+ * visible au survol / focus (liste longue, scroll interne) ; liste des sorts de la créature en fin
+ * (lien texte + vignette, aperçu SpellViewMinimal au survol). Plus de carte caractéristiques complète dans l’overlay.
  *
  * @props {Monster} monster - Instance du modèle Monster
- * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
+import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
-import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
-import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
+import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
+import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 
 const props = defineProps({
     monster: {
@@ -41,9 +47,40 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    characteristicRuntime: { type: Object, default: null },
 });
 
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
+
 const emit = defineEmits(["edit", "view", "delete", "action"]);
+
+const permissions = usePermissions();
+const ctx = computed(() => ({
+    capabilities: {
+        viewAny: permissions.can("monsters", "viewAny"),
+        createAny: permissions.can("monsters", "createAny"),
+        updateAny: permissions.can("monsters", "updateAny"),
+        deleteAny: permissions.can("monsters", "deleteAny"),
+        manageAny: permissions.can("monsters", "manageAny"),
+    },
+    meta: { capabilities: {} },
+}));
+
+const descriptors = computed(() => getMonsterFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === "function") {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch {
+            return false;
+        }
+    }
+    return true;
+};
 
 const entity = computed(() => props.monster);
 
@@ -92,15 +129,46 @@ const descriptionFull = computed(() => {
     return d && String(d).trim() ? String(d) : "";
 });
 
-const creatureCharacteristicsGroups = computed(() => buildCreatureCharacteristicGroups(creatureData.value));
-const hasCreatureCharacteristics = computed(() => !!creatureData.value);
+const cellOpts = () => ({ size: "xs", context: "minimal", ctx: props.tableMeta });
 
-const creatureIdForStats = computed(() => creatureData.value?.id ?? null);
-const { runtime: creatureRuntimeStats } = useCreatureResolvedStats(creatureIdForStats);
+const SUMMARY_KEYS = [
+    "creature_summary_combat",
+    "creature_summary_stats",
+    "creature_summary_control",
+    "creature_summary_resistance",
+    "creature_summary_damage",
+];
+
+function getSummaryCell(fieldKey) {
+    const m = entity.value;
+    if (m && typeof m.toCell === "function") {
+        return m.toCell(fieldKey, cellOpts());
+    }
+    return { type: "text", value: "—", params: {} };
+}
+
+const relationsCell = computed(() => getSummaryCell("monster_summary_relations"));
+
+/** Maîtrises regroupées par caractéristique primaire (carte longue → affichée au survol de la carte). */
+const competenceGroups = computed(() => buildCreatureCompetenceGroupsByPrimary(creatureData.value));
+
+const cardEntityForCompetences = computed(() =>
+    creatureData.value ? { level: creatureData.value.level } : null,
+);
+
+const hasRelationsChips = computed(() => {
+    const items = relationsCell.value?.params?.items;
+    return Array.isArray(items) && items.length > 0;
+});
+
+const hostilityCell = computed(() => getSummaryCell("creature_hostility"));
+const bossPaCell = computed(() => getSummaryCell("boss_pa"));
 
 const showHref = computed(() =>
     entity.value?.id ? route("entities.monsters.show", { monster: entity.value.id }) : null
 );
+
+const showDescriptionInCompactSlot = computed(() => props.displayMode === "compact");
 
 const handleAction = async (actionKey) => {
     const monsterId = entity.value?.id;
@@ -190,8 +258,25 @@ const handleAction = async (actionKey) => {
                             <Tooltip v-if="sizeLabel" :content="`Taille: ${sizeLabel}`" placement="top">
                                 <span class="text-base-content/80">{{ sizeLabel }}</span>
                             </Tooltip>
+                            <CellRenderer
+                                v-if="canShowField('creature_hostility') && hostilityCell?.value !== '—'"
+                                :cell="hostilityCell"
+                                class="inline-flex text-[11px] text-base-content/85"
+                            />
                             <Badge v-if="isBoss" color="error" variant="soft" size="xs">Boss</Badge>
+                            <CellRenderer
+                                v-if="isBoss && canShowField('boss_pa') && bossPaCell?.value !== '—'"
+                                :cell="bossPaCell"
+                                class="inline-flex text-[11px]"
+                            />
                         </div>
+                        <p
+                            v-if="showDescriptionInCompactSlot && descriptionFull"
+                            class="text-[11px] leading-snug italic text-base-content/45 max-h-0 opacity-0 overflow-hidden transition-all duration-200 ease-out group-hover:max-h-32 group-hover:opacity-100 group-hover:mt-0.5"
+                            :title="descriptionFull"
+                        >
+                            {{ descriptionFull }}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -199,7 +284,7 @@ const handleAction = async (actionKey) => {
         <template #expanded>
             <div
                 data-cy="entity-minimal-card-expanded"
-                class="relative p-2 flex flex-col gap-1.5 transition-colors"
+                class="relative flex flex-col gap-1.5 p-2 transition-colors"
             >
                 <div class="absolute top-1.5 left-1.5 z-10">
                     <EntityUsableDot :state="stateValue" />
@@ -260,28 +345,92 @@ const handleAction = async (actionKey) => {
                             <Tooltip v-if="sizeLabel" :content="`Taille: ${sizeLabel}`" placement="top">
                                 <span class="text-base-content/80">{{ sizeLabel }}</span>
                             </Tooltip>
+                            <CellRenderer
+                                v-if="canShowField('creature_hostility') && hostilityCell?.value !== '—'"
+                                :cell="hostilityCell"
+                                class="inline-flex text-[11px] text-base-content/85"
+                            />
                             <Badge v-if="isBoss" color="error" variant="soft" size="xs">Boss</Badge>
+                            <CellRenderer
+                                v-if="isBoss && canShowField('boss_pa') && bossPaCell?.value !== '—'"
+                                :cell="bossPaCell"
+                                class="inline-flex text-[11px]"
+                            />
                         </div>
                         <p
                             v-if="descriptionFull"
-                            class="text-xs text-base-content/80 line-clamp-3"
+                            :class="
+                                displayMode === 'extended'
+                                    ? 'text-[11px] leading-snug italic text-base-content/55 mt-0.5'
+                                    : 'text-[11px] leading-snug italic text-base-content/45 max-h-0 overflow-hidden opacity-0 transition-all duration-200 ease-out group-hover:max-h-40 group-hover:opacity-100'
+                            "
                             :title="descriptionFull"
                         >
                             {{ descriptionFull }}
                         </p>
                     </div>
                 </div>
-                <section
-                    v-if="hasCreatureCharacteristics"
-                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+
+                <div
+                    v-if="canShowField('monster_summary_relations') && hasRelationsChips"
+                    class="w-full border-t border-base-300/80 pt-1.5"
                 >
-                    <CharacteristicsCard
-                        :entity="creatureData"
-                        :groups="creatureCharacteristicsGroups"
-                        :dense="true"
-                        :runtime="creatureRuntimeStats"
+                    <p class="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-300/90">
+                        Contenus liés
+                    </p>
+                    <CellRenderer
+                        :cell="relationsCell"
+                        ui-color="primary"
+                        class="text-[11px] leading-tight [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
                     />
-                </section>
+                </div>
+
+                <div
+                    v-if="creatureData"
+                    class="grid w-full grid-cols-1 gap-1.5 border-t border-primary/20 bg-primary/5 pt-1.5 sm:grid-cols-2"
+                >
+                    <div
+                        v-for="fieldKey in SUMMARY_KEYS"
+                        :key="fieldKey"
+                        class="group/ms min-h-0 min-w-0 overflow-hidden rounded-md border border-base-300/60 bg-base-200/30 p-1 transition-[max-height] duration-200 ease-out max-h-[6.25rem] hover:max-h-[min(70vh,28rem)] hover:overflow-y-auto"
+                    >
+                        <CellRenderer
+                            :cell="getSummaryCell(fieldKey)"
+                            ui-color="primary"
+                            class="text-[11px] leading-tight [&_.characteristics-card]:!p-1 [&_.characteristic-group>h4]:!text-[0.6rem]"
+                        />
+                    </div>
+                </div>
+
+                <!-- Compétences (maîtrises) : bloc long, révélé au survol / focus de la carte -->
+                <div
+                    v-if="creatureData && competenceGroups.length"
+                    class="minimal-monster-competences-outer transition-[max-height,opacity] duration-200 ease-out max-h-0 opacity-0 overflow-hidden group-hover:max-h-[min(90vh,44rem)] group-hover:opacity-100 group-focus-within:max-h-[min(90vh,44rem)] group-focus-within:opacity-100"
+                >
+                    <div
+                        class="minimal-monster-competences mt-1.5 max-h-[min(85vh,42rem)] overflow-y-auto overscroll-contain border-t border-base-300/80 pt-1.5"
+                    >
+                        <p class="mb-1 text-[10px] font-semibold uppercase tracking-wide text-primary-300/90">
+                            Compétences
+                        </p>
+                        <CharacteristicsCard
+                            :entity="cardEntityForCompetences"
+                            :groups="competenceGroups"
+                            :runtime="characteristicRuntime"
+                            dense
+                            class="border-0 bg-transparent p-0 shadow-none ring-0 [&_.characteristics-card]:!p-1 [&_.characteristic-group>h4]:!text-[0.6rem]"
+                        />
+                    </div>
+                </div>
+
+                <!-- Sorts liés à la créature (texte + aperçu minimal au survol de chaque sort) -->
+                <MonsterCreatureSpellsList
+                    v-if="creatureData"
+                    :creature="creatureData"
+                    :table-meta="tableMeta"
+                    :characteristic-runtime="characteristicRuntime"
+                    section-class="mt-1.5 border-t border-base-300/80 pt-1.5"
+                />
             </div>
         </template>
     </EntityMinimalCard>

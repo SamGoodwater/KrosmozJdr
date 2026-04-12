@@ -3,8 +3,11 @@
  * MonsterLineRow — Une ligne de la vue Line pour Monster
  *
  * @description
- * État • Image • Niveau • Nom • métas (race, taille, hostilité, boss) • grille de caractéristiques (résumés) • description.
+ * État • Image • Niveau • Nom • métas (race, taille, hostilité, boss) • grille de caractéristiques (résumés) • maîtrises par stat • description.
  * Les résumés utilisent les mêmes clés que le tableau (`creature_summary_*`) via `getCellFor` + colonne factice.
+ * Menu d’actions / sélection en overlay (coin supérieur droit) pour ne pas reflow la grille des résumés.
+ * Carte Compétences sous les résumés : dépliée au survol / focus (contenu scrollable).
+ * Liste des sorts de créature en fin de ligne (lien texte + aperçu minimal au survol).
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
@@ -13,9 +16,12 @@ import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
+import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -33,6 +39,20 @@ const emit = defineEmits(["row-click", "toggle-select", "action"]);
 
 /** Entité source : rowParams.entity (API) ou row lui-même (données plates) */
 const entity = computed(() => props.row?.rowParams?.entity ?? props.row);
+
+/** Données créature (colonnes `*_mastery`, stats, etc.) */
+const creature = computed(() => entity.value?.creature ?? entity.value?._data?.creature ?? null);
+
+/** Groupes de maîtrises regroupés par caractéristique primaire (Force, Agilité, …). */
+const competenceGroups = computed(() => buildCreatureCompetenceGroupsByPrimary(creature.value));
+
+/** Entité minimale pour CharacteristicsCard (sélecteur de niveau éventuel). */
+const cardEntityForCompetences = computed(() =>
+    creature.value ? { level: creature.value.level } : null,
+);
+
+/** Runtime optionnel (tooltips résolus) depuis la meta tableau. */
+const characteristicRuntime = computed(() => props.tableMeta?.characteristicRuntime ?? null);
 
 const getCell = (fieldKey) => {
     const col = props.columns.find((c) => (c.cellId || c.id) === fieldKey);
@@ -121,7 +141,41 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
         <div class="absolute top-2 left-2 z-10" @click.stop>
             <EntityUsableDot :state="stateValue" />
         </div>
-        <div class="flex w-full min-w-0 flex-col gap-3 lg:flex-row lg:items-start">
+        <div
+            v-if="showActions || showSelection"
+            class="monster-line-actions-host absolute top-2 right-2 z-20 flex items-center gap-2"
+            @click.stop
+        >
+            <div v-if="showActions" class="entity-row-actions-hover-reveal monster-line-actions-reveal">
+                <EntityActions
+                    entity-type="monsters"
+                    :entity="entity || row"
+                    format="dropdown"
+                    :show-inline-shortcuts="false"
+                    :whitelist="['pin', 'quick-view', 'view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh']"
+                    @action="(k, e) => emit('action', k, e, row)"
+                />
+            </div>
+            <div
+                v-if="showSelection"
+                class="flex h-8 w-8 shrink-0 items-center justify-end"
+            >
+                <CheckboxCore
+                    :model-value="isSelected"
+                    size="xs"
+                    :color="uiColor"
+                    aria-label="Sélectionner"
+                    class="shrink-0 transition-opacity duration-150 ease-out"
+                    :class="
+                        isSelected
+                            ? 'opacity-100'
+                            : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
+                    "
+                    @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
+                />
+            </div>
+        </div>
+        <div class="monster-line-main flex w-full min-w-0 flex-col gap-3 pr-14 sm:pr-16 lg:flex-row lg:items-start">
             <!-- Bloc identité : largeur contenu / plafonnée pour laisser la place aux caractéristiques -->
             <div class="flex min-w-0 shrink-0 gap-3 lg:max-w-[min(100%,26rem)]">
                 <div
@@ -179,7 +233,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                     </div>
                     <p
                         v-if="descriptionFull"
-                        class="wrap-break-word text-xs whitespace-normal text-base-content/80"
+                        class="wrap-break-word text-xs whitespace-normal text-base-content/80 italic line-clamp-3 transition-[line-clamp] duration-150 group-hover:line-clamp-none"
                         :title="descriptionFull"
                     >
                         {{ descriptionFull }}
@@ -203,45 +257,37 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                     />
                 </div>
             </div>
+        </div>
 
-            <!-- Actions : dernier bloc = toujours à droite (desktop), aligné à droite en colonne (mobile) -->
+        <!-- Maîtrises (par stat) : contenu long → visible au survol / focus de la ligne uniquement -->
+        <div
+            v-if="competenceGroups.length"
+            class="monster-line-competences-outer transition-[max-height,opacity] duration-200 ease-out max-h-0 opacity-0 overflow-hidden group-hover:max-h-[min(90vh,44rem)] group-hover:opacity-100 group-focus-within:max-h-[min(90vh,44rem)] group-focus-within:opacity-100"
+        >
             <div
-                v-if="showActions || showSelection"
-                class="flex w-full shrink-0 items-center justify-end gap-2 self-start pt-0.5 lg:w-auto lg:pt-0"
-                @click.stop
+                class="monster-line-competences max-h-[min(85vh,42rem)] overflow-y-auto overscroll-contain rounded-box border border-base-300/60 bg-base-200/25 px-2 py-1.5"
             >
-                <div
-                    v-if="showActions"
-                    class="entity-row-actions-hover-reveal"
-                >
-                    <EntityActions
-                        entity-type="monsters"
-                        :entity="entity || row"
-                        format="dropdown"
-                        :whitelist="['pin', 'quick-view', 'view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh']"
-                        @action="(k, e) => emit('action', k, e, row)"
-                    />
-                </div>
-                <div
-                    v-if="showSelection"
-                    class="flex shrink-0 items-center transition-[max-width,opacity] duration-150 ease-out"
-                    :class="
-                        isSelected
-                            ? 'max-w-10 overflow-visible opacity-100 pointer-events-auto'
-                            : 'max-w-0 overflow-hidden opacity-0 pointer-events-none group-hover:max-w-10 group-hover:overflow-visible group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:max-w-10 group-focus-within:overflow-visible group-focus-within:opacity-100 group-focus-within:pointer-events-auto'
-                    "
-                >
-                    <CheckboxCore
-                        :model-value="isSelected"
-                        size="xs"
-                        :color="uiColor"
-                        aria-label="Sélectionner"
-                        class="shrink-0"
-                        @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
-                    />
-                </div>
+                <p class="mb-1 text-[0.625rem] font-semibold uppercase tracking-wide text-base-content/60">
+                    Compétences
+                </p>
+                <CharacteristicsCard
+                    :entity="cardEntityForCompetences"
+                    :groups="competenceGroups"
+                    :runtime="characteristicRuntime"
+                    dense
+                    class="border-0 bg-transparent p-0 shadow-none ring-0"
+                />
             </div>
         </div>
+
+        <!-- Sorts de la créature (texte + aperçu minimal au survol) -->
+        <MonsterCreatureSpellsList
+            v-if="creature"
+            :creature="creature"
+            :table-meta="tableMeta"
+            :characteristic-runtime="characteristicRuntime"
+            section-class="mt-1.5 border-t border-base-300/50 pt-1.5"
+        />
 
         <Teleport to="body">
             <EntityActions
@@ -263,6 +309,30 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
 </template>
 
 <style scoped>
+/**
+ * Vue ligne monstre : ne pas animer la largeur du bloc actions (max-width global sur
+ * `.entity-row-actions-hover-reveal`) — cela change la boîte absolue et peut faire « sauter »
+ * le contenu (overflow, alignements). On révèle par opacité : largeur stable, overlay au-dessus.
+ */
+.monster-line-actions-host :deep(.monster-line-actions-reveal.entity-row-actions-hover-reveal) {
+    max-width: none !important;
+    overflow: visible !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+.group:hover .monster-line-actions-host :deep(.monster-line-actions-reveal.entity-row-actions-hover-reveal),
+.group:focus-within .monster-line-actions-host :deep(.monster-line-actions-reveal.entity-row-actions-hover-reveal),
+.group:has(.monster-line-actions-host .entity-row-actions-hover-reveal [data-dropdown-open="true"])
+    .monster-line-actions-host
+    :deep(.monster-line-actions-reveal.entity-row-actions-hover-reveal),
+.group:has(.monster-line-actions-host .entity-row-actions-hover-reveal [aria-expanded="true"])
+    .monster-line-actions-host
+    :deep(.monster-line-actions-reveal.entity-row-actions-hover-reveal) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* Une seule ligne de titre (CharacteristicGroup) ; chips plus denses que la vue tableau */
 .monster-line-char-cell :deep(.characteristics-card) {
     padding: 0.25rem 0.35rem;
@@ -295,5 +365,34 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
 }
 .monster-line-char-cell :deep(.characteristic-formula .text-xs) {
     font-size: 0.625rem;
+}
+
+.monster-line-competences :deep(.characteristics-card) {
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+}
+.monster-line-competences :deep(.characteristic-group) {
+    margin-bottom: 0.35rem;
+}
+.monster-line-competences :deep(.characteristic-group:last-child) {
+    margin-bottom: 0;
+}
+.monster-line-competences :deep(.characteristic-group h4) {
+    margin-bottom: 0.2rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+.monster-line-competences :deep(.characteristic-group > .flex) {
+    gap: 0.25rem 0.35rem;
+}
+.monster-line-competences :deep(.characteristic-formula) {
+    padding: 0.1rem 0.25rem;
+    font-size: 0.7rem;
 }
 </style>

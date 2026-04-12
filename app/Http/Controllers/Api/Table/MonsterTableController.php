@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Table;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
+use App\Models\Entity\Spell;
 use App\Models\Type\MonsterRace;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -71,7 +72,9 @@ class MonsterTableController extends Controller
 
         $query = Monster::query()
             ->with([
-                'creature' => fn ($q) => $q->withCount(['resources', 'items', 'consumables']),
+                'creature' => fn ($q) => $q
+                    ->with(['spells' => fn ($sq) => $sq->orderBy('name')])
+                    ->withCount(['resources', 'items', 'consumables']),
                 'monsterRace',
             ])
             ->withCount(['spellInvocations', 'campaigns', 'scenarios']);
@@ -268,6 +271,14 @@ class MonsterTableController extends Controller
                         'save_intelligence_mastery' => $c->save_intelligence_mastery ?? 0,
                         'save_chance_mastery' => $c->save_chance_mastery ?? 0,
                         'save_agility_mastery' => $c->save_agility_mastery ?? 0,
+                        'spells' => $c->relationLoaded('spells')
+                            ? $c->spells->map(fn (Spell $s) => [
+                                'id' => $s->id,
+                                'name' => $s->name,
+                                'image' => $s->image,
+                                'level' => $s->level,
+                            ])->values()->all()
+                            : [],
                     ];
                 }
 
