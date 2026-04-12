@@ -45,6 +45,7 @@ class UpdateSpellRequest extends FormRequest
             'cast_per_target' => ['nullable', 'string', 'max:255'],
             'sight_line' => ['nullable', 'boolean'],
             'number_between_two_cast' => ['nullable', 'string', 'max:255'],
+            'duration' => ['nullable', 'string', 'max:255'],
             'element' => array_merge(
                 ['nullable', 'integer'],
                 $this->characteristicMinMaxRules('element', 'spell') ?: ['min:0', 'max:127']
@@ -75,9 +76,10 @@ class UpdateSpellRequest extends FormRequest
             'official_id' => ['nullable', 'string', 'max:255'],
             'dofusdb_id' => ['nullable', 'string', 'max:255'],
             /**
-             * `index` : modal liste ; `edit` : rester sur l’éditeur ; `show` : fiche lecture (défaut si absent).
+             * `stay` : retour HTTP sans changer d’URL (ex. modal liste) ; `index` : liste ;
+             * `edit` : éditeur ; `show` : fiche lecture (défaut si absent).
              */
-            'redirect_after_update' => ['nullable', 'string', 'in:index,show,edit'],
+            'redirect_after_update' => ['nullable', 'string', 'in:stay,index,show,edit'],
         ];
     }
 }

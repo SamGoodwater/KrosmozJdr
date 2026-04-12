@@ -575,6 +575,24 @@ class SpellControllerTest extends TestCase
     }
 
     /**
+     * Test : redirect_after_update=stay renvoie en arrière (modal liste : pas de navigation vers la fiche sort).
+     */
+    public function test_spell_update_redirects_back_when_stay_requested(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create();
+
+        $response = $this->actingAs($admin)
+            ->from(route('entities.spells.index'))
+            ->patch(route('entities.spells.update', $spell), [
+                'name' => 'Nom stay '.$spell->id,
+                'redirect_after_update' => 'stay',
+            ]);
+
+        $response->assertRedirect(route('entities.spells.index'));
+    }
+
+    /**
      * Test : redirect_after_update=edit renvoie vers l’éditeur (page fiche sort).
      */
     public function test_spell_update_redirects_to_edit_when_requested(): void

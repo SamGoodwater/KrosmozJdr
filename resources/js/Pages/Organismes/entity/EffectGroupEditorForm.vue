@@ -4,18 +4,21 @@
  * Utilisable depuis l’admin effets ou la fiche sort.
  */
 import { computed, reactive, ref, useSlots, watch } from 'vue';
+import axios from 'axios';
 import { useForm } from '@inertiajs/vue3';
+import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
+import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
+import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vue';
 import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
 import { METERS_PER_CASE, previewMetersFromCellsFormula } from '@/Utils/Entity/displacementFormat.js';
+import { getElementIcon } from '@/Utils/Entity/Elements.js';
 
 /** Exposé au template (règle 1 case = 1,5 m). */
 const CASE_SIZE_METERS = METERS_PER_CASE;
-import { getElementIcon } from '@/Utils/Entity/Elements.js';
 import { getByCharacteristicKey } from '@/Composables/store/useCharacteristicsStore';
 import {
     getCharacteristicColorStyle,
@@ -72,7 +75,14 @@ const props = defineProps({
     showAdminDegreeDelete: { type: Boolean, default: false },
     /** ID de la définition d’effet (Effect), pour la route destroy-degree. */
     adminEffectId: { type: Number, default: null },
+    /**
+     * Si true : PATCH en JSON sans visite Inertia (ex. modal « modifier le sort » sur la liste).
+     * Sinon : Inertia + redirection « retour » côté serveur (pas vers une autre page fixe).
+     */
+    saveWithoutInertia: { type: Boolean, default: false },
 });
+
+const notificationStore = useNotificationStore();
 
 const common = reactive({
     name: '',
@@ -89,6 +99,9 @@ const groupSaveForm = useForm({
 });
 
 const deleteDegreeForm = useForm({});
+
+/** PATCH groupe d’effets hors Inertia (modal liste sorts). */
+const jsonSaving = ref(false);
 
 const slots = useSlots();
 const hasDegreeExtraSlot = computed(() => Boolean(slots['degree-extra']));
@@ -165,6 +178,14 @@ function characteristicsForRow(row) {
     const categories = param?.categories;
     if (!categories?.length) return props.options.characteristics ?? [];
     return (props.options.characteristics ?? []).filter((c) => categories.includes(c.category));
+}
+
+/** Options select pour les caractéristiques d'une ligne de sous-effet. */
+function characteristicSelectOptionsForRow(row) {
+    return characteristicsForRow(row).map((c) => ({
+        value: c.key,
+        label: c.label ?? c.key,
+    }));
 }
 
 function rowHasCharacteristicParam(row) {
@@ -635,13 +656,61 @@ function applyGroupPayloadToForm() {
     }));
 }
 
+function csrfHeaders() {
+    const t = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    return t ? { 'X-CSRF-TOKEN': t } : {};
+}
+
+/**
+ * PATCH JSON (pas de navigation) — succès / erreurs via toasts.
+ *
+ * @returns {Promise<void>}
+ */
+async function patchEffectGroupJson() {
+    applyGroupPayloadToForm();
+    jsonSaving.value = true;
+    try {
+        await axios.patch(props.patchUrl, groupSaveForm.data(), {
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                ...csrfHeaders(),
+            },
+        });
+        notificationStore.success('Effets du groupe enregistrés.');
+    } catch (e) {
+        const errs = e?.response?.data?.errors;
+        let detail = "Impossible d’enregistrer le groupe d’effets.";
+        if (errs && typeof errs === 'object') {
+            const vals = Object.values(errs).flat();
+            if (vals.length && vals[0]) {
+                detail = String(Array.isArray(vals[0]) ? vals[0][0] : vals[0]);
+            }
+        } else if (e?.response?.data?.message) {
+            detail = String(e.response.data.message);
+        }
+        notificationStore.error(detail, { duration: 8000, placement: 'top-right' });
+        const err = new Error(detail);
+        err.toasted = true;
+        throw err;
+    } finally {
+        jsonSaving.value = false;
+    }
+}
+
 function submitGroup() {
     if (!validateDegreeAreas()) {
+        return;
+    }
+    if (props.saveWithoutInertia) {
+        patchEffectGroupJson().catch(() => {});
         return;
     }
     applyGroupPayloadToForm();
     groupSaveForm.patch(props.patchUrl, {
         preserveScroll: true,
+        preserveState: true,
     });
 }
 
@@ -651,14 +720,27 @@ function submitGroup() {
  * @returns {Promise<{ ok: true } | { ok: false, reason: 'validation_area' }>}
  */
 function submitGroupAsync() {
+    if (!validateDegreeAreas()) {
+        return Promise.resolve({ ok: false, reason: 'validation_area' });
+    }
+    if (props.saveWithoutInertia) {
+        return patchEffectGroupJson()
+            .then(() => ({ ok: true }))
+            .catch((e) => {
+                if (!e?.toasted) {
+                    notificationStore.error('Impossible d’enregistrer les effets du sort.', {
+                        duration: 5000,
+                        placement: 'top-right',
+                    });
+                }
+                return { ok: false, reason: 'request' };
+            });
+    }
+    applyGroupPayloadToForm();
     return new Promise((resolve, reject) => {
-        if (!validateDegreeAreas()) {
-            resolve({ ok: false, reason: 'validation_area' });
-            return;
-        }
-        applyGroupPayloadToForm();
         groupSaveForm.patch(props.patchUrl, {
             preserveScroll: true,
+            preserveState: true,
             onSuccess: () => resolve({ ok: true }),
             onError: (errors) => {
                 const err = new Error('Effect group validation failed');
@@ -673,7 +755,7 @@ function getActiveEffectId() {
     return degreeForms.value[activeTab.value]?.id ?? null;
 }
 
-const saving = computed(() => groupSaveForm.processing || deleteDegreeForm.processing);
+const saving = computed(() => groupSaveForm.processing || deleteDegreeForm.processing || jsonSaving.value);
 
 /** ID définition d’effet (Effect) exploitable pour la route (évite NaN / valeurs invalides). */
 const adminEffectIdForRoute = computed(() => {
@@ -759,11 +841,12 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                         <div class="sm:col-span-2">
                             <InputField v-model="common.description" label="Description (aperçu)" name="common_description" type="textarea" />
                         </div>
-                        <SelectFieldNative
+                        <SelectField
                             v-model="common.target_type"
                             label="Type de cible"
                             name="common_target_type"
                             :options="TARGET_TYPE_OPTIONS"
+                            :searchable="false"
                             helper="Direct, piège ou glyphe."
                         />
                     </div>
@@ -1067,45 +1150,17 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                                             </label>
                                         </div>
 
-                                        <!-- Caractéristique / élément (au-dessus de la valeur) -->
+                                        <!-- Caractéristique / élément -->
                                         <template v-if="rowHasCharacteristicParam(row)">
-                                            <div class="space-y-1.5">
-                                                <label class="text-xs font-medium text-base-content/80">{{
-                                                    characteristicLabelForRow(row)
-                                                }}</label>
-                                                <div
-                                                    class="flex flex-wrap gap-1.5"
-                                                    role="group"
-                                                    :aria-label="characteristicLabelForRow(row)"
-                                                >
-                                                    <button
-                                                        v-for="c in characteristicsForRow(row)"
-                                                        :key="c.key"
-                                                        type="button"
-                                                        :class="characteristicBadgeButtonClass(row, c)"
-                                                        :style="characteristicBadgeButtonStyle(row, c)"
-                                                        :title="c.helper || ''"
-                                                        @click="row.params.characteristic = c.key"
-                                                    >
-                                                        <Icon
-                                                            v-if="characteristicBadgeMeta(c).kind === 'element'"
-                                                            :source="getElementIcon(characteristicBadgeMeta(c).primaryId)"
-                                                            :alt="c.label"
-                                                            size="xs"
-                                                        />
-                                                        <Icon
-                                                            v-else-if="characteristicBadgeMeta(c).icon"
-                                                            :source="characteristicBadgeMeta(c).icon"
-                                                            :alt="c.label"
-                                                            size="xs"
-                                                            :style="characteristicBadgeMeta(c).colorStyle"
-                                                        />
-                                                        <span :style="characteristicBadgeMeta(c).colorStyle">{{
-                                                            c.label
-                                                        }}</span>
-                                                    </button>
-                                                </div>
-                                            </div>
+                                            <SelectSearchField
+                                                size="xs"
+                                                :label="characteristicLabelForRow(row)"
+                                                :placeholder="characteristicLabelForRow(row) + '…'"
+                                                :options="characteristicSelectOptionsForRow(row)"
+                                                :model-value="row.params.characteristic"
+                                                @update:model-value="row.params.characteristic = $event"
+                                                :searchable="characteristicsForRow(row).length > 8"
+                                            />
                                         </template>
 
                                         <!-- Valeur + critique -->

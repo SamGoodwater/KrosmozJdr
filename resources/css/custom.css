@@ -2,22 +2,24 @@
 /**
  * Thème éléments (Spell, Capability)
  *
- * Couleurs Tailwind pour badges/dégradés.
- * Variables --color-* du thème Tailwind (slate, amber, red, emerald, blue).
+ * Les combinaisons multi-primaires (masque 7 bits) utilisent un dégradé inline
+ * via {@link resources/js/Utils/Entity/Elements.js} `getElementBadgeStyle`.
  */
 .element-badge {
   color: white;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
   border: none;
 }
+
 .element-badge--empty {
   background-color: color-mix(in srgb, var(--color-base-content) 14%, transparent);
   color: var(--color-base-content);
   text-shadow: none;
   box-shadow: none;
 }
+
 .element-badge--dynamic {
-  /* dégradé / halo : inline depuis ElementDisplay.vue */
+  /* background / box-shadow définis en inline (Vue) */
 }
 
 .box-shadow-glass-xs {

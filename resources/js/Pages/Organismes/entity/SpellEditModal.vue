@@ -108,7 +108,7 @@ const handleClose = () => {
                 :effect-form-options="payload.effectFormOptions || {}"
                 :spell-effect-groups="payload.spellEffectGroups || []"
                 embedded-in-modal
-                redirect-after-update="index"
+                redirect-after-update="stay"
                 @cancel="handleClose"
                 @saved="emit('saved')"
             />

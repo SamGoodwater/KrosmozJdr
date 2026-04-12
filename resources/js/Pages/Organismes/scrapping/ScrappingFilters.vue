@@ -231,6 +231,7 @@ const coverageColor = computed(() => {
                             label="Mode"
                             :model-value="typeMode"
                             :options="typeModeOptions"
+                            :searchable="false"
                             :disabled="knownTypesLoading"
                             @update:model-value="emit('update:typeMode', $event)"
                         />
@@ -320,6 +321,7 @@ const coverageColor = computed(() => {
                             label="Mode"
                             :model-value="raceMode"
                             :options="raceModeOptions"
+                            :searchable="false"
                             :disabled="knownRacesLoading"
                             @update:model-value="emit('update:raceMode', $event)"
                         />

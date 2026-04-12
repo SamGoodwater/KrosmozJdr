@@ -648,6 +648,7 @@ const confirmForceDelete = () => {
                                 label: getRoleTranslation(role) 
                             }))"
                             :validation="roleValidation"
+                            :searchable="false"
                         />
                     </Tooltip>
                     <div class="flex items-center gap-4">

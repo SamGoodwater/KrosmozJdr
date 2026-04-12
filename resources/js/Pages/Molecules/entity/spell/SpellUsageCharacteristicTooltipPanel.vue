@@ -91,6 +91,12 @@ defineProps({
                     {{ statusText }}
                 </div>
                 <p
+                    v-if="visual.characteristicSubtitle"
+                    class="mt-1 text-[11px] italic leading-snug text-base-content/80"
+                >
+                    {{ visual.characteristicSubtitle }}
+                </p>
+                <p
                     v-if="visual.characteristicHelper"
                     class="mt-1 text-[11px] leading-snug text-base-content/75 whitespace-pre-wrap"
                 >

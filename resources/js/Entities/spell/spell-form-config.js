@@ -135,6 +135,12 @@ export function buildSpellFormFieldsConfig(options = {}) {
             label: 'Délai entre deux lancers (tours)',
             required: false,
         },
+        duration: {
+            type: 'text',
+            label: 'Durée de l\'effet',
+            required: false,
+            help: 'Durée globale du sort : instantané, 1 tour, 3 tours, concentration, etc.',
+        },
         po_min: {
             type: 'text',
             label: 'PO min',
@@ -293,6 +299,7 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
             'allows_reaction',
             'casting_time',
             'ritual_available',
+            'duration',
             'cast_per_turn',
             'cast_per_target',
             'number_between_two_cast',
@@ -377,6 +384,7 @@ export function getSpellCreateDefaultEntity() {
         casting_time: '',
         ritual_available: false,
         number_between_two_cast: '0',
+        duration: '',
         element: null,
         category: 1,
         spellTypes: [],

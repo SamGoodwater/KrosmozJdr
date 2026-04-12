@@ -26,6 +26,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $icon_false
  * @property string|null $color
  * @property string|null $color_false
+ * @property array|null $value_overrides
  * @property string|null $unit
  * @property string $type
  * @property int $sort_order
@@ -56,6 +57,7 @@ class Characteristic extends Model implements HasMedia
         'icon_false',
         'color',
         'color_false',
+        'value_overrides',
         'unit',
         'type',
         'sort_order',
@@ -66,6 +68,7 @@ class Characteristic extends Model implements HasMedia
     /** @var array<string, string> */
     protected $casts = [
         'sort_order' => 'integer',
+        'value_overrides' => 'array',
     ];
 
     /**

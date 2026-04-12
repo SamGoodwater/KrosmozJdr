@@ -320,7 +320,7 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       id: "attributes.index",
       entityType: "attribute",
       quickEdit: {
-        enabled: true,
+        enabled: false,
         permission: "updateAny",
       },
       actions: {

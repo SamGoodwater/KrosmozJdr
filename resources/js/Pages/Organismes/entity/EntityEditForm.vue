@@ -836,6 +836,7 @@ const cancel = () => {
                         :option-badge="stateField.config.optionBadge || null"
                         :required="stateField.config.required"
                         :validation="getFieldValidation(stateField.key)"
+                        :searchable="false"
                     />
                 </div>
             </div>

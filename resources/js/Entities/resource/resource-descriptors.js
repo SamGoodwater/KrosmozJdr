@@ -1023,7 +1023,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       id: "resources.index",
       entityType: "resource",
       quickEdit: {
-        enabled: true,
+        enabled: false,
         permission: "updateAny",
       },
       actions: {

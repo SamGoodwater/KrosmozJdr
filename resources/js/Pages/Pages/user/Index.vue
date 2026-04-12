@@ -176,11 +176,13 @@ const closeForceDeleteModal = () => {
                     v-model="form.role"
                     label="Rôle"
                     :options="roleOptions"
+                    :searchable="false"
                 />
                 <SelectField
                     v-model="form.status"
                     label="Statut"
                     :options="statusOptions"
+                    :searchable="false"
                 />
                 <div class="flex items-center gap-2">
                     <Btn color="primary" size="sm" class="gap-2" @click="applyFilters">

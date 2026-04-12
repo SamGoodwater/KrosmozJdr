@@ -430,7 +430,7 @@ export function getShopFieldDescriptors(ctx = {}) {
       id: "shops.index",
       entityType: "shop",
       quickEdit: {
-        enabled: true,
+        enabled: false,
         permission: "updateAny",
       },
       actions: {

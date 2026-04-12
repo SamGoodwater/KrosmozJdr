@@ -159,6 +159,7 @@ const handleSlugInput = () => {
         label="Lecture (min.)"
         :options="roleOptions"
         helper="Qui peut voir cette section ?"
+        :searchable="false"
     />
     
     <!-- Champs avancés -->
@@ -169,6 +170,7 @@ const handleSlugInput = () => {
             label="Écriture (min.)"
             :options="roleOptions"
             helper="Rôle minimum requis pour modifier cette section"
+            :searchable="false"
         />
         
         <!-- État -->
@@ -177,6 +179,7 @@ const handleSlugInput = () => {
             label="État"
             :options="stateOptions"
             helper="Cycle de vie de la section"
+            :searchable="false"
         />
     </template>
 </template>

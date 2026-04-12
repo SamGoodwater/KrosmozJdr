@@ -585,7 +585,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       id: "items.index",
       entityType: "item",
       quickEdit: {
-        enabled: true,
+        enabled: false,
         permission: "updateAny",
       },
       actions: {

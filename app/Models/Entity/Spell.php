@@ -191,6 +191,7 @@ class Spell extends Model implements HasMedia
         'cast_per_target',
         'sight_line',
         'number_between_two_cast',
+        'duration',
         'element',
         'category',
         'is_magic',

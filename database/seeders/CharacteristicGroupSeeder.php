@@ -20,6 +20,14 @@ abstract class CharacteristicGroupSeeder extends Seeder
     abstract protected function dataPath(): string;
 
     /**
+     * Fichier de normes séparé (optionnel). Retourne null si aucun fichier de normes.
+     */
+    protected function normsDataPath(): ?string
+    {
+        return null;
+    }
+
+    /**
      * @return class-string<Model>
      */
     abstract protected function modelClass(): string;
@@ -33,9 +41,32 @@ abstract class CharacteristicGroupSeeder extends Seeder
     }
 
     /**
+     * Charge le fichier de normes et retourne un tableau characteristic_key → données.
+     * N'utilise pas loadDataFile car les normes sont indexées par clé (string), pas par index.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    protected function loadNormsData(): array
+    {
+        $path = $this->normsDataPath();
+        if ($path === null) {
+            return [];
+        }
+
+        $fullPath = base_path($path);
+        if (! is_file($fullPath)) {
+            return [];
+        }
+
+        $data = require $fullPath;
+
+        return is_array($data) ? $data : [];
+    }
+
+    /**
      * Attributs communs à creature, object et spell (limites, formules, conversion).
      *
-     * @param array<string, mixed> $row
+     * @param  array<string, mixed>  $row
      * @return array<string, mixed>
      */
     protected function commonAttributes(array $row): array
@@ -52,13 +83,16 @@ abstract class CharacteristicGroupSeeder extends Seeder
             'conversion_dofus_sample' => $row['conversion_dofus_sample'] ?? null,
             'conversion_krosmoz_sample' => $row['conversion_krosmoz_sample'] ?? null,
             'conversion_sample_rows' => $row['conversion_sample_rows'] ?? null,
+            'norms_grid' => $row['norms_grid'] ?? null,
+            'norms_conditions' => $row['norms_conditions'] ?? null,
+            'norms_description' => $row['norms_description'] ?? null,
         ];
     }
 
     /**
      * Mappe une ligne du fichier vers les attributs à passer à updateOrCreate.
      *
-     * @param array<string, mixed> $row
+     * @param  array<string, mixed>  $row
      * @return array<string, mixed>
      */
     abstract protected function mapRowToAttributes(array $row): array;
@@ -66,20 +100,33 @@ abstract class CharacteristicGroupSeeder extends Seeder
     public function run(): void
     {
         $rows = $this->loadDataFile($this->dataPath());
+        $normsData = $this->loadNormsData();
+
         // Dédoublonnage par (characteristic_key, entity) pour éviter les violations de contrainte unique.
         $byKeyEntity = [];
         foreach ($rows as $row) {
             $key = $row['characteristic_key'] ?? '';
             $entity = $row['entity'] ?? $this->defaultEntity();
             if ($key !== '') {
-                $byKeyEntity[$key . "\0" . $entity] = $row;
+                $byKeyEntity[$key."\0".$entity] = $row;
             }
         }
         $rows = array_values($byKeyEntity);
 
+        $normsApplied = 0;
         $modelClass = $this->modelClass();
         foreach ($rows as $row) {
-            $char = Characteristic::where('key', $row['characteristic_key'] ?? '')->first();
+            $key = $row['characteristic_key'] ?? '';
+
+            // Fusionner les normes depuis le fichier dédié si disponible.
+            if (isset($normsData[$key])) {
+                $row['norms_grid'] = $normsData[$key]['norms_grid'] ?? null;
+                $row['norms_conditions'] = $normsData[$key]['norms_conditions'] ?? null;
+                $row['norms_description'] = $normsData[$key]['norms_description'] ?? null;
+                $normsApplied++;
+            }
+
+            $char = Characteristic::where('key', $key)->first();
             if ($char === null) {
                 continue;
             }
@@ -93,7 +140,11 @@ abstract class CharacteristicGroupSeeder extends Seeder
             );
         }
         if ($this->command) {
-            $this->command->info(class_basename(static::class) . ' : ' . count($rows) . ' ligne(s).');
+            $info = class_basename(static::class).' : '.count($rows).' ligne(s)';
+            if ($normsApplied > 0) {
+                $info .= ", {$normsApplied} avec normes";
+            }
+            $this->command->info($info.'.');
         }
     }
 }

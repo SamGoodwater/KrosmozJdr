@@ -30,6 +30,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $forgemagie_max
  * @property float|null $base_price_per_unit
  * @property float|null $rune_price_per_unit
+ * @property array|null $norms_grid Grille 5×20 : {power_level: [val_lvl1..val_lvl20]}
+ * @property array|null $norms_conditions Conditions de lecture
+ * @property string|null $norms_description Description libre de la norme
  * @property array|null $value_available
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ItemType> $allowedItemTypes
  */
@@ -69,6 +72,9 @@ class CharacteristicObject extends Model
         'conversion_dofus_sample',
         'conversion_krosmoz_sample',
         'conversion_sample_rows',
+        'norms_grid',
+        'norms_conditions',
+        'norms_description',
         'forgemagie_allowed',
         'forgemagie_max',
         'base_price_per_unit',
@@ -82,6 +88,8 @@ class CharacteristicObject extends Model
         'conversion_dofus_sample' => 'array',
         'conversion_krosmoz_sample' => 'array',
         'conversion_sample_rows' => 'array',
+        'norms_grid' => 'array',
+        'norms_conditions' => 'array',
         'forgemagie_allowed' => 'boolean',
         'forgemagie_max' => 'integer',
         'base_price_per_unit' => 'decimal:2',

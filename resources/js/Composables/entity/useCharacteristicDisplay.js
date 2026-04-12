@@ -161,12 +161,41 @@ const DEFAULT_SOURCE_GROUPS = {
 };
 
 /**
+ * Cherche dans un tableau value_overrides l'entrée correspondant à la valeur donnée.
+ * Priorité stricte (===) puis comparaison souple (true/1/"1", false/0/"0", string cast).
+ *
+ * @param {Array|null|undefined} overrides
+ * @param {*} value
+ * @returns {Object|null}
+ */
+export function resolveValueOverride(overrides, value) {
+    if (!Array.isArray(overrides) || overrides.length === 0 || value === undefined) {
+        return null;
+    }
+    const valid = overrides.filter(
+        (e) => e != null && typeof e === "object" && "value" in e
+    );
+    for (const entry of valid) {
+        if (entry.value === value) return entry;
+    }
+    for (const entry of valid) {
+        const ev = entry.value;
+        if (ev === true  && (value === 1 || value === "1")) return entry;
+        if (ev === false && (value === 0 || value === "0")) return entry;
+        if ((ev === 1 || ev === "1") && value === true) return entry;
+        if ((ev === 0 || ev === "0") && value === false) return entry;
+        if (String(ev) === String(value)) return entry;
+    }
+    return null;
+}
+
+/**
  * Résout une définition depuis le store (key, db_column ou dofusdb_id).
  *
  * @param {string|number} keyOrId - characteristic_key, db_column, ou dofusdb_characteristic_id
  * @param {string|number|boolean} [value] - Valeur (pour variantes : iconFalse si booléen, label depuis value_available)
  * @param {Object} [options] - { sourceGroups: string[] }
- * @returns {Object|null} - { key, db_column, name, short_name, icon, icon_false?, color, color_false?, unit, type, helper, descriptions, value_available } ou null
+ * @returns {Object|null} - { key, db_column, name, short_name, icon, icon_false?, color, color_false?, unit, type, helper, descriptions, value_available, value_overrides?, _resolvedSubtitle? } ou null
  */
 export function resolveDef(keyOrId, value, options = {}) {
     const sourceGroups = options?.sourceGroups ?? ["creature", "item", "resource", "spell", "capability"];
@@ -185,27 +214,41 @@ export function resolveDef(keyOrId, value, options = {}) {
             getByComputedKey(group, keyStr);
         if (def) {
             def = { ...def };
-            if (typeof value === "boolean" && def.icon_false != null) {
-                def._resolvedIcon = value ? def.icon : (def.icon_false ?? def.icon);
-                const cf = def.color_false;
-                if (
-                    value === false &&
-                    typeof cf === "string" &&
-                    cf.trim() !== "" &&
-                    cf.trim().startsWith("#")
-                ) {
-                    def._resolvedColor = cf.trim();
-                }
-            } else if (Array.isArray(def.value_available)) {
-                const entry = def.value_available.find(
-                    (a) => (typeof a === "object" && a?.value === value) || a === value
-                );
-                if (typeof entry === "object" && entry != null) {
-                    if (entry.icon != null) def._resolvedIcon = entry.icon;
-                    if (entry.color != null) def._resolvedColor = entry.color;
-                    if (entry.label != null) def._resolvedLabel = entry.label;
+
+            const vo = resolveValueOverride(def.value_overrides, value);
+            if (vo) {
+                if (vo.icon != null)     def._resolvedIcon = vo.icon;
+                if (vo.color != null)    def._resolvedColor = vo.color;
+                if (vo.subtitle != null) def._resolvedSubtitle = vo.subtitle;
+            }
+
+            if (def._resolvedIcon == null || def._resolvedColor == null) {
+                if (typeof value === "boolean" && def.icon_false != null) {
+                    if (def._resolvedIcon == null) {
+                        def._resolvedIcon = value ? def.icon : (def.icon_false ?? def.icon);
+                    }
+                    const cf = def.color_false;
+                    if (
+                        def._resolvedColor == null &&
+                        value === false &&
+                        typeof cf === "string" &&
+                        cf.trim() !== "" &&
+                        cf.trim().startsWith("#")
+                    ) {
+                        def._resolvedColor = cf.trim();
+                    }
+                } else if (Array.isArray(def.value_available)) {
+                    const entry = def.value_available.find(
+                        (a) => (typeof a === "object" && a?.value === value) || a === value
+                    );
+                    if (typeof entry === "object" && entry != null) {
+                        if (def._resolvedIcon == null && entry.icon != null) def._resolvedIcon = entry.icon;
+                        if (def._resolvedColor == null && entry.color != null) def._resolvedColor = entry.color;
+                        if (entry.label != null) def._resolvedLabel = entry.label;
+                    }
                 }
             }
+
             return def;
         }
     }

@@ -177,6 +177,7 @@ watch(
         label="Vidéo directe"
         :options="directVideoDisplayModeOptions"
         helper="Choisir entre lecture intégrée et téléchargement uniquement."
+        :searchable="false"
       />
     </div>
 
@@ -185,6 +186,7 @@ watch(
       label="Type de vidéo"
       :options="videoTypeOptions"
       helper="Plateforme ou type de vidéo"
+      :searchable="false"
     />
     
     <InputField

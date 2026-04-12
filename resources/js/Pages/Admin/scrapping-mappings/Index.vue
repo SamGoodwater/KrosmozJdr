@@ -10,7 +10,7 @@ import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
-import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
+import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vue';
 import axios from 'axios';
 
 const { setPageTitle } = usePageTitle();
@@ -340,7 +340,7 @@ onMounted(() => {
                     </label>
                 </div>
                 <div>
-                    <SelectFieldNative
+                    <SelectSearchField
                         v-model="form.characteristic_id"
                         label="Caractéristique (conversion/limites)"
                         name="characteristic_id"

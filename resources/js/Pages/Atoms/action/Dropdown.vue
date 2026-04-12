@@ -302,14 +302,15 @@ const handleContentKeydown = (event) => {
 
 // Gestion des clics sur le contenu
 const handleContentClick = (event) => {
-  // Si closeOnContentClick est true, fermer le dropdown
-  if (props.closeOnContentClick) {
-    // Attendre un peu pour permettre aux événements de se propager
-    setTimeout(() => {
-      close();
-    }, 100);
-  }
-  // Sinon, ne rien faire (le dropdown reste ouvert)
+  if (!props.closeOnContentClick) return;
+
+  const target = event.target;
+  const isInteractive = target?.closest?.('input, textarea, select, [data-no-close]');
+  if (isInteractive) return;
+
+  setTimeout(() => {
+    close();
+  }, 100);
 };
 
 // Gestion du hover

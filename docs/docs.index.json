@@ -1305,6 +1305,11 @@
     "description": "Ce document définit les **types de valeurs** qu’une caractéristique peut prendre dans les entités (Boolean, Liste, String), les **propriétés associées à chaque type**, et le **format JSON** utilisé pour stocker les champs qui peuvent être une valeur fixe, une formule ou une table par caractéristique. C’est la base du service de caractéristiques pour définir correctement les valeurs possibles côté entités."
   },
   {
+    "path": "50-Fonctionnalités/Characteristics-DB/SURCHARGES_VISUELLES_PAR_VALEUR.md",
+    "title": "Surcharges visuelles par valeur des caractéristiques",
+    "description": "Colonne JSON value_overrides sur characteristics pour définir icône, couleur et sous-texte conditionnels selon la valeur. Résolution frontend via resolveValueOverride, affichage du sous-texte dans les tooltips."
+  },
+  {
     "path": "50-Fonctionnalités/ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md",
     "title": "Estimation : renommage de l'entité « classe » en « breed »",
     "description": "**Objectif** : utiliser `breed` dans le code et la documentation technique, tout en conservant **« Classe »** pour l’affichage utilisateur (menu, titres, libellés, règles du jeu)."

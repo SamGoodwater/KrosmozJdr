@@ -24,6 +24,11 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
         return 'database/seeders/data/characteristic_object.php';
     }
 
+    protected function normsDataPath(): ?string
+    {
+        return 'database/seeders/data/characteristic_object_norms.php';
+    }
+
     /**
      * @return class-string<\App\Models\CharacteristicObject>
      */
@@ -33,7 +38,7 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
     }
 
     /**
-     * @param array<string, mixed> $row
+     * @param  array<string, mixed>  $row
      * @return array<string, mixed>
      */
     protected function mapRowToAttributes(array $row): array
@@ -70,8 +75,8 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
     /**
      * Construit conversion_sample_rows à partir des deux échantillons (paires dofus_level / krosmoz_level).
      *
-     * @param array<string, int|float> $dofusSample
-     * @param array<string, int|float> $krosmozSample
+     * @param  array<string, int|float>  $dofusSample
+     * @param  array<string, int|float>  $krosmozSample
      * @return list<array{dofus_level: int, dofus_value: int|float|null, krosmoz_level: int, krosmoz_value: int|float|null}>
      */
     protected function buildConversionSampleRows(array $dofusSample, array $krosmozSample): array
@@ -96,11 +101,21 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
     {
         $rows = $this->loadDataFile($this->dataPath());
         $samplesByKey = $this->loadObjectSamples();
+        $normsData = $this->loadNormsData();
         $modelClass = $this->modelClass();
         $enrichedCount = 0;
+        $normsApplied = 0;
 
         foreach ($rows as $row) {
             $key = $row['characteristic_key'] ?? '';
+
+            if (isset($normsData[$key])) {
+                $row['norms_grid'] = $normsData[$key]['norms_grid'] ?? null;
+                $row['norms_conditions'] = $normsData[$key]['norms_conditions'] ?? null;
+                $row['norms_description'] = $normsData[$key]['norms_description'] ?? null;
+                $normsApplied++;
+            }
+
             if ($key !== '' && isset($samplesByKey[$key])) {
                 $samples = $samplesByKey[$key];
                 $dofusRef = $samples['conversion_dofus_sample_reference'] ?? $samples['conversion_dofus_sample'] ?? [];
@@ -133,7 +148,14 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
         }
 
         if ($this->command) {
-            $this->command->info(class_basename(static::class) . ' : ' . count($rows) . ' ligne(s)' . ($enrichedCount > 0 ? ", {$enrichedCount} avec samples" : '') . '.');
+            $extra = [];
+            if ($enrichedCount > 0) {
+                $extra[] = "{$enrichedCount} avec samples";
+            }
+            if ($normsApplied > 0) {
+                $extra[] = "{$normsApplied} avec normes";
+            }
+            $this->command->info(class_basename(static::class).' : '.count($rows).' ligne(s)'.($extra !== [] ? ', '.implode(', ', $extra) : '').'.');
         }
     }
 }

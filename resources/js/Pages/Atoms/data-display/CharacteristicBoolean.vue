@@ -16,6 +16,7 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import {
     getCharacteristicColorStyle,
     getCharacteristicContainerStyle,
+    resolveValueOverride,
 } from "@/Composables/entity/useCharacteristicDisplay";
 
 const props = defineProps({
@@ -24,18 +25,32 @@ const props = defineProps({
     compact: { type: Boolean, default: false },
 });
 
-const description = computed(() => props.def?.descriptions || props.def?.helper || "");
+const override = computed(() => resolveValueOverride(props.def?.value_overrides, props.value));
+
+const tooltipText = computed(() => {
+    const sub = override.value?.subtitle;
+    if (sub) return sub;
+    return props.def?.descriptions || props.def?.helper || "";
+});
 const label = computed(() => props.def?.short_name || props.def?.name || props.def?.key || "—");
-const iconSource = computed(() =>
-    props.value ? props.def?.icon : (props.def?.iconFalse ?? props.def?.icon)
-);
+const iconSource = computed(() => {
+    const ov = override.value;
+    if (ov?.icon) return ov.icon;
+    return props.value ? props.def?.icon : (props.def?.iconFalse ?? props.def?.icon);
+});
+const resolvedColor = computed(() => {
+    const ov = override.value;
+    if (ov?.color) return ov.color;
+    if (!props.value && props.def?.color_false) return props.def.color_false;
+    return props.def?.color;
+});
 const alt = computed(() => props.def?.name || props.def?.key || "—");
 
 const iconStyle = computed(() =>
-    props.value && props.def?.color ? getCharacteristicColorStyle(props.def.color) ?? {} : {},
+    props.value && resolvedColor.value ? getCharacteristicColorStyle(resolvedColor.value) ?? {} : {},
 );
 const containerStyle = computed(() =>
-    props.compact || !props.value ? {} : getCharacteristicContainerStyle(props.def?.color),
+    props.compact || !props.value ? {} : getCharacteristicContainerStyle(resolvedColor.value),
 );
 </script>
 
@@ -45,7 +60,7 @@ const containerStyle = computed(() =>
         :class="compact ? 'items-center rounded px-1 py-0.5' : 'flex-col items-center rounded-box border border-base-300 px-2 py-1.5 backdrop-blur-sm'"
         :style="compact ? {} : containerStyle"
     >
-        <Tooltip v-if="description && compact" :content="description" placement="top">
+        <Tooltip v-if="tooltipText && compact" :content="tooltipText" placement="top">
             <span
                 class="flex items-center"
                 :class="value ? '' : 'opacity-50'"
@@ -76,7 +91,7 @@ const containerStyle = computed(() =>
             </span>
         </template>
         <template v-else>
-            <Tooltip v-if="description" :content="description" placement="top">
+            <Tooltip v-if="tooltipText" :content="tooltipText" placement="top">
                 <span
                     class="flex items-center"
                     :class="value ? '' : 'opacity-50'"

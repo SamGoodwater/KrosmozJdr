@@ -9,7 +9,7 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
+import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import EffectGroupEditorForm from '@/Pages/Organismes/entity/EffectGroupEditorForm.vue';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
@@ -233,11 +233,12 @@ function duplicateEffect() {
                                 <div class="sm:col-span-2">
                                     <InputField v-model="form.description" label="Description (aperçu)" name="description" type="textarea" />
                                 </div>
-                                <SelectFieldNative
+                                <SelectField
                                     v-model="form.target_type"
                                     label="Type de cible"
                                     name="target_type"
                                     :options="TARGET_TYPE_OPTIONS"
+                                    :searchable="false"
                                     helper="Direct, piège ou glyphe."
                                 />
                                 <InputField

@@ -300,11 +300,13 @@ const deleteCurrentFile = async () => {
           v-model="localSettings.align"
           label="Alignement"
           :options="alignOptions"
+          :searchable="false"
         />
         <SelectField
           v-model="localSettings.size"
           label="Taille"
           :options="sizeOptions"
+          :searchable="false"
         />
       </div>
       <InputField
@@ -325,6 +327,7 @@ const deleteCurrentFile = async () => {
         label="Affichage des documents"
         :options="documentModeOptions"
         helper="Contrôle l'affichage des PDF et autres documents non-image."
+        :searchable="false"
       />
     </div>
 

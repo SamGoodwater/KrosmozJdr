@@ -31,6 +31,10 @@ const props = defineProps({
      * Masque le bouton « Enregistrer les effets » : sauvegarde via le parent (ex. « Mettre à jour » du sort).
      */
     hideEffectGroupSubmitButton: { type: Boolean, default: false },
+    /**
+     * Éditeur affiché dans la modal (liste sorts) : enregistrement groupe d’effets en JSON sans navigation Inertia.
+     */
+    embeddedInModal: { type: Boolean, default: false },
 });
 
 const notificationStore = useNotificationStore();
@@ -355,6 +359,7 @@ defineExpose({ flushEffectGroupSave });
             :heading="selectedGroup.label"
             submit-label="Enregistrer les effets"
             :hide-submit-button="hideEffectGroupSubmitButton"
+            :save-without-inertia="embeddedInModal"
         />
 
         <div v-if="selectedGroup && patchUrlForSelectedGroup" class="mt-3">

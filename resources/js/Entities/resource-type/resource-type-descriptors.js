@@ -364,7 +364,7 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       id: "resource-types.index",
       entityType: "resource-type",
       quickEdit: {
-        enabled: true,
+        enabled: false,
         permission: "updateAny",
       },
       actions: {

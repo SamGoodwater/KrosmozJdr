@@ -259,11 +259,13 @@ onMounted(() => {
         v-model="localSettings.align"
         label="Alignement"
         :options="alignOptions"
+        :searchable="false"
       />
       <SelectField
         v-model="localSettings.size"
         label="Taille du texte"
         :options="sizeOptions"
+        :searchable="false"
       />
     </div>
     <RichTextEditorField

@@ -9,7 +9,7 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
+import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vue';
 import axios from 'axios';
 
 const { setPageTitle } = usePageTitle();
@@ -256,20 +256,21 @@ onMounted(() => {
                 <p v-if="modalMode === 'edit'" class="label-text-alt text-base-content/60">
                     L’effectId ne peut pas être modifié en édition.
                 </p>
-                <SelectFieldNative
+                <SelectSearchField
                     v-model="form.sub_effect_slug"
                     label="Sous-effet (action Krosmoz)"
                     name="sub_effect_slug"
                     :options="subEffectsForSelect"
                     required
                 />
-                <SelectFieldNative
+                <SelectSearchField
                     v-model="form.characteristic_source"
                     label="Source de caractéristique"
                     name="characteristic_source"
                     :options="characteristicSourceOptions"
+                    :searchable="false"
                 />
-                <SelectFieldNative
+                <SelectSearchField
                     v-if="showCharacteristicKey"
                     v-model="form.characteristic_key"
                     label="Clé caractéristique"

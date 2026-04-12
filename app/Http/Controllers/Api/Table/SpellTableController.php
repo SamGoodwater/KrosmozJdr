@@ -326,7 +326,7 @@ class SpellTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['level', 'pa', 'category', 'element', 'is_magic', 'allows_reaction', 'powerful', 'state'] as $k) {
+        foreach (['level', 'pa', 'category', 'element', 'is_magic', 'allows_reaction', 'powerful', 'state', 'sight_line', 'po_editable'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -389,8 +389,20 @@ class SpellTableController extends Controller
         if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
             $query->where('state', (string) $filters['state']);
         }
+        if (array_key_exists('sight_line', $filters) && $filters['sight_line'] !== '' && $filters['sight_line'] !== null) {
+            $query->where('sight_line', (int) $filters['sight_line']);
+        }
+        if (array_key_exists('po_editable', $filters) && $filters['po_editable'] !== '' && $filters['po_editable'] !== null) {
+            $query->where('po_editable', (int) $filters['po_editable']);
+        }
+        if (array_key_exists('ritual_available', $filters) && $filters['ritual_available'] !== '' && $filters['ritual_available'] !== null) {
+            $query->where('ritual_available', (int) $filters['ritual_available']);
+        }
+        if (array_key_exists('auto_update', $filters) && $filters['auto_update'] !== '' && $filters['auto_update'] !== null) {
+            $query->where('auto_update', (int) $filters['auto_update']);
+        }
 
-        $allowedSort = ['id', 'name', 'level', 'pa', 'po', 'area', 'element', 'category', 'dofusdb_id', 'created_at', 'updated_at', 'state'];
+        $allowedSort = ['id', 'name', 'description', 'level', 'pa', 'po', 'area', 'element', 'category', 'is_magic', 'allows_reaction', 'casting_time', 'ritual_available', 'cast_per_turn', 'cast_per_target', 'number_between_two_cast', 'duration', 'sight_line', 'po_editable', 'state', 'auto_update', 'read_level', 'write_level', 'dofusdb_id', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $total = $query->count();
@@ -463,6 +475,22 @@ class SpellTableController extends Controller
                 ['value' => '0', 'label' => 'Normal'],
                 ['value' => '1', 'label' => 'Puissant'],
             ],
+            'sight_line' => [
+                ['value' => '1', 'label' => 'Oui'],
+                ['value' => '0', 'label' => 'Non'],
+            ],
+            'po_editable' => [
+                ['value' => '1', 'label' => 'Oui'],
+                ['value' => '0', 'label' => 'Non'],
+            ],
+            'ritual_available' => [
+                ['value' => '1', 'label' => 'Oui'],
+                ['value' => '0', 'label' => 'Non'],
+            ],
+            'auto_update' => [
+                ['value' => '1', 'label' => 'Oui'],
+                ['value' => '0', 'label' => 'Non'],
+            ],
             'state' => [
                 ['value' => 'raw', 'label' => 'Brut'],
                 ['value' => 'draft', 'label' => 'Brouillon'],
@@ -503,6 +531,7 @@ class SpellTableController extends Controller
                     'cast_per_target' => $sp->cast_per_target,
                     'sight_line' => (bool) $sp->sight_line,
                     'number_between_two_cast' => $sp->number_between_two_cast,
+                    'duration' => $sp->duration,
                     'element' => $sp->element,
                     'category' => $sp->category,
                     'is_magic' => (bool) $sp->is_magic,
@@ -578,6 +607,11 @@ class SpellTableController extends Controller
             return [
                 'id' => $sp->id,
                 'cells' => [
+                    'id' => [
+                        'type' => 'text',
+                        'value' => (string) $sp->id,
+                        'params' => ['sortValue' => $sp->id, 'filterValue' => (string) $sp->id],
+                    ],
                     'name' => [
                         'type' => 'route',
                         'value' => (string) $sp->name,
@@ -586,6 +620,11 @@ class SpellTableController extends Controller
                             'searchValue' => (string) $sp->name,
                             'sortValue' => (string) $sp->name,
                         ],
+                    ],
+                    'description' => [
+                        'type' => 'text',
+                        'value' => $sp->description ?: '-',
+                        'params' => ['searchValue' => (string) ($sp->description ?? ''), 'sortValue' => (string) ($sp->description ?? '')],
                     ],
                     'level' => [
                         'type' => 'text',
@@ -612,6 +651,16 @@ class SpellTableController extends Controller
                         ],
                     ],
                     'area' => $this->buildAreaCell($sp->area),
+                    'element' => [
+                        'type' => 'badge',
+                        'value' => $sp->element !== null ? (string) $sp->element : '-',
+                        'params' => ['filterValue' => (string) ($sp->element ?? ''), 'sortValue' => $sp->element ?? 0],
+                    ],
+                    'category' => [
+                        'type' => 'badge',
+                        'value' => $sp->category !== null ? (string) $sp->category : '-',
+                        'params' => ['filterValue' => (string) ($sp->category ?? ''), 'sortValue' => $sp->category ?? 0],
+                    ],
                     'spell_types' => [
                         'type' => 'text',
                         'value' => $typesLabel,
@@ -619,6 +668,81 @@ class SpellTableController extends Controller
                             'searchValue' => $typesLabel,
                             'sortValue' => $typesLabel,
                         ],
+                    ],
+                    'is_magic' => [
+                        'type' => 'badge',
+                        'value' => $sp->is_magic ? 'Wakfu' : 'Physique',
+                        'params' => ['filterValue' => $sp->is_magic ? '1' : '0', 'sortValue' => $sp->is_magic ? 1 : 0],
+                    ],
+                    'allows_reaction' => [
+                        'type' => 'badge',
+                        'value' => $sp->allows_reaction ? 'Oui' : 'Non',
+                        'params' => ['filterValue' => $sp->allows_reaction ? '1' : '0', 'sortValue' => $sp->allows_reaction ? 1 : 0],
+                    ],
+                    'casting_time' => [
+                        'type' => 'text',
+                        'value' => $sp->casting_time ?: '-',
+                        'params' => ['sortValue' => (string) ($sp->casting_time ?? '')],
+                    ],
+                    'ritual_available' => [
+                        'type' => 'badge',
+                        'value' => $sp->ritual_available ? 'Oui' : 'Non',
+                        'params' => ['filterValue' => $sp->ritual_available ? '1' : '0', 'sortValue' => $sp->ritual_available ? 1 : 0],
+                    ],
+                    'cast_per_turn' => [
+                        'type' => 'text',
+                        'value' => $sp->cast_per_turn ?: '-',
+                        'params' => ['sortValue' => (string) ($sp->cast_per_turn ?? '')],
+                    ],
+                    'cast_per_target' => [
+                        'type' => 'text',
+                        'value' => $sp->cast_per_target ?: '-',
+                        'params' => ['sortValue' => (string) ($sp->cast_per_target ?? '')],
+                    ],
+                    'number_between_two_cast' => [
+                        'type' => 'text',
+                        'value' => $sp->number_between_two_cast ?: '-',
+                        'params' => ['sortValue' => (string) ($sp->number_between_two_cast ?? '')],
+                    ],
+                    'duration' => [
+                        'type' => 'text',
+                        'value' => $sp->duration ?: '-',
+                        'params' => ['sortValue' => (string) ($sp->duration ?? '')],
+                    ],
+                    'sight_line' => [
+                        'type' => 'badge',
+                        'value' => $sp->sight_line ? 'Oui' : 'Non',
+                        'params' => ['sortValue' => $sp->sight_line ? 1 : 0, 'filterValue' => $sp->sight_line ? '1' : '0'],
+                    ],
+                    'po_editable' => [
+                        'type' => 'badge',
+                        'value' => $sp->po_editable ? 'Oui' : 'Non',
+                        'params' => ['sortValue' => $sp->po_editable ? 1 : 0, 'filterValue' => $sp->po_editable ? '1' : '0'],
+                    ],
+                    'state' => [
+                        'type' => 'badge',
+                        'value' => (string) ($sp->state ?? 'draft'),
+                        'params' => ['filterValue' => (string) ($sp->state ?? ''), 'sortValue' => (string) ($sp->state ?? '')],
+                    ],
+                    'auto_update' => [
+                        'type' => 'badge',
+                        'value' => $sp->auto_update ? 'Oui' : 'Non',
+                        'params' => ['sortValue' => $sp->auto_update ? 1 : 0],
+                    ],
+                    'image' => [
+                        'type' => 'thumb',
+                        'value' => $sp->image ?: '',
+                        'params' => ['sortValue' => $sp->image ? 1 : 0],
+                    ],
+                    'read_level' => [
+                        'type' => 'badge',
+                        'value' => (string) ($sp->read_level ?? 0),
+                        'params' => ['sortValue' => (int) ($sp->read_level ?? 0)],
+                    ],
+                    'write_level' => [
+                        'type' => 'badge',
+                        'value' => (string) ($sp->write_level ?? 0),
+                        'params' => ['sortValue' => (int) ($sp->write_level ?? 0)],
                     ],
                     'dofusdb_id' => [
                         'type' => 'route',
@@ -674,6 +798,7 @@ class SpellTableController extends Controller
                         'cast_per_target' => $sp->cast_per_target,
                         'sight_line' => (bool) $sp->sight_line,
                         'number_between_two_cast' => $sp->number_between_two_cast,
+                        'duration' => $sp->duration,
                         'element' => $sp->element,
                         'category' => $sp->category,
                         'is_magic' => (bool) $sp->is_magic,

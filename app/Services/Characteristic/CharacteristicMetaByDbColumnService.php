@@ -353,6 +353,7 @@ final class CharacteristicMetaByDbColumnService
             'icon_false' => $iconFalse,
             'color' => $c->color,
             'color_false' => $c->color_false ?? null,
+            'value_overrides' => $this->normalizeValueOverridesIcons($c->value_overrides),
             'unit' => $c->unit,
             'type' => $c->type,
         ], array_filter($extra, fn ($v) => $v !== null));
@@ -393,8 +394,34 @@ final class CharacteristicMetaByDbColumnService
             'icon_false' => $iconFalse,
             'color' => $c->color,
             'color_false' => $c->color_false ?? null,
+            'value_overrides' => $this->normalizeValueOverridesIcons($c->value_overrides),
             'unit' => $c->unit,
             'type' => $c->type,
         ], array_filter($extra, fn ($v) => $v !== null));
+    }
+
+    /**
+     * Préfixe les noms d'icônes courts dans les entrées value_overrides.
+     *
+     * @param  array<int, array<string, mixed>>|null  $overrides
+     * @return array<int, array<string, mixed>>|null
+     */
+    private function normalizeValueOverridesIcons(?array $overrides): ?array
+    {
+        if ($overrides === null || $overrides === []) {
+            return null;
+        }
+
+        foreach ($overrides as &$entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+            $icon = $entry['icon'] ?? null;
+            if (is_string($icon) && $icon !== '' && ! str_starts_with($icon, 'fa-') && ! str_contains($icon, '/')) {
+                $entry['icon'] = 'icons/caracteristics/'.$icon;
+            }
+        }
+
+        return $overrides;
     }
 }

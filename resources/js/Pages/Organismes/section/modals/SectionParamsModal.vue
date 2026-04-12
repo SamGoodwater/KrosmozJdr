@@ -449,6 +449,7 @@ const canDeleteSection = computed(() => {
                     label="Lecture (min.)"
                     helper="Niveau minimum requis pour voir la section"
                     :options="roleOptions"
+                    :searchable="false"
                 />
                 
                 <!-- Écriture (min.) -->
@@ -457,6 +458,7 @@ const canDeleteSection = computed(() => {
                     label="Écriture (min.)"
                     helper="Niveau minimum requis pour modifier la section"
                     :options="roleOptions"
+                    :searchable="false"
                 />
                 
                 <!-- État -->
@@ -465,6 +467,7 @@ const canDeleteSection = computed(() => {
                     label="État"
                     helper="Cycle de vie de la section"
                     :options="stateOptions"
+                    :searchable="false"
                 />
             </div>
             

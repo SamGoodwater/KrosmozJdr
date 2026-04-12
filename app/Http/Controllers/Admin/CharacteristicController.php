@@ -48,6 +48,11 @@ class CharacteristicController extends Controller
         return Schema::hasColumn('characteristics', 'color_false');
     }
 
+    private function characteristicsTableHasValueOverridesColumn(): bool
+    {
+        return Schema::hasColumn('characteristics', 'value_overrides');
+    }
+
     /** Entités possibles + '*' = toutes les entités du groupe (défaut). */
     private const ENTITIES = ['*', 'monster', 'class', 'npc', 'item', 'consumable', 'resource', 'panoply', 'spell'];
 
@@ -185,6 +190,7 @@ class CharacteristicController extends Controller
             'icon_false' => $this->characteristicsTableHasIconFalseColumn() ? $characteristic->icon_false : null,
             'color' => $characteristic->color,
             'color_false' => $this->characteristicsTableHasColorFalseColumn() ? $characteristic->color_false : null,
+            'value_overrides' => $this->characteristicsTableHasValueOverridesColumn() ? $characteristic->value_overrides : null,
             'type' => $characteristic->type,
             'unit' => $characteristic->unit,
             'sort_order' => $characteristic->sort_order,
@@ -264,6 +270,9 @@ class CharacteristicController extends Controller
         }
         if ($this->characteristicsTableHasColorFalseColumn()) {
             $createPayload['color_false'] = $data['color_false'] ?? null;
+        }
+        if ($this->characteristicsTableHasValueOverridesColumn()) {
+            $createPayload['value_overrides'] = $this->parseValueOverridesInput($data['value_overrides'] ?? null);
         }
 
         $characteristic = Characteristic::create($createPayload);
@@ -860,8 +869,27 @@ class CharacteristicController extends Controller
             'entities.*.forgemagie_max' => 'nullable|integer',
             'entities.*.base_price_per_unit' => 'nullable|numeric',
             'entities.*.rune_price_per_unit' => 'nullable|numeric',
+            'entities.*.norms_grid' => 'nullable|array',
+            'entities.*.norms_grid.very_weak' => 'nullable|array|size:20',
+            'entities.*.norms_grid.weak' => 'nullable|array|size:20',
+            'entities.*.norms_grid.neutral' => 'nullable|array|size:20',
+            'entities.*.norms_grid.strong' => 'nullable|array|size:20',
+            'entities.*.norms_grid.very_strong' => 'nullable|array|size:20',
+            'entities.*.norms_conditions' => 'nullable|array',
+            'entities.*.norms_conditions.*.characteristic_key' => 'required|string|max:128',
+            'entities.*.norms_conditions.*.operator' => 'required|in:>,>=,=,<=,<',
+            'entities.*.norms_conditions.*.value' => 'required|numeric',
+            'entities.*.norms_conditions.*.target' => 'required|in:power,level',
+            'entities.*.norms_conditions.*.modifier' => 'required|integer',
+            'entities.*.norms_conditions.*.comment' => 'nullable|string|max:500',
+            'entities.*.norms_description' => 'nullable|string|max:2000',
             'entity_override_keys' => 'nullable|array',
             'entity_override_keys.*' => 'string|max:32',
+            'value_overrides' => 'nullable|array',
+            'value_overrides.*.value' => 'required',
+            'value_overrides.*.icon' => 'nullable|string|max:64',
+            'value_overrides.*.color' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
+            'value_overrides.*.subtitle' => 'nullable|string|max:500',
         ]);
 
         $updatePayload = [
@@ -880,6 +908,9 @@ class CharacteristicController extends Controller
         }
         if ($this->characteristicsTableHasColorFalseColumn()) {
             $updatePayload['color_false'] = $data['color_false'] ?? null;
+        }
+        if ($this->characteristicsTableHasValueOverridesColumn()) {
+            $updatePayload['value_overrides'] = $this->parseValueOverridesInput($data['value_overrides'] ?? null);
         }
 
         $characteristic->update($updatePayload);
@@ -1069,6 +1100,9 @@ class CharacteristicController extends Controller
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
             'rune_price_per_unit' => null,
+            'norms_grid' => $row->norms_grid,
+            'norms_conditions' => $row->norms_conditions,
+            'norms_description' => $row->norms_description,
         ];
         if ($row instanceof CharacteristicObject) {
             $out['forgemagie_allowed'] = $row->forgemagie_allowed;
@@ -1182,6 +1216,9 @@ class CharacteristicController extends Controller
             'conversion_dofus_sample' => $this->deriveSampleFromRows($sampleRows, 'dofus') ?? $this->normalizeSampleForSave($data['conversion_dofus_sample'] ?? null),
             'conversion_krosmoz_sample' => $this->deriveSampleFromRows($sampleRows, 'krosmoz') ?? $this->normalizeSampleForSave($data['conversion_krosmoz_sample'] ?? null),
             'conversion_sample_rows' => $sampleRows,
+            'norms_grid' => $this->parseNormsGrid($data['norms_grid'] ?? null),
+            'norms_conditions' => ! empty($data['norms_conditions']) ? array_values($data['norms_conditions']) : null,
+            'norms_description' => ($data['norms_description'] ?? null) !== '' ? ($data['norms_description'] ?? null) : null,
         ];
 
         if (in_array($entity, ['*', 'monster', 'class', 'npc'], true)) {
@@ -1241,5 +1278,73 @@ class CharacteristicController extends Controller
         if ($currentGroup !== 'spell') {
             CharacteristicSpell::where('characteristic_id', $characteristicId)->delete();
         }
+    }
+
+    /**
+     * Normalise la grille norms : conserve uniquement les 5 power levels attendus.
+     * Retourne null si la grille est vide ou si toutes les cellules sont vides.
+     *
+     * @return array<string, list<int|float|null>>|null
+     */
+    private function parseNormsGrid(mixed $input): ?array
+    {
+        if (! is_array($input) || $input === []) {
+            return null;
+        }
+        $powerLevels = ['very_weak', 'weak', 'neutral', 'strong', 'very_strong'];
+        $grid = [];
+        $hasValue = false;
+        foreach ($powerLevels as $pl) {
+            $row = $input[$pl] ?? [];
+            if (! is_array($row)) {
+                $grid[$pl] = array_fill(0, 20, null);
+
+                continue;
+            }
+            $normalized = [];
+            for ($i = 0; $i < 20; $i++) {
+                $v = $row[$i] ?? null;
+                if ($v !== null && $v !== '' && is_numeric($v)) {
+                    $normalized[] = (float) $v;
+                    $hasValue = true;
+                } else {
+                    $normalized[] = null;
+                }
+            }
+            $grid[$pl] = $normalized;
+        }
+
+        return $hasValue ? $grid : null;
+    }
+
+    /**
+     * @param  mixed  $input
+     * @return list<array{value: mixed, icon?: string, color?: string, subtitle?: string}>|null
+     */
+    private function parseValueOverridesInput(mixed $input): ?array
+    {
+        if (! is_array($input) || $input === []) {
+            return null;
+        }
+
+        $clean = [];
+        foreach ($input as $entry) {
+            if (! is_array($entry) || ! array_key_exists('value', $entry)) {
+                continue;
+            }
+            $item = ['value' => $entry['value']];
+            if (isset($entry['icon']) && is_string($entry['icon']) && $entry['icon'] !== '') {
+                $item['icon'] = $entry['icon'];
+            }
+            if (isset($entry['color']) && is_string($entry['color']) && $entry['color'] !== '') {
+                $item['color'] = $entry['color'];
+            }
+            if (isset($entry['subtitle']) && is_string($entry['subtitle']) && $entry['subtitle'] !== '') {
+                $item['subtitle'] = $entry['subtitle'];
+            }
+            $clean[] = $item;
+        }
+
+        return $clean !== [] ? $clean : null;
     }
 }

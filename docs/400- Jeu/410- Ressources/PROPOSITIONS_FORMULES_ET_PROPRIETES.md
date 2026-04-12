@@ -31,16 +31,15 @@ Remplacer les formules linéaires par des **formules-table** (syntaxe JSON suppo
 
 ## 2. Incohérences règles vs seeders (COHERENCE_SEEDER_REGLES)
 
-### 2.1 Bonus par objet : max 4 vs max 8 (règles 2.6.1 vs PDF)
+### 2.1 Bonus par objet : stats principales (RÉSOLU)
 
 | Source | Vitalité / Force / etc. (chapeaux, capes) |
 |--------|-------------------------------------------|
-| **Règles 2.6.1** | +4 maximum par objet |
-| **PDF Caractéristiques** | Max : 10 + 8 (+8 + 2) = équipement +10, forgemagie +2 |
-| **PDF Équipements** | Table niveau 19–20 : bonus 8, forgemagie +2 → 10 total par objet |
-| **Seeder actuel** | max 8, formula `[level]*(8/20)` |
+| **Règles 2.2.1** | +6 maximum (équipement) + 2 (forgemagie) = +8 total |
+| **Règles 2.6.1** | +6 maximum par slot (forgemagie +2) |
+| **Seeder actuel** | max 8 (6 équip. + 2 forgemagie), formula paliers niveau |
 
-**Proposition** : Conserver **max 8** pour la conversion/génération (aligné PDF Équipements). Documenter que le plafond **+4** des règles 2.6.1 peut être une simplification ou une règle de validation à appliquer côté UI (ex. « un objet ne peut pas dépasser +4 en création manuelle »). Ou aligner les règles 2.6.1 sur le PDF (+8/+10) si c’est la référence.
+**Décision** : Le seeder utilise **max 8** = **+6 équipement + 2 forgemagie**. Aligné avec les règles 2.2.1 et 2.6.1.
 
 ### 2.2 Anneaux : PO et invocations
 
@@ -99,7 +98,7 @@ Comparaison PDF Équipements vs seeder :
 
 | Caractéristique | PDF forgemagie max | Seeder forgemagie_max |
 |-----------------|--------------------|------------------------|
-| Bonus de touche | 1 | 1 ✓ |
+| Bonus de touche | 0 | 0 ✓ (pas de forgemagie, cf. 2.2.2) |
 | Dommage fixe (arme) | 5 | 5 ✓ |
 | Dommage fixe multiple | 2 | 2 ✓ |
 | PV max | 20 | 20 ✓ |

@@ -59,6 +59,7 @@ final class CharacteristicShowPayloadBuilder
 
         $hasIconFalse = Schema::hasColumn('characteristics', 'icon_false');
         $hasColorFalse = Schema::hasColumn('characteristics', 'color_false');
+        $hasValueOverrides = Schema::hasColumn('characteristics', 'value_overrides');
 
         $selected = [
             'id' => $characteristic->key,
@@ -70,6 +71,7 @@ final class CharacteristicShowPayloadBuilder
             'icon_false' => $hasIconFalse ? $effective->icon_false : null,
             'color' => $effective->color,
             'color_false' => $hasColorFalse ? $effective->color_false : null,
+            'value_overrides' => $hasValueOverrides ? $effective->value_overrides : null,
             'type' => $effective->type,
             'unit' => $effective->unit,
             'sort_order' => $characteristic->sort_order,
@@ -173,6 +175,9 @@ final class CharacteristicShowPayloadBuilder
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
             'rune_price_per_unit' => null,
+            'norms_grid' => null,
+            'norms_conditions' => null,
+            'norms_description' => null,
         ];
     }
 
@@ -247,6 +252,9 @@ final class CharacteristicShowPayloadBuilder
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
             'rune_price_per_unit' => null,
+            'norms_grid' => $def['norms_grid'] ?? null,
+            'norms_conditions' => $def['norms_conditions'] ?? null,
+            'norms_description' => $def['norms_description'] ?? null,
         ];
         if (isset($def['forgemagie_allowed'])) {
             $out['forgemagie_allowed'] = (bool) $def['forgemagie_allowed'];
@@ -286,6 +294,9 @@ final class CharacteristicShowPayloadBuilder
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
             'rune_price_per_unit' => null,
+            'norms_grid' => $row->norms_grid,
+            'norms_conditions' => $row->norms_conditions,
+            'norms_description' => $row->norms_description,
         ];
         if ($row instanceof CharacteristicObject) {
             $out['forgemagie_allowed'] = $row->forgemagie_allowed;

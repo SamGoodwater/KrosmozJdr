@@ -157,6 +157,7 @@ const submit = () => {
                         :options="roleOptions"
                         required
                         helper="Qui peut voir cette page ?"
+                        :searchable="false"
                     />
                     
                     <!-- Rôle requis pour modifier -->
@@ -166,6 +167,7 @@ const submit = () => {
                         :options="roleOptions"
                         required
                         helper="Rôle minimum requis pour modifier cette page (admin par défaut)"
+                        :searchable="false"
                     />
                     
                     <!-- État -->
@@ -175,6 +177,7 @@ const submit = () => {
                         :options="stateOptions"
                         required
                         helper="Cycle de vie de la page"
+                        :searchable="false"
                     />
                     
                     <!-- Page parente -->

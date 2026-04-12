@@ -219,14 +219,20 @@ class SpellController extends Controller
     /**
      * Enregistre un groupe d’effets depuis la fiche sort (même charge utile que l’admin).
      */
-    public function updateEffectGroup(UpdateSpellEffectGroupRequest $request, Spell $spell, Effect $effect): RedirectResponse
+    public function updateEffectGroup(UpdateSpellEffectGroupRequest $request, Spell $spell, Effect $effect): JsonResponse|RedirectResponse
     {
         $this->authorize('update', $spell);
 
         app(EffectGroupUpdateService::class)->updateGroup($effect, $request->validated());
 
-        return redirect()->route('entities.spells.edit', $spell)
-            ->with('success', 'Effets du groupe enregistrés.');
+        $message = 'Effets du groupe enregistrés.';
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => $message]);
+        }
+
+        return back(fallback: route('entities.spells.edit', $spell))
+            ->with('success', $message);
     }
 
     /**
@@ -251,18 +257,24 @@ class SpellController extends Controller
 
         $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes']);
 
+        $successMessage = 'Sort mis à jour avec succès.';
+
+        if ($redirectAfter === 'stay') {
+            return back()->with('success', $successMessage);
+        }
+
         if ($redirectAfter === 'index') {
             return redirect()->route('entities.spells.index')
-                ->with('success', 'Sort mis à jour avec succès.');
+                ->with('success', $successMessage);
         }
 
         if ($redirectAfter === 'edit') {
             return redirect()->route('entities.spells.edit', $spell)
-                ->with('success', 'Sort mis à jour avec succès.');
+                ->with('success', $successMessage);
         }
 
         return redirect()->route('entities.spells.show', $spell)
-            ->with('success', 'Sort mis à jour avec succès.');
+            ->with('success', $successMessage);
     }
 
     /**

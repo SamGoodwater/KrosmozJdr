@@ -5,6 +5,7 @@
 
 import { getByDbColumn } from "@/Composables/store/useCharacteristicsStore";
 import { hexToRgba } from "@/Utils/color/Color";
+import { resolveValueOverride } from "@/Composables/entity/useCharacteristicDisplay";
 
 /** @readonly */
 const SPELL_GROUPS = Object.freeze(["spell", "capability"]);
@@ -169,18 +170,19 @@ export function spellUsageTooltipPanelStyle(color) {
 }
 
 /**
- * Résout icône + couleur pour une colonne sort (`db_column` dans characteristic_spell).
- * Pour les booléens, passez la valeur pour appliquer `icon_false` si présent en BDD.
+ * Résout icône + couleur + subtitle pour une colonne sort (`db_column` dans characteristic_spell).
+ * Priorise les value_overrides BDD, puis fallback sur icon_false/color_false et logique dérivée.
  *
  * @param {string} dbColumn - ex. `po_editable`, `cast_per_turn`
- * @param {boolean} [booleanValue] - si défini, bascule icône true/false quand `icon_false` existe
+ * @param {boolean|number} [booleanValue] - si défini, bascule icône true/false quand `icon_false` existe
  * @returns {{
  *   source: string,
  *   color: string,
  *   hasIcon: boolean,
  *   hasDistinctFalseIcon: boolean,
  *   characteristicName: string,
- *   characteristicHelper: string
+ *   characteristicHelper: string,
+ *   characteristicSubtitle: string
  * }}
  */
 export function resolveSpellUsageCharacteristicVisual(dbColumn, booleanValue) {
@@ -193,85 +195,97 @@ export function resolveSpellUsageCharacteristicVisual(dbColumn, booleanValue) {
             hasDistinctFalseIcon: false,
             characteristicName: "",
             characteristicHelper: "",
+            characteristicSubtitle: "",
         };
     }
+
+    const vo = resolveValueOverride(def.value_overrides, booleanValue);
+    let voIcon = vo?.icon ?? null;
+    let voColor = vo?.color ?? null;
+    const voSubtitle = vo?.subtitle ?? "";
+
     const falseIconRaw = def.icon_false;
     const falseIconStr = String(falseIconRaw ?? "").trim();
     const hasStoredFalseIcon = falseIconStr !== "";
-    let hasDistinctFalseIcon = hasStoredFalseIcon;
-    let icon = def.icon;
+    let hasDistinctFalseIcon = hasStoredFalseIcon || voIcon != null;
+    let icon = voIcon ?? def.icon;
 
-    if (dbColumn === "is_magic" && typeof booleanValue === "boolean" && booleanValue === false) {
-        const falseIsSpellPhysic = /spellphysic/i.test(falseIconStr);
-        if (hasStoredFalseIcon && falseIsSpellPhysic) {
-            icon = falseIconStr;
-        } else {
-            icon = deriveSpellPhysicIconPath(def.icon);
-            hasDistinctFalseIcon = true;
+    if (voIcon == null) {
+        if (dbColumn === "is_magic" && typeof booleanValue === "boolean" && booleanValue === false) {
+            const falseIsSpellPhysic = /spellphysic/i.test(falseIconStr);
+            if (hasStoredFalseIcon && falseIsSpellPhysic) {
+                icon = falseIconStr;
+            } else {
+                icon = deriveSpellPhysicIconPath(def.icon);
+                hasDistinctFalseIcon = true;
+            }
+        } else if (
+            dbColumn === "ritual_available" &&
+            typeof booleanValue === "boolean" &&
+            booleanValue === false
+        ) {
+            const falseIsNotRitual = /notritual/i.test(falseIconStr);
+            if (hasStoredFalseIcon && falseIsNotRitual) {
+                icon = falseIconStr;
+            } else {
+                icon = deriveNotRitualIconPath(def.icon);
+                hasDistinctFalseIcon = true;
+            }
+        } else if (
+            dbColumn === "sight_line" &&
+            typeof booleanValue === "boolean" &&
+            booleanValue === false
+        ) {
+            const falseIsNoSight = /nosightline/i.test(falseIconStr);
+            if (hasStoredFalseIcon && falseIsNoSight) {
+                icon = falseIconStr;
+            } else {
+                icon = deriveNoSightLineIconPath(def.icon);
+                hasDistinctFalseIcon = true;
+            }
+        } else if (
+            dbColumn === "po_editable" &&
+            typeof booleanValue === "boolean" &&
+            booleanValue === false
+        ) {
+            const falseIsNoPo = /nopoeditable/i.test(falseIconStr);
+            if (hasStoredFalseIcon && falseIsNoPo) {
+                icon = falseIconStr;
+            } else {
+                icon = deriveNoPoEditableIconPath(def.icon);
+                hasDistinctFalseIcon = true;
+            }
+        } else if (typeof booleanValue === "boolean" && hasStoredFalseIcon) {
+            icon = booleanValue ? def.icon : def.icon_false;
         }
-    } else if (
-        dbColumn === "ritual_available" &&
-        typeof booleanValue === "boolean" &&
-        booleanValue === false
-    ) {
-        const falseIsNotRitual = /notritual/i.test(falseIconStr);
-        if (hasStoredFalseIcon && falseIsNotRitual) {
-            icon = falseIconStr;
-        } else {
-            icon = deriveNotRitualIconPath(def.icon);
-            hasDistinctFalseIcon = true;
-        }
-    } else if (
-        dbColumn === "sight_line" &&
-        typeof booleanValue === "boolean" &&
-        booleanValue === false
-    ) {
-        const falseIsNoSight = /nosightline/i.test(falseIconStr);
-        if (hasStoredFalseIcon && falseIsNoSight) {
-            icon = falseIconStr;
-        } else {
-            icon = deriveNoSightLineIconPath(def.icon);
-            hasDistinctFalseIcon = true;
-        }
-    } else if (
-        dbColumn === "po_editable" &&
-        typeof booleanValue === "boolean" &&
-        booleanValue === false
-    ) {
-        const falseIsNoPo = /nopoeditable/i.test(falseIconStr);
-        if (hasStoredFalseIcon && falseIsNoPo) {
-            icon = falseIconStr;
-        } else {
-            icon = deriveNoPoEditableIconPath(def.icon);
-            hasDistinctFalseIcon = true;
-        }
-    } else if (typeof booleanValue === "boolean" && hasStoredFalseIcon) {
-        icon = booleanValue ? def.icon : def.icon_false;
     }
 
-    let color = def.color ?? "";
-    const colorFalseRaw = def.color_false;
-    const colorFalseHex =
-        typeof colorFalseRaw === "string" && colorFalseRaw.trim().startsWith("#")
-            ? colorFalseRaw.trim()
-            : "";
-    if (typeof booleanValue === "boolean" && booleanValue === false && colorFalseHex) {
-        color = colorFalseHex;
-    } else if (
-        dbColumn === "is_magic" &&
-        typeof booleanValue === "boolean" &&
-        booleanValue === false &&
-        !colorFalseHex
-    ) {
-        color = "#ff8a65";
-    } else if (
-        dbColumn === "ritual_available" &&
-        typeof booleanValue === "boolean" &&
-        booleanValue === false &&
-        !colorFalseHex
-    ) {
-        color = "#78909c";
+    let color = voColor ?? def.color ?? "";
+    if (voColor == null) {
+        const colorFalseRaw = def.color_false;
+        const colorFalseHex =
+            typeof colorFalseRaw === "string" && colorFalseRaw.trim().startsWith("#")
+                ? colorFalseRaw.trim()
+                : "";
+        if (typeof booleanValue === "boolean" && booleanValue === false && colorFalseHex) {
+            color = colorFalseHex;
+        } else if (
+            dbColumn === "is_magic" &&
+            typeof booleanValue === "boolean" &&
+            booleanValue === false &&
+            !colorFalseHex
+        ) {
+            color = "#79726d";
+        } else if (
+            dbColumn === "ritual_available" &&
+            typeof booleanValue === "boolean" &&
+            booleanValue === false &&
+            !colorFalseHex
+        ) {
+            color = "#78909c";
+        }
     }
+
     const source = typeof icon === "string" ? icon.trim() : "";
     const helperRaw =
         typeof def.helper === "string" && def.helper.trim() !== ""
@@ -286,5 +300,6 @@ export function resolveSpellUsageCharacteristicVisual(dbColumn, booleanValue) {
         hasDistinctFalseIcon,
         characteristicName: typeof def.name === "string" ? def.name : "",
         characteristicHelper: helperRaw,
+        characteristicSubtitle: voSubtitle,
     };
 }

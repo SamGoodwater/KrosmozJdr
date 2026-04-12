@@ -26,7 +26,6 @@ import { computed, ref } from 'vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import TextareaField from '@/Pages/Molecules/data-input/TextareaField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
-import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vue';
 import FileField from '@/Pages/Molecules/data-input/FileField.vue';
 import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue';
 import LevelBadge from '@/Pages/Molecules/data-display/LevelBadge.vue';
@@ -255,7 +254,7 @@ const handleFileUpdate = async (v) => {
 
         <!-- Select -->
         <SelectField
-            v-else-if="isSelectField && !fieldConfig?.searchable"
+            v-else-if="isSelectField"
             v-model="localValue"
             :label="fieldConfig?.label"
             :options="fieldConfig?.options || []"
@@ -264,20 +263,7 @@ const handleFileUpdate = async (v) => {
             :disabled="disabled || fieldConfig?.disabled"
             :validation="error ? { state: 'error', message: error } : null"
             :size="size"
-            variant="glass"
-        />
-
-        <!-- Select avec recherche -->
-        <SelectSearchField
-            v-else-if="isSelectField && fieldConfig?.searchable"
-            v-model="localValue"
-            :label="fieldConfig?.label"
-            :options="fieldConfig?.options || []"
-            :placeholder="fieldConfig?.placeholder"
-            :required="fieldConfig?.required"
-            :disabled="disabled || fieldConfig?.disabled"
-            :validation="error ? { state: 'error', message: error } : null"
-            :size="size"
+            :searchable="Boolean(fieldConfig?.searchable)"
         />
 
         <!-- Checkbox -->

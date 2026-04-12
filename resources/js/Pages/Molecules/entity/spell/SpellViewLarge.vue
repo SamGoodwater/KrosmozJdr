@@ -27,8 +27,8 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getSpellFieldDescriptors } from '@/Entities/spell/spell-descriptors';
-import { getByCharacteristicKey, getByDbColumn } from '@/Composables/store/useCharacteristicsStore';
-import { getCharacteristicColorStyle } from '@/Composables/entity/useCharacteristicDisplay';
+import { getByCharacteristicKey } from '@/Composables/store/useCharacteristicsStore';
+import { getCharacteristicColorStyle, resolveDef } from '@/Composables/entity/useCharacteristicDisplay';
 import { resolveSpellCharacteristicKey } from '@/Composables/entity/useSpellAbilityCharacteristic';
 import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
 import { PROPERTY_DISPLAY_MODES } from '@/Utils/Entity/Constants';
@@ -182,7 +182,9 @@ const asTextCell = (cell) => {
     };
 };
 
-const magicMeta = computed(() => getByCharacteristicKey('spell', 'is_magic_spell'));
+const magicDef = computed(() =>
+    resolveDef('is_magic_spell', props.spell?.isMagic, { sourceGroups: ['spell'] }),
+);
 
 const effectsDefinitions = computed(() =>
     Array.isArray(props.spell?.effectsDefinitions) ? props.spell.effectsDefinitions : [],
@@ -208,19 +210,30 @@ const saveCharDef = computed(() => {
     return k ? getByCharacteristicKey('spell', k) : null;
 });
 
-const poEditableMeta = computed(() => getByDbColumn('spell', 'po_editable'));
+const poEditableDef = computed(() => {
+    const val = props.spell?._data?.po_editable ?? props.spell?.poEditable;
+    return resolveDef('range_editable_spell', val, { sourceGroups: ['spell'] });
+});
 
-const ritualMeta = computed(() => getByDbColumn('spell', 'ritual_available'));
+const ritualDef = computed(() =>
+    resolveDef('ritual_available_spell', props.spell?.isRitual, { sourceGroups: ['spell'] }),
+);
 
 const showRitualBadge = computed(() => props.spell?.isRitual === true);
 
 const ritualTooltipText = computed(() => {
-    const m = ritualMeta.value;
-    const t = m?.helper || (Array.isArray(m?.descriptions) ? m.descriptions.join(' ') : m?.descriptions) || '';
+    const d = ritualDef.value;
+    if (d?._resolvedSubtitle) return d._resolvedSubtitle;
+    const t = d?.helper || (Array.isArray(d?.descriptions) ? d.descriptions.join(' ') : d?.descriptions) || '';
     return t || 'Ce sort peut être lancé comme un rituel (incantation prolongée).';
 });
 
-const reactionMeta = computed(() => getByDbColumn('spell', 'allows_reaction'));
+const reactionDef = computed(() => {
+    const val = typeof props.spell?.allowsReaction === 'boolean'
+        ? props.spell.allowsReaction
+        : Boolean(props.spell?._data?.allows_reaction);
+    return resolveDef('allows_reaction_spell', val, { sourceGroups: ['spell'] });
+});
 
 const showReactionBadge = computed(() => {
     const s = props.spell;
@@ -232,17 +245,20 @@ const showReactionBadge = computed(() => {
 
 /** Contenu structuré pour l’infobulle « réaction » (règles PA / round). */
 const reactionTooltipBlocks = computed(() => {
-    const m = reactionMeta.value;
-    const title = m?.short_name || m?.name || 'Réaction';
-    const helper = typeof m?.helper === 'string' && m.helper.trim() !== '' ? m.helper.trim() : '';
-    const descRaw = m?.descriptions;
-    const desc =
-        Array.isArray(descRaw) ? descRaw.map((p) => String(p).trim()).filter(Boolean).join(' ') : String(descRaw || '').trim();
+    const d = reactionDef.value;
+    const title = d?.short_name || d?.name || 'Réaction';
     const lines = [];
-    if (helper) {
+    if (d?._resolvedSubtitle) {
+        lines.push(d._resolvedSubtitle);
+    }
+    const helper = typeof d?.helper === 'string' && d.helper.trim() !== '' ? d.helper.trim() : '';
+    if (helper && helper !== d?._resolvedSubtitle) {
         lines.push(helper);
     }
-    if (desc && desc !== helper) {
+    const descRaw = d?.descriptions;
+    const desc =
+        Array.isArray(descRaw) ? descRaw.map((p) => String(p).trim()).filter(Boolean).join(' ') : String(descRaw || '').trim();
+    if (desc && desc !== helper && desc !== d?._resolvedSubtitle) {
         lines.push(desc);
     }
     if (lines.length === 0) {
@@ -267,10 +283,12 @@ function characteristicTooltipText(meta) {
 const usageFieldKeys = Object.freeze([
     'pa',
     'po_range',
+    'duration',
     'cast_per_turn',
     'cast_per_target',
     'sight_line',
     'number_between_two_cast',
+    'po_editable',
 ]);
 
 const handleAction = async (actionKey) => {
@@ -380,45 +398,35 @@ const handleAction = async (actionKey) => {
 
                 <div class="mt-4 flex flex-wrap items-center gap-4">
                     <Tooltip
-                        v-if="spell.isMagic === true && magicMeta"
-                        :content="characteristicTooltipText(magicMeta) || 'Sort magique : résolution fréquemment par sauvegarde.'"
+                        v-if="typeof spell.isMagic === 'boolean' && magicDef"
+                        :content="magicDef._resolvedSubtitle || characteristicTooltipText(magicDef) || 'Orientation du sort.'"
                         placement="top"
                     >
                         <span
                             class="inline-flex items-center gap-2 text-sm font-medium cursor-default"
-                            :style="magicMeta.color ? getCharacteristicColorStyle(magicMeta.color) : undefined"
+                            :style="(magicDef._resolvedColor || magicDef.color) ? getCharacteristicColorStyle(magicDef._resolvedColor || magicDef.color) : undefined"
                         >
                             <Icon
-                                v-if="magicMeta.icon"
-                                :source="magicMeta.icon"
-                                :alt="magicMeta.short_name || 'Magique'"
+                                v-if="magicDef._resolvedIcon || magicDef.icon"
+                                :source="magicDef._resolvedIcon || magicDef.icon"
+                                :alt="spell.isMagic ? 'Wakfu' : 'Physique'"
                                 size="sm"
                             />
-                            <span>{{ magicMeta.short_name || magicMeta.name || 'Magique' }}</span>
-                        </span>
-                    </Tooltip>
-                    <Tooltip
-                        v-else-if="spell.isMagic === false"
-                        content="Sort physique : résolution fréquemment par jet d’attaque (touche vs CA)."
-                        placement="top"
-                    >
-                        <span class="inline-flex items-center gap-2 text-sm font-medium text-primary-200 cursor-default">
-                            <Icon source="fa-solid fa-hand-fist" alt="Physique" size="sm" />
-                            <span>Physique</span>
+                            <span>{{ spell.isMagic ? (magicDef.short_name || 'Wakfu') : 'Physique' }}</span>
                         </span>
                     </Tooltip>
 
                     <Tooltip v-if="showRitualBadge" :content="ritualTooltipText" placement="top">
                         <span
                             class="inline-flex items-center gap-2 text-sm cursor-default"
-                            :style="ritualMeta?.color ? getCharacteristicColorStyle(ritualMeta.color) : undefined"
+                            :style="(ritualDef?._resolvedColor || ritualDef?.color) ? getCharacteristicColorStyle(ritualDef._resolvedColor || ritualDef.color) : undefined"
                         >
                             <Icon
-                                :source="ritualMeta?.icon || 'fa-solid fa-book-open'"
-                                :alt="ritualMeta?.short_name || 'Rituel'"
+                                :source="ritualDef?._resolvedIcon || ritualDef?.icon || 'fa-solid fa-book-open'"
+                                :alt="ritualDef?.short_name || 'Rituel'"
                                 size="sm"
                             />
-                            <span>{{ ritualMeta?.short_name || ritualMeta?.name || 'Rituel' }}</span>
+                            <span>{{ ritualDef?.short_name || ritualDef?.name || 'Rituel' }}</span>
                         </span>
                     </Tooltip>
 
@@ -433,16 +441,17 @@ const handleAction = async (actionKey) => {
                         </template>
                         <span
                             class="inline-flex items-center gap-2 text-sm font-medium cursor-default"
-                            :style="reactionMeta?.color ? getCharacteristicColorStyle(reactionMeta.color) : undefined"
+                            :style="(reactionDef?._resolvedColor || reactionDef?.color) ? getCharacteristicColorStyle(reactionDef._resolvedColor || reactionDef.color) : undefined"
                         >
                             <Icon
-                                :source="reactionMeta?.icon || 'icons/caracteristics/is_reaction.webp'"
-                                :alt="reactionMeta?.short_name || 'Réaction'"
+                                :source="reactionDef?._resolvedIcon || reactionDef?.icon || 'icons/caracteristics/is_reaction.webp'"
+                                :alt="reactionDef?.short_name || 'Réaction'"
                                 size="sm"
                             />
-                            <span>{{ reactionMeta?.short_name || reactionMeta?.name || 'Réaction' }}</span>
+                            <span>{{ reactionDef?.short_name || reactionDef?.name || 'Réaction' }}</span>
                         </span>
                     </Tooltip>
+
                 </div>
             </template>
 
@@ -487,7 +496,7 @@ const handleAction = async (actionKey) => {
                     />
                 </div>
 
-                <div v-if="poEditableMeta" class="p-3 bg-base-200 entity-radius-box min-w-0">
+                <div v-if="poEditableDef" class="p-3 bg-base-200 entity-radius-box min-w-0">
                     <EntityPropertyDisplay
                         field-key="po_editable"
                         :entity="spell"

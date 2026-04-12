@@ -24,6 +24,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $conversion_function Identifiant d'une fonction de conversion enregistrée
  * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
  * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
+ * @property array|null $norms_grid Grille 5×20 : {power_level: [val_lvl1..val_lvl20]}
+ * @property array|null $norms_conditions Conditions de lecture
+ * @property string|null $norms_description Description libre de la norme
  * @property array|null $value_available
  */
 class CharacteristicSpell extends Model
@@ -54,6 +57,9 @@ class CharacteristicSpell extends Model
         'conversion_dofus_sample',
         'conversion_krosmoz_sample',
         'conversion_sample_rows',
+        'norms_grid',
+        'norms_conditions',
+        'norms_description',
         'value_available',
     ];
 
@@ -63,6 +69,8 @@ class CharacteristicSpell extends Model
         'conversion_dofus_sample' => 'array',
         'conversion_krosmoz_sample' => 'array',
         'conversion_sample_rows' => 'array',
+        'norms_grid' => 'array',
+        'norms_conditions' => 'array',
         'value_available' => 'array',
     ];
 

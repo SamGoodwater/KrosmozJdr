@@ -493,6 +493,7 @@ onMounted(async () => {
                 v-model="queryFilter"
                 :label="String(mode) === 'decision' ? 'Filtre statut' : 'Filtre état'"
                 :options="filterOptions"
+                :searchable="false"
             />
             <div class="space-y-1">
                 <SelectField
@@ -501,6 +502,7 @@ onMounted(async () => {
                     :options="bulkOptions"
                     :disabled="!isAdmin || selectedCount === 0"
                     placeholder="Choisir…"
+                    :searchable="false"
                 />
                 <div class="flex items-center justify-between gap-2">
                     <div class="text-xs text-primary-300">
@@ -518,6 +520,7 @@ onMounted(async () => {
                     :options="moveTargetOptions"
                     :disabled="!isAdmin || selectedCount === 0"
                     placeholder="Déplacer vers…"
+                    :searchable="false"
                 />
                 <Btn
                     size="sm"

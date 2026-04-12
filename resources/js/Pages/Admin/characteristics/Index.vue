@@ -16,6 +16,7 @@ import FormulaOrTableField from '@/Pages/Molecules/data-input/FormulaOrTableFiel
 import FormulaOrTableFieldWithChart from '@/Pages/Organismes/data-input/FormulaOrTableFieldWithChart.vue';
 import ConversionChartBlock from '@/Pages/Admin/characteristics/ConversionChartBlock.vue';
 import MappingPanel from '@/Pages/Admin/characteristics/MappingPanel.vue';
+import NormsPanel from '@/Pages/Admin/characteristics/NormsPanel.vue';
 import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import axios from 'axios';
 
@@ -262,6 +263,7 @@ function buildFormData(selected, entitiesByGroup = null) {
             type: 'int',
             unit: '',
             sort_order: 0,
+            value_overrides: [],
             entities: [],
             conversion_formulas: defaultConversionFormulasForGroup(entitiesByGroup ?? {}, 'creature'),
         };
@@ -288,6 +290,7 @@ function buildFormData(selected, entitiesByGroup = null) {
         type: selected.type ?? 'int',
         unit: selected.unit ?? '',
         sort_order: selected.sort_order ?? 0,
+        value_overrides: Array.isArray(selected.value_overrides) ? selected.value_overrides.map((o) => ({ ...o })) : [],
         entities: entitiesForGroup.map((e) => ({
             entity: e.entity,
             db_column: e.db_column ?? '',
@@ -305,6 +308,9 @@ function buildFormData(selected, entitiesByGroup = null) {
             conversion_dofus_sample: e.conversion_dofus_sample ?? null,
             conversion_krosmoz_sample: e.conversion_krosmoz_sample ?? null,
             conversion_sample_rows: (e.conversion_sample_rows && e.conversion_sample_rows.length) ? e.conversion_sample_rows : getDefaultConversionSampleRows(),
+            norms_grid: e.norms_grid || null,
+            norms_conditions: e.norms_conditions || [],
+            norms_description: e.norms_description || '',
         })),
         conversion_formulas: conversionFormulas,
     };
@@ -327,6 +333,7 @@ watch(
         form.type = data.type;
         form.unit = data.unit;
         form.sort_order = data.sort_order;
+        form.value_overrides = data.value_overrides;
         form.entities = data.entities;
         form.conversion_formulas = data.conversion_formulas;
         // Réhydrater les panneaux « spécifique entité » à partir des clés renvoyées par le serveur (ex. après enregistrement)
@@ -364,6 +371,9 @@ function addEntityOverride(entityKey) {
             conversion_dofus_sample: null,
             conversion_krosmoz_sample: null,
             conversion_sample_rows: getDefaultConversionSampleRows(),
+            norms_grid: null,
+            norms_conditions: [],
+            norms_description: '',
         };
         form.entities = [...(form.entities ?? []), defaultRow];
     }
@@ -456,6 +466,7 @@ watch(
             form.type = src.type ?? 'int';
             form.unit = src.unit ?? '';
             form.sort_order = src.sort_order ?? 0;
+            form.value_overrides = Array.isArray(src.value_overrides) ? src.value_overrides.map((o) => ({ ...o })) : [];
             form.key = (src.key ?? '').replace(/_creature$|_object$|_spell$/, '') || '';
             if (Array.isArray(src.entities) && src.entities.length) {
                 form.entities = src.entities.map((e) => ({
@@ -555,6 +566,16 @@ const groupLabels = {
     object: 'Objet (équipement, consommable, ressource, panoplie)',
     spell: 'Sort',
 };
+
+/** Liste plate de toutes les caractéristiques (pour le select des conditions de normes). */
+const allCharacteristicsFlat = computed(() => {
+    const groups = props.characteristicsByGroup ?? {};
+    return Object.values(groups).flat().map((c) => ({
+        id: c.id,
+        key: c.id,
+        name: c.name ?? c.id,
+    }));
+});
 
 /** Ligne entity (défaut groupe) pour le panneau Général. */
 function generalEntityRow() {
@@ -717,6 +738,7 @@ function submit() {
         type: form.type,
         unit: form.unit,
         sort_order: form.sort_order,
+        value_overrides: (form.value_overrides ?? []).filter((o) => o.value !== '' && o.value !== undefined),
         entities: entitiesToSend,
         entity_override_keys: selectedEntityOverrides.value,
     }, {
@@ -1242,6 +1264,126 @@ function submitConvertToLinked() {
                         </div>
                     </div>
 
+                    <!-- Panneau — Surcharges visuelles par valeur -->
+                    <section class="space-y-4">
+                        <h2 class="text-xl font-semibold text-base-content border-b border-base-300 pb-2">Surcharges visuelles par valeur</h2>
+                        <div class="space-y-4 pt-2">
+                            <div
+                                v-for="(ov, idx) in form.value_overrides"
+                                :key="idx"
+                                class="card shadow border border-base-200 border-glass-sm relative overflow-hidden"
+                            >
+                                <div class="card-body bg-base-200 rounded-box">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="card-title text-base">
+                                            Surcharge #{{ idx + 1 }}
+                                            <span v-if="ov.value !== '' && ov.value !== undefined" class="badge badge-sm badge-outline font-mono">{{ String(ov.value) }}</span>
+                                        </h3>
+                                        <Tooltip content="Supprimer cette surcharge" placement="left">
+                                            <Btn size="xs" variant="ghost" class="text-error" @click="form.value_overrides.splice(idx, 1)">
+                                                <i class="fa-solid fa-trash-can" />
+                                            </Btn>
+                                        </Tooltip>
+                                    </div>
+                                    <p class="text-sm text-base-content/70">Quand la caractéristique vaut cette valeur, l'icône, la couleur et le sous-texte ci-dessous remplacent les valeurs par défaut.</p>
+
+                                    <div class="grid gap-4 sm:grid-cols-2 pt-2">
+                                        <!-- Valeur déclencheuse -->
+                                        <div>
+                                            <InputField
+                                                :model-value="ov.value === true ? 'true' : ov.value === false ? 'false' : String(ov.value ?? '')"
+                                                @update:model-value="(v) => {
+                                                    if (v === 'true') ov.value = true;
+                                                    else if (v === 'false') ov.value = false;
+                                                    else if (/^-?\d+$/.test(String(v))) ov.value = Number(v);
+                                                    else ov.value = v;
+                                                }"
+                                                label="Valeur déclencheuse"
+                                                placeholder="true / false / 0 / 1 / fire…"
+                                                helper="La valeur qui active cette surcharge."
+                                            />
+                                        </div>
+                                        <!-- Sous-texte -->
+                                        <div>
+                                            <InputField
+                                                v-model="ov.subtitle"
+                                                label="Sous-texte"
+                                                placeholder="Texte contextuel pour cette valeur…"
+                                                helper="Affiché en italique dans les tooltips à la place de la description."
+                                            />
+                                        </div>
+                                        <!-- Icône -->
+                                        <div>
+                                            <label class="label"><span class="label-text">Icône</span></label>
+                                            <div class="flex items-center gap-2">
+                                                <div
+                                                    v-if="ov.icon"
+                                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-base-300 bg-base-100"
+                                                >
+                                                    <img
+                                                        :src="`/storage/images/${ov.icon.includes('/') ? ov.icon : 'icons/caracteristics/' + ov.icon}`"
+                                                        :alt="ov.icon"
+                                                        class="h-6 w-6 object-contain"
+                                                        @error="(e) => e.target.style.display = 'none'"
+                                                    />
+                                                </div>
+                                                <input
+                                                    v-model="ov.icon"
+                                                    type="text"
+                                                    class="input input-bordered input-sm flex-1 font-mono"
+                                                    placeholder="cac.webp ou fa-icon"
+                                                />
+                                            </div>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                class="file-input file-input-bordered file-input-xs w-full max-w-xs mt-1.5"
+                                                @change="(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) ov.icon = file.name;
+                                                    e.target.value = '';
+                                                }"
+                                            />
+                                            <p class="mt-1 text-xs text-base-content/60">Nom du fichier dans <code class="rounded bg-base-300 px-1">caracteristics/</code> ou préfixe <code class="rounded bg-base-300 px-1">fa-</code> pour Font Awesome.</p>
+                                        </div>
+                                        <!-- Couleur -->
+                                        <div>
+                                            <label class="label"><span class="label-text">Couleur</span></label>
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <input
+                                                    v-model="ov.color"
+                                                    type="text"
+                                                    class="input input-bordered input-sm w-28 font-mono"
+                                                    placeholder="#e53935"
+                                                    maxlength="7"
+                                                />
+                                                <ColorCore
+                                                    :model-value="colorForPicker(ov.color)"
+                                                    @update:model-value="ov.color = $event"
+                                                />
+                                                <div
+                                                    v-if="ov.color && /^#([0-9A-Fa-f]{3}){1,2}$/.test(ov.color)"
+                                                    class="h-6 w-6 rounded-full border border-base-300"
+                                                    :style="{ backgroundColor: ov.color }"
+                                                />
+                                            </div>
+                                            <p class="mt-1 text-xs text-base-content/60">Code hexadécimal. Laissez vide pour garder la couleur par défaut.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- État vide -->
+                            <div v-if="!form.value_overrides?.length" class="rounded-box border border-dashed border-base-300 bg-base-200/30 px-6 py-8 text-center">
+                                <i class="fa-solid fa-layer-group mb-2 text-2xl text-base-content/30" />
+                                <p class="text-sm text-base-content/50">Aucune surcharge définie. Les valeurs par défaut (icône, couleur) seront utilisées pour toutes les valeurs.</p>
+                            </div>
+                        </div>
+                        <Btn size="sm" variant="outline" @click="form.value_overrides.push({ value: '', icon: '', color: '', subtitle: '' })">
+                            <i class="fa-solid fa-plus mr-1" /> Ajouter une surcharge
+                        </Btn>
+                    </section>
+
                     <!-- Panneau 1 — Limite et valeur (défaut, min, max : expressions dynamiques) -->
                     <section class="space-y-4" v-if="generalEntityRow()">
                         <h2 class="text-xl font-semibold text-base-content border-b border-base-300 pb-2">Panneau 1 — Limite et valeur</h2>
@@ -1537,6 +1679,23 @@ function submitConvertToLinked() {
                     </div>
                     </section>
 
+                    <!-- Panneau Normes (Général / *) -->
+                    <section v-if="generalEntityRow()" class="card shadow border border-base-200 mt-4 border-glass-sm">
+                        <div class="card-body bg-base-100 rounded-box">
+                            <div class="collapse collapse-arrow bg-base-200/30">
+                                <input type="checkbox" />
+                                <div class="collapse-title text-sm font-semibold">Normes (Charte) — Général</div>
+                                <div class="collapse-content">
+                                    <NormsPanel
+                                        :model-value="generalEntityRow()"
+                                        :characteristics-list="allCharacteristicsFlat"
+                                        @update:model-value="Object.assign(generalEntityRow(), $event)"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- Panneau 3 — Mapping (lien DofusDB ↔ Krosmoz, unique par entité) -->
                     <MappingPanel
                         :scrapping-mappings-using-this="scrappingMappingsUsingThis ?? []"
@@ -1748,6 +1907,18 @@ function submitConvertToLinked() {
                                             <button type="button" class="btn btn-sm btn-ghost mt-2" @click="addConversionSampleRow(entityKey)">+ Ajouter une ligne</button>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <!-- Normes (entité spécifique) -->
+                            <div class="collapse collapse-arrow bg-base-200/30 mt-2">
+                                <input type="checkbox" />
+                                <div class="collapse-title text-sm font-semibold">Normes (Charte) — {{ entityLabels[entityKey] || entityKey }}</div>
+                                <div class="collapse-content">
+                                    <NormsPanel
+                                        :model-value="entityRow(entityKey)"
+                                        :characteristics-list="allCharacteristicsFlat"
+                                        @update:model-value="Object.assign(entityRow(entityKey), $event)"
+                                    />
                                 </div>
                             </div>
                         </div>

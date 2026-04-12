@@ -290,6 +290,7 @@ function onLimitBlur() {
       label="Preset de filtres"
       helper="Presets enregistrés pour cette table"
       :options="presetOptions"
+      :searchable="false"
       @update:model-value="applySelectedPreset"
     />
     <p v-if="currentTableId" class="text-xs text-base-content/60">
@@ -308,6 +309,7 @@ function onLimitBlur() {
       label="Type d'entité"
       helper="Table d'entités à afficher"
       :options="entityOptions"
+      :searchable="false"
       @update:model-value="persist"
     />
     <TextareaField

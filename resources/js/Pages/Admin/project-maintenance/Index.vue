@@ -8,7 +8,7 @@ import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
+import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
 const { setPageTitle } = usePageTitle();
@@ -194,7 +194,7 @@ const langOptions = [
                 <section class="rounded-box border border-base-300 bg-base-200/40 p-4">
                     <h2 class="font-medium text-base-content">Options</h2>
                     <div class="mt-3 max-w-xs">
-                        <SelectFieldNative v-model="form.lang" label="Langue DofusDB (catalogue)" :options="langOptions" />
+                        <SelectField v-model="form.lang" label="Langue DofusDB (catalogue)" :options="langOptions" :searchable="false" />
                     </div>
                     <div class="mt-4 grid gap-2 sm:grid-cols-2">
                         <label class="flex cursor-pointer items-center gap-2 text-sm">

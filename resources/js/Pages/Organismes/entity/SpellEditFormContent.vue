@@ -33,7 +33,7 @@ const props = defineProps({
     embeddedInModal: { type: Boolean, default: false },
     /**
      * Redirection après PATCH réussi : `edit` = rester sur l’éditeur (page fiche) ; `index` = liste (modal).
-     * @type {"index"|"show"|"edit"|null}
+     * @type {"stay"|"index"|"show"|"edit"|null}
      */
     redirectAfterUpdate: { type: String, default: "edit" },
 });
@@ -171,6 +171,7 @@ function confirmDelete() {
                 :spell-effect-groups="spellEffectGroups"
                 :entity-type="effectEntityType"
                 :entity-id="spellModel.id"
+                :embedded-in-modal="embeddedInModal"
             />
         </div>
     </div>

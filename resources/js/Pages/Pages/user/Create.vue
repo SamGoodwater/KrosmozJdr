@@ -62,6 +62,7 @@ const submit = () => {
                     label="Niveau d'accès"
                     :options="roleOptions"
                     :validation="form.errors.role ? { state: 'error', message: form.errors.role } : null"
+                    :searchable="false"
                 />
                 <div class="md:col-span-2 alert alert-info alert-soft">
                     Le rôle super administrateur ne peut pas être attribué depuis cet écran.

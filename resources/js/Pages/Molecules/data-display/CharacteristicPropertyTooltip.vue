@@ -30,6 +30,7 @@ defineProps({
             </div>
         </div>
 
+        <p v-if="model.subtitle" class="text-xs italic text-white/80">{{ model.subtitle }}</p>
         <p v-if="model.helper" class="text-xs text-white/75">{{ model.helper }}</p>
         <p v-if="model.descriptions && model.descriptions !== model.helper" class="text-xs text-white/65">
             {{ model.descriptions }}

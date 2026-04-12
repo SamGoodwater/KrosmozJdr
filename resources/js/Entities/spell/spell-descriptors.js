@@ -354,11 +354,189 @@ export function getSpellFieldDescriptors(ctx = {}) {
         },
       },
     },
+    cast_per_turn: {
+      key: "cast_per_turn",
+      label: "Lancers / tour",
+      icon: "fa-solid fa-repeat",
+      table: {
+        order: 160,
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    cast_per_target: {
+      key: "cast_per_target",
+      label: "Lancers / cible",
+      icon: "fa-solid fa-bullseye",
+      table: {
+        order: 161,
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    number_between_two_cast: {
+      key: "number_between_two_cast",
+      label: "Délai relance",
+      icon: "fa-solid fa-clock-rotate-left",
+      table: {
+        order: 162,
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    duration: {
+      key: "duration",
+      label: "Durée",
+      icon: "fa-solid fa-hourglass",
+      table: {
+        order: 163,
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          placeholder: "Ex : instantané, 1 tour, 3 tours, concentration",
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    sight_line: {
+      key: "sight_line",
+      label: "Ligne de vue",
+      icon: "fa-solid fa-eye",
+      table: {
+        order: 164,
+        sortable: true,
+        filterable: { id: "sight_line", type: "boolean", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
+        },
+      },
+    },
+    po_editable: {
+      key: "po_editable",
+      label: "PO modifiable",
+      icon: "fa-solid fa-arrows-left-right",
+      table: {
+        order: 165,
+        sortable: true,
+        filterable: { id: "po_editable", type: "boolean", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
+        },
+      },
+    },
     casting_time: {
       key: "casting_time",
       label: "Temps d'incantation",
       icon: "fa-solid fa-hourglass-half",
       table: {
+        order: 166,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -647,7 +825,6 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-eye",
       table: {
         sortable: false,
-        filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -678,7 +855,6 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-pen-to-square",
       table: {
         sortable: false,
-        filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -737,7 +913,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-tags",
       table: {
         sortable: true,
-        filterable: { id: "types", type: "multi", defaultVisible: false },
+        filterable: { id: "types", type: "multi", defaultVisible: true },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -898,7 +1074,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       id: "spells.index",
       entityType: "spell",
       quickEdit: {
-        enabled: true,
+        enabled: false,
         permission: "updateAny",
       },
       actions: {

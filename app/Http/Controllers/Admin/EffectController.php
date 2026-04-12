@@ -12,6 +12,7 @@ use App\Models\EffectDegree;
 use App\Services\Effect\EffectGroupEditorDataService;
 use App\Services\Effect\EffectGroupUpdateService;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -123,12 +124,18 @@ class EffectController extends Controller
         ]);
     }
 
-    public function updateGroup(UpdateEffectGroupRequest $request, Effect $effect): RedirectResponse
+    public function updateGroup(UpdateEffectGroupRequest $request, Effect $effect): JsonResponse|RedirectResponse
     {
         $this->effectGroupUpdate->updateGroup($effect, $request->validated());
 
-        return redirect()->route('admin.effects.show', $effect)
-            ->with('success', 'Groupe d’effets enregistré.');
+        $message = 'Groupe d’effets enregistré.';
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => $message]);
+        }
+
+        return back(fallback: route('admin.effects.show', $effect))
+            ->with('success', $message);
     }
 
     public function destroy(Effect $effect): RedirectResponse

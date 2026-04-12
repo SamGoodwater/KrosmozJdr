@@ -713,7 +713,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       id: "capabilities.index",
       entityType: "capability",
       quickEdit: {
-        enabled: true,
+        enabled: false,
         permission: "updateAny",
       },
       actions: {

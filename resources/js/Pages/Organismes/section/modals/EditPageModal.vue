@@ -328,6 +328,7 @@ const handleClose = () => {
                         :options="roleOptions"
                         required
                         helper="Qui peut voir cette page ?"
+                        :searchable="false"
                     />
                 </div>
 
@@ -338,6 +339,7 @@ const handleClose = () => {
                         :options="roleOptions"
                         required
                         helper="Rôle minimum requis pour modifier cette page (admin par défaut)"
+                        :searchable="false"
                     />
                 </div>
 
@@ -348,6 +350,7 @@ const handleClose = () => {
                         :options="stateOptions"
                         required
                         helper="Cycle de vie de la page"
+                        :searchable="false"
                     />
                 </div>
 

@@ -16,6 +16,11 @@ class SpellCharacteristicSeeder extends CharacteristicGroupSeeder
         return 'database/seeders/data/characteristic_spell.php';
     }
 
+    protected function normsDataPath(): ?string
+    {
+        return 'database/seeders/data/characteristic_spell_norms.php';
+    }
+
     protected function defaultEntity(): string
     {
         return 'spell';
@@ -30,7 +35,7 @@ class SpellCharacteristicSeeder extends CharacteristicGroupSeeder
     }
 
     /**
-     * @param array<string, mixed> $row
+     * @param  array<string, mixed>  $row
      * @return array<string, mixed>
      */
     protected function mapRowToAttributes(array $row): array

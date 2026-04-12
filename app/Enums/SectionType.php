@@ -4,9 +4,9 @@ namespace App\Enums;
 
 /**
  * Enum pour les types de sections disponibles.
- * 
+ *
  * Chaque type correspond à un template Vue dans le frontend.
- * 
+ *
  * @method static self TEXT()
  * @method static self IMAGE()
  * @method static self GALLERY()
@@ -22,49 +22,48 @@ enum SectionType: string
     case VIDEO = 'video';
     case ENTITY_TABLE = 'entity_table';
     case LEGAL_MARKDOWN = 'legal_markdown';
+    case CHARACTERISTIC_NORMS = 'characteristic_norms';
 
     /**
      * Retourne le label traduit du type.
-     * 
-     * @return string
      */
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::TEXT => 'Texte',
             self::IMAGE => 'Image',
             self::GALLERY => 'Galerie',
             self::VIDEO => 'Vidéo',
             self::ENTITY_TABLE => 'Tableau d\'entités',
             self::LEGAL_MARKDOWN => 'Document légal (Markdown)',
+            self::CHARACTERISTIC_NORMS => 'Charte caractéristique',
         };
     }
 
     /**
      * Retourne l'icône FontAwesome associée au type.
-     * 
-     * @return string
      */
     public function icon(): string
     {
-        return match($this) {
+        return match ($this) {
             self::TEXT => 'fa-file-lines',
             self::IMAGE => 'fa-image',
             self::GALLERY => 'fa-images',
             self::VIDEO => 'fa-video',
             self::ENTITY_TABLE => 'fa-table',
             self::LEGAL_MARKDOWN => 'fa-scale-balanced',
+            self::CHARACTERISTIC_NORMS => 'fa-chart-bar',
         };
     }
 
     /**
      * Retourne la structure attendue des params pour ce type.
-     * 
+     *
      * @return array<string, mixed>
      */
     public function expectedParams(): array
     {
-        return match($this) {
+        return match ($this) {
             self::TEXT => [
                 'content' => 'string (required)',
                 'align' => 'string (optional: left|center|right)',
@@ -97,12 +96,17 @@ enum SectionType: string
                 'sourceUrl' => 'string (required, URL du fichier markdown)',
                 'title' => 'string (optional)',
             ],
+            self::CHARACTERISTIC_NORMS => [
+                'characteristic_key' => 'string (required, clé de la caractéristique)',
+                'group' => 'string (required: creature|object|spell)',
+                'entity' => 'string (optional, default: *)',
+            ],
         };
     }
 
     /**
      * Retourne tous les types possibles.
-     * 
+     *
      * @return array<string, string>
      */
     public static function toArray(): array
@@ -112,7 +116,7 @@ enum SectionType: string
 
     /**
      * Retourne tous les types avec leurs labels.
-     * 
+     *
      * @return array<string, string>
      */
     public static function toArrayWithLabels(): array
@@ -121,7 +125,7 @@ enum SectionType: string
         foreach (self::cases() as $case) {
             $result[$case->value] = $case->label();
         }
+
         return $result;
     }
 }
-
