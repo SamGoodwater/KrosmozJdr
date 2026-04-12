@@ -443,7 +443,7 @@ export function getCampaignFieldDescriptors(ctx = {}) {
       id: "campaigns.index",
       entityType: "campaign",
       quickEdit: {
-        enabled: false,
+        enabled: true,
         permission: "updateAny",
       },
       actions: {

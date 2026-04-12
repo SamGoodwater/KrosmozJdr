@@ -3,22 +3,27 @@
  * CapabilityViewMinimal — Vue Minimal pour Capability
  *
  * @description
- * Alignée sur SpellViewMinimal : EntityMinimalCard, état • image • niveau • nom • élément • PA/PO • effet.
+ * Méta alignée sur les sorts : {@link CapabilityMinimalUsageMetaRow} (PA, PO, portée modulable, incantation/rituel, durée/relance, élément & Wakfu/Physique au survol).
+ * Description générale : italique, discrète, visible surtout au survol (compact + ligne d’overlay hover/extended).
+ * Effets : bloc mis en avant ; 3 lignes puis troncature, détail complet au survol du bloc.
  *
  * @props {Capability} capability - Instance du modèle Capability
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import CapabilityMinimalUsageMetaRow from "@/Pages/Molecules/entity/capability/CapabilityMinimalUsageMetaRow.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
+import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 
 const props = defineProps({
     capability: {
@@ -31,16 +36,47 @@ const props = defineProps({
     },
     displayMode: {
         type: String,
-        default: "extended",
+        default: "hover",
         validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
     tableMeta: {
         type: Object,
         default: () => ({}),
     },
+    characteristicRuntime: { type: Object, default: null },
 });
 
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
+
 const emit = defineEmits(["edit", "view", "delete", "action"]);
+
+const permissions = usePermissions();
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can("capabilities", "viewAny"),
+        createAny: permissions.can("capabilities", "createAny"),
+        updateAny: permissions.can("capabilities", "updateAny"),
+        deleteAny: permissions.can("capabilities", "deleteAny"),
+        manageAny: permissions.can("capabilities", "manageAny"),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getCapabilityFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf ?? desc?.visibleIf;
+    if (typeof visibleIf === "function") {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch {
+            return false;
+        }
+    }
+    return true;
+};
 
 const entity = computed(() => props.capability);
 
@@ -58,17 +94,11 @@ const imageUrl = computed(() => {
     return u && String(u).trim() ? String(u) : null;
 });
 
-const cellOpts = () => ({ size: "xs", context: "minimal" });
-
-const elementCell = computed(() => entity.value?.toCell?.("element", cellOpts()) ?? null);
-const paCell = computed(() => entity.value?.toCell?.("pa", cellOpts()) ?? null);
-const poCell = computed(() => entity.value?.toCell?.("po", cellOpts()) ?? null);
-
 const effectItems = computed(() => {
     const cell = buildCharacteristicEffectCell({
         rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
         options: {},
-        sourceGroups: ["spell", "item", "panoply"],
+        sourceGroups: ["capability", "spell", "item", "panoply"],
         size: "sm",
     });
     return cell?.type === "chips" ? cell.params?.items || [] : [];
@@ -79,9 +109,35 @@ const descriptionFull = computed(() => {
     return d && String(d).trim() ? String(d) : "";
 });
 
+/** Texte d’effets (champ `effect`) : extrait pour tooltips / fallback. */
+const effectPlainText = computed(() => {
+    const raw = entity.value?.effect ?? entity.value?._data?.effect;
+    if (raw === null || raw === undefined || String(raw).trim() === "") return "";
+    const stripped = String(raw)
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    return stripped;
+});
+
+const hasEffectText = computed(() => Boolean(effectPlainText.value));
+
+/** Effets HTML sanitizés. */
+const effectHtmlSafe = computed(() => {
+    const raw = entity.value?.effect ?? entity.value?._data?.effect;
+    if (raw === null || raw === undefined || String(raw).trim() === "") return "";
+    return sanitizeHtml(String(raw));
+});
+
 const showHref = computed(() =>
     entity.value?.id ? route("entities.capabilities.show", { capability: entity.value.id }) : null
 );
+
+/**
+ * En `compact`, pas d’overlay : la description reste discrète jusqu’au survol de la carte (`group`).
+ * En `hover` / `extended`, la description est dans le panneau étendu (déjà conditionné par le mode carte).
+ */
+const showDescriptionInCompactSlot = computed(() => props.displayMode === "compact");
 
 const handleAction = async (actionKey) => {
     const capabilityId = entity.value?.id;
@@ -156,26 +212,41 @@ const handleAction = async (actionKey) => {
                                 />
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <CellRenderer
-                                v-if="elementCell?.value && elementCell.value !== '—' && elementCell.value !== '-'"
-                                :cell="elementCell"
-                                class="inline-flex items-center"
+                        <CapabilityMinimalUsageMetaRow
+                            :entity="entity"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            :can-show-field="canShowField"
+                            property-size="xs"
+                            row-class="gap-1.5 text-xs"
+                        />
+                        <p
+                            v-if="showDescriptionInCompactSlot && descriptionFull"
+                            class="text-[11px] leading-snug italic text-base-content/45 max-h-0 opacity-0 overflow-hidden transition-all duration-200 ease-out group-hover:max-h-32 group-hover:opacity-100 group-hover:mt-0.5"
+                            :title="descriptionFull"
+                        >
+                            {{ descriptionFull }}
+                        </p>
+                        <div
+                            v-if="hasEffectText"
+                            class="group/effect w-full pt-1.5 mt-1 border-t border-primary/25 bg-primary/5 rounded-md px-1.5 py-1"
+                        >
+                            <p class="text-[10px] font-semibold uppercase tracking-wide text-primary-300/95 mb-0.5">
+                                Effets
+                            </p>
+                            <!-- eslint-disable vue/no-v-html -- éditeur riche, HTML sanitizé (sanitizeHtml) -->
+                            <article
+                                v-if="effectHtmlSafe"
+                                class="prose prose-sm prose-invert max-w-none text-[11px] leading-snug text-base-content capability-minimal-effect-prose line-clamp-3 group-hover/effect:line-clamp-none"
+                                v-html="effectHtmlSafe"
                             />
-                            <Tooltip
-                                v-if="paCell?.value && paCell.value !== '—' && paCell.value !== '-'"
-                                content="PA"
-                                placement="top"
+                            <!-- eslint-enable vue/no-v-html -->
+                            <p
+                                v-else
+                                class="text-[11px] leading-snug text-base-content line-clamp-3 group-hover/effect:line-clamp-none wrap-break-word"
                             >
-                                <span class="text-base-content/80">{{ paCell.value }}</span>
-                            </Tooltip>
-                            <Tooltip
-                                v-if="poCell?.value && poCell.value !== '—' && poCell.value !== '-'"
-                                content="PO"
-                                placement="top"
-                            >
-                                <span class="text-base-content/80">{{ poCell.value }}</span>
-                            </Tooltip>
+                                {{ effectPlainText }}
+                            </p>
                         </div>
                         <div
                             v-if="effectItems.length > 0"
@@ -236,22 +307,45 @@ const handleAction = async (actionKey) => {
                                 />
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <CellRenderer
-                                v-if="elementCell?.value && elementCell.value !== '—' && elementCell.value !== '-'"
-                                :cell="elementCell"
-                                class="inline-flex items-center"
+                        <CapabilityMinimalUsageMetaRow
+                            :entity="entity"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            :can-show-field="canShowField"
+                            property-size="xs"
+                            row-class="gap-1.5 text-xs"
+                        />
+                        <p
+                            v-if="descriptionFull"
+                            :class="
+                                displayMode === 'extended'
+                                    ? 'text-[11px] leading-snug italic text-base-content/55 mt-0.5'
+                                    : 'text-[11px] leading-snug italic text-base-content/45 max-h-0 opacity-0 overflow-hidden transition-all duration-200 ease-out group-hover:max-h-40 group-hover:opacity-100'
+                            "
+                            :title="descriptionFull"
+                        >
+                            {{ descriptionFull }}
+                        </p>
+                        <div
+                            v-if="hasEffectText"
+                            class="group/effect w-full space-y-1 pt-1.5 mt-1 border-t border-primary/30 bg-primary/5 rounded-md px-1.5 py-1.5"
+                        >
+                            <p class="text-[10px] font-semibold uppercase tracking-wide text-primary-300/95">
+                                Effets
+                            </p>
+                            <!-- eslint-disable vue/no-v-html -- éditeur riche, HTML sanitizé (sanitizeHtml) -->
+                            <article
+                                v-if="effectHtmlSafe"
+                                class="prose prose-sm prose-invert max-w-none text-[11px] leading-snug text-base-content/95 capability-minimal-effect-prose line-clamp-3 group-hover/effect:line-clamp-none"
+                                v-html="effectHtmlSafe"
                             />
-                            <CellRenderer
-                                v-if="paCell?.value && paCell.value !== '—' && paCell.value !== '-'"
-                                :cell="paCell"
-                                class="inline-flex items-center"
-                            />
-                            <CellRenderer
-                                v-if="poCell?.value && poCell.value !== '—' && poCell.value !== '-'"
-                                :cell="poCell"
-                                class="inline-flex items-center"
-                            />
+                            <!-- eslint-enable vue/no-v-html -->
+                            <p
+                                v-else
+                                class="text-[11px] leading-snug text-base-content line-clamp-3 group-hover/effect:line-clamp-none wrap-break-word"
+                            >
+                                {{ effectPlainText }}
+                            </p>
                         </div>
                         <div
                             v-if="effectItems.length > 0"
@@ -259,13 +353,6 @@ const handleAction = async (actionKey) => {
                         >
                             <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
                         </div>
-                        <p
-                            v-if="descriptionFull"
-                            class="text-xs text-base-content/80 line-clamp-4"
-                            :title="descriptionFull"
-                        >
-                            {{ descriptionFull }}
-                        </p>
                     </div>
                 </div>
             </div>

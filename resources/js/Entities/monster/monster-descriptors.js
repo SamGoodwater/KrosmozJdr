@@ -919,7 +919,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       id: 'monsters.index',
       entityType: 'monster',
       quickEdit: {
-        enabled: false,
+        enabled: true,
         permission: 'updateAny',
       },
       actions: {

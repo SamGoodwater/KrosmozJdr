@@ -3,11 +3,10 @@
  * CapabilityLineRow — Ligne vue Line pour les capacités
  *
  * @description
- * Aligné sur SpellLineRow / PanoplyLineRow : état • image • niveau • nom • élément • PA/PO • effet • description.
+ * Aligné sur SpellLineRow : méta {@link CapabilityMinimalUsageMetaRow}, description discrète au survol de ligne, effets mis en avant (3 lignes / complet au survol du bloc).
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
@@ -15,6 +14,11 @@ import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import CapabilityMinimalUsageMetaRow from "@/Pages/Molecules/entity/capability/CapabilityMinimalUsageMetaRow.vue";
+import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -26,7 +30,36 @@ const props = defineProps({
     showActions: { type: Boolean, default: true },
     uiColor: { type: String, default: "primary" },
     entityType: { type: String, default: "capabilities" },
+    characteristicRuntime: { type: Object, default: null },
 });
+
+provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
+
+const permissions = usePermissions();
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can("capabilities", "viewAny"),
+        createAny: permissions.can("capabilities", "createAny"),
+        updateAny: permissions.can("capabilities", "updateAny"),
+        deleteAny: permissions.can("capabilities", "deleteAny"),
+        manageAny: permissions.can("capabilities", "manageAny"),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+const descriptors = computed(() => getCapabilityFieldDescriptors(ctx.value));
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf ?? desc?.visibleIf;
+    if (typeof visibleIf === "function") {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch {
+            return false;
+        }
+    }
+    return true;
+};
 
 const emit = defineEmits(["row-click", "toggle-select", "action"]);
 
@@ -53,19 +86,33 @@ const imageUrl = computed(() => {
 });
 
 const nameCell = computed(() => getCell("name"));
-const elementCell = computed(() => getCell("element"));
-const paCell = computed(() => getCell("pa"));
-const poCell = computed(() => getCell("po"));
 
 const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
 );
 
+const effectHtmlSafe = computed(() => {
+    const raw = entity.value?.effect ?? entity.value?._data?.effect;
+    if (raw === null || raw === undefined || String(raw).trim() === "") return "";
+    return sanitizeHtml(String(raw));
+});
+
+const effectPlainText = computed(() => {
+    const raw = entity.value?.effect ?? entity.value?._data?.effect;
+    if (raw === null || raw === undefined || String(raw).trim() === "") return "";
+    return String(raw)
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+});
+
+const hasEffectText = computed(() => Boolean(effectPlainText.value));
+
 const effectItems = computed(() => {
     const cell = buildCharacteristicEffectCell({
         rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
         options: {},
-        sourceGroups: ["spell", "item", "panoply"],
+        sourceGroups: ["capability", "spell", "item", "panoply"],
         size: "md",
     });
     return cell?.type === "chips" ? cell.params?.items || [] : [];
@@ -161,36 +208,49 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                         />
                     </div>
                 </div>
-                <div class="flex flex-wrap items-center gap-2 text-sm">
-                    <CellRenderer
-                        v-if="elementCell?.value && elementCell.value !== '—' && elementCell.value !== '-'"
-                        :cell="elementCell"
-                        class="inline-flex"
-                    />
-                    <CellRenderer
-                        v-if="paCell?.value && paCell.value !== '—' && paCell.value !== '-'"
-                        :cell="paCell"
-                        class="inline-flex"
-                    />
-                    <CellRenderer
-                        v-if="poCell?.value && poCell.value !== '—' && poCell.value !== '-'"
-                        :cell="poCell"
-                        class="inline-flex"
-                    />
-                </div>
+                <CapabilityMinimalUsageMetaRow
+                    :entity="entity"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    :can-show-field="canShowField"
+                    property-size="xs"
+                    row-class="gap-2 text-sm"
+                    hover-inner-gap-class="gap-2"
+                />
+                <p
+                    v-if="descriptionFull"
+                    class="text-[11px] italic text-base-content/45 max-h-0 opacity-0 overflow-hidden transition-all duration-200 ease-out group-hover:max-h-36 group-hover:opacity-100 group-hover:mt-0.5 leading-snug whitespace-normal wrap-break-word"
+                    :title="descriptionFull"
+                >
+                    {{ descriptionFull }}
+                </p>
                 <div
                     v-if="effectItems.length > 0"
                     class="w-full pt-1 border-t border-base-300/80"
                 >
                     <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
                 </div>
-                <p
-                    v-if="descriptionFull"
-                    class="text-xs text-base-content/80 whitespace-normal wrap-break-word line-clamp-3"
-                    :title="descriptionFull"
+                <div
+                    v-if="hasEffectText"
+                    class="group/effect w-full border-t border-primary/25 bg-primary/5 rounded-md px-2 py-1.5 mt-1"
                 >
-                    {{ descriptionFull }}
-                </p>
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-primary-300/95 mb-1">
+                        Effets
+                    </p>
+                    <!-- eslint-disable vue/no-v-html -- éditeur riche, HTML sanitizé (sanitizeHtml) -->
+                    <article
+                        v-if="effectHtmlSafe"
+                        class="prose prose-sm prose-invert max-w-none text-sm leading-snug text-base-content capability-line-effect-prose line-clamp-3 group-hover/effect:line-clamp-none"
+                        v-html="effectHtmlSafe"
+                    />
+                    <!-- eslint-enable vue/no-v-html -->
+                    <p
+                        v-else
+                        class="text-sm leading-snug text-base-content line-clamp-3 group-hover/effect:line-clamp-none wrap-break-word"
+                    >
+                        {{ effectPlainText }}
+                    </p>
+                </div>
             </div>
         </div>
 

@@ -564,7 +564,7 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       id: "consumables.index",
       entityType: "consumable",
       quickEdit: {
-        enabled: false,
+        enabled: true,
         permission: "updateAny",
       },
       actions: {

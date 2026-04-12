@@ -535,7 +535,7 @@ export function getBreedFieldDescriptors(ctx = {}) {
       id: "breeds.index",
       entityType: "breed",
       quickEdit: {
-        enabled: false,
+        enabled: true,
         permission: "updateAny",
       },
       actions: {

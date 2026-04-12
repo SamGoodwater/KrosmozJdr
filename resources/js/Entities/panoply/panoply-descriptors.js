@@ -385,7 +385,7 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       id: "panoplies.index",
       entityType: "panoply",
       quickEdit: {
-        enabled: false,
+        enabled: true,
         permission: "updateAny",
       },
       actions: {

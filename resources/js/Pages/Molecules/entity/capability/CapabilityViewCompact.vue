@@ -69,17 +69,27 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-// Champs à afficher dans la vue compacte
-const compactFields = computed(() => [
-    'name',
-    'level',
-    'pa',
-    'po',
-    'element',
-    'state',
-    'read_level',
-    'write_level',
-].filter(canShowField));
+// Champs à afficher dans la vue compacte (aligné densité sort / fiche utile)
+const compactFields = computed(() =>
+    [
+        "level",
+        "pa",
+        "po",
+        "po_editable",
+        "element",
+        "casting_time",
+        "duration",
+        "time_before_use_again",
+        "capability_summary_metier",
+        "is_magic",
+        "ritual_available",
+        "powerful",
+        "state",
+        "read_level",
+        "write_level",
+        "description",
+    ].filter(canShowField),
+);
 
 const getFieldLabel = (fieldKey) => {
     return descriptors.value?.[fieldKey]?.label || fieldKey;

@@ -45,6 +45,8 @@ class UpdateCapabilityRequest extends FormRequest
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'image' => ['nullable', 'string', 'max:255'],
+            // Inertia : même schéma que les sorts (rester sur l’éditeur, liste, etc.)
+            'redirect_after_update' => ['nullable', 'string', 'in:stay,index,edit,show'],
         ];
     }
 }

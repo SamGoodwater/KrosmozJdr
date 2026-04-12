@@ -66,6 +66,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-hashtag",
       visibleIf: () => canCreateAny,
       table: {
+        order: 5,
         sortable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         filterable: { id: "id", type: "text", defaultVisible: false },
@@ -86,6 +87,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Nom",
       icon: "fa-solid fa-font",
       table: {
+        order: 100,
         sortable: true,
         searchable: true,
         defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
@@ -114,18 +116,27 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Niveau",
       icon: "fa-solid fa-level-up-alt",
       table: {
+        order: 200,
         sortable: true,
-        filterable: { id: "level", type: "multi", defaultVisible: true },
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
-        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+        filterable: {
+          id: "level",
+          type: "multi",
+          defaultVisible: true,
+          ui: {
+            optionsMode: "rows",
+            maxOptions: 250,
+          },
+        },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
         sizes: {
-          xs: { mode: "text" },
-          sm: { mode: "text" },
-          md: { mode: "text" },
-          lg: { mode: "text" },
-          xl: { mode: "text" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
       edit: {
@@ -144,7 +155,9 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "PA",
       icon: "fa-solid fa-bolt",
       table: {
+        order: 150,
         sortable: true,
+        filterable: { id: "pa", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -173,8 +186,9 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "PO",
       icon: "fa-solid fa-crosshairs",
       table: {
+        order: 151,
         sortable: true,
-        filterable: { id: "po", type: "text", defaultVisible: false },
+        filterable: { id: "po", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -198,12 +212,44 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
         },
       },
     },
+    po_editable: {
+      key: "po_editable",
+      label: "PO modifiable",
+      icon: "fa-solid fa-arrows-left-right",
+      table: {
+        order: 165,
+        sortable: true,
+        filterable: { id: "po_editable", type: "boolean", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
+        },
+      },
+    },
     element: {
       key: "element",
       label: "Élément",
       icon: "fa-solid fa-fire",
       table: {
-        filterable: { id: "element", type: "multi", defaultVisible: false },
+        order: 153,
+        sortable: true,
+        filterable: { id: "element", type: "multi", defaultVisible: true },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -233,9 +279,11 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Description",
       icon: "fa-solid fa-align-left",
       table: {
+        order: 15,
+        sortable: true,
         searchable: true,
         filterable: { id: "description", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -259,9 +307,11 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
     },
     effect: {
       key: "effect",
-      label: "Effet",
+      label: "Effets (texte riche)",
       icon: "fa-solid fa-magic",
       table: {
+        order: 35,
+        sortable: true,
         searchable: true,
         filterable: { id: "effect", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
@@ -278,11 +328,13 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "textarea",
+          type: "richtext",
           group: "Contenu",
           required: false,
           showInCompact: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          help:
+            "Contrairement aux sorts, les effets d’une capacité se décrivent ici en texte riche (pas d’éditeur d’effets / sous-effets).",
+          bulk: { enabled: false },
         },
       },
     },
@@ -291,6 +343,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Temps avant réutilisation",
       icon: "fa-solid fa-clock",
       table: {
+        order: 161,
         sortable: true,
         filterable: { id: "time_before_use_again", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -311,6 +364,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
           group: "Métier",
           required: false,
           showInCompact: false,
+          help: "Délai minimum avant de pouvoir réutiliser cette capacité (ex. « 1 tour », « 24h »).",
           bulk: { enabled: false },
         },
       },
@@ -320,6 +374,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Temps d'incantation",
       icon: "fa-solid fa-hourglass",
       table: {
+        order: 162,
         sortable: true,
         filterable: { id: "casting_time", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -340,6 +395,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
           group: "Métier",
           required: false,
           showInCompact: false,
+          help: "Temps nécessaire pour lancer la capacité (ex. « 1 » instantané, « 10m » rituel).",
           bulk: { enabled: false },
         },
       },
@@ -349,6 +405,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Durée",
       icon: "fa-solid fa-stopwatch",
       table: {
+        order: 163,
         sortable: true,
         filterable: { id: "duration", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -369,6 +426,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
           group: "Métier",
           required: false,
           showInCompact: false,
+          help: "Durée pendant laquelle la capacité reste active ou son effet persiste.",
           bulk: { enabled: false },
         },
       },
@@ -378,9 +436,10 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Détails de lancer",
       icon: "fa-solid fa-layer-group",
       table: {
+        order: 25,
         type: "chips",
         searchable: true,
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
       display: {
@@ -398,10 +457,11 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "PA / PO / Magie",
       icon: "fa-solid fa-bolt",
       table: {
+        order: 20,
         type: "chips",
         searchable: true,
         sortable: false,
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
       display: {
@@ -419,6 +479,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Invocation",
       icon: "fa-solid fa-link",
       table: {
+        order: 28,
         type: "chips",
         searchable: true,
         sortable: false,
@@ -440,6 +501,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Physique / Wakfu",
       icon: "fa-solid fa-wand-magic",
       table: {
+        order: 154,
         sortable: true,
         filterable: { id: "is_magic", type: "boolean", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -470,6 +532,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Rituel disponible",
       icon: "fa-solid fa-book",
       table: {
+        order: 167,
         sortable: true,
         filterable: { id: "ritual_available", type: "boolean", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -500,6 +563,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Puissance",
       icon: "fa-solid fa-star",
       table: {
+        order: 170,
         sortable: true,
         filterable: { id: "powerful", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -529,6 +593,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "État",
       icon: "fa-solid fa-circle-info",
       table: {
+        order: 210,
         sortable: true,
         filterable: {
           id: "state",
@@ -565,7 +630,8 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       table: {
-        sortable: false,
+        order: 220,
+        sortable: true,
         filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -596,7 +662,8 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
       table: {
-        sortable: false,
+        order: 221,
+        sortable: true,
         filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -627,16 +694,18 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Image",
       icon: "fa-solid fa-image",
       table: {
+        order: 175,
+        sortable: false,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
-        cell: { sizes: { xs: { mode: "image" }, sm: { mode: "image" }, md: { mode: "image" }, lg: { mode: "image" }, xl: { mode: "image" } } },
+        cell: { sizes: { xs: { mode: "thumb" }, sm: { mode: "thumb" }, md: { mode: "thumb" }, lg: { mode: "thumb" }, xl: { mode: "thumb" } } },
       },
       display: {
         sizes: {
-          xs: { mode: "image" },
-          sm: { mode: "image" },
-          md: { mode: "image" },
-          lg: { mode: "image" },
-          xl: { mode: "image" },
+          xs: { mode: "thumb" },
+          sm: { mode: "thumb" },
+          md: { mode: "thumb" },
+          lg: { mode: "thumb" },
+          xl: { mode: "thumb" },
         },
       },
       edit: {
@@ -655,6 +724,8 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-user",
       visibleIf: () => canCreateAny,
       table: {
+        order: 800,
+        sortable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -674,6 +745,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-calendar-plus",
       visibleIf: () => canCreateAny,
       table: {
+        order: 810,
         sortable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
@@ -694,6 +766,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-calendar-check",
       visibleIf: () => canCreateAny,
       table: {
+        order: 820,
         sortable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
@@ -713,7 +786,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       id: "capabilities.index",
       entityType: "capability",
       quickEdit: {
-        enabled: false,
+        enabled: true,
         permission: "updateAny",
       },
       actions: {
@@ -764,6 +837,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
         "level",
         "pa",
         "po",
+        "po_editable",
         "element",
         "state",
         "read_level",

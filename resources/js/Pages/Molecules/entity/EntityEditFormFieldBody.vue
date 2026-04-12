@@ -12,6 +12,7 @@ import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue';
 import SpellElementPrimariesField from '@/Pages/Molecules/entity/spell/SpellElementPrimariesField.vue';
 import SpellTypesMultiField from '@/Pages/Molecules/entity/spell/SpellTypesMultiField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import RichTextEditorField from '@/Pages/Molecules/data-input/RichTextEditorField.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
 import { getByDbColumn } from '@/Composables/store/useCharacteristicsStore';
@@ -445,6 +446,7 @@ const resolvedSelectOptions = computed(() => {
                 getFieldRenderType(field.key, field.config) === 'text' ||
                 ![
                     'textarea',
+                    'richtext',
                     'select',
                     'file',
                     'number',
@@ -483,6 +485,28 @@ const resolvedSelectOptions = computed(() => {
                     </Btn>
                 </template>
             </InputField>
+        </div>
+
+        <div v-else-if="getFieldRenderType(field.key, field.config) === 'richtext'" class="w-full min-w-0">
+            <RichTextEditorField
+                v-model="form[field.key]"
+                @update:model-value="() => markDirty(field.key)"
+                :label="getFieldLabel(field.key, field.config)"
+                :helper="getFieldHelper(field.key, field.config)"
+                :validation="getFieldValidation(field.key)"
+                :placeholder="getFieldPlaceholder(field.key, field.config) || 'Décrivez les effets…'"
+                :height="field.config.richEditorHeight || 'min-h-[220px]'"
+            />
+            <Btn
+                v-if="isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key]"
+                size="xs"
+                variant="ghost"
+                class="mt-2"
+                title="Annuler la modification (ne pas modifier ce champ)"
+                @click.stop="resetFieldMultiEdit(field.key, 'richtext')"
+            >
+                <i class="fa-solid fa-rotate-left"></i>
+            </Btn>
         </div>
 
         <TextareaField

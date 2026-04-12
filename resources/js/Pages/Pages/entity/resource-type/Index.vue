@@ -26,6 +26,7 @@ import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 import { ResourceType } from "@/Models/Entity/ResourceType";
+import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 
 const props = defineProps({
     resourceTypes: { type: Object, required: true },
@@ -54,6 +55,7 @@ const quickEditEntity = ref(null);
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
+const { tableQuickEditEnabled, onUpdateTableQuickEdit } = useEntityIndexQuickEditTable(ResourceType);
 
 const tableConfig = computed(() => {
     const ctx = {
@@ -207,7 +209,10 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
 
         <div
             class="grid grid-cols-1 gap-4"
-            :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
+            :class="{
+                'xl:grid-cols-[minmax(0,1fr)_380px]':
+                    canModifyResolved && selectedEntities.length >= 1 && tableQuickEditEnabled,
+            }"
         >
             <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
@@ -218,11 +223,12 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
             </div>
 
-            <div v-if="canModifyResolved && selectedEntities.length >= 1" class="sticky top-4 self-start">
+            <div v-if="canModifyResolved && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
                 <EntityQuickEditPanel
                     entity-type="resource-types"
                     :selected-entities="selectedEntities"

@@ -1074,7 +1074,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       id: "spells.index",
       entityType: "spell",
       quickEdit: {
-        enabled: false,
+        enabled: true,
         permission: "updateAny",
       },
       actions: {

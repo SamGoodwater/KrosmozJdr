@@ -117,7 +117,7 @@ const props = defineProps({
     layoutProfile: {
         type: String,
         default: null,
-        validator: (v) => v == null || v === '' || v === 'spell',
+        validator: (v) => v == null || v === '' || v === 'spell' || v === 'capability',
     },
     /** Pied d’actions fixe (enregistrer / annuler / reset) visible au scroll. */
     fixedFooterActions: {
@@ -137,12 +137,42 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel']);
 
-const isSpellLayout = computed(() => props.layoutProfile === 'spell');
+/** Grille dense multi-colonnes (fiches sort / capacité). */
+const isSpellLayout = computed(() => props.layoutProfile === 'spell' || props.layoutProfile === 'capability');
+
+/** Fiche capacité : 1ʳᵉ ligne 3 panneaux égaux, 2ᵉ ligne effets 2/3 + métadonnées 1/3 (grille 6 cols ≥ md). */
+const isCapabilityLayout = computed(() => props.layoutProfile === 'capability');
+
+/**
+ * Segment `entities.{segment}` (ex. capabilities, pas « capabilitys »).
+ *
+ * @returns {string}
+ */
+const entitiesPluralSegment = computed(() => {
+    const et = props.entityType;
+    if (et === 'panoply') return 'panoplies';
+    if (et === 'capability' || et === 'capabilities') return 'capabilities';
+    return `${et}s`;
+});
+
+/**
+ * Clé du paramètre de route Laravel (`capability` pour `/capabilities/{capability}`).
+ *
+ * @returns {string}
+ */
+const resolvedRouteParamKey = computed(() => {
+    if (props.routeParamKey) return props.routeParamKey;
+    if (props.entityType === 'capabilities') return 'capability';
+    return props.entityType;
+});
 
 /** Conteneur des sections (grille ou empilé). */
 const sectionsContainerClass = computed(() => {
     if (!props.fieldSections?.length) {
         return '';
+    }
+    if (isCapabilityLayout.value) {
+        return 'capability-edit-sections grid w-full min-w-0 grid-cols-1 gap-4 md:grid-cols-6 md:gap-x-4 md:gap-y-5 md:items-stretch';
     }
     return isSpellLayout.value
         ? 'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
@@ -150,16 +180,30 @@ const sectionsContainerClass = computed(() => {
 });
 
 /**
- * Portée de colonnes pour une section (profil sort).
- * — md : 2 colonnes (2×2).
- * — lg : 3 colonnes ; la section admin occupe toute la ligne du bas.
- * — xl : 4 colonnes égales sur une ligne.
+ * Portée de colonnes pour une section (profil sort ou capacité).
+ *
+ * **Capacité** (`layout-profile="capability"`) : grille 6 colonnes à partir de `md` —
+ * ligne 1 : généralités, coût, déroulé (2+2+2) ; ligne 2 : effets (4) + admin (2).
+ *
+ * **Sort** : md 2 cols, lg 3, xl 4 ; admin en pied.
  *
  * @param {{ id?: string }} sec
  * @returns {string}
  */
 function spellSectionColClass(sec) {
     if (!isSpellLayout.value || !sec?.id) {
+        return '';
+    }
+    if (isCapabilityLayout.value) {
+        if (['general', 'cost_effect', 'gameplay'].includes(sec.id)) {
+            return 'min-w-0 md:col-span-2';
+        }
+        if (sec.id === 'effect_richtext') {
+            return 'min-w-0 md:col-span-4';
+        }
+        if (sec.id === 'admin') {
+            return 'min-w-0 md:col-span-2';
+        }
         return '';
     }
     if (sec.id === 'admin') {
@@ -620,7 +664,7 @@ const getFieldValidation = (fieldKey) => {
 };
 
 const nonFormulaFieldKeys = new Set([
-    'id', 'name', 'title', 'slug', 'description', 'image', 'icon', 'state', 'decision',
+    'id', 'name', 'title', 'slug', 'description', 'effect', 'image', 'icon', 'state', 'decision',
     'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at',
 ]);
 
@@ -645,6 +689,7 @@ const isImageField = (fieldKey, fieldConfig) => {
 
 const getFieldRenderType = (fieldKey, fieldConfig) => {
     if (fieldConfig?.type === 'display') return 'display';
+    if (fieldConfig?.type === 'richtext') return 'richtext';
     if (fieldConfig?.type === 'file') return 'file';
     if (fieldConfig?.type === 'text' && isImageField(fieldKey, fieldConfig)) return 'file';
     if (fieldConfig?.type === 'elementPrimaries') return 'elementPrimaries';
@@ -718,6 +763,7 @@ const getFieldWrapperClass = (fieldKey) => ([
     props.differentFields.includes(fieldKey) ? 'opacity-60' : '',
     fieldKey === 'name' ? 'form-field--wide' : '',
     fieldKey === 'description' ? 'form-field--full' : '',
+    fieldKey === 'effect' ? 'form-field--full' : '',
     ['category', 'state'].includes(fieldKey) ? 'form-field--meta-pair' : '',
     fieldKey === 'element' ? 'form-field--full' : '',
 ].filter(Boolean));
@@ -759,14 +805,10 @@ const submit = async () => {
     }
 
     // Construction du nom de route selon le type d'entité
-    // Note: Par défaut, les routes utilisent le pluriel (items, spells, monsters, panoplies)
-    const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
-    const base = props.routeNameBase || `entities.${entityTypePlural}`;
+    const base = props.routeNameBase || `entities.${entitiesPluralSegment.value}`;
     const routeName = props.isUpdating ? `${base}.update` : `${base}.store`;
-    
-    // Paramètres de route selon le type d'entité
-    const routeParamKey = props.routeParamKey || props.entityType;
-    const routeParams = props.isUpdating ? { [routeParamKey]: entityId } : {};
+
+    const routeParams = props.isUpdating ? { [resolvedRouteParamKey.value]: entityId } : {};
 
     const method = props.isUpdating ? 'patch' : 'post';
 
@@ -806,10 +848,9 @@ const cancel = () => {
     }
     // Seulement rediriger si c'est une page d'édition hors modal
     if (props.isUpdating) {
-        const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
         const entityId = props.entity?.id ?? null;
         if (entityId) {
-            router.visit(route(`entities.${entityTypePlural}.show`, { [props.entityType]: entityId }));
+            router.visit(route(`entities.${entitiesPluralSegment.value}.show`, { [resolvedRouteParamKey.value]: entityId }));
         }
     }
 };

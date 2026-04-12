@@ -337,7 +337,7 @@ const prefs = useTanStackTablePreferences(props.config?.id, {
     visibleColumns: {},
     pageSize: props.config?.features?.pagination?.perPage?.default ?? 25,
     displayMode: "line",
-    quickEditEnabled: true,
+    quickEditEnabled: false,
     sorting: [],
 });
 

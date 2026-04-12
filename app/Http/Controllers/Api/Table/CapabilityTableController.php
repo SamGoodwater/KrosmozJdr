@@ -69,8 +69,28 @@ class CapabilityTableController extends Controller
         if (array_key_exists('element', $filters) && $filters['element'] !== '' && $filters['element'] !== null) {
             $query->where('element', (int) $filters['element']);
         }
+        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
+            $query->where('id', (int) $filters['id']);
+        }
+        if (array_key_exists('pa', $filters) && $filters['pa'] !== '' && $filters['pa'] !== null) {
+            $query->where('pa', (string) $filters['pa']);
+        }
+        if (array_key_exists('is_magic', $filters) && $filters['is_magic'] !== '' && $filters['is_magic'] !== null) {
+            $query->where('is_magic', (int) $filters['is_magic']);
+        }
+        if (array_key_exists('ritual_available', $filters) && $filters['ritual_available'] !== '' && $filters['ritual_available'] !== null) {
+            $query->where('ritual_available', (int) $filters['ritual_available']);
+        }
+        if (array_key_exists('po_editable', $filters) && $filters['po_editable'] !== '' && $filters['po_editable'] !== null) {
+            $query->where('po_editable', (int) $filters['po_editable']);
+        }
 
-        $allowedSort = ['id', 'name', 'level', 'pa', 'po', 'element', 'created_at', 'updated_at'];
+        $allowedSort = [
+            'id', 'name', 'description', 'effect', 'level', 'pa', 'po', 'element', 'is_magic', 'ritual_available',
+            'time_before_use_again', 'casting_time', 'duration', 'state', 'po_editable', 'powerful',
+            'read_level', 'write_level',
+            'created_at', 'updated_at',
+        ];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $rows = $query->limit($limit)->get();
@@ -92,6 +112,23 @@ class CapabilityTableController extends Controller
                 ['value' => '7', 'label' => '7'],
                 ['value' => '8', 'label' => '8'],
             ],
+            'pa' => [
+                ['value' => '1', 'label' => '1'],
+                ['value' => '2', 'label' => '2'],
+                ['value' => '3', 'label' => '3'],
+                ['value' => '4', 'label' => '4'],
+                ['value' => '5', 'label' => '5'],
+                ['value' => '6', 'label' => '6'],
+            ],
+            'po' => [
+                ['value' => '0', 'label' => '0 (soi)'],
+                ['value' => '1', 'label' => '1 (CàC)'],
+                ['value' => '2', 'label' => '2'],
+                ['value' => '3', 'label' => '3'],
+                ['value' => '4', 'label' => '4'],
+                ['value' => '5', 'label' => '5'],
+                ['value' => '6', 'label' => '6+'],
+            ],
             'state' => [
                 ['value' => 'raw', 'label' => 'Brut'],
                 ['value' => 'draft', 'label' => 'Brouillon'],
@@ -99,6 +136,18 @@ class CapabilityTableController extends Controller
                 ['value' => 'archived', 'label' => 'Archivé'],
             ],
             'element' => \App\Support\ElementBitmask::allFilterOptions(),
+            'is_magic' => [
+                ['value' => '1', 'label' => 'Wakfu'],
+                ['value' => '0', 'label' => 'Physique'],
+            ],
+            'ritual_available' => [
+                ['value' => '1', 'label' => 'Oui'],
+                ['value' => '0', 'label' => 'Non'],
+            ],
+            'po_editable' => [
+                ['value' => '1', 'label' => 'Oui'],
+                ['value' => '0', 'label' => 'Non'],
+            ],
         ];
 
         // Mode "entities" : retourner les entités brutes
@@ -167,9 +216,17 @@ class CapabilityTableController extends Controller
             $updatedAtLabel = $c->updated_at ? $c->updated_at->format('d/m/Y H:i') : '-';
             $updatedAtSort = $c->updated_at ? $c->updated_at->getTimestamp() : 0;
 
+            $effectPlain = $c->effect ? trim(preg_replace('/\s+/', ' ', strip_tags((string) $c->effect))) : '';
+            $descriptionPlain = $c->description ? trim(preg_replace('/\s+/', ' ', strip_tags((string) $c->description))) : '';
+
             return [
                 'id' => $c->id,
                 'cells' => [
+                    'id' => [
+                        'type' => 'text',
+                        'value' => (string) $c->id,
+                        'params' => ['sortValue' => $c->id, 'filterValue' => (string) $c->id],
+                    ],
                     'name' => [
                         'type' => 'route',
                         'value' => (string) $c->name,
@@ -179,10 +236,27 @@ class CapabilityTableController extends Controller
                             'sortValue' => (string) $c->name,
                         ],
                     ],
+                    'description' => [
+                        'type' => 'text',
+                        'value' => $descriptionPlain !== '' ? $descriptionPlain : '-',
+                        'params' => [
+                            'searchValue' => $descriptionPlain,
+                            'sortValue' => $descriptionPlain,
+                        ],
+                    ],
+                    'effect' => [
+                        'type' => 'text',
+                        'value' => $effectPlain !== '' ? $effectPlain : '-',
+                        'params' => [
+                            'searchValue' => $effectPlain,
+                            'sortValue' => $effectPlain,
+                        ],
+                    ],
                     'level' => [
                         'type' => 'text',
                         'value' => $c->level ?: '-',
                         'params' => [
+                            'filterValue' => (string) ($c->level ?? ''),
                             'sortValue' => is_numeric((string) $c->level) ? (int) $c->level : (string) ($c->level ?? ''),
                             'searchValue' => (string) ($c->level ?? ''),
                         ],
@@ -191,6 +265,7 @@ class CapabilityTableController extends Controller
                         'type' => 'text',
                         'value' => $c->pa ?: '-',
                         'params' => [
+                            'filterValue' => (string) ($c->pa ?? ''),
                             'sortValue' => is_numeric((string) $c->pa) ? (int) $c->pa : (string) ($c->pa ?? ''),
                         ],
                     ],
@@ -198,8 +273,19 @@ class CapabilityTableController extends Controller
                         'type' => 'text',
                         'value' => $c->po ?: '-',
                         'params' => [
+                            'filterValue' => (string) ($c->po ?? ''),
                             'sortValue' => (string) ($c->po ?? ''),
                         ],
+                    ],
+                    'image' => [
+                        'type' => 'thumb',
+                        'value' => $c->image ?: '',
+                        'params' => ['sortValue' => $c->image ? 1 : 0],
+                    ],
+                    'po_editable' => [
+                        'type' => 'badge',
+                        'value' => $c->po_editable ? 'Oui' : 'Non',
+                        'params' => ['sortValue' => $c->po_editable ? 1 : 0, 'filterValue' => $c->po_editable ? '1' : '0'],
                     ],
                     'element' => [
                         'type' => 'element',
@@ -210,6 +296,46 @@ class CapabilityTableController extends Controller
                             'searchValue' => ElementConstants::getLabel((int) ($c->element ?? 0)) ?? '',
                             'filterValue' => (int) ($c->element ?? 0),
                         ],
+                    ],
+                    'is_magic' => [
+                        'type' => 'badge',
+                        'value' => $c->is_magic ? 'Wakfu' : 'Physique',
+                        'params' => ['filterValue' => $c->is_magic ? '1' : '0', 'sortValue' => $c->is_magic ? 1 : 0],
+                    ],
+                    'ritual_available' => [
+                        'type' => 'badge',
+                        'value' => $c->ritual_available ? 'Oui' : 'Non',
+                        'params' => ['filterValue' => $c->ritual_available ? '1' : '0', 'sortValue' => $c->ritual_available ? 1 : 0],
+                    ],
+                    'time_before_use_again' => [
+                        'type' => 'text',
+                        'value' => $c->time_before_use_again ?: '-',
+                        'params' => ['sortValue' => (string) ($c->time_before_use_again ?? '')],
+                    ],
+                    'casting_time' => [
+                        'type' => 'text',
+                        'value' => $c->casting_time ?: '-',
+                        'params' => ['sortValue' => (string) ($c->casting_time ?? '')],
+                    ],
+                    'duration' => [
+                        'type' => 'text',
+                        'value' => $c->duration ?: '-',
+                        'params' => ['sortValue' => (string) ($c->duration ?? '')],
+                    ],
+                    'state' => [
+                        'type' => 'badge',
+                        'value' => (string) ($c->state ?? 'draft'),
+                        'params' => ['filterValue' => (string) ($c->state ?? ''), 'sortValue' => (string) ($c->state ?? '')],
+                    ],
+                    'read_level' => [
+                        'type' => 'badge',
+                        'value' => (string) ($c->read_level ?? 0),
+                        'params' => ['sortValue' => (int) ($c->read_level ?? 0)],
+                    ],
+                    'write_level' => [
+                        'type' => 'badge',
+                        'value' => (string) ($c->write_level ?? 0),
+                        'params' => ['sortValue' => (int) ($c->write_level ?? 0)],
                     ],
                     'created_by' => [
                         'type' => 'text',

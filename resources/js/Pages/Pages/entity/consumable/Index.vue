@@ -13,6 +13,7 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Consumable } from "@/Models/Entity/Consumable";
+import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
@@ -69,6 +70,7 @@ const quickEditEntity = ref(null);
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
+const { tableQuickEditEnabled, onUpdateTableQuickEdit } = useEntityIndexQuickEditTable(Consumable);
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
@@ -267,7 +269,13 @@ const handleQuickEditSubmit = () => {
         </div>
 
         <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
-        <div class="xl:grid xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-6">
+        <div
+            class="grid grid-cols-1 gap-4 xl:gap-6"
+            :class="{
+                'xl:grid xl:grid-cols-[minmax(0,1fr)_380px]':
+                    canModify && selectedEntities.length >= 1 && tableQuickEditEnabled,
+            }"
+        >
             <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="consumables"
@@ -277,12 +285,13 @@ const handleQuickEditSubmit = () => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
             </div>
 
             <!-- Quick Edit Panel -->
-            <div v-if="canModify && selectedEntities.length >= 1" class="sticky top-4 self-start">
+            <div v-if="canModify && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
                 <EntityQuickEditPanel
                     entity-type="consumables"
                     :selected-entities="selectedEntities"

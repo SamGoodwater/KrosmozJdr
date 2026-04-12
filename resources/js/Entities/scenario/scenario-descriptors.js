@@ -443,7 +443,7 @@ export function getScenarioFieldDescriptors(ctx = {}) {
       id: "scenarios.index",
       entityType: "scenario",
       quickEdit: {
-        enabled: false,
+        enabled: true,
         permission: "updateAny",
       },
       actions: {

@@ -426,9 +426,16 @@ export class Capability extends BaseModel {
      * @private
      */
     _toCapabilitySummaryCastCell(_format, _size, options = {}) {
-        const castValue = this.castingTime ? String(this.castingTime) : null;
-        const durationValue = this.duration ? String(this.duration) : null;
-        const cooldownValue = this.timeBeforeUseAgain ? String(this.timeBeforeUseAgain) : null;
+        const normalizeToken = (raw) => {
+            if (raw === null || raw === undefined || raw === false) return null;
+            const s = String(raw).trim();
+            if (s === '' || s.toLowerCase() === 'false') return null;
+            return s;
+        };
+
+        const castValue = normalizeToken(this.castingTime);
+        const durationValue = normalizeToken(this.duration);
+        const cooldownValue = normalizeToken(this.timeBeforeUseAgain);
 
         const castDef = this._getCapabilityCharacteristicDef(options, ['casting_time']);
         const durationDef = this._getCapabilityCharacteristicDef(options, ['duration']);
@@ -463,8 +470,15 @@ export class Capability extends BaseModel {
      * @private
      */
     _toCapabilitySummaryMetierCell(_format, _size, options) {
-        const paValue = this.pa != null ? String(this.pa) : null;
-        const poValue = this.po ? String(this.po) : null;
+        const normalizeToken = (raw) => {
+            if (raw === null || raw === undefined || raw === false) return null;
+            const s = String(raw).trim();
+            if (s === '' || s.toLowerCase() === 'false') return null;
+            return s;
+        };
+
+        const paValue = normalizeToken(this.pa);
+        const poValue = normalizeToken(this.po);
         const isMagic = this.isMagic ?? false;
         const ritualAvailable = this.ritualAvailable ?? false;
         const paDef = this._getCapabilityCharacteristicDef(options, ['pa']);

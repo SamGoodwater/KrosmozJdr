@@ -18,7 +18,7 @@
 import { ref } from "vue";
 
 export function useEntityIndexQuickEditTable(_Model) {
-    const tableQuickEditEnabled = ref(true);
+    const tableQuickEditEnabled = ref(false);
     const quickEditModalOpen = ref(false);
     const quickEditEntity = ref(null);
 

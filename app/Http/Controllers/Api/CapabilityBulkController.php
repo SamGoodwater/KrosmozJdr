@@ -32,6 +32,7 @@ class CapabilityBulkController extends Controller
             'level' => ['sometimes', 'nullable', 'string', 'max:255'],
             'pa' => ['sometimes', 'nullable', 'string', 'max:255'],
             'po' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'po_editable' => ['sometimes', 'nullable', 'boolean'],
             'element' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:127'],
             'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
@@ -56,6 +57,7 @@ class CapabilityBulkController extends Controller
             'level',
             'pa',
             'po',
+            'po_editable',
             'element',
             'state',
             'read_level',
@@ -85,8 +87,9 @@ class CapabilityBulkController extends Controller
 
             foreach ($ids as $id) {
                 $model = $models->firstWhere('id', $id);
-                if (!$model) {
+                if (! $model) {
                     $errors[] = ['id' => $id, 'error' => 'Not found'];
+
                     continue;
                 }
 
@@ -124,4 +127,3 @@ class CapabilityBulkController extends Controller
         ]);
     }
 }
-

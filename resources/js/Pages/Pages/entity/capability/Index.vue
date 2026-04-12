@@ -1,14 +1,14 @@
 <script setup>
 /**
  * Capability Index Page
- * 
+ *
  * @description
- * Page de liste des capacités avec tableau et modal
- * 
+ * Liste des capacités ; édition complète en modal ({@link CapabilityEditModal}, charge utile `edit-payload`), comme les sorts.
+ *
  * @props {Object} capabilities - Collection paginée des capacités
  */
 import { Head, router } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
@@ -23,11 +23,16 @@ import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vu
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
-import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
+import CapabilityEditModal from '@/Pages/Organismes/entity/CapabilityEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
-import { createFieldsConfigFromDescriptors } from "@/Utils/entity/descriptor-form";
+import {
+    buildCapabilityFormFieldsConfig,
+    CAPABILITY_FORM_FIELD_SECTIONS_CREATE,
+    getCapabilityCreateDefaultEntity,
+} from "@/Entities/capability/capability-form-config";
+import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 
 defineProps({
     capabilities: {
@@ -55,6 +60,16 @@ const { refreshEntity } = useScrapping();
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
+const { tableQuickEditEnabled, onUpdateTableQuickEdit } = useEntityIndexQuickEditTable(Capability);
+
+watch(
+    () => canModify.value,
+    (allowed) => {
+        if (allowed) return;
+        selectedIds.value = [];
+    },
+    { immediate: true },
+);
 
 // Configuration du tableau avec permissions et contexte
 const tableConfig = computed(() => {
@@ -70,11 +85,10 @@ const tableConfig = computed(() => {
 });
 const serverUrl = computed(() => `${route('api.tables.capabilities')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 
-// Fields config pour les formulaires (généré depuis les descriptors)
-const fieldsConfig = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createFieldsConfigFromDescriptors(getCapabilityFieldDescriptors(ctx));
-});
+const capabilityCreateFieldsConfig = computed(() =>
+    buildCapabilityFormFieldsConfig({ includeReadonlyMeta: false }),
+);
+const capabilityCreateDefaultEntity = getCapabilityCreateDefaultEntity();
 
 // Calcul des entités sélectionnées depuis les IDs et les rows
 const selectedEntities = computed(() => {
@@ -121,9 +135,27 @@ const handleRowDoubleClick = (row) => {
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
-const quickEditModalOpen = ref(false);
-const quickEditEntity = ref(null);
 const createModalOpen = ref(false);
+
+/** Éditeur complet en modal (même corps que la page Edit). */
+const capabilityEditModalOpen = ref(false);
+const capabilityEditId = ref(null);
+
+const openCapabilityEditModal = (entityId) => {
+    if (!entityId) return;
+    capabilityEditId.value = entityId;
+    capabilityEditModalOpen.value = true;
+};
+
+const closeCapabilityEditModal = () => {
+    capabilityEditModalOpen.value = false;
+    capabilityEditId.value = null;
+};
+
+const onCapabilityEditModalSaved = () => {
+    closeCapabilityEditModal();
+    refreshToken.value++;
+};
 
 const handleCreate = () => {
     createModalOpen.value = true;
@@ -167,12 +199,11 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'edit':
-            router.visit(route('entities.capabilities.edit', { capability: entityId }));
+            openCapabilityEditModal(entityId);
             break;
 
         case 'quick-edit':
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
+            openCapabilityEditModal(entityId);
             break;
 
         case 'copy-link': {
@@ -201,9 +232,10 @@ const handleTableAction = async (actionKey, entity, row) => {
 
 // Handlers pour les actions du modal
 const handleModalQuickEdit = (entity) => {
-    quickEditEntity.value = entity;
-    quickEditModalOpen.value = true;
+    const entityId = entity?.id;
+    if (!entityId) return;
     closeModal();
+    openCapabilityEditModal(entityId);
 };
 
 const handleModalExpand = (entity) => {
@@ -241,11 +273,6 @@ const handleModalDelete = (_entity) => {
     // TODO: Implémenter la suppression avec confirmation
 };
 
-const handleQuickEditSubmit = () => {
-    refreshToken.value++;
-    quickEditEntity.value = null;
-    quickEditModalOpen.value = false;
-};
 </script>
 
 <template>
@@ -267,7 +294,10 @@ const handleQuickEditSubmit = () => {
         <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
         <div
             class="grid grid-cols-1 gap-4"
-            :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
+            :class="{
+                'xl:grid-cols-[minmax(0,1fr)_380px]':
+                    canModify && selectedEntities.length >= 1 && tableQuickEditEnabled,
+            }"
         >
             <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
@@ -278,12 +308,13 @@ const handleQuickEditSubmit = () => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
             </div>
 
             <!-- Quick Edit Panel -->
-            <div v-if="canModify && selectedEntities.length >= 1" class="sticky top-4 self-start">
+            <div v-if="canModify && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
                 <EntityQuickEditPanel
                     entity-type="capabilities"
                     :selected-entities="selectedEntities"
@@ -300,6 +331,10 @@ const handleQuickEditSubmit = () => {
         <CreateEntityModal
             :open="createModalOpen"
             entity-type="capabilities"
+            :fields-config="capabilityCreateFieldsConfig"
+            :default-entity="capabilityCreateDefaultEntity"
+            :field-sections="CAPABILITY_FORM_FIELD_SECTIONS_CREATE"
+            characteristics-group="capability"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />
@@ -321,15 +356,11 @@ const handleQuickEditSubmit = () => {
             @delete="handleModalDelete"
         />
 
-        <!-- Modal d'édition rapide -->
-        <EntityQuickEditModal
-            v-if="quickEditEntity"
-            :entity="quickEditEntity"
-            entity-type="capabilities"
-            :fields-config="fieldsConfig"
-            :open="quickEditModalOpen"
-            @close="quickEditModalOpen = false"
-            @submit="handleQuickEditSubmit"
+        <CapabilityEditModal
+            :open="capabilityEditModalOpen"
+            :capability-id="capabilityEditId"
+            @close="closeCapabilityEditModal"
+            @saved="onCapabilityEditModalSaved"
         />
     </div>
 </template>

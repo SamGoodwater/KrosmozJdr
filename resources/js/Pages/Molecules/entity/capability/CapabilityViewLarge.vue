@@ -9,7 +9,7 @@
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { computed } from "vue";
-import { router } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
@@ -26,6 +26,7 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entit
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 
 const props = defineProps({
     capability: {
@@ -41,6 +42,12 @@ const props = defineProps({
         default: () => ({}),
     },
     characteristicRuntime: { type: Object, default: null },
+    /** Balise du titre principal (h1 sur page fiche, h2 en modal). */
+    titleTag: {
+        type: String,
+        default: "h2",
+        validator: (v) => ["h1", "h2", "h3"].includes(v),
+    },
 });
 
 provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
@@ -103,6 +110,7 @@ const metaFields = computed(() =>
     [
         "pa",
         "po",
+        "po_editable",
         "element",
         "capability_summary_cast",
         "capability_summary_metier",
@@ -121,7 +129,6 @@ const technicalFields = computed(() => ["created_by", "created_at", "updated_at"
 
 const bodyFields = computed(() =>
     [
-        "effect",
         "time_before_use_again",
         "casting_time",
         "duration",
@@ -130,6 +137,35 @@ const bodyFields = computed(() =>
         "powerful",
     ].filter(canShowField)
 );
+
+const specializationLinks = computed(() => {
+    const raw = props.capability?.specializations ?? props.capability?._data?.specializations ?? [];
+    const list = Array.isArray(raw) ? raw : [];
+    return list
+        .map((s) => ({
+            id: s?.id,
+            name: s?.name ?? `#${s?.id}`,
+        }))
+        .filter((x) => x.id != null);
+});
+
+const creatureLinks = computed(() => {
+    const raw = props.capability?.creatures ?? props.capability?._data?.creatures ?? [];
+    const list = Array.isArray(raw) ? raw : [];
+    return list
+        .map((c) => ({
+            id: c?.id,
+            name: c?.name ?? `#${c?.id}`,
+        }))
+        .filter((x) => x.id != null);
+});
+
+/** Effets : HTML riche (pas d’éditeur d’effets structurés comme pour les sorts). */
+const effectHtml = computed(() => {
+    const raw = props.capability?.effect ?? props.capability?._data?.effect;
+    if (raw === null || raw === undefined || String(raw).trim() === "") return "";
+    return sanitizeHtml(String(raw));
+});
 
 const getFieldUi = (fieldKey) =>
     resolveEntityFieldUi({
@@ -280,7 +316,9 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #title>
-                <h2 class="text-2xl font-bold text-primary-100 wrap-break-word">{{ capability.name }}</h2>
+                <component :is="titleTag" class="text-2xl font-bold text-primary-100 wrap-break-word">
+                    {{ capability.name }}
+                </component>
             </template>
 
             <template #subtitle>
@@ -321,6 +359,42 @@ const handleAction = async (actionKey) => {
                 </div>
             </template>
         </EntityViewHeader>
+
+        <section
+            v-if="specializationLinks.length > 0 || creatureLinks.length > 0"
+            class="space-y-2 rounded-xl border border-base-300/60 bg-base-100/20 p-4"
+        >
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Relations</h3>
+            <div v-if="specializationLinks.length > 0" class="flex flex-wrap gap-2 items-center">
+                <span class="text-xs text-primary-400 shrink-0">Spécialisations</span>
+                <Link
+                    v-for="s in specializationLinks"
+                    :key="`sp-${s.id}`"
+                    :href="route('entities.specializations.show', { specialization: s.id })"
+                    class="badge badge-sm badge-outline border-primary/40 text-primary-200 hover:border-primary"
+                >
+                    {{ s.name }}
+                </Link>
+            </div>
+            <div v-if="creatureLinks.length > 0" class="flex flex-wrap gap-2 items-center">
+                <span class="text-xs text-primary-400 shrink-0">Créatures</span>
+                <Link
+                    v-for="c in creatureLinks"
+                    :key="`cr-${c.id}`"
+                    :href="route('entities.creatures.show', { creature: c.id })"
+                    class="badge badge-sm badge-outline border-primary/40 text-primary-200 hover:border-primary"
+                >
+                    {{ c.name }}
+                </Link>
+            </div>
+        </section>
+
+        <section v-if="canShowField('effect')" class="space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
+            <!-- eslint-disable-next-line vue/no-v-html -- contenu éditeur riche, sanitizé côté client -->
+            <article v-if="effectHtml" class="prose prose-sm prose-invert max-w-none text-primary-100 capability-effect-prose" v-html="effectHtml" />
+            <p v-else class="text-sm text-primary-400 italic">Aucun effet décrit (texte riche).</p>
+        </section>
 
         <div v-if="bodyFields.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div v-for="fieldKey in bodyFields" :key="fieldKey" class="p-3 bg-base-200 entity-radius-box">
@@ -402,5 +476,10 @@ const handleAction = async (actionKey) => {
 <style scoped>
 .entity-radius-box {
     border-radius: var(--radius-box, 0.1rem);
+}
+
+:deep(.capability-effect-prose a) {
+    color: var(--color-primary-300, inherit);
+    text-decoration: underline;
 }
 </style>

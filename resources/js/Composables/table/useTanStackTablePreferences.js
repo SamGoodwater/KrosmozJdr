@@ -38,11 +38,11 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
     const pageSize = ref(saved?.pageSize || defaults.pageSize || null);
     /** displayMode: 'table' | 'line' | 'minimal'. Défaut: 'line'. */
     const displayMode = ref(saved?.displayMode ?? defaults.displayMode ?? "line");
-    /** Quick edit panel (liste) : activé par défaut si droit (UI gérée par le parent). */
+    /** Quick edit panel : désactivé par défaut ; l’utilisateur réactive via le toggle (persisté). */
     const quickEditEnabled = ref(
         typeof saved?.quickEditEnabled === "boolean"
             ? saved.quickEditEnabled
-            : (defaults.quickEditEnabled !== false),
+            : (defaults.quickEditEnabled === true),
     );
     /**
      * Tri multi (TanStack) persisté : [{ id: string, desc: boolean }, ...]

@@ -332,7 +332,7 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
       id: "specializations.index",
       entityType: "specialization",
       quickEdit: {
-        enabled: false,
+        enabled: true,
         permission: "updateAny",
       },
       actions: {

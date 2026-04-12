@@ -557,7 +557,7 @@ export function getNpcFieldDescriptors(ctx = {}) {
       id: "npcs.index",
       entityType: "npc",
       quickEdit: {
-        enabled: false,
+        enabled: true,
         permission: "updateAny",
       },
       actions: {
