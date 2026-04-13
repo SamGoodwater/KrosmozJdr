@@ -11,7 +11,6 @@
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
@@ -19,9 +18,9 @@ import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
+import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -95,7 +94,11 @@ const nameCell = computed(() => getCell("creature_name"));
 const imageCell = computed(() => getCell("creature_image"));
 const raceCell = computed(() => getCell("monster_race"));
 const sizeCell = computed(() => getCell("size"));
-const isBossCell = computed(() => getCell("is_boss"));
+/** Boss : données modèle ou cellule tableau (vue ligne). */
+const isBossMonster = computed(() =>
+    Boolean(entity.value?.isBoss ?? entity.value?._data?.is_boss),
+);
+const bossPaCell = computed(() => getCell("boss_pa"));
 const hostilityCell = computed(() => cellForKey("creature_hostility"));
 
 const descriptionFull = computed(
@@ -198,37 +201,35 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                         </div>
                     </div>
                     <div class="flex flex-wrap items-center gap-2 text-sm">
-                        <Badge
+                        <CellRenderer
                             v-if="raceCell?.value && raceCell.value !== '-' && raceCell.value !== '—'"
-                            color="auto"
-                            :auto-label="String(raceCell.value)"
-                            auto-scheme="labelHash"
-                            auto-tone="light"
-                            variant="soft"
-                            size="xs"
-                        >
-                            {{ raceCell.value }}
-                        </Badge>
-                        <Tooltip
+                            :cell="raceCell"
+                            class="inline-flex text-xs"
+                        />
+                        <CellRenderer
                             v-if="sizeCell?.value && sizeCell.value !== '-' && sizeCell.value !== '—'"
-                            :content="`Taille: ${sizeCell.value}`"
-                        >
-                            <span class="text-xs text-base-content/80">{{ sizeCell.value }}</span>
-                        </Tooltip>
-                        <Tooltip
+                            :cell="sizeCell"
+                            class="inline-flex text-xs text-base-content/80"
+                        />
+                        <CellRenderer
                             v-if="
                                 hostilityCell?.value &&
                                 hostilityCell.value !== '-' &&
                                 hostilityCell.value !== '—'
                             "
-                            content="Hostilité"
-                        >
-                            <span class="text-xs font-medium text-base-content/85">{{ hostilityCell.value }}</span>
-                        </Tooltip>
+                            :cell="hostilityCell"
+                            class="inline-flex text-xs font-medium text-base-content/85"
+                        />
+                        <MonsterBossMark v-if="isBossMonster" size-class="h-6 w-6" class="align-middle" />
                         <CellRenderer
-                            v-if="isBossCell?.value && String(isBossCell.value).trim() !== ''"
-                            :cell="isBossCell"
-                            class="inline-flex"
+                            v-if="
+                                isBossMonster &&
+                                bossPaCell?.value &&
+                                bossPaCell.value !== '—' &&
+                                String(bossPaCell.value).trim() !== ''
+                            "
+                            :cell="bossPaCell"
+                            class="inline-flex text-xs text-base-content/90"
                         />
                     </div>
                     <p

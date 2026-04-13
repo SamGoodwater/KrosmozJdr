@@ -14,13 +14,11 @@
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
@@ -28,6 +26,7 @@ import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descripto
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
+import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 
 const props = defineProps({
     monster: {
@@ -102,26 +101,6 @@ const imageUrl = computed(() => {
 
 const creatureName = computed(() => creatureData.value?.name ?? "—");
 
-const raceName = computed(() => {
-    const r = entity.value?.monsterRace ?? entity.value?._data?.monsterRace;
-    return r?.name ?? r?.label ?? null;
-});
-
-const sizeLabels = {
-    0: "Minuscule",
-    1: "Petit",
-    2: "Moyen",
-    3: "Grand",
-    4: "Colossal",
-    5: "Gigantesque",
-};
-
-const sizeLabel = computed(() => {
-    const s = entity.value?.size ?? entity.value?._data?.size;
-    if (s === null || typeof s === "undefined") return null;
-    return sizeLabels[Number(s)] ?? String(s);
-});
-
 const isBoss = computed(() => Boolean(entity.value?.isBoss ?? entity.value?._data?.is_boss));
 
 const descriptionFull = computed(() => {
@@ -161,6 +140,8 @@ const hasRelationsChips = computed(() => {
     return Array.isArray(items) && items.length > 0;
 });
 
+const raceCell = computed(() => getSummaryCell("monster_race"));
+const sizeCell = computed(() => getSummaryCell("size"));
 const hostilityCell = computed(() => getSummaryCell("creature_hostility"));
 const bossPaCell = computed(() => getSummaryCell("boss_pa"));
 
@@ -244,26 +225,22 @@ const handleAction = async (actionKey) => {
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Badge
-                                v-if="raceName"
-                                color="auto"
-                                :auto-label="raceName"
-                                auto-scheme="labelHash"
-                                auto-tone="light"
-                                variant="soft"
-                                size="xs"
-                            >
-                                {{ raceName }}
-                            </Badge>
-                            <Tooltip v-if="sizeLabel" :content="`Taille: ${sizeLabel}`" placement="top">
-                                <span class="text-base-content/80">{{ sizeLabel }}</span>
-                            </Tooltip>
+                            <CellRenderer
+                                v-if="raceCell?.value && raceCell.value !== '-' && raceCell.value !== '—'"
+                                :cell="raceCell"
+                                class="inline-flex text-xs"
+                            />
+                            <CellRenderer
+                                v-if="sizeCell?.value && sizeCell.value !== '-' && sizeCell.value !== '—'"
+                                :cell="sizeCell"
+                                class="inline-flex text-[11px] text-base-content/80"
+                            />
                             <CellRenderer
                                 v-if="canShowField('creature_hostility') && hostilityCell?.value !== '—'"
                                 :cell="hostilityCell"
                                 class="inline-flex text-[11px] text-base-content/85"
                             />
-                            <Badge v-if="isBoss" color="error" variant="soft" size="xs">Boss</Badge>
+                            <MonsterBossMark v-if="isBoss" size-class="h-6 w-6" />
                             <CellRenderer
                                 v-if="isBoss && canShowField('boss_pa') && bossPaCell?.value !== '—'"
                                 :cell="bossPaCell"
@@ -331,26 +308,22 @@ const handleAction = async (actionKey) => {
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Badge
-                                v-if="raceName"
-                                color="auto"
-                                :auto-label="raceName"
-                                auto-scheme="labelHash"
-                                auto-tone="light"
-                                variant="soft"
-                                size="xs"
-                            >
-                                {{ raceName }}
-                            </Badge>
-                            <Tooltip v-if="sizeLabel" :content="`Taille: ${sizeLabel}`" placement="top">
-                                <span class="text-base-content/80">{{ sizeLabel }}</span>
-                            </Tooltip>
+                            <CellRenderer
+                                v-if="raceCell?.value && raceCell.value !== '-' && raceCell.value !== '—'"
+                                :cell="raceCell"
+                                class="inline-flex text-xs"
+                            />
+                            <CellRenderer
+                                v-if="sizeCell?.value && sizeCell.value !== '-' && sizeCell.value !== '—'"
+                                :cell="sizeCell"
+                                class="inline-flex text-[11px] text-base-content/80"
+                            />
                             <CellRenderer
                                 v-if="canShowField('creature_hostility') && hostilityCell?.value !== '—'"
                                 :cell="hostilityCell"
                                 class="inline-flex text-[11px] text-base-content/85"
                             />
-                            <Badge v-if="isBoss" color="error" variant="soft" size="xs">Boss</Badge>
+                            <MonsterBossMark v-if="isBoss" size-class="h-6 w-6" />
                             <CellRenderer
                                 v-if="isBoss && canShowField('boss_pa') && bossPaCell?.value !== '—'"
                                 :cell="bossPaCell"

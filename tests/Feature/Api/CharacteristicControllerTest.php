@@ -37,6 +37,9 @@ class CharacteristicControllerTest extends TestCase
             $this->assertArrayHasKey($group, $data, "Groupe manquant : {$group}");
         }
 
+        $this->assertArrayHasKey('byMonsterField', $data['creature']);
+        $this->assertIsArray($data['creature']['byMonsterField']);
+
         if (isset($data['creature']['byDbColumn'])) {
             $this->assertIsArray($data['creature']['byDbColumn']);
             if (count($data['creature']['byDbColumn']) > 0) {

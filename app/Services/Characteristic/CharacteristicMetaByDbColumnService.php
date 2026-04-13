@@ -268,11 +268,38 @@ final class CharacteristicMetaByDbColumnService
     }
 
     /**
-     * Agrège toutes les caractéristiques pour le frontend (chargement au démarrage).
-     * Structure compatible avec meta.characteristics actuelle.
+     * Métadonnées pour champs propres au modèle Monster (taille, race), indexés comme en UI (`size`, `monster_race`).
      *
-     * @return array<string, array{byDbColumn: array, byComputedKey?: array, byCharacteristicKey?: array, byDofusdbId?: array}>
+     * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
      */
+    public function buildMonsterFieldMeta(): array
+    {
+        $out = [];
+        try {
+            $map = [
+                'monster_size' => 'size',
+                'monster_race' => 'monster_race',
+            ];
+            $chars = Characteristic::query()
+                ->whereIn('key', array_keys($map))
+                ->with('masterCharacteristic')
+                ->get();
+            foreach ($chars as $c) {
+                $uiKey = $map[$c->key] ?? null;
+                if ($uiKey === null) {
+                    continue;
+                }
+                $entry = $this->rowToDefinitionFromCharacteristic($c);
+                if ($entry !== null) {
+                    $out[$uiKey] = $entry;
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return $out;
+    }
+
     /**
      * Invalide le cache des métadonnées caractéristiques (icônes, couleurs, libellés) exposé au frontend.
      */
@@ -281,6 +308,11 @@ final class CharacteristicMetaByDbColumnService
         Cache::forget(self::FRONTEND_CACHE_KEY);
     }
 
+    /**
+     * Agrège toutes les caractéristiques pour le frontend (chargement au démarrage).
+     *
+     * @return array<string, mixed>
+     */
     public function buildAllForFrontend(): array
     {
         return Cache::remember(self::FRONTEND_CACHE_KEY, 300, function () {
@@ -288,6 +320,7 @@ final class CharacteristicMetaByDbColumnService
                 'creature' => [
                     'byDbColumn' => $this->buildCreatureByDbColumn(),
                     'byComputedKey' => $this->buildCreatureComputedByKey(),
+                    'byMonsterField' => $this->buildMonsterFieldMeta(),
                 ],
                 'spell' => [
                     'byDbColumn' => $this->buildSpellByDbColumn(),

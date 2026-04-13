@@ -2026,4 +2026,17 @@ return [
         'conversion_dofus_sample' => null,
         'conversion_krosmoz_sample' => null,
     ],
+    110 => [
+        'characteristic_key' => 'hostility_creature',
+        'entity' => '*',
+        'db_column' => 'hostility',
+        'min' => '0',
+        'max' => '4',
+        'formula' => null,
+        'formula_display' => 'Échelle 0\u20134 : Amical \u2192 Agressif.',
+        'default_value' => '2',
+        'conversion_formula' => null,
+        'conversion_dofus_sample' => null,
+        'conversion_krosmoz_sample' => null,
+    ],
 ];

@@ -416,6 +416,9 @@ const ariaLiveMessage = ref("");
 const { listPresets, createPreset, updatePreset, deletePreset } = useTableFilterPresets();
 const presetsLoading = ref(false);
 const presetsEnabled = computed(() => {
+    if (props.config?.features?.filterPresets === false) {
+        return false;
+    }
     const fromProp = String(props.entityType || "");
     const fromConfig = String(props.config?._metadata?.entityType || props.config?.entityType || "");
     return Boolean(fromProp || fromConfig);

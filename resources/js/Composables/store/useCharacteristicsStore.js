@@ -115,6 +115,17 @@ export function getByDofusdbIdMap(group) {
     return (byId && typeof byId === "object") ? byId : {};
 }
 
+/**
+ * Champs fiche monstre (taille, race) — métadonnées service caractéristiques.
+ *
+ * @returns {Record<string, object>}
+ */
+export function getMonsterFieldMeta() {
+    const data = getRawData();
+    const raw = data?.creature?.byMonsterField;
+    return raw && typeof raw === "object" ? raw : {};
+}
+
 export function useCharacteristicsStore() {
     return {
         getRawData,
@@ -126,5 +137,6 @@ export function useCharacteristicsStore() {
         getByComputedKeyMap,
         getByCharacteristicKeyMap,
         getByDofusdbIdMap,
+        getMonsterFieldMeta,
     };
 }

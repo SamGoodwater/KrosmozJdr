@@ -28,6 +28,7 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entit
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
+import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 
 const props = defineProps({
     monster: {
@@ -88,7 +89,11 @@ const canShowField = (fieldKey) => {
 };
 
 const headlineFields = computed(() =>
-    ["creature_level", "monster_race", "size", "is_boss", "state"].filter(canShowField),
+    ["creature_level", "monster_race", "size", "state"].filter(canShowField),
+);
+
+const isBossMonster = computed(() =>
+    Boolean(props.monster?.isBoss ?? props.monster?._data?.is_boss),
 );
 
 const metaFields = computed(() =>
@@ -271,9 +276,12 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #title>
-                <h3 class="text-lg font-semibold text-primary-100 truncate">
-                    <CellRenderer :cell="getCell('creature_name')" ui-color="primary" />
-                </h3>
+                <div class="flex min-w-0 items-center gap-2">
+                    <h3 class="min-w-0 flex-1 truncate text-lg font-semibold text-primary-100">
+                        <CellRenderer :cell="getCell('creature_name')" ui-color="primary" />
+                    </h3>
+                    <MonsterBossMark v-if="isBossMonster" size-class="h-7 w-7" class="shrink-0" />
+                </div>
             </template>
 
             <template #actions>

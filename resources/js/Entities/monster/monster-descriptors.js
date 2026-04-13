@@ -940,7 +940,9 @@ export function getMonsterFieldDescriptors(ctx = {}) {
           placeholder: 'Rechercher un monstre…',
           debounceMs: 200,
         },
-        filters: { enabled: true },
+        filters: { enabled: false },
+        /** Désactive presets API (lecture/écriture) pour cette table. */
+        filterPresets: false,
         pagination: {
           enabled: true,
           perPage: { default: 25, options: [10, 25, 50, 100] },

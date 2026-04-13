@@ -13,7 +13,7 @@
  * const label = getEntityFieldShortLabel("level", "Niveau"); // "nvx"
  */
 
-import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
+import { getByDbColumnMap, getMonsterFieldMeta } from '@/Composables/store/useCharacteristicsStore';
 
 /**
  * Retourne le tooltip le plus pertinent pour un champ.
@@ -31,6 +31,30 @@ export function getEntityFieldTooltip(desc) {
       desc?.edit?.form?.help ||
       "",
   );
+}
+
+/**
+ * Tooltip d’une propriété à partir du service caractéristiques (helper + descriptions).
+ *
+ * @param {object|null} def - Entrée `characteristics` (helper, descriptions, name…)
+ * @param {string} [valueDisplay] - Valeur affichée (ex. « Moyen », « Neutre »)
+ * @returns {string}
+ */
+export function formatCharacteristicPropertyTooltip(def, valueDisplay = "") {
+  if (!def || typeof def !== "object") return String(valueDisplay || "");
+  const helper = typeof def.helper === "string" ? def.helper.trim() : "";
+  const descRaw = def.descriptions;
+  const desc = Array.isArray(descRaw)
+    ? descRaw.map((p) => String(p).trim()).filter(Boolean).join(" ")
+    : String(descRaw || "").trim();
+  const core = [helper, desc].filter(Boolean).join(" ").trim();
+  const title = String(def.short_name || def.name || "").trim();
+  const val = String(valueDisplay || "").trim();
+  if (val && title) {
+    return core ? `${title} : ${val}. ${core}` : `${title} : ${val}.`;
+  }
+  if (core) return core;
+  return val || title;
 }
 
 /**
@@ -118,20 +142,37 @@ export function getCharacteristicsEntityAliases(entityType) {
  */
 export function getEntityCharacteristicsByDbColumn(tableMeta, entityType) {
   const aliases = getCharacteristicsEntityAliases(entityType);
+  let base = {};
   for (const alias of aliases) {
     const byDbColumn = getByDbColumnMap(alias);
     if (byDbColumn && Object.keys(byDbColumn).length > 0) {
-      return byDbColumn;
+      base = { ...byDbColumn };
+      break;
     }
   }
-  const characteristics = tableMeta?.characteristics || {};
-  for (const alias of aliases) {
-    const byDbColumn = characteristics?.[alias]?.byDbColumn;
-    if (byDbColumn && typeof byDbColumn === "object") {
-      return byDbColumn;
+  if (Object.keys(base).length === 0) {
+    const characteristics = tableMeta?.characteristics || {};
+    for (const alias of aliases) {
+      const byDbColumn = characteristics?.[alias]?.byDbColumn;
+      if (byDbColumn && typeof byDbColumn === "object") {
+        base = { ...byDbColumn };
+        break;
+      }
     }
   }
-  return {};
+  const et = String(entityType || "").toLowerCase();
+  if (et === "monster" || aliases.includes("monster")) {
+    const fromPage = getMonsterFieldMeta();
+    const fromMeta = tableMeta?.characteristics?.creature?.byMonsterField;
+    const monsterExtras = {
+      ...(fromPage && typeof fromPage === "object" ? fromPage : {}),
+      ...(fromMeta && typeof fromMeta === "object" ? fromMeta : {}),
+    };
+    if (Object.keys(monsterExtras).length > 0) {
+      return { ...base, ...monsterExtras };
+    }
+  }
+  return base;
 }
 
 /**

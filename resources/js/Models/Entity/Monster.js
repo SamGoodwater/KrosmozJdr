@@ -11,7 +11,8 @@
 import { BaseModel } from '../BaseModel';
 import CharacteristicsCard from '@/Pages/Organismes/data-display/CharacteristicsCard.vue';
 import { buildCreatureCharacteristicGroups } from '@/Utils/Entity/buildCreatureCharacteristicGroups';
-import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
+import { getByDbColumnMap, getMonsterFieldMeta } from '@/Composables/store/useCharacteristicsStore';
+import { formatCharacteristicPropertyTooltip } from '@/Utils/Entity/entity-view-ui';
 
 export class Monster extends BaseModel {
     // ============================================
@@ -126,6 +127,22 @@ export class Monster extends BaseModel {
         return null;
     }
 
+    /**
+     * Métadonnées service (taille, race) — `creature.byMonsterField` ou store Inertia.
+     *
+     * @param {Object} options
+     * @param {'size'|'monster_race'} fieldKey
+     * @returns {object|null}
+     */
+    _getMonsterDisplayFieldDef(options = {}, fieldKey) {
+        const ctx = options?.ctx?.characteristics?.creature?.byMonsterField;
+        if (ctx && ctx[fieldKey]) {
+            return ctx[fieldKey];
+        }
+        const map = getMonsterFieldMeta();
+        return map?.[fieldKey] ?? null;
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -224,6 +241,8 @@ export class Monster extends BaseModel {
         if (creatureKey === 'hostility') {
             const labels = { 0: 'Amical', 1: 'Curieux', 2: 'Neutre', 3: 'Hostile', 4: 'Agressif' };
             const displayRaw = labels[Number(raw)] ?? String(raw);
+            const def = this._getCreatureCharacteristicDef(_options, ['hostility']);
+            const tooltip = formatCharacteristicPropertyTooltip(def, displayRaw);
             return {
                 type: 'text',
                 value: displayRaw,
@@ -231,6 +250,7 @@ export class Monster extends BaseModel {
                     sortValue: Number(raw),
                     searchValue: displayRaw,
                     filterValue: String(raw),
+                    tooltip: tooltip || displayRaw,
                 },
             };
         }
@@ -510,6 +530,11 @@ export class Monster extends BaseModel {
         }
 
         const raceName = monsterRace.name || monsterRace.label || '-';
+        const def = this._getMonsterDisplayFieldDef(_options, 'monster_race');
+        const tooltip =
+            raceName === '-'
+                ? ''
+                : formatCharacteristicPropertyTooltip(def, raceName) || raceName;
 
         return {
             type: 'badge',
@@ -519,7 +544,7 @@ export class Monster extends BaseModel {
                 autoLabel: raceName,
                 autoScheme: 'labelHash',
                 autoTone: 'light',
-                tooltip: raceName === '-' ? '' : raceName,
+                tooltip,
                 sortValue: raceName,
                 searchValue: raceName,
             },
@@ -541,7 +566,12 @@ export class Monster extends BaseModel {
             5: 'Gigantesque',
         };
         const label = sizeValue !== null && sizeLabels[sizeValue] ? sizeLabels[sizeValue] : (sizeValue !== null ? String(sizeValue) : '-');
-        
+        const def = this._getMonsterDisplayFieldDef(_options, 'size');
+        const tooltip =
+            label === '-'
+                ? ''
+                : formatCharacteristicPropertyTooltip(def, label) || (sizeValue !== null ? `Taille : ${label}` : '');
+
         return {
             type: 'text',
             value: label,
@@ -549,6 +579,7 @@ export class Monster extends BaseModel {
                 sortValue: sizeValue ?? 0,
                 searchValue: label === '-' ? '' : label,
                 filterValue: sizeValue !== null ? String(sizeValue) : null,
+                tooltip,
             },
         };
     }
