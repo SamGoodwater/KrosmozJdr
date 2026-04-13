@@ -21,6 +21,5 @@ defineProps({
     entity-prop="capability"
     :minimal-component="CapabilityViewMinimal"
     fallback-icon="fa-solid fa-magic"
-    minimal-display-mode="hover"
   />
 </template>

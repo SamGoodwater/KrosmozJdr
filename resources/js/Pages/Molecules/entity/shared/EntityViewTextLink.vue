@@ -47,6 +47,12 @@ const props = defineProps({
   /** Placement du « tooltip » (Floating UI). */
   placement: { type: String, default: "bottom-start" },
   showActionsOnHover: { type: Boolean, default: false },
+  /**
+   * Conservé pour compatibilité ; ignoré pour le rendu : l’aperçu minimal utilise toujours
+   * `displayMode: 'extended'` sur la vue cible. Le survol sur le **nom** ouvre déjà le tooltip ;
+   * évite d’exiger un second survol sur la carte (`hover`) pour voir le bloc « étendu ».
+   * @deprecated Ne plus se fier à cette prop.
+   */
   minimalDisplayMode: {
     type: String,
     default: "extended",
@@ -85,7 +91,8 @@ const nameCell = computed(() => {
 const minimalBind = computed(() => ({
   [props.entityProp]: props.entity,
   showActions: props.showActionsOnHover,
-  displayMode: props.minimalDisplayMode,
+  /** Toujours extended : le tooltip remplace le « survol sur la carte minimal » du contexte liste. */
+  displayMode: "extended",
   ...(Object.keys(props.tableMeta || {}).length > 0 ? { tableMeta: props.tableMeta } : {}),
   ...(props.characteristicRuntime != null
     ? { characteristicRuntime: props.characteristicRuntime }

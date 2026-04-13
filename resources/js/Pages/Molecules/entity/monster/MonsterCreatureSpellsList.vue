@@ -4,7 +4,7 @@
  *
  * @description
  * Affiche une liste compacte : icône / vignette + nom ; au survol, `SpellViewMinimal`.
- * Données attendues : `creature.spells[]` avec au minimum `id`, `name`, `image`, `level`.
+ * Données attendues : `creature.spells[]` au format API table (SpellResource + usages d’effets), pour PA/PO/effets dans le tooltip.
  *
  * @props {Object|null} creature - Créature (souvent `monster.creature`) avec relation `spells`
  * @props {Object} [tableMeta] - Meta tableau / contexte pour les cellules
@@ -48,7 +48,6 @@ const spellModels = computed(() => {
                     fallback-icon="fa-solid fa-wand-magic-sparkles"
                     ui-color="primary"
                     :show-actions-on-hover="false"
-                    minimal-display-mode="extended"
                     hover-width-class="w-80 max-w-[min(92vw,22rem)]"
                     :table-meta="tableMeta"
                     :characteristic-runtime="characteristicRuntime"

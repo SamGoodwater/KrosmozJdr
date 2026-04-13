@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Entity\SpellResource;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\Type\MonsterRace;
+use App\Services\Effect\SpellEffectUsagesDataService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -37,6 +39,10 @@ use Illuminate\Support\Facades\Gate;
  */
 class MonsterTableController extends Controller
 {
+    public function __construct(
+        private readonly SpellEffectUsagesDataService $spellEffectUsagesDataService
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Monster::class);
@@ -73,7 +79,15 @@ class MonsterTableController extends Controller
         $query = Monster::query()
             ->with([
                 'creature' => fn ($q) => $q
-                    ->with(['spells' => fn ($sq) => $sq->orderBy('name')])
+                    ->with([
+                        'spells' => fn ($sq) => $sq
+                            ->orderBy('name')
+                            ->with([
+                                'spellTypes',
+                                'spellEffects.spellEffectType',
+                                'effects.degrees.effectSubEffects.subEffect',
+                            ]),
+                    ])
                     ->withCount(['resources', 'items', 'consumables']),
                 'monsterRace',
             ])
@@ -200,7 +214,7 @@ class MonsterTableController extends Controller
 
         // Mode "entities" : retourner les entités brutes (monstre + créature complète pour le tableau)
         if ($format === 'entities') {
-            $entities = $rows->map(function (Monster $m) {
+            $entities = $rows->map(function (Monster $m) use ($request) {
                 $creature = null;
                 if ($m->creature) {
                     $c = $m->creature;
@@ -272,12 +286,15 @@ class MonsterTableController extends Controller
                         'save_chance_mastery' => $c->save_chance_mastery ?? 0,
                         'save_agility_mastery' => $c->save_agility_mastery ?? 0,
                         'spells' => $c->relationLoaded('spells')
-                            ? $c->spells->map(fn (Spell $s) => [
-                                'id' => $s->id,
-                                'name' => $s->name,
-                                'image' => $s->image,
-                                'level' => $s->level,
-                            ])->values()->all()
+                            ? $c->spells->map(function (Spell $s) use ($request) {
+                                $usage = $this->spellEffectUsagesDataService->build($s);
+                                $base = (new SpellResource($s))->toArray($request);
+
+                                return array_merge($base, [
+                                    'effect_usages_summary' => $usage['summary'],
+                                    'effect_usages_chips' => $usage['chips'],
+                                ]);
+                            })->values()->all()
                             : [],
                     ];
                 }
