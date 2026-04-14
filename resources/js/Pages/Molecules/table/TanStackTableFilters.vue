@@ -59,7 +59,6 @@ const values = computed(() => unref(props.filterValues) || {});
 const getOptions = (col) => {
     const id = col?.filter?.id;
     if (id && Array.isArray(props.filterOptions?.[id])) return props.filterOptions[id];
-    if (Array.isArray(col?.filter?.options)) return col.filter.options;
     return [];
 };
 

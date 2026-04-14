@@ -93,7 +93,7 @@ const headlineFields = computed(() =>
     ["creature_level", "monster_race", "size", "state"].filter(canShowField),
 );
 
-const isBossMonster = computed(() =>
+const isBoss = computed(() =>
     Boolean(props.monster?.isBoss ?? props.monster?._data?.is_boss),
 );
 
@@ -301,11 +301,16 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #title>
-                <div class="flex flex-wrap items-center gap-2">
-                    <h2 class="text-2xl font-bold text-primary-100 break-words">
+                <div class="flex min-w-0 items-start gap-3">
+                    <MonsterBossMark
+                        v-if="isBoss && canShowField('is_boss')"
+                        :tooltip="getFieldTooltip('is_boss')"
+                        size-class="h-10 w-10"
+                        class="mt-1 shrink-0"
+                    />
+                    <h2 class="min-w-0 flex-1 break-words text-2xl font-bold text-primary-100">
                         <CellRenderer :cell="getCell('creature_name')" ui-color="primary" />
                     </h2>
-                    <MonsterBossMark v-if="isBossMonster" size-class="h-8 w-8" class="shrink-0" />
                 </div>
             </template>
 

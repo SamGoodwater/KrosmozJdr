@@ -3,7 +3,7 @@
  * Marqueur visuel « Boss » (icône dédiée) pour les profils monstre boss.
  *
  * @description
- * Affiche `public/images/entity/monsters/boss.webp` (à placer côté déploiement).
+ * Affiche l’icône caractéristique `boss.webp` (storage public + lien symbolique).
  * En cas d’absence / erreur de chargement, repli sur une icône Font Awesome.
  *
  * @props {string} [tooltip] - Texte du survol (règle boss + PA bonus)
@@ -13,8 +13,8 @@ import { ref } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
-/** Fichier public : placez `boss.webp` à cet emplacement. */
-const MONSTER_BOSS_ICON_PUBLIC_PATH = "/images/entity/monsters/boss.webp";
+/** Icône service caractéristiques (`storage/app/public/images/icons/caracteristics/boss.webp`). */
+const MONSTER_BOSS_ICON_PUBLIC_PATH = "/storage/images/icons/caracteristics/boss.webp";
 
 defineProps({
     tooltip: {

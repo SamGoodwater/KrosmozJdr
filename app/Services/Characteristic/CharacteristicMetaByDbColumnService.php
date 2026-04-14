@@ -279,6 +279,7 @@ final class CharacteristicMetaByDbColumnService
             $map = [
                 'monster_size' => 'size',
                 'monster_race' => 'monster_race',
+                'monster_is_boss' => 'is_boss',
             ];
             $chars = Characteristic::query()
                 ->whereIn('key', array_keys($map))

@@ -235,6 +235,27 @@ export function resolveEntityFieldUi(options = {}) {
 }
 
 /**
+ * Indique si une cellule tableau a du contenu affichable (`CellRenderer`).
+ * Les cellules `chips` ont souvent `value === ''` (données dans `params.items`).
+ *
+ * @param {object|null|undefined} cell
+ * @returns {boolean}
+ */
+export function cellHasRenderableContent(cell) {
+  if (!cell || typeof cell !== "object") return false;
+  const t = String(cell.type || "");
+  if (t === "chips") {
+    const items = cell.params?.items;
+    return Array.isArray(items) && items.length > 0;
+  }
+  const v = cell.value;
+  if (v === null || typeof v === "undefined") return false;
+  const s = String(v).trim();
+  if (s === "" || s === "-" || s === "—") return false;
+  return true;
+}
+
+/**
  * Détermine le style de badge d'un champ (couleur + auto params).
  * Priorise:
  * 1) couleur de cellule (`cell.params.color`)

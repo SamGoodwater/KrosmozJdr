@@ -40,7 +40,9 @@ export class Monster extends BaseModel {
     }
 
     get size() {
-        return this._data.size || null;
+        // 0 = Minuscule : ne pas utiliser || (0 serait assimilé à « vide »).
+        const raw = this._data.size;
+        return raw === null || raw === undefined ? null : raw;
     }
 
     get monsterRaceId() {
@@ -143,6 +145,22 @@ export class Monster extends BaseModel {
         return map?.[fieldKey] ?? null;
     }
 
+    /**
+     * Affichage chips pour taille / hostilité : vue minimal ou ligne → icône + valeur uniquement ;
+     * tableau, compact, étendu → icône + libellé caractéristique + valeur.
+     *
+     * @param {Object} options - Options `toCell` (context: minimal | line | table | compact | extended, …)
+     * @returns {{ labelMode: 'icon-only' | 'full' }}
+     * @private
+     */
+    _resolveChipsLayoutForTraitDisplay(options = {}) {
+        const ctx = String(options?.context || 'table');
+        if (ctx === 'minimal' || ctx === 'line') {
+            return { labelMode: 'icon-only' };
+        }
+        return { labelMode: 'full' };
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -242,7 +260,29 @@ export class Monster extends BaseModel {
             const labels = { 0: 'Amical', 1: 'Curieux', 2: 'Neutre', 3: 'Hostile', 4: 'Agressif' };
             const displayRaw = labels[Number(raw)] ?? String(raw);
             const def = this._getCreatureCharacteristicDef(_options, ['hostility']);
-            const tooltip = formatCharacteristicPropertyTooltip(def, displayRaw);
+            if (def) {
+                return {
+                    type: 'chips',
+                    value: '',
+                    params: {
+                        items: [
+                            {
+                                icon: def.icon || null,
+                                color: def.color || null,
+                                value: displayRaw,
+                                name: def.name,
+                                shortLabel: def.short_name,
+                                helper: def.helper,
+                                descriptions: def.descriptions,
+                            },
+                        ],
+                        chipsLayout: this._resolveChipsLayoutForTraitDisplay(_options),
+                        sortValue: Number(raw),
+                        searchValue: displayRaw,
+                        filterValue: String(raw),
+                    },
+                };
+            }
             return {
                 type: 'text',
                 value: displayRaw,
@@ -250,7 +290,7 @@ export class Monster extends BaseModel {
                     sortValue: Number(raw),
                     searchValue: displayRaw,
                     filterValue: String(raw),
-                    tooltip: tooltip || displayRaw,
+                    tooltip: formatCharacteristicPropertyTooltip(def, displayRaw) || displayRaw,
                 },
             };
         }
@@ -258,7 +298,6 @@ export class Monster extends BaseModel {
         const characteristicDef = this._getCreatureCharacteristicDef(_options, [creatureKey]);
         if (characteristicDef) {
             const value = String(raw);
-            const label = characteristicDef?.short_name || characteristicDef?.name || creatureKey.toUpperCase();
             const numericSort = Number(raw);
             return {
                 type: 'chips',
@@ -269,7 +308,10 @@ export class Monster extends BaseModel {
                             icon: characteristicDef.icon || null,
                             color: characteristicDef.color || null,
                             value,
-                            tooltip: `${label}: ${value}`,
+                            name: characteristicDef.name,
+                            shortLabel: characteristicDef.short_name,
+                            helper: characteristicDef.helper,
+                            descriptions: characteristicDef.descriptions,
                         },
                     ],
                     sortValue: Number.isFinite(numericSort) ? numericSort : value,
@@ -567,17 +609,52 @@ export class Monster extends BaseModel {
         };
         const label = sizeValue !== null && sizeLabels[sizeValue] ? sizeLabels[sizeValue] : (sizeValue !== null ? String(sizeValue) : '-');
         const def = this._getMonsterDisplayFieldDef(_options, 'size');
+
+        if (label === '-') {
+            return {
+                type: 'text',
+                value: '-',
+                params: {
+                    sortValue: '',
+                    searchValue: '',
+                    filterValue: null,
+                },
+            };
+        }
+
+        if (def) {
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [
+                        {
+                            icon: def.icon || null,
+                            color: def.color || null,
+                            value: label,
+                            name: def.name,
+                            shortLabel: def.short_name,
+                            helper: def.helper,
+                            descriptions: def.descriptions,
+                        },
+                    ],
+                    chipsLayout: this._resolveChipsLayoutForTraitDisplay(_options),
+                    sortValue: sizeValue ?? 0,
+                    searchValue: label,
+                    filterValue: sizeValue !== null ? String(sizeValue) : null,
+                },
+            };
+        }
+
         const tooltip =
-            label === '-'
-                ? ''
-                : formatCharacteristicPropertyTooltip(def, label) || (sizeValue !== null ? `Taille : ${label}` : '');
+            formatCharacteristicPropertyTooltip(def, label) || (sizeValue !== null ? `Taille : ${label}` : '');
 
         return {
             type: 'text',
             value: label,
             params: {
                 sortValue: sizeValue ?? 0,
-                searchValue: label === '-' ? '' : label,
+                searchValue: label,
                 filterValue: sizeValue !== null ? String(sizeValue) : null,
                 tooltip,
             },

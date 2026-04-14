@@ -593,7 +593,6 @@ export function getMonsterFieldDescriptors(ctx = {}) {
           id: 'state',
           type: 'multi',
           defaultVisible: true,
-          options: getEntityStateOptions(),
         },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {
@@ -940,9 +939,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
           placeholder: 'Rechercher un monstre…',
           debounceMs: 200,
         },
-        filters: { enabled: false },
-        /** Désactive presets API (lecture/écriture) pour cette table. */
-        filterPresets: false,
+        filters: { enabled: true },
         pagination: {
           enabled: true,
           perPage: { default: 25, options: [10, 25, 50, 100] },

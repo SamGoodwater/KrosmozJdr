@@ -27,6 +27,7 @@ import { provideCharacteristicRuntime } from "@/Composables/entity/characteristi
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
+import { cellHasRenderableContent, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     monster: {
@@ -103,6 +104,15 @@ const creatureName = computed(() => creatureData.value?.name ?? "—");
 
 const isBoss = computed(() => Boolean(entity.value?.isBoss ?? entity.value?._data?.is_boss));
 
+const bossFieldTooltip = computed(() =>
+    resolveEntityFieldUi({
+        fieldKey: "is_boss",
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: "monster",
+    }).tooltip,
+);
+
 const descriptionFull = computed(() => {
     const d = creatureData.value?.description;
     return d && String(d).trim() ? String(d) : "";
@@ -142,6 +152,8 @@ const hasRelationsChips = computed(() => {
 
 const raceCell = computed(() => getSummaryCell("monster_race"));
 const sizeCell = computed(() => getSummaryCell("size"));
+/** Les chips (taille) ont `value` vide : ne pas tester seulement `cell.value`. */
+const showSizeCell = computed(() => cellHasRenderableContent(sizeCell.value));
 const hostilityCell = computed(() => getSummaryCell("creature_hostility"));
 const bossPaCell = computed(() => getSummaryCell("boss_pa"));
 
@@ -199,6 +211,12 @@ const handleAction = async (actionKey) => {
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <MonsterBossMark
+                                v-if="isBoss && canShowField('is_boss')"
+                                :tooltip="bossFieldTooltip"
+                                size-class="h-5 w-5"
+                                class="shrink-0"
+                            />
                             <div class="min-w-0 flex-1">
                                 <Route
                                     v-if="showHref"
@@ -231,7 +249,7 @@ const handleAction = async (actionKey) => {
                                 class="inline-flex text-xs"
                             />
                             <CellRenderer
-                                v-if="sizeCell?.value && sizeCell.value !== '-' && sizeCell.value !== '—'"
+                                v-if="showSizeCell"
                                 :cell="sizeCell"
                                 class="inline-flex text-[11px] text-base-content/80"
                             />
@@ -240,7 +258,6 @@ const handleAction = async (actionKey) => {
                                 :cell="hostilityCell"
                                 class="inline-flex text-[11px] text-base-content/85"
                             />
-                            <MonsterBossMark v-if="isBoss" size-class="h-6 w-6" />
                             <CellRenderer
                                 v-if="isBoss && canShowField('boss_pa') && bossPaCell?.value !== '—'"
                                 :cell="bossPaCell"
@@ -282,6 +299,12 @@ const handleAction = async (actionKey) => {
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <MonsterBossMark
+                                v-if="isBoss && canShowField('is_boss')"
+                                :tooltip="bossFieldTooltip"
+                                size-class="h-5 w-5"
+                                class="shrink-0"
+                            />
                             <div class="min-w-0 flex-1">
                                 <Route
                                     v-if="showHref"
@@ -314,7 +337,7 @@ const handleAction = async (actionKey) => {
                                 class="inline-flex text-xs"
                             />
                             <CellRenderer
-                                v-if="sizeCell?.value && sizeCell.value !== '-' && sizeCell.value !== '—'"
+                                v-if="showSizeCell"
                                 :cell="sizeCell"
                                 class="inline-flex text-[11px] text-base-content/80"
                             />
@@ -323,7 +346,6 @@ const handleAction = async (actionKey) => {
                                 :cell="hostilityCell"
                                 class="inline-flex text-[11px] text-base-content/85"
                             />
-                            <MonsterBossMark v-if="isBoss" size-class="h-6 w-6" />
                             <CellRenderer
                                 v-if="isBoss && canShowField('boss_pa') && bossPaCell?.value !== '—'"
                                 :cell="bossPaCell"

@@ -213,14 +213,32 @@ export function viewModelFromChipItem(item) {
                   : "Non"
               : String(raw);
     const displayValue = unit && v !== "—" ? `${v} ${unit}`.trim() : v;
+
+    const def = i.def && typeof i.def === "object" ? i.def : null;
+    const descRaw = i.descriptions ?? def?.descriptions;
+    const descriptionsStr = Array.isArray(descRaw)
+        ? descRaw.map((p) => String(p).trim()).filter(Boolean).join(" ")
+        : String(descRaw || "").trim();
+
+    const helperRaw = i.helper ?? def?.helper;
+    const helperStr =
+        typeof helperRaw === "string" && helperRaw.trim() !== ""
+            ? helperRaw.trim()
+            : String(i.tooltip || "").trim();
+
+    const name = String(i.name || def?.name || i.label || "").trim();
+    const shortName = String(
+        i.shortLabel || i.short_name || def?.short_name || i.label || "",
+    ).trim();
+
     return {
-        key: i.key || "chip",
-        name: i.name || i.label || "",
-        shortName: i.shortLabel || i.short_name || i.name || i.label || "",
-        icon: i.icon || "",
-        color: i.color || "",
-        helper: i.tooltip || "",
-        descriptions: "",
+        key: i.key || def?.key || "chip",
+        name: name || shortName,
+        shortName: shortName || name,
+        icon: i.icon || def?.icon || "",
+        color: i.color || def?.color || "",
+        helper: helperStr,
+        descriptions: descriptionsStr,
         subtitle: i.subtitle || "",
         unit,
         displayValue,
@@ -233,7 +251,7 @@ export function viewModelFromChipItem(item) {
         substituted: "",
         placeholders: [],
         levelTable: [],
-        tooltipLine: i.tooltip || "",
+        tooltipLine: helperStr,
     };
 }
 

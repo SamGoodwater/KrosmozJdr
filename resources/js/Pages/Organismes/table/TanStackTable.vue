@@ -416,9 +416,6 @@ const ariaLiveMessage = ref("");
 const { listPresets, createPreset, updatePreset, deletePreset } = useTableFilterPresets();
 const presetsLoading = ref(false);
 const presetsEnabled = computed(() => {
-    if (props.config?.features?.filterPresets === false) {
-        return false;
-    }
     const fromProp = String(props.entityType || "");
     const fromConfig = String(props.config?._metadata?.entityType || props.config?.entityType || "");
     return Boolean(fromProp || fromConfig);
@@ -866,9 +863,8 @@ const filterOptions = computed(() => {
 
 /**
  * Options de filtre résolues:
- * - priorité aux options serveur (`props.filterOptions` / `config.filterOptions`)
- * - sinon fallback aux `col.filter.options`
- * - si demandé (`col.filter.ui.optionsMode === 'rows'`) ou si aucune option fournie: génération depuis les rows
+ * - options serveur (`props.filterOptions` / `config.filterOptions`) uniquement (pas de `col.filter.options`)
+ * - si demandé (`col.filter.ui.optionsMode === 'rows'`) et pas d’options serveur : génération depuis les lignes
  */
 const resolvedFilterOptions = computed(() => {
     const base = (filterOptions.value && typeof filterOptions.value === "object") ? filterOptions.value : {};
@@ -881,8 +877,7 @@ const resolvedFilterOptions = computed(() => {
         const mode = String(f?.ui?.optionsMode || "");
         if (mode === "rows") return true;
         const hasServer = Array.isArray(base?.[f.id]) && base[f.id].length > 0;
-        const hasColumn = Array.isArray(f?.options) && f.options.length > 0;
-        return !hasServer && !hasColumn;
+        return !hasServer;
     };
 
     const rows = Array.isArray(props.rows) ? props.rows : [];
@@ -1101,10 +1096,14 @@ const getCellFor = (row, col) => {
         // Récupérer les descriptors avec le contexte complet stocké dans _metadata
         const context = props.config?._metadata?.context || {};
         const descriptors = props.entityType ? getEntityConfig(props.entityType)?.getDescriptors?.(context) : {};
+        // Aligner le contexte UI (chips taille / hostilité : icon-only en ligne ou grille minimal)
+        const displayMode = prefs.displayMode.value;
+        const cellUiContext =
+            displayMode === "line" ? "line" : displayMode === "minimal" ? "minimal" : "table";
         // Générer la cellule via entity.toCell()
         const cell = entity.toCell(cellId, {
             size: currentScreenSize.value,
-            context: "table",
+            context: cellUiContext,
             format: colFormat,
             href: col?.cell?.href || fallbackHref, // fallback show route par entité si aucun href explicite
             ctx: context, // Contexte complet (meta serveur inclus: capabilities, filterOptions, characteristics, etc.)

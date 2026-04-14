@@ -21,6 +21,9 @@ import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
+import { cellHasRenderableContent, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -38,6 +41,35 @@ const emit = defineEmits(["row-click", "toggle-select", "action"]);
 
 /** Entité source : rowParams.entity (API) ou row lui-même (données plates) */
 const entity = computed(() => props.row?.rowParams?.entity ?? props.row);
+
+const permissions = usePermissions();
+const monsterDescriptorCtx = computed(() => ({
+    capabilities: {
+        viewAny: permissions.can("monsters", "viewAny"),
+        createAny: permissions.can("monsters", "createAny"),
+        updateAny: permissions.can("monsters", "updateAny"),
+        deleteAny: permissions.can("monsters", "deleteAny"),
+        manageAny: permissions.can("monsters", "manageAny"),
+    },
+    meta: { capabilities: {} },
+}));
+const monsterDescriptors = computed(() => getMonsterFieldDescriptors(monsterDescriptorCtx.value));
+
+const isBossMonster = computed(() => {
+    const e = entity.value;
+    if (!e) return false;
+    if (typeof e.isBoss === "boolean") return e.isBoss;
+    return Boolean(e?._data?.is_boss);
+});
+
+const bossTooltip = computed(() =>
+    resolveEntityFieldUi({
+        fieldKey: "is_boss",
+        descriptors: monsterDescriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: "monster",
+    }).tooltip,
+);
 
 /** Données créature (colonnes `*_mastery`, stats, etc.) */
 const creature = computed(() => entity.value?.creature ?? entity.value?._data?.creature ?? null);
@@ -93,13 +125,11 @@ const levelValue = computed(() => {
 const nameCell = computed(() => getCell("creature_name"));
 const imageCell = computed(() => getCell("creature_image"));
 const raceCell = computed(() => getCell("monster_race"));
-const sizeCell = computed(() => getCell("size"));
-/** Boss : données modèle ou cellule tableau (vue ligne). */
-const isBossMonster = computed(() =>
-    Boolean(entity.value?.isBoss ?? entity.value?._data?.is_boss),
-);
-const bossPaCell = computed(() => getCell("boss_pa"));
+/** Colonne `size` souvent absente en vue ligne : même chemin que l'hostilité (colonne factice). */
+const sizeCell = computed(() => cellForKey("size"));
+const showSizeCell = computed(() => cellHasRenderableContent(sizeCell.value));
 const hostilityCell = computed(() => cellForKey("creature_hostility"));
+const showHostilityCell = computed(() => cellHasRenderableContent(hostilityCell.value));
 
 const descriptionFull = computed(
     () =>
@@ -196,6 +226,12 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                 <div class="flex min-w-0 flex-1 flex-col gap-1.5 pl-1">
                     <div class="flex min-w-0 items-center gap-2">
                         <LevelBadge v-if="levelValue != null" :level="levelValue" size="sm" class="shrink-0" />
+                        <MonsterBossMark
+                            v-if="isBossMonster"
+                            :tooltip="bossTooltip"
+                            size-class="h-6 w-6"
+                            class="shrink-0"
+                        />
                         <div class="min-w-0 flex-1">
                             <span class="block truncate font-semibold">{{ nameCell?.value || "—" }}</span>
                         </div>
@@ -207,29 +243,14 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                             class="inline-flex text-xs"
                         />
                         <CellRenderer
-                            v-if="sizeCell?.value && sizeCell.value !== '-' && sizeCell.value !== '—'"
+                            v-if="showSizeCell"
                             :cell="sizeCell"
                             class="inline-flex text-xs text-base-content/80"
                         />
                         <CellRenderer
-                            v-if="
-                                hostilityCell?.value &&
-                                hostilityCell.value !== '-' &&
-                                hostilityCell.value !== '—'
-                            "
+                            v-if="showHostilityCell"
                             :cell="hostilityCell"
                             class="inline-flex text-xs font-medium text-base-content/85"
-                        />
-                        <MonsterBossMark v-if="isBossMonster" size-class="h-6 w-6" class="align-middle" />
-                        <CellRenderer
-                            v-if="
-                                isBossMonster &&
-                                bossPaCell?.value &&
-                                bossPaCell.value !== '—' &&
-                                String(bossPaCell.value).trim() !== ''
-                            "
-                            :cell="bossPaCell"
-                            class="inline-flex text-xs text-base-content/90"
                         />
                     </div>
                     <p
