@@ -7,7 +7,6 @@ namespace Tests\Feature\Admin;
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\Scrapping\ScrappingEntityMapping;
-use App\Models\Scrapping\ScrappingEntityMappingTarget;
 use App\Models\User;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Database\Seeders\CharacteristicSeeder;
@@ -123,6 +122,7 @@ class CharacteristicControllerTest extends TestCase
         $uniqueKey = 'test_store_pa_creature';
 
         $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
             ->post(route('admin.characteristics.store'), [
                 'key' => $uniqueKey,
                 'name' => 'Points d\'action (test)',
@@ -145,6 +145,7 @@ class CharacteristicControllerTest extends TestCase
         $keyWithoutSuffix = 'test_life_dice';
 
         $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
             ->post(route('admin.characteristics.store'), [
                 'key' => $keyWithoutSuffix,
                 'name' => 'Dé de vie (test)',
@@ -166,6 +167,7 @@ class CharacteristicControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
             ->post(route('admin.characteristics.store'), [
                 'key' => 'life_points_creature',
                 'name' => 'Vie',
@@ -215,6 +217,7 @@ class CharacteristicControllerTest extends TestCase
         $this->assertNotNull($char);
 
         $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
             ->patch(route('admin.characteristics.update', 'life_points_creature'), [
                 'name' => 'Points de vie (modifié)',
                 'short_name' => $char->short_name,
@@ -238,7 +241,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $url = route('admin.characteristics.formula-preview') . '?' . http_build_query([
+        $url = route('admin.characteristics.formula-preview').'?'.http_build_query([
             'characteristic_id' => 'life_points_creature',
             'entity' => 'monster',
             'variable' => 'level',
@@ -255,7 +258,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->getJson(route('admin.characteristics.formula-preview') . '?' . http_build_query([
+        $response = $this->actingAs($admin)->getJson(route('admin.characteristics.formula-preview').'?'.http_build_query([
             'characteristic_id' => 'life_points_creature',
             'entity' => 'monster',
             'variable' => 'level',
@@ -276,7 +279,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $url = route('admin.characteristics.formula-preview') . '?' . http_build_query([
+        $url = route('admin.characteristics.formula-preview').'?'.http_build_query([
             'characteristic_id' => 'life_points_creature',
             'entity' => 'invalid_entity',
         ]);
@@ -308,6 +311,7 @@ class CharacteristicControllerTest extends TestCase
         $this->assertNotNull($char);
 
         $response = $this->actingAs($superAdmin)
+            ->withSession($this->passwordConfirmedSession())
             ->patch(route('admin.characteristics.update', 'level_creature'), [
                 'name' => 'Niveau (modifié)',
                 'short_name' => $char->short_name,
@@ -357,7 +361,9 @@ class CharacteristicControllerTest extends TestCase
         ]);
         $key = $char->key;
 
-        $response = $this->actingAs($admin)->delete(route('admin.characteristics.destroy', $key));
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->delete(route('admin.characteristics.destroy', $key));
 
         $response->assertRedirect(route('admin.characteristics.index'));
         $response->assertSessionHas('success');
@@ -385,7 +391,9 @@ class CharacteristicControllerTest extends TestCase
             'linked_to_characteristic_id' => $levelCreature->id,
         ]);
 
-        $response = $this->actingAs($admin)->delete(route('admin.characteristics.destroy', 'level_creature'));
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->delete(route('admin.characteristics.destroy', 'level_creature'));
 
         $response->assertRedirect(route('admin.characteristics.index'));
         $response->assertSessionHas('error');
@@ -400,7 +408,9 @@ class CharacteristicControllerTest extends TestCase
             'pairs' => [['d' => 10, 'k' => 1], ['d' => 200, 'k' => 20]],
             'curve_type' => 'table',
         ];
-        $response = $this->actingAs($admin)->postJson(route('admin.characteristics.suggest-conversion-formula'), $payload);
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->postJson(route('admin.characteristics.suggest-conversion-formula'), $payload);
 
         $response->assertOk();
         $response->assertJsonStructure(['formula']);
@@ -420,6 +430,7 @@ class CharacteristicControllerTest extends TestCase
         $file = UploadedFile::fake()->image('icon.png', 64, 64);
 
         $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
             ->postJson(route('admin.characteristics.upload-icon'), [
                 'file' => $file,
                 'characteristic_id' => $characteristic->id,
@@ -438,7 +449,7 @@ class CharacteristicControllerTest extends TestCase
      */
     public function test_guest_redirected_on_scrapping_mapping_options(): void
     {
-        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_points_creature']) . '?entity=monster';
+        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_points_creature']).'?entity=monster';
         $response = $this->getJson($url);
         $response->assertStatus(401);
     }
@@ -464,7 +475,7 @@ class CharacteristicControllerTest extends TestCase
     public function test_admin_can_get_scrapping_mapping_paths(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_points_creature']) . '?entity=monster';
+        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_points_creature']).'?entity=monster';
         $response = $this->actingAs($admin)->getJson($url);
         $response->assertOk();
         $response->assertJsonStructure(['paths']);
@@ -479,10 +490,12 @@ class CharacteristicControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $char = Characteristic::where('key', 'life_points_creature')->first();
         $this->assertNotNull($char);
-        $response = $this->actingAs($admin)->postJson(
-            route('admin.characteristics.store-scrapping-mapping', ['characteristic_key' => 'life_points_creature']),
-            ['entity' => 'monster', 'from_path' => 'grades.0.lifePoints']
-        );
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->postJson(
+                route('admin.characteristics.store-scrapping-mapping', ['characteristic_key' => 'life_points_creature']),
+                ['entity' => 'monster', 'from_path' => 'grades.0.lifePoints']
+            );
         $response->assertOk();
         $response->assertJson(['success' => true]);
         $this->assertDatabaseHas('scrapping_entity_mappings', [
@@ -512,10 +525,12 @@ class CharacteristicControllerTest extends TestCase
                 'sort_order' => 0,
             ]
         );
-        $response = $this->actingAs($admin)->postJson(
-            route('admin.characteristics.unlink-scrapping-mapping', ['characteristic_key' => 'life_points_creature']),
-            ['mapping_id' => $mapping->id]
-        );
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->postJson(
+                route('admin.characteristics.unlink-scrapping-mapping', ['characteristic_key' => 'life_points_creature']),
+                ['mapping_id' => $mapping->id]
+            );
         $response->assertOk();
         $response->assertJson(['success' => true]);
         $mapping->refresh();

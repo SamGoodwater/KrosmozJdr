@@ -29,6 +29,7 @@ import TextareaField from '@/Pages/Molecules/data-input/TextareaField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { useSectionAPI } from '../composables/useSectionAPI';
+import { useTemplateRegistry } from '../composables/useTemplateRegistry';
 import { TransformService, SectionParameterService, SectionMapper } from '@/Utils/Services';
 import { Section } from '@/Models';
 import { logDev, warnDev } from '@/Utils/dev-logger';
@@ -56,6 +57,7 @@ const emit = defineEmits(['close', 'validated', 'deleted']);
 
 // Composables
 const { deleteSection } = useSectionAPI();
+const templateRegistry = useTemplateRegistry();
 
 // Options pour les selects
 const roleOptions = computed(() => SectionParameterService.getVisibilityOptions());
@@ -382,6 +384,31 @@ const canDeleteSection = computed(() => {
     // Priorité à la permission explicite delete, fallback sur update pour rester cohérent UI.
     return Boolean(model.canDelete ?? model.canUpdate ?? false);
 });
+
+const templateConfig = computed(() => {
+    if (!props.sectionTemplate) {
+        return null;
+    }
+    return templateRegistry.getConfig(props.sectionTemplate);
+});
+
+const templateParameters = computed(() => {
+    const parameters = templateConfig.value?.parameters;
+    return Array.isArray(parameters) ? parameters : [];
+});
+
+const getTemplateSettingValue = (key, fallback = '') => {
+    const settings = formData.value.settings || {};
+    const value = settings[key];
+    return value ?? fallback;
+};
+
+const updateTemplateSetting = (key, value) => {
+    formData.value.settings = {
+        ...formData.value.settings,
+        [key]: value,
+    };
+};
 </script>
 
 <template>
@@ -494,7 +521,48 @@ const canDeleteSection = computed(() => {
                     :rows="4"
                 />
             </div>
-            
+
+            <!-- Section : Paramètres du template -->
+            <div v-if="templateParameters.length" class="space-y-4">
+                <h4 class="text-md font-semibold text-base-content/80 border-b border-base-300 pb-2">
+                    Paramètres du template
+                </h4>
+
+                <div
+                    v-for="param in templateParameters"
+                    :key="param.key"
+                    class="space-y-1"
+                >
+                    <SelectField
+                        v-if="param.type === 'select'"
+                        :model-value="getTemplateSettingValue(param.key, param.default ?? '')"
+                        :label="param.label || param.key"
+                        :helper="param.description || ''"
+                        :options="param.options || []"
+                        :searchable="false"
+                        @update:model-value="updateTemplateSetting(param.key, $event)"
+                    />
+
+                    <TextareaField
+                        v-else-if="param.type === 'textarea'"
+                        :model-value="getTemplateSettingValue(param.key, param.default ?? '')"
+                        :label="param.label || param.key"
+                        :helper="param.description || ''"
+                        :placeholder="param.placeholder || ''"
+                        :rows="4"
+                        @update:model-value="updateTemplateSetting(param.key, $event)"
+                    />
+
+                    <InputField
+                        v-else
+                        :model-value="getTemplateSettingValue(param.key, param.default ?? '')"
+                        :label="param.label || param.key"
+                        :helper="param.description || ''"
+                        :placeholder="param.placeholder || ''"
+                        @update:model-value="updateTemplateSetting(param.key, $event)"
+                    />
+                </div>
+            </div>
         </div>
 
         <template #actions>

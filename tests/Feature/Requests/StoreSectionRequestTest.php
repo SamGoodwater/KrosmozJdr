@@ -2,15 +2,15 @@
 
 namespace Tests\Feature\Requests;
 
-use App\Models\User;
-use App\Models\Page;
 use App\Enums\SectionType;
+use App\Models\Page;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests de validation pour StoreSectionRequest
- * 
+ *
  * Vérifie que les règles de validation sont correctement appliquées :
  * - page_id obligatoire et existant
  * - template obligatoire et valide (enum SectionType)
@@ -218,6 +218,48 @@ class StoreSectionRequestTest extends TestCase
         $response->assertJsonValidationErrors('write_level');
     }
 
+    public function test_characteristic_norms_catalog_accepts_valid_settings(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $admin->id]);
+
+        $response = $this->actingAs($admin)->postJson(route('sections.store'), [
+            'title' => 'Catalogue chartes',
+            'page_id' => $page->id,
+            'template' => SectionType::CHARACTERISTIC_NORMS_CATALOG->value,
+            'settings' => [
+                'group' => 'spell',
+                'entity' => '*',
+                'characteristic_keys' => ['dommages_spell', 'soin_spell'],
+            ],
+        ]);
+
+        $response->assertStatus(302);
+        $this->assertDatabaseHas('sections', [
+            'title' => 'Catalogue chartes',
+            'template' => SectionType::CHARACTERISTIC_NORMS_CATALOG->value,
+        ]);
+    }
+
+    public function test_characteristic_norms_catalog_rejects_invalid_group(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $admin->id]);
+
+        $response = $this->actingAs($admin)->postJson(route('sections.store'), [
+            'title' => 'Catalogue chartes',
+            'page_id' => $page->id,
+            'template' => SectionType::CHARACTERISTIC_NORMS_CATALOG->value,
+            'settings' => [
+                'group' => 'invalid',
+                'entity' => '*',
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('settings.group');
+    }
+
     /**
      * Une requête valide crée la section avec succès
      */
@@ -246,4 +288,3 @@ class StoreSectionRequestTest extends TestCase
         ]);
     }
 }
-

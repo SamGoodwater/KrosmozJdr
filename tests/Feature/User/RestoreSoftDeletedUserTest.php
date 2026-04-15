@@ -31,7 +31,9 @@ class RestoreSoftDeletedUserTest extends TestCase
         ]);
         $target->delete();
 
-        $response = $this->actingAs($superAdmin)->post(route('user.restore', $target->id));
+        $response = $this->actingAs($superAdmin)
+            ->withSession($this->passwordConfirmedSession())
+            ->post(route('user.restore', $target->id));
 
         $response->assertRedirect();
         $this->assertDatabaseHas('users', [
@@ -40,5 +42,3 @@ class RestoreSoftDeletedUserTest extends TestCase
         ]);
     }
 }
-
-

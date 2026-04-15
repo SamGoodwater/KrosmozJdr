@@ -2,15 +2,15 @@
 
 /**
  * Configuration des templates de sections
- * 
+ *
  * Ce fichier contient les valeurs par défaut pour chaque template de section.
  * Il doit être synchronisé avec les fichiers config.js des templates frontend.
- * 
+ *
  * Structure : chaque template a 'settings' et 'data' par défaut.
- * 
+ *
  * @note Ce fichier doit être mis à jour manuellement lorsque les configs JS changent.
  * Un script de synchronisation automatique pourrait être créé à l'avenir.
- * 
+ *
  * @see resources/js/Pages/Organismes/section/templates/ pour les fichiers config.js de chaque template
  */
 
@@ -74,5 +74,20 @@ return [
             'title' => null,
         ],
     ],
+    'characteristic_norms' => [
+        'settings' => [
+            'characteristic_key' => '',
+            'group' => 'creature',
+            'entity' => '*',
+        ],
+        'data' => [],
+    ],
+    'characteristic_norms_catalog' => [
+        'settings' => [
+            'group' => 'spell',
+            'entity' => '*',
+            'characteristic_keys' => [],
+        ],
+        'data' => [],
+    ],
 ];
-

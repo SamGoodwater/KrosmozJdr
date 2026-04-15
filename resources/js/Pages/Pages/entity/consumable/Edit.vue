@@ -17,6 +17,7 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Consumable } from '@/Models/Entity/Consumable';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EffectUsagesManager from '@/Pages/Organismes/entity/EffectUsagesManager.vue';
+import ObjectEffectsManager from '@/Pages/Organismes/entity/ObjectEffectsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
@@ -36,6 +37,9 @@ const props = defineProps({
     effectUsages: { type: Array, default: () => [] },
     availableEffects: { type: Array, default: () => [] },
     effectEntityType: { type: String, default: 'consumable' },
+    objectEffects: { type: Array, default: () => [] },
+    objectEffectCharacteristics: { type: Array, default: () => [] },
+    objectEffectMonsters: { type: Array, default: () => [] },
 });
 
 const consumableTypeOptions = computed(() =>
@@ -152,6 +156,14 @@ setPageTitle(`Modifier le consommable : ${consumable.value.name || 'Sans nom'}`)
         <EffectUsagesManager
             :effect-usages="effectUsages"
             :available-effects="availableEffects"
+            :entity-type="effectEntityType"
+            :entity-id="consumable.id"
+        />
+
+        <ObjectEffectsManager
+            :object-effects="objectEffects"
+            :object-effect-characteristics="objectEffectCharacteristics"
+            :object-effect-monsters="objectEffectMonsters"
             :entity-type="effectEntityType"
             :entity-id="consumable.id"
         />

@@ -11,6 +11,21 @@ abstract class TestCase extends BaseTestCase
     use RefreshDatabase;
 
     /**
+     * Session comme après une confirmation mot de passe récente (middleware password.confirm).
+     *
+     * @return array<string, int>
+     */
+    protected function passwordConfirmedSession(): array
+    {
+        $t = time();
+
+        return [
+            'auth.password_confirmed_at' => $t,
+            'auth.password_last_activity_at' => $t,
+        ];
+    }
+
+    /**
      * Configuration des tests d'authentification.
      */
     protected function setUp(): void

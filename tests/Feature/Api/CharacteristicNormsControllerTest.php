@@ -26,6 +26,8 @@ class CharacteristicNormsControllerTest extends TestCase
         CharacteristicCreature::create([
             'characteristic_id' => $char->id,
             'entity' => '*',
+            'min' => '1',
+            'max' => '20',
             'norms_grid' => [
                 'very_weak' => array_fill(0, 20, 1),
                 'weak' => array_fill(0, 20, 5),
@@ -58,7 +60,7 @@ class CharacteristicNormsControllerTest extends TestCase
         $response->assertOk();
         $response->assertJsonStructure([
             'characteristic' => ['key', 'name', 'icon', 'color'],
-            'norms' => ['grid', 'conditions', 'description'],
+            'norms' => ['grid', 'conditions', 'description', 'limits' => ['min', 'max']],
             'power_levels',
             'max_level',
         ]);
@@ -68,6 +70,8 @@ class CharacteristicNormsControllerTest extends TestCase
         $this->assertCount(5, $data['norms']['grid']);
         $this->assertCount(1, $data['norms']['conditions']);
         $this->assertEquals('Norme de test pour la force.', $data['norms']['description']);
+        $this->assertSame('1', $data['norms']['limits']['min']);
+        $this->assertSame('20', $data['norms']['limits']['max']);
         $this->assertEquals(20, $data['max_level']);
     }
 
@@ -135,5 +139,24 @@ class CharacteristicNormsControllerTest extends TestCase
         $this->assertArrayHasKey('very_weak', $powerLevels);
         $this->assertArrayHasKey('neutral', $powerLevels);
         $this->assertArrayHasKey('very_strong', $powerLevels);
+    }
+
+    public function test_rejects_invalid_group_query_parameter(): void
+    {
+        $this->seedCharacteristic();
+
+        $response = $this->getJson('/api/characteristics/strength_creature/norms?group=invalid');
+        $response->assertStatus(422);
+        $this->assertStringContainsString('Groupe invalide', (string) $response->json('error'));
+    }
+
+    public function test_group_query_parameter_filters_lookup_to_requested_group(): void
+    {
+        $this->seedCharacteristic();
+
+        // La caractéristique existe en creature ; en forçant group=spell, on ne doit rien trouver.
+        $response = $this->getJson('/api/characteristics/strength_creature/norms?group=spell');
+        $response->assertOk();
+        $this->assertNull($response->json('norms'));
     }
 }

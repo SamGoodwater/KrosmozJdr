@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Scrapping\Core\Conversion;
 
+use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Core\Conversion\ItemEffectsToBonusConverter;
 use Database\Seeders\CharacteristicSeeder;
@@ -139,6 +140,28 @@ class ItemEffectsToBonusConverterTest extends TestCase
         $this->assertIsArray($decoded);
         $this->assertArrayHasKey('heal_bonus', $decoded);
         $this->assertSame(20, $decoded['heal_bonus']);
+    }
+
+    /**
+     * Résistances % par élément : une clé bonus par id Dofus (33–37), palier 0/1/2 après conversion.
+     */
+    public function test_convert_maps_percent_resist_per_element_with_dofus_conversion(): void
+    {
+        $getter = $this->app->make(CharacteristicGetterService::class);
+        $conversion = $this->app->make(DofusConversionService::class);
+        $converter = new ItemEffectsToBonusConverter($getter, $conversion);
+
+        $effects = [
+            ['characteristic' => 33, 'value' => 90],
+            ['characteristic' => 34, 'value' => 96],
+        ];
+
+        $result = $converter->convert($effects, [], ['entityType' => 'item']);
+        $this->assertIsString($result);
+        $decoded = json_decode($result, true);
+        $this->assertIsArray($decoded);
+        $this->assertSame(1, $decoded['resistance_percent_tier_earth'] ?? null);
+        $this->assertSame(2, $decoded['resistance_percent_tier_fire'] ?? null);
     }
 
     public function test_convert_ignores_deprecated_characteristics_push(): void

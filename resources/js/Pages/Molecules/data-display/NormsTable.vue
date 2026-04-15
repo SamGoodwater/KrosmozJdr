@@ -19,6 +19,8 @@ const props = defineProps({
     effectivePowerIndex: { type: Number, default: NEUTRAL_INDEX },
     selectedLevel: { type: Number, default: null },
     effectiveLevelIndex: { type: Number, default: null },
+    minNumeric: { type: Number, default: null },
+    maxNumeric: { type: Number, default: null },
 });
 
 const emit = defineEmits(['select-level']);
@@ -36,6 +38,15 @@ function cellValue(powerLevel, levelIndex) {
 
 function isResolvedCell(powerLevel, levelIndex) {
     return powerLevel === activePowerLevel.value && levelIndex === activeColIndex.value;
+}
+
+function isOutOfBounds(value) {
+    if (value === null || value === undefined || value === '') return false;
+    const num = Number(value);
+    if (!Number.isFinite(num)) return false;
+    if (props.minNumeric !== null && num < props.minNumeric) return true;
+    if (props.maxNumeric !== null && num > props.maxNumeric) return true;
+    return false;
 }
 </script>
 
@@ -87,6 +98,7 @@ function isResolvedCell(powerLevel, levelIndex) {
                         class="text-center text-xs transition-all duration-200"
                         :class="{
                             'font-bold ring-2 ring-primary rounded': isResolvedCell(pl, lvlIdx),
+                            'bg-error/10 text-error': isOutOfBounds(cellValue(pl, lvlIdx)),
                         }"
                         :style="{
                             backgroundColor: activeColIndex === lvlIdx

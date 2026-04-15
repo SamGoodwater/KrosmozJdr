@@ -23,6 +23,7 @@ import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
 import { useSidebar } from "@/Composables/layout/useSidebar";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
+import CookieConsentTriggerButton from "@/Pages/Molecules/privacy/CookieConsentTriggerButton.vue";
 
 const { toggleSidebar } = useSidebar();
 
@@ -63,24 +64,35 @@ const footerItems = [
             <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" height="24px" class="mx-auto" @error="logoError = true" />
         </template>
         <template #section>
-            <span>
-                {{ appName }}
-                | version {{ appVersion + " " + appStability }}
-                | {{ new Date().getFullYear() }}
-            </span>
-            <span v-for="item in footerItems" :key="item.label" class="flex items-center gap-2">
-                <Tooltip :content="item.tooltip" placement="top">
-                    <Route :href="item.href" :target="item.target" class="flex items-center gap-2">
-                        <Icon :source="item.icon" :pack="item.pack" :alt="item.tooltip" class="w-4 h-4" />
-                        <span>{{ item.label }}</span>
-                    </Route>
-                </Tooltip>
-            </span>
+            <div class="flex w-full flex-wrap items-end justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
+                    <span>
+                        {{ appName }}
+                        | version {{ appVersion + " " + appStability }}
+                        | {{ new Date().getFullYear() }}
+                    </span>
+                    <span v-for="item in footerItems" :key="item.label" class="flex items-center gap-2">
+                        <Tooltip :content="item.tooltip" placement="top">
+                            <Route :href="item.href" :target="item.target" class="flex items-center gap-2">
+                                <Icon :source="item.icon" :pack="item.pack" :alt="item.tooltip" class="w-4 h-4" />
+                                <span>{{ item.label }}</span>
+                            </Route>
+                        </Tooltip>
+                    </span>
+                </div>
+                <div class="ml-auto shrink-0 self-end">
+                    <CookieConsentTriggerButton />
+                </div>
+            </div>
         </template>
         <template #copyright>
             {{ appDescription }}
         </template>
     </FooterMolecule>
+    <!-- Mobile : cookies dans le flux (au-dessus du dock), aligné à droite — non fixe -->
+    <div class="flex w-full justify-end px-3 py-2 sm:hidden">
+        <CookieConsentTriggerButton />
+    </div>
     <!-- Mobile Footer (Dock) -->
     <div class="fixed bottom-0 left-0 right-0 z-50 max-sm:block hidden">
         <Dock size="md" class="px-1 py-2 flex justify-between box-glass-md">

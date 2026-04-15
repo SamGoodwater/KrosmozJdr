@@ -93,7 +93,18 @@ class SectionTemplateValidationRules
                 'data.title' => ['sometimes', 'nullable', 'string', 'max:255'],
                 'params.title' => ['sometimes', 'nullable', 'string', 'max:255'],
             ],
+            SectionType::CHARACTERISTIC_NORMS => [
+                'settings.characteristic_key' => ['sometimes', 'nullable', 'string', 'max:128'],
+                'settings.group' => ['sometimes', 'nullable', 'string', Rule::in(['creature', 'object', 'spell'])],
+                'settings.entity' => ['sometimes', 'nullable', 'string', 'max:32'],
+            ],
+            SectionType::CHARACTERISTIC_NORMS_CATALOG => [
+                'settings.group' => ['sometimes', 'nullable', 'string', Rule::in(['creature', 'object', 'spell'])],
+                'settings.entity' => ['sometimes', 'nullable', 'string', 'max:32'],
+                'settings.characteristic_keys' => ['sometimes', 'nullable', 'array'],
+                'settings.characteristic_keys.*' => ['string', 'max:128'],
+            ],
+            default => [],
         };
     }
 }
-

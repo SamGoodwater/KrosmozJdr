@@ -84,12 +84,14 @@ class DofusdbEffectMappingControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->postJson(route('admin.dofusdb-effect-mappings.store'), [
-            'dofusdb_effect_id' => 96,
-            'sub_effect_slug' => 'frapper',
-            'characteristic_source' => 'element',
-            'characteristic_key' => null,
-        ]);
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->postJson(route('admin.dofusdb-effect-mappings.store'), [
+                'dofusdb_effect_id' => 96,
+                'sub_effect_slug' => 'frapper',
+                'characteristic_source' => 'element',
+                'characteristic_key' => null,
+            ]);
 
         $response->assertStatus(201)
             ->assertJson(['success' => true, 'message' => 'Mapping créé.'])
@@ -111,11 +113,13 @@ class DofusdbEffectMappingControllerTest extends TestCase
             'characteristic_key' => null,
         ]);
 
-        $response = $this->actingAs($admin)->patchJson(route('admin.dofusdb-effect-mappings.update', $mapping), [
-            'sub_effect_slug' => 'frapper',
-            'characteristic_source' => 'none',
-            'characteristic_key' => null,
-        ]);
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->patchJson(route('admin.dofusdb-effect-mappings.update', $mapping), [
+                'sub_effect_slug' => 'frapper',
+                'characteristic_source' => 'none',
+                'characteristic_key' => null,
+            ]);
 
         $response->assertOk()
             ->assertJson(['success' => true]);
@@ -134,7 +138,9 @@ class DofusdbEffectMappingControllerTest extends TestCase
         ]);
         $id = $mapping->id;
 
-        $response = $this->actingAs($admin)->deleteJson(route('admin.dofusdb-effect-mappings.destroy', $mapping));
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->deleteJson(route('admin.dofusdb-effect-mappings.destroy', $mapping));
 
         $response->assertOk()
             ->assertJson(['success' => true, 'message' => 'Mapping supprimé.']);

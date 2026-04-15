@@ -34,7 +34,9 @@ class EffectControllerDestroyDegreeTest extends TestCase
         EffectDegree::create(['effect_id' => $effect->id, 'degree' => 1]);
         $d2 = EffectDegree::create(['effect_id' => $effect->id, 'degree' => 2]);
 
-        $response = $this->actingAs($user)->from(route('admin.effects.show', $effect))
+        $response = $this->actingAs($user)
+            ->withSession($this->passwordConfirmedSession())
+            ->from(route('admin.effects.show', $effect))
             ->delete(route('admin.effects.destroy-degree', [$effect->id, $d2->id]));
 
         $response->assertRedirect(route('admin.effects.show', $effect));
@@ -48,7 +50,9 @@ class EffectControllerDestroyDegreeTest extends TestCase
         $effect = Effect::create(['name' => 'E', 'target_type' => Effect::TARGET_DIRECT]);
         $d1 = EffectDegree::create(['effect_id' => $effect->id, 'degree' => 1]);
 
-        $response = $this->actingAs($user)->from(route('admin.effects.show', $effect))
+        $response = $this->actingAs($user)
+            ->withSession($this->passwordConfirmedSession())
+            ->from(route('admin.effects.show', $effect))
             ->delete(route('admin.effects.destroy-degree', [$effect->id, $d1->id]));
 
         $response->assertRedirect(route('admin.effects.show', $effect));
@@ -64,7 +68,9 @@ class EffectControllerDestroyDegreeTest extends TestCase
         EffectDegree::create(['effect_id' => $e1->id, 'degree' => 1]);
         $d2 = EffectDegree::create(['effect_id' => $e2->id, 'degree' => 1]);
 
-        $this->actingAs($user)->delete(route('admin.effects.destroy-degree', [$e1->id, $d2->id]))
+        $this->actingAs($user)
+            ->withSession($this->passwordConfirmedSession())
+            ->delete(route('admin.effects.destroy-degree', [$e1->id, $d2->id]))
             ->assertNotFound();
     }
 }

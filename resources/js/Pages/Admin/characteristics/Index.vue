@@ -5,10 +5,11 @@
  * Pour chaque champ formule : graphique (variable entre min et max).
  */
 import { computed, inject, nextTick, onMounted, ref, watch } from 'vue';
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import ColorCore from '@/Pages/Atoms/data-input/ColorCore.vue';
@@ -225,6 +226,13 @@ function openFormulaHelp(e) {
 
 defineOptions({ layout: AdminArea });
 setPageTitle('Administration des caractéristiques');
+
+const page = usePage();
+const adminUnlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
+const showAdminConfirmModal = ref(false);
+function onAdminPasswordConfirmed() {
+    adminUnlocked.value = true;
+}
 
 /** Lignes par défaut pour le tableau Dofus/Krosmoz (6 paires niveau/valeur). */
 function getDefaultConversionSampleRows() {
@@ -773,7 +781,20 @@ function submitConvertToLinked() {
 
 <template>
     <Head title="Caractéristiques" />
-    <div class="flex h-full min-h-0 w-full flex-col lg:flex-row">
+
+    <div
+        v-if="!adminUnlocked"
+        class="rounded-box border border-warning/40 bg-warning/10 p-8 mx-auto max-w-lg my-8 text-center space-y-4"
+    >
+        <p class="text-warning-content">
+            Cette section permet de modifier les caractéristiques et les données associées. Confirme ton mot de passe pour continuer.
+        </p>
+        <Btn color="primary" @click="showAdminConfirmModal = true">
+            Accéder à l’administration des caractéristiques
+        </Btn>
+    </div>
+
+    <div v-else class="flex h-full min-h-0 w-full flex-col lg:flex-row">
         <!-- Liste à gauche (vue par caractéristique) -->
         <SidebarNav
             title="Caractéristiques"
@@ -1967,6 +1988,14 @@ function submitConvertToLinked() {
             </div>
         </Teleport>
     </div>
+
+    <ConfirmPasswordModal
+        v-model:open="showAdminConfirmModal"
+        title="Administration des caractéristiques"
+        message="Cette section modifie les caractéristiques et peut lancer des imports/exports de seeders. Entre ton mot de passe pour confirmer ton identité."
+        confirm-label="Accéder"
+        @confirmed="onAdminPasswordConfirmed"
+    />
 </template>
 
 <style scoped>

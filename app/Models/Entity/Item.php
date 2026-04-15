@@ -2,23 +2,17 @@
 
 namespace App\Models\Entity;
 
+use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\EffectUsage;
+use App\Models\ObjectEffect;
+use App\Models\Type\ItemType;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Type\ItemType;
-use App\Models\Entity\Resource;
-use App\Models\Entity\Panoply;
-use App\Models\Entity\Campaign;
-use App\Models\Entity\Shop;
-use App\Models\Entity\Scenario;
-use App\Models\EffectUsage;
-use App\Models\Concerns\HasEntityImageMedia;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
- * 
- *
  * @property int $id
  * @property string|null $official_id
  * @property string|null $dofusdb_id
@@ -47,12 +41,13 @@ use Spatie\MediaLibrary\HasMedia;
  * @property-read ItemType|null $itemType
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, resource> $resources
  * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
  * @property-read int|null $shops_count
+ *
  * @method static \Database\Factories\Entity\ItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item newQuery()
@@ -82,16 +77,20 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Item extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\ItemFactory> */
-    use HasFactory, SoftDeletes, HasEntityImageMedia;
+    use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     /** Répertoire Media Library pour ce modèle. */
@@ -200,5 +199,13 @@ class Item extends Model implements HasMedia
     public function effectUsages()
     {
         return $this->morphMany(EffectUsage::class, 'entity');
+    }
+
+    /**
+     * Effets d’objet structurés (action + caractéristique ou monstre + valeur).
+     */
+    public function objectEffects()
+    {
+        return $this->morphMany(ObjectEffect::class, 'object_effectable');
     }
 }

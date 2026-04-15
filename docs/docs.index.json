@@ -1260,6 +1260,11 @@
     "description": "**Date :** 2026-02"
   },
   {
+    "path": "50-Fonctionnalités/Characteristics-DB/CAHIER_DES_CHARGES_NORMES_ENTITES.md",
+    "title": "Cahier des charges — Aide à la création d’entités (normes / chartes)",
+    "description": "Spécification produit et recensement de l’existant : grilles 5×20, régulateurs (norms_conditions), API GET /api/characteristics/{key}/norms, admin NormsPanel, NormsViewer interactif, écarts (échelle 5 vs 7, conditions manuelles vs évaluation SI), page contributions à assembler."
+  },
+  {
     "path": "50-Fonctionnalités/Characteristics-DB/DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md",
     "title": "Référence : id caractéristique DofusDB ↔ nom et KrosmozJDR",
     "description": "Ce document liste **toutes** les caractéristiques exposées par l’API DofusDB [`GET /characteristics`](https://api.dofusdb.fr/characteristics?$skip=0&visible=true&$limit=50), avec leur **keyword**, le **nom (fr)** et la correspondance **characteristic_key** KrosmozJDR lorsqu’elle existe."

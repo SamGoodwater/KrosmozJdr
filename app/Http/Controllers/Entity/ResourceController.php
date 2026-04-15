@@ -4,21 +4,22 @@ namespace App\Http\Controllers\Entity;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreResourceRequest;
-use App\Http\Requests\Entity\UpdateResourceRequest;
 use App\Http\Requests\Entity\UpdateResourceRecipeRequest;
-use App\Models\Entity\Resource;
-use App\Models\Entity\Item;
+use App\Http\Requests\Entity\UpdateResourceRequest;
+use App\Http\Resources\Entity\ResourceResource;
+use App\Models\Entity\Campaign;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
-use App\Models\Entity\Shop;
+use App\Models\Entity\Item;
+use App\Models\Entity\Resource;
 use App\Models\Entity\Scenario;
-use App\Models\Entity\Campaign;
+use App\Models\Entity\Shop;
 use App\Models\Type\ResourceType;
-use App\Http\Resources\Entity\ResourceResource;
 use App\Services\PdfService;
-use Inertia\Inertia;
-use Illuminate\Http\Request;
+use App\Support\Entity\ObjectEffectEditOptions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ResourceController extends Controller
 {
@@ -30,23 +31,23 @@ class ResourceController extends Controller
         $this->authorize('viewAny', Resource::class);
 
         $user = request()->user();
-        
+
         $query = Resource::with(['createdBy', 'resourceType']);
-        
+
         // Recherche
         if (request()->has('search') && request()->search) {
             $search = request()->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
-        
+
         // Filtres
         if (request()->has('level') && request()->level !== '') {
             $query->where('level', request()->level);
         }
-        
+
         if (request()->has('resource_type_id') && request()->resource_type_id !== '') {
             $query->where('resource_type_id', request()->resource_type_id);
         }
@@ -68,19 +69,19 @@ class ResourceController extends Controller
         if (request()->has('auto_update') && request()->auto_update !== '') {
             $query->where('auto_update', (int) request()->auto_update);
         }
-        
+
         // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
-        
+
         if (in_array($sortColumn, ['id', 'name', 'level', 'rarity', 'price', 'weight', 'state', 'read_level', 'write_level', 'auto_update', 'dofusdb_id', 'created_at'], true)) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
         }
-        
+
         $resources = $query->paginate(20)->withQueryString();
-        
+
         return Inertia::render('Pages/entity/resource/Index', [
             'resources' => ResourceResource::collection($resources),
             'filters' => request()->only(['search', 'level', 'resource_type_id', 'rarity', 'state', 'read_level', 'write_level', 'auto_update']),
@@ -184,6 +185,7 @@ class ResourceController extends Controller
             'scenarios',
             'campaigns',
             'shops',
+            'objectEffects',
         ]);
 
         $availableResourcesForRecipe = Resource::query()
@@ -192,14 +194,14 @@ class ResourceController extends Controller
             ->orderBy('name')
             ->get();
 
-        return Inertia::render('Pages/entity/resource/Edit', [
+        return Inertia::render('Pages/entity/resource/Edit', array_merge([
             'resource' => new ResourceResource($resource),
             'resourceTypes' => ResourceType::query()->select('id', 'name')->orderBy('name')->get(),
             'availableResourcesForRecipe' => $availableResourcesForRecipe,
             'availableShops' => Shop::query()->select('id', 'name', 'description')->orderBy('name')->get(),
             'availableScenarios' => Scenario::query()->select('id', 'name', 'description')->orderBy('name')->get(),
             'availableCampaigns' => Campaign::query()->select('id', 'name', 'description')->orderBy('name')->get(),
-        ]);
+        ], ObjectEffectEditOptions::inertiaPropsFor($resource)));
     }
 
     /**
@@ -385,7 +387,7 @@ class ResourceController extends Controller
     /**
      * Construit un payload compatible sync() pour des pivots type quantity.
      *
-     * @param array $data Format: { id: { quantity: X } }
+     * @param  array  $data  Format: { id: { quantity: X } }
      * @return array<int, array{quantity:int}>
      */
     private function buildPivotSyncData(array $data): array
@@ -404,39 +406,39 @@ class ResourceController extends Controller
 
     /**
      * Télécharge un PDF pour un ou plusieurs resources.
-     * 
-     * @param Resource|null $resource La resource unique (si une seule)
+     *
+     * @param  resource|null  $resource  La resource unique (si une seule)
      * @return \Illuminate\Http\Response
      */
     public function downloadPdf(?Resource $resource = null)
     {
         $ids = request()->get('ids');
-        
-        if (!empty($ids)) {
+
+        if (! empty($ids)) {
             if (is_string($ids)) {
                 $ids = explode(',', $ids);
             }
-            
+
             if (is_array($ids) && count($ids) > 0) {
                 $resources = Resource::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Resource::class);
-                
+
                 $pdf = PdfService::generateForEntities($resources, 'resource');
-                $filename = 'resources-' . now()->format('Y-m-d-His') . '.pdf';
-                
+                $filename = 'resources-'.now()->format('Y-m-d-His').'.pdf';
+
                 return $pdf->download($filename);
             }
         }
-        
-        if (!$resource) {
+
+        if (! $resource) {
             abort(404);
         }
-        
+
         $this->authorize('view', $resource);
-        
+
         $pdf = PdfService::generateForEntity($resource, 'resource');
-        $filename = 'resource-' . $resource->id . '-' . now()->format('Y-m-d-His') . '.pdf';
-        
+        $filename = 'resource-'.$resource->id.'-'.now()->format('Y-m-d-His').'.pdf';
+
         return $pdf->download($filename);
     }
 }

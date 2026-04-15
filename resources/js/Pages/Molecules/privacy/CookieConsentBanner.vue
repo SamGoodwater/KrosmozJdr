@@ -8,7 +8,6 @@ const {
   isCookiePreferencesOpen,
   acceptThirdPartyCookies,
   declineThirdPartyCookies,
-  openCookiePreferences,
   closeCookiePreferences,
   resetCookieConsentChoice,
 } = useCookieConsent();
@@ -66,18 +65,6 @@ const {
       </div>
     </aside>
   </transition>
-
-  <button
-    v-if="!shouldRenderCookiePanel"
-    type="button"
-    class="btn btn-ghost btn-xs fixed bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 z-60 opacity-80"
-    @click="openCookiePreferences"
-    aria-label="Ouvrir les preferences cookies"
-    title="Preferences cookies"
-  >
-    <i class="fa-solid fa-cookie-bite sm:hidden" aria-hidden="true"></i>
-    <span class="hidden sm:inline">Cookies</span>
-  </button>
 </template>
 
 <style scoped>

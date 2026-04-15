@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 /**
  * Tests Feature pour UserController
- * 
+ *
  * Vérifie que :
  * - Un utilisateur peut modifier son propre profil
  * - Un admin peut modifier n'importe quel utilisateur
@@ -28,7 +28,7 @@ class UserControllerTest extends TestCase
         parent::setUp();
         // Désactiver le middleware role pour les tests (on teste les policies directement)
         $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
-        
+
         // Désactiver explicitement le CSRF pour les tests
         $this->withoutMiddleware([
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
@@ -91,10 +91,12 @@ class UserControllerTest extends TestCase
             'email' => 'target@example.com',
         ]);
 
-        $response = $this->actingAs($admin)->patch(route('user.admin.update', $targetUser), [
-            'name' => 'Updated Name',
-            'email' => 'updated@example.com',
-        ]);
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->patch(route('user.admin.update', $targetUser), [
+                'name' => 'Updated Name',
+                'email' => 'updated@example.com',
+            ]);
 
         $response->assertRedirect(route('user.admin.edit', $targetUser));
         $this->assertDatabaseHas('users', [
@@ -117,10 +119,12 @@ class UserControllerTest extends TestCase
 
         $this->assertTrue($superAdmin->can('update', $targetUser));
 
-        $response = $this->actingAs($superAdmin)->patch(route('user.admin.update', $targetUser), [
-            'name' => 'Updated Name',
-            'email' => 'updated@example.com',
-        ]);
+        $response = $this->actingAs($superAdmin)
+            ->withSession($this->passwordConfirmedSession())
+            ->patch(route('user.admin.update', $targetUser), [
+                'name' => 'Updated Name',
+                'email' => 'updated@example.com',
+            ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('users', [
@@ -212,10 +216,12 @@ class UserControllerTest extends TestCase
             'password' => Hash::make('oldpassword'),
         ]);
 
-        $response = $this->actingAs($admin)->patch(route('user.admin.updatePassword', $targetUser), [
-            'password' => 'newpassword123',
-            'password_confirmation' => 'newpassword123',
-        ]);
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->patch(route('user.admin.updatePassword', $targetUser), [
+                'password' => 'newpassword123',
+                'password_confirmation' => 'newpassword123',
+            ]);
 
         $response->assertForbidden();
         $targetUser->refresh();
@@ -232,10 +238,12 @@ class UserControllerTest extends TestCase
             'password' => Hash::make('oldpassword'),
         ]);
 
-        $response = $this->actingAs($superAdmin)->patch(route('user.admin.updatePassword', $targetUser), [
-            'password' => 'newpassword123',
-            'password_confirmation' => 'newpassword123',
-        ]);
+        $response = $this->actingAs($superAdmin)
+            ->withSession($this->passwordConfirmedSession())
+            ->patch(route('user.admin.updatePassword', $targetUser), [
+                'password' => 'newpassword123',
+                'password_confirmation' => 'newpassword123',
+            ]);
 
         $response->assertRedirect();
         $targetUser->refresh();
@@ -265,9 +273,11 @@ class UserControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $targetUser = User::factory()->create(['role' => User::ROLE_USER]);
 
-        $response = $this->actingAs($admin)->patch(route('user.admin.updateRole', $targetUser), [
-            'role' => User::ROLE_PLAYER,
-        ]);
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->patch(route('user.admin.updateRole', $targetUser), [
+                'role' => User::ROLE_PLAYER,
+            ]);
 
         $response->assertRedirect();
         $targetUser->refresh();
@@ -282,9 +292,11 @@ class UserControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $targetUser = User::factory()->create(['role' => User::ROLE_USER]);
 
-        $response = $this->actingAs($admin)->patch(route('user.admin.updateRole', $targetUser), [
-            'role' => User::ROLE_ADMIN,
-        ]);
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->patch(route('user.admin.updateRole', $targetUser), [
+                'role' => User::ROLE_ADMIN,
+            ]);
 
         $response->assertSessionHasErrors('role');
         $targetUser->refresh();
@@ -299,9 +311,11 @@ class UserControllerTest extends TestCase
         $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
         $targetUser = User::factory()->create(['role' => User::ROLE_USER]);
 
-        $response = $this->actingAs($superAdmin)->patch(route('user.admin.updateRole', $targetUser), [
-            'role' => User::ROLE_ADMIN,
-        ]);
+        $response = $this->actingAs($superAdmin)
+            ->withSession($this->passwordConfirmedSession())
+            ->patch(route('user.admin.updateRole', $targetUser), [
+                'role' => User::ROLE_ADMIN,
+            ]);
 
         $response->assertRedirect();
         $targetUser->refresh();
@@ -316,9 +330,11 @@ class UserControllerTest extends TestCase
         $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
         $targetUser = User::factory()->create(['role' => User::ROLE_USER]);
 
-        $response = $this->actingAs($superAdmin)->patch(route('user.admin.updateRole', $targetUser), [
-            'role' => User::ROLE_SUPER_ADMIN,
-        ]);
+        $response = $this->actingAs($superAdmin)
+            ->withSession($this->passwordConfirmedSession())
+            ->patch(route('user.admin.updateRole', $targetUser), [
+                'role' => User::ROLE_SUPER_ADMIN,
+            ]);
 
         $response->assertSessionHasErrors('role');
         $targetUser->refresh();
@@ -455,4 +471,3 @@ class UserControllerTest extends TestCase
         $this->assertNull($user->avatar);
     }
 }
-

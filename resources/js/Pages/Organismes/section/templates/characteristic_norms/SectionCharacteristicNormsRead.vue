@@ -63,6 +63,8 @@ watch([characteristicKey, entity], fetchNorms);
             :grid="normsData.norms.grid"
             :conditions="normsData.norms.conditions || []"
             :description="normsData.norms.description || ''"
+            :min-limit="normsData.norms.limits?.min ?? null"
+            :max-limit="normsData.norms.limits?.max ?? null"
             :characteristic-name="normsData.characteristic?.name || ''"
             :characteristic-color="normsData.characteristic?.color || '#6366f1'"
             :available-characteristics="normsData.available_characteristics || {}"

@@ -10,6 +10,7 @@ use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Endpoint public pour la lecture des normes (chartes) d'une caractéristique.
@@ -17,6 +18,9 @@ use Illuminate\Http\JsonResponse;
  */
 class CharacteristicNormsController extends Controller
 {
+    /** @var list<string> */
+    private const GROUPS = ['creature', 'object', 'spell'];
+
     private const POWER_LEVELS = [
         'very_weak' => 'Très faible',
         'weak' => 'Faible',
@@ -25,15 +29,20 @@ class CharacteristicNormsController extends Controller
         'very_strong' => 'Très fort',
     ];
 
-    public function show(string $key, string $entity = '*'): JsonResponse
+    public function show(Request $request, string $key, string $entity = '*'): JsonResponse
     {
         $characteristic = Characteristic::where('key', $key)->first();
         if ($characteristic === null) {
             return response()->json(['error' => 'Caractéristique introuvable.'], 404);
         }
 
+        $group = $request->query('group');
+        if (is_string($group) && $group !== '' && ! in_array($group, self::GROUPS, true)) {
+            return response()->json(['error' => 'Groupe invalide. Utiliser creature, object ou spell.'], 422);
+        }
+
         $effective = $characteristic->effectiveCharacteristic();
-        $row = $this->findGroupRow($characteristic->id, $entity);
+        $row = $this->findGroupRow($characteristic->id, $entity, is_string($group) ? $group : null);
 
         if ($row === null || $row->norms_grid === null) {
             return response()->json([
@@ -69,6 +78,10 @@ class CharacteristicNormsController extends Controller
                 'grid' => $row->norms_grid,
                 'conditions' => $row->norms_conditions ?? [],
                 'description' => $row->norms_description,
+                'limits' => [
+                    'min' => $row->min,
+                    'max' => $row->max,
+                ],
             ],
             'power_levels' => self::POWER_LEVELS,
             'max_level' => 20,
@@ -76,8 +89,15 @@ class CharacteristicNormsController extends Controller
         ]);
     }
 
-    private function findGroupRow(int $characteristicId, string $entity): CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null
-    {
+    private function findGroupRow(
+        int $characteristicId,
+        string $entity,
+        ?string $group
+    ): CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null {
+        if ($group !== null && $group !== '') {
+            return $this->findRowByExplicitGroup($characteristicId, $entity, $group);
+        }
+
         $row = CharacteristicCreature::where('characteristic_id', $characteristicId)
             ->where('entity', $entity)->first();
         if ($row !== null) {
@@ -92,6 +112,25 @@ class CharacteristicNormsController extends Controller
 
         return CharacteristicSpell::where('characteristic_id', $characteristicId)
             ->where('entity', $entity)->first();
+    }
+
+    private function findRowByExplicitGroup(
+        int $characteristicId,
+        string $entity,
+        string $group
+    ): CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null {
+        return match ($group) {
+            'creature' => CharacteristicCreature::where('characteristic_id', $characteristicId)
+                ->where('entity', $entity)
+                ->first(),
+            'object' => CharacteristicObject::where('characteristic_id', $characteristicId)
+                ->where('entity', $entity)
+                ->first(),
+            'spell' => CharacteristicSpell::where('characteristic_id', $characteristicId)
+                ->where('entity', $entity)
+                ->first(),
+            default => null,
+        };
     }
 
     /**

@@ -4,14 +4,6 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Database\Seeders\CharacteristicSeeder;
-use Database\Seeders\CreatureCharacteristicSeeder;
-use Database\Seeders\ObjectCharacteristicSeeder;
-use Database\Seeders\SpellCharacteristicSeeder;
-use Database\Seeders\SpellEffectTypeSeeder;
-use Database\Seeders\DofusdbCharacteristicIdSeeder;
-use Database\Seeders\ScrappingEntityMappingSeeder;
-use Database\Seeders\ScrappingEntityMappingCharacteristicSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -36,6 +28,7 @@ class DatabaseSeeder extends Seeder
             SubEffectSeeder::class,
             ScrappingEntityMappingSeeder::class,
             ScrappingEntityMappingCharacteristicSeeder::class,
+            CreationPagesSeeder::class,
         ]);
     }
 }

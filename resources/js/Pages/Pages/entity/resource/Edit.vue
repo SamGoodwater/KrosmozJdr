@@ -13,6 +13,7 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Resource } from '@/Models/Entity/Resource';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
+import ObjectEffectsManager from '@/Pages/Organismes/entity/ObjectEffectsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
@@ -47,6 +48,9 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    objectEffects: { type: Array, default: () => [] },
+    objectEffectCharacteristics: { type: Array, default: () => [] },
+    objectEffectMonsters: { type: Array, default: () => [] },
 });
 
 // Contexte pour les descriptors (options dynamiques, permissions, etc.)
@@ -89,6 +93,15 @@ setPageTitle(`Modifier la ressource : ${resource.value.name || 'Nouvelle ressour
             entity-type="resource"
             :fields-config="fieldsConfig"
             :is-updating="!!resource?.id"
+        />
+
+        <ObjectEffectsManager
+            v-if="resource?.id"
+            :object-effects="objectEffects"
+            :object-effect-characteristics="objectEffectCharacteristics"
+            :object-effect-monsters="objectEffectMonsters"
+            entity-type="resource"
+            :entity-id="resource.id"
         />
 
         <!-- Recette : ingrédients (autres ressources) avec quantités -->

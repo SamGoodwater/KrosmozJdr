@@ -10,6 +10,7 @@ use App\Http\Resources\Entity\ItemResource;
 use App\Models\Effect;
 use App\Models\Entity\Item;
 use App\Services\PdfService;
+use App\Support\Entity\ObjectEffectEditOptions;
 use Inertia\Inertia;
 
 class ItemController extends Controller
@@ -94,7 +95,7 @@ class ItemController extends Controller
     {
         $this->authorize('update', $item);
 
-        $item->load(['itemType', 'createdBy', 'resources', 'effectUsages.effectDegree.effect']);
+        $item->load(['itemType', 'createdBy', 'resources', 'effectUsages.effectDegree.effect', 'objectEffects']);
 
         $availableResources = \App\Models\Entity\Resource::select('id', 'name', 'description', 'level')
             ->orderBy('name')
@@ -132,13 +133,13 @@ class ItemController extends Controller
             ->values()
             ->all();
 
-        return Inertia::render('Pages/entity/item/Edit', [
+        return Inertia::render('Pages/entity/item/Edit', array_merge([
             'item' => new ItemResource($item),
             'availableResources' => $availableResources,
             'effectUsages' => $effectUsages,
             'availableEffects' => $availableEffects,
             'effectEntityType' => 'item',
-        ]);
+        ], ObjectEffectEditOptions::inertiaPropsFor($item)));
     }
 
     /**

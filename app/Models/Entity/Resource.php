@@ -2,24 +2,17 @@
 
 namespace App\Models\Entity;
 
+use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\EffectUsage;
+use App\Models\ObjectEffect;
+use App\Models\Type\ResourceType;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Type\ResourceType;
-use App\Models\Entity\Consumable;
-use App\Models\Entity\Creature;
-use App\Models\Entity\Item;
-use App\Models\Entity\Scenario;
-use App\Models\Entity\Shop;
-use App\Models\Entity\Campaign;
-use App\Models\EffectUsage;
-use App\Models\Concerns\HasEntityImageMedia;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
- * 
- *
  * @property int $id
  * @property string|null $dofusdb_id
  * @property int|null $official_id
@@ -53,6 +46,7 @@ use Spatie\MediaLibrary\HasMedia;
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
  * @property-read int|null $shops_count
+ *
  * @method static \Database\Factories\Entity\ResourceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource newQuery()
@@ -81,16 +75,20 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereWeight($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Resource extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\ResourceFactory> */
-    use HasFactory, SoftDeletes, HasEntityImageMedia;
+    use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     /** Répertoire Media Library pour ce modèle. */
@@ -107,6 +105,7 @@ class Resource extends Model implements HasMedia
         4 => 'Légendaire',
         5 => 'Unique',
     ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -168,6 +167,7 @@ class Resource extends Model implements HasMedia
     {
         return $this->belongsToMany(Consumable::class, 'consumable_resource')->withPivot('quantity');
     }
+
     /**
      * Les créatures utilisant cette ressource.
      */
@@ -175,6 +175,7 @@ class Resource extends Model implements HasMedia
     {
         return $this->belongsToMany(Creature::class, 'creature_resource')->withPivot('quantity');
     }
+
     /**
      * Les objets utilisant cette ressource.
      */
@@ -187,7 +188,7 @@ class Resource extends Model implements HasMedia
      * Recette de fabrication : ressources (ingrédients) nécessaires avec quantités.
      * Une ressource craftable est fabriquée à partir d'autres ressources.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Resource, Resource>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<resource, resource>
      */
     public function recipeIngredients()
     {
@@ -198,6 +199,7 @@ class Resource extends Model implements HasMedia
             'ingredient_resource_id'
         )->withPivot('quantity');
     }
+
     /**
      * Les scénarios associés à cette ressource.
      */
@@ -213,6 +215,7 @@ class Resource extends Model implements HasMedia
     {
         return $this->belongsToMany(Campaign::class, 'resource_campaign');
     }
+
     /**
      * Les hotels de vente associées à cette ressource.
      */
@@ -227,5 +230,13 @@ class Resource extends Model implements HasMedia
     public function effectUsages()
     {
         return $this->morphMany(EffectUsage::class, 'entity');
+    }
+
+    /**
+     * Effets d’objet structurés (action + caractéristique ou monstre + valeur).
+     */
+    public function objectEffects()
+    {
+        return $this->morphMany(ObjectEffect::class, 'object_effectable');
     }
 }

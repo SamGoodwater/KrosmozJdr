@@ -4,9 +4,11 @@
  * (slug, zone, sous-effets). « Ajouter un degré » duplique l’effet courant côté serveur.
  */
 import { computed, ref, watch } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
@@ -30,6 +32,13 @@ const props = defineProps({
 
 defineOptions({ layout: AdminArea });
 setPageTitle('Effets');
+
+const page = usePage();
+const adminUnlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
+const showAdminConfirmModal = ref(false);
+function onAdminPasswordConfirmed() {
+    adminUnlocked.value = true;
+}
 
 const isGroupEdit = computed(
     () => Boolean(props.selected && typeof props.selected === 'object' && props.selected.id && props.groupEffects?.length)
@@ -138,7 +147,20 @@ function duplicateEffect() {
 
 <template>
     <Head title="Effets" />
-    <div class="flex h-full min-h-0 w-full flex-col lg:flex-row">
+
+    <div
+        v-if="!adminUnlocked"
+        class="rounded-box border border-warning/40 bg-warning/10 p-8 mx-auto max-w-lg my-8 text-center space-y-4"
+    >
+        <p class="text-warning-content">
+            La définition des effets modifie la base de données. Confirme ton mot de passe pour continuer.
+        </p>
+        <Btn color="primary" @click="showAdminConfirmModal = true">
+            Accéder à l’administration des effets
+        </Btn>
+    </div>
+
+    <div v-else class="flex h-full min-h-0 w-full flex-col lg:flex-row">
         <SidebarNav
             title="Effets"
             description="Une entrée par définition d’effet ; le libellé secondaire indique le nombre de degrés."
@@ -283,4 +305,12 @@ function duplicateEffect() {
             </template>
         </main>
     </div>
+
+    <ConfirmPasswordModal
+        v-model:open="showAdminConfirmModal"
+        title="Administration des effets"
+        message="Cette section modifie les effets et degrés en base. Entre ton mot de passe pour confirmer ton identité."
+        confirm-label="Accéder"
+        @confirmed="onAdminPasswordConfirmed"
+    />
 </template>

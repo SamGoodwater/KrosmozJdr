@@ -9,6 +9,7 @@ use App\Http\Resources\Entity\ConsumableResource;
 use App\Models\Effect;
 use App\Models\Entity\Consumable;
 use App\Services\PdfService;
+use App\Support\Entity\ObjectEffectEditOptions;
 use Inertia\Inertia;
 
 class ConsumableController extends Controller
@@ -89,7 +90,7 @@ class ConsumableController extends Controller
     {
         $this->authorize('update', $consumable);
 
-        $consumable->load(['createdBy', 'consumableType', 'resources', 'effectUsages.effectDegree.effect']);
+        $consumable->load(['createdBy', 'consumableType', 'resources', 'effectUsages.effectDegree.effect', 'objectEffects']);
 
         $availableConsumableTypes = \App\Models\Type\ConsumableType::select('id', 'name', 'description')
             ->orderBy('name')
@@ -127,13 +128,13 @@ class ConsumableController extends Controller
             ->values()
             ->all();
 
-        return Inertia::render('Pages/entity/consumable/Edit', [
+        return Inertia::render('Pages/entity/consumable/Edit', array_merge([
             'consumable' => new ConsumableResource($consumable),
             'availableConsumableTypes' => $availableConsumableTypes,
             'effectUsages' => $effectUsages,
             'availableEffects' => $availableEffects,
             'effectEntityType' => 'consumable',
-        ]);
+        ], ObjectEffectEditOptions::inertiaPropsFor($consumable)));
     }
 
     /**

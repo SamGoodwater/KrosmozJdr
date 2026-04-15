@@ -414,7 +414,7 @@ return [
         'min' => '0',
         'max' => '30',
         'formula' => null,
-        'formula_display' => 'Boost/retrait temporaire d\'Agilité via sous-effet de sort (2.2.1). Agilité liée à l\'Air, score créature 6–31, mod = floor((score-10)/2). Effet sort max 30, compression Dofus pow(0.42).',
+        'formula_display' => 'Boost/retrait temporaire d\'Agilité via sous-effet de sort (2.2.1). Air ; scores créature 6–24 (2.2.1). Bonus converti depuis Dofus, plafond effet +30, pow(0.42).',
         'default_value' => '0',
         'conversion_formula' => 'round(min(30,max(0,2.0*pow(max(1,[d]),0.42))))',
         'conversion_dofus_sample' => [
@@ -460,7 +460,7 @@ return [
         'min' => '0',
         'max' => '30',
         'formula' => null,
-        'formula_display' => 'Boost/retrait temporaire de Chance via sous-effet de sort (2.2.1). Chance liée à l\'Eau, score créature 6–31, mod = floor((score-10)/2). Effet sort max 30, compression Dofus pow(0.42).',
+        'formula_display' => 'Boost/retrait temporaire de Chance via sous-effet de sort (2.2.1). Eau ; scores créature 6–24 (2.2.1). Bonus converti depuis Dofus, plafond effet +30, pow(0.42).',
         'default_value' => '0',
         'conversion_formula' => 'round(min(30,max(0,2.0*pow(max(1,[d]),0.42))))',
         'conversion_dofus_sample' => [
@@ -894,7 +894,7 @@ return [
         'min' => '0',
         'max' => '30',
         'formula' => null,
-        'formula_display' => 'Boost/retrait temporaire d\'Intelligence via sous-effet de sort (2.2.1). Intelligence liée au Feu, score créature 6–31, mod = floor((score-10)/2). Effet sort max 30, compression Dofus pow(0.42).',
+        'formula_display' => 'Boost/retrait temporaire d\'Intelligence via sous-effet de sort (2.2.1). Feu ; scores créature 6–24 (2.2.1). Bonus converti depuis Dofus, plafond effet +30, pow(0.42).',
         'default_value' => '0',
         'conversion_formula' => 'round(min(30,max(0,2.0*pow(max(1,[d]),0.42))))',
         'conversion_dofus_sample' => [
@@ -1108,7 +1108,7 @@ return [
         'min' => '0',
         'max' => '30',
         'formula' => null,
-        'formula_display' => 'Boost/retrait temporaire de Sagesse via sous-effet de sort (2.2.1). Sagesse liée à la perception et aux soins, score créature 6–31, mod = floor((score-10)/2). Effet sort max 30, compression Dofus pow(0.42).',
+        'formula_display' => 'Boost/retrait temporaire de Sagesse via sous-effet de sort (2.2.1). Perception et soins ; scores créature 6–24 (2.2.1). Bonus converti depuis Dofus, plafond effet +30, pow(0.42).',
         'default_value' => '0',
         'conversion_formula' => 'round(min(30,max(0,2.0*pow(max(1,[d]),0.42))))',
         'conversion_dofus_sample' => [
@@ -1212,7 +1212,7 @@ return [
         'min' => '0',
         'max' => '30',
         'formula' => null,
-        'formula_display' => 'Boost/retrait temporaire de Force via sous-effet de sort (2.2.1). Force liée à la Terre, score créature 6–31, mod = floor((score-10)/2). Effet sort max 30, compression Dofus pow(0.42).',
+        'formula_display' => 'Boost/retrait temporaire de Force via sous-effet de sort (2.2.1). Terre ; scores créature 6–24 (2.2.1). Bonus converti depuis Dofus, plafond effet +30, pow(0.42).',
         'default_value' => '0',
         'conversion_formula' => 'round(min(30,max(0,2.0*pow(max(1,[d]),0.42))))',
         'conversion_dofus_sample' => [
@@ -1277,7 +1277,7 @@ return [
         'min' => '0',
         'max' => '30',
         'formula' => null,
-        'formula_display' => 'Boost/retrait temporaire de Vitalité via sous-effet de sort (2.2.1). Vitalité liée à la Constitution/PV, score créature 6–31, mod = floor((score-10)/2). PV = Vitalité × 10. Effet sort max 30, compression Dofus pow(0.42).',
+        'formula_display' => 'Boost/retrait temporaire de Vitalité via sous-effet de sort (2.2.1). PV = Vitalité × 10 ; scores créature 6–24 (2.2.1). Bonus converti depuis Dofus, plafond effet +30, pow(0.42).',
         'default_value' => '0',
         'conversion_formula' => 'round(min(30,max(0,2.0*pow(max(1,[d]),0.42))))',
         'conversion_dofus_sample' => [

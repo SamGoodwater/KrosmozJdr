@@ -8,7 +8,9 @@ use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Construit les métadonnées "byDbColumn" pour les caractéristiques (creature, object, spell).
@@ -37,7 +39,7 @@ final class CharacteristicMetaByDbColumnService
                 ->with(['characteristic.masterCharacteristic'])
                 ->get();
 
-            $sorted = $charRows->sortBy(fn (CharacteristicCreature $r) => $r->entity === CharacteristicCreature::ENTITY_ALL ? 0 : 1)->values();
+            $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
 
             foreach ($sorted as $row) {
                 $entry = $this->rowToDefinition($row->db_column, $row->characteristic);
@@ -46,7 +48,7 @@ final class CharacteristicMetaByDbColumnService
                 }
             }
         } catch (\Throwable $e) {
-            // Ne pas bloquer le tableau en cas d'erreur (table manquante, etc.)
+            $this->reportMetaBuildFailure('buildCreatureByDbColumn', $e);
         }
 
         return $out;
@@ -129,7 +131,7 @@ final class CharacteristicMetaByDbColumnService
                 }
             }
         } catch (\Throwable $e) {
-            // Ne pas bloquer en cas d'erreur
+            $this->reportMetaBuildFailure('buildCreatureComputedByKey', $e);
         }
 
         return $out;
@@ -151,7 +153,7 @@ final class CharacteristicMetaByDbColumnService
                 ->with(['characteristic.masterCharacteristic'])
                 ->get();
 
-            $sorted = $charRows->sortBy(fn (CharacteristicObject $r) => $r->entity === CharacteristicObject::ENTITY_ALL ? 0 : 1)->values();
+            $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
 
             foreach ($sorted as $row) {
                 $entry = $this->rowToDefinition($row->db_column, $row->characteristic, ['value_available' => $row->value_available]);
@@ -160,6 +162,7 @@ final class CharacteristicMetaByDbColumnService
                 }
             }
         } catch (\Throwable $e) {
+            $this->reportMetaBuildFailure('buildObjectByDbColumn', $e);
         }
 
         return $out;
@@ -182,7 +185,7 @@ final class CharacteristicMetaByDbColumnService
                 ->with(['characteristic.masterCharacteristic'])
                 ->get();
 
-            $sorted = $charRows->sortBy(fn (CharacteristicObject $r) => $r->entity === CharacteristicObject::ENTITY_ALL ? 0 : 1)->values();
+            $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
 
             foreach ($sorted as $row) {
                 if ($row->characteristic === null) {
@@ -201,6 +204,7 @@ final class CharacteristicMetaByDbColumnService
                 }
             }
         } catch (\Throwable $e) {
+            $this->reportMetaBuildFailure('buildObjectByCharacteristicKey', $e);
         }
 
         return $out;
@@ -223,7 +227,7 @@ final class CharacteristicMetaByDbColumnService
                 ->with(['characteristic.masterCharacteristic'])
                 ->get();
 
-            $sorted = $charRows->sortBy(fn (CharacteristicObject $r) => $r->entity === CharacteristicObject::ENTITY_ALL ? 0 : 1)->values();
+            $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
 
             foreach ($sorted as $row) {
                 $idKey = (string) $row->dofusdb_characteristic_id;
@@ -233,6 +237,7 @@ final class CharacteristicMetaByDbColumnService
                 }
             }
         } catch (\Throwable $e) {
+            $this->reportMetaBuildFailure('buildObjectByDofusdbId', $e);
         }
 
         return $out;
@@ -253,7 +258,7 @@ final class CharacteristicMetaByDbColumnService
                 ->with(['characteristic.masterCharacteristic'])
                 ->get();
 
-            $sorted = $charRows->sortBy(fn (CharacteristicSpell $r) => $r->entity === CharacteristicSpell::ENTITY_ALL ? 0 : 1)->values();
+            $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
 
             foreach ($sorted as $row) {
                 $entry = $this->rowToDefinition($row->db_column, $row->characteristic, ['value_available' => $row->value_available]);
@@ -262,6 +267,7 @@ final class CharacteristicMetaByDbColumnService
                 }
             }
         } catch (\Throwable $e) {
+            $this->reportMetaBuildFailure('buildSpellByDbColumn', $e);
         }
 
         return $out;
@@ -296,6 +302,7 @@ final class CharacteristicMetaByDbColumnService
                 }
             }
         } catch (\Throwable $e) {
+            $this->reportMetaBuildFailure('buildMonsterFieldMeta', $e);
         }
 
         return $out;
@@ -317,6 +324,8 @@ final class CharacteristicMetaByDbColumnService
     public function buildAllForFrontend(): array
     {
         return Cache::remember(self::FRONTEND_CACHE_KEY, 300, function () {
+            $spellByDbColumn = $this->buildSpellByDbColumn();
+
             return [
                 'creature' => [
                     'byDbColumn' => $this->buildCreatureByDbColumn(),
@@ -324,10 +333,10 @@ final class CharacteristicMetaByDbColumnService
                     'byMonsterField' => $this->buildMonsterFieldMeta(),
                 ],
                 'spell' => [
-                    'byDbColumn' => $this->buildSpellByDbColumn(),
+                    'byDbColumn' => $spellByDbColumn,
                 ],
                 'capability' => [
-                    'byDbColumn' => $this->buildSpellByDbColumn(),
+                    'byDbColumn' => $spellByDbColumn,
                 ],
                 'item' => [
                     'byDbColumn' => $this->buildObjectByDbColumn(CharacteristicObject::ENTITY_ITEM),
@@ -367,14 +376,7 @@ final class CharacteristicMetaByDbColumnService
             return null;
         }
 
-        $icon = $c->icon;
-        if (is_string($icon) && $icon !== '' && ! str_starts_with($icon, 'fa-') && ! str_contains($icon, '/')) {
-            $icon = 'icons/caracteristics/'.$icon;
-        }
-        $iconFalse = $c->icon_false ?? null;
-        if (is_string($iconFalse) && $iconFalse !== '' && ! str_starts_with($iconFalse, 'fa-') && ! str_contains($iconFalse, '/')) {
-            $iconFalse = 'icons/caracteristics/'.$iconFalse;
-        }
+        $icons = $this->resolveCharacteristicIconPaths($c);
 
         return array_merge([
             'key' => $key,
@@ -383,8 +385,8 @@ final class CharacteristicMetaByDbColumnService
             'short_name' => $c->short_name,
             'helper' => $c->helper,
             'descriptions' => $c->descriptions,
-            'icon' => $icon,
-            'icon_false' => $iconFalse,
+            'icon' => $icons['icon'],
+            'icon_false' => $icons['icon_false'],
             'color' => $c->color,
             'color_false' => $c->color_false ?? null,
             'value_overrides' => $this->normalizeValueOverridesIcons($c->value_overrides),
@@ -408,6 +410,41 @@ final class CharacteristicMetaByDbColumnService
         }
         $c = $characteristic->effectiveCharacteristic();
 
+        $icons = $this->resolveCharacteristicIconPaths($c);
+
+        return array_merge([
+            'key' => $c->key,
+            'db_column' => $dbColumn,
+            'name' => $c->name,
+            'short_name' => $c->short_name,
+            'helper' => $c->helper,
+            'descriptions' => $c->descriptions,
+            'icon' => $icons['icon'],
+            'icon_false' => $icons['icon_false'],
+            'color' => $c->color,
+            'color_false' => $c->color_false ?? null,
+            'value_overrides' => $this->normalizeValueOverridesIcons($c->value_overrides),
+            'unit' => $c->unit,
+            'type' => $c->type,
+        ], array_filter($extra, fn ($v) => $v !== null));
+    }
+
+    /**
+     * Lignes pivot : `entity = *` d'abord, puis surcharge (valeurs finales prioritaires).
+     *
+     * @param  EloquentCollection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>  $rows
+     * @return \Illuminate\Support\Collection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>
+     */
+    private function sortPivotRowsEntityOverlayLast(EloquentCollection $rows)
+    {
+        return $rows->sortBy(fn ($r) => $r->entity === CharacteristicCreature::ENTITY_ALL ? 0 : 1)->values();
+    }
+
+    /**
+     * @return array{icon: string|null, icon_false: string|null}
+     */
+    private function resolveCharacteristicIconPaths(Characteristic $c): array
+    {
         $icon = $c->icon;
         if (is_string($icon) && $icon !== '' && ! str_starts_with($icon, 'fa-') && ! str_contains($icon, '/')) {
             $icon = 'icons/caracteristics/'.$icon;
@@ -417,21 +454,15 @@ final class CharacteristicMetaByDbColumnService
             $iconFalse = 'icons/caracteristics/'.$iconFalse;
         }
 
-        return array_merge([
-            'key' => $c->key,
-            'db_column' => $dbColumn,
-            'name' => $c->name,
-            'short_name' => $c->short_name,
-            'helper' => $c->helper,
-            'descriptions' => $c->descriptions,
-            'icon' => $icon,
-            'icon_false' => $iconFalse,
-            'color' => $c->color,
-            'color_false' => $c->color_false ?? null,
-            'value_overrides' => $this->normalizeValueOverridesIcons($c->value_overrides),
-            'unit' => $c->unit,
-            'type' => $c->type,
-        ], array_filter($extra, fn ($v) => $v !== null));
+        return ['icon' => $icon, 'icon_false' => $iconFalse];
+    }
+
+    private function reportMetaBuildFailure(string $context, \Throwable $e): void
+    {
+        Log::warning('CharacteristicMetaByDbColumnService: échec construction métadonnées', [
+            'context' => $context,
+            'message' => $e->getMessage(),
+        ]);
     }
 
     /**

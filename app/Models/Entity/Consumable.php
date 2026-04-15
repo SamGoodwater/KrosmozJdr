@@ -2,23 +2,17 @@
 
 namespace App\Models\Entity;
 
+use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\EffectUsage;
+use App\Models\ObjectEffect;
+use App\Models\Type\ConsumableType;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Type\ConsumableType;
-use App\Models\Entity\Resource;
-use App\Models\Entity\Creature;
-use App\Models\Entity\Scenario;
-use App\Models\Entity\Campaign;
-use App\Models\Entity\Shop;
-use App\Models\EffectUsage;
-use App\Models\Concerns\HasEntityImageMedia;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
- * 
- *
  * @property int $id
  * @property string|null $official_id
  * @property string|null $dofusdb_id
@@ -46,12 +40,13 @@ use Spatie\MediaLibrary\HasMedia;
  * @property-read User|null $createdBy
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, resource> $resources
  * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
  * @property-read int|null $shops_count
+ *
  * @method static \Database\Factories\Entity\ConsumableFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable newQuery()
@@ -80,16 +75,20 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Consumable extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\ConsumableFactory> */
-    use HasFactory, SoftDeletes, HasEntityImageMedia;
+    use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     /** Répertoire Media Library pour ce modèle. */
@@ -197,5 +196,13 @@ class Consumable extends Model implements HasMedia
     public function effectUsages()
     {
         return $this->morphMany(EffectUsage::class, 'entity');
+    }
+
+    /**
+     * Effets d’objet structurés (action + caractéristique ou monstre + valeur).
+     */
+    public function objectEffects()
+    {
+        return $this->morphMany(ObjectEffect::class, 'object_effectable');
     }
 }

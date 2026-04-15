@@ -103,17 +103,19 @@ class ScrappingMappingControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->postJson(route('admin.scrapping-mappings.store'), [
-            'source' => 'dofusdb',
-            'entity' => 'monster',
-            'mapping_key' => 'test_key',
-            'from_path' => 'grades.0.level',
-            'from_lang_aware' => false,
-            'sort_order' => 0,
-            'targets' => [
-                ['target_model' => 'creatures', 'target_field' => 'level', 'sort_order' => 0],
-            ],
-        ]);
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->postJson(route('admin.scrapping-mappings.store'), [
+                'source' => 'dofusdb',
+                'entity' => 'monster',
+                'mapping_key' => 'test_key',
+                'from_path' => 'grades.0.level',
+                'from_lang_aware' => false,
+                'sort_order' => 0,
+                'targets' => [
+                    ['target_model' => 'creatures', 'target_field' => 'level', 'sort_order' => 0],
+                ],
+            ]);
 
         $response->assertStatus(201)
             ->assertJson(['success' => true, 'message' => 'Règle de mapping créée.'])
@@ -142,10 +144,12 @@ class ScrappingMappingControllerTest extends TestCase
             'sort_order' => 0,
         ]);
 
-        $response = $this->actingAs($admin)->patchJson(route('admin.scrapping-mappings.update', $mapping->id), [
-            'mapping_key' => 'updated_key',
-            'from_path' => 'grades.0.lifePoints',
-        ]);
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->patchJson(route('admin.scrapping-mappings.update', $mapping->id), [
+                'mapping_key' => 'updated_key',
+                'from_path' => 'grades.0.lifePoints',
+            ]);
 
         $response->assertOk()
             ->assertJson(['success' => true]);
@@ -167,7 +171,9 @@ class ScrappingMappingControllerTest extends TestCase
         ]);
         $id = $mapping->id;
 
-        $response = $this->actingAs($admin)->deleteJson(route('admin.scrapping-mappings.destroy', $id));
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->deleteJson(route('admin.scrapping-mappings.destroy', $id));
 
         $response->assertOk()
             ->assertJson(['success' => true, 'message' => 'Règle de mapping supprimée.']);

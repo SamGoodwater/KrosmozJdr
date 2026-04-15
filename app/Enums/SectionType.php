@@ -23,6 +23,8 @@ enum SectionType: string
     case ENTITY_TABLE = 'entity_table';
     case LEGAL_MARKDOWN = 'legal_markdown';
     case CHARACTERISTIC_NORMS = 'characteristic_norms';
+    /** Catalogue de chartes (plusieurs caractéristiques en accordéon). */
+    case CHARACTERISTIC_NORMS_CATALOG = 'characteristic_norms_catalog';
 
     /**
      * Retourne le label traduit du type.
@@ -37,6 +39,7 @@ enum SectionType: string
             self::ENTITY_TABLE => 'Tableau d\'entités',
             self::LEGAL_MARKDOWN => 'Document légal (Markdown)',
             self::CHARACTERISTIC_NORMS => 'Charte caractéristique',
+            self::CHARACTERISTIC_NORMS_CATALOG => 'Catalogue de chartes (normes)',
         };
     }
 
@@ -53,6 +56,7 @@ enum SectionType: string
             self::ENTITY_TABLE => 'fa-table',
             self::LEGAL_MARKDOWN => 'fa-scale-balanced',
             self::CHARACTERISTIC_NORMS => 'fa-chart-bar',
+            self::CHARACTERISTIC_NORMS_CATALOG => 'fa-table-list',
         };
     }
 
@@ -100,6 +104,11 @@ enum SectionType: string
                 'characteristic_key' => 'string (required, clé de la caractéristique)',
                 'group' => 'string (required: creature|object|spell)',
                 'entity' => 'string (optional, default: *)',
+            ],
+            self::CHARACTERISTIC_NORMS_CATALOG => [
+                'group' => 'string (required: creature|object|spell)',
+                'entity' => 'string (optional, default: *)',
+                'characteristic_keys' => 'array (optional, filtre de clés)',
             ],
         };
     }

@@ -4,15 +4,23 @@
  * Liste des mappings ; création / édition / suppression.
  */
 import { computed, onMounted, ref } from 'vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vue';
 import axios from 'axios';
+import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
 const { setPageTitle } = usePageTitle();
+
+const page = usePage();
+const adminUnlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
+const showAdminConfirmModal = ref(false);
+function onAdminPasswordConfirmed() {
+    adminUnlocked.value = true;
+}
 
 const props = defineProps({
     effectIdFilter: { type: String, default: '' },
@@ -150,7 +158,20 @@ onMounted(() => {
 
 <template>
     <Head title="Mapping effets DofusDB" />
-    <div class="flex h-full min-h-0 w-full flex-col lg:flex-row">
+
+    <div
+        v-if="!adminUnlocked"
+        class="rounded-box border border-warning/40 bg-warning/10 p-8 mx-auto max-w-lg my-8 text-center space-y-4"
+    >
+        <p class="text-warning-content">
+            Les mappings modifient la base de données. Confirme ton mot de passe pour continuer.
+        </p>
+        <Btn color="primary" @click="showAdminConfirmModal = true">
+            Accéder aux mappings effets DofusDB
+        </Btn>
+    </div>
+
+    <div v-else class="flex h-full min-h-0 w-full flex-col lg:flex-row">
         <main class="min-w-0 flex-1 overflow-y-auto p-6">
             <div class="mb-4">
                 <Btn color="neutral" variant="ghost" size="sm" class="gap-2 mb-2" @click="goBackToEffects">
@@ -230,7 +251,7 @@ onMounted(() => {
     </div>
 
     <!-- Modal création / édition -->
-    <dialog class="modal" :class="{ 'modal-open': showModal }">
+    <dialog v-if="adminUnlocked" class="modal" :class="{ 'modal-open': showModal }">
         <div class="modal-box max-w-lg">
             <h3 class="text-lg font-bold">
                 {{ modalMode === 'create' ? 'Nouveau mapping effet DofusDB' : 'Modifier le mapping' }}
@@ -289,4 +310,12 @@ onMounted(() => {
             <button type="button" @click="showModal = false">fermer</button>
         </form>
     </dialog>
+
+    <ConfirmPasswordModal
+        v-model:open="showAdminConfirmModal"
+        title="Mapping effets DofusDB"
+        message="Cette section modifie les mappings effectId en base. Entre ton mot de passe pour confirmer ton identité."
+        confirm-label="Accéder"
+        @confirmed="onAdminPasswordConfirmed"
+    />
 </template>

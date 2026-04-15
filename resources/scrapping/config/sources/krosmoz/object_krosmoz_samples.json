@@ -64,9 +64,25 @@
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 5 },
       "source_rule": "2.2.2 : modifiable par équipement (illimité) ; convention ordre de grandeur"
     },
-    "resistance_50_percent_object": {
+    "resistance_percent_tier_earth_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
-      "source_rule": "2.2.2 : résistance % (0, 50, 100) ; pas de courbe niveau → valeur unique par objet"
+      "source_rule": "2.2.2 : palier par élément (0 / 50 % / 100 %) ; pas de courbe niveau, valeur par effet d’objet"
+    },
+    "resistance_percent_tier_fire_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "2.2.2 : idem Terre"
+    },
+    "resistance_percent_tier_water_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "2.2.2 : idem Terre"
+    },
+    "resistance_percent_tier_air_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "2.2.2 : idem Terre"
+    },
+    "resistance_percent_tier_neutral_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "2.2.2 : idem Terre"
     },
     "fixed_resistance_earth_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },

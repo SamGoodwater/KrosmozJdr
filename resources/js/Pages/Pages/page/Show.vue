@@ -9,7 +9,7 @@
  * @props {Object} page - Données de la page (avec sections)
  */
 import { Head, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import PageRenderer from '@/Pages/Organismes/section/PageRenderer.vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 
@@ -38,11 +38,17 @@ const user = computed(() => {
  * Titre de la page
  */
 const pageTitle = computed(() => {
-    return props.page.title || 'Page';
+    return props.page?.title || props.page?.data?.title || 'Page';
 });
 
-// Mettre à jour le titre de la page
-setPageTitle(pageTitle.value);
+// Mettre à jour le titre de la page de manière réactive
+watch(
+    pageTitle,
+    (title) => {
+        setPageTitle(title || 'Page');
+    },
+    { immediate: true }
+);
 </script>
 
 <template>

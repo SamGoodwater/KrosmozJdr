@@ -20,10 +20,12 @@ final class CharacteristicGetterService
     /** Valeur entity = « s'applique à toutes les entités du groupe ». */
     public const ENTITY_ALL = '*';
 
+    /** TTL cache index champ → clé (aligné sur le mapping DofusDB). */
+    private const FIELD_MAP_CACHE_TTL = 3600;
+
     public function __construct(
         private readonly FormulaResolutionService $formulaResolution
-    ) {
-    }
+    ) {}
 
     /** Entités du groupe creature */
     private const GROUP_CREATURE = ['monster', 'class', 'npc'];
@@ -35,15 +37,34 @@ final class CharacteristicGetterService
     private const GROUP_SPELL = ['spell'];
 
     /**
+     * Résultats mémoïsés de getDefinition (évite requêtes répétées dans une même requête HTTP / worker).
+     *
+     * @var array<string, array<string, mixed>|null>
+     */
+    private array $definitionMemo = [];
+
+    /** @var list<string> */
+    private const FIELD_MAP_ENTITIES = [
+        ...self::GROUP_CREATURE,
+        ...self::GROUP_OBJECT,
+        ...self::GROUP_SPELL,
+    ];
+
+    /**
      * Retourne la définition complète d’une caractéristique pour une entité (nom, limites, formules, conversion, etc.).
      *
      * @return array<string, mixed>|null
      */
     public function getDefinition(string $characteristicKey, string $entity): ?array
     {
+        $memoKey = $characteristicKey.'|'.$entity;
+        if (array_key_exists($memoKey, $this->definitionMemo)) {
+            return $this->definitionMemo[$memoKey];
+        }
+
         $characteristic = Characteristic::where('key', $characteristicKey)->first();
         if ($characteristic === null) {
-            return null;
+            return $this->definitionMemo[$memoKey] = null;
         }
 
         // Si la caractéristique est liée, on résout la définition via la caractéristique maître.
@@ -53,7 +74,7 @@ final class CharacteristicGetterService
             // On récupère la ligne de base (entity='*') de la maître, quelle que soit sa table de groupe.
             $base = $this->findMasterBaseRow($master);
             if ($base === null) {
-                return null;
+                return $this->definitionMemo[$memoKey] = null;
             }
 
             $def = $this->mergeDefinition($master, $base, null, $entity);
@@ -61,14 +82,15 @@ final class CharacteristicGetterService
             // même si la config vient de la maître (ex. level_creature).
             $def['key'] = $characteristicKey;
 
-            return $def;
+            return $this->definitionMemo[$memoKey] = $def;
         }
 
         [$base, $overlay] = $this->findGroupRows($characteristic->id, $entity);
         if ($base === null && $overlay === null) {
-            return null;
+            return $this->definitionMemo[$memoKey] = null;
         }
-        return $this->mergeDefinition($characteristic, $base, $overlay, $entity);
+
+        return $this->definitionMemo[$memoKey] = $this->mergeDefinition($characteristic, $base, $overlay, $entity);
     }
 
     /**
@@ -77,7 +99,7 @@ final class CharacteristicGetterService
      * ils sont évalués avec les variables fournies (ex. level, vitality). Sans variables, formules/tables
      * sont évaluées avec 0 pour les variables manquantes.
      *
-     * @param array<string, int|float> $variables Contexte pour l'évaluation (ex. ['level' => 5, 'vitality' => 10])
+     * @param  array<string, int|float>  $variables  Contexte pour l'évaluation (ex. ['level' => 5, 'vitality' => 10])
      * @return array{min: int, max: int}|null
      */
     public function getLimits(string $characteristicKey, string $entity, array $variables = []): ?array
@@ -91,6 +113,7 @@ final class CharacteristicGetterService
         if ($minVal === null || $maxVal === null) {
             return null;
         }
+
         return [
             'min' => (int) $minVal,
             'max' => (int) $maxVal,
@@ -100,12 +123,13 @@ final class CharacteristicGetterService
     /**
      * Retourne les limites pour un champ de données (nom de colonne ou clé) et une entité.
      *
-     * @param array<string, int|float> $variables Contexte pour l'évaluation des formules min/max
+     * @param  array<string, int|float>  $variables  Contexte pour l'évaluation des formules min/max
      * @return array{min: int, max: int}|null
      */
     public function getLimitsByField(string $field, string $entity, array $variables = []): ?array
     {
         $key = $this->resolveFieldToKey($field, $entity);
+
         return $key !== null ? $this->getLimits($key, $entity, $variables) : null;
     }
 
@@ -136,51 +160,120 @@ final class CharacteristicGetterService
         if (in_array($entity, self::GROUP_SPELL, true)) {
             return 'spell';
         }
+
         return 'object';
     }
 
     /**
      * Résout un nom de champ (ex. level, life) ou un nom court (ex. level → level_creature) en clé BDD pour une entité.
      * Accepte la clé complète, le db_column, ou le nom court sans suffixe (_creature, _object, _spell).
+     *
+     * Une requête indexée par entité (cache applicatif) remplace le chargement complet des pivots à chaque résolution.
      */
     private function resolveFieldToKey(string $field, string $entity): ?string
     {
+        $map = $this->getCachedFieldToKeyMap($entity);
+        if (isset($map[$field])) {
+            return $map[$field];
+        }
+
+        $suffix = $this->fieldKeySuffixForEntity($entity);
+        if ($suffix === null) {
+            return null;
+        }
+
+        $candidate = $field.$suffix;
+
+        return $this->getDefinition($candidate, $entity) !== null ? $candidate : null;
+    }
+
+    /**
+     * Index : clé complète, db_column, alias — pour une entité donnée.
+     * Lignes `entity = *` puis surcharge entité (la surcharge écrase les alias en doublon).
+     *
+     * @return array<string, string>
+     */
+    private function getCachedFieldToKeyMap(string $entity): array
+    {
+        if (! in_array($entity, self::FIELD_MAP_ENTITIES, true)) {
+            return [];
+        }
+
+        $cacheKey = 'characteristic.field_map.v1.'.$entity;
+
+        return Cache::remember($cacheKey, self::FIELD_MAP_CACHE_TTL, function () use ($entity): array {
+            return $this->buildFieldToKeyMap($entity);
+        });
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function buildFieldToKeyMap(string $entity): array
+    {
         if (in_array($entity, self::GROUP_CREATURE, true)) {
-            $rows = CharacteristicCreature::whereIn('entity', [$entity, self::ENTITY_ALL])->with('characteristic')->get();
-            foreach ($rows as $row) {
-                if ($row->characteristic->key === $field || $row->db_column === $field) {
-                    return $row->characteristic->key;
-                }
-            }
-            $fullKey = $field . '_creature';
-            if ($this->getDefinition($fullKey, $entity) !== null) {
-                return $fullKey;
-            }
+            return $this->accumulateFieldAliases(
+                CharacteristicCreature::whereIn('entity', [$entity, self::ENTITY_ALL])
+                    ->with('characteristic')
+                    ->get()
+            );
         }
         if (in_array($entity, self::GROUP_OBJECT, true)) {
-            $rows = CharacteristicObject::whereIn('entity', [$entity, self::ENTITY_ALL])->with('characteristic')->get();
-            foreach ($rows as $row) {
-                if ($row->characteristic->key === $field || $row->db_column === $field) {
-                    return $row->characteristic->key;
-                }
-            }
-            $fullKey = $field . '_object';
-            if ($this->getDefinition($fullKey, $entity) !== null) {
-                return $fullKey;
-            }
+            return $this->accumulateFieldAliases(
+                CharacteristicObject::whereIn('entity', [$entity, self::ENTITY_ALL])
+                    ->with('characteristic')
+                    ->get()
+            );
         }
         if (in_array($entity, self::GROUP_SPELL, true)) {
-            $rows = CharacteristicSpell::whereIn('entity', [$entity, self::ENTITY_ALL])->with('characteristic')->get();
-            foreach ($rows as $row) {
-                if ($row->characteristic->key === $field || $row->db_column === $field) {
-                    return $row->characteristic->key;
-                }
+            return $this->accumulateFieldAliases(
+                CharacteristicSpell::whereIn('entity', [$entity, self::ENTITY_ALL])
+                    ->with('characteristic')
+                    ->get()
+            );
+        }
+
+        return [];
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Collection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>  $rows
+     * @return array<string, string>
+     */
+    private function accumulateFieldAliases($rows): array
+    {
+        $sorted = $rows->sortBy(fn ($r) => $r->entity === self::ENTITY_ALL ? 0 : 1)->values();
+        $map = [];
+        foreach ($sorted as $row) {
+            $char = $row->characteristic;
+            if ($char === null) {
+                continue;
             }
-            $fullKey = $field . '_spell';
-            if ($this->getDefinition($fullKey, $entity) !== null) {
-                return $fullKey;
+            $key = $char->key;
+            if ($key !== '') {
+                $map[$key] = $key;
+            }
+            $col = $row->db_column;
+            if (is_string($col) && $col !== '') {
+                $map[$col] = $key;
             }
         }
+
+        return $map;
+    }
+
+    private function fieldKeySuffixForEntity(string $entity): ?string
+    {
+        if (in_array($entity, self::GROUP_CREATURE, true)) {
+            return '_creature';
+        }
+        if (in_array($entity, self::GROUP_OBJECT, true)) {
+            return '_object';
+        }
+        if (in_array($entity, self::GROUP_SPELL, true)) {
+            return '_spell';
+        }
+
         return null;
     }
 
@@ -191,6 +284,7 @@ final class CharacteristicGetterService
     {
         $def = $this->getDefinition($characteristicKey, $entity);
         $formula = $def['conversion_formula'] ?? null;
+
         return is_string($formula) && trim($formula) !== '' ? $formula : null;
     }
 
@@ -201,6 +295,7 @@ final class CharacteristicGetterService
     {
         $def = $this->getDefinition($characteristicKey, $entity);
         $id = $def['conversion_function'] ?? null;
+
         return is_string($id) && trim($id) !== '' ? $id : null;
     }
 
@@ -216,7 +311,7 @@ final class CharacteristicGetterService
      */
     public function getDofusdbToCharacteristicKeyMap(string $group): array
     {
-        $cacheKey = 'characteristic.dofusdb_to_key.' . $group;
+        $cacheKey = 'characteristic.dofusdb_to_key.'.$group;
 
         return Cache::remember($cacheKey, self::DOFUSDB_TO_KEY_CACHE_TTL, function () use ($group): array {
             $query = match ($group) {
@@ -245,6 +340,7 @@ final class CharacteristicGetterService
      * Pour plusieurs résolutions (ex. boucle effets), préférer getDofusdbToCharacteristicKeyMap() pour éviter N+1.
      *
      * @param  'object'|'creature'|'spell'  $group  Groupe de caractéristiques (table de groupe)
+     *
      * @example getCharacteristicKeyByDofusdbCharacteristicId(10, 'object') === 'strength_object'
      */
     public function getCharacteristicKeyByDofusdbCharacteristicId(int $dofusdbCharacteristicId, string $group): ?string
@@ -258,8 +354,12 @@ final class CharacteristicGetterService
     public function clearCache(): void
     {
         foreach (['object', 'creature', 'spell'] as $group) {
-            Cache::forget('characteristic.dofusdb_to_key.' . $group);
+            Cache::forget('characteristic.dofusdb_to_key.'.$group);
         }
+        foreach (self::FIELD_MAP_ENTITIES as $ent) {
+            Cache::forget('characteristic.field_map.v1.'.$ent);
+        }
+        $this->definitionMemo = [];
     }
 
     /**
@@ -278,6 +378,7 @@ final class CharacteristicGetterService
                 ->get();
             $base = $rows->firstWhere('entity', self::ENTITY_ALL);
             $overlay = $entity !== self::ENTITY_ALL ? $rows->firstWhere('entity', $entity) : null;
+
             return [$base, $overlay];
         }
         if (in_array($entity, self::GROUP_OBJECT, true)) {
@@ -287,6 +388,7 @@ final class CharacteristicGetterService
                 ->get();
             $base = $rows->firstWhere('entity', self::ENTITY_ALL);
             $overlay = $entity !== self::ENTITY_ALL ? $rows->firstWhere('entity', $entity) : null;
+
             return [$base, $overlay];
         }
         if (in_array($entity, self::GROUP_SPELL, true)) {
@@ -295,8 +397,10 @@ final class CharacteristicGetterService
                 ->get();
             $base = $rows->firstWhere('entity', self::ENTITY_ALL);
             $overlay = $entity !== self::ENTITY_ALL ? $rows->firstWhere('entity', $entity) : null;
+
             return [$base, $overlay];
         }
+
         return [null, null];
     }
 
@@ -312,14 +416,15 @@ final class CharacteristicGetterService
         if ($overlayVal !== null && $overlayVal !== '') {
             return $overlayVal;
         }
+
         return $base !== null ? $base->getAttribute($attribute) : null;
     }
 
     /**
      * Résout une limite (min ou max) : valeur fixe, formule ou table → entier.
      *
-     * @param mixed $value Valeur en BDD (string numérique, formule ou JSON table)
-     * @param array<string, int|float> $variables Contexte pour l'évaluation
+     * @param  mixed  $value  Valeur en BDD (string numérique, formule ou JSON table)
+     * @param  array<string, int|float>  $variables  Contexte pour l'évaluation
      */
     private function resolveLimitValue(mixed $value, array $variables): ?int
     {
@@ -337,6 +442,7 @@ final class CharacteristicGetterService
         if ($evaluated === null) {
             return null;
         }
+
         return (int) round($evaluated);
     }
 
@@ -344,8 +450,8 @@ final class CharacteristicGetterService
      * Fusionne la caractéristique générale et les lignes de groupe (base + surcharge entité) en un seul tableau.
      * Les propriétés non généralistes (min, max, formula, etc.) sont prises sur la surcharge si non vides, sinon sur la base.
      *
-     * @param CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null $base Ligne entity='*'
-     * @param CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null $overlay Ligne entity précise (ex. monster)
+     * @param  CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null  $base  Ligne entity='*'
+     * @param  CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null  $overlay  Ligne entity précise (ex. monster)
      * @return array<string, mixed>
      */
     private function mergeDefinition(
@@ -397,6 +503,7 @@ final class CharacteristicGetterService
         if ($row instanceof CharacteristicSpell) {
             $out['value_available'] = $this->pickGroupValue($base, $overlay, 'value_available') ?? $row->value_available;
         }
+
         return $out;
     }
 
