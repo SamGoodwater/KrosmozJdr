@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
@@ -116,6 +117,10 @@ class CharacteristicController extends Controller
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
             'rune_price_per_unit' => null,
+            'norms_grid' => null,
+            'norms_conditions' => null,
+            'norms_description' => null,
+            'norms_help_section_id' => null,
         ];
         $entitiesTemplate = [];
         foreach (self::ENTITIES_BY_GROUP as $group => $entities) {
@@ -211,6 +216,12 @@ class CharacteristicController extends Controller
             return $this->storeLink($request);
         }
 
+        if (is_array($request->input('entities'))) {
+            $request->merge([
+                'entities' => $this->normalizeNormsHelpSectionIdsInEntities($request->input('entities')),
+            ]);
+        }
+
         $data = $request->validate([
             'key' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_]+$/'],
             'name' => 'required|string|max:255',
@@ -239,6 +250,11 @@ class CharacteristicController extends Controller
             'entities.*.forgemagie_max' => 'nullable|integer',
             'entities.*.base_price_per_unit' => 'nullable|numeric',
             'entities.*.rune_price_per_unit' => 'nullable|numeric',
+            'entities.*.norms_help_section_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('sections', 'id')->whereNull('deleted_at'),
+            ],
         ]);
 
         $key = $this->normalizeCharacteristicKey(trim($data['key']), $data['group']);
@@ -834,6 +850,12 @@ class CharacteristicController extends Controller
             return $this->convertToLinked($request, $characteristic);
         }
 
+        if (is_array($request->input('entities'))) {
+            $request->merge([
+                'entities' => $this->normalizeNormsHelpSectionIdsInEntities($request->input('entities')),
+            ]);
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'short_name' => 'nullable|string|max:255',
@@ -883,6 +905,11 @@ class CharacteristicController extends Controller
             'entities.*.norms_conditions.*.modifier' => 'required|integer',
             'entities.*.norms_conditions.*.comment' => 'nullable|string|max:500',
             'entities.*.norms_description' => 'nullable|string|max:2000',
+            'entities.*.norms_help_section_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('sections', 'id')->whereNull('deleted_at'),
+            ],
             'entity_override_keys' => 'nullable|array',
             'entity_override_keys.*' => 'string|max:32',
             'value_overrides' => 'nullable|array',
@@ -1103,6 +1130,7 @@ class CharacteristicController extends Controller
             'norms_grid' => $row->norms_grid,
             'norms_conditions' => $row->norms_conditions,
             'norms_description' => $row->norms_description,
+            'norms_help_section_id' => $row->norms_help_section_id,
         ];
         if ($row instanceof CharacteristicObject) {
             $out['forgemagie_allowed'] = $row->forgemagie_allowed;
@@ -1181,6 +1209,10 @@ class CharacteristicController extends Controller
                 'forgemagie_max' => 0,
                 'base_price_per_unit' => null,
                 'rune_price_per_unit' => null,
+                'norms_grid' => null,
+                'norms_conditions' => null,
+                'norms_description' => null,
+                'norms_help_section_id' => null,
             ];
         }
 
@@ -1219,6 +1251,7 @@ class CharacteristicController extends Controller
             'norms_grid' => $this->parseNormsGrid($data['norms_grid'] ?? null),
             'norms_conditions' => ! empty($data['norms_conditions']) ? array_values($data['norms_conditions']) : null,
             'norms_description' => ($data['norms_description'] ?? null) !== '' ? ($data['norms_description'] ?? null) : null,
+            'norms_help_section_id' => $this->parseNormsHelpSectionId($data['norms_help_section_id'] ?? null),
         ];
 
         if (in_array($entity, ['*', 'monster', 'class', 'npc'], true)) {
@@ -1281,6 +1314,44 @@ class CharacteristicController extends Controller
     }
 
     /**
+     * Remplace les chaînes vides par null pour éviter les erreurs de validation « integer » côté formulaire.
+     *
+     * @param  list<array<string, mixed>>  $entities
+     * @return list<array<string, mixed>>
+     */
+    private function normalizeNormsHelpSectionIdsInEntities(array $entities): array
+    {
+        foreach ($entities as $i => $ent) {
+            if (! is_array($ent)) {
+                continue;
+            }
+            $v = $ent['norms_help_section_id'] ?? null;
+            if ($v === '' || $v === false) {
+                $entities[$i]['norms_help_section_id'] = null;
+            }
+        }
+
+        return $entities;
+    }
+
+    /**
+     * ID de section d’aide liée aux normes (nullable).
+     */
+    private function parseNormsHelpSectionId(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+        if (is_numeric($value)) {
+            $id = (int) $value;
+
+            return $id > 0 ? $id : null;
+        }
+
+        return null;
+    }
+
+    /**
      * Normalise la grille norms : conserve uniquement les 5 power levels attendus.
      * Retourne null si la grille est vide ou si toutes les cellules sont vides.
      *
@@ -1318,7 +1389,6 @@ class CharacteristicController extends Controller
     }
 
     /**
-     * @param  mixed  $input
      * @return list<array{value: mixed, icon?: string, color?: string, subtitle?: string}>|null
      */
     private function parseValueOverridesInput(mixed $input): ?array

@@ -1,7 +1,7 @@
 <script setup>
 /**
  * Panneau d'édition des normes (chartes) pour une caractéristique.
- * Grille 5 puissances × 20 niveaux + conditions de lecture + description.
+ * Grille 5 puissances × 20 niveaux + conditions de lecture + description + section d’aide CMS.
  */
 import { computed, ref, watch } from 'vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -58,6 +58,23 @@ watch(
 );
 function emitDescription() {
     emit('update:modelValue', { ...props.modelValue, norms_description: localDescription.value });
+}
+
+const localHelpSectionId = ref('');
+watch(
+    () => props.modelValue.norms_help_section_id,
+    (val) => {
+        localHelpSectionId.value = val !== null && val !== undefined && val !== '' ? String(val) : '';
+    },
+    { immediate: true }
+);
+function emitHelpSectionId() {
+    const raw = localHelpSectionId.value.trim();
+    const id = raw === '' ? null : Number.parseInt(raw, 10);
+    emit('update:modelValue', {
+        ...props.modelValue,
+        norms_help_section_id: Number.isFinite(id) && id > 0 ? id : null,
+    });
 }
 
 function emptyGrid() {
@@ -152,6 +169,21 @@ const characteristicsOptions = computed(() =>
                 rows="2"
                 placeholder="Description de la norme (contexte, usage…)"
             />
+        </div>
+
+        <div>
+            <label class="label text-xs">Section d’aide (CMS, template Texte)</label>
+            <input
+                v-model="localHelpSectionId"
+                type="number"
+                min="1"
+                class="input input-bordered input-sm w-full max-w-xs font-mono"
+                placeholder="ID section (ex. depuis l’éditeur de page)"
+                @change="emitHelpSectionId"
+            />
+            <p class="text-xs text-content/50 mt-1">
+                Optionnel : ID d’une section « Texte » ; son contenu s’affiche sous la charte sur le site et dans les catalogues.
+            </p>
         </div>
 
         <!-- Grille 5×20 -->

@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property array|null $norms_grid Grille 5×20 : {power_level: [val_lvl1..val_lvl20]}
  * @property array|null $norms_conditions Conditions de lecture
  * @property string|null $norms_description Description libre de la norme
+ * @property int|null $norms_help_section_id Section CMS (texte) affichée sous la charte
  * @property array|null $value_available
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ItemType> $allowedItemTypes
  */
@@ -44,8 +45,11 @@ class CharacteristicObject extends Model
     public const ENTITY_ALL = '*';
 
     public const ENTITY_ITEM = 'item';
+
     public const ENTITY_CONSUMABLE = 'consumable';
+
     public const ENTITY_RESOURCE = 'resource';
+
     public const ENTITY_PANOPLY = 'panoply';
 
     /** @var list<string> */
@@ -75,6 +79,7 @@ class CharacteristicObject extends Model
         'norms_grid',
         'norms_conditions',
         'norms_description',
+        'norms_help_section_id',
         'forgemagie_allowed',
         'forgemagie_max',
         'base_price_per_unit',
@@ -95,11 +100,17 @@ class CharacteristicObject extends Model
         'base_price_per_unit' => 'decimal:2',
         'rune_price_per_unit' => 'decimal:2',
         'value_available' => 'array',
+        'norms_help_section_id' => 'integer',
     ];
 
     public function characteristic(): BelongsTo
     {
         return $this->belongsTo(Characteristic::class);
+    }
+
+    public function normsHelpSection(): BelongsTo
+    {
+        return $this->belongsTo(Section::class, 'norms_help_section_id');
     }
 
     /**

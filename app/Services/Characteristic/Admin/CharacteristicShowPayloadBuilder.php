@@ -178,6 +178,7 @@ final class CharacteristicShowPayloadBuilder
             'norms_grid' => null,
             'norms_conditions' => null,
             'norms_description' => null,
+            'norms_help_section_id' => null,
         ];
     }
 
@@ -255,6 +256,7 @@ final class CharacteristicShowPayloadBuilder
             'norms_grid' => $def['norms_grid'] ?? null,
             'norms_conditions' => $def['norms_conditions'] ?? null,
             'norms_description' => $def['norms_description'] ?? null,
+            'norms_help_section_id' => $def['norms_help_section_id'] ?? null,
         ];
         if (isset($def['forgemagie_allowed'])) {
             $out['forgemagie_allowed'] = (bool) $def['forgemagie_allowed'];
@@ -297,6 +299,7 @@ final class CharacteristicShowPayloadBuilder
             'norms_grid' => $row->norms_grid,
             'norms_conditions' => $row->norms_conditions,
             'norms_description' => $row->norms_description,
+            'norms_help_section_id' => $row->norms_help_section_id,
         ];
         if ($row instanceof CharacteristicObject) {
             $out['forgemagie_allowed'] = $row->forgemagie_allowed;

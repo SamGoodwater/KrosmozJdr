@@ -68,6 +68,8 @@ watch([characteristicKey, entity], fetchNorms);
             :characteristic-name="normsData.characteristic?.name || ''"
             :characteristic-color="normsData.characteristic?.color || '#6366f1'"
             :available-characteristics="normsData.available_characteristics || {}"
+            :help-section-html="normsData.norms.help_section?.html || ''"
+            :help-section-title="normsData.norms.help_section?.title || ''"
         />
     </div>
 </template>

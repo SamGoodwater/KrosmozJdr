@@ -71,13 +71,13 @@ Audit réalisé en comparant les seeders `characteristic_creature` et `character
 | CHAPEAUX | Compétences | skills_object | ✓ |
 | CHAPEAUX | Points de vie | life_points_max_object | ✓ |
 | CHAPEAUX | Vitalité, Sagesse | vitality_object, wisdom_object | ✓ |
-| CHAPEAUX | Bonus sauvegarde Vit/Sag | save_vitality_wisdom_object | ✓ |
-| CHAPEAUX | Compétences passives | passive_skills_object | ✓ |
+| CHAPEAUX | Bonus sauvegarde Vitalité / Sagesse | save_vitality_object, save_wisdom_object | ✓ |
+| CHAPEAUX | Compétences passives (×18) | `*_passive_object` (ex. acrobatics_passive_object) | ✓ |
 | CAPES | Initiative | initiative_object | ✓ |
 | CAPES | Compétences | skills_object | ✓ |
 | CAPES | Points de vie | life_points_max_object | ✓ |
 | CAPES | Force, Intel, Chance, Agi | strength/intelligence/chance/agility_object | ✓ |
-| CAPES | Bonus sauvegarde For/Int/Cha/Agi | save_strength_intelligence_chance_agility_object | ✓ |
+| CAPES | Bonus sauvegarde For/Int/Cha/Agi | save_strength_object, save_intelligence_object, save_chance_object, save_agility_object | ✓ |
 | AMULETTES | Points de vie | life_points_max_object | ✓ |
 | AMULETTES | PA | action_points_object | ✓ |
 | AMULETTES | Esquive PA | dodge_action_points_object | ✓ |

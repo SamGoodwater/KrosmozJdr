@@ -2,8 +2,12 @@
 
 namespace Tests\Feature\Api;
 
+use App\Enums\SectionType;
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
+use App\Models\Page;
+use App\Models\Section;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -60,7 +64,7 @@ class CharacteristicNormsControllerTest extends TestCase
         $response->assertOk();
         $response->assertJsonStructure([
             'characteristic' => ['key', 'name', 'icon', 'color'],
-            'norms' => ['grid', 'conditions', 'description', 'limits' => ['min', 'max']],
+            'norms' => ['grid', 'conditions', 'description', 'limits' => ['min', 'max'], 'help_section'],
             'power_levels',
             'max_level',
         ]);
@@ -73,6 +77,122 @@ class CharacteristicNormsControllerTest extends TestCase
         $this->assertSame('1', $data['norms']['limits']['min']);
         $this->assertSame('20', $data['norms']['limits']['max']);
         $this->assertEquals(20, $data['max_level']);
+        $this->assertNull($data['norms']['help_section']);
+    }
+
+    public function test_returns_help_section_html_when_norms_help_section_id_set(): void
+    {
+        $page = Page::factory()->create();
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'template' => SectionType::TEXT,
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'data' => ['content' => '<p>Règle liée aux normes</p>'],
+        ]);
+
+        $char = Characteristic::create([
+            'key' => 'with_help_creature',
+            'name' => 'Avec aide',
+            'type' => 'int',
+            'sort_order' => 1,
+        ]);
+
+        CharacteristicCreature::create([
+            'characteristic_id' => $char->id,
+            'entity' => '*',
+            'norms_grid' => [
+                'very_weak' => array_fill(0, 20, 1),
+                'weak' => array_fill(0, 20, 2),
+                'neutral' => array_fill(0, 20, 3),
+                'strong' => array_fill(0, 20, 4),
+                'very_strong' => array_fill(0, 20, 5),
+            ],
+            'norms_help_section_id' => $section->id,
+        ]);
+
+        $response = $this->getJson('/api/characteristics/with_help_creature/norms');
+        $response->assertOk();
+        $help = $response->json('norms.help_section');
+        $this->assertIsArray($help);
+        $this->assertSame($section->id, $help['id']);
+        $this->assertStringContainsString('Règle liée aux normes', $help['html']);
+    }
+
+    public function test_help_section_hidden_when_read_level_too_high_for_guest(): void
+    {
+        $page = Page::factory()->create();
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'template' => SectionType::TEXT,
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'data' => ['content' => '<p>Secret MJ</p>'],
+        ]);
+
+        $char = Characteristic::create([
+            'key' => 'help_restricted_creature',
+            'name' => 'Restreint',
+            'type' => 'int',
+            'sort_order' => 1,
+        ]);
+
+        CharacteristicCreature::create([
+            'characteristic_id' => $char->id,
+            'entity' => '*',
+            'norms_grid' => [
+                'very_weak' => array_fill(0, 20, 1),
+                'weak' => array_fill(0, 20, 2),
+                'neutral' => array_fill(0, 20, 3),
+                'strong' => array_fill(0, 20, 4),
+                'very_strong' => array_fill(0, 20, 5),
+            ],
+            'norms_help_section_id' => $section->id,
+        ]);
+
+        $response = $this->getJson('/api/characteristics/help_restricted_creature/norms');
+        $response->assertOk();
+        $this->assertNull($response->json('norms.help_section'));
+    }
+
+    public function test_help_section_visible_when_user_meets_read_level(): void
+    {
+        $page = Page::factory()->create();
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'template' => SectionType::TEXT,
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'data' => ['content' => '<p>Contenu MJ</p>'],
+        ]);
+
+        $char = Characteristic::create([
+            'key' => 'help_mj_creature',
+            'name' => 'MJ',
+            'type' => 'int',
+            'sort_order' => 1,
+        ]);
+
+        CharacteristicCreature::create([
+            'characteristic_id' => $char->id,
+            'entity' => '*',
+            'norms_grid' => [
+                'very_weak' => array_fill(0, 20, 1),
+                'weak' => array_fill(0, 20, 2),
+                'neutral' => array_fill(0, 20, 3),
+                'strong' => array_fill(0, 20, 4),
+                'very_strong' => array_fill(0, 20, 5),
+            ],
+            'norms_help_section_id' => $section->id,
+        ]);
+
+        $mj = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+
+        $response = $this->actingAs($mj)->getJson('/api/characteristics/help_mj_creature/norms');
+        $response->assertOk();
+        $help = $response->json('norms.help_section');
+        $this->assertIsArray($help);
+        $this->assertStringContainsString('Contenu MJ', $help['html']);
     }
 
     public function test_returns_404_for_unknown_characteristic(): void

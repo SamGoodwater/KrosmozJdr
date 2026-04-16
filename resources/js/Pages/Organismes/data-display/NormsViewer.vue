@@ -2,12 +2,15 @@
 /**
  * Composant assembleur des normes : table + chart + sélecteur de conditions.
  * Layout responsive : côte à côte (lg) ou empilé (sm).
+ * @prop {string} [helpSectionHtml] HTML brut depuis l’API ; affichage via sanitizeHtml() (règles détaillées).
+ * @prop {string} [helpSectionTitle] Titre optionnel au-dessus du bloc règles.
  */
 import { computed, ref, toRef } from 'vue';
 import NormsTable from '@/Pages/Molecules/data-display/NormsTable.vue';
 import NormsChart from '@/Pages/Molecules/data-display/NormsChart.vue';
 import NormsConditionSelector from '@/Pages/Molecules/data-input/NormsConditionSelector.vue';
 import { useNormsReader } from '@/Composables/characteristic/useNormsReader';
+import { sanitizeHtml } from '@/Utils/security/sanitizeHtml';
 import {
     POWER_LEVELS,
     POWER_LABELS,
@@ -23,6 +26,9 @@ const props = defineProps({
     availableCharacteristics: { type: Object, default: () => ({}) },
     minLimit: { type: [String, Number, null], default: null },
     maxLimit: { type: [String, Number, null], default: null },
+    /** Contenu brut (sanitisé côté client comme SectionTextRead). */
+    helpSectionHtml: { type: String, default: '' },
+    helpSectionTitle: { type: String, default: '' },
 });
 
 const gridRef = toRef(props, 'grid');
@@ -51,6 +57,8 @@ function parseNumericLimit(limit) {
 
 const minNumeric = computed(() => parseNumericLimit(props.minLimit));
 const maxNumeric = computed(() => parseNumericLimit(props.maxLimit));
+
+const sanitizedHelpHtml = computed(() => sanitizeHtml(props.helpSectionHtml || ''));
 </script>
 
 <template>
@@ -157,6 +165,17 @@ const maxNumeric = computed(() => parseNumericLimit(props.maxLimit));
                     :effective-level-index="effectiveLevelIndex"
                 />
             </div>
+        </div>
+
+        <div
+            v-if="sanitizedHelpHtml"
+            class="border-t border-base-300 pt-4 space-y-2"
+        >
+            <h5 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">
+                {{ helpSectionTitle || 'Règles et conseils' }}
+            </h5>
+            <!-- eslint-disable-next-line vue/no-v-html -- contenu sanitizé via sanitizeHtml() -->
+            <div class="prose prose-sm max-w-none text-base-content norms-help-section-content" v-html="sanitizedHelpHtml" />
         </div>
     </div>
 </template>

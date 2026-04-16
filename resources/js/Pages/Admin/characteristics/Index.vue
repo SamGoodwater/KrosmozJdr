@@ -319,6 +319,7 @@ function buildFormData(selected, entitiesByGroup = null) {
             norms_grid: e.norms_grid || null,
             norms_conditions: e.norms_conditions || [],
             norms_description: e.norms_description || '',
+            norms_help_section_id: e.norms_help_section_id ?? null,
         })),
         conversion_formulas: conversionFormulas,
     };
@@ -382,6 +383,7 @@ function addEntityOverride(entityKey) {
             norms_grid: null,
             norms_conditions: [],
             norms_description: '',
+            norms_help_section_id: null,
         };
         form.entities = [...(form.entities ?? []), defaultRow];
     }
@@ -491,7 +493,15 @@ watch(
                     rune_price_per_unit: e.rune_price_per_unit ?? '',
                     conversion_formula: e.conversion_formula ?? '',
                     conversion_function: e.conversion_function ?? '',
-                    conversion_sample_rows: e.conversion_sample_rows ?? null,
+                    conversion_dofus_sample: e.conversion_dofus_sample ?? null,
+                    conversion_krosmoz_sample: e.conversion_krosmoz_sample ?? null,
+                    conversion_sample_rows: (e.conversion_sample_rows && e.conversion_sample_rows.length)
+                        ? e.conversion_sample_rows
+                        : getDefaultConversionSampleRows(),
+                    norms_grid: e.norms_grid || null,
+                    norms_conditions: e.norms_conditions || [],
+                    norms_description: e.norms_description || '',
+                    norms_help_section_id: e.norms_help_section_id ?? null,
                 }));
             }
             form.conversion_formulas = defaultConversionFormulasForGroup(props.entitiesByGroup ?? {}, form.group);
@@ -517,6 +527,15 @@ watch(
                             rune_price_per_unit: defaultRow.rune_price_per_unit ?? '',
                             conversion_formula: defaultRow.conversion_formula ?? '',
                             conversion_function: defaultRow.conversion_function ?? '',
+                            conversion_dofus_sample: defaultRow.conversion_dofus_sample ?? null,
+                            conversion_krosmoz_sample: defaultRow.conversion_krosmoz_sample ?? null,
+                            conversion_sample_rows: (defaultRow.conversion_sample_rows && defaultRow.conversion_sample_rows.length)
+                                ? defaultRow.conversion_sample_rows
+                                : getDefaultConversionSampleRows(),
+                            norms_grid: defaultRow.norms_grid ?? null,
+                            norms_conditions: defaultRow.norms_conditions || [],
+                            norms_description: defaultRow.norms_description || '',
+                            norms_help_section_id: defaultRow.norms_help_section_id ?? null,
                         },
                     ];
                 }

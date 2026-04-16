@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\SectionType;
 use App\Http\Controllers\Controller;
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
+use App\Models\Section;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -82,11 +85,50 @@ class CharacteristicNormsController extends Controller
                     'min' => $row->min,
                     'max' => $row->max,
                 ],
+                'help_section' => $this->normsHelpSectionPayload($row->norms_help_section_id, $request->user()),
             ],
             'power_levels' => self::POWER_LEVELS,
             'max_level' => 20,
             'available_characteristics' => $availableCharacteristics,
         ]);
+    }
+
+    /**
+     * Section CMS « texte » liée : HTML affiché sous la charte (même source que SectionTextRead).
+     * Respecte {@see Section::canBeViewedBy()} (état, read_level, associations utilisateur, admins).
+     *
+     * @return array{id: int, title: string|null, html: string}|null
+     */
+    private function normsHelpSectionPayload(mixed $sectionId, ?User $viewer): ?array
+    {
+        if ($sectionId === null || $sectionId === '' || ! is_numeric($sectionId)) {
+            return null;
+        }
+        $id = (int) $sectionId;
+        if ($id < 1) {
+            return null;
+        }
+        $section = Section::query()->find($id);
+        if ($section === null) {
+            return null;
+        }
+        if (! $section->canBeViewedBy($viewer)) {
+            return null;
+        }
+        if ($section->template !== SectionType::TEXT) {
+            return null;
+        }
+        $data = $section->data;
+        $html = is_array($data) && isset($data['content']) && is_string($data['content']) ? trim($data['content']) : '';
+        if ($html === '') {
+            return null;
+        }
+
+        return [
+            'id' => $section->id,
+            'title' => $section->title,
+            'html' => $html,
+        ];
     }
 
     private function findGroupRow(

@@ -7,7 +7,9 @@ Ce document liste **toutes** les caractéristiques exposées par l’API DofusDB
 
 Source : API DofusDB (dernière récupération documentée). Pour mettre à jour, relancer une requête sur `/characteristics` avec `$limit` suffisant.
 
-**Caractéristiques objet non liées à une propriété DofusDB (intentionnel)** : CA (`ca_object`), recharge de Wakfu (`wakfu_recharge_object`), bonus de sauvegarde (`save_*_object`), compétences (`competences_object`, `competences_passives_object`), bonus de touche (`touch_object`). Elles n’ont pas d’équivalent dans `item.effects[]` ou ne sont pas mappées.
+**Caractéristiques objet non liées à une propriété DofusDB (intentionnel)** : CA (`armor_class_object`), recharge de Wakfu (`wakfu_recharge_object`), bonus de sauvegarde (`save_*_object`), compétences (`skills_object`, `*_passive_object`), bonus de touche (`hit_bonus_object`). Elles n’ont pas d’équivalent dans `item.effects[]` ou ne sont pas mappées.
+
+**Résistances élémentaires (DofusDB → Krosmoz)** : les ids **33 à 37** correspondent chacun à un **élément** (Terre, Feu, Eau, Air, Neutre). Dans Krosmoz ce ne sont **pas** cinq fois la même clé : ce sont **cinq `characteristic_key` distinctes** (`resistance_percent_tier_*_object`). L’API DofusDB envoie encore un **pourcentage** sur l’effet ; à l’import, ce pourcentage est **converti en palier** `0` (aucune résistance %), `1` (résistance 50 %), `2` (invulnérabilité 100 %), une valeur par élément, indépendante des autres.
 
 ---
 
@@ -44,11 +46,11 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 30 | alignementValue | Valeur d'alignement | — |
 | 31 | weaponDamagePercent | Maitrise d'arme | — |
 | 32 | physicalDamageBonus | Bonus aux dommages physiques | — |
-| 33 | earthElementResistPercent | Terre (%) | res_50_object |
-| 34 | fireElementResistPercent | Feu (%) | res_50_object |
-| 35 | waterElementResistPercent | Eau (%) | res_50_object |
-| 36 | airElementResistPercent | Air (%) | res_50_object |
-| 37 | neutralElementResistPercent | Neutre (%) | res_50_object |
+| 33 | earthElementResistPercent | Terre (%) | `resistance_percent_tier_earth_object` (palier 0/1/2, remplace le % Dofus) |
+| 34 | fireElementResistPercent | Feu (%) | `resistance_percent_tier_fire_object` |
+| 35 | waterElementResistPercent | Eau (%) | `resistance_percent_tier_water_object` |
+| 36 | airElementResistPercent | Air (%) | `resistance_percent_tier_air_object` |
+| 37 | neutralElementResistPercent | Neutre (%) | `resistance_percent_tier_neutral_object` |
 | 39 | criticalMiss | Echec critique | — |
 | 40 | weight | Pods | weight_object |
 | 41 | restrictionOnPlayer | Restriction sur l'acteur | — |

@@ -504,6 +504,11 @@ final class CharacteristicGetterService
             $out['value_available'] = $this->pickGroupValue($base, $overlay, 'value_available') ?? $row->value_available;
         }
 
+        $out['norms_grid'] = $this->pickGroupValue($base, $overlay, 'norms_grid');
+        $out['norms_conditions'] = $this->pickGroupValue($base, $overlay, 'norms_conditions');
+        $out['norms_description'] = $this->pickGroupValue($base, $overlay, 'norms_description');
+        $out['norms_help_section_id'] = $this->pickGroupValue($base, $overlay, 'norms_help_section_id');
+
         return $out;
     }
 

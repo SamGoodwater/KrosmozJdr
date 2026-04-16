@@ -41,10 +41,10 @@
 |------------|-----|
 | objet_sav, objet_save | object_save |
 | sav (alone) | save |
-| save_vit_sag | save_vitality_wisdom |
-| save_force_int_cha_agi | save_strength_intelligence_chance_agility |
+| save_vit_sag (objet, éviter) | `save_vitality_object`, `save_wisdom_object` |
+| save_force_int_cha_agi (objet, éviter) | `save_strength_object`, `save_intelligence_object`, `save_chance_object`, `save_agility_object` |
 
-**Note** : Prefer a single, consistent prefix: `object_save_*` for object context, `save_*_creature` for creature context. Always spell **save** in full (never `sav`).
+**Note** : Côté **créature**, une sauvegarde par carac : `save_vitality_creature`, `save_wisdom_creature`, etc. Côté **objet**, aligné : `save_*_object` (plus d’agrégats Vit/Sag ni For/Int/Cha/Agi). Toujours **save** en entier (jamais `sav`).
 
 ---
 
@@ -179,14 +179,14 @@ When migrating existing data and code, use this mapping. Each row is “old iden
 | esquive_pa_*, esquive_pm_* | dodge_action_points_*, dodge_movement_points_* |
 | fuite_creature, fuite_object | dodge_creature, dodge_object *(or escape_* if you prefer)* |
 | tacle_creature, tacle_object | tackle_creature, tackle_object |
-| save_vit_sag_object | save_vitality_wisdom_object |
-| save_force_int_cha_agi_object | save_strength_intelligence_chance_agility_object |
+| save_vit_sag_object | `save_vitality_object`, `save_wisdom_object` |
+| save_force_int_cha_agi_object | `save_strength_object`, `save_intelligence_object`, `save_chance_object`, `save_agility_object` |
 | modificateur_* | modifier_* (e.g. modifier_vitality_creature) |
 | de_vie_creature | hit_dice_creature |
 | bonus_maitrise_creature | mastery_bonus_creature |
 | pv_object | life_points_max_object |
 | competences_object | skills_object |
-| competences_passives_object | passive_skills_object |
+| competences_passives_object | `acrobatics_passive_object`, …, `survival_passive_object` (une clé par compétence) |
 | res_50_object | resistance_50_percent_object |
 | invuln_100_object | invulnerability_100_percent_object |
 | po_editable_spell, spell_po_min_spell, spell_po_max_spell | range_editable_spell, spell_range_min_spell, spell_range_max_spell |

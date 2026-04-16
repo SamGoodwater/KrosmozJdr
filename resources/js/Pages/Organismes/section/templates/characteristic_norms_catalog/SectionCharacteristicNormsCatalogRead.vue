@@ -254,6 +254,8 @@ watch(searchTerm, (value) => {
                             :characteristic-name="normsByKey[item.key].characteristic?.name || ''"
                             :characteristic-color="normsByKey[item.key].characteristic?.color || '#6366f1'"
                             :available-characteristics="normsByKey[item.key].available_characteristics || {}"
+                            :help-section-html="normsByKey[item.key].norms.help_section?.html || ''"
+                            :help-section-title="normsByKey[item.key].norms.help_section?.title || ''"
                         />
                     </div>
                 </div>

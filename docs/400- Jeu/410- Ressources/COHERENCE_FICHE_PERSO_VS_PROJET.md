@@ -52,7 +52,7 @@ Les deux sont cohérents si « Jet de classe » correspond aux dés de vie et qu
 ### 3.3 Compétences passives : Perception, Intuition
 
 **Fiche** : `[10 + Compétence (+ Bonus)]`  
-Le projet possède `passive_skills_object` (bonus équipement). Vérifier si une caractéristique creature « Perception » / « Intuition » (valeurs de base) existe ou si c’est uniquement Mod. Sagesse + bonus.
+Les bonus d’équipement pour compétences passives sont des caractéristiques distinctes `*_passive_object` (alignées sur les compétences). Vérifier si une caractéristique creature « Perception » / « Intuition » (valeurs de base) existe ou si c’est uniquement Mod. Sagesse + bonus.
 
 ---
 

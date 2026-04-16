@@ -1842,13 +1842,13 @@ return [
         'linked_to_key' => null,
     ],
     131 => [
-        'key' => 'passive_skills_object',
-        'name' => 'Compétences passives',
-        'short_name' => 'Comp. pass.',
-        'helper' => 'Bonus compétences passives (chapeaux). Max 3, forgemagie +2.',
-        'descriptions' => 'Bonus compétences passives (chapeaux). Bonus au jet +10 par compétence. Équip. max +3, forgemagie +2 (2.2.2).',
-        'icon' => 'skill.webp',
-        'color' => '#858585',
+        'key' => 'save_vitality_object',
+        'name' => 'Bonus jet de sauvegarde Vitalité',
+        'short_name' => 'Sauv. Vit',
+        'helper' => 'Bonus au jet de sauvegarde Vitalité (chapeaux). Max 3.',
+        'descriptions' => 'Jet de sauvegarde Vitalité : 1d20 + mod + maîtrise (si formé) + équip. Chapeaux. Équip. max +3 (2.2.2).',
+        'icon' => 'saveVitality.webp',
+        'color' => '#d88d3d',
         'unit' => null,
         'type' => 'int',
         'sort_order' => 24,
@@ -1856,13 +1856,13 @@ return [
         'linked_to_key' => null,
     ],
     132 => [
-        'key' => 'save_strength_intelligence_chance_agility_object',
-        'name' => 'Bonus sauvegarde Force',
-        'short_name' => 'Sav Force',
-        'helper' => 'Bonus jet de sauvegarde (capes). Max 3.',
-        'descriptions' => 'Bonus sauvegarde For/Int/Cha/Agi (capes). Jet : 1d20 + mod + maîtrise. Équip. max +3 (2.2.2).',
-        'icon' => 'saveStrenght.webp',
-        'color' => '#95743c',
+        'key' => 'save_wisdom_object',
+        'name' => 'Bonus jet de sauvegarde Sagesse',
+        'short_name' => 'Sauv. Sag',
+        'helper' => 'Bonus au jet de sauvegarde Sagesse (chapeaux). Max 3.',
+        'descriptions' => 'Jet de sauvegarde Sagesse : 1d20 + mod + maîtrise (si formé) + équip. Chapeaux. Équip. max +3 (2.2.2).',
+        'icon' => 'saveWisdom.webp',
+        'color' => '#7d64f5',
         'unit' => null,
         'type' => 'int',
         'sort_order' => 24,
@@ -1870,13 +1870,13 @@ return [
         'linked_to_key' => null,
     ],
     133 => [
-        'key' => 'save_vitality_wisdom_object',
-        'name' => 'Bonus sauvegarde Vitalité',
-        'short_name' => 'Sav Vitalité',
-        'helper' => 'Bonus jet de sauvegarde Vit. ou Sag. (chapeaux). Max 3.',
-        'descriptions' => 'Bonus sauvegarde Vitalité/Sagesse (chapeaux). Jet : 1d20 + mod + maîtrise. Équip. max +3 (2.2.2).',
-        'icon' => 'saveVitality.webp',
-        'color' => '#d78b3d',
+        'key' => 'save_strength_object',
+        'name' => 'Bonus jet de sauvegarde Force',
+        'short_name' => 'Sauv. For',
+        'helper' => 'Bonus au jet de sauvegarde Force (capes). Max 3.',
+        'descriptions' => 'Jet de sauvegarde Force : 1d20 + mod + maîtrise (si formé) + équip. Capes. Équip. max +3 (2.2.2).',
+        'icon' => 'saveStrenght.webp',
+        'color' => '#8b6c38',
         'unit' => null,
         'type' => 'int',
         'sort_order' => 24,
@@ -1884,6 +1884,301 @@ return [
         'linked_to_key' => null,
     ],
     134 => [
+        'key' => 'save_intelligence_object',
+        'name' => 'Bonus jet de sauvegarde Intelligence',
+        'short_name' => 'Sauv. Int',
+        'helper' => 'Bonus au jet de sauvegarde Intelligence (capes). Max 3.',
+        'descriptions' => 'Jet de sauvegarde Intelligence : 1d20 + mod + maîtrise (si formé) + équip. Capes. Équip. max +3 (2.2.2).',
+        'icon' => 'saveIntel.webp',
+        'color' => '#c16024',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 24,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    135 => [
+        'key' => 'save_chance_object',
+        'name' => 'Bonus jet de sauvegarde Chance',
+        'short_name' => 'Sauv. Cha',
+        'helper' => 'Bonus au jet de sauvegarde Chance (capes). Max 3.',
+        'descriptions' => 'Jet de sauvegarde Chance : 1d20 + mod + maîtrise (si formé) + équip. Capes. Équip. max +3 (2.2.2).',
+        'icon' => 'saveLuck.webp',
+        'color' => '#92cefa',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 24,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    136 => [
+        'key' => 'save_agility_object',
+        'name' => 'Bonus jet de sauvegarde Agilité',
+        'short_name' => 'Sauv. Agi',
+        'helper' => 'Bonus au jet de sauvegarde Agilité (capes). Max 3.',
+        'descriptions' => 'Jet de sauvegarde Agilité : 1d20 + mod + maîtrise (si formé) + équip. Capes. Équip. max +3 (2.2.2).',
+        'icon' => 'saveAgi.webp',
+        'color' => '#96c270',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 24,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    137 => [
+        'key' => 'acrobatics_passive_object',
+        'name' => 'Acrobaties (passif)',
+        'short_name' => 'Acr. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillAgility.webp',
+        'color' => '#96c270',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    138 => [
+        'key' => 'animal_handling_passive_object',
+        'name' => 'Dressage (passif)',
+        'short_name' => 'Dress. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillWisdom.webp',
+        'color' => '#6b57d1',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    139 => [
+        'key' => 'arcana_passive_object',
+        'name' => 'Arcanes (passif)',
+        'short_name' => 'Arc. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillIntelligence.webp',
+        'color' => '#e4732d',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    140 => [
+        'key' => 'athletics_passive_object',
+        'name' => 'Athlétisme (passif)',
+        'short_name' => 'Athl. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillStrength.webp',
+        'color' => '#8c7448',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    141 => [
+        'key' => 'deception_passive_object',
+        'name' => 'Supercherie (passif)',
+        'short_name' => 'Super. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillChance.webp',
+        'color' => '#92cefa',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    142 => [
+        'key' => 'history_passive_object',
+        'name' => 'Histoire (passif)',
+        'short_name' => 'Hist. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillIntelligence.webp',
+        'color' => '#e4732d',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    143 => [
+        'key' => 'insight_passive_object',
+        'name' => 'Perspicacité (passif)',
+        'short_name' => 'Persp. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillWisdom.webp',
+        'color' => '#6b57d1',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    144 => [
+        'key' => 'intimidation_passive_object',
+        'name' => 'Intimidation (passif)',
+        'short_name' => 'Intim. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillStrength.webp',
+        'color' => '#8c7448',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    145 => [
+        'key' => 'investigation_passive_object',
+        'name' => 'Investigation (passif)',
+        'short_name' => 'Inv. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillIntelligence.webp',
+        'color' => '#e4732d',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    146 => [
+        'key' => 'medicine_passive_object',
+        'name' => 'Médecine (passif)',
+        'short_name' => 'Méd. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillWisdom.webp',
+        'color' => '#6b57d1',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    147 => [
+        'key' => 'nature_passive_object',
+        'name' => 'Nature (passif)',
+        'short_name' => 'Nat. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillIntelligence.webp',
+        'color' => '#e4732d',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    148 => [
+        'key' => 'perception_passive_object',
+        'name' => 'Perception (passif)',
+        'short_name' => 'Perc. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillWisdom.webp',
+        'color' => '#6b57d1',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    149 => [
+        'key' => 'performance_passive_object',
+        'name' => 'Représentation (passif)',
+        'short_name' => 'Repr. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillChance.webp',
+        'color' => '#92cefa',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    150 => [
+        'key' => 'persuasion_passive_object',
+        'name' => 'Persuasion (passif)',
+        'short_name' => 'Persu. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillChance.webp',
+        'color' => '#92cefa',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    151 => [
+        'key' => 'religion_passive_object',
+        'name' => 'Religion (passif)',
+        'short_name' => 'Rel. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillIntelligence.webp',
+        'color' => '#e4732d',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    152 => [
+        'key' => 'sleight_of_hand_passive_object',
+        'name' => 'Escamotage (passif)',
+        'short_name' => 'Esc. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillAgility.webp',
+        'color' => '#96c270',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    153 => [
+        'key' => 'stealth_passive_object',
+        'name' => 'Discrétion (passif)',
+        'short_name' => 'Discr. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillAgility.webp',
+        'color' => '#96c270',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+    154 => [
+        'key' => 'survival_passive_object',
+        'name' => 'Survie (passif)',
+        'short_name' => 'Surv. pass.',
+        'helper' => 'Bonus compétence passive (chapeaux). Max 3, forgemagie +2.',
+        'descriptions' => 'Bonus au total sans jet : compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).',
+        'icon' => 'skillWisdom.webp',
+        'color' => '#6b57d1',
+        'unit' => null,
+        'type' => 'int',
+        'sort_order' => 25,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+
+    155 => [
         'key' => 'skills_object',
         'name' => 'Compétences',
         'short_name' => 'Comp.',
@@ -1897,7 +2192,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    135 => [
+    156 => [
         'key' => 'acrobatics_object',
         'name' => 'Acrobaties',
         'short_name' => 'Acr.',
@@ -1911,7 +2206,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    136 => [
+    157 => [
         'key' => 'animal_handling_object',
         'name' => 'Dressage',
         'short_name' => 'Dress.',
@@ -1925,7 +2220,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    137 => [
+    158 => [
         'key' => 'arcana_object',
         'name' => 'Arcanes',
         'short_name' => 'Arc.',
@@ -1939,7 +2234,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    138 => [
+    159 => [
         'key' => 'athletics_object',
         'name' => 'Athlétisme',
         'short_name' => 'Athl.',
@@ -1953,7 +2248,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    139 => [
+    160 => [
         'key' => 'deception_object',
         'name' => 'Supercherie',
         'short_name' => 'Super.',
@@ -1967,7 +2262,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    140 => [
+    161 => [
         'key' => 'fixed_damage_air_object',
         'name' => 'Dommage fixe Air',
         'short_name' => 'Dmg A',
@@ -1981,7 +2276,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    141 => [
+    162 => [
         'key' => 'fixed_damage_earth_object',
         'name' => 'Dommage fixe Terre',
         'short_name' => 'Dmg T',
@@ -1995,7 +2290,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    142 => [
+    163 => [
         'key' => 'fixed_damage_fire_object',
         'name' => 'Dommage fixe Feu',
         'short_name' => 'Dmg F',
@@ -2009,7 +2304,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    143 => [
+    164 => [
         'key' => 'fixed_damage_multiple_object',
         'name' => 'Dommage fixe multiple',
         'short_name' => 'Dmg mult.',
@@ -2023,7 +2318,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    144 => [
+    165 => [
         'key' => 'fixed_damage_neutral_object',
         'name' => 'Dommage fixe Neutre',
         'short_name' => 'Dmg N',
@@ -2037,7 +2332,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    145 => [
+    166 => [
         'key' => 'fixed_damage_water_object',
         'name' => 'Dommage fixe Eau',
         'short_name' => 'Dmg E',
@@ -2051,7 +2346,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    146 => [
+    167 => [
         'key' => 'history_object',
         'name' => 'Histoire',
         'short_name' => 'Hist.',
@@ -2065,7 +2360,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    147 => [
+    168 => [
         'key' => 'insight_object',
         'name' => 'Perspicacité',
         'short_name' => 'Persp.',
@@ -2079,7 +2374,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    148 => [
+    169 => [
         'key' => 'intimidation_object',
         'name' => 'Intimidation',
         'short_name' => 'Intim.',
@@ -2093,7 +2388,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    149 => [
+    170 => [
         'key' => 'investigation_object',
         'name' => 'Investigation',
         'short_name' => 'Inv.',
@@ -2107,7 +2402,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    150 => [
+    171 => [
         'key' => 'medicine_object',
         'name' => 'Médecine',
         'short_name' => 'Méd.',
@@ -2121,7 +2416,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    151 => [
+    172 => [
         'key' => 'nature_object',
         'name' => 'Nature',
         'short_name' => 'Nat.',
@@ -2135,7 +2430,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    152 => [
+    173 => [
         'key' => 'perception_object',
         'name' => 'Perception',
         'short_name' => 'Perc.',
@@ -2149,7 +2444,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    153 => [
+    174 => [
         'key' => 'performance_object',
         'name' => 'Représentation',
         'short_name' => 'Repr.',
@@ -2163,7 +2458,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    154 => [
+    175 => [
         'key' => 'persuasion_object',
         'name' => 'Persuasion',
         'short_name' => 'Persu.',
@@ -2177,7 +2472,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    155 => [
+    176 => [
         'key' => 'religion_object',
         'name' => 'Religion',
         'short_name' => 'Rel.',
@@ -2191,7 +2486,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    156 => [
+    177 => [
         'key' => 'sleight_of_hand_object',
         'name' => 'Escamotage',
         'short_name' => 'Esc.',
@@ -2205,7 +2500,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    157 => [
+    178 => [
         'key' => 'stealth_object',
         'name' => 'Discrétion',
         'short_name' => 'Discr.',
@@ -2219,7 +2514,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    158 => [
+    179 => [
         'key' => 'survival_object',
         'name' => 'Survie',
         'short_name' => 'Surv.',
@@ -2233,7 +2528,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    159 => [
+    180 => [
         'key' => 'fixed_resistance_air_object',
         'name' => 'Résistance fixe Air',
         'short_name' => 'Rés. A',
@@ -2247,7 +2542,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    160 => [
+    181 => [
         'key' => 'fixed_resistance_earth_object',
         'name' => 'Résistance fixe Terre',
         'short_name' => 'Rés. T',
@@ -2261,7 +2556,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    161 => [
+    182 => [
         'key' => 'fixed_resistance_fire_object',
         'name' => 'Résistance fixe Feu',
         'short_name' => 'Rés. F',
@@ -2275,7 +2570,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    162 => [
+    183 => [
         'key' => 'fixed_resistance_neutral_object',
         'name' => 'Résistance fixe Neutre',
         'short_name' => 'Rés. N',
@@ -2289,7 +2584,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    163 => [
+    184 => [
         'key' => 'fixed_resistance_water_object',
         'name' => 'Résistance fixe Eau',
         'short_name' => 'Rés. E',
@@ -2303,7 +2598,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    164 => [
+    185 => [
         'key' => 'invulnerability_100_percent_object',
         'name' => 'Invulnérabilité 100%',
         'short_name' => 'Invul. 100%',
@@ -2317,7 +2612,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    165 => [
+    186 => [
         'key' => 'resistance_50_percent_object',
         'name' => 'Résistance 50%',
         'short_name' => 'Rés. 50%',
@@ -2331,7 +2626,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    166 => [
+    187 => [
         'key' => 'critical_hit_object',
         'name' => 'Critique',
         'short_name' => 'Crit',
@@ -2345,7 +2640,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    167 => [
+    188 => [
         'key' => 'heal_bonus_object',
         'name' => 'Soins',
         'short_name' => 'Soin',
@@ -2359,7 +2654,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    168 => [
+    189 => [
         'key' => 'wakfu_recharge_object',
         'name' => 'Recharge réserve Wakfu',
         'short_name' => 'Wakfu',
@@ -2373,7 +2668,7 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    169 => [
+    190 => [
         'key' => 'action_points_spell',
         'name' => 'Coût en PA',
         'short_name' => 'PA',
@@ -2387,7 +2682,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    170 => [
+    191 => [
         'key' => 'area_spell',
         'name' => 'Zone',
         'short_name' => 'Zone',
@@ -2401,7 +2696,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    171 => [
+    192 => [
         'key' => 'cast_per_target_spell',
         'name' => 'Lancers par cible',
         'short_name' => 'Lanc./cible',
@@ -2415,7 +2710,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    172 => [
+    193 => [
         'key' => 'cast_per_turn_spell',
         'name' => 'Lancers par tour',
         'short_name' => 'Lanc./tour',
@@ -2429,7 +2724,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    173 => [
+    194 => [
         'key' => 'casting_time_spell',
         'name' => 'Temps d\'incantation',
         'short_name' => 'Cast',
@@ -2443,7 +2738,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    174 => [
+    195 => [
         'key' => 'category_spell',
         'name' => 'Catégorie',
         'short_name' => 'Cat.',
@@ -2457,7 +2752,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    175 => [
+    196 => [
         'key' => 'spell_type_spell',
         'name' => 'Type de sort',
         'short_name' => 'Type',
@@ -2471,7 +2766,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    176 => [
+    197 => [
         'key' => 'duration_spell',
         'name' => 'Durée',
         'short_name' => 'Durée',
@@ -2485,7 +2780,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    177 => [
+    198 => [
         'key' => 'element_spell',
         'name' => 'Élément',
         'short_name' => 'Élém.',
@@ -2499,7 +2794,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    178 => [
+    199 => [
         'key' => 'is_magic_spell',
         'name' => 'Physique ou Wakfu',
         'short_name' => 'Phys. / Wakfu',
@@ -2513,7 +2808,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    179 => [
+    200 => [
         'key' => 'level_spell',
         'name' => 'Niveau du sort',
         'short_name' => 'Niv.',
@@ -2527,7 +2822,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => 'level_creature',
     ],
-    180 => [
+    201 => [
         'key' => 'number_between_two_cast_spell',
         'name' => 'Délai entre deux lancers',
         'short_name' => 'Délai',
@@ -2541,7 +2836,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    181 => [
+    202 => [
         'key' => 'power_spell',
         'name' => 'Puissance',
         'short_name' => 'Puis.',
@@ -2555,7 +2850,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    182 => [
+    203 => [
         'key' => 'range_editable_spell',
         'name' => 'Portée modifiable',
         'short_name' => 'PO mod.',
@@ -2569,7 +2864,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    183 => [
+    204 => [
         'key' => 'ritual_available_spell',
         'name' => 'Rituel disponible',
         'short_name' => 'Rituel',
@@ -2583,7 +2878,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    184 => [
+    205 => [
         'key' => 'sight_line_spell',
         'name' => 'Ligne de vue',
         'short_name' => 'Ligne vue',
@@ -2597,7 +2892,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    185 => [
+    206 => [
         'key' => 'spell_range_max_spell',
         'name' => 'Portée max',
         'short_name' => 'PO max',
@@ -2611,7 +2906,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    186 => [
+    207 => [
         'key' => 'spell_range_min_spell',
         'name' => 'Portée min',
         'short_name' => 'PO min',
@@ -2625,7 +2920,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    187 => [
+    208 => [
         'key' => 'time_before_use_again_spell',
         'name' => 'Temps avant réutilisation',
         'short_name' => 'Relance',
@@ -2639,7 +2934,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    188 => [
+    209 => [
         'key' => 'allows_reaction_spell',
         'name' => 'Utilisable en réaction',
         'short_name' => 'Réaction',
@@ -2653,7 +2948,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    189 => [
+    210 => [
         'key' => 'bouclier_spell',
         'name' => 'Bouclier',
         'short_name' => 'Bouclier',
@@ -2667,7 +2962,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    190 => [
+    211 => [
         'key' => 'dommages_spell',
         'name' => 'Dommages',
         'short_name' => 'Dmg',
@@ -2681,7 +2976,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    191 => [
+    212 => [
         'key' => 'soin_spell',
         'name' => 'Soin',
         'short_name' => 'Soin',
@@ -2695,7 +2990,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    192 => [
+    213 => [
         'key' => 'vol_vie_spell',
         'name' => 'Vol de vie',
         'short_name' => 'Vol PV',
@@ -2709,7 +3004,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    193 => [
+    214 => [
         'key' => 'agi_spell',
         'name' => 'Agilité',
         'short_name' => 'Agi.',
@@ -2723,7 +3018,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    194 => [
+    215 => [
         'key' => 'armor_class_spell',
         'name' => 'CA',
         'short_name' => 'CA',
@@ -2737,7 +3032,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    195 => [
+    216 => [
         'key' => 'chance_spell',
         'name' => 'Chance',
         'short_name' => 'Cha.',
@@ -2751,7 +3046,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    196 => [
+    217 => [
         'key' => 'critical_damage_reduction_spell',
         'name' => 'Résistance critiques',
         'short_name' => 'Res Crit',
@@ -2765,7 +3060,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    197 => [
+    218 => [
         'key' => 'critical_spell',
         'name' => 'Critiques',
         'short_name' => 'Crit.',
@@ -2779,7 +3074,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    198 => [
+    219 => [
         'key' => 'do_fixe_multiple_spell',
         'name' => 'Dommages fixes multi',
         'short_name' => 'Do Multi',
@@ -2793,7 +3088,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    199 => [
+    220 => [
         'key' => 'dodge_action_points_spell',
         'name' => 'Esquive PA',
         'short_name' => 'Esq PA',
@@ -2807,7 +3102,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    200 => [
+    221 => [
         'key' => 'dodge_movement_points_spell',
         'name' => 'Esquive PM',
         'short_name' => 'Esq PM',
@@ -2821,7 +3116,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    201 => [
+    222 => [
         'key' => 'dodge_spell',
         'name' => 'Fuite',
         'short_name' => 'Fuite',
@@ -2835,7 +3130,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    202 => [
+    223 => [
         'key' => 'fixed_damage_air_spell',
         'name' => 'Dégâts fixe Air',
         'short_name' => 'Do A',
@@ -2849,7 +3144,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    203 => [
+    224 => [
         'key' => 'fixed_damage_earth_spell',
         'name' => 'Dégâts fixe Terre',
         'short_name' => 'Do T',
@@ -2863,7 +3158,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    204 => [
+    225 => [
         'key' => 'fixed_damage_fire_spell',
         'name' => 'Dégâts fixe Feu',
         'short_name' => 'Do F',
@@ -2877,7 +3172,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    205 => [
+    226 => [
         'key' => 'fixed_damage_neutral_spell',
         'name' => 'Dégâts fixe Neutre',
         'short_name' => 'Do N',
@@ -2891,7 +3186,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    206 => [
+    227 => [
         'key' => 'fixed_damage_sagesse_spell',
         'name' => 'Dégâts fixes Sagesse (sort)',
         'short_name' => 'Fix Sag',
@@ -2905,7 +3200,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    207 => [
+    228 => [
         'key' => 'fixed_damage_vitalite_spell',
         'name' => 'Dégâts fixes Vitalité (sort)',
         'short_name' => 'Fix Vit',
@@ -2919,7 +3214,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    208 => [
+    229 => [
         'key' => 'fixed_damage_water_spell',
         'name' => 'Dégâts fixe Eau',
         'short_name' => 'Do E',
@@ -2933,7 +3228,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    209 => [
+    230 => [
         'key' => 'fixed_resistance_air_spell',
         'name' => 'Résistance fixe Air',
         'short_name' => 'ResFix A',
@@ -2947,7 +3242,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    210 => [
+    231 => [
         'key' => 'fixed_resistance_eau_spell',
         'name' => 'Résistance fixe Eau',
         'short_name' => 'ResFix E',
@@ -2961,7 +3256,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    211 => [
+    232 => [
         'key' => 'fixed_resistance_feu_spell',
         'name' => 'Résistance fixe Feu',
         'short_name' => 'ResFix F',
@@ -2975,7 +3270,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    212 => [
+    233 => [
         'key' => 'fixed_resistance_neutre_spell',
         'name' => 'Résistance fixe Neutre',
         'short_name' => 'ResFix N',
@@ -2989,7 +3284,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    213 => [
+    234 => [
         'key' => 'fixed_resistance_terre_spell',
         'name' => 'Résistance fixe Terre',
         'short_name' => 'ResFix T',
@@ -3003,7 +3298,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    214 => [
+    235 => [
         'key' => 'heal_bonus_spell',
         'name' => 'Bonus de soin',
         'short_name' => 'Soin',
@@ -3017,7 +3312,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    215 => [
+    236 => [
         'key' => 'hit_bonus_spell',
         'name' => 'Bonus de touche',
         'short_name' => 'Touche',
@@ -3031,7 +3326,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    216 => [
+    237 => [
         'key' => 'initiative_spell',
         'name' => 'Initiative',
         'short_name' => 'Ini.',
@@ -3045,7 +3340,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    217 => [
+    238 => [
         'key' => 'intel_spell',
         'name' => 'Intelligence',
         'short_name' => 'Int.',
@@ -3059,7 +3354,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    218 => [
+    239 => [
         'key' => 'mastery_bonus_spell',
         'name' => 'Bonus maîtrise',
         'short_name' => 'Bonus maîtrise',
@@ -3073,7 +3368,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    219 => [
+    240 => [
         'key' => 'movement_points_spell',
         'name' => 'PM',
         'short_name' => 'PM',
@@ -3087,7 +3382,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    220 => [
+    241 => [
         'key' => 'push_damage_reduction_spell',
         'name' => 'Résistance poussée',
         'short_name' => 'Res Push',
@@ -3101,7 +3396,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    221 => [
+    242 => [
         'key' => 'range_spell',
         'name' => 'Portée',
         'short_name' => 'PO',
@@ -3115,7 +3410,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    222 => [
+    243 => [
         'key' => 'res_air_spell',
         'name' => 'Résistance Air',
         'short_name' => 'Res A',
@@ -3129,7 +3424,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    223 => [
+    244 => [
         'key' => 'res_eau_spell',
         'name' => 'Résistance Eau',
         'short_name' => 'Res E',
@@ -3143,7 +3438,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    224 => [
+    245 => [
         'key' => 'res_feu_spell',
         'name' => 'Résistance Feu',
         'short_name' => 'Res F',
@@ -3157,7 +3452,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    225 => [
+    246 => [
         'key' => 'res_neutre_spell',
         'name' => 'Résistance Neutre',
         'short_name' => 'Res N',
@@ -3171,7 +3466,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    226 => [
+    247 => [
         'key' => 'res_sagesse_spell',
         'name' => 'Résistance Sagesse (élément)',
         'short_name' => 'Res Sag',
@@ -3185,7 +3480,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    227 => [
+    248 => [
         'key' => 'res_terre_spell',
         'name' => 'Résistance Terre',
         'short_name' => 'Res T',
@@ -3199,7 +3494,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    228 => [
+    249 => [
         'key' => 'res_vitalite_spell',
         'name' => 'Résistance Vitalité (élément)',
         'short_name' => 'Res Vit',
@@ -3213,7 +3508,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    229 => [
+    250 => [
         'key' => 'sagesse_spell',
         'name' => 'Sagesse',
         'short_name' => 'Sag.',
@@ -3227,7 +3522,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    230 => [
+    251 => [
         'key' => 'save_agility_spell',
         'name' => 'Sauvegarde Agilité',
         'short_name' => 'Sav Agi',
@@ -3241,7 +3536,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    231 => [
+    252 => [
         'key' => 'save_chance_spell',
         'name' => 'Sauvegarde Chance',
         'short_name' => 'Sav Cha',
@@ -3255,7 +3550,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    232 => [
+    253 => [
         'key' => 'save_intelligence_spell',
         'name' => 'Sauvegarde Intelligence',
         'short_name' => 'Sav Int',
@@ -3269,7 +3564,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    233 => [
+    254 => [
         'key' => 'save_strength_spell',
         'name' => 'Sauvegarde Force',
         'short_name' => 'Sav For',
@@ -3283,7 +3578,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    234 => [
+    255 => [
         'key' => 'save_vitality_spell',
         'name' => 'Sauvegarde Vitalité',
         'short_name' => 'Sav Vit',
@@ -3297,7 +3592,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    235 => [
+    256 => [
         'key' => 'save_wisdom_spell',
         'name' => 'Sauvegarde Sagesse',
         'short_name' => 'Sav Sag',
@@ -3311,7 +3606,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    236 => [
+    257 => [
         'key' => 'strong_spell',
         'name' => 'Force',
         'short_name' => 'For.',
@@ -3325,7 +3620,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    237 => [
+    258 => [
         'key' => 'summoning_spell',
         'name' => 'Invocations',
         'short_name' => 'Invoc.',
@@ -3339,7 +3634,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    238 => [
+    259 => [
         'key' => 'tackle_spell',
         'name' => 'Tacle',
         'short_name' => 'Tacle',
@@ -3353,7 +3648,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    239 => [
+    260 => [
         'key' => 'vitality_spell',
         'name' => 'Vitalité',
         'short_name' => 'Vit.',
@@ -3367,7 +3662,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    240 => [
+    261 => [
         'key' => 'wakfu_reserve_spell',
         'name' => 'Réserve Wakfu',
         'short_name' => 'Réserve Wakfu',
@@ -3381,7 +3676,7 @@ return [
         'group' => 'spell',
         'linked_to_key' => null,
     ],
-    241 => [
+    262 => [
         'key' => 'hostility_creature',
         'name' => 'Hostilité',
         'short_name' => 'Hostil.',
@@ -3395,7 +3690,7 @@ return [
         'group' => 'creature',
         'linked_to_key' => null,
     ],
-    242 => [
+    263 => [
         'key' => 'monster_size',
         'name' => 'Taille du monstre',
         'short_name' => 'Taille',
@@ -3409,7 +3704,7 @@ return [
         'group' => 'creature',
         'linked_to_key' => null,
     ],
-    243 => [
+    264 => [
         'key' => 'monster_race',
         'name' => 'Race du monstre',
         'short_name' => 'Race',
@@ -3423,7 +3718,7 @@ return [
         'group' => 'creature',
         'linked_to_key' => null,
     ],
-    244 => [
+    265 => [
         'key' => 'monster_is_boss',
         'name' => 'Boss',
         'short_name' => 'Boss',
@@ -3437,7 +3732,7 @@ return [
         'group' => 'creature',
         'linked_to_key' => null,
     ],
-    245 => [
+    266 => [
         'key' => 'initiative_object',
         'name' => 'Initiative',
         'short_name' => 'Ini',
@@ -3451,12 +3746,12 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    246 => [
+    267 => [
         'key' => 'resistance_percent_tier_earth_object',
         'name' => 'Résistance % Terre (palier)',
         'short_name' => 'Rés. % T',
-        'helper' => 'Résistance aux dégâts % Terre (boucliers) : 0 = aucune, 1 = 50 %, 2 = 100 %.',
-        'descriptions' => 'Palier de résistance % Terre (boucliers). 0 aucune, 1 réduction 50 %, 2 immunité. Conversion Dofus : <80 → 0, 80–94 → 1, ≥95 → 2 (2.2.2). Dofus id 33.',
+        'helper' => 'Une des cinq propriétés par élément (Neutre, Terre, Feu, Air, Eau). Terre : 0 = aucune, 1 = 50 %, 2 = 100 %. Remplace le % résistance Terre DofusDB (id 33).',
+        'descriptions' => 'Propriété indépendante pour la Terre. Le pourcentage DofusDB sur l’effet est converti en palier 0 / 1 / 2 (ex. <80 → 0, 80–94 → 1, ≥95 → 2). Dofus id 33.',
         'icon' => 'resEarth.webp',
         'color' => '#8d6e63',
         'unit' => null,
@@ -3465,12 +3760,12 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    247 => [
+    268 => [
         'key' => 'resistance_percent_tier_fire_object',
         'name' => 'Résistance % Feu (palier)',
         'short_name' => 'Rés. % F',
-        'helper' => 'Résistance aux dégâts % Feu (boucliers) : 0 = aucune, 1 = 50 %, 2 = 100 %.',
-        'descriptions' => 'Palier de résistance % Feu (boucliers). 0 aucune, 1 réduction 50 %, 2 immunité. Conversion Dofus : <80 → 0, 80–94 → 1, ≥95 → 2 (2.2.2). Dofus id 34.',
+        'helper' => 'Une des cinq propriétés par élément. Feu : 0 = aucune, 1 = 50 %, 2 = 100 %. Remplace le % résistance Feu DofusDB (id 34).',
+        'descriptions' => 'Propriété indépendante pour le Feu. Le pourcentage DofusDB sur l’effet est converti en palier 0 / 1 / 2. Dofus id 34.',
         'icon' => 'resFire.webp',
         'color' => '#e93323',
         'unit' => null,
@@ -3479,12 +3774,12 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    248 => [
+    269 => [
         'key' => 'resistance_percent_tier_water_object',
         'name' => 'Résistance % Eau (palier)',
         'short_name' => 'Rés. % E',
-        'helper' => 'Résistance aux dégâts % Eau (boucliers) : 0 = aucune, 1 = 50 %, 2 = 100 %.',
-        'descriptions' => 'Palier de résistance % Eau (boucliers). 0 aucune, 1 réduction 50 %, 2 immunité. Conversion Dofus : <80 → 0, 80–94 → 1, ≥95 → 2 (2.2.2). Dofus id 35.',
+        'helper' => 'Une des cinq propriétés par élément. Eau : 0 = aucune, 1 = 50 %, 2 = 100 %. Remplace le % résistance Eau DofusDB (id 35).',
+        'descriptions' => 'Propriété indépendante pour l’Eau. Le pourcentage DofusDB sur l’effet est converti en palier 0 / 1 / 2. Dofus id 35.',
         'icon' => 'resWater.webp',
         'color' => '#29b6f6',
         'unit' => null,
@@ -3493,12 +3788,12 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    249 => [
+    270 => [
         'key' => 'resistance_percent_tier_air_object',
         'name' => 'Résistance % Air (palier)',
         'short_name' => 'Rés. % A',
-        'helper' => 'Résistance aux dégâts % Air (boucliers) : 0 = aucune, 1 = 50 %, 2 = 100 %.',
-        'descriptions' => 'Palier de résistance % Air (boucliers). 0 aucune, 1 réduction 50 %, 2 immunité. Conversion Dofus : <80 → 0, 80–94 → 1, ≥95 → 2 (2.2.2). Dofus id 36.',
+        'helper' => 'Une des cinq propriétés par élément. Air : 0 = aucune, 1 = 50 %, 2 = 100 %. Remplace le % résistance Air DofusDB (id 36).',
+        'descriptions' => 'Propriété indépendante pour l’Air. Le pourcentage DofusDB sur l’effet est converti en palier 0 / 1 / 2. Dofus id 36.',
         'icon' => 'resAir.webp',
         'color' => '#26c6da',
         'unit' => null,
@@ -3507,12 +3802,12 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
-    250 => [
+    271 => [
         'key' => 'resistance_percent_tier_neutral_object',
         'name' => 'Résistance % Neutre (palier)',
         'short_name' => 'Rés. % N',
-        'helper' => 'Résistance aux dégâts % Neutre (boucliers) : 0 = aucune, 1 = 50 %, 2 = 100 %.',
-        'descriptions' => 'Palier de résistance % Neutre (boucliers). 0 aucune, 1 réduction 50 %, 2 immunité. Conversion Dofus : <80 → 0, 80–94 → 1, ≥95 → 2 (2.2.2). Dofus id 37.',
+        'helper' => 'Une des cinq propriétés par élément. Neutre : 0 = aucune, 1 = 50 %, 2 = 100 %. Remplace le % résistance Neutre DofusDB (id 37).',
+        'descriptions' => 'Propriété indépendante pour le Neutre. Le pourcentage DofusDB sur l’effet est converti en palier 0 / 1 / 2. Dofus id 37.',
         'icon' => 'resNeutral.webp',
         'color' => '#9e9e9e',
         'unit' => null,
@@ -3521,4 +3816,19 @@ return [
         'group' => 'object',
         'linked_to_key' => null,
     ],
+    272 => [
+        'key' => 'description_object',
+        'name' => 'Description',
+        'short_name' => 'Desc.',
+        'helper' => 'Texte descriptif de l\'objet (aperçu, MJ, lore).',
+        'descriptions' => 'Description libre : mise en forme riche selon l\'éditeur de la fiche objet.',
+        'icon' => 'skill.webp',
+        'color' => '#78909c',
+        'unit' => null,
+        'type' => 'string',
+        'sort_order' => 20,
+        'group' => 'object',
+        'linked_to_key' => null,
+    ],
+
 ];
