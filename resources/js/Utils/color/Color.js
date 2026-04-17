@@ -1,8 +1,12 @@
 import { colord, extend } from 'colord';
 import a11yPlugin from 'colord/plugins/a11y';
+import { TAILWIND_CHARACTERISTIC_PALETTES } from '@/Constants/tailwindCharacteristicPalettes';
 
 // Étendre colord avec le plugin A11y (contrast, luminance, isReadable)
 extend([a11yPlugin]);
+
+/** Palettes autorisées pour les caractéristiques (noms seuls, sans nuance). */
+const CHARACTERISTIC_PALETTE_NAMES = new Set(TAILWIND_CHARACTERISTIC_PALETTES);
 
 /**
  * Utilitaire de gestion des couleurs basé sur colord
@@ -84,43 +88,78 @@ export function hexToRgba(hex, a) {
 }
 
 /**
- * Style inline pour texte/icône à partir d'une couleur caractéristique.
- * Supporte hex (#xxx) et tokens Tailwind (ex. blue-600 → var(--color-blue-600)).
+ * Résout une couleur caractéristique vers une valeur CSS (hex, `palette-nuance`, ou nom de palette seul → nuance 500).
  *
- * @param {string} color - Hex ou token DaisyUI/Tailwind
+ * @param {string} color - Hex, ex. `blue-600`, ou nom de palette (`blue`, `brown`, …)
+ * @returns {string} Chaîne CSS ou '' si non résolu
+ *
+ * @example
+ * resolveCharacteristicUiColor('#e93323') // => '#e93323'
+ * resolveCharacteristicUiColor('blue-600') // => 'var(--color-blue-600)'
+ * resolveCharacteristicUiColor('emerald') // => 'var(--color-emerald-400)' (lisibilité sur fonds sombres)
+ */
+export function resolveCharacteristicUiColor(color) {
+  if (!color || typeof color !== 'string') return '';
+  const t = color.trim();
+  if (!t) return '';
+  if (t.startsWith('#')) return t;
+  if (t.includes('-')) return `var(--color-${t})`;
+  const low = t.toLowerCase();
+  if (CHARACTERISTIC_PALETTE_NAMES.has(low)) {
+    return `var(--color-${low}-400)`;
+  }
+  return '';
+}
+
+/**
+ * Style inline pour texte/icône à partir d'une couleur caractéristique.
+ * Supporte hex (#xxx), tokens avec nuance (ex. blue-600) et nom de palette seul (ex. blue → --color-blue-500).
+ *
+ * @param {string} color - Hex ou token
  * @returns {Object|undefined} - { color } pour :style ou undefined
  *
  * @example
  * getCharacteristicColorStyle('#e93323') // => { color: '#e93323' }
  * getCharacteristicColorStyle('blue-600') // => { color: 'var(--color-blue-600)' }
+ * getCharacteristicColorStyle('brown') // => { color: 'var(--color-brown-400)' }
  */
 export function getCharacteristicColorStyle(color) {
-  if (!color || typeof color !== 'string') return undefined;
-  const t = color.trim();
-  if (t.startsWith('#')) return { color: t };
-  if (t.includes('-')) return { color: `var(--color-${t})` };
-  return undefined;
+  const c = resolveCharacteristicUiColor(color);
+  if (!c) return undefined;
+  return { color: c };
 }
 
 /**
  * Style pour carte caractéristique (fond teinté, ombre, bordure).
- * Utilisé par CharacteristicFormula, CharacteristicBoolean, CharacteristicBadges.
+ * Hex : rgba dérivé ; palette : color-mix avec le jeton `--color-*`.
+ * Ombre : neutre foncée (lisible sur fond sombre), bordure via `base-content` (discrète).
  *
- * @param {string} hex - Couleur hex (ex. #e93323)
+ * @param {string} color - Hex ou token (voir {@link resolveCharacteristicUiColor})
  * @returns {Object} - Objet style pour :style
- *
- * @example
- * getCharacteristicContainerStyle('#e93323') // => { backgroundColor, boxShadow, borderColor? }
  */
-export function getCharacteristicContainerStyle(hex) {
-  if (!hex || typeof hex !== 'string') return {};
-  const rgba = hexToRgba(hex, 0.08);
-  const shadowRgba = hexToRgba(hex, 0.15);
-  if (!rgba || !shadowRgba) return {};
+/** Ombre neutre foncée (~intensité 300–400), sans halo teinté par la couleur carac. */
+const CHARACTERISTIC_CARD_BOX_SHADOW =
+  '0 1px 2px rgb(0 0 0 / 0.44), 0 2px 8px rgb(0 0 0 / 0.34), 0 0 0 1px rgb(0 0 0 / 0.18)';
+
+export function getCharacteristicContainerStyle(color) {
+  if (!color || typeof color !== 'string') return {};
+  const t = color.trim();
+  if (!t) return {};
+  if (t.startsWith('#')) {
+    const rgba = hexToRgba(t, 0.07);
+    if (!rgba) return {};
+    return {
+      backgroundColor: rgba,
+      boxShadow: CHARACTERISTIC_CARD_BOX_SHADOW,
+      borderColor: 'color-mix(in srgb, var(--color-base-content) 16%, transparent)',
+    };
+  }
+  const token = resolveCharacteristicUiColor(t);
+  if (!token.startsWith('var(')) return {};
   return {
-    backgroundColor: rgba,
-    boxShadow: `0 1px 3px ${shadowRgba}`,
-    ...(hexToRgba(hex, 0.2) ? { borderColor: hexToRgba(hex, 0.2) } : {}),
+    backgroundColor: `color-mix(in srgb, ${token} 8%, transparent)`,
+    boxShadow: CHARACTERISTIC_CARD_BOX_SHADOW,
+    borderColor: 'color-mix(in srgb, var(--color-base-content) 14%, transparent)',
   };
 }
 

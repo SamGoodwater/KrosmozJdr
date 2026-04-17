@@ -12,6 +12,7 @@
 
 import {
     hexToRgba,
+    resolveCharacteristicUiColor,
     getCharacteristicColorStyle,
     getCharacteristicContainerStyle,
 } from "@/Utils/color/Color";
@@ -23,7 +24,7 @@ import {
 } from "@/Composables/store/useCharacteristicsStore";
 
 // Ré-exports pour usage direct
-export { hexToRgba, getCharacteristicColorStyle, getCharacteristicContainerStyle };
+export { hexToRgba, resolveCharacteristicUiColor, getCharacteristicColorStyle, getCharacteristicContainerStyle };
 
 /**
  * Icône CàC (corps à corps).
@@ -195,7 +196,7 @@ export function resolveValueOverride(overrides, value) {
  * @param {string|number} keyOrId - characteristic_key, db_column, ou dofusdb_characteristic_id
  * @param {string|number|boolean} [value] - Valeur (pour variantes : iconFalse si booléen, label depuis value_available)
  * @param {Object} [options] - { sourceGroups: string[] }
- * @returns {Object|null} - { key, db_column, name, short_name, icon, icon_false?, color, color_false?, unit, type, helper, descriptions, value_available, value_overrides?, _resolvedSubtitle? } ou null
+ * @returns {Object|null} - { key, db_column, name, short_name, icon, icon_false?, color, unit, type, helper, descriptions, value_available, value_overrides?, _resolvedSubtitle? } ou null
  */
 export function resolveDef(keyOrId, value, options = {}) {
     const sourceGroups = options?.sourceGroups ?? ["creature", "item", "resource", "spell", "capability"];
@@ -226,16 +227,6 @@ export function resolveDef(keyOrId, value, options = {}) {
                 if (typeof value === "boolean" && def.icon_false != null) {
                     if (def._resolvedIcon == null) {
                         def._resolvedIcon = value ? def.icon : (def.icon_false ?? def.icon);
-                    }
-                    const cf = def.color_false;
-                    if (
-                        def._resolvedColor == null &&
-                        value === false &&
-                        typeof cf === "string" &&
-                        cf.trim() !== "" &&
-                        cf.trim().startsWith("#")
-                    ) {
-                        def._resolvedColor = cf.trim();
                     }
                 } else if (Array.isArray(def.value_available)) {
                     const entry = def.value_available.find(

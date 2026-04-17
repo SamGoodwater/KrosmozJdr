@@ -21,6 +21,8 @@ import NormsPanel from '@/Pages/Admin/characteristics/NormsPanel.vue';
 import ItemTypesMultiField from '@/Pages/Molecules/data-input/ItemTypesMultiField.vue';
 import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import axios from 'axios';
+import { resolveCharacteristicUiColor } from '@/Utils/color/Color';
+import { TAILWIND_CHARACTERISTIC_PALETTES } from '@/Constants/tailwindCharacteristicPalettes';
 
 const { setPageTitle } = usePageTitle();
 const notificationStore = inject('notificationStore', null);
@@ -672,34 +674,51 @@ const conversionTableCharacteristicOptions = [
     { id: 'level', name: 'Niveau JDR (level)' },
 ];
 
-/** Retourne la valeur CSS pour afficher la couleur (hex ou ancien nom Tailwind). */
+/** Retourne la valeur CSS pour afficher la couleur (hex, token avec nuance, ou nom de palette Tailwind). */
 function displayColor(val) {
-    if (!val) return null;
-    if (typeof val === 'string' && val.startsWith('#')) return val;
-    return `var(--color-${val})`;
-}
-
-/** Valeur pour le color picker (doit être un hex valide). */
-const defaultHexForPicker = '#808080';
-function colorForPicker(hex) {
-    if (!hex || typeof hex !== 'string') return defaultHexForPicker;
-    if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(hex)) return hex;
-    return defaultHexForPicker;
+    const css = resolveCharacteristicUiColor(val);
+    return css || null;
 }
 
 /** Style CSS pour le thème de la caractéristique : glass, bordures, graphique, boutons, inputs. */
 const characteristicColorStyle = computed(() => {
-    const hex = form.color && typeof form.color === 'string' && /^#([0-9A-Fa-f]{3}){1,2}$/.test(form.color.trim()) ? form.color.trim() : null;
-    if (!hex) return {};
+    const raw = form.color && typeof form.color === 'string' ? form.color.trim() : '';
+    if (!raw) return {};
+    if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(raw)) {
+        return {
+            '--color': raw,
+            '--bg-color': raw,
+            '--chart-fill': `color-mix(in srgb, ${raw} 15%, transparent)`,
+            '--color-primary': raw,
+            '--color-primary-content': '#fff',
+        };
+    }
+    const token = resolveCharacteristicUiColor(raw);
+    if (!token.startsWith('var(')) return {};
     return {
-        '--color': hex,
-        '--bg-color': hex,
-        '--chart-fill': `color-mix(in srgb, ${hex} 15%, transparent)`,
-        /* Surcharge primary du thème pour boutons, liens, focus inputs */
-        '--color-primary': hex,
+        '--color': token,
+        '--bg-color': token,
+        '--chart-fill': `color-mix(in srgb, ${token} 15%, transparent)`,
+        '--color-primary': token,
         '--color-primary-content': '#fff',
     };
 });
+
+/** Pastille d’aperçu pour surcharges (palette Tailwind ou hex legacy). */
+function overrideColorSwatchClass(val) {
+    if (!val || typeof val !== 'string') return '';
+    const t = val.trim();
+    if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(t)) return '';
+    const low = t.toLowerCase();
+    return TAILWIND_CHARACTERISTIC_PALETTES.includes(low) ? `bg-${low}-500` : '';
+}
+
+/** Style inline si la valeur est encore en hex. */
+function overrideColorSwatchStyle(val) {
+    if (!val || typeof val !== 'string') return {};
+    const t = val.trim();
+    return /^#([0-9A-Fa-f]{3}){1,2}$/.test(t) ? { backgroundColor: t } : {};
+}
 
 /** URL des icônes : storage/app/public/images/icons/caracteristics/ (servi via /storage/...) */
 const iconBasePath = '/storage/images/icons/caracteristics';
@@ -849,8 +868,14 @@ function submitConvertToLinked() {
             :search-keys="['name', 'id', 'key']"
             :get-item-href="(c) => route('admin.characteristics.show', c.id)"
             :is-item-active="(c) => selected?.id === c.id"
-            :get-item-css-classes="(c) => (c.color && !String(c.color).startsWith('#') ? `color-${c.color}-500 box-shadow-glass-xs` : '')"
-            :get-item-color="(c) => (displayColor(c.color) && String(c.color || '').startsWith('#') ? displayColor(c.color) : null)"
+            :get-item-css-classes="(c) => {
+                if (!c?.color) return '';
+                const col = String(c.color).trim();
+                if (col.startsWith('#')) return '';
+                if (col.includes('-')) return `color-${col} box-shadow-glass-xs`;
+                return `color-${col}-500 box-shadow-glass-xs`;
+            }"
+            :get-item-color="(c) => displayColor(c.color)"
             :get-item-icon="(c) => c.icon || null"
             :get-item-label="(c) => c.name || c.id"
             :get-item-label-secondary="(c) => (c.id ? `[${c.id}]` : null)"
@@ -1064,22 +1089,14 @@ function submitConvertToLinked() {
                                 <InputField v-model="form.description" label="Description" name="description" type="textarea" class="sm:col-span-2" />
                                 <div>
                                     <label class="label"><span class="label-text">Couleur</span></label>
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <input
-                                            v-model="form.color"
-                                            type="text"
-                                            name="color"
-                                            class="input input-bordered w-28 font-mono"
-                                            placeholder="#000000"
-                                            maxlength="7"
-                                        />
-                                        <ColorCore
-                                            :model-value="colorForPicker(form.color)"
-                                            @update:model-value="form.color = $event"
-                                            class="input-primary"
-                                        />
-                                    </div>
-                                    <p class="mt-1 text-xs text-base-content/70">Code hexadécimal (ex. #3b82f6).</p>
+                                    <ColorCore
+                                        v-model="form.color"
+                                        limit-to="tailwind"
+                                        name="color"
+                                        class="input-primary w-full max-w-md"
+                                        placeholder="Choisir une palette"
+                                    />
+                                    <p class="mt-1 text-xs text-base-content/70">Palette Tailwind (ex. blue, brown). Valeur stockée sans nuance.</p>
                                 </div>
                                 <div>
                                     <InputField v-model="form.type" label="Type" name="type" :options="['int', 'string', 'array', 'bool']" />
@@ -1289,22 +1306,14 @@ function submitConvertToLinked() {
                                 </div>
                                 <div>
                                     <label class="label"><span class="label-text">Couleur</span></label>
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <input
-                                            v-model="form.color"
-                                            type="text"
-                                            name="color"
-                                            class="input input-bordered w-28 font-mono"
-                                            placeholder="#000000"
-                                            maxlength="7"
-                                        />
-                                        <ColorCore
-                                            :model-value="colorForPicker(form.color)"
-                                            @update:model-value="form.color = $event"
-                                            class="input-primary"
-                                        />
-                                    </div>
-                                    <p class="mt-1 text-xs text-base-content/70">Code hexadécimal (ex. #3b82f6). Utilisée pour les badges, graphiques et indicateurs.</p>
+                                    <ColorCore
+                                        v-model="form.color"
+                                        limit-to="tailwind"
+                                        name="color"
+                                        class="input-primary w-full max-w-md"
+                                        placeholder="Choisir une palette"
+                                    />
+                                    <p class="mt-1 text-xs text-base-content/70">Palette Tailwind. Utilisée pour les badges, graphiques et indicateurs.</p>
                                 </div>
                                 <div>
                                     <InputField v-model="form.type" label="Type" name="type" :options="['int', 'string', 'array', 'bool']" />
@@ -1413,24 +1422,20 @@ function submitConvertToLinked() {
                                         <div>
                                             <label class="label"><span class="label-text">Couleur</span></label>
                                             <div class="flex flex-wrap items-center gap-2">
-                                                <input
-                                                    v-model="ov.color"
-                                                    type="text"
-                                                    class="input input-bordered input-sm w-28 font-mono"
-                                                    placeholder="#e53935"
-                                                    maxlength="7"
-                                                />
                                                 <ColorCore
-                                                    :model-value="colorForPicker(ov.color)"
-                                                    @update:model-value="ov.color = $event"
+                                                    v-model="ov.color"
+                                                    limit-to="tailwind"
+                                                    class="max-w-xs flex-1"
+                                                    placeholder="Défaut"
                                                 />
                                                 <div
-                                                    v-if="ov.color && /^#([0-9A-Fa-f]{3}){1,2}$/.test(ov.color)"
-                                                    class="h-6 w-6 rounded-full border border-base-300"
-                                                    :style="{ backgroundColor: ov.color }"
+                                                    v-if="ov.color"
+                                                    class="h-6 w-6 shrink-0 rounded-full border border-base-300"
+                                                    :class="overrideColorSwatchClass(ov.color)"
+                                                    :style="overrideColorSwatchStyle(ov.color)"
                                                 />
                                             </div>
-                                            <p class="mt-1 text-xs text-base-content/60">Code hexadécimal. Laissez vide pour garder la couleur par défaut.</p>
+                                            <p class="mt-1 text-xs text-base-content/60">Palette Tailwind. Laissez vide pour garder la couleur par défaut.</p>
                                         </div>
                                     </div>
                                 </div>

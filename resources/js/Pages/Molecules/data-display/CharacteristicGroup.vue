@@ -52,7 +52,7 @@ function formulaViewModel(item) {
 
 <template>
     <div class="characteristic-group space-y-2">
-        <h4 v-if="title" class="text-sm font-semibold opacity-90">
+        <h4 v-if="title" class="text-sm font-semibold text-base-content/90">
             {{ title }}
         </h4>
         <div class="flex flex-wrap gap-2">

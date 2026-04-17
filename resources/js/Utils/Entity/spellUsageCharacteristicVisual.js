@@ -4,7 +4,7 @@
  */
 
 import { getByDbColumn } from "@/Composables/store/useCharacteristicsStore";
-import { hexToRgba } from "@/Utils/color/Color";
+import { hexToRgba, resolveCharacteristicUiColor } from "@/Utils/color/Color";
 import { resolveValueOverride } from "@/Composables/entity/useCharacteristicDisplay";
 
 /** @readonly */
@@ -131,8 +131,8 @@ function deriveNoPoEditableIconPath(rangeEditableIcon) {
  * @returns {Record<string, string>}
  */
 export function spellUsageTextColorStyle(color) {
-    if (!color || typeof color !== "string") return {};
-    return { color };
+    const c = resolveCharacteristicUiColor(color);
+    return c ? { color: c } : {};
 }
 
 /**
@@ -142,11 +142,18 @@ export function spellUsageTextColorStyle(color) {
  * @returns {Record<string, string>}
  */
 export function spellUsageIconBackdropStyle(color) {
-    if (!color || typeof color !== "string" || !color.startsWith("#")) return {};
-    const bg = hexToRgba(color, 0.14);
-    if (!bg) return {};
+    const c = resolveCharacteristicUiColor(color);
+    if (!c) return {};
+    if (c.startsWith("#")) {
+        const bg = hexToRgba(c, 0.14);
+        if (!bg) return {};
+        return {
+            backgroundColor: bg,
+            borderRadius: "0.25rem",
+        };
+    }
     return {
-        backgroundColor: bg,
+        backgroundColor: `color-mix(in srgb, ${c} 14%, transparent)`,
         borderRadius: "0.25rem",
     };
 }
@@ -158,20 +165,25 @@ export function spellUsageIconBackdropStyle(color) {
  * @returns {Record<string, string>}
  */
 export function spellUsageTooltipPanelStyle(color) {
-    if (!color || typeof color !== "string" || !color.startsWith("#")) {
-        return {};
+    const c = resolveCharacteristicUiColor(color);
+    if (!c) return {};
+    if (c.startsWith("#")) {
+        const bg = hexToRgba(c, 0.1);
+        if (!bg) return {};
+        return {
+            borderLeftColor: c,
+            backgroundColor: bg,
+        };
     }
-    const bg = hexToRgba(color, 0.1);
-    if (!bg) return {};
     return {
-        borderLeftColor: color,
-        backgroundColor: bg,
+        borderLeftColor: c,
+        backgroundColor: `color-mix(in srgb, ${c} 12%, transparent)`,
     };
 }
 
 /**
  * Résout icône + couleur + subtitle pour une colonne sort (`db_column` dans characteristic_spell).
- * Priorise les value_overrides BDD, puis fallback sur icon_false/color_false et logique dérivée.
+ * Priorise les value_overrides BDD, puis icon_false et logique dérivée (couleurs par défaut si besoin).
  *
  * @param {string} dbColumn - ex. `po_editable`, `cast_per_turn`
  * @param {boolean|number} [booleanValue] - si défini, bascule icône true/false quand `icon_false` existe
@@ -262,25 +274,18 @@ export function resolveSpellUsageCharacteristicVisual(dbColumn, booleanValue) {
 
     let color = voColor ?? def.color ?? "";
     if (voColor == null) {
-        const colorFalseRaw = def.color_false;
-        const colorFalseHex =
-            typeof colorFalseRaw === "string" && colorFalseRaw.trim().startsWith("#")
-                ? colorFalseRaw.trim()
-                : "";
-        if (typeof booleanValue === "boolean" && booleanValue === false && colorFalseHex) {
-            color = colorFalseHex;
-        } else if (
+        if (
             dbColumn === "is_magic" &&
             typeof booleanValue === "boolean" &&
             booleanValue === false &&
-            !colorFalseHex
+            !color
         ) {
             color = "#79726d";
         } else if (
             dbColumn === "ritual_available" &&
             typeof booleanValue === "boolean" &&
             booleanValue === false &&
-            !colorFalseHex
+            !color
         ) {
             color = "#78909c";
         }

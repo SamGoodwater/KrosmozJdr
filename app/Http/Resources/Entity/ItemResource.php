@@ -18,6 +18,8 @@ class ItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+        $canUpdate = $user && $user->can('update', $this->resource);
+
         return [
             'id' => $this->id,
             'official_id' => $this->official_id,
@@ -28,7 +30,9 @@ class ItemResource extends JsonResource
             'effect' => $this->effect,
             'bonus' => $this->bonus,
             'recipe' => $this->recipe,
-            'price' => $this->price,
+            'price' => $this->displayPriceKamas(),
+            'price_calculated' => $canUpdate ? ($this->price_calculated !== null ? (int) $this->price_calculated : null) : null,
+            'price_custom' => $canUpdate ? ($this->price_custom !== null ? (int) $this->price_custom : null) : null,
             'rarity' => $this->rarity,
             'dofus_version' => $this->dofus_version,
             'state' => $this->state,
@@ -62,8 +66,6 @@ class ItemResource extends JsonResource
 
     /**
      * Retourne toujours un tableau pour les ressources, même si la relation n'est pas chargée.
-     *
-     * @return array
      */
     protected function getResourcesArray(): array
     {
@@ -84,7 +86,7 @@ class ItemResource extends JsonResource
         } catch (\Exception $e) {
             // Si la relation n'existe pas ou n'est pas chargée, retourner un tableau vide
         }
+
         return [];
     }
 }
-

@@ -25,7 +25,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $icon
  * @property string|null $icon_false
  * @property string|null $color
- * @property string|null $color_false
  * @property array|null $value_overrides
  * @property string|null $unit
  * @property string $type
@@ -56,7 +55,6 @@ class Characteristic extends Model implements HasMedia
         'icon',
         'icon_false',
         'color',
-        'color_false',
         'value_overrides',
         'unit',
         'type',

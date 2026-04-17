@@ -125,6 +125,15 @@ const stateLabel = computed(() => {
     return opt?.label ?? '-';
 });
 
+const showPriceKamas = computed(() => {
+    const raw = props.item?.price ?? props.item?._data?.price;
+    if (raw === null || raw === undefined || raw === '') {
+        return false;
+    }
+    const n = Math.round(Number(raw));
+    return Number.isFinite(n) && n > 0;
+});
+
 const handleStateChange = (newState) => {
     if (!props.item?.id || !userCanEdit.value) return;
     router.patch(route('entities.items.update', { item: props.item.id }), { state: newState }, {
@@ -307,7 +316,7 @@ const handleAction = async (actionKey) => {
                             class="max-w-[18rem] min-w-0 text-primary-200"
                         />
                         <EntityPropertyDisplay
-                            v-if="canShowField('price')"
+                            v-if="canShowField('price') && showPriceKamas"
                             field-key="price"
                             :entity="item"
                             entity-type="item"

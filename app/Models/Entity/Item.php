@@ -22,7 +22,9 @@ use Spatie\MediaLibrary\HasMedia;
  * @property string|null $effect
  * @property string|null $bonus
  * @property string|null $recipe
- * @property string|null $price
+ * @property int|null $price_calculated
+ * @property int|null $price_custom
+ * @property string|null $price Total kamas affiché (entier, synchronisé depuis calculé + personnalisé)
  * @property int $rarity
  * @property string $dofus_version
  * @property string $state
@@ -113,7 +115,8 @@ class Item extends Model implements HasMedia
         'effect',
         'bonus',
         'recipe',
-        'price',
+        'price_calculated',
+        'price_custom',
         'rarity',
         'dofus_version',
         'state',
@@ -131,11 +134,41 @@ class Item extends Model implements HasMedia
      * @var array<string, string>
      */
     protected $casts = [
+        'price_calculated' => 'integer',
+        'price_custom' => 'integer',
         'rarity' => 'integer',
         'read_level' => 'integer',
         'write_level' => 'integer',
         'auto_update' => 'boolean',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Item $item): void {
+            $item->price = (string) $item->totalPriceKamas();
+        });
+    }
+
+    /**
+     * Total kamas (entier, plancher à 0) : part calculée + part personnalisée (peut être négative).
+     */
+    public function totalPriceKamas(): int
+    {
+        $calc = $this->price_calculated !== null ? (int) $this->price_calculated : 0;
+        $custom = $this->price_custom !== null ? (int) $this->price_custom : 0;
+
+        return max(0, (int) round($calc + $custom));
+    }
+
+    /**
+     * Prix à exposer dans les vues lecture (null si total ≤ 0).
+     */
+    public function displayPriceKamas(): ?int
+    {
+        $total = $this->totalPriceKamas();
+
+        return $total > 0 ? $total : null;
+    }
 
     /**
      * Get the user that created the item.

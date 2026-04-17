@@ -2091,6 +2091,29 @@
     "file": "entity/item/ItemViewCompact.vue"
   },
   {
+    "name": "ItemPriceEditSection",
+    "description": "Bloc prix (édition item) : montant calculé (lecture seule), ajustement personnalisé (signé), total (lecture seule).",
+    "props": [
+      {
+        "name": "itemId",
+        "type": "number",
+        "desc": "- Identifiant de l'item"
+      },
+      {
+        "name": "priceCalculated",
+        "type": "number|null",
+        "desc": "- Part calculée (kamas entiers), peut être null si non calculée"
+      },
+      {
+        "name": "priceCustom",
+        "type": "number|null",
+        "desc": "- Ajustement (peut être négatif pour baisser le total)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/item/ItemPriceEditSection.vue"
+  },
+  {
     "name": "ItemLineRow",
     "description": "ItemLineRow — Une ligne de la vue Line pour Item",
     "props": [],
@@ -2523,6 +2546,13 @@
     "props": [],
     "slots": [],
     "file": "data-input/NormsConditionSelector.vue"
+  },
+  {
+    "name": "ItemTypesMultiField",
+    "description": "Multi-sélection des types d'équipement (`item_types`) pour restriction des caractéristiques groupe object. `v-model` : tableau d'ids numériques. Utilise SelectSearchField (recherche, badges + croix).",
+    "props": [],
+    "slots": [],
+    "file": "data-input/ItemTypesMultiField.vue"
   },
   {
     "name": "InputField",

@@ -41,7 +41,6 @@ const iconSource = computed(() => {
 const resolvedColor = computed(() => {
     const ov = override.value;
     if (ov?.color) return ov.color;
-    if (!props.value && props.def?.color_false) return props.def.color_false;
     return props.def?.color;
 });
 const alt = computed(() => props.def?.name || props.def?.key || "—");
@@ -57,7 +56,7 @@ const containerStyle = computed(() =>
 <template>
     <div
         class="characteristic-boolean inline-flex min-w-0 transition-shadow"
-        :class="compact ? 'items-center rounded px-1 py-0.5' : 'flex-col items-center rounded-box border border-base-300 px-2 py-1.5 backdrop-blur-sm'"
+        :class="compact ? 'items-center rounded px-1 py-0.5' : 'flex-col items-center rounded-box border border-base-content/15 px-2 py-1.5 text-base-content backdrop-blur-sm'"
         :style="compact ? {} : containerStyle"
     >
         <Tooltip v-if="tooltipText && compact" :content="tooltipText" placement="top">
@@ -120,7 +119,7 @@ const containerStyle = computed(() =>
                     :disabled="!value"
                 />
             </span>
-            <p class="mt-0.5 text-xs opacity-80">{{ label }}</p>
+            <p class="mt-0.5 text-xs text-base-content/90">{{ label }}</p>
         </template>
     </div>
 </template>

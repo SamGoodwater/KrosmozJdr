@@ -14,6 +14,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class UpdateItemRequest extends FormRequest
 {
     use HasCharacteristicValidation;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -39,10 +40,7 @@ class UpdateItemRequest extends FormRequest
             'effect' => ['nullable', 'string'],
             'bonus' => ['nullable', 'string'],
             'recipe' => ['nullable', 'string'],
-            'price' => array_merge(
-                ['nullable', 'numeric'],
-                $this->characteristicMinMaxRules('price', 'item') ?: ['min:0']
-            ),
+            'price_custom' => ['nullable', 'integer'],
             'rarity' => $this->characteristicRules('rarity', 'item') ?: ['nullable', 'integer', 'min:0'],
             'dofus_version' => ['nullable', 'string', 'max:255'],
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],

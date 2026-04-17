@@ -38,7 +38,7 @@ Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism e
 Le système génère automatiquement des variantes colorées pour trois thèmes principaux :
 
 - **Thème global** (`$theme-global`) : `primary`, `secondary`, `accent`, `neutral`, `info`, `success`, `warning`, `error`, `base`
-- **Thème caractéristiques** (`$theme-caracs`) : `pa`, `pm`, `fuite`, `tacle`, `cc`, `res_cc`, `ini`, `ca`, `kamas`, `touch`, `mastery`, `expertise`, `res-neutre`, `res-terre`, `res-air`, `res-feu`, `res-eau`, `cast-per-turn`, `cast-per-target`, `sight-line`, `number-between-two-cast`, `time_before_use_again`, `casting_time`, `dodge_pa`, `dodge_pm`, `po`, `po-editable`, `force`, `strong`, `terre`, `intel`, `feu`, `agi`, `air`, `chance`, `eau`, `vitality`, `sagesse`, `life`, `level`, `master_bonus`
+- **Couleurs caractéristiques (clé BDD → `--color`)** : source unique = colonne `color` en base ; le fichier `public/css/characteristic-colors.css` est régénéré (`php artisan characteristics:generate-color-css` ou sauvegarde admin). Les classes `.color-{key}` ne sont plus définies dans le SCSS.
 - **Thème entités** (`$theme-entities`) : `section`, `page`, `npc`, `item`, `creature`, `shop`, `campaign`, `resource`, `monster`, `specialization`, `spell`, `user`, `attribute`, `capitalize`, `breed`, `consumable`, `scenario`, `condition`
 
 #### Tailles d'intensité disponibles

@@ -49,8 +49,46 @@ export class Item extends BaseModel {
         return this._data.recipe || null;
     }
 
+    /**
+     * Prix total pour affichage lecture (kamas entiers). Null si ≤ 0 ou absent.
+     */
     get price() {
-        return this._data.price || null;
+        const p = this._data.price;
+        if (p === null || p === undefined || p === '') {
+            return null;
+        }
+        const n = Math.round(Number(p));
+        if (!Number.isFinite(n) || n <= 0) {
+            return null;
+        }
+        return n;
+    }
+
+    get priceCalculated() {
+        const v = this._data.price_calculated;
+        if (v === null || v === undefined) {
+            return null;
+        }
+        const n = Math.round(Number(v));
+        return Number.isFinite(n) ? n : null;
+    }
+
+    get priceCustom() {
+        const v = this._data.price_custom;
+        if (v === null || v === undefined) {
+            return null;
+        }
+        const n = Math.round(Number(v));
+        return Number.isFinite(n) ? n : null;
+    }
+
+    /**
+     * Total kamas (pour prévisualisation édition) : max(0, calculé + personnalisé).
+     */
+    get priceTotalComputed() {
+        const c = this.priceCalculated ?? 0;
+        const u = this.priceCustom ?? 0;
+        return Math.max(0, Math.round(c + u));
     }
 
     get rarity() {
@@ -359,7 +397,7 @@ export class Item extends BaseModel {
         const rarityValue = this.rarity;
         const rarityLabel = Number.isFinite(Number(rarityValue)) ? (rarityMap[Number(rarityValue)] || String(rarityValue)) : null;
         const levelValue = this.level != null ? String(this.level) : null;
-        const priceValue = this.price != null && String(this.price) !== '' ? String(this.price) : null;
+        const priceValue = this.price != null ? String(this.price) : null;
         const versionValue = this.dofusVersion ? String(this.dofusVersion) : null;
         const dofusdbValue = this.dofusdbId ? `#${this.dofusdbId}` : null;
         const resourcesValue = this.resourcesCount > 0 ? `${this.resourcesCount} ressource${this.resourcesCount > 1 ? 's' : ''}` : null;
@@ -463,7 +501,7 @@ export class Item extends BaseModel {
             effect: this.effect,
             bonus: this.bonus,
             recipe: this.recipe,
-            price: this.price,
+            price_custom: this.priceCustom,
             rarity: this.rarity,
             dofus_version: this.dofusVersion,
             state: this.state,

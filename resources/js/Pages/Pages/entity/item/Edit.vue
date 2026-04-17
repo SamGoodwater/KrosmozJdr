@@ -18,6 +18,7 @@ import ObjectEffectsManager from '@/Pages/Organismes/entity/ObjectEffectsManager
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
+import ItemPriceEditSection from '@/Pages/Molecules/entity/item/ItemPriceEditSection.vue';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -105,6 +106,13 @@ setPageTitle(`Modifier l'item : ${item.value.name || 'Nouvel item'}`);
             entity-type="item"
             :fields-config="fieldsConfig"
             :is-updating="true"
+        />
+
+        <ItemPriceEditSection
+            v-if="item.id"
+            :item-id="item.id"
+            :price-calculated="item.priceCalculated"
+            :price-custom="item.priceCustom"
         />
         
         <!-- Gestion des usages d'effets (système unifié) -->

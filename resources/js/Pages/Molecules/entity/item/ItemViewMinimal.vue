@@ -80,6 +80,15 @@ const canShowField = (fieldKey) => {
 
 const entity = computed(() => props.item);
 
+const showPriceKamas = computed(() => {
+    const raw = entity.value?.price ?? entity.value?._data?.price;
+    if (raw === null || raw === undefined || raw === '') {
+        return false;
+    }
+    const n = Math.round(Number(raw));
+    return Number.isFinite(n) && n > 0;
+});
+
 const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
 const levelValue = computed(() => entity.value?.level ?? entity.value?._data?.level ?? null);
 
@@ -199,7 +208,7 @@ const handleAction = async (actionKey) => {
                                 {{ rarityConfig.label }}
                             </Badge>
                             <EntityPropertyDisplay
-                                v-if="canShowField('price')"
+                                v-if="canShowField('price') && showPriceKamas"
                                 field-key="price"
                                 :entity="entity"
                                 entity-type="item"
@@ -208,6 +217,7 @@ const handleAction = async (actionKey) => {
                                 :table-meta="tableMeta"
                                 size="xs"
                                 class="min-w-0"
+                                hide-field-label
                             />
                         </div>
                     </div>
@@ -282,7 +292,7 @@ const handleAction = async (actionKey) => {
                                 {{ rarityConfig.label }}
                             </Badge>
                             <EntityPropertyDisplay
-                                v-if="canShowField('price')"
+                                v-if="canShowField('price') && showPriceKamas"
                                 field-key="price"
                                 :entity="entity"
                                 entity-type="item"
@@ -291,6 +301,7 @@ const handleAction = async (actionKey) => {
                                 :table-meta="tableMeta"
                                 size="xs"
                                 class="min-w-0"
+                                hide-field-label
                             />
                         </div>
                         <p

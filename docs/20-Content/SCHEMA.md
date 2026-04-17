@@ -223,7 +223,6 @@ erDiagram
     icon : varchar(64)
     icon_false : varchar(64)
     color : varchar(32)
-    color_false : varchar(7)
     value_overrides : longtext
     unit : varchar(32)
     type : varchar(16)
@@ -561,6 +560,8 @@ erDiagram
     effect : varchar(255)
     bonus : text
     recipe : varchar(255)
+    price_calculated : bigint(20)
+    price_custom : bigint(20)
     price : varchar(255)
     rarity : int(11)
     dofus_version : varchar(255)

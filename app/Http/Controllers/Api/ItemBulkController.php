@@ -40,6 +40,7 @@ class ItemBulkController extends Controller
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'level' => ['sometimes', 'nullable', 'string', 'max:255'],
             'price' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'price_custom' => ['sometimes', 'nullable', 'integer'],
             'description' => ['sometimes', 'nullable', 'string'],
             'image' => ['sometimes', 'nullable', 'string', 'max:255'],
             'dofus_version' => ['sometimes', 'nullable', 'string', 'max:255'],
@@ -61,14 +62,18 @@ class ItemBulkController extends Controller
             'auto_update',
             'rarity',
             'level',
-            'price',
             'description',
             'image',
             'dofus_version',
+            'price_custom',
         ] as $k) {
             if (array_key_exists($k, $validated)) {
                 $patch[$k] = $validated[$k];
             }
+        }
+        if (array_key_exists('price', $validated)) {
+            $raw = $validated['price'];
+            $patch['price_custom'] = $raw === null || $raw === '' ? null : (int) (is_numeric($raw) ? $raw : preg_replace('/\D/', '', (string) $raw));
         }
 
         if (empty($patch)) {
@@ -87,8 +92,9 @@ class ItemBulkController extends Controller
 
             foreach ($ids as $id) {
                 $model = $models->firstWhere('id', $id);
-                if (!$model) {
+                if (! $model) {
                     $errors[] = ['id' => $id, 'error' => 'Not found'];
+
                     continue;
                 }
 
@@ -126,5 +132,3 @@ class ItemBulkController extends Controller
         ]);
     }
 }
-
-

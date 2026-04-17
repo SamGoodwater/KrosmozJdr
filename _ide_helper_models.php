@@ -26,7 +26,6 @@ namespace App\Models{
  * @property string|null $icon
  * @property string|null $icon_false
  * @property string|null $color
- * @property string|null $color_false
  * @property array|null $value_overrides
  * @property string|null $unit
  * @property string $type
@@ -50,7 +49,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereColor($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereColorFalse($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereDescriptions($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereGroup($value)
@@ -1050,7 +1048,9 @@ namespace App\Models\Entity{
  * @property string|null $effect
  * @property string|null $bonus
  * @property string|null $recipe
- * @property string|null $price
+ * @property int|null $price_calculated
+ * @property int|null $price_custom
+ * @property string|null $price Total kamas affiché (entier, synchronisé depuis calculé + personnalisé)
  * @property int $rarity
  * @property string $dofus_version
  * @property string $state
@@ -1111,6 +1111,8 @@ namespace App\Models\Entity{
  * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ObjectEffect> $objectEffects
  * @property-read int|null $object_effects_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePriceCalculated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePriceCustom($value)
  */
 	class Item extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }

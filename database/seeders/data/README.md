@@ -9,6 +9,7 @@ Ces fichiers PHP sont la **source des données** pour les seeders (caractéristi
 | `characteristics.php` | `CharacteristicSeeder` | Table générale : une ligne par caractéristique (key, name, type, unit, sort_order, etc.) |
 | `characteristic_creature.php` | `CreatureCharacteristicSeeder` | Groupe creature (monster, class, npc) : limites, formules, conversion_formula, conversion_function par entity |
 | `characteristic_object.php` | `ObjectCharacteristicSeeder` | Groupe object : idem + forgemagie, base_price_per_unit, rune_price_per_unit, value_available, item_type_ids (pivot characteristic_object_item_type) |
+| `characteristic_object_norms.php` | (fusionné par `ObjectCharacteristicSeeder`) | Grilles `norms_grid` (5 puissances × 20 niveaux objet) pour toutes les caractéristiques bonus objet, hors champs méta (`level`, `price`, `rarity`, `weight`, `name`, `description`) |
 | `characteristic_object_equipment_slot_dofus_type_ids.php` | `ObjectCharacteristicSeeder` | (Optionnel) Cartographie PDF « Equipements et forgemagie » : `characteristic_key` → `dofusdb_type_id[]` pour remplir la pivot (types d’équipement autorisés par caractéristique) |
 | `characteristic_spell.php` | `SpellCharacteristicSeeder` | Groupe spell : limites, formules, conversion_formula, conversion_function, value_available |
 

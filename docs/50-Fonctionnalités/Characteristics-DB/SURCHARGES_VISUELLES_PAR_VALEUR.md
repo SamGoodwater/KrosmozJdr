@@ -70,10 +70,10 @@ Cela permet de stocker `value: true` en JSON même si le backend envoie `1`.
 ## Priorité de résolution
 
 ```
-value_overrides  >  icon_false / color_false  >  value_available  >  défaut
+value_overrides  >  icon_false  >  value_available  >  défaut
 ```
 
-Les `value_overrides` sont vérifiées en premier dans `resolveDef()`. Si une entrée matche et définit `icon` ou `color`, elle prend la priorité. Les fallbacks `icon_false`/`color_false` et `value_available` ne sont appliqués que pour les propriétés non couvertes par l'override.
+Les `value_overrides` sont vérifiées en premier dans `resolveDef()`. Si une entrée matche et définit `icon` ou `color`, elle prend la priorité. Les fallbacks `icon_false` et `value_available` ne sont appliqués que pour les propriétés non couvertes par l'override (couleur « si faux » pour un booléen : entrée `value: false` dans `value_overrides`).
 
 ## Administration
 

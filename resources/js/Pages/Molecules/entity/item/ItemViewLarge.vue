@@ -148,6 +148,16 @@ const stateLabel = computed(() => {
     return opt?.label ?? '-';
 });
 
+/** Prix total affiché uniquement si &gt; 0 (kamas entiers). */
+const priceKamasDisplay = computed(() => {
+    const raw = props.item?.price ?? props.item?._data?.price;
+    if (raw === null || raw === undefined || raw === '') {
+        return null;
+    }
+    const n = Math.round(Number(raw));
+    return Number.isFinite(n) && n > 0 ? n : null;
+});
+
 const handleStateChange = (newState) => {
     if (!props.item?.id || !userCanEdit.value) return;
     router.patch(route('entities.items.update', { item: props.item.id }), { state: newState }, {
@@ -264,11 +274,11 @@ const handleAction = async (actionKey) => {
                                 </span>
                             </Tooltip>
                         </template>
-                        <template v-if="canShowField('price')">
+                        <template v-if="canShowField('price') && priceKamasDisplay != null">
                             <Tooltip :content="getFieldTooltip('price')" placement="top">
                                 <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('price')">
                                     <Icon :source="getFieldIcon('price')" :alt="getFieldLabel('price')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ item.price ?? '-' }}{{ getFieldUnit('price') ? ` ${getFieldUnit('price')}` : '' }}</span>
+                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ priceKamasDisplay }}{{ getFieldUnit('price') ? ` ${getFieldUnit('price')}` : '' }}</span>
                                 </span>
                             </Tooltip>
                         </template>

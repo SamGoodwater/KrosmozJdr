@@ -58,7 +58,6 @@ final class CharacteristicShowPayloadBuilder
         $conversionFormulas = $this->buildConversionFormulas($characteristic->key, $entitiesForGroup);
 
         $hasIconFalse = Schema::hasColumn('characteristics', 'icon_false');
-        $hasColorFalse = Schema::hasColumn('characteristics', 'color_false');
         $hasValueOverrides = Schema::hasColumn('characteristics', 'value_overrides');
 
         $selected = [
@@ -70,7 +69,6 @@ final class CharacteristicShowPayloadBuilder
             'icon' => $effective->icon,
             'icon_false' => $hasIconFalse ? $effective->icon_false : null,
             'color' => $effective->color,
-            'color_false' => $hasColorFalse ? $effective->color_false : null,
             'value_overrides' => $hasValueOverrides ? $effective->value_overrides : null,
             'type' => $effective->type,
             'unit' => $effective->unit,

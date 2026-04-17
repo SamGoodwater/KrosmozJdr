@@ -20,7 +20,7 @@ return new class extends Migration
         }
         Schema::table('characteristics', function (Blueprint $table) {
             if (! Schema::hasColumn('characteristics', 'value_overrides')) {
-                $table->json('value_overrides')->nullable()->after('color_false');
+                $table->json('value_overrides')->nullable()->after('color');
             }
         });
     }

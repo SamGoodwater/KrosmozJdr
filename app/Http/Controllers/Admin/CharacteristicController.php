@@ -22,6 +22,7 @@ use App\Services\Characteristic\Formula\FormulaConfigDecoder;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Config\ScrappingMappingService;
+use Database\Seeders\Data\CharacteristicPaletteResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -45,14 +46,38 @@ class CharacteristicController extends Controller
         return Schema::hasColumn('characteristics', 'icon_false');
     }
 
-    private function characteristicsTableHasColorFalseColumn(): bool
-    {
-        return Schema::hasColumn('characteristics', 'color_false');
-    }
-
     private function characteristicsTableHasValueOverridesColumn(): bool
     {
         return Schema::hasColumn('characteristics', 'value_overrides');
+    }
+
+    /**
+     * Les selects de palettes envoient une chaîne vide ; {@see Rule::in} ne l’accepte pas. Normalise en null.
+     */
+    private function normalizeEmptyTailwindPaletteFields(Request $request): void
+    {
+        foreach (['color'] as $key) {
+            if ($request->has($key) && $request->input($key) === '') {
+                $request->merge([$key => null]);
+            }
+        }
+        $vos = $request->input('value_overrides');
+        if (! is_array($vos)) {
+            return;
+        }
+        $normalized = [];
+        foreach ($vos as $entry) {
+            if (! is_array($entry)) {
+                $normalized[] = $entry;
+
+                continue;
+            }
+            if (array_key_exists('color', $entry) && $entry['color'] === '') {
+                $entry['color'] = null;
+            }
+            $normalized[] = $entry;
+        }
+        $request->merge(['value_overrides' => $normalized]);
     }
 
     /** Entités possibles + '*' = toutes les entités du groupe (défaut). */
@@ -216,7 +241,6 @@ class CharacteristicController extends Controller
             'icon' => $characteristic->icon,
             'icon_false' => $this->characteristicsTableHasIconFalseColumn() ? $characteristic->icon_false : null,
             'color' => $characteristic->color,
-            'color_false' => $this->characteristicsTableHasColorFalseColumn() ? $characteristic->color_false : null,
             'value_overrides' => $this->characteristicsTableHasValueOverridesColumn() ? $characteristic->value_overrides : null,
             'type' => $characteristic->type,
             'unit' => $characteristic->unit,
@@ -244,6 +268,8 @@ class CharacteristicController extends Controller
             ]);
         }
 
+        $this->normalizeEmptyTailwindPaletteFields($request);
+
         $data = $request->validate([
             'key' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_]+$/'],
             'name' => 'required|string|max:255',
@@ -252,12 +278,16 @@ class CharacteristicController extends Controller
             'helper' => 'nullable|string',
             'icon' => 'nullable|string|max:64',
             'icon_false' => 'nullable|string|max:64',
-            'color' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
-            'color_false' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
+            'color' => ['nullable', 'string', 'max:32', Rule::in(CharacteristicPaletteResolver::ALLOWED_PALETTES)],
             'type' => 'required|in:int,string,array,bool',
             'unit' => 'nullable|string|max:64',
             'sort_order' => 'nullable|integer',
             'group' => 'required|in:creature,object,spell',
+            'value_overrides' => 'nullable|array',
+            'value_overrides.*.value' => 'required',
+            'value_overrides.*.icon' => 'nullable|string|max:64',
+            'value_overrides.*.color' => ['nullable', 'string', 'max:32', Rule::in(CharacteristicPaletteResolver::ALLOWED_PALETTES)],
+            'value_overrides.*.subtitle' => 'nullable|string|max:500',
             'entities' => 'array',
             'entities.*.entity' => 'required|string|max:32',
             'entities.*.db_column' => 'nullable|string|max:64',
@@ -307,9 +337,6 @@ class CharacteristicController extends Controller
         ];
         if ($this->characteristicsTableHasIconFalseColumn()) {
             $createPayload['icon_false'] = $data['icon_false'] ?? null;
-        }
-        if ($this->characteristicsTableHasColorFalseColumn()) {
-            $createPayload['color_false'] = $data['color_false'] ?? null;
         }
         if ($this->characteristicsTableHasValueOverridesColumn()) {
             $createPayload['value_overrides'] = $this->parseValueOverridesInput($data['value_overrides'] ?? null);
@@ -882,6 +909,8 @@ class CharacteristicController extends Controller
             ]);
         }
 
+        $this->normalizeEmptyTailwindPaletteFields($request);
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'short_name' => 'nullable|string|max:255',
@@ -889,8 +918,7 @@ class CharacteristicController extends Controller
             'helper' => 'nullable|string',
             'icon' => 'nullable|string|max:64',
             'icon_false' => 'nullable|string|max:64',
-            'color' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
-            'color_false' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
+            'color' => ['nullable', 'string', 'max:32', Rule::in(CharacteristicPaletteResolver::ALLOWED_PALETTES)],
             'type' => 'required|in:int,string,array,bool',
             'unit' => 'nullable|string|max:64',
             'sort_order' => 'nullable|integer',
@@ -943,7 +971,7 @@ class CharacteristicController extends Controller
             'value_overrides' => 'nullable|array',
             'value_overrides.*.value' => 'required',
             'value_overrides.*.icon' => 'nullable|string|max:64',
-            'value_overrides.*.color' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
+            'value_overrides.*.color' => ['nullable', 'string', 'max:32', Rule::in(CharacteristicPaletteResolver::ALLOWED_PALETTES)],
             'value_overrides.*.subtitle' => 'nullable|string|max:500',
         ]);
 
@@ -960,9 +988,6 @@ class CharacteristicController extends Controller
         ];
         if ($this->characteristicsTableHasIconFalseColumn()) {
             $updatePayload['icon_false'] = $data['icon_false'] ?? null;
-        }
-        if ($this->characteristicsTableHasColorFalseColumn()) {
-            $updatePayload['color_false'] = $data['color_false'] ?? null;
         }
         if ($this->characteristicsTableHasValueOverridesColumn()) {
             $updatePayload['value_overrides'] = $this->parseValueOverridesInput($data['value_overrides'] ?? null);

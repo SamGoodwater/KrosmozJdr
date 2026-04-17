@@ -50,7 +50,7 @@ L'utilisateur souhaite :
 
 ### Thème SCSS
 
-- `_theme-caracs.scss` : `terre`=brown, `feu`=red, `air`=green, `eau`=blue
+- Couleurs caractéristiques : BDD + `characteristic-colors.css` généré (plus de carte SCSS `_theme-caracs`).
 - Pas de variables dédiées aux éléments pour gradients
 
 ---
@@ -131,7 +131,7 @@ L'utilisateur souhaite :
 ### Phase 3 — SCSS : couleurs et dégradés
 
 1. **Variables élémentaires**
-   - Fichier `scss/themes/_theme-elements.scss` (ou extension de `_theme-caracs.scss`) :
+   - Fichier `scss/themes/_theme-elements.scss` (couleurs éléments distinctes des caractéristiques BDD) :
      ```scss
      // Couleurs primaires (hex ou variables existantes)
      $element-neutre: ...;

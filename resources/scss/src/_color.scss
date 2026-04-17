@@ -1,6 +1,6 @@
 @use '../themes/_theme-global.scss' as *;
 @use '../themes/_theme-entities.scss' as *;
-// theme-caracs : couleurs des caractéristiques générées depuis la BDD (public/css/characteristic-colors.css)
+// Couleurs par clé caractéristique : uniquement public/css/characteristic-colors.css (généré depuis la BDD, voir CharacteristicColorCssGenerator).
 
 $intensities: (
     50: 50,

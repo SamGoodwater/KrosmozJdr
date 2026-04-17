@@ -1639,28 +1639,7 @@
   {
     "name": "ColorCore",
     "description": "ColorCore Atom (DaisyUI, Atomic Design)",
-    "props": [
-      {
-        "name": "modelValue",
-        "type": "String",
-        "desc": "- v-model (couleur hex, ex. #3b82f6)"
-      },
-      {
-        "name": "disabled,",
-        "type": "Boolean",
-        "desc": "readonly, required"
-      },
-      {
-        "name": "color,",
-        "type": "String",
-        "desc": "size, variant"
-      },
-      {
-        "name": "inputStyle",
-        "type": "String|Object",
-        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "data-input/ColorCore.vue"
   },

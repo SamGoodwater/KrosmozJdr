@@ -78,12 +78,10 @@ class CharacteristicSeeder extends Seeder
         $icons = $defaults['icons'] ?? [];
         $iconsFalse = $defaults['icons_false'] ?? [];
         $colors = $defaults['colors'] ?? [];
-        $colorsFalse = $defaults['colors_false'] ?? [];
         $descriptions = $defaults['descriptions'] ?? [];
         $valueOverrides = $defaults['value_overrides'] ?? [];
 
         $hasIconFalse = Schema::hasColumn('characteristics', 'icon_false');
-        $hasColorFalse = Schema::hasColumn('characteristics', 'color_false');
         $hasValueOverrides = Schema::hasColumn('characteristics', 'value_overrides');
 
         // 1) Création / mise à jour des caractéristiques sans gérer les liens
@@ -107,9 +105,6 @@ class CharacteristicSeeder extends Seeder
             ];
             if ($hasIconFalse) {
                 $payload['icon_false'] = $row['icon_false'] ?? ($iconsFalse[$key] ?? null);
-            }
-            if ($hasColorFalse) {
-                $payload['color_false'] = $row['color_false'] ?? ($colorsFalse[$key] ?? null);
             }
             if ($hasValueOverrides) {
                 $payload['value_overrides'] = $row['value_overrides'] ?? ($valueOverrides[$key] ?? null);
@@ -245,13 +240,13 @@ class CharacteristicSeeder extends Seeder
     /**
      * Charge le mapping clé → icône et clé → couleur (fichier characteristic_icons_colors.php).
      *
-     * @return array{icons: array<string, string>, icons_false: array<string, string>, colors: array<string, string>, colors_false: array<string, string>, descriptions: array<string, string>, value_overrides: array<string, list<array<string, mixed>>>}
+     * @return array{icons: array<string, string>, icons_false: array<string, string>, colors: array<string, string>, descriptions: array<string, string>, value_overrides: array<string, list<array<string, mixed>>>}
      */
     private function loadIconsAndColorsDefaults(): array
     {
         $path = base_path(self::ICONS_COLORS_FILE);
         if (! is_file($path)) {
-            return ['icons' => [], 'icons_false' => [], 'colors' => [], 'colors_false' => [], 'descriptions' => [], 'value_overrides' => []];
+            return ['icons' => [], 'icons_false' => [], 'colors' => [], 'descriptions' => [], 'value_overrides' => []];
         }
 
         $data = require $path;
@@ -260,7 +255,6 @@ class CharacteristicSeeder extends Seeder
             'icons' => is_array($data['icons'] ?? null) ? $data['icons'] : [],
             'icons_false' => is_array($data['icons_false'] ?? null) ? $data['icons_false'] : [],
             'colors' => is_array($data['colors'] ?? null) ? $data['colors'] : [],
-            'colors_false' => is_array($data['colors_false'] ?? null) ? $data['colors_false'] : [],
             'descriptions' => is_array($data['descriptions'] ?? null) ? $data['descriptions'] : [],
             'value_overrides' => is_array($data['value_overrides'] ?? null) ? $data['value_overrides'] : [],
         ];

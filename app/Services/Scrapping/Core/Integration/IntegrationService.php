@@ -1422,10 +1422,17 @@ final class IntegrationService
             'name' => (string) ($data['name'] ?? ''),
             'description' => (string) ($data['description'] ?? ''),
             'level' => (string) ($data['level'] ?? '1'),
-            'price' => $data['price'] !== null ? (string) $data['price'] : null,
             'rarity' => $rarity,
             'created_by' => $userId,
         ];
+        if ($targetTable === 'items') {
+            $rawPrice = $data['price'] ?? null;
+            $payload['price_custom'] = $rawPrice !== null && $rawPrice !== ''
+                ? (int) (is_numeric($rawPrice) ? $rawPrice : preg_replace('/\D/', '', (string) $rawPrice))
+                : null;
+        } else {
+            $payload['price'] = $data['price'] !== null ? (string) $data['price'] : null;
+        }
         if (in_array($targetTable, ['items', 'resources', 'consumables'], true)) {
             $effectRaw = $data['effect'] ?? null;
             $payload['effect'] = is_string($effectRaw) ? $effectRaw : (is_array($effectRaw) ? json_encode($effectRaw, JSON_UNESCAPED_UNICODE) : null);

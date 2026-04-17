@@ -11,6 +11,7 @@ import NormsChart from '@/Pages/Molecules/data-display/NormsChart.vue';
 import NormsConditionSelector from '@/Pages/Molecules/data-input/NormsConditionSelector.vue';
 import { useNormsReader } from '@/Composables/characteristic/useNormsReader';
 import { sanitizeHtml } from '@/Utils/security/sanitizeHtml';
+import { resolveCharacteristicUiColor } from '@/Utils/color/Color';
 import {
     POWER_LEVELS,
     POWER_LABELS,
@@ -22,7 +23,8 @@ const props = defineProps({
     conditions: { type: Array, default: () => [] },
     description: { type: String, default: '' },
     characteristicName: { type: String, default: '' },
-    characteristicColor: { type: String, default: '#6366f1' },
+    /** Hex, token `nuance-palette` ou nom de palette Tailwind (`indigo`, `brown`, …). */
+    characteristicColor: { type: String, default: 'indigo' },
     availableCharacteristics: { type: Object, default: () => ({}) },
     minLimit: { type: [String, Number, null], default: null },
     maxLimit: { type: [String, Number, null], default: null },
@@ -59,6 +61,9 @@ const minNumeric = computed(() => parseNumericLimit(props.minLimit));
 const maxNumeric = computed(() => parseNumericLimit(props.maxLimit));
 
 const sanitizedHelpHtml = computed(() => sanitizeHtml(props.helpSectionHtml || ''));
+
+/** Couleur d’accent résolue (variables CSS ou hex) pour texte et pastille. */
+const resolvedCharacteristicColor = computed(() => resolveCharacteristicUiColor(props.characteristicColor) || resolveCharacteristicUiColor('indigo'));
 </script>
 
 <template>
@@ -103,14 +108,14 @@ const sanitizedHelpHtml = computed(() => sanitizeHtml(props.helpSectionHtml || '
         <!-- Valeur résolue -->
         <div v-if="selectedLevel !== null" class="flex items-center gap-3 text-sm">
             <span class="text-base-content/60">
-                Niveau <strong :style="{ color: characteristicColor }">{{ selectedLevel }}</strong>
+                Niveau <strong :style="{ color: resolvedCharacteristicColor }">{{ selectedLevel }}</strong>
                 <template v-if="effectiveLevelIndex !== null && effectiveLevelIndex !== selectedLevel - 1">
                     → lecture au niveau <strong>{{ effectiveLevelIndex + 1 }}</strong>
                 </template>
                 ·
                 Puissance <strong :style="{ color: POWER_COLORS[effectivePowerLevel] }">{{ POWER_LABELS[effectivePowerLevel] }}</strong>
             </span>
-            <span v-if="resolvedValue !== null" class="badge badge-lg font-bold" :style="{ backgroundColor: characteristicColor, color: 'white' }">
+            <span v-if="resolvedValue !== null" class="badge badge-lg font-bold" :style="{ backgroundColor: resolvedCharacteristicColor, color: 'white' }">
                 {{ resolvedValue }}
             </span>
         </div>

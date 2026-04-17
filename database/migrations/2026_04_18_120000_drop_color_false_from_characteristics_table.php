@@ -7,7 +7,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Couleur associée à l’état « faux » des booléens (complément de icon_false).
+ * Colonne supprimée au profit de value_overrides (entrées value: false + color).
+ * Idempotent : bases déjà à jour (sans color_false) ne sont pas modifiées.
  */
 return new class extends Migration
 {
@@ -16,10 +17,11 @@ return new class extends Migration
         if (! Schema::hasTable('characteristics')) {
             return;
         }
+        if (! Schema::hasColumn('characteristics', 'color_false')) {
+            return;
+        }
         Schema::table('characteristics', function (Blueprint $table) {
-            if (! Schema::hasColumn('characteristics', 'color_false')) {
-                $table->string('color_false', 7)->nullable()->after('color');
-            }
+            $table->dropColumn('color_false');
         });
     }
 
@@ -28,10 +30,11 @@ return new class extends Migration
         if (! Schema::hasTable('characteristics')) {
             return;
         }
+        if (Schema::hasColumn('characteristics', 'color_false')) {
+            return;
+        }
         Schema::table('characteristics', function (Blueprint $table) {
-            if (Schema::hasColumn('characteristics', 'color_false')) {
-                $table->dropColumn('color_false');
-            }
+            $table->string('color_false', 32)->nullable()->after('color');
         });
     }
 };

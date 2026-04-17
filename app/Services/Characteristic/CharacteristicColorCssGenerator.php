@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Characteristic;
 
 use App\Models\Characteristic;
+use Database\Seeders\Data\CharacteristicPaletteResolver;
 use Illuminate\Support\Facades\File;
 
 /**
- * Génère le fichier CSS des couleurs de caractéristiques (hex en BDD → classes .color-{key} avec --color).
- * Permet de garder le système de variable --color utilisé partout dans le SCSS.
+ * Génère le fichier CSS des couleurs de caractéristiques (palette Tailwind ou hex legacy → .color-{key} avec --color).
+ * Source unique : colonne {@see Characteristic::$color} ; pas de duplication dans les thèmes SCSS.
  */
 class CharacteristicColorCssGenerator
 {
@@ -17,7 +18,7 @@ class CharacteristicColorCssGenerator
     public const OUTPUT_PATH = 'public/css/characteristic-colors.css';
 
     /**
-     * Génère le fichier CSS à partir des caractéristiques ayant une couleur (hex) en base.
+     * Génère le fichier CSS à partir des caractéristiques ayant une couleur renseignée en base.
      */
     public function generate(): bool
     {
@@ -28,16 +29,17 @@ class CharacteristicColorCssGenerator
         }
 
         $css = $this->buildCss();
+
         return File::put($path, $css) !== false;
     }
 
     /**
-     * Construit le contenu CSS (classes .color-{key} et .bg-color-{key} avec --color / --bg-color en hex).
+     * Construit le contenu CSS (classes .color-{key} avec --color en var(--color-{palette}-nuance)).
      */
     public function buildCss(): string
     {
         $lines = [
-            '/* Généré depuis les caractéristiques (couleur hex en BDD). Ne pas éditer à la main. */',
+            '/* Généré depuis les caractéristiques (palette Tailwind en BDD). Ne pas éditer à la main. */',
             '/* Régénéré lors de la sauvegarde d’une caractéristique ou via php artisan characteristics:generate-color-css */',
             '',
         ];
@@ -47,32 +49,54 @@ class CharacteristicColorCssGenerator
             ->get(['key', 'color']);
 
         foreach ($characteristics as $c) {
-            $hex = $this->normalizeHex($c->color);
-            if ($hex === null) {
+            $resolved = $this->resolveColorCssValue($c->color);
+            if ($resolved === null) {
                 continue;
             }
             $class = $this->sanitizeClassKey($c->key);
             if ($class === '') {
                 continue;
             }
-            $lines[] = ".color-{$class} { --color: {$hex}; }";
-            $lines[] = ".bg-color-{$class} { --bg-color: {$hex}; }";
-            $lines[] = ".color-{$class}-500 { --color: {$hex}; }";
-            $lines[] = ".bg-color-{$class}-950 { --bg-color: {$hex}; }";
+            $lines[] = ".color-{$class} { --color: {$resolved['main']}; }";
+            $lines[] = ".bg-color-{$class} { --bg-color: {$resolved['bg']}; }";
+            $lines[] = ".color-{$class}-500 { --color: {$resolved['main']}; }";
+            $lines[] = ".bg-color-{$class}-950 { --bg-color: {$resolved['bg']}; }";
             $lines[] = '';
         }
 
         return implode("\n", $lines);
     }
 
-    private function normalizeHex(?string $value): ?string
+    /**
+     * @return array{main: string, bg: string}|null
+     */
+    private function resolveColorCssValue(?string $value): ?array
     {
         if ($value === null || $value === '') {
             return null;
         }
         $value = trim($value);
         if (preg_match('/^#([0-9A-Fa-f]{3}){1,2}$/', $value)) {
-            return $value;
+            return [
+                'main' => $value,
+                'bg' => $value,
+            ];
+        }
+        if (preg_match('/^([a-z]+)-(\d{2,3})$/', strtolower($value), $m)) {
+            $token = $m[1].'-'.$m[2];
+
+            return [
+                'main' => "var(--color-{$token})",
+                'bg' => "var(--color-{$token})",
+            ];
+        }
+        if (CharacteristicPaletteResolver::isAllowedPalette($value)) {
+            $p = strtolower($value);
+
+            return [
+                'main' => "var(--color-{$p}-500)",
+                'bg' => "var(--color-{$p}-950)",
+            ];
         }
 
         return null;

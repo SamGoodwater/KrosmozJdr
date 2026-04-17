@@ -211,6 +211,12 @@ export const SPECIFIC_PROPS = {
     },
     color: {
         core: [
+            {
+                key: 'limitTo',
+                type: String,
+                default: null,
+                validator: (v) => v === null || v === '' || v === 'tailwind',
+            },
             { key: 'type', type: String, default: 'color' },
             { key: 'format', type: String, default: 'hex', validator: v => ['hex', 'rgb', 'rgba', 'hsl', 'hsla'].includes(v) },
             { key: 'theme', type: String, default: 'dark', validator: v => ['light', 'dark'].includes(v) },

@@ -20,7 +20,7 @@ const NON_HTML_PROPS = [
   'value', 'rows', 'cols', 'number', 'items', 'half', 'format',
   'theme', 'colorsDefault', 'colorsHistoryKey', 'suckerHide',
   'showValue', 'showPreview', 'showFormat', 'showRandom', 'showClear',
-  'indeterminate', 'multiple'
+  'indeterminate', 'multiple', 'limitTo'
 ]
 
 // Éléments qui n'ont pas d'attribut 'type'

@@ -86,6 +86,15 @@ const handleDoubleClick = (e) => {
 /** Entité source : rowParams.entity (API) ou row lui-même (données plates) */
 const entity = computed(() => props.row?.rowParams?.entity ?? props.row);
 
+const showPriceKamas = computed(() => {
+    const raw = entity.value?.price ?? entity.value?._data?.price;
+    if (raw === null || raw === undefined || raw === "") {
+        return false;
+    }
+    const n = Math.round(Number(raw));
+    return Number.isFinite(n) && n > 0;
+});
+
 const getCell = (fieldKey) => {
     const col = props.columns.find((c) => (c.cellId || c.id) === fieldKey);
     if (!col || !props.getCellFor) return { type: "text", value: "—", params: {} };
@@ -240,7 +249,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                     {{ rarityConfig.label }}
                 </Badge>
                 <EntityPropertyDisplay
-                    v-if="canShowField('price')"
+                    v-if="canShowField('price') && showPriceKamas"
                     field-key="price"
                     :entity="entity"
                     entity-type="item"

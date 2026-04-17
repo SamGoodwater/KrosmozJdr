@@ -46,6 +46,7 @@ import {
     CHARACTERISTIC_PROPERTY_DENSITY,
     CHARACTERISTIC_PROPERTY_LAYOUT,
 } from "@/Utils/Entity/Constants";
+import { TAILWIND_CHARACTERISTIC_PALETTES } from "@/Constants/tailwindCharacteristicPalettes";
 
 const props = defineProps({
     viewModel: {
@@ -143,7 +144,12 @@ const containerStyle = computed(() =>
 const effectiveBadgeColor = computed(() => {
     const c = model.value?.color;
     if (!c || typeof c !== "string") return "neutral";
-    return c.trim();
+    const s = c.trim();
+    const low = s.toLowerCase();
+    if (TAILWIND_CHARACTERISTIC_PALETTES.includes(low) && !s.includes("-")) {
+        return `${low}-400`;
+    }
+    return s;
 });
 
 /** Couleurs Daisy uniquement pour la prop `color` du Tooltip. */
@@ -171,12 +177,16 @@ const characteristicTooltipAccentStyle = computed(() => {
     if (s.includes("-")) {
         return { "--color": `var(--color-${s})` };
     }
+    const low = s.toLowerCase();
+    if (TAILWIND_CHARACTERISTIC_PALETTES.includes(low)) {
+        return { "--color": `var(--color-${low}-400)` };
+    }
     const co = colord(s);
     if (co.isValid()) return { "--color": co.toHex() };
     return {};
 });
 
-/** Clé sémantique (ex. `life_points_creature`) → classe `color-*` (characteristic-colors.css). */
+/** Clé BDD (ex. `life_points_creature`) → classe `.color-{key}` (CSS généré depuis la BDD). */
 const characteristicTooltipAccentClass = computed(() => {
     const c = model.value?.color;
     if (!c || typeof c !== "string") return "";
@@ -235,14 +245,14 @@ const badgeVariant = computed(() =>
             :color="effectiveBadgeColor"
             :size="badgeSize"
             :variant="badgeVariant"
-            class="inline-flex max-w-full min-w-0 items-center gap-1"
+            class="inline-flex max-w-full min-w-0 items-center gap-1 text-base-content"
         >
             <Icon
                 v-if="showIcon && model.icon"
                 :source="model.icon"
                 :alt="model.name || ''"
                 :size="iconSize"
-                class="shrink-0 opacity-90"
+                class="shrink-0 opacity-95"
             />
             <span
                 v-if="showValue"
@@ -255,7 +265,7 @@ const badgeVariant = computed(() =>
         <!-- Carte (hors badge) -->
         <div
             v-else-if="isCard"
-            class="characteristic-property inline-block min-w-0 rounded-box border border-base-300 px-2.5 py-2 backdrop-blur-sm transition-shadow"
+            class="characteristic-property text-base-content inline-block min-w-0 rounded-box border border-base-content/15 px-2.5 py-2 backdrop-blur-sm transition-shadow"
             :style="containerStyle"
         >
             <div class="flex items-center justify-between gap-2">
@@ -269,17 +279,17 @@ const badgeVariant = computed(() =>
                     :source="model.icon"
                     :alt="model.name || ''"
                     :size="iconSize"
-                    class="shrink-0 opacity-80"
+                    class="shrink-0 opacity-90"
                     :style="valueStyle"
                 />
             </div>
-            <p v-if="showLabel && model.name" class="mt-0.5 text-xs opacity-80">{{ model.name }}</p>
+            <p v-if="showLabel && model.name" class="mt-0.5 text-xs text-base-content/90">{{ model.name }}</p>
         </div>
 
         <!-- Inline -->
         <span
             v-else
-            class="characteristic-property inline-flex max-w-full min-w-0 items-center gap-1"
+            class="characteristic-property text-base-content inline-flex max-w-full min-w-0 items-center gap-1"
             :class="textSizeClass"
         >
             <Icon
@@ -287,7 +297,7 @@ const badgeVariant = computed(() =>
                 :source="model.icon"
                 :alt="model.name || ''"
                 :size="iconSize"
-                class="shrink-0 opacity-80"
+                class="shrink-0 opacity-90"
                 :style="valueStyle"
             />
             <template v-if="isShort">
@@ -298,9 +308,9 @@ const badgeVariant = computed(() =>
                     :width="labelImagePx"
                     :height="labelImagePx"
                     fit="contain"
-                    class="inline-block shrink-0 opacity-90"
+                    class="inline-block shrink-0 opacity-95"
                 />
-                <span v-else-if="showLabel && model.shortName" class="truncate opacity-80">{{ model.shortName }}:</span>
+                <span v-else-if="showLabel && model.shortName" class="truncate text-base-content/90">{{ model.shortName }}:</span>
                 <span
                     v-if="showValue"
                     class="truncate font-medium"
@@ -324,9 +334,9 @@ const badgeVariant = computed(() =>
                     :width="labelImagePx"
                     :height="labelImagePx"
                     fit="contain"
-                    class="inline-block shrink-0 opacity-90"
+                    class="inline-block shrink-0 opacity-95"
                 />
-                <span v-else-if="showLabel && model.name" class="truncate opacity-80">{{ model.name }}:</span>
+                <span v-else-if="showLabel && model.name" class="truncate text-base-content/90">{{ model.name }}:</span>
                 <span
                     v-if="showValue"
                     class="truncate font-medium"
