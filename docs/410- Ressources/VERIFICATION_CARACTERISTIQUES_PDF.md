@@ -68,13 +68,13 @@ Audit réalisé en comparant les seeders `characteristic_creature` et `character
 | ARMES | Bonus de touche | hit_bonus_object | ✓ |
 | ARMES | Dommage fixe neutre/terre/feu/air/eau | fixed_damage_*_object | ✓ |
 | ARMES | Dommage fixe multiple | fixed_damage_multiple_object | ✓ |
-| CHAPEAUX | Compétences | skills_object | ✓ |
+| CHAPEAUX | Compétences (×18) | `acrobatics_object`, … (une clé par compétence) | ✓ |
 | CHAPEAUX | Points de vie | life_points_max_object | ✓ |
 | CHAPEAUX | Vitalité, Sagesse | vitality_object, wisdom_object | ✓ |
 | CHAPEAUX | Bonus sauvegarde Vitalité / Sagesse | save_vitality_object, save_wisdom_object | ✓ |
 | CHAPEAUX | Compétences passives (×18) | `*_passive_object` (ex. acrobatics_passive_object) | ✓ |
 | CAPES | Initiative | initiative_object | ✓ |
-| CAPES | Compétences | skills_object | ✓ |
+| CAPES | Compétences (×18) | `acrobatics_object`, … (une clé par compétence) | ✓ |
 | CAPES | Points de vie | life_points_max_object | ✓ |
 | CAPES | Force, Intel, Chance, Agi | strength/intelligence/chance/agility_object | ✓ |
 | CAPES | Bonus sauvegarde For/Int/Cha/Agi | save_strength_object, save_intelligence_object, save_chance_object, save_agility_object | ✓ |
@@ -95,15 +95,16 @@ Audit réalisé en comparant les seeders `characteristic_creature` et `character
 | CEINTURES | Recharge réserve Wakfu | wakfu_recharge_object | ✓ |
 | BOUCLIERS | Classe d'armure | armor_class_object | ✓ |
 | BOUCLIERS | Résistance fixe * | fixed_resistance_*_object | ✓ |
-| BOUCLIERS | Résistance 50% | resistance_50_percent_object | ✓ |
-| BOUCLIERS | Invulnérabilité 100% | invulnerability_100_percent_object | ✓ |
+| BOUCLIERS | Résistance % / palier (50 % / 100 % par élément) | `resistance_percent_tier_*_object` | ✓ |
 
 ### 2.2 Caractéristiques _object en plus du PDF
 
+- **name_object**, **description_object** : texte d’affichage et description riche des fiches objets (colonnes `name`, `description`), hors tableau forgemagie du PDF.
 
 ### 2.3 Meta (hors PDF équipements)
 
 - level_object, rarity_object, price_object, weight_object : nécessaires pour la gestion des objets.
+- name_object, description_object : voir § 2.2 (présentes dans `characteristic_object` pour exposer définitions getter / métadonnées front).
 
 ---
 

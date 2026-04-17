@@ -140,20 +140,23 @@ En complément, une caractéristique peut être **autorisée ou non** à la forg
 
 ### 5.3 Restriction par type d’équipement (slot)
 
-Une caractéristique du groupe **object** peut être **réservée à certains types d’équipement** (slots), via la table pivot `characteristic_object_item_type` qui lie `characteristic_object` aux **id** de la table **item_types**.
+Une caractéristique du groupe **object** peut être **réservée à certains types d’équipement** (slots du PDF *Equipements et forgemagie*), via la table pivot `characteristic_object_item_type` qui lie `characteristic_object` aux **id** (`item_types.id`) de la table **item_types**.
+
+Le périmètre par caractéristique (quels slots peuvent porter le bonus) est décrit dans **`database/seeders/data/characteristic_object_equipment_slot_dofus_type_ids.php`** : tableau `characteristic_key` → liste de **dofusdb_type_id** (référence stable DofusDB), résolu en ids BDD au seed par `ObjectCharacteristicSeeder`. Les caractéristiques absentes de ce fichier ou sans ligne pivot restent valables sur **tous** les types d’objets.
 
 | Propriété | Rôle | Type / remarque |
 |-----------|------|------------------|
-| **allowed_item_type_ids** | Liste des **id** des types d’équipement (item_types) pour lesquels cette caractéristique est proposée. | Tableau d’entiers (ids). **Vide ou absent** = la caractéristique s’applique à **tous** les types ; sinon elle ne s’affiche / ne s’applique qu’aux types listés. |
+| **allowed_item_type_restricted** | Indique si une **liste blanche** de types s’applique. | Booléen. **`false`** = pas de restriction (comportement « tous les types »). **`true`** = utiliser **allowed_item_type_ids**. |
+| **allowed_item_type_ids** | Liste des **id** internes (`item_types.id`) autorisés pour cette caractéristique. | Tableau d’entiers. **Uniquement lorsque** `allowed_item_type_restricted` vaut **`true`** ; sinon tableau vide (et ne pas interpréter comme « aucun type »). |
 
-En base : une ligne dans `characteristic_object` sans entrée dans `characteristic_object_item_type` → tous les types. Avec des entrées dans la pivot → uniquement les `item_type_id` listés. Le getter expose cette liste sous la clé **allowed_item_type_ids** dans la définition retournée pour l’entité.
+En base : aucune entrée dans `characteristic_object_item_type` → pas de restriction (tous les types). Au moins une entrée → restriction aux `item_type_id` listés.
 
 **Récapitulatif objet :**
 
 - **Prix par unité** → calcul du prix de l’objet à partir des valeurs des caractéristiques.
 - **forgemagie_max** → limite du bonus forgemagie (entier).
 - **Prix par rune** → coût d’une rune de forgemagie pour cette caractéristique.
-- **allowed_item_type_ids** → restriction optionnelle aux types d’équipement (item_types) ; vide = tous les types.
+- **allowed_item_type_restricted** + **allowed_item_type_ids** → restriction optionnelle aux types d’équipement (voir ci-dessus).
 
 ---
 

@@ -18,6 +18,7 @@ import FormulaOrTableFieldWithChart from '@/Pages/Organismes/data-input/FormulaO
 import ConversionChartBlock from '@/Pages/Admin/characteristics/ConversionChartBlock.vue';
 import MappingPanel from '@/Pages/Admin/characteristics/MappingPanel.vue';
 import NormsPanel from '@/Pages/Admin/characteristics/NormsPanel.vue';
+import ItemTypesMultiField from '@/Pages/Molecules/data-input/ItemTypesMultiField.vue';
 import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import axios from 'axios';
 
@@ -52,6 +53,8 @@ const props = defineProps({
     scrappingMappingsUsingThis: { type: Array, default: () => [] },
     /** Options pour le select "Fonction de conversion" (mode création : passé à la racine). */
     conversionFunctionOptions: { type: Array, default: () => [] },
+    /** Types d'équipement (item_types) pour restriction des caractéristiques groupe object. */
+    itemTypes: { type: Array, default: () => [] },
 });
 
 /** Options du select "Fonction de conversion" : depuis selected (édition) ou props (création). */
@@ -61,6 +64,19 @@ const conversionFunctionSelectOptions = computed(() =>
         label: opt.label ?? opt.id ?? '',
     }))
 );
+
+/** Groupe « object » : édition ou création (form.group). */
+const isObjectCharacteristicGroup = computed(() => (props.selected?.group ?? form.group) === 'object');
+
+/**
+ * Normalise les ids (select multiple renvoie parfois des chaînes).
+ * @param {unknown} raw
+ * @returns {number[]}
+ */
+function normalizeItemTypeIds(raw) {
+    if (!Array.isArray(raw)) return [];
+    return [...new Set(raw.map((id) => parseInt(String(id), 10)).filter((n) => !Number.isNaN(n)))];
+}
 
 /** Entités affichées en panneaux supplémentaires (hors Général). Clic sur "Spécifier pour une entité". */
 const selectedEntityOverrides = ref([]);
@@ -320,6 +336,7 @@ function buildFormData(selected, entitiesByGroup = null) {
             norms_conditions: e.norms_conditions || [],
             norms_description: e.norms_description || '',
             norms_help_section_id: e.norms_help_section_id ?? null,
+            item_type_ids: Array.isArray(e.item_type_ids) ? e.item_type_ids.map((id) => parseInt(String(id), 10)).filter((n) => !Number.isNaN(n)) : [],
         })),
         conversion_formulas: conversionFormulas,
     };
@@ -384,6 +401,7 @@ function addEntityOverride(entityKey) {
             norms_conditions: [],
             norms_description: '',
             norms_help_section_id: null,
+            item_type_ids: [],
         };
         form.entities = [...(form.entities ?? []), defaultRow];
     }
@@ -502,6 +520,7 @@ watch(
                     norms_conditions: e.norms_conditions || [],
                     norms_description: e.norms_description || '',
                     norms_help_section_id: e.norms_help_section_id ?? null,
+                    item_type_ids: Array.isArray(e.item_type_ids) ? e.item_type_ids.map((id) => parseInt(String(id), 10)).filter((n) => !Number.isNaN(n)) : [],
                 }));
             }
             form.conversion_formulas = defaultConversionFormulasForGroup(props.entitiesByGroup ?? {}, form.group);
@@ -536,6 +555,7 @@ watch(
                             norms_conditions: defaultRow.norms_conditions || [],
                             norms_description: defaultRow.norms_description || '',
                             norms_help_section_id: defaultRow.norms_help_section_id ?? null,
+                            item_type_ids: Array.isArray(defaultRow.item_type_ids) ? [...defaultRow.item_type_ids] : [],
                         },
                     ];
                 }
@@ -766,7 +786,10 @@ function submit() {
         unit: form.unit,
         sort_order: form.sort_order,
         value_overrides: (form.value_overrides ?? []).filter((o) => o.value !== '' && o.value !== undefined),
-        entities: entitiesToSend,
+        entities: entitiesToSend.map((e) => ({
+            ...e,
+            item_type_ids: props.selected?.group === 'object' ? normalizeItemTypeIds(e.item_type_ids) : e.item_type_ids,
+        })),
         entity_override_keys: selectedEntityOverrides.value,
     }, {
         preserveScroll: true,
@@ -1481,8 +1504,8 @@ function submitConvertToLinked() {
                                     <p class="mt-1 text-xs text-base-content/70">Version lisible affichée à l’utilisateur (sans code).</p>
                                 </div>
                                 <InputField v-model="ent.default_value" label="Valeur par défaut" type="text" />
-                                <!-- Forgemagie et prix : uniquement pour l’équipement (item) -->
-                                <template v-if="selected?.group === 'object'">
+                                <!-- Forgemagie et prix : uniquement pour le groupe object -->
+                                <template v-if="isObjectCharacteristicGroup">
                                     <div class="sm:col-span-2 border-t border-base-300 pt-4 mt-2">
                                         <h3 class="mb-3 text-sm font-semibold text-base-content/80">Prix / unité et forgemagie (groupe objet)</h3>
                                         <div class="grid gap-4 sm:grid-cols-2">
@@ -1511,6 +1534,12 @@ function submitConvertToLinked() {
                                                 />
                                                 <p class="text-xs text-base-content/70">Prix base et rune pour création équipement et forgemagie (optionnel).</p>
                                             </div>
+                                        </div>
+                                        <div class="mt-4">
+                                            <ItemTypesMultiField
+                                                v-model="ent.item_type_ids"
+                                                :options="itemTypes"
+                                            />
                                         </div>
                                     </div>
                                 </template>

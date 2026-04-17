@@ -11,6 +11,7 @@ use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\Scrapping\ScrappingEntityMappingTarget;
+use App\Models\Type\ItemType;
 use App\Models\User;
 use App\Services\Characteristic\Admin\CharacteristicShowPayloadBuilder;
 use App\Services\Characteristic\CharacteristicColorCssGenerator;
@@ -82,6 +83,24 @@ class CharacteristicController extends Controller
         private readonly ConfigLoader $configLoader
     ) {}
 
+    /**
+     * Types d'équipement (item_types) pour multiselect admin : restriction des caractéristiques objet.
+     *
+     * @return list<array{id: int, name: string, dofusdb_type_id: int}>
+     */
+    private function itemTypesForAdminSelect(): array
+    {
+        return ItemType::query()
+            ->orderBy('name')
+            ->get(['id', 'name', 'dofusdb_type_id'])
+            ->map(fn (ItemType $t): array => [
+                'id' => (int) $t->id,
+                'name' => (string) $t->name,
+                'dofusdb_type_id' => (int) $t->dofusdb_type_id,
+            ])
+            ->all();
+    }
+
     public function index(): InertiaResponse
     {
         $characteristicsByGroup = $this->buildCharacteristicsByGroup();
@@ -90,6 +109,7 @@ class CharacteristicController extends Controller
             'characteristicsByGroup' => $characteristicsByGroup,
             'selected' => null,
             'entitiesByGroup' => self::ENTITIES_BY_GROUP,
+            'itemTypes' => $this->itemTypesForAdminSelect(),
         ]);
     }
 
@@ -121,6 +141,7 @@ class CharacteristicController extends Controller
             'norms_conditions' => null,
             'norms_description' => null,
             'norms_help_section_id' => null,
+            'item_type_ids' => [],
         ];
         $entitiesTemplate = [];
         foreach (self::ENTITIES_BY_GROUP as $group => $entities) {
@@ -161,6 +182,7 @@ class CharacteristicController extends Controller
             'characteristicsForLinkOrCopy' => $characteristicsForLinkOrCopy,
             'copyFromCharacteristic' => $copyFromCharacteristic,
             'conversionFunctionOptions' => $this->conversionFunctionRegistry->options(),
+            'itemTypes' => $this->itemTypesForAdminSelect(),
         ]);
     }
 
@@ -177,7 +199,7 @@ class CharacteristicController extends Controller
         foreach (CharacteristicCreature::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
             $entities[] = $this->groupRowToEntity($row, $characteristic);
         }
-        foreach (CharacteristicObject::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+        foreach (CharacteristicObject::with('allowedItemTypes')->where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
             $entities[] = $this->groupRowToEntity($row, $characteristic);
         }
         foreach (CharacteristicSpell::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
@@ -250,6 +272,8 @@ class CharacteristicController extends Controller
             'entities.*.forgemagie_max' => 'nullable|integer',
             'entities.*.base_price_per_unit' => 'nullable|numeric',
             'entities.*.rune_price_per_unit' => 'nullable|numeric',
+            'entities.*.item_type_ids' => 'nullable|array',
+            'entities.*.item_type_ids.*' => 'integer|exists:item_types,id',
             'entities.*.norms_help_section_id' => [
                 'nullable',
                 'integer',
@@ -378,6 +402,7 @@ class CharacteristicController extends Controller
                 'characteristicsByGroup' => $this->buildCharacteristicsByGroup(),
                 'selected' => null,
                 'entitiesByGroup' => self::ENTITIES_BY_GROUP,
+                'itemTypes' => $this->itemTypesForAdminSelect(),
             ])->with('error', 'Caractéristique introuvable.');
         }
 
@@ -390,6 +415,7 @@ class CharacteristicController extends Controller
             'characteristicsForConvertToLinked' => $payload['characteristicsForConvertToLinked'],
             'scrappingMappingsUsingThis' => $payload['scrappingMappingsUsingThis'],
             'conversionFunctionOptions' => $this->conversionFunctionRegistry->options(),
+            'itemTypes' => $this->itemTypesForAdminSelect(),
         ]);
     }
 
@@ -910,6 +936,8 @@ class CharacteristicController extends Controller
                 'integer',
                 Rule::exists('sections', 'id')->whereNull('deleted_at'),
             ],
+            'entities.*.item_type_ids' => 'nullable|array',
+            'entities.*.item_type_ids.*' => 'integer|exists:item_types,id',
             'entity_override_keys' => 'nullable|array',
             'entity_override_keys.*' => 'string|max:32',
             'value_overrides' => 'nullable|array',
@@ -1137,6 +1165,9 @@ class CharacteristicController extends Controller
             $out['forgemagie_max'] = $row->forgemagie_max;
             $out['base_price_per_unit'] = $row->base_price_per_unit;
             $out['rune_price_per_unit'] = $row->rune_price_per_unit;
+            $out['item_type_ids'] = $row->relationLoaded('allowedItemTypes')
+                ? $row->allowedItemTypes->pluck('id')->map(fn ($id): int => (int) $id)->values()->all()
+                : [];
         }
 
         return $out;
@@ -1213,6 +1244,7 @@ class CharacteristicController extends Controller
                 'norms_conditions' => null,
                 'norms_description' => null,
                 'norms_help_section_id' => null,
+                'item_type_ids' => [],
             ];
         }
 
@@ -1263,7 +1295,7 @@ class CharacteristicController extends Controller
         if (in_array($entity, ['*', 'item', 'consumable', 'resource', 'panoply'], true)) {
             $basePrice = $data['base_price_per_unit'] ?? null;
             $runePrice = $data['rune_price_per_unit'] ?? null;
-            CharacteristicObject::updateOrCreate(
+            $charObj = CharacteristicObject::updateOrCreate(
                 ['characteristic_id' => $characteristicId, 'entity' => $entity],
                 array_merge($common, [
                     'forgemagie_allowed' => (bool) ($data['forgemagie_allowed'] ?? false),
@@ -1272,6 +1304,10 @@ class CharacteristicController extends Controller
                     'rune_price_per_unit' => $runePrice !== null && $runePrice !== '' ? (float) $runePrice : null,
                 ])
             );
+            if (array_key_exists('item_type_ids', $data) && is_array($data['item_type_ids'])) {
+                $ids = array_values(array_unique(array_filter(array_map('intval', $data['item_type_ids']))));
+                $charObj->allowedItemTypes()->sync($ids);
+            }
         }
         if ($entity === 'spell' || $entity === '*') {
             CharacteristicSpell::updateOrCreate(

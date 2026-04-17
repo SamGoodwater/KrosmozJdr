@@ -338,8 +338,8 @@
       },
       {
         "name": "variant",
-        "type": "String",
-        "desc": "- `group` (section menu, majuscules) ou `parent` (page avec sous-pages)"
+        "type": "('group'|'parent')",
+        "desc": "- `group` : libellé de section (majuscules, gris, centré). `parent` : ligne comme une entrée de navigation (alignée à gauche, titre naturel)."
       }
     ],
     "slots": [],
@@ -446,52 +446,52 @@
   },
   {
     "name": "Tooltip",
-    "description": "Tooltip Atom (DaisyUI)",
+    "description": "Tooltip Atom (DaisyUI + Floating UI)",
     "props": [
       {
         "name": "content",
         "type": "String",
-        "desc": "- Texte simple du tooltip (optionnel, sinon slot #content)"
+        "desc": "- Texte simple (si pas de slot #content)"
       },
       {
         "name": "placement",
         "type": "String",
-        "desc": "- Position du tooltip ('top', 'right', 'bottom', 'left'), défaut 'top'"
+        "desc": "- top | right | bottom | left | end | start"
       },
       {
         "name": "color",
         "type": "String",
-        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')"
+        "desc": "- neutral | primary | … (atomMap)"
+      },
+      {
+        "name": "accentClass",
+        "type": "String",
+        "desc": "- classe `color-*` additionnelle (prioritaire sur `color` pour l’accent)"
+      },
+      {
+        "name": "accentStyle",
+        "type": "Object",
+        "desc": "- styles inline sur le panneau (ex. `--color` en hex)"
       },
       {
         "name": "open",
         "type": "Boolean",
-        "desc": "- Force l'ouverture du tooltip"
+        "desc": "- Force l’ouverture"
       },
       {
         "name": "responsive",
         "type": "String",
-        "desc": "- Breakpoint responsive DaisyUI ('sm', 'md', 'lg', 'xl', '2xl')"
-      },
-      {
-        "name": "shadow,",
-        "type": "String",
-        "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
-      },
-      {
-        "name": "id,",
-        "type": "String",
-        "desc": "ariaLabel, role, tabindex, class, style, disabled - hérités de commonProps (sauf tooltip/tooltip_placement)"
+        "desc": "- sm | md | lg | xl | 2xl : tooltip actif seulement à partir du breakpoint (matchMedia)"
       }
     ],
     "slots": [
       {
         "name": "default",
-        "desc": "- Élément déclencheur (trigger)"
+        "desc": "- Trigger"
       },
       {
         "name": "content",
-        "desc": "- Contenu HTML complexe du tooltip (optionnel, prioritaire sur prop content)"
+        "desc": "- Contenu riche"
       }
     ],
     "file": "feedback/Tooltip.vue"
@@ -1886,7 +1886,7 @@
   },
   {
     "name": "PropertyDisplay",
-    "description": "PropertyDisplay — affichage standardisé d'une propriété/caractéristique.",
+    "description": "PropertyDisplay — wrapper léger vers CharacteristicProperty (affichage unifié).",
     "props": [
       {
         "name": "property",
@@ -2181,7 +2181,7 @@
       {
         "name": "element",
         "type": "Number",
-        "desc": "- Valeur élément 0-29"
+        "desc": "- Masque 7 bits (1–127) ou ancien code 0–29 (normalisé côté util)."
       },
       {
         "name": "size",
@@ -2322,8 +2322,101 @@
     "file": "data-display/Collapse.vue"
   },
   {
+    "name": "CharacteristicProperty",
+    "description": "CharacteristicProperty — affichage unifié d'une caractéristique (tooltip riche unique).",
+    "props": [
+      {
+        "name": "viewModel",
+        "type": "Object",
+        "desc": "— Si fourni, utilisé tel quel (prioritaire sur le mode entité)."
+      },
+      {
+        "name": "fieldKey",
+        "type": "string",
+        "desc": "— Mode entité : clé champ"
+      },
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": ""
+      },
+      {
+        "name": "entityType",
+        "type": "string",
+        "desc": ""
+      },
+      {
+        "name": "descriptors",
+        "type": "Object",
+        "desc": ""
+      },
+      {
+        "name": "tableMeta",
+        "type": "Object",
+        "desc": ""
+      },
+      {
+        "name": "runtime",
+        "type": "Object|null",
+        "desc": "— ex. payload resolved-stats racine `{ computed: { [key]: {...} } }`"
+      },
+      {
+        "name": "levelTable",
+        "type": "Array",
+        "desc": ""
+      },
+      {
+        "name": "formulaResolved",
+        "type": "string",
+        "desc": ""
+      },
+      {
+        "name": "formulaRaw",
+        "type": "string",
+        "desc": ""
+      },
+      {
+        "name": "density",
+        "type": "string",
+        "desc": "— full | short | icon-only"
+      },
+      {
+        "name": "badge",
+        "type": "string",
+        "desc": "— none | solid | outline"
+      },
+      {
+        "name": "layout",
+        "type": "string",
+        "desc": "— inline | card"
+      },
+      {
+        "name": "showValue",
+        "type": "boolean",
+        "desc": "— Afficher la valeur dans le déclencheur (désactiver pour l’ancien variant `icon` de PropertyDisplay)"
+      },
+      {
+        "name": "showLabel",
+        "type": "boolean",
+        "desc": "— Afficher le libellé court / complet (Cat., Types, etc.)"
+      },
+      {
+        "name": "showIcon",
+        "type": "boolean",
+        "desc": "— Afficher l’icône caractéristique (désactiver si une icône externe la remplace)"
+      },
+      {
+        "name": "size",
+        "type": "string",
+        "desc": "— xs | sm | md"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/CharacteristicProperty.vue"
+  },
+  {
     "name": "CharacteristicFormula",
-    "description": "CharacteristicFormula — Atome d'affichage d'une caractéristique à formule (valeur + unité).",
+    "description": "CharacteristicFormula — wrapper de compatibilité vers CharacteristicProperty.",
     "props": [
       {
         "name": "def",
@@ -2338,27 +2431,27 @@
       {
         "name": "formulaResolved",
         "type": "string",
-        "desc": "- Formule avec variables remplacées"
+        "desc": ""
       },
       {
         "name": "formulaRaw",
         "type": "string",
-        "desc": "- Formule brute (tooltip)"
+        "desc": ""
       },
       {
         "name": "levelTable",
         "type": "Array<{level, value}>",
-        "desc": "- Tableau niveau → valeur"
+        "desc": ""
       },
       {
         "name": "unit",
         "type": "string",
-        "desc": "- Unité (affichée après la valeur)"
+        "desc": ""
       },
       {
         "name": "displayMode",
         "type": "string",
-        "desc": "- 'minimal'|'compact'|'extended'|'detailed' (PROPERTY_DISPLAY_MODES)"
+        "desc": "- 'minimal'|'compact'|'extended'|'detailed'"
       },
       {
         "name": "compact",
@@ -2371,12 +2464,17 @@
   },
   {
     "name": "CharacteristicChip",
-    "description": "CharacteristicChip — atome d'affichage d'une caractéristique (icône + label + valeur + unité).",
+    "description": "CharacteristicChip — wrapper vers CharacteristicProperty (chips tableaux / listes).",
     "props": [
+      {
+        "name": "item",
+        "type": "Object",
+        "desc": "— { icon, name, label, shortLabel, value, unit, color, tooltip, area? } — si `area` est défini, icône de zone en fin de chip (après le texte)."
+      },
       {
         "name": "labelMode",
         "type": "String",
-        "desc": "- 'full' | 'short' | 'icon-only' — full: nom complet, short: abrégé, icon-only: icône + valeur + unité"
+        "desc": "- 'full' | 'short' | 'icon-only'"
       }
     ],
     "slots": [],

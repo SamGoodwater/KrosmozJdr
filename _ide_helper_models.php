@@ -24,7 +24,10 @@ namespace App\Models{
  * @property string|null $helper
  * @property string|null $descriptions
  * @property string|null $icon
+ * @property string|null $icon_false
  * @property string|null $color
+ * @property string|null $color_false
+ * @property array|null $value_overrides
  * @property string|null $unit
  * @property string $type
  * @property int $sort_order
@@ -47,11 +50,13 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereColor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereColorFalse($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereDescriptions($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereGroup($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHelper($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereIconFalse($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereLinkedToCharacteristicId($value)
@@ -61,6 +66,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereValueOverrides($value)
  */
 	class Characteristic extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -83,12 +89,17 @@ namespace App\Models{
  * @property string|null $conversion_function Identifiant d'une fonction de conversion enregistrée
  * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
  * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
+ * @property array|null $norms_grid Grille 5×20 : {power_level: [val_lvl1..val_lvl20]}
+ * @property array|null $norms_conditions Conditions de lecture
+ * @property string|null $norms_description Description libre de la norme
+ * @property int|null $norms_help_section_id Section CMS (texte) affichée sous la charte
  * @property array|null $labels
  * @property array|null $validation
  * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Characteristic $characteristic
+ * @property-read \App\Models\Section|null $normsHelpSection
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature query()
@@ -109,6 +120,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereLabels($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereNormsConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereNormsDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereNormsGrid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereNormsHelpSectionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereValidation($value)
  */
@@ -137,6 +152,10 @@ namespace App\Models{
  * @property int $forgemagie_max
  * @property float|null $base_price_per_unit
  * @property float|null $rune_price_per_unit
+ * @property array|null $norms_grid Grille 5×20 : {power_level: [val_lvl1..val_lvl20]}
+ * @property array|null $norms_conditions Conditions de lecture
+ * @property string|null $norms_description Description libre de la norme
+ * @property int|null $norms_help_section_id Section CMS (texte) affichée sous la charte
  * @property array|null $value_available
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ItemType> $allowedItemTypes
  * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
@@ -144,6 +163,7 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read int|null $allowed_item_types_count
  * @property-read \App\Models\Characteristic $characteristic
+ * @property-read \App\Models\Section|null $normsHelpSection
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject query()
@@ -166,6 +186,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereNormsConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereNormsDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereNormsGrid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereNormsHelpSectionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereRunePricePerUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereValueAvailable($value)
@@ -191,11 +215,16 @@ namespace App\Models{
  * @property string|null $conversion_function Identifiant d'une fonction de conversion enregistrée
  * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
  * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
+ * @property array|null $norms_grid Grille 5×20 : {power_level: [val_lvl1..val_lvl20]}
+ * @property array|null $norms_conditions Conditions de lecture
+ * @property string|null $norms_description Description libre de la norme
+ * @property int|null $norms_help_section_id Section CMS (texte) affichée sous la charte
  * @property array|null $value_available
  * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Characteristic $characteristic
+ * @property-read \App\Models\Section|null $normsHelpSection
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell query()
@@ -215,6 +244,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereNormsConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereNormsDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereNormsGrid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereNormsHelpSectionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereValueAvailable($value)
  */
@@ -714,7 +747,7 @@ namespace App\Models\Entity{
  * @property-read User|null $createdBy
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, resource> $resources
  * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
@@ -753,6 +786,8 @@ namespace App\Models\Entity{
  * @property-read int|null $effect_usages_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ObjectEffect> $objectEffects
+ * @property-read int|null $object_effects_count
  */
 	class Consumable extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -789,6 +824,8 @@ namespace App\Models\Entity{
  * @property string $do_fixe_feu
  * @property string $do_fixe_air
  * @property string $do_fixe_eau
+ * @property string $do_sagesse
+ * @property string $do_vitalite
  * @property string $res_fixe_neutre
  * @property string $res_fixe_terre
  * @property string $res_fixe_feu
@@ -799,6 +836,8 @@ namespace App\Models\Entity{
  * @property string $res_feu
  * @property string $res_air
  * @property string $res_eau
+ * @property string $res_sagesse
+ * @property string $res_vitalite
  * @property string $acrobatie_bonus
  * @property string $discretion_bonus
  * @property string $escamotage_bonus
@@ -979,7 +1018,11 @@ namespace App\Models\Entity{
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereCriticalHit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoSagesse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoVitalite($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereHealBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResSagesse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResVitalite($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveAgilityBonus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveAgilityMastery($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveChanceBonus($value)
@@ -1026,7 +1069,7 @@ namespace App\Models\Entity{
  * @property-read ItemType|null $itemType
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, resource> $resources
  * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
@@ -1066,6 +1109,8 @@ namespace App\Models\Entity{
  * @property-read int|null $effect_usages_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ObjectEffect> $objectEffects
+ * @property-read int|null $object_effects_count
  */
 	class Item extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1285,6 +1330,8 @@ namespace App\Models\Entity{
  * @property-read int|null $effect_usages_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ObjectEffect> $objectEffects
+ * @property-read int|null $object_effects_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $recipeIngredients
  * @property-read int|null $recipe_ingredients_count
  */
@@ -1469,7 +1516,7 @@ namespace App\Models\Entity{
  * @property string|null $official_id
  * @property string|null $dofusdb_id
  * @property string $name
- * @property string $description
+ * @property string $description Toujours non null en base ; une valeur API `null` est normalisée en chaîne vide.
  * @property string|null $effect
  * @property string $level
  * @property string|null $po_min Portée min (valeur ou formule, ex. "0", "[level]")
@@ -1489,6 +1536,10 @@ namespace App\Models\Entity{
  * @property string|null $save_characteristic_key
  * @property string|null $save_dc_formula
  * @property string|null $save_success_note
+ * @property bool $auto_success_if_willing_target Réussite auto si la cible est consentante
+ * @property bool $allows_reaction Utilisable comme réaction de combat (PA non récupérés au tour suivant)
+ * @property string|null $casting_time Temps d'incantation (texte libre)
+ * @property bool|null $ritual_available Utilisable en mode rituel (null = non renseigné)
  * @property string $state
  * @property int $read_level
  * @property int $write_level
@@ -1546,6 +1597,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
  * @mixin \Eloquent
+ * @property string|null $duration
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
  * @property-read int|null $breeds_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Effect> $effects
@@ -1558,8 +1610,13 @@ namespace App\Models\Entity{
  * @property-read int|null $spell_effects_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SpellState> $spellStates
  * @property-read int|null $spell_states_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAllowsReaction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAttackCharacteristicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAutoSuccessIfWillingTarget($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastingTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereDuration($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereResolutionMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereRitualAvailable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveCharacteristicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveDcFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveSuccessNote($value)
@@ -1626,6 +1683,39 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereUserId($value)
  */
 	class OAuthAccount extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Effet simple lié à un objet jeu (item, consommable, ressource) : action + cible optionnelle + valeur optionnelle.
+ *
+ * @property int $id
+ * @property string $object_effectable_type
+ * @property int $object_effectable_id
+ * @property ObjectEffectAction $action
+ * @property int|null $characteristic_id
+ * @property int|null $monster_id
+ * @property int|null $value
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Characteristic|null $characteristic
+ * @property-read \App\Models\Entity\Monster|null $monster
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $objectEffectable
+ * @method static \Database\Factories\ObjectEffectFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereMonsterId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereObjectEffectableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereObjectEffectableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereValue($value)
+ */
+	class ObjectEffect extends \Eloquent {}
 }
 
 namespace App\Models{

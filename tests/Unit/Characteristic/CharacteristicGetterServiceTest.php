@@ -9,6 +9,7 @@ use Database\Seeders\CharacteristicSeeder;
 use Database\Seeders\CreatureCharacteristicSeeder;
 use Database\Seeders\ObjectCharacteristicSeeder;
 use Database\Seeders\SpellCharacteristicSeeder;
+use Database\Seeders\Type\ItemTypeSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\SeedsMinimalCharacteristics;
 use Tests\TestCase;
@@ -28,6 +29,7 @@ class CharacteristicGetterServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seed(ItemTypeSeeder::class);
         $this->seed(CharacteristicSeeder::class);
         $this->seed(CreatureCharacteristicSeeder::class);
         $this->seed(ObjectCharacteristicSeeder::class);
@@ -104,5 +106,47 @@ class CharacteristicGetterServiceTest extends TestCase
     {
         $this->getter->clearCache();
         $this->expectNotToPerformAssertions();
+    }
+
+    public function test_object_definition_includes_equipment_type_restriction_for_pdf_scoped_stat(): void
+    {
+        $def = $this->getter->getDefinition('hit_bonus_object', 'item');
+        $this->assertNotNull($def);
+        $this->assertArrayHasKey('allowed_item_type_restricted', $def);
+        $this->assertTrue($def['allowed_item_type_restricted']);
+        $this->assertIsArray($def['allowed_item_type_ids']);
+        $this->assertNotSame([], $def['allowed_item_type_ids']);
+    }
+
+    public function test_failure_hit_object_shares_amulet_slot_with_critical(): void
+    {
+        $def = $this->getter->getDefinition('failure_hit_object', 'item');
+        $this->assertNotNull($def);
+        $this->assertTrue($def['allowed_item_type_restricted']);
+        $crit = $this->getter->getDefinition('critical_hit_object', 'item');
+        $this->assertNotNull($crit);
+        $this->assertSame($crit['allowed_item_type_ids'], $def['allowed_item_type_ids']);
+    }
+
+    public function test_object_definition_without_slot_allowlist_marks_unrestricted(): void
+    {
+        $def = $this->getter->getDefinition('level_object', 'item');
+        $this->assertNotNull($def);
+        $this->assertArrayHasKey('allowed_item_type_restricted', $def);
+        $this->assertFalse($def['allowed_item_type_restricted']);
+        $this->assertSame([], $def['allowed_item_type_ids']);
+    }
+
+    public function test_object_name_and_description_have_group_definition_and_db_column(): void
+    {
+        $nameDef = $this->getter->getDefinition('name_object', 'item');
+        $this->assertNotNull($nameDef);
+        $this->assertSame('name', $nameDef['db_column']);
+        $this->assertSame('string', $nameDef['type']);
+
+        $descDef = $this->getter->getDefinition('description_object', 'consumable');
+        $this->assertNotNull($descDef);
+        $this->assertSame('description', $descDef['db_column']);
+        $this->assertSame('string', $descDef['type']);
     }
 }

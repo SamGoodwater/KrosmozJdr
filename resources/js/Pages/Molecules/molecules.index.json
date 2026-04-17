@@ -27,11 +27,32 @@
     "file": "table/TanStackTableToolbar.vue"
   },
   {
+    "name": "TanStackTableSortPanel",
+    "description": "Panneau de tri multi-critères (TanStack Table).",
+    "props": [],
+    "slots": [],
+    "file": "table/TanStackTableSortPanel.vue"
+  },
+  {
     "name": "TanStackTableSkeletonBody",
     "description": "TanStackTableSkeletonBody Molecule",
     "props": [],
     "slots": [],
     "file": "table/TanStackTableSkeletonBody.vue"
+  },
+  {
+    "name": "TanStackTableShortcutsModal",
+    "description": "Aide : raccourcis clavier et clics souris du tableau TanStack.",
+    "props": [],
+    "slots": [],
+    "file": "table/TanStackTableShortcutsModal.vue"
+  },
+  {
+    "name": "TanStackTableShortcutKeysDisplay",
+    "description": "Affichage d’une chaîne de raccourcis avec l’atome DaisyUI Kbd.",
+    "props": [],
+    "slots": [],
+    "file": "table/TanStackTableShortcutKeysDisplay.vue"
   },
   {
     "name": "TanStackTableRow",
@@ -95,6 +116,13 @@
     "props": [],
     "slots": [],
     "file": "privacy/PendingErasureBanner.vue"
+  },
+  {
+    "name": "CookieConsentTriggerButton",
+    "description": "Bouton discret pour rouvrir le panneau de préférences cookies (hors position fixed).",
+    "props": [],
+    "slots": [],
+    "file": "privacy/CookieConsentTriggerButton.vue"
   },
   {
     "name": "Tab",
@@ -691,6 +719,13 @@
     "file": "entity/EntityFormField.vue"
   },
   {
+    "name": "EntityEditFormFieldBody",
+    "description": "Rendu d’un champ du formulaire d’entité (extrait pour réutilisation dans EntityEditForm).",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityEditFormFieldBody.vue"
+  },
+  {
     "name": "EntityActionsList",
     "description": "EntityActionsList Molecule",
     "props": [],
@@ -703,6 +738,13 @@
     "props": [],
     "slots": [],
     "file": "entity/EntityActionsDropdown.vue"
+  },
+  {
+    "name": "SpellZonePreview",
+    "description": "Aperçu schématique de la zone d’effet (damier) à partir de la notation Krosmoz.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellZonePreview.vue"
   },
   {
     "name": "SpellViewText",
@@ -761,10 +803,128 @@
         "name": "showActions",
         "type": "Boolean",
         "desc": "- Afficher les actions (défaut: true)"
+      },
+      {
+        "name": "tableMeta",
+        "type": "Object",
+        "desc": "- Meta caractéristiques"
+      },
+      {
+        "name": "characteristicRuntime",
+        "type": "Object|null",
+        "desc": "- Payload runtime (tooltips formules)"
       }
     ],
     "slots": [],
     "file": "entity/spell/SpellViewCompact.vue"
+  },
+  {
+    "name": "SpellUsageCharacteristicTooltipPanel",
+    "description": "Panneau riche pour tooltips « usage sort » (icône BDD, teinte, libellé métier).",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellUsageCharacteristicTooltipPanel.vue"
+  },
+  {
+    "name": "SpellTypesMultiField",
+    "description": "Multi-sélection des types de sort (pivot) — `v-model` : tableau d'IDs. Utilise SelectSearchField en mode multiple pour un affichage compact.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellTypesMultiField.vue"
+  },
+  {
+    "name": "SpellTypeBadge",
+    "description": "Badge outline pour un type de sort : icône dédiée + ombre teintée.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellTypeBadge.vue"
+  },
+  {
+    "name": "SpellSummonMonsterInline",
+    "description": "Monstre invoqué — aligné sur la vue texte monstre ({@link MonsterViewText} / {@link EntityViewTextLink}) : vignette ou icône + nom, survol → {@link MonsterViewMinimal} (même mode que {@link MonsterViewText} : `extended` = bandeau + détails / caractéristiques si données dispo).",
+    "props": [
+      {
+        "name": "monsterBrief",
+        "type": "{ id: number, name: string, image?: string|null }",
+        "desc": "- Résumé sérialisé (SpellResource, effets)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellSummonMonsterInline.vue"
+  },
+  {
+    "name": "SpellSubEffectTypeRouter",
+    "description": "Route vers le présentateur adapté au `type_slug` du sous-effet.",
+    "props": [
+      {
+        "name": "row",
+        "type": "Object",
+        "desc": ""
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellSubEffectTypeRouter.vue"
+  },
+  {
+    "name": "SpellSubEffectRow",
+    "description": "Ligne de sous-effet (pivot) — présentation unifiée selon l’action.",
+    "props": [
+      {
+        "name": "row",
+        "type": "object",
+        "desc": "- Sérialisation SpellResource (degré.rows[])"
+      },
+      {
+        "name": "layout",
+        "type": "'large'|'compact'|'line'|'minimal'",
+        "desc": "- Journal large/compact ; table line/minimal via chips"
+      },
+      {
+        "name": "degreeArea",
+        "type": "string|null",
+        "desc": "- Zone du degré (affichée en fin de ligne quand présente)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellSubEffectRow.vue"
+  },
+  {
+    "name": "SpellSubEffectActionPresentation",
+    "description": "Rendu structuré d’un sous-effet (modèle unifié définition ou chip).",
+    "props": [
+      {
+        "name": "model",
+        "type": "object",
+        "desc": "- {@link buildUnifiedSubEffectModel}"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellSubEffectActionPresentation.vue"
+  },
+  {
+    "name": "SpellStateInline",
+    "description": "État de sort — libellé + icône optionnelle (définitions d’effets).",
+    "props": [
+      {
+        "name": "spellState",
+        "type": "{ id: number, name: string, icon?: string|null }",
+        "desc": ""
+      },
+      {
+        "name": "nameFallback",
+        "type": "string",
+        "desc": "- Si pas d’objet état complet (ex. chip API)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellStateInline.vue"
+  },
+  {
+    "name": "SpellMinimalUsageMetaRow",
+    "description": "Ligne méta PA / PO / lancers / élément (survol) / types & catégorie (survol).",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellMinimalUsageMetaRow.vue"
   },
   {
     "name": "SpellLineRow",
@@ -774,11 +934,113 @@
     "file": "entity/spell/SpellLineRow.vue"
   },
   {
+    "name": "SpellElementPrimariesField",
+    "description": "Multi-sélection des éléments primaires (Neutre → Vitalité) avec SelectSearchField. `v-model` : `null` = aucun élément ; sinon masque 1–127 (combinaison de primaires).",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellElementPrimariesField.vue"
+  },
+  {
+    "name": "SpellEffectsJournal",
+    "description": "Bloc « effets » d’un sort : définitions, onglets par degré, zones, sous-effets (dont branches OU).",
+    "props": [
+      {
+        "name": "definitions",
+        "type": "Array<Object>",
+        "desc": "- `effects_definitions` (SpellResource)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellEffectsJournal.vue"
+  },
+  {
+    "name": "SpellEffectUsageMinimalLine",
+    "description": "Une ligne d’effet « minimal » : élément, caractéristique, texte ou vue monstre invoqué (SpellSummonMonsterInline), zone.",
+    "props": [
+      {
+        "name": "item",
+        "type": "object",
+        "desc": "- Chip (characteristic, element, value, summon_monster, area, tooltip…)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellEffectUsageMinimalLine.vue"
+  },
+  {
+    "name": "SpellEffectUsageActionLine",
+    "description": "Ligne d’effet structurée (chips API `effect_usages_chips` avec `action_slug`).",
+    "props": [
+      {
+        "name": "item",
+        "type": "object",
+        "desc": "- Item normalisé Spell._toEffectSummaryCell"
+      },
+      {
+        "name": "density",
+        "type": "'minimal'|'line'",
+        "desc": "- minimal = cartes ; line = liste dense"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellEffectUsageActionLine.vue"
+  },
+  {
     "name": "SpellEffectChips",
-    "description": "SpellEffectChips — Affichage des effets d'un sort avec filtre par degré.",
+    "description": "SpellEffectChips — Effets d’un sort en chips, avec sélecteurs de palier compacts.",
     "props": [],
     "slots": [],
     "file": "entity/spell/SpellEffectChips.vue"
+  },
+  {
+    "name": "SpellEffectChipTooltipContent",
+    "description": "Contenu visuel des tooltips des chips / lignes d’effets de sort.",
+    "props": [
+      {
+        "name": "model",
+        "type": "object",
+        "desc": "- Résultat de {@link buildUnifiedSubEffectModel}"
+      },
+      {
+        "name": "detailText",
+        "type": "string",
+        "desc": "- Texte détaillé (meta palier, zone, etc.)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellEffectChipTooltipContent.vue"
+  },
+  {
+    "name": "AreaDisplay",
+    "description": "Zone d’effet : icône de forme + libellé court, infobulle avec notation complète et schéma.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/AreaDisplay.vue"
+  },
+  {
+    "name": "SpellSubEffectHealPresenter",
+    "description": "Présentation sous-effet « soin » — point d’extension.",
+    "props": [
+      {
+        "name": "row",
+        "type": "Object",
+        "desc": "- Ligne pivot sérialisée"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/presenters/SpellSubEffectHealPresenter.vue"
+  },
+  {
+    "name": "SpellSubEffectDamagePresenter",
+    "description": "Présentation sous-effet « dégâts » — point d’extension (couche / mise en forme dédiée).",
+    "props": [
+      {
+        "name": "row",
+        "type": "Object",
+        "desc": "- Ligne pivot sérialisée"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/presenters/SpellSubEffectDamagePresenter.vue"
   },
   {
     "name": "SpecializationViewText",
@@ -956,12 +1218,17 @@
       {
         "name": "hoverWidthClass",
         "type": "string",
-        "desc": "- Largeur du panneau hover (ex: 'w-64')"
+        "desc": "- Largeur max du panneau (ex. `max-w-[min(92vw,22rem)]`)"
       },
       {
         "name": "hoverCardClass",
         "type": "string",
-        "desc": "- Classes appliquées à la card hover (border/shadow)"
+        "desc": "- Classes appliquées à la vue minimal"
+      },
+      {
+        "name": "placement",
+        "type": "string",
+        "desc": "- Placement Floating UI (défaut: `bottom-start`)"
       },
       {
         "name": "showActionsOnHover",
@@ -1072,62 +1339,102 @@
   },
   {
     "name": "EntityPropertyDisplay",
-    "description": "EntityPropertyDisplay — Affichage unifié des propriétés d'entité",
+    "description": "EntityPropertyDisplay — façade par `fieldKey` vers CharacteristicProperty + view model unifié.",
     "props": [
       {
         "name": "fieldKey",
         "type": "string",
-        "desc": "- Clé du champ"
+        "desc": ""
       },
       {
         "name": "entity",
         "type": "Object",
-        "desc": "- Entité (modèle ou objet)"
+        "desc": ""
       },
       {
         "name": "entityType",
         "type": "string",
-        "desc": "- Type d'entité (resource, spell, monster, etc.)"
+        "desc": ""
       },
       {
         "name": "displayMode",
         "type": "string",
-        "desc": "- minimal | compact | extended | detailed (PROPERTY_DISPLAY_MODES)"
+        "desc": "- minimal | compact | extended | detailed"
       },
       {
         "name": "descriptors",
         "type": "Object",
-        "desc": "- Descriptors (getXFieldDescriptors())"
+        "desc": ""
       },
       {
         "name": "tableMeta",
         "type": "Object",
-        "desc": "- Meta tableau"
+        "desc": ""
       },
       {
         "name": "variant",
         "type": "string",
-        "desc": "- Override présentation: badge | icon | inline (pour PropertyDisplay)"
+        "desc": "- badge | icon | inline"
       },
       {
         "name": "size",
         "type": "string",
-        "desc": "- xs | sm | md"
+        "desc": ""
       },
       {
         "name": "formulaResolved",
         "type": "string",
-        "desc": "- Formule résolue (mode detailed)"
+        "desc": ""
       },
       {
         "name": "formulaRaw",
         "type": "string",
-        "desc": "- Formule brute (mode detailed)"
+        "desc": ""
       },
       {
         "name": "levelTable",
         "type": "Array",
-        "desc": "- Tableau niveau→valeur (mode detailed)"
+        "desc": ""
+      },
+      {
+        "name": "runtime",
+        "type": "Object|null|undefined",
+        "desc": "— ex. resolved-stats ; si omis, inject du contexte (provideCharacteristicRuntime)"
+      },
+      {
+        "name": "presentation",
+        "type": "string",
+        "desc": "- `default` | `spell-types-icons-only` (types de sort : icônes seules, via toCell)"
+      },
+      {
+        "name": "hideFieldLabel",
+        "type": "boolean",
+        "desc": "— masque « Cat. », « Types », etc. sur {@link CharacteristicProperty}"
+      },
+      {
+        "name": "hideCharacteristicIcon",
+        "type": "boolean",
+        "desc": "— masque l’icône BDD (ex. PO remplacée par une icône externe)"
+      },
+      {
+        "name": "characteristicLabelImageSource",
+        "type": "string",
+        "desc": "— remplace le libellé texte (ex. icône CàC à la place de « PO : »)"
+      },
+      {
+        "name": "characteristicLabelImageAlt",
+        "type": "string",
+        "desc": "— alt de l’image libellé"
+      },
+      {
+        "name": "characteristicValueTextClass",
+        "type": "string",
+        "desc": "— classes sur la valeur (ex. text-red-600)"
+      },
+      {
+        "name": "toCellOptions",
+        "type": "Object",
+        "desc": "— fusionné dans les options passées à `entity.toCell` / cellOptions du composable"
       }
     ],
     "slots": [],
@@ -1378,6 +1685,16 @@
         "name": "showActions",
         "type": "Boolean",
         "desc": "- Afficher les actions (défaut: true)"
+      },
+      {
+        "name": "tableMeta",
+        "type": "Object",
+        "desc": "- Meta caractéristiques (tableau / Inertia)"
+      },
+      {
+        "name": "characteristicRuntime",
+        "type": "Object|null",
+        "desc": "- Payload runtime optionnel (même schéma que resolved-stats)"
       }
     ],
     "slots": [],
@@ -1608,11 +1925,6 @@
         "name": "monster",
         "type": "Monster",
         "desc": "- Instance du modèle Monster"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
       }
     ],
     "slots": [],
@@ -1660,6 +1972,57 @@
     "props": [],
     "slots": [],
     "file": "entity/monster/MonsterLineRow.vue"
+  },
+  {
+    "name": "MonsterCreatureSpellsList",
+    "description": "MonsterCreatureSpellsList — Sorts liés à la créature du monstre (vue texte + aperçu minimal au survol)",
+    "props": [
+      {
+        "name": "creature",
+        "type": "Object|null",
+        "desc": "- Créature (souvent `monster.creature`) avec relation `spells`"
+      },
+      {
+        "name": "tableMeta",
+        "type": "Object",
+        "desc": "- Meta tableau / contexte pour les cellules"
+      },
+      {
+        "name": "characteristicRuntime",
+        "type": "Object|null",
+        "desc": "- Runtime tooltips (optionnel)"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "desc": "- Libellé de section (défaut : « Sorts »)"
+      },
+      {
+        "name": "sectionClass",
+        "type": "string",
+        "desc": "- Classes du conteneur de section"
+      }
+    ],
+    "slots": [],
+    "file": "entity/monster/MonsterCreatureSpellsList.vue"
+  },
+  {
+    "name": "MonsterBossMark",
+    "description": "Marqueur visuel « Boss » (icône dédiée) pour les profils monstre boss.",
+    "props": [
+      {
+        "name": "tooltip",
+        "type": "string",
+        "desc": "- Texte du survol (règle boss + PA bonus)"
+      },
+      {
+        "name": "sizeClass",
+        "type": "string",
+        "desc": "- Classes Tailwind pour la taille du pictogramme"
+      }
+    ],
+    "slots": [],
+    "file": "entity/monster/MonsterBossMark.vue"
   },
   {
     "name": "ItemViewText",
@@ -1712,6 +2075,16 @@
         "name": "showActions",
         "type": "Boolean",
         "desc": "- Afficher les actions (défaut: true)"
+      },
+      {
+        "name": "tableMeta",
+        "type": "Object",
+        "desc": "- Meta caractéristiques"
+      },
+      {
+        "name": "characteristicRuntime",
+        "type": "Object|null",
+        "desc": "- Payload runtime optionnel"
       }
     ],
     "slots": [],
@@ -1775,6 +2148,16 @@
         "name": "showActions",
         "type": "Boolean",
         "desc": "- Afficher les actions (défaut: true)"
+      },
+      {
+        "name": "tableMeta",
+        "type": "Object",
+        "desc": "- Meta caractéristiques"
+      },
+      {
+        "name": "characteristicRuntime",
+        "type": "Object|null",
+        "desc": "- Payload runtime optionnel"
       }
     ],
     "slots": [],
@@ -1848,6 +2231,13 @@
     ],
     "slots": [],
     "file": "entity/capability/CapabilityViewCompact.vue"
+  },
+  {
+    "name": "CapabilityMinimalUsageMetaRow",
+    "description": "Ligne méta capacité : PA, PO + portée modifiable, incantation/rituel, durée / relance, élément & magie au survol.",
+    "props": [],
+    "slots": [],
+    "file": "entity/capability/CapabilityMinimalUsageMetaRow.vue"
   },
   {
     "name": "CapabilityLineRow",
@@ -2128,6 +2518,13 @@
     "file": "data-input/RadioField.vue"
   },
   {
+    "name": "NormsConditionSelector",
+    "description": "Sélecteur interactif de conditions de normes. Chaque condition = chip toggleable affichant un résumé lisible.",
+    "props": [],
+    "slots": [],
+    "file": "data-input/NormsConditionSelector.vue"
+  },
+  {
     "name": "InputField",
     "description": "InputField Molecule (DaisyUI, Atomic Design)",
     "props": [
@@ -2215,6 +2612,13 @@
     "file": "data-input/FileField.vue"
   },
   {
+    "name": "FieldTemplate",
+    "description": "",
+    "props": [],
+    "slots": [],
+    "file": "data-input/FieldTemplate.vue"
+  },
+  {
     "name": "DateField",
     "description": "DateField Molecule (DaisyUI, Atomic Design)",
     "props": [],
@@ -2249,6 +2653,20 @@
     "file": "data-display/ResourceIngredientsList.vue"
   },
   {
+    "name": "NormsTable",
+    "description": "Tableau interactif de normes : 5 lignes puissance × 20 colonnes niveaux. La ligne active (puissance effective) et la colonne active (level sélectionné) sont mises en avant.",
+    "props": [],
+    "slots": [],
+    "file": "data-display/NormsTable.vue"
+  },
+  {
+    "name": "NormsChart",
+    "description": "Graphique Chart.js des normes : 5 courbes (power levels) avec le level actif en ligne verticale.",
+    "props": [],
+    "slots": [],
+    "file": "data-display/NormsChart.vue"
+  },
+  {
     "name": "LevelBadge",
     "description": "LevelBadge Molecule",
     "props": [],
@@ -2261,6 +2679,19 @@
     "props": [],
     "slots": [],
     "file": "data-display/ImageViewer.vue"
+  },
+  {
+    "name": "CharacteristicPropertyTooltip",
+    "description": "Contenu riche du tooltip pour une caractéristique (vue unifiée).",
+    "props": [
+      {
+        "name": "model",
+        "type": "Object",
+        "desc": "— sortie viewModel (useCharacteristicViewModel / viewModelFromFormulaGroupItem)"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/CharacteristicPropertyTooltip.vue"
   },
   {
     "name": "CharacteristicInlineGroup",

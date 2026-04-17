@@ -55,15 +55,15 @@ if old not in text:
 
 text = text.replace(old, fragment.rstrip() + "\n", 1)
 
-marker = "    134 => [\n        'key' => 'skills_object',"
+marker = "    156 => [\n        'key' => 'acrobatics_object',"
 idx = text.find(marker)
 if idx == -1:
-    raise SystemExit("skills_object introuvable après injection")
+    raise SystemExit("acrobatics_object introuvable après injection")
 
 head = text[:idx]
 tail = text[idx:]
 # Haut → bas pour éviter les collisions (ex. 134→155 avant de traiter l’ancien 155).
-for n in range(250, 133, -1):
+for n in range(272, 155, -1):
     needle = f"    {n} =>"
     c = tail.count(needle)
     if c != 1:

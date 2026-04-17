@@ -7,7 +7,7 @@ Ce document liste **toutes** les caractéristiques exposées par l’API DofusDB
 
 Source : API DofusDB (dernière récupération documentée). Pour mettre à jour, relancer une requête sur `/characteristics` avec `$limit` suffisant.
 
-**Caractéristiques objet non liées à une propriété DofusDB (intentionnel)** : CA (`armor_class_object`), recharge de Wakfu (`wakfu_recharge_object`), bonus de sauvegarde (`save_*_object`), compétences (`skills_object`, `*_passive_object`), bonus de touche (`hit_bonus_object`). Elles n’ont pas d’équivalent dans `item.effects[]` ou ne sont pas mappées.
+**Caractéristiques objet non liées à une propriété DofusDB (intentionnel)** : CA (`armor_class_object`), recharge de Wakfu (`wakfu_recharge_object`), bonus de sauvegarde (`save_*_object`), compétences actives et passives (`*_object` / `*_passive_object`, une clé par compétence), bonus de touche (`hit_bonus_object`). Elles n’ont pas d’équivalent dans `item.effects[]` ou ne sont pas mappées.
 
 **Résistances élémentaires (DofusDB → Krosmoz)** : les ids **33 à 37** correspondent chacun à un **élément** (Terre, Feu, Eau, Air, Neutre). Dans Krosmoz ce ne sont **pas** cinq fois la même clé : ce sont **cinq `characteristic_key` distinctes** (`resistance_percent_tier_*_object`). L’API DofusDB envoie encore un **pourcentage** sur l’effet ; à l’import, ce pourcentage est **converti en palier** `0` (aucune résistance %), `1` (résistance 50 %), `2` (invulnérabilité 100 %), une valeur par élément, indépendante des autres.
 

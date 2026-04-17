@@ -194,14 +194,14 @@ if old not in text:
 
 text = text.replace(old, new_middle.rstrip() + "\n", 1)
 
-marker = "    25 => [\n        'characteristic_key' => 'skills_object',"
+marker = "    47 => [\n        'characteristic_key' => 'acrobatics_object',"
 idx = text.find(marker)
 if idx == -1:
-    raise SystemExit("skills_object pivot introuvable")
+    raise SystemExit("acrobatics_object pivot introuvable")
 
 head = text[:idx]
 tail = text[idx:]
-for n in range(65, 24, -1):
+for n in range(86, 46, -1):
     needle = f"    {n} =>"
     c = tail.count(needle)
     if c != 1:

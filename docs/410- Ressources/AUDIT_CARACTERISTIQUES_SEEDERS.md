@@ -20,7 +20,7 @@ Ces caractéristiques proviennent de DofusDB mais ne sont **pas définies** dans
 | `received_damage_multiplier_distance_object` | 121 | Distance % (résistance) — pas dans 2.6.1 |
 | `all_damage_bonus_object` | 16 | Dommages génériques — 2.6.1 utilise dommages fixes par élément (fixed_damage_*) |
 
-**Conserver** : `invulnerability_100_percent_object` (résistance 100 % = immunité, définie en 2.2.2).
+**Modèle actuel** : pas de clé globale « invulnérabilité 100 % » — le 100 % par élément est le **palier 2** de `resistance_percent_tier_*_object` (voir 2.2.2).
 
 ---
 

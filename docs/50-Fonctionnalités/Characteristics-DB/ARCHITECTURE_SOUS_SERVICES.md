@@ -26,7 +26,7 @@ Le **Conversion** s’appuie sur le Getter (pour lire la formule de conversion e
 **Principales méthodes :**
 
 - `getDefinition(string $characteristicKey, string $entity): ?array`  
-  Retourne la définition fusionnée (table générale + ligne de groupe, avec surcharge par entité). Contient notamment : `key`, `name`, `type`, `min`, `max`, `formula`, `default_value`, `conversion_formula`, et pour le groupe object : `forgemagie_allowed`, `forgemagie_max`, `base_price_per_unit`, `rune_price_per_unit`, `allowed_item_type_ids`.
+  Retourne la définition fusionnée (table générale + ligne de groupe, avec surcharge par entité). Contient notamment : `key`, `name`, `type`, `min`, `max`, `formula`, `default_value`, `conversion_formula`, et pour le groupe object : `forgemagie_allowed`, `forgemagie_max`, `base_price_per_unit`, `rune_price_per_unit`, `allowed_item_type_restricted`, `allowed_item_type_ids`.
 - `getLimits(string $characteristicKey, string $entity, array $variables = []): ?array`  
   Retourne `['min' => int, 'max' => int]` après évaluation des champs min/max (valeur fixe, formule ou table).
 - `getLimitsByField(string $field, string $entity, ...): ?array`  
@@ -148,7 +148,7 @@ Voir [SEEDERS_DONNEES.md](./SEEDERS_DONNEES.md) pour le contenu de ces fichiers 
 
 **Objectif métier :** Pour les caractéristiques du groupe **object**, indiquer **quels types d’items** (équipements) peuvent porter cette caractéristique (ex. « PA bonus » uniquement sur armes et amulettes).
 
-**Solution retenue (source unique de vérité) :** La table pivot **characteristic_object_item_type** associe chaque ligne `characteristic_object` aux **id** de la table **item_types**. Si une définition n’a aucune entrée dans cette pivot, la caractéristique s’applique à tous les types ; sinon elle ne s’applique qu’aux types listés. Le Getter expose cette liste sous la clé **allowed_item_type_ids** dans la définition (voir [TYPES_VALEURS_ET_CONTENU_JSON.md](./TYPES_VALEURS_ET_CONTENU_JSON.md) § 5.3).
+**Solution retenue (source unique de vérité) :** La table pivot **characteristic_object_item_type** associe chaque ligne `characteristic_object` aux **id** de la table **item_types**. Si une définition n’a aucune entrée dans cette pivot, la caractéristique s’applique à tous les types ; sinon elle ne s’applique qu’aux types listés. Les données de périmètre (PDF équipements) sont amorcées depuis **`characteristic_object_equipment_slot_dofus_type_ids.php`** au seed. Le Getter expose **allowed_item_type_restricted** et **allowed_item_type_ids** dans la définition (voir [TYPES_VALEURS_ET_CONTENU_JSON.md](./TYPES_VALEURS_ET_CONTENU_JSON.md) § 5.3).
 
 ---
 

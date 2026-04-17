@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Characteristic;
 use App\Models\CharacteristicObject;
+use App\Models\Type\ItemType;
 
 /**
  * Seed characteristic_object (groupe object : item, consumable, resource, panoply).
@@ -50,6 +51,26 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
             'rune_price_per_unit' => isset($row['rune_price_per_unit']) ? (float) $row['rune_price_per_unit'] : null,
             'value_available' => isset($row['value_available']) ? $row['value_available'] : null,
         ]);
+    }
+
+    /**
+     * Résout les ids pivot `item_types.id` à partir des id DofusDB (`item_types.dofusdb_type_id`).
+     *
+     * @param  list<int>  $dofusdbTypeIds
+     * @return list<int>
+     */
+    protected function resolveItemTypeIdsFromDofusTypeIds(array $dofusdbTypeIds): array
+    {
+        if ($dofusdbTypeIds === []) {
+            return [];
+        }
+
+        return ItemType::query()
+            ->whereIn('dofusdb_type_id', $dofusdbTypeIds)
+            ->orderBy('id')
+            ->pluck('id')
+            ->map(fn (int|string $id): int => (int) $id)
+            ->all();
     }
 
     /**
@@ -102,12 +123,21 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
         $rows = $this->loadDataFile($this->dataPath());
         $samplesByKey = $this->loadObjectSamples();
         $normsData = $this->loadNormsData();
+        $allowlistPath = base_path('database/seeders/data/characteristic_object_equipment_slot_dofus_type_ids.php');
+        $equipmentSlotDofusIdsByKey = is_file($allowlistPath) ? require $allowlistPath : [];
+        if (! is_array($equipmentSlotDofusIdsByKey)) {
+            $equipmentSlotDofusIdsByKey = [];
+        }
         $modelClass = $this->modelClass();
         $enrichedCount = 0;
         $normsApplied = 0;
 
         foreach ($rows as $row) {
             $key = $row['characteristic_key'] ?? '';
+
+            if ($key !== '' && isset($equipmentSlotDofusIdsByKey[$key]) && is_array($equipmentSlotDofusIdsByKey[$key])) {
+                $row['item_type_ids'] = $this->resolveItemTypeIdsFromDofusTypeIds(array_map('intval', $equipmentSlotDofusIdsByKey[$key]));
+            }
 
             if (isset($normsData[$key])) {
                 $row['norms_grid'] = $normsData[$key]['norms_grid'] ?? null;

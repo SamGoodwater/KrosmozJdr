@@ -145,6 +145,10 @@ erDiagram
     conversion_dofus_sample : longtext
     conversion_krosmoz_sample : longtext
     conversion_sample_rows : longtext
+    norms_grid : longtext
+    norms_conditions : longtext
+    norms_description : text
+    norms_help_section_id : bigint(20) unsigned
     labels : longtext
     validation : longtext
     created_at : timestamp
@@ -166,6 +170,10 @@ erDiagram
     conversion_dofus_sample : longtext
     conversion_krosmoz_sample : longtext
     conversion_sample_rows : longtext
+    norms_grid : longtext
+    norms_conditions : longtext
+    norms_description : text
+    norms_help_section_id : bigint(20) unsigned
     forgemagie_allowed : tinyint(1)
     forgemagie_max : tinyint(3) unsigned
     base_price_per_unit : decimal(12,2)
@@ -197,6 +205,10 @@ erDiagram
     conversion_dofus_sample : longtext
     conversion_krosmoz_sample : longtext
     conversion_sample_rows : longtext
+    norms_grid : longtext
+    norms_conditions : longtext
+    norms_description : text
+    norms_help_section_id : bigint(20) unsigned
     value_available : longtext
     created_at : timestamp
     updated_at : timestamp
@@ -209,7 +221,10 @@ erDiagram
     helper : text
     descriptions : text
     icon : varchar(64)
+    icon_false : varchar(64)
     color : varchar(32)
+    color_false : varchar(7)
+    value_overrides : longtext
     unit : varchar(32)
     type : varchar(16)
     sort_order : smallint(5) unsigned
@@ -328,6 +343,8 @@ erDiagram
     do_fixe_feu : varchar(255)
     do_fixe_air : varchar(255)
     do_fixe_eau : varchar(255)
+    do_sagesse : varchar(255)
+    do_vitalite : varchar(255)
     res_fixe_neutre : text
     res_fixe_terre : text
     res_fixe_feu : text
@@ -338,6 +355,8 @@ erDiagram
     res_feu : varchar(255)
     res_air : varchar(255)
     res_eau : varchar(255)
+    res_sagesse : varchar(255)
+    res_vitalite : varchar(255)
     acrobatie_bonus : varchar(255)
     discretion_bonus : varchar(255)
     escamotage_bonus : varchar(255)
@@ -695,6 +714,17 @@ erDiagram
     provider_email : varchar(255)
     provider_name : varchar(255)
     avatar_url : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  OBJECT_EFFECTS {
+    id : bigint(20) unsigned
+    object_effectable_type : varchar(255)
+    object_effectable_id : bigint(20) unsigned
+    action : varchar(32)
+    characteristic_id : bigint(20) unsigned
+    monster_id : bigint(20) unsigned
+    value : int(11)
     created_at : timestamp
     updated_at : timestamp
   }
@@ -1092,10 +1122,13 @@ erDiagram
     po_max : varchar(64)
     po_editable : tinyint(1)
     pa : varchar(255)
+    casting_time : varchar(255)
+    ritual_available : tinyint(1)
     cast_per_turn : varchar(255)
     cast_per_target : varchar(255)
     sight_line : tinyint(1)
     number_between_two_cast : varchar(255)
+    duration : varchar(255)
     element : int(11)
     category : int(11)
     is_magic : tinyint(1)
@@ -1105,6 +1138,8 @@ erDiagram
     save_characteristic_key : varchar(64)
     save_dc_formula : varchar(255)
     save_success_note : text
+    auto_success_if_willing_target : tinyint(1)
+    allows_reaction : tinyint(1)
     state : varchar(255)
     read_level : tinyint(4)
     write_level : tinyint(4)
@@ -1183,10 +1218,13 @@ erDiagram
   CAPABILITY_SPECIALIZATION }o--|| CAPABILITIES : "FK capability_id"
   CAPABILITY_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
   CHARACTERISTIC_CREATURE }o--|| CHARACTERISTICS : "FK characteristic_id"
+  CHARACTERISTIC_CREATURE }o--|| SECTIONS : "FK norms_help_section_id"
   CHARACTERISTIC_OBJECT }o--|| CHARACTERISTICS : "FK characteristic_id"
+  CHARACTERISTIC_OBJECT }o--|| SECTIONS : "FK norms_help_section_id"
   CHARACTERISTIC_OBJECT_ITEM_TYPE }o--|| CHARACTERISTIC_OBJECT : "FK characteristic_object_id"
   CHARACTERISTIC_OBJECT_ITEM_TYPE }o--|| ITEM_TYPES : "FK item_type_id"
   CHARACTERISTIC_SPELL }o--|| CHARACTERISTICS : "FK characteristic_id"
+  CHARACTERISTIC_SPELL }o--|| SECTIONS : "FK norms_help_section_id"
   CHARACTERISTICS }o--|| CHARACTERISTICS : "FK linked_to_characteristic_id"
   CONSUMABLE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   CONSUMABLE_CAMPAIGN }o--|| CONSUMABLES : "FK consumable_id"
@@ -1247,6 +1285,8 @@ erDiagram
   NPCS }o--|| CREATURES : "FK creature_id"
   NPCS }o--|| SPECIALIZATIONS : "FK specialization_id"
   OAUTH_ACCOUNTS }o--|| USERS : "FK user_id"
+  OBJECT_EFFECTS }o--|| CHARACTERISTICS : "FK characteristic_id"
+  OBJECT_EFFECTS }o--|| MONSTERS : "FK monster_id"
   PAGE_USER }o--|| PAGES : "FK page_id"
   PAGE_USER }o--|| USERS : "FK user_id"
   PAGES }o--|| USERS : "FK created_by"

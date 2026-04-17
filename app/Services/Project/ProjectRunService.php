@@ -432,6 +432,9 @@ class ProjectRunService
     {
         $command->info('Lancement des serveurs de développement...');
 
+        // Libère 8000 / 5173 si une instance précédente tourne encore (évite « Port already in use »).
+        $this->killServers($command);
+
         $command->info('Démarrage du serveur Laravel sur le port 8000...');
         exec('php artisan serve --host=127.0.0.1 --port=8000 > /dev/null 2>&1 &');
 

@@ -69,8 +69,8 @@
 | do_fixe | fixed_damage |
 | res_fixe | fixed_resistance |
 | res (for %) | resistance |
-| res_50 | resistance_50_percent |
-| invuln_100 | invulnerability_100_percent |
+| res_50 (agrégat) | `resistance_percent_tier_*_object` (palier 1 = 50 %) |
+| invuln_100 (agrégat) | `resistance_percent_tier_*_object` (palier 2 = 100 %) |
 | bouclier | shield *(points)* |
 
 **Examples** : `life_points_creature`, `life_points_max_object`, `fixed_damage_earth_object`, `fixed_resistance_neutral_creature`, `resistance_fire_creature`.
@@ -105,7 +105,7 @@
 | reserve_wakfu | wakfu_reserve |
 | wakfu_recharge | wakfu_recharge *(already English)* |
 
-**Examples** : `summoning_creature`, `summoning_object`, `skills_object`, `cast_per_turn_spell`, `cast_per_target_spell`, `hit_dice_creature`, `mastery_bonus_creature`.
+**Examples** : `summoning_creature`, `summoning_object`, `acrobatics_object`, `cast_per_turn_spell`, `cast_per_target_spell`, `hit_dice_creature`, `mastery_bonus_creature`.
 
 ---
 
@@ -185,10 +185,10 @@ When migrating existing data and code, use this mapping. Each row is “old iden
 | de_vie_creature | hit_dice_creature |
 | bonus_maitrise_creature | mastery_bonus_creature |
 | pv_object | life_points_max_object |
-| competences_object | skills_object |
+| competences_object | `acrobatics_object`, … (une clé par compétence active) |
 | competences_passives_object | `acrobatics_passive_object`, …, `survival_passive_object` (une clé par compétence) |
-| res_50_object | resistance_50_percent_object |
-| invuln_100_object | invulnerability_100_percent_object |
+| res_50_object | `resistance_percent_tier_*_object` (palier 1) |
+| invuln_100_object | `resistance_percent_tier_*_object` (palier 2) |
 | po_editable_spell, spell_po_min_spell, spell_po_max_spell | range_editable_spell, spell_range_min_spell, spell_range_max_spell |
 
 Elements in compound keys: **terre** → **earth**, **feu** → **fire**, **eau** → **water**, **air** → **air**, **neutre** → **neutral**.

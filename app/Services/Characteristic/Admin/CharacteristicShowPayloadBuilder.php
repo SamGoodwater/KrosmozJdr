@@ -131,7 +131,7 @@ final class CharacteristicShowPayloadBuilder
                 $ent = $this->groupRowToEntity($row, $characteristic);
                 $byEntity[$ent['entity'] ?? ''] = $ent;
             }
-            foreach (CharacteristicObject::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+            foreach (CharacteristicObject::with('allowedItemTypes')->where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
                 $ent = $this->groupRowToEntity($row, $characteristic);
                 $byEntity[$ent['entity'] ?? ''] = $ent;
             }
@@ -179,6 +179,7 @@ final class CharacteristicShowPayloadBuilder
             'norms_conditions' => null,
             'norms_description' => null,
             'norms_help_section_id' => null,
+            'item_type_ids' => [],
         ];
     }
 
@@ -270,6 +271,11 @@ final class CharacteristicShowPayloadBuilder
         if (array_key_exists('rune_price_per_unit', $def)) {
             $out['rune_price_per_unit'] = $def['rune_price_per_unit'];
         }
+        if (array_key_exists('allowed_item_type_ids', $def)) {
+            $out['item_type_ids'] = is_array($def['allowed_item_type_ids'] ?? null)
+                ? array_map('intval', $def['allowed_item_type_ids'])
+                : [];
+        }
 
         return $out;
     }
@@ -306,6 +312,9 @@ final class CharacteristicShowPayloadBuilder
             $out['forgemagie_max'] = $row->forgemagie_max;
             $out['base_price_per_unit'] = $row->base_price_per_unit;
             $out['rune_price_per_unit'] = $row->rune_price_per_unit;
+            $out['item_type_ids'] = $row->relationLoaded('allowedItemTypes')
+                ? $row->allowedItemTypes->pluck('id')->map(fn ($id): int => (int) $id)->values()->all()
+                : [];
         }
 
         return $out;

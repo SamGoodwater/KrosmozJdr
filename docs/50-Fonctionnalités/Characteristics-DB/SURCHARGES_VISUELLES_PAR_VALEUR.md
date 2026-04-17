@@ -81,13 +81,28 @@ Dans la page admin des caractéristiques (`Admin/characteristics/Index.vue`), un
 
 ## Données pré-remplies (seeder)
 
-Les valeurs par défaut sont définies dans `database/seeders/data/characteristic_icons_colors.php` (clé `value_overrides`) et appliquées par `CharacteristicSeeder`.
+Les valeurs par défaut sont définies dans `database/seeders/data/characteristic_icons_colors.php` (clé `value_overrides`, fusionnée avec les paliers maîtrise créature via `array_merge`) et appliquées par `CharacteristicSeeder` lorsque la ligne dans `characteristics.php` ne définit pas déjà un `value_overrides` explicite.
 
-Caractéristiques pré-configurées :
-- `range_spell` (portée)
-- `spell_range_min_spell`, `spell_range_max_spell`
-- `sight_line_spell` (ligne de vue)
-- `is_magic_spell` (magique/physique)
-- `ritual_available_spell` (rituel)
-- `range_editable_spell` (portée modifiable)
-- `allows_reaction_spell` (réaction)
+### Sorts (`group` spell)
+
+- **Portée** : `range_spell`, `spell_range_min_spell`, `spell_range_max_spell` (valeurs `0` / `1`, CàC vs auto-cible).
+- **Booléens** : `range_editable_spell`, `sight_line_spell`, `is_magic_spell`, `ritual_available_spell`, `allows_reaction_spell`.
+- **Catégorie** : `category_spell` (entiers `0`–`3`).
+- **Type stratégique** : `spell_type_spell` (chaînes slug : `degats`, `soin`, `protection`, etc.) — icônes SVG sous `icons/spell_type/`.
+- **Élément(s)** : `element_spell` (masque de bits + combinaisons courantes documentées dans le fichier).
+
+### Objet (`group` object)
+
+- **Rareté** : `rarity_object` (`0`–`5`).
+- **Résistance en % par palier** : `resistance_percent_tier_earth_object`, `resistance_percent_tier_fire_object`, `resistance_percent_tier_water_object`, `resistance_percent_tier_air_object`, `resistance_percent_tier_neutral_object` (`0`–`2`).
+- **Seuils d20** : `critical_hit_object`, `failure_hit_object` (`0`–`3`).
+
+### Créature (`group` creature)
+
+- **Critique** : `critical_hit_creature` (`0`–`3`, aligné sur l’équipement).
+- **Fiche monstre** : `hostility_creature` (`0`–`4`, aligné sur `Monster::HOSTILITY`), `monster_size` (`0`–`5`, aligné sur `Monster::SIZE`), `monster_is_boss` (`true` / `false`, sous-textes uniquement).
+- **Palier maîtrise (0–2)** : les 18 clés `*_mastery_creature` listées dans `$masteryCreaturePalierKeys` (même tableau de surcharges `Non formé` / `Maîtrise` / `Expertise` pour toutes).
+
+### Hors périmètre des surcharges seedées
+
+- Valeurs ouvertes ou référentiels extensifs (ex. `monster_race`) : pas de tableau d’overrides par valeur dans le seeder ; l’affichage repose sur le libellé métier (race) et les métadonnées par défaut de la caractéristique.

@@ -435,11 +435,6 @@
     "description": "Standardiser l’affichage des entités (ressources, items, monstres, sorts, etc.) afin d’obtenir des “cards” cohérentes dans les modales et les listes, et limiter la duplication de logique."
   },
   {
-    "path": "30-UI/SPELL_SUB_EFFECTS_DISPLAY.md",
-    "title": "Sous-effets de sort — ordre d’affichage et actions",
-    "description": "Préfixes (scope, critique), libellés par slug d’action, layouts journal (large/compact) vs chips table (minimal/line), données API et limites connues."
-  },
-  {
     "path": "30-UI/FRONTEND_MODELS.md",
     "title": "Modèles Frontend JS — KrosmozJDR",
     "description": "Les modèles frontend JS sont des classes qui normalisent et encapsulent les données des entités côté client. Ils fournissent une interface cohérente pour accéder aux propriétés, relations et méthodes utilitaires, indépendamment de la structure des données brutes (Proxies Vue, objets Inertia, etc.)."
@@ -527,7 +522,12 @@
   {
     "path": "30-UI/README.md",
     "title": "UI & Atomic Design — KrosmozJDR",
-    "description": "- **[ENTITY_FIELD_DESCRIPTORS_GUIDE.md](./ENTITY_FIELD_DESCRIPTORS_GUIDE.md)** — Guide complet du système Entity Field Descriptors (fonctionnement, architecture, utilisation)"
+    "description": "- **[PROPERTY_DISPLAY_SYSTEM.md](./PROPERTY_DISPLAY_SYSTEM.md)** — Propriétés / caractéristiques : baseline, flux BDD → Inertia, refonte unifiée (`CharacteristicProperty`, `useCharacteristicViewModel`, runtime créature)"
+  },
+  {
+    "path": "30-UI/SPELL_SUB_EFFECTS_DISPLAY.md",
+    "title": "Affichage des sous-effets de sort (actions)",
+    "description": "Unifier la **forme** des lignes de sous-effet sur :"
   },
   {
     "path": "30-UI/TANSTACK_TABLE.md",
@@ -555,14 +555,14 @@
     "description": "Ce document a été déplacé depuis `docs/50-Fonctionnalités/Scrapping/` car il ne concerne pas spécifiquement le scrapping."
   },
   {
+    "path": "40-DevGuides/PROJECT_CLI.md",
+    "title": "Interface CLI unifiée du projet (`project:*`)",
+    "description": "Objectif : **un vocabulaire stable** (dépendances, dev, données, bootstrap) via les commandes **`project:*`** et le service **`ProjectRunService`**, avec `setup` / `scrapping:*` pour les domaines concernés."
+  },
+  {
     "path": "40-DevGuides/README.md",
     "title": "Guides de développement — KrosmozJDR",
     "description": "Ce dossier regroupe les scripts, automatisations et outils pour le développement, la maintenance et le déploiement du projet."
-  },
-  {
-    "path": "40-DevGuides/PROJECT_CLI.md",
-    "title": "Interface CLI unifiée (project:*)",
-    "description": "Commandes project:deps, project:dev, project:refresh, project:data, project:data:sync, project:backup, project:super-admin ; ProjectRunService et setup ; page super admin maintenance (sync async)."
   },
   {
     "path": "40-DevGuides/UTILISATEUR_SYSTEME.md",
@@ -1262,7 +1262,7 @@
   {
     "path": "50-Fonctionnalités/Characteristics-DB/CAHIER_DES_CHARGES_NORMES_ENTITES.md",
     "title": "Cahier des charges — Aide à la création d’entités (normes / chartes)",
-    "description": "Spécification produit et recensement de l’existant : grilles 5×20, régulateurs (norms_conditions), API GET /api/characteristics/{key}/norms, admin NormsPanel, NormsViewer interactif, écarts (échelle 5 vs 7, conditions manuelles vs évaluation SI), page contributions à assembler."
+    "description": "**Date** : 2026-04-15"
   },
   {
     "path": "50-Fonctionnalités/Characteristics-DB/DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md",
@@ -1305,14 +1305,14 @@
     "description": "Ce fichier est produit par la commande `php artisan characteristics:extract-object-samples`. Il contient des **échantillons niveau → valeur** issus des **équipements** DofusDB, avec un **lien formel** entre les caractéristiques DofusDB et les clés Krosmoz."
   },
   {
+    "path": "50-Fonctionnalités/Characteristics-DB/SURCHARGES_VISUELLES_PAR_VALEUR.md",
+    "title": "Surcharges visuelles par valeur",
+    "description": "Chaque caractéristique possède une icône et une couleur par défaut (colonnes `icon`, `color` de la table `characteristics`). Certaines caractéristiques nécessitent que ces propriétés visuelles changent en fonction de la **valeur** courante. Par exemple :"
+  },
+  {
     "path": "50-Fonctionnalités/Characteristics-DB/TYPES_VALEURS_ET_CONTENU_JSON.md",
     "title": "Types de valeurs et contenu JSON des caractéristiques",
     "description": "Ce document définit les **types de valeurs** qu’une caractéristique peut prendre dans les entités (Boolean, Liste, String), les **propriétés associées à chaque type**, et le **format JSON** utilisé pour stocker les champs qui peuvent être une valeur fixe, une formule ou une table par caractéristique. C’est la base du service de caractéristiques pour définir correctement les valeurs possibles côté entités."
-  },
-  {
-    "path": "50-Fonctionnalités/Characteristics-DB/SURCHARGES_VISUELLES_PAR_VALEUR.md",
-    "title": "Surcharges visuelles par valeur des caractéristiques",
-    "description": "Colonne JSON value_overrides sur characteristics pour définir icône, couleur et sous-texte conditionnels selon la valeur. Résolution frontend via resolveValueOverride, affichage du sous-texte dans les tooltips."
   },
   {
     "path": "50-Fonctionnalités/ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md",

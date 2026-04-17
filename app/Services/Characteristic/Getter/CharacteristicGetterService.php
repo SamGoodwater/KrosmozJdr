@@ -492,9 +492,12 @@ final class CharacteristicGetterService
             $out['value_available'] = $this->pickGroupValue($base, $overlay, 'value_available') ?? $row->value_available;
             $overlayObj = $overlay instanceof CharacteristicObject ? $overlay : null;
             $baseObj = $base instanceof CharacteristicObject ? $base : null;
-            $out['allowed_item_type_ids'] = ($overlayObj && $overlayObj->relationLoaded('allowedItemTypes') && $overlayObj->allowedItemTypes->isNotEmpty())
-                ? $overlayObj->allowedItemTypes->pluck('id')->all()
-                : ($baseObj && $baseObj->relationLoaded('allowedItemTypes') ? $baseObj->allowedItemTypes->pluck('id')->all() : []);
+            $effectiveItemTypes = ($overlayObj && $overlayObj->relationLoaded('allowedItemTypes') && $overlayObj->allowedItemTypes->isNotEmpty())
+                ? $overlayObj->allowedItemTypes
+                : ($baseObj && $baseObj->relationLoaded('allowedItemTypes') ? $baseObj->allowedItemTypes : collect());
+            $restricted = $effectiveItemTypes->isNotEmpty();
+            $out['allowed_item_type_restricted'] = $restricted;
+            $out['allowed_item_type_ids'] = $restricted ? $effectiveItemTypes->pluck('id')->values()->all() : [];
         }
         if ($row instanceof CharacteristicCreature) {
             $out['labels'] = $this->pickGroupValue($base, $overlay, 'labels') ?? $row->labels;

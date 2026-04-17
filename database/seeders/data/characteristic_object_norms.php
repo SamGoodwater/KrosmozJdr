@@ -273,6 +273,16 @@ return [
         ],
         'norms_description' => 'Bonus critique d\'équipement. Rare.',
     ],
+    'failure_hit_object' => [
+        'norms_grid' => [
+            'very_weak'   => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            'weak'        => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            'neutral'     => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            'strong'      => [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2],
+            'very_strong' => [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3],
+        ],
+        'norms_description' => 'Malus échec critique d\'équipement. Rare.',
+    ],
     'heal_bonus_object' => [
         'norms_grid' => [
             'very_weak'   => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

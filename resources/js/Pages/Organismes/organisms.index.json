@@ -318,6 +318,34 @@
     "file": "section/templates/entity_table/SectionEntityTableEdit.vue"
   },
   {
+    "name": "SectionCharacteristicNormsCatalogRead",
+    "description": "Catalogue public de chartes : liste via API norms-catalog, détail chargé à l’ouverture d’un panneau.",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/characteristic_norms_catalog/SectionCharacteristicNormsCatalogRead.vue"
+  },
+  {
+    "name": "SectionCharacteristicNormsCatalogEdit",
+    "description": "Édition du catalogue de chartes : groupe, entité, filtre optionnel de clés. Sauvegarde via useSectionSave (aligné sur SectionEntityTableEdit).",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/characteristic_norms_catalog/SectionCharacteristicNormsCatalogEdit.vue"
+  },
+  {
+    "name": "SectionCharacteristicNormsRead",
+    "description": "Rendu public d'une section CharacteristicNorms. Charge les normes via l'API et affiche le NormsViewer interactif.",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/characteristic_norms/SectionCharacteristicNormsRead.vue"
+  },
+  {
+    "name": "SectionCharacteristicNormsEdit",
+    "description": "Édition de la configuration d'une section CharacteristicNorms. Sauvegarde via useSectionSave (aligné sur SectionEntityTableEdit).",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/characteristic_norms/SectionCharacteristicNormsEdit.vue"
+  },
+  {
     "name": "SectionParamsModal",
     "description": "SectionParamsModal Component",
     "props": [
@@ -489,29 +517,29 @@
     "file": "layout/ToolsFooterDropdown.vue"
   },
   {
-    "name": "SidebarNav",
-    "description": "Menu secondaire liste + détail : colonne ≥ lg, dropdown mobile/tablette.",
-    "props": [],
-    "slots": [],
-    "file": "layout/SidebarNav.vue"
-  },
-  {
     "name": "SidebarNavPanel",
-    "description": "Corps SidebarNav (en-tête, recherche, liste) — partagé colonne / dropdown.",
+    "description": "Corps du menu secondaire (en-tête, recherche, liste) — utilisé dans la colonne desktop et dans le dropdown mobile / tablette.",
     "props": [],
     "slots": [],
     "file": "layout/SidebarNavPanel.vue"
   },
   {
     "name": "SidebarNavItem",
-    "description": "Ligne d’item SidebarNav (lien ou bouton, accent glass, sous-texte).",
+    "description": "Une ligne du menu secondaire SidebarNav (lien ou bouton, accent glass, icônes, sous-texte).",
     "props": [],
     "slots": [],
     "file": "layout/SidebarNavItem.vue"
   },
   {
+    "name": "SidebarNav",
+    "description": "SidebarNav Organism",
+    "props": [],
+    "slots": [],
+    "file": "layout/SidebarNav.vue"
+  },
+  {
     "name": "HorizontalOverflowNav",
-    "description": "Barre nav horizontale glass, overflow en dropdown, mode mobile tout-menu.",
+    "description": "Barre de navigation horizontale : boutons glass alignés à droite, overflow dans un menu, et sous le breakpoint `md` (useDevice) tout regroupé dans un seul dropdown. Item attendu : `{ title, href, icon, path? }` — `href` = nom de route Ziggy, `path` = préfixe URL pour l’état actif.",
     "props": [],
     "slots": [],
     "file": "layout/HorizontalOverflowNav.vue"
@@ -536,6 +564,27 @@
     "props": [],
     "slots": [],
     "file": "entity/SpellEffectsUnifiedSection.vue"
+  },
+  {
+    "name": "SpellEditModal",
+    "description": "Modal d’édition sort : même contenu que la page {@link Pages/entity/spell/Edit} (données chargées via JSON pour rester sur la liste).",
+    "props": [],
+    "slots": [],
+    "file": "entity/SpellEditModal.vue"
+  },
+  {
+    "name": "SpellEditFormContent",
+    "description": "Corps de la fiche d’édition d’un sort (toolbar, formulaire, effets).",
+    "props": [],
+    "slots": [],
+    "file": "entity/SpellEditFormContent.vue"
+  },
+  {
+    "name": "ObjectEffectsManager",
+    "description": "Effets d’objet structurés (régénérer, ajouter, retirer, téléporter, invoquer) — hors système « effets de sort ».",
+    "props": [],
+    "slots": [],
+    "file": "entity/ObjectEffectsManager.vue"
   },
   {
     "name": "EntityRelationsManager",
@@ -781,6 +830,20 @@
     "file": "entity/CreateEntityModal.vue"
   },
   {
+    "name": "CapabilityEditModal",
+    "description": "Modal d’édition capacité : même contenu que {@link Pages/entity/capability/Edit} (données chargées via JSON pour rester sur la liste).",
+    "props": [],
+    "slots": [],
+    "file": "entity/CapabilityEditModal.vue"
+  },
+  {
+    "name": "CapabilityEditFormContent",
+    "description": "Corps de la fiche d’édition d’une capacité (toolbar + formulaire unique).",
+    "props": [],
+    "slots": [],
+    "file": "entity/CapabilityEditFormContent.vue"
+  },
+  {
     "name": "SearchInput",
     "description": "SearchInput Molecule (Atomic Design, DaisyUI)",
     "props": [
@@ -836,6 +899,24 @@
       }
     ],
     "file": "data-input/Fieldset.vue"
+  },
+  {
+    "name": "NormsViewer",
+    "description": "Composant assembleur des normes : table + chart + sélecteur de conditions. Layout responsive : côte à côte (lg) ou empilé (sm).",
+    "props": [
+      {
+        "name": "helpSectionHtml",
+        "type": "string",
+        "desc": "HTML brut depuis l’API ; affichage via sanitizeHtml() (règles détaillées)."
+      },
+      {
+        "name": "helpSectionTitle",
+        "type": "string",
+        "desc": "Titre optionnel au-dessus du bloc règles."
+      }
+    ],
+    "slots": [],
+    "file": "data-display/NormsViewer.vue"
   },
   {
     "name": "CharacteristicsCard",

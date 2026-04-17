@@ -94,8 +94,9 @@ class CharacteristicSeeder extends Seeder
                 'short_name' => $row['short_name'] ?? null,
                 'helper' => $row['helper'] ?? null,
                 'descriptions' => $row['descriptions'] ?? $descriptions[$key] ?? null,
-                'icon' => $row['icon'] ?? $icons[$key] ?? null,
-                'color' => $row['color'] ?? $colors[$key] ?? null,
+                // Clé absente ou null explicite : pas de repli sur les defaults (icône / couleur vides volontaires).
+                'icon' => array_key_exists('icon', $row) ? $row['icon'] : ($icons[$key] ?? null),
+                'color' => array_key_exists('color', $row) ? $row['color'] : ($colors[$key] ?? null),
                 'unit' => $row['unit'] ?? null,
                 'type' => $row['type'] ?? 'string',
                 'sort_order' => (int) ($row['sort_order'] ?? 0),
