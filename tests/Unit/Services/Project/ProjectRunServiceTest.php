@@ -9,30 +9,15 @@ use PHPUnit\Framework\TestCase;
 
 class ProjectRunServiceTest extends TestCase
 {
-    public function test_collect_actions_prepare_chaîne_attendue(): void
+    public function test_collect_actions_update_all_inclut_composer_et_pnpm(): void
     {
         $service = new ProjectRunService;
-        $actions = $service->collectActionsFromOptionMap(['prepare' => true]);
+        $actions = $service->collectActionsFromOptionMap(['update:all' => true]);
 
         $expected = [
-            'killServers',
-            'clearCss',
-            'clearCache',
-            'clearConfig',
-            'clearRoute',
-            'clearView',
-            'clearDebugbar',
-            'clearQueue',
-            'clearSchedule',
-            'clearEvent',
-            'clearOptimize',
             'runSetupInstall',
-            'updateCss',
-            'updateDocs',
-            'dumpAutoload',
-            'optimiseIde',
-            'optimiseLaravel',
-            'runSetupDb',
+            'runComposerProjectUpdate',
+            'runPnpmProjectUpdate',
         ];
 
         self::assertSame($expected, $actions);
@@ -44,5 +29,13 @@ class ProjectRunServiceTest extends TestCase
         $actions = $service->collectActionsFromOptionMap(['clear:cache' => true]);
 
         self::assertSame(['clearCache'], $actions);
+    }
+
+    public function test_collect_actions_clear_test_inclut_clear_test_artifacts(): void
+    {
+        $service = new ProjectRunService;
+        $actions = $service->collectActionsFromOptionMap(['clear:test' => true]);
+
+        self::assertSame(['clearTestArtifacts'], $actions);
     }
 }

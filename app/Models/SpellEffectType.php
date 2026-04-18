@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Type d'effet de sort (référentiel).
@@ -21,7 +23,29 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $is_positive
  * @property int $sort_order
  * @property int|null $dofusdb_effect_id
- * @property \Illuminate\Database\Eloquent\Collection<int, SpellEffect> $spellEffects
+ * @property Collection<int, SpellEffect> $spellEffects
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read int|null $spell_effects_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereDofusdbEffectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereElement($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereIsPositive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereValueType($value)
+ *
+ * @mixin \Eloquent
  */
 class SpellEffectType extends Model
 {
@@ -47,41 +71,73 @@ class SpellEffectType extends Model
     ];
 
     public const VALUE_TYPE_FIXED = 'fixed';
+
     public const VALUE_TYPE_DICE = 'dice';
+
     public const VALUE_TYPE_PERCENT = 'percent';
 
     public const CATEGORY_DAMAGE = 'damage';
+
     public const CATEGORY_HEAL = 'heal';
+
     public const CATEGORY_SHIELD = 'shield';
+
     public const CATEGORY_AP = 'ap';
+
     public const CATEGORY_PM = 'pm';
+
     public const CATEGORY_RANGE = 'range';
+
     public const CATEGORY_BUFF_STAT = 'buff_stat';
+
     public const CATEGORY_DEBUFF_STAT = 'debuff_stat';
+
     public const CATEGORY_BUFF_DAMAGE = 'buff_damage';
+
     public const CATEGORY_DEBUFF_DAMAGE = 'debuff_damage';
+
     public const CATEGORY_RESISTANCE = 'resistance';
+
     public const CATEGORY_STATE = 'state';
+
     public const CATEGORY_PLACEMENT = 'placement';
+
     public const CATEGORY_TELEPORT = 'teleport';
+
     public const CATEGORY_SUMMON = 'summon';
+
     public const CATEGORY_GLYPH_TRAP = 'glyph_trap';
+
     public const CATEGORY_ZONE = 'zone';
+
     public const CATEGORY_CRITICAL = 'critical';
+
     public const CATEGORY_REFLECT = 'reflect';
+
     public const CATEGORY_STEAL = 'steal';
+
     public const CATEGORY_DAMAGE_OVER_TIME = 'damage_over_time';
+
     public const CATEGORY_HEAL_OVER_TIME = 'heal_over_time';
+
     public const CATEGORY_LOCK = 'lock';
+
     public const CATEGORY_LINE_OF_SIGHT = 'line_of_sight';
+
     public const CATEGORY_INVISIBILITY = 'invisibility';
+
     public const CATEGORY_PROSPECTING = 'prospecting';
+
     public const CATEGORY_OTHER = 'other';
 
     public const ELEMENT_NEUTRAL = 'neutral';
+
     public const ELEMENT_EARTH = 'earth';
+
     public const ELEMENT_FIRE = 'fire';
+
     public const ELEMENT_WATER = 'water';
+
     public const ELEMENT_AIR = 'air';
 
     /**

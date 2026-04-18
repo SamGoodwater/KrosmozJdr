@@ -102,29 +102,6 @@ return [
         ],
     ],
     6 => [
-        'characteristic_key' => 'spell_type_spell',
-        'entity' => '*',
-        'db_column' => 'spell_type',
-        'min' => null,
-        'max' => null,
-        'formula' => null,
-        'formula_display' => 'Type de sort : orientation stratégique (dégâts, soin, protection, amélioration, entrave, invocation, placement, tank). Relation spell_types, pas une colonne directe. Un sort peut avoir plusieurs types.',
-        'default_value' => null,
-        'conversion_formula' => null,
-        'conversion_dofus_sample' => null,
-        'conversion_krosmoz_sample' => null,
-        'value_available' => [
-            'degats' => 'Dégâts',
-            'soin' => 'Soin',
-            'protection' => 'Protection',
-            'amelioration' => 'Amélioration',
-            'entrave' => 'Entrave',
-            'invocation' => 'Invocation',
-            'placement' => 'Placement',
-            'tank' => 'Tank',
-        ],
-    ],
-    7 => [
         'characteristic_key' => 'duration_spell',
         'entity' => '*',
         'db_column' => 'duration',
@@ -138,7 +115,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    8 => [
+    7 => [
         'characteristic_key' => 'element_spell',
         'entity' => '*',
         'db_column' => 'element',
@@ -152,7 +129,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    9 => [
+    8 => [
         'characteristic_key' => 'is_magic_spell',
         'entity' => '*',
         'db_column' => 'is_magic',
@@ -166,7 +143,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    10 => [
+    9 => [
         'characteristic_key' => 'number_between_two_cast_spell',
         'entity' => '*',
         'db_column' => 'number_between_two_cast',
@@ -180,7 +157,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    11 => [
+    10 => [
         'characteristic_key' => 'power_spell',
         'entity' => '*',
         'db_column' => 'powerful',
@@ -205,7 +182,7 @@ return [
         ],
         'value_available' => null,
     ],
-    12 => [
+    11 => [
         'characteristic_key' => 'range_editable_spell',
         'entity' => '*',
         'db_column' => 'po_editable',
@@ -219,7 +196,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    13 => [
+    12 => [
         'characteristic_key' => 'ritual_available_spell',
         'entity' => '*',
         'db_column' => 'ritual_available',
@@ -233,7 +210,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    14 => [
+    13 => [
         'characteristic_key' => 'sight_line_spell',
         'entity' => '*',
         'db_column' => 'sight_line',
@@ -247,7 +224,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    15 => [
+    14 => [
         'characteristic_key' => 'spell_range_max_spell',
         'entity' => '*',
         'db_column' => 'po_max',
@@ -261,7 +238,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    16 => [
+    15 => [
         'characteristic_key' => 'spell_range_min_spell',
         'entity' => '*',
         'db_column' => 'po_min',
@@ -275,7 +252,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    17 => [
+    16 => [
         'characteristic_key' => 'time_before_use_again_spell',
         'entity' => '*',
         'db_column' => 'time_before_use_again',
@@ -289,7 +266,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    18 => [
+    17 => [
         'characteristic_key' => 'allows_reaction_spell',
         'entity' => '*',
         'db_column' => 'allows_reaction',
@@ -303,7 +280,7 @@ return [
         'conversion_krosmoz_sample' => null,
         'value_available' => null,
     ],
-    19 => [
+    18 => [
         'characteristic_key' => 'bouclier_spell',
         'entity' => '*',
         'db_column' => null,
@@ -313,7 +290,31 @@ return [
         'formula_display' => 'Absorption/bouclier (sous-effet protéger, 3.2.4). PV temporaires absorbés avant les PV. Barèmes 5.2.3 : niv 1–3 ~1d4, niv 16–20 ~5d4+mod. Dofus dizaines–centaines, compressé pow(0.475) puis notation dés (convertToDice).',
         'default_value' => '0',
         'conversion_formula' => 'round(min(96, max(1, 1.12 * pow(max(1,[d]), 0.475))))',
-        'conversion_function' => 'convertToDice',
+        'conversion_dofus_sample' => [
+            10 => 3,
+            50 => 8,
+            100 => 11,
+            300 => 19,
+            1000 => 31,
+        ],
+        'conversion_krosmoz_sample' => [
+            3 => 3,
+            8 => 8,
+            15 => 15,
+            25 => 25,
+        ],
+        'value_available' => null,
+    ],
+    19 => [
+        'characteristic_key' => 'dommages_spell',
+        'entity' => '*',
+        'db_column' => null,
+        'min' => '0',
+        'max' => '96',
+        'formula' => null,
+        'formula_display' => 'Dégâts (sous-effet frapper, 3.3.2). Barèmes 5.2.3 : niv 1–3 1d6+mod (~5–10), niv 16–20 5d6+mod (~40–50). Dofus centaines compressées pow(0.475) puis notation dés (convertToDice). Élément détermine la carac de mod.',
+        'default_value' => '0',
+        'conversion_formula' => 'round(min(96, max(1, 1.12 * pow(max(1,[d]), 0.475))))',
         'conversion_dofus_sample' => [
             10 => 3,
             50 => 8,
@@ -330,16 +331,15 @@ return [
         'value_available' => null,
     ],
     20 => [
-        'characteristic_key' => 'dommages_spell',
+        'characteristic_key' => 'soin_spell',
         'entity' => '*',
         'db_column' => null,
         'min' => '0',
         'max' => '96',
         'formula' => null,
-        'formula_display' => 'Dégâts (sous-effet frapper, 3.3.2). Barèmes 5.2.3 : niv 1–3 1d6+mod (~5–10), niv 16–20 5d6+mod (~40–50). Dofus centaines compressées pow(0.475) puis notation dés (convertToDice). Élément détermine la carac de mod.',
+        'formula_display' => 'Soins (sous-effet soigner, 3.2.4). Barèmes 5.2.3 : niv 1–3 1d4+mod, niv 16–20 5d4+mod. Même compression que dommages. Plafonnés aux PV max de la cible. Souvent lié à Sagesse ou Vitalité (2.2.1.4).',
         'default_value' => '0',
         'conversion_formula' => 'round(min(96, max(1, 1.12 * pow(max(1,[d]), 0.475))))',
-        'conversion_function' => 'convertToDice',
         'conversion_dofus_sample' => [
             10 => 3,
             50 => 8,
@@ -356,30 +356,27 @@ return [
         'value_available' => null,
     ],
     21 => [
-        'characteristic_key' => 'soin_spell',
+        'characteristic_key' => 'spell_type_spell',
         'entity' => '*',
-        'db_column' => null,
-        'min' => '0',
-        'max' => '96',
+        'db_column' => 'spell_type',
+        'min' => null,
+        'max' => null,
         'formula' => null,
-        'formula_display' => 'Soins (sous-effet soigner, 3.2.4). Barèmes 5.2.3 : niv 1–3 1d4+mod, niv 16–20 5d4+mod. Même compression que dommages. Plafonnés aux PV max de la cible. Souvent lié à Sagesse ou Vitalité (2.2.1.4).',
-        'default_value' => '0',
-        'conversion_formula' => 'round(min(96, max(1, 1.12 * pow(max(1,[d]), 0.475))))',
-        'conversion_function' => 'convertToDice',
-        'conversion_dofus_sample' => [
-            10 => 3,
-            50 => 8,
-            100 => 11,
-            300 => 19,
-            1000 => 31,
+        'formula_display' => 'Type de sort : orientation stratégique (dégâts, soin, protection, amélioration, entrave, invocation, placement, tank). Relation spell_types, pas une colonne directe. Un sort peut avoir plusieurs types.',
+        'default_value' => null,
+        'conversion_formula' => null,
+        'conversion_dofus_sample' => null,
+        'conversion_krosmoz_sample' => null,
+        'value_available' => [
+            'degats' => 'Dégâts',
+            'soin' => 'Soin',
+            'protection' => 'Protection',
+            'amelioration' => 'Amélioration',
+            'entrave' => 'Entrave',
+            'invocation' => 'Invocation',
+            'placement' => 'Placement',
+            'tank' => 'Tank',
         ],
-        'conversion_krosmoz_sample' => [
-            3 => 3,
-            8 => 8,
-            15 => 15,
-            25 => 25,
-        ],
-        'value_available' => null,
     ],
     22 => [
         'characteristic_key' => 'vol_vie_spell',
@@ -391,7 +388,6 @@ return [
         'formula_display' => 'Vol de vie (sous-effet frapper + life_steal_formula, 3.2.4). Dégâts infligés + soins proportionnels au lanceur. Le vol de vie ne passe pas par les boucliers de la cible. Même barème que dommages.',
         'default_value' => '0',
         'conversion_formula' => 'round(min(96, max(1, 1.12 * pow(max(1,[d]), 0.475))))',
-        'conversion_function' => 'convertToDice',
         'conversion_dofus_sample' => [
             10 => 3,
             50 => 8,

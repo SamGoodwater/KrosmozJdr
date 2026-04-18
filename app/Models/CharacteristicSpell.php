@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Définition d’une caractéristique pour l’entité spell (groupe sort).
@@ -29,6 +30,39 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $norms_description Description libre de la norme
  * @property int|null $norms_help_section_id Section CMS (texte) affichée sous la charte
  * @property array|null $value_available
+ * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Characteristic $characteristic
+ * @property-read Section|null $normsHelpSection
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionDofusSample($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionFunction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionKrosmozSample($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionSampleRows($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereDbColumn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereDefaultValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereDofusdbCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereFormulaDisplay($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereNormsConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereNormsDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereNormsGrid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereNormsHelpSectionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereValueAvailable($value)
+ *
+ * @mixin \Eloquent
  */
 class CharacteristicSpell extends Model
 {

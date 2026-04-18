@@ -7,10 +7,15 @@ use App\Models\EffectUsage;
 use App\Models\ObjectEffect;
 use App\Models\Type\ItemType;
 use App\Models\User;
+use Database\Factories\ItemFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @property int $id
@@ -32,22 +37,22 @@ use Spatie\MediaLibrary\HasMedia;
  * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  * @property int|null $item_type_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read User|null $createdBy
  * @property-read ItemType|null $itemType
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
+ * @property-read Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
  *
  * @method static \Database\Factories\Entity\ItemFactory factory($count = null, $state = [])
@@ -80,11 +85,21 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withoutTrashed()
  *
+ * @property-read Collection<int, EffectUsage> $effectUsages
+ * @property-read int|null $effect_usages_count
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @property-read Collection<int, ObjectEffect> $objectEffects
+ * @property-read int|null $object_effects_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePriceCalculated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePriceCustom($value)
+ *
  * @mixin \Eloquent
  */
 class Item extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\ItemFactory> */
+    /** @use HasFactory<ItemFactory> */
     use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';

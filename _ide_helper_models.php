@@ -14,7 +14,7 @@
 namespace App\Models{
 /**
  * Caractéristique générale : propriétés communes et id unique.
- * 
+ *
  * Une ligne = une caractéristique (ex. PA créature, PA sort, PA objet = 3 lignes).
  *
  * @property int $id
@@ -32,18 +32,18 @@ namespace App\Models{
  * @property int $sort_order
  * @property string|null $group
  * @property int|null $linked_to_characteristic_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicCreature> $creatureRows
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, CharacteristicCreature> $creatureRows
  * @property-read int|null $creature_rows_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Characteristic> $linkedCharacteristics
+ * @property-read Collection<int, Characteristic> $linkedCharacteristics
  * @property-read int|null $linked_characteristics_count
  * @property-read Characteristic|null $masterCharacteristic
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicObject> $objectRows
+ * @property-read Collection<int, CharacteristicObject> $objectRows
  * @property-read int|null $object_rows_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicSpell> $spellRows
+ * @property-read Collection<int, CharacteristicSpell> $spellRows
  * @property-read int|null $spell_rows_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newQuery()
@@ -65,6 +65,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereValueOverrides($value)
+ * @mixin \Eloquent
  */
 	class Characteristic extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -94,10 +95,10 @@ namespace App\Models{
  * @property array|null $labels
  * @property array|null $validation
  * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Characteristic $characteristic
- * @property-read \App\Models\Section|null $normsHelpSection
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Characteristic $characteristic
+ * @property-read Section|null $normsHelpSection
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature query()
@@ -124,6 +125,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereNormsHelpSectionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereValidation($value)
+ * @mixin \Eloquent
  */
 	class CharacteristicCreature extends \Eloquent {}
 }
@@ -155,13 +157,13 @@ namespace App\Models{
  * @property string|null $norms_description Description libre de la norme
  * @property int|null $norms_help_section_id Section CMS (texte) affichée sous la charte
  * @property array|null $value_available
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ItemType> $allowedItemTypes
+ * @property-read Collection<int, ItemType> $allowedItemTypes
  * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read int|null $allowed_item_types_count
- * @property-read \App\Models\Characteristic $characteristic
- * @property-read \App\Models\Section|null $normsHelpSection
+ * @property-read Characteristic $characteristic
+ * @property-read Section|null $normsHelpSection
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject query()
@@ -191,6 +193,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereRunePricePerUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereValueAvailable($value)
+ * @mixin \Eloquent
  */
 	class CharacteristicObject extends \Eloquent {}
 }
@@ -219,10 +222,10 @@ namespace App\Models{
  * @property int|null $norms_help_section_id Section CMS (texte) affichée sous la charte
  * @property array|null $value_available
  * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Characteristic $characteristic
- * @property-read \App\Models\Section|null $normsHelpSection
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Characteristic $characteristic
+ * @property-read Section|null $normsHelpSection
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell query()
@@ -248,6 +251,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereNormsHelpSectionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereValueAvailable($value)
+ * @mixin \Eloquent
  */
 	class CharacteristicSpell extends \Eloquent {}
 }
@@ -258,16 +262,16 @@ namespace App\Models{
  * @property int $user_id
  * @property string $type
  * @property string $status
- * @property \Illuminate\Support\Carbon $requested_at
- * @property \Illuminate\Support\Carbon|null $confirmed_at
- * @property \Illuminate\Support\Carbon|null $processed_at
- * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property Carbon $requested_at
+ * @property Carbon|null $confirmed_at
+ * @property Carbon|null $processed_at
+ * @property Carbon|null $expires_at
  * @property array<array-key, mixed>|null $meta
  * @property string|null $ip_address
  * @property string|null $user_agent
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest query()
@@ -284,6 +288,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereUserAgent($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DataSubjectRequest whereUserId($value)
+ * @mixin \Eloquent
  */
 	class DataSubjectRequest extends \Eloquent {}
 }
@@ -298,8 +303,8 @@ namespace App\Models{
  * @property string $sub_effect_slug
  * @property string $characteristic_source
  * @property string|null $characteristic_key
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping query()
@@ -310,6 +315,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereSubEffectSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class DofusdbEffectMapping extends \Eloquent {}
 }
@@ -323,13 +329,13 @@ namespace App\Models{
  * @property string|null $slug
  * @property string|null $description
  * @property string $target_type
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectDegree> $degrees
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, EffectDegree> $degrees
  * @property-read int|null $degrees_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read Collection<int, EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newQuery()
@@ -341,6 +347,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereTargetType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class Effect extends \Eloquent {}
 }
@@ -357,12 +364,12 @@ namespace App\Models{
  * @property string|null $area
  * @property string|null $slug
  * @property string|null $config_signature
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Effect $effect
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectSubEffect> $effectSubEffects
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Effect $effect
+ * @property-read Collection<int, EffectSubEffect> $effectSubEffects
  * @property-read int|null $effect_sub_effects_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read Collection<int, EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree newQuery()
@@ -376,6 +383,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereRequiredCreatureLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class EffectDegree extends \Eloquent {}
 }
@@ -399,10 +407,10 @@ namespace App\Models{
  * @property string|null $logic_group
  * @property string|null $logic_operator
  * @property string|null $logic_condition
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\EffectDegree $effectDegree
- * @property-read \App\Models\SubEffect $subEffect
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read EffectDegree $effectDegree
+ * @property-read SubEffect $subEffect
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect query()
@@ -423,6 +431,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereValueMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereValueMin($value)
+ * @mixin \Eloquent
  */
 	class EffectSubEffect extends \Eloquent {}
 }
@@ -430,17 +439,17 @@ namespace App\Models{
 namespace App\Models{
 /**
  * Lien polymorphique entité (item, consumable, resource) → degré d’effet.
- * 
+ *
  * Les sorts utilisent la table {@see effect_spell} ; le seuil est sur {@see EffectDegree::required_creature_level}.
  *
  * @property int $id
  * @property string $entity_type
  * @property int $entity_id
  * @property int $effect_degree_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\EffectDegree $effectDegree
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $entity
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read EffectDegree $effectDegree
+ * @property-read Model|\Eloquent $entity
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage query()
@@ -450,6 +459,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEntityType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class EffectUsage extends \Eloquent {}
 }
@@ -457,14 +467,14 @@ namespace App\Models{
 namespace App\Models{
 /**
  * Modèle placeholder pour les uploads d'images d'entités sans entité cible (ex. bulk).
- * 
+ *
  * Un média est attaché à cette instance ; l'URL retournée peut être affectée au champ
  * image de plusieurs entités (string). Nettoyage des anciennes lignes à prévoir (job).
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload newQuery()
@@ -472,6 +482,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class EntityImageUpload extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -485,12 +496,12 @@ namespace App\Models\Entity{
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Creature> $creatures
+ * @property-read Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
  * @method static \Database\Factories\Entity\AttributeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute newModelQuery()
@@ -510,9 +521,9 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withoutTrashed()
- * @mixin \Eloquent
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ * @mixin \Eloquent
  */
 	class Attribute extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -524,8 +535,8 @@ namespace App\Models\Entity{
  * @property int $id
  * @property string|null $official_id
  * @property string|null $dofusdb_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string $name
  * @property string|null $description_fast
  * @property string|null $description
@@ -539,20 +550,19 @@ namespace App\Models\Entity{
  * @property string|null $image
  * @property string|null $icon
  * @property bool $auto_update
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Npc> $npcs
+ * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
  * @method static \Database\Factories\Entity\BreedFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed query()
- * @mixin \Eloquent
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereAutoUpdate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedAt($value)
@@ -576,6 +586,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
+ * @mixin \Eloquent
  */
 	class Breed extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -593,34 +604,34 @@ namespace App\Models\Entity{
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
+ * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Npc> $npcs
+ * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Page> $pages
+ * @property-read Collection<int, Page> $pages
  * @property-read int|null $pages_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
+ * @property-read Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $users
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
  * @method static \Database\Factories\Entity\CampaignFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign newModelQuery()
@@ -670,14 +681,14 @@ namespace App\Models\Entity{
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Creature> $creatures
+ * @property-read Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Specialization> $specializations
+ * @property-read Collection<int, Specialization> $specializations
  * @property-read int|null $specializations_count
  * @method static \Database\Factories\Entity\CapabilityFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability newModelQuery()
@@ -709,9 +720,9 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
- * @mixin \Eloquent
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ * @mixin \Eloquent
  */
 	class Capability extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -721,8 +732,8 @@ namespace App\Models\Entity{
  * @property int $id
  * @property string|null $official_id
  * @property string|null $dofusdb_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string $name
  * @property string|null $description
  * @property string|null $effect
@@ -736,20 +747,20 @@ namespace App\Models\Entity{
  * @property string $dofus_version
  * @property string|null $image
  * @property bool $auto_update
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  * @property int|null $consumable_type_id
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read ConsumableType|null $consumableType
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Creature> $creatures
+ * @property-read Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
  * @method static \Database\Factories\Entity\ConsumableFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable newModelQuery()
@@ -779,13 +790,13 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withoutTrashed()
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read Collection<int, EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ObjectEffect> $objectEffects
+ * @property-read Collection<int, ObjectEffect> $objectEffects
  * @property-read int|null $object_effects_count
+ * @mixin \Eloquent
  */
 	class Consumable extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -894,24 +905,24 @@ namespace App\Models\Entity{
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Attribute> $attributes
+ * @property-read Collection<int, Attribute> $attributes
  * @property-read int|null $attributes_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Capability> $capabilities
+ * @property-read Collection<int, Capability> $capabilities
  * @property-read int|null $capabilities_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
  * @property-read Monster|null $monster
  * @property-read Npc|null $npc
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
  * @method static \Database\Factories\Entity\CreatureFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature newModelQuery()
@@ -1010,10 +1021,9 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereVitality($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withoutTrashed()
- * @mixin \Eloquent
  * @property string $critical_hit
  * @property string $heal_bonus
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereCriticalHit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoSagesse($value)
@@ -1033,6 +1043,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveVitalityMastery($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomBonus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomMastery($value)
+ * @mixin \Eloquent
  */
 	class Creature extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1058,22 +1069,22 @@ namespace App\Models\Entity{
  * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  * @property int|null $item_type_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read User|null $createdBy
  * @property-read ItemType|null $itemType
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
+ * @property-read Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
  * @method static \Database\Factories\Entity\ItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item newModelQuery()
@@ -1104,15 +1115,15 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withoutTrashed()
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read Collection<int, EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ObjectEffect> $objectEffects
+ * @property-read Collection<int, ObjectEffect> $objectEffects
  * @property-read int|null $object_effects_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePriceCalculated($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePriceCustom($value)
+ * @mixin \Eloquent
  */
 	class Item extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1127,15 +1138,15 @@ namespace App\Models\Entity{
  * @property bool $auto_update
  * @property int $size
  * @property int|null $monster_race_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read Creature|null $creature
  * @property-read MonsterRace|null $monsterRace
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spellInvocations
+ * @property-read Collection<int, Spell> $spellInvocations
  * @property-read int|null $spell_invocations_count
  * @method static \Database\Factories\Entity\MonsterFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster newModelQuery()
@@ -1155,13 +1166,13 @@ namespace App\Models\Entity{
  * @property string $boss_pa
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereBossPa($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereIsBoss($value)
- * @mixin \Eloquent
  * @property string $state
  * @property int $read_level
  * @property int $write_level
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereWriteLevel($value)
+ * @mixin \Eloquent
  */
 	class Monster extends \Eloquent {}
 }
@@ -1176,15 +1187,15 @@ namespace App\Models\Entity{
  * @property string|null $size
  * @property int|null $breed_id
  * @property int|null $specialization_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read Breed|null $breed
  * @property-read Creature|null $creature
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
+ * @property-read Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read Shop|null $shop
  * @property-read Specialization|null $specialization
@@ -1202,13 +1213,13 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereSpecializationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereStory($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereUpdatedAt($value)
- * @mixin \Eloquent
  * @property string $state
  * @property int $read_level
  * @property int $write_level
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereWriteLevel($value)
+ * @mixin \Eloquent
  */
 	class Npc extends \Eloquent {}
 }
@@ -1222,20 +1233,20 @@ namespace App\Models\Entity{
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Npc> $npcs
+ * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
  * @method static \Database\Factories\Entity\PanoplyFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply newModelQuery()
@@ -1255,9 +1266,9 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withoutTrashed()
- * @mixin \Eloquent
  * @property string|null $dofusdb_id
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereDofusdbId($value)
+ * @mixin \Eloquent
  */
 	class Panoply extends \Eloquent {}
 }
@@ -1280,22 +1291,22 @@ namespace App\Models\Entity{
  * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  * @property int|null $resource_type_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Creature> $creatures
+ * @property-read Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
  * @property-read ResourceType|null $resourceType
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
  * @method static \Database\Factories\Entity\ResourceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource newModelQuery()
@@ -1325,17 +1336,17 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereWeight($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read Collection<int, EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ObjectEffect> $objectEffects
+ * @property-read Collection<int, ObjectEffect> $objectEffects
  * @property-read int|null $object_effects_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $recipeIngredients
+ * @property-read Collection<int, resource> $recipeIngredients
  * @property-read int|null $recipe_ingredients_count
+ * @mixin \Eloquent
  */
 	class Resource extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1353,36 +1364,36 @@ namespace App\Models\Entity{
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
+ * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Npc> $npcs
+ * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Page> $pages
+ * @property-read Collection<int, Page> $pages
  * @property-read int|null $pages_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
+ * @property-read Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ScenarioLink> $scenarioLinks
+ * @property-read Collection<int, ScenarioLink> $scenarioLinks
  * @property-read int|null $scenario_links_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $users
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
  * @method static \Database\Factories\Entity\ScenarioFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario newModelQuery()
@@ -1422,24 +1433,24 @@ namespace App\Models\Entity{
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property int|null $npc_id
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
  * @property-read Npc|null $npc
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
+ * @property-read Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @method static \Database\Factories\Entity\ShopFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop newModelQuery()
@@ -1462,9 +1473,9 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withoutTrashed()
- * @mixin \Eloquent
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ * @mixin \Eloquent
  */
 	class Shop extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1478,14 +1489,14 @@ namespace App\Models\Entity{
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Capability> $capabilities
+ * @property-read Collection<int, Capability> $capabilities
  * @property-read int|null $capabilities_count
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Npc> $npcs
+ * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
  * @method static \Database\Factories\Entity\SpecializationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization newModelQuery()
@@ -1505,9 +1516,9 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withoutTrashed()
- * @mixin \Eloquent
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ * @mixin \Eloquent
  */
 	class Specialization extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1547,20 +1558,20 @@ namespace App\Models\Entity{
  * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Creature> $creatures
+ * @property-read Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
+ * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, SpellType> $spellTypes
+ * @property-read Collection<int, SpellType> $spellTypes
  * @property-read int|null $spell_types_count
  * @method static \Database\Factories\Entity\SpellFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell newModelQuery()
@@ -1598,19 +1609,18 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
- * @mixin \Eloquent
  * @property string|null $duration
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
+ * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Effect> $effects
+ * @property-read Collection<int, Effect> $effects
  * @property-read int|null $effects_count
  * @property-read string|null $area
  * @property-read string $po_display
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SpellEffect> $spellEffects
+ * @property-read Collection<int, SpellEffect> $spellEffects
  * @property-read int|null $spell_effects_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SpellState> $spellStates
+ * @property-read Collection<int, SpellState> $spellStates
  * @property-read int|null $spell_states_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAllowsReaction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAttackCharacteristicKey($value)
@@ -1622,6 +1632,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveCharacteristicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveDcFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveSuccessNote($value)
+ * @mixin \Eloquent
  */
 	class Spell extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1629,7 +1640,7 @@ namespace App\Models\Entity{
 namespace App\Models{
 /**
  * Entrée en attente pour envoi en digest (quotidien, hebdo, mensuel).
- * 
+ *
  * Le payload est stocké en JSON ; NotificationService::pushToDigestQueue le normalise
  * (Carbon, Enum, etc.) avant enregistrement.
  *
@@ -1638,7 +1649,7 @@ namespace App\Models{
  * @property string $notification_type
  * @property string $frequency
  * @property array $payload
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon $created_at
  * @property-read User $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue newQuery()
@@ -1649,6 +1660,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereNotificationType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue wherePayload($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereUserId($value)
+ * @mixin \Eloquent
  */
 	class NotificationDigestQueue extends \Eloquent {}
 }
@@ -1656,7 +1668,7 @@ namespace App\Models{
 namespace App\Models{
 /**
  * Compte OAuth lié à un utilisateur (GitHub, Discord).
- * 
+ *
  * Stocke les identifiants externes et permet la liaison/déliaison des fournisseurs.
  *
  * @property int $id
@@ -1666,8 +1678,8 @@ namespace App\Models{
  * @property string|null $provider_email
  * @property string|null $provider_name
  * @property string|null $avatar_url
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property-read User $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount forUser(int $userId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount newModelQuery()
@@ -1683,6 +1695,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereProviderName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereUserId($value)
+ * @mixin \Eloquent
  */
 	class OAuthAccount extends \Eloquent {}
 }
@@ -1698,11 +1711,11 @@ namespace App\Models{
  * @property int|null $characteristic_id
  * @property int|null $monster_id
  * @property int|null $value
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Characteristic|null $characteristic
- * @property-read \App\Models\Entity\Monster|null $monster
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $objectEffectable
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Characteristic|null $characteristic
+ * @property-read Monster|null $monster
+ * @property-read Model|\Eloquent $objectEffectable
  * @method static \Database\Factories\ObjectEffectFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect newQuery()
@@ -1716,6 +1729,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereObjectEffectableType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereValue($value)
+ * @mixin \Eloquent
  */
 	class ObjectEffect extends \Eloquent {}
 }
@@ -1723,11 +1737,11 @@ namespace App\Models{
 namespace App\Models{
 /**
  * Modèle Eloquent Page
- * 
+ *
  * Représente une page dynamique du site (menu, arborescence, sections, droits, etc.).
  * Gère la hiérarchie, la visibilité, l'état, les utilisateurs associés, les campagnes et scénarios liés.
  * Utilisé pour la construction dynamique du contenu et la gestion des droits d'accès.
- * 
+ *
  * Relations : sections, parent, children, users, campaigns, scenarios, createdBy
  *
  * @property int $id
@@ -1741,16 +1755,16 @@ namespace App\Models{
  * @property int $menu_order
  * @property string|null $menu_group
  * @property int|null $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Page> $children
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read Collection<int, Page> $children
  * @property-read int|null $children_count
- * @property-read \App\Models\User|null $createdBy
+ * @property-read User|null $createdBy
  * @property-read Page|null $parent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Section> $sections
+ * @property-read Collection<int, Section> $sections
  * @property-read int|null $sections_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
  * @method static \Database\Factories\PageFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page newModelQuery()
@@ -1772,28 +1786,28 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page withoutTrashed()
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @mixin \Eloquent
  * @property string|null $entity_key
  * @property string|null $icon
  * @property string|null $page_css_classes
  * @property string|null $title_css_classes
  * @property string|null $menu_item_css_classes
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page forMenu(?\App\Models\User $user = null)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page inMenu()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page ordered()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page playable()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page readableFor(?\App\Models\User $user = null)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereEntityKey($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereIcon($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereMenuItemCssClasses($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page wherePageCssClasses($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereReadLevel($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereTitleCssClasses($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereWriteLevel($value)
+ * @method static Builder<static>|Page forMenu(?\App\Models\User $user = null)
+ * @method static Builder<static>|Page inMenu()
+ * @method static Builder<static>|Page ordered()
+ * @method static Builder<static>|Page playable()
+ * @method static Builder<static>|Page readableFor(?\App\Models\User $user = null)
+ * @method static Builder<static>|Page whereEntityKey($value)
+ * @method static Builder<static>|Page whereIcon($value)
+ * @method static Builder<static>|Page whereMenuItemCssClasses($value)
+ * @method static Builder<static>|Page wherePageCssClasses($value)
+ * @method static Builder<static>|Page whereReadLevel($value)
+ * @method static Builder<static>|Page whereTitleCssClasses($value)
+ * @method static Builder<static>|Page whereWriteLevel($value)
+ * @mixin \Eloquent
  */
 	class Page extends \Eloquent {}
 }
@@ -1809,9 +1823,9 @@ namespace App\Models{
  * @property array|null $context Contexte additionnel
  * @property string|null $ip_address
  * @property string|null $user_agent
- * @property \Illuminate\Support\Carbon $created_at
- * @property-read \App\Models\User|null $actor
- * @property-read \App\Models\User|null $subjectUser
+ * @property Carbon $created_at
+ * @property-read User|null $actor
+ * @property-read User|null $subjectUser
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog query()
@@ -1823,6 +1837,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereIpAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereSubjectUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereUserAgent($value)
+ * @mixin \Eloquent
  */
 	class PrivacyAuditLog extends \Eloquent {}
 }
@@ -1835,13 +1850,13 @@ namespace App\Models{
  * @property string $status
  * @property string $path
  * @property string|null $checksum
- * @property \Illuminate\Support\Carbon|null $expires_at
- * @property \Illuminate\Support\Carbon|null $downloaded_at
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $downloaded_at
  * @property array<array-key, mixed>|null $meta
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\DataSubjectRequest|null $dataSubjectRequest
- * @property-read \App\Models\User $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read DataSubjectRequest|null $dataSubjectRequest
+ * @property-read User $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport query()
@@ -1856,6 +1871,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereUserId($value)
+ * @mixin \Eloquent
  */
 	class PrivacyExport extends \Eloquent {}
 }
@@ -1873,12 +1889,12 @@ namespace App\Models{
  * @property int $progress_done
  * @property int $progress_total
  * @property string|null $error
- * @property \Illuminate\Support\Carbon|null $started_at
- * @property \Illuminate\Support\Carbon|null $finished_at
- * @property \Illuminate\Support\Carbon|null $cancelled_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $started_at
+ * @property Carbon|null $finished_at
+ * @property Carbon|null $cancelled_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob query()
@@ -1898,6 +1914,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereSummary($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class ScrappingJob extends \Eloquent {}
 }
@@ -1918,8 +1935,8 @@ namespace App\Models\Scrapping{
  * @property string|null $source_entity_type
  * @property int|null $source_entity_dofusdb_id
  * @property int|null $quantity
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem query()
@@ -1932,6 +1949,7 @@ namespace App\Models\Scrapping{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereSourceEntityDofusdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereSourceEntityType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class PendingResourceTypeItem extends \Eloquent {}
 }
@@ -1939,7 +1957,7 @@ namespace App\Models\Scrapping{
 namespace App\Models\Scrapping{
 /**
  * Règle de mapping : une clé logique (ex. level, name) pour une source+entité DofusDB.
- * 
+ *
  * Lie un chemin API (from_path) à une ou plusieurs cibles Krosmoz (model.field) avec formatters.
  *
  * @property int $id
@@ -1953,12 +1971,12 @@ namespace App\Models\Scrapping{
  * @property string|null $spell_level_aggregation first|max|min|last (agrégation multi spell-level)
  * @property int $sort_order
  * @example ScrappingEntityMapping::where('source', 'dofusdb')->where('entity', 'monster')->orderBy('sort_order')->get();
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Characteristic|null $characteristic
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Characteristic> $characteristics
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Characteristic|null $characteristic
+ * @property-read Collection<int, Characteristic> $characteristics
  * @property-read int|null $characteristics_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Scrapping\ScrappingEntityMappingTarget> $targets
+ * @property-read Collection<int, ScrappingEntityMappingTarget> $targets
  * @property-read int|null $targets_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping newQuery()
@@ -1975,6 +1993,7 @@ namespace App\Models\Scrapping{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSource($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSpellLevelAggregation($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class ScrappingEntityMapping extends \Eloquent {}
 }
@@ -1982,7 +2001,7 @@ namespace App\Models\Scrapping{
 namespace App\Models\Scrapping{
 /**
  * Cible d'une règle de mapping : un couple (model, field) Krosmoz.
- * 
+ *
  * Une règle peut avoir plusieurs cibles (ex. item → resources, consumables, items).
  *
  * @property int $id
@@ -1990,9 +2009,9 @@ namespace App\Models\Scrapping{
  * @property string $target_model
  * @property string $target_field
  * @property int $sort_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Scrapping\ScrappingEntityMapping $scrappingEntityMapping
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read ScrappingEntityMapping $scrappingEntityMapping
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget query()
@@ -2003,6 +2022,7 @@ namespace App\Models\Scrapping{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereTargetField($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereTargetModel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class ScrappingEntityMappingTarget extends \Eloquent {}
 }
@@ -2010,11 +2030,11 @@ namespace App\Models\Scrapping{
 namespace App\Models{
 /**
  * Modèle Eloquent Section
- * 
+ *
  * Représente une section dynamique appartenant à une page (bloc de contenu, composant Vue).
  * Gère l'ordre, le type, les paramètres dynamiques, la visibilité, l'état, les utilisateurs et fichiers associés.
  * Utilisé pour la construction flexible des pages et la gestion fine des droits d'accès.
- * 
+ *
  * Relations : page, users, createdBy ; médias via Media Library (collection files)
  *
  * @property int $id
@@ -2022,21 +2042,21 @@ namespace App\Models{
  * @property string|null $title
  * @property string|null $slug
  * @property int $order
- * @property \App\Enums\SectionType $template
+ * @property SectionType $template
  * @property array<array-key, mixed>|null $settings
  * @property array<array-key, mixed>|null $data
  * @property string $state
  * @property int $read_level
  * @property int $write_level
  * @property int|null $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read User|null $createdBy
+ * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \App\Models\Page $page
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read Page $page
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
  * @method static \Database\Factories\SectionFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section newModelQuery()
@@ -2058,18 +2078,18 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withoutTrashed()
- * @mixin \Eloquent
- * @property \App\Enums\SectionType|null $type
+ * @property SectionType|null $type
  * @property array<array-key, mixed>|null $params
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section displayable(?\App\Models\User $user = null)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section ordered()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section playable()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section published()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section readableFor(?\App\Models\User $user = null)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereParams($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereReadLevel($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereWriteLevel($value)
+ * @method static Builder<static>|Section displayable(?\App\Models\User $user = null)
+ * @method static Builder<static>|Section ordered()
+ * @method static Builder<static>|Section playable()
+ * @method static Builder<static>|Section published()
+ * @method static Builder<static>|Section readableFor(?\App\Models\User $user = null)
+ * @method static Builder<static>|Section whereParams($value)
+ * @method static Builder<static>|Section whereReadLevel($value)
+ * @method static Builder<static>|Section whereType($value)
+ * @method static Builder<static>|Section whereWriteLevel($value)
+ * @mixin \Eloquent
  */
 	class Section extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -2095,8 +2115,8 @@ namespace App\Models{
  * @property-read Spell $spell
  * @property-read SpellEffectType $spellEffectType
  * @property-read Monster|null $summonMonster
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect query()
@@ -2116,6 +2136,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereValueMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereValueMin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereZoneShape($value)
+ * @mixin \Eloquent
  */
 	class SpellEffect extends \Eloquent {}
 }
@@ -2135,9 +2156,9 @@ namespace App\Models{
  * @property bool $is_positive
  * @property int $sort_order
  * @property int|null $dofusdb_effect_id
- * @property \Illuminate\Database\Eloquent\Collection<int, SpellEffect> $spellEffects
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Collection<int, SpellEffect> $spellEffects
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read int|null $spell_effects_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType newQuery()
@@ -2155,6 +2176,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereValueType($value)
+ * @mixin \Eloquent
  */
 	class SpellEffectType extends \Eloquent {}
 }
@@ -2183,9 +2205,9 @@ namespace App\Models{
  * @property bool $display_turn_remaining
  * @property bool $is_main_state
  * @property array<array-key, mixed>|null $raw
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Spell> $spells
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState newQuery()
@@ -2212,6 +2234,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState wherePreventsSpellCast($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereRaw($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class SpellState extends \Eloquent {}
 }
@@ -2219,7 +2242,7 @@ namespace App\Models{
 namespace App\Models{
 /**
  * Sous-effet (atome : taper, soigner, vol_pa.
- * 
+ *
  * ..).
  *
  * @property int $id
@@ -2230,9 +2253,9 @@ namespace App\Models{
  * @property array<array-key, mixed>|null $variables_allowed
  * @property array<array-key, mixed>|null $param_schema
  * @property int|null $dofusdb_effect_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectDegree> $effectDegrees
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, EffectDegree> $effectDegrees
  * @property-read int|null $effect_degrees_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect newQuery()
@@ -2247,6 +2270,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereTypeSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereVariablesAllowed($value)
+ * @mixin \Eloquent
  */
 	class SubEffect extends \Eloquent {}
 }
@@ -2254,7 +2278,7 @@ namespace App\Models{
 namespace App\Models{
 /**
  * Preset de filtres pour les tableaux TanStack.
- * 
+ *
  * Stocke des snapshots de filtres par utilisateur, type d'entité et table.
  *
  * @property int $id
@@ -2266,9 +2290,9 @@ namespace App\Models{
  * @property array<array-key, mixed>|null $filters
  * @property int|null $limit
  * @property bool $is_default
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset query()
@@ -2283,6 +2307,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset whereTableId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset whereUserId($value)
+ * @mixin \Eloquent
  */
 	class TableFilterPreset extends \Eloquent {}
 }
@@ -2294,11 +2319,11 @@ namespace App\Models\Type{
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User|null $createdBy
  * @method static \Database\Factories\Type\ConsumableTypeFactory factory($count = null, $state = [])
@@ -2317,11 +2342,10 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withoutTrashed()
- * @mixin \Eloquent
  * @property int|null $dofusdb_type_id
  * @property string $decision
  * @property int $seen_count
- * @property \Illuminate\Support\Carbon|null $last_seen_at
+ * @property Carbon|null $last_seen_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType allowed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType blocked()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType pending()
@@ -2329,6 +2353,7 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDofusdbTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereLastSeenAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereSeenCount($value)
+ * @mixin \Eloquent
  */
 	class ConsumableType extends \Eloquent {}
 }
@@ -2340,12 +2365,12 @@ namespace App\Models\Type{
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
  * @method static \Database\Factories\Type\ItemTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType newModelQuery()
@@ -2363,12 +2388,11 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withoutTrashed()
- * @mixin \Eloquent
  * @property int|null $dofusdb_type_id
  * @property string $decision
  * @property int $seen_count
- * @property \Illuminate\Support\Carbon|null $last_seen_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicObject> $allowedCharacteristicObjects
+ * @property Carbon|null $last_seen_at
+ * @property-read Collection<int, CharacteristicObject> $allowedCharacteristicObjects
  * @property-read int|null $allowed_characteristic_objects_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType allowed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType blocked()
@@ -2377,6 +2401,7 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereDofusdbTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereLastSeenAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereSeenCount($value)
+ * @mixin \Eloquent
  */
 	class ItemType extends \Eloquent {}
 }
@@ -2389,15 +2414,15 @@ namespace App\Models\Type{
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property int|null $id_super_race
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
+ * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, MonsterRace> $subRaces
+ * @property-read Collection<int, MonsterRace> $subRaces
  * @property-read int|null $sub_races_count
  * @property-read MonsterRace|null $superRace
  * @method static \Database\Factories\Type\MonsterRaceFactory factory($count = null, $state = [])
@@ -2417,8 +2442,8 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withoutTrashed()
- * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereDofusdbRaceId($value)
+ * @mixin \Eloquent
  */
 	class MonsterRace extends \Eloquent {}
 }
@@ -2430,12 +2455,12 @@ namespace App\Models\Type{
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
  * @method static \Database\Factories\Type\ResourceTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType newModelQuery()
@@ -2453,11 +2478,10 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withoutTrashed()
- * @mixin \Eloquent
  * @property int|null $dofusdb_type_id
  * @property string $decision
  * @property int $seen_count
- * @property \Illuminate\Support\Carbon|null $last_seen_at
+ * @property Carbon|null $last_seen_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType allowed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType blocked()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType pending()
@@ -2465,6 +2489,7 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDofusdbTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereLastSeenAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereSeenCount($value)
+ * @mixin \Eloquent
  */
 	class ResourceType extends \Eloquent {}
 }
@@ -2499,12 +2524,12 @@ namespace App\Models\Type{
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
  * @method static \Database\Factories\Type\SpellTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType newModelQuery()
@@ -2533,13 +2558,13 @@ namespace App\Models\Type{
 namespace App\Models{
 /**
  * Modèle User central du projet Krosmoz JDR.
- * 
+ *
  * Gère l'authentification, les rôles, l'avatar, les notifications et les relations avec les entités du jeu.
- * 
+ *
  * Champs principaux :
  * - id, name, email, password, role, avatar
  * - notifications_enabled, notification_channels
- * 
+ *
  * Relations :
  * - scénarios, campagnes, pages, sections, et entités créées
  *
@@ -2557,20 +2582,20 @@ namespace App\Models{
  * @method string avatarPath() URL de l'avatar (jamais null)
  * @method bool verifyRole(string|int $role) Possède au moins le rôle donné
  * @method bool updateRole(User $user) Peut-il modifier le rôle d'un autre ?
- * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property Carbon|null $email_verified_at
  * @property string|null $remember_token
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Page> $createdPages
+ * @property Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Page> $createdPages
  * @property-read int|null $created_pages_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Section> $createdSections
+ * @property-read Collection<int, Section> $createdSections
  * @property-read int|null $created_sections_count
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Page> $pages
+ * @property-read Collection<int, Page> $pages
  * @property-read int|null $pages_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Section> $sections
+ * @property-read Collection<int, Section> $sections
  * @property-read int|null $sections_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
@@ -2592,54 +2617,54 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Attribute> $createdAttributes
+ * @property-read Collection<int, Attribute> $createdAttributes
  * @property-read int|null $created_attributes_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Capability> $createdCapabilities
+ * @property-read Collection<int, Capability> $createdCapabilities
  * @property-read int|null $created_capabilities_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Breed> $createdBreeds
+ * @property-read Collection<int, Breed> $createdBreeds
  * @property-read int|null $created_breeds_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ConsumableType> $createdConsumableTypes
+ * @property-read Collection<int, ConsumableType> $createdConsumableTypes
  * @property-read int|null $created_consumable_types_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $createdConsumables
+ * @property-read Collection<int, Consumable> $createdConsumables
  * @property-read int|null $created_consumables_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ItemType> $createdItemTypes
+ * @property-read Collection<int, ItemType> $createdItemTypes
  * @property-read int|null $created_item_types_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $createdItems
+ * @property-read Collection<int, Item> $createdItems
  * @property-read int|null $created_items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, MonsterRace> $createdMonsterRaces
+ * @property-read Collection<int, MonsterRace> $createdMonsterRaces
  * @property-read int|null $created_monster_races_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $createdPanoplies
+ * @property-read Collection<int, Panoply> $createdPanoplies
  * @property-read int|null $created_panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ResourceType> $createdResourceTypes
+ * @property-read Collection<int, ResourceType> $createdResourceTypes
  * @property-read int|null $created_resource_types_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $createdResources
+ * @property-read Collection<int, resource> $createdResources
  * @property-read int|null $created_resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $createdScenarios
+ * @property-read Collection<int, Scenario> $createdScenarios
  * @property-read int|null $created_scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $createdShops
+ * @property-read Collection<int, Shop> $createdShops
  * @property-read int|null $created_shops_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Specialization> $createdSpecializations
+ * @property-read Collection<int, Specialization> $createdSpecializations
  * @property-read int|null $created_specializations_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, SpellType> $createdSpellTypes
+ * @property-read Collection<int, SpellType> $createdSpellTypes
  * @property-read int|null $created_spell_types_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $createdSpells
+ * @property-read Collection<int, Spell> $createdSpells
  * @property-read int|null $created_spells_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read string $role_name
- * @mixin \Eloquent
- * @property \Illuminate\Support\Carbon|null $last_login_at
+ * @property Carbon|null $last_login_at
  * @property bool $is_system
  * @property array<array-key, mixed>|null $notification_preferences
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OAuthAccount> $oauthAccounts
+ * @property-read Collection<int, OAuthAccount> $oauthAccounts
  * @property-read int|null $oauth_accounts_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsSystem($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastLoginAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNotificationPreferences($value)
+ * @mixin \Eloquent
  */
 	class User extends \Eloquent implements \Spatie\MediaLibrary\HasMedia, \Illuminate\Contracts\Auth\MustVerifyEmail {}
 }

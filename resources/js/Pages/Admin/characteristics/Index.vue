@@ -289,6 +289,7 @@ function buildFormData(selected, entitiesByGroup = null) {
             type: 'int',
             unit: '',
             sort_order: 0,
+            hide_when_empty: false,
             value_overrides: [],
             entities: [],
             conversion_formulas: defaultConversionFormulasForGroup(entitiesByGroup ?? {}, 'creature'),
@@ -316,6 +317,7 @@ function buildFormData(selected, entitiesByGroup = null) {
         type: selected.type ?? 'int',
         unit: selected.unit ?? '',
         sort_order: selected.sort_order ?? 0,
+        hide_when_empty: selected.hide_when_empty ?? false,
         value_overrides: Array.isArray(selected.value_overrides) ? selected.value_overrides.map((o) => ({ ...o })) : [],
         entities: entitiesForGroup.map((e) => ({
             entity: e.entity,
@@ -325,7 +327,6 @@ function buildFormData(selected, entitiesByGroup = null) {
             formula: e.formula ?? '',
             formula_display: e.formula_display ?? '',
             default_value: e.default_value ?? '',
-            forgemagie_allowed: e.forgemagie_allowed ?? false,
             forgemagie_max: e.forgemagie_max ?? 0,
             base_price_per_unit: e.base_price_per_unit ?? '',
             rune_price_per_unit: e.rune_price_per_unit ?? '',
@@ -361,6 +362,7 @@ watch(
         form.type = data.type;
         form.unit = data.unit;
         form.sort_order = data.sort_order;
+        form.hide_when_empty = data.hide_when_empty;
         form.value_overrides = data.value_overrides;
         form.entities = data.entities;
         form.conversion_formulas = data.conversion_formulas;
@@ -390,7 +392,6 @@ function addEntityOverride(entityKey) {
             formula: '',
             formula_display: '',
             default_value: '',
-            forgemagie_allowed: false,
             forgemagie_max: 0,
             base_price_per_unit: '',
             rune_price_per_unit: '',
@@ -428,6 +429,7 @@ async function removeEntityOverride(entityKey) {
         type: form.type,
         unit: form.unit,
         sort_order: form.sort_order,
+        hide_when_empty: form.hide_when_empty,
         entities: entitiesFiltered,
         entity_override_keys: selectedEntityOverrides.value,
     }, {
@@ -496,6 +498,7 @@ watch(
             form.type = src.type ?? 'int';
             form.unit = src.unit ?? '';
             form.sort_order = src.sort_order ?? 0;
+            form.hide_when_empty = src.hide_when_empty ?? false;
             form.value_overrides = Array.isArray(src.value_overrides) ? src.value_overrides.map((o) => ({ ...o })) : [];
             form.key = (src.key ?? '').replace(/_creature$|_object$|_spell$/, '') || '';
             if (Array.isArray(src.entities) && src.entities.length) {
@@ -507,7 +510,6 @@ watch(
                     formula: e.formula ?? '',
                     formula_display: e.formula_display ?? '',
                     default_value: e.default_value ?? '',
-                    forgemagie_allowed: e.forgemagie_allowed ?? false,
                     forgemagie_max: e.forgemagie_max ?? 0,
                     base_price_per_unit: e.base_price_per_unit ?? '',
                     rune_price_per_unit: e.rune_price_per_unit ?? '',
@@ -542,7 +544,6 @@ watch(
                             formula: defaultRow.formula ?? '',
                             formula_display: defaultRow.formula_display ?? '',
                             default_value: defaultRow.default_value ?? '',
-                            forgemagie_allowed: defaultRow.forgemagie_allowed ?? false,
                             forgemagie_max: defaultRow.forgemagie_max ?? 0,
                             base_price_per_unit: defaultRow.base_price_per_unit ?? '',
                             rune_price_per_unit: defaultRow.rune_price_per_unit ?? '',
@@ -804,6 +805,7 @@ function submit() {
         type: form.type,
         unit: form.unit,
         sort_order: form.sort_order,
+        hide_when_empty: form.hide_when_empty,
         value_overrides: (form.value_overrides ?? []).filter((o) => o.value !== '' && o.value !== undefined),
         entities: entitiesToSend.map((e) => ({
             ...e,
@@ -1332,6 +1334,20 @@ function submitConvertToLinked() {
                                     type="number"
                                     helper="Ordre d’affichage dans les listes (plus petit = plus haut)."
                                 />
+                                <div class="sm:col-span-2 flex flex-wrap items-center gap-3 rounded-box border border-base-300 bg-base-200/40 px-4 py-3">
+                                    <input
+                                        id="hide_when_empty"
+                                        v-model="form.hide_when_empty"
+                                        type="checkbox"
+                                        class="checkbox checkbox-sm"
+                                    />
+                                    <label for="hide_when_empty" class="cursor-pointer text-sm">
+                                        Masquer la ligne en jeu lorsque la valeur est vide
+                                        <span class="block text-xs text-base-content/70">
+                                            Selon le type : chaîne vide, tableau vide, entier à 0 ; les booléens « Non » restent affichés.
+                                        </span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1515,12 +1531,10 @@ function submitConvertToLinked() {
                                         <h3 class="mb-3 text-sm font-semibold text-base-content/80">Prix / unité et forgemagie (groupe objet)</h3>
                                         <div class="grid gap-4 sm:grid-cols-2">
                                             <div class="flex flex-col gap-1">
-                                                <div class="flex items-center gap-2">
-                                                    <input v-model="ent.forgemagie_allowed" type="checkbox" class="checkbox" />
-                                                    <span>Forgemagie possible</span>
-                                                </div>
                                                 <InputField v-model="ent.forgemagie_max" label="Max forgemagie" type="number" />
-                                                <p class="text-xs text-base-content/70">Valeur maximale ajoutable par forgemagie pour cette caractéristique.</p>
+                                                <p class="text-xs text-base-content/70">
+                                                    Valeur maximale ajoutable par forgemagie. Mettre 0 si la forgemagie ne s’applique pas à cette caractéristique.
+                                                </p>
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <InputField

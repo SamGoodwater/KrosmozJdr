@@ -31,7 +31,7 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
     }
 
     /**
-     * @return class-string<\App\Models\CharacteristicObject>
+     * @return class-string<CharacteristicObject>
      */
     protected function modelClass(): string
     {
@@ -45,7 +45,6 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
     protected function mapRowToAttributes(array $row): array
     {
         return array_merge($this->commonAttributes($row), [
-            'forgemagie_allowed' => (bool) ($row['forgemagie_allowed'] ?? false),
             'forgemagie_max' => (int) ($row['forgemagie_max'] ?? 0),
             'base_price_per_unit' => isset($row['base_price_per_unit']) ? (float) $row['base_price_per_unit'] : null,
             'rune_price_per_unit' => isset($row['rune_price_per_unit']) ? (float) $row['rune_price_per_unit'] : null,

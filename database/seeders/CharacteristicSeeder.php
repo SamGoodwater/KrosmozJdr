@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Characteristic;
 use Database\Seeders\Concerns\LoadsSeederDataFile;
+use Database\Seeders\Support\CharacteristicDefinitionJsonLoader;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -17,6 +18,9 @@ class CharacteristicSeeder extends Seeder
     use LoadsSeederDataFile;
 
     private const DATA_FILE = 'database/seeders/data/characteristics.php';
+
+    /** Définitions 1 fichier / clé ; si au moins un `.json` seedable est présent, il remplace {@see self::DATA_FILE}. */
+    private const JSON_DEFINITIONS_DIR = 'database/seeders/data/caracterictis-definition';
 
     private const ICONS_COLORS_FILE = 'database/seeders/data/characteristic_icons_colors.php';
 
@@ -56,7 +60,11 @@ class CharacteristicSeeder extends Seeder
 
     public function run(): void
     {
-        $rows = $this->loadDataFile(self::DATA_FILE);
+        $fromJson = CharacteristicDefinitionJsonLoader::loadFromDirectory(self::JSON_DEFINITIONS_DIR);
+        $rows = $fromJson ?? $this->loadDataFile(self::DATA_FILE);
+        if ($fromJson !== null && $this->command) {
+            $this->command->info('CharacteristicSeeder : source JSON `'.self::JSON_DEFINITIONS_DIR.'` ('.count($rows).' fichier(s)).');
+        }
         // Dédoublonnage par clé pour éviter les violations de contrainte unique (ex. exécution parallèle de tests).
         $byKey = [];
         foreach ($rows as $row) {
@@ -83,6 +91,7 @@ class CharacteristicSeeder extends Seeder
 
         $hasIconFalse = Schema::hasColumn('characteristics', 'icon_false');
         $hasValueOverrides = Schema::hasColumn('characteristics', 'value_overrides');
+        $hasHideWhenEmpty = Schema::hasColumn('characteristics', 'hide_when_empty');
 
         // 1) Création / mise à jour des caractéristiques sans gérer les liens
         foreach ($rows as $row) {
@@ -108,6 +117,9 @@ class CharacteristicSeeder extends Seeder
             }
             if ($hasValueOverrides) {
                 $payload['value_overrides'] = $row['value_overrides'] ?? ($valueOverrides[$key] ?? null);
+            }
+            if ($hasHideWhenEmpty) {
+                $payload['hide_when_empty'] = (bool) ($row['hide_when_empty'] ?? false);
             }
             Characteristic::updateOrCreate(
                 ['key' => $key],

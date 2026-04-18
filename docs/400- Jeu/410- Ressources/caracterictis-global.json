@@ -1,0 +1,223 @@
+{
+  "_schema_version": "2",
+  "_description": "Une entrée = une caractéristique logique (characteristic_key). Champs regroupés par rôle : general, display, value_and_norms, conversion, mapping, relations. Les tables SQL restent characteristics + pivot groupe ; ce découpage est pour la lisibilité et l’import.",
+  "_champs_meta": {
+    "color_false": "Colonne supprimée (migration 2026_04_18). Ne plus utiliser : préférer value_overrides (ex. entrée value: false).",
+    "icon_false": "Encore en base pour les booléens (icône si « faux ») ; la doc produit privilégie value_overrides. Peut rester null."
+  },
+  "groups": {
+    "object": { "id": 1, "name": "Objet" },
+    "creature": { "id": 2, "name": "Créature" },
+    "spell": { "id": 3, "name": "Sort" }
+  },
+  "characteristics": {
+    "creature": {
+      "range_creature": {
+        "general": {
+          "key": "range_creature",
+          "name": "Portée",
+          "short_name": "PO",
+          "helper": "Portée supplémentaire pour les sorts et les capacités sur la fiche personnage ou monstre.",
+          "descriptions": "Bonus de portée. Base 0, max 6 (équipement +6, forgemagie +1). 1 PO = 1,5 m. S’ajoute aux sorts dont la portée peut être modifiée (règles 2.2.2).",
+          "group": "creature",
+          "type": "int",
+          "unit": null,
+          "sort_order": 1,
+          "linked_to_characteristic_id": null
+        },
+        "display": {
+          "icon": "range.webp",
+          "value_overrides": null,
+          "hide_when_empty": true,
+          "_hide_when_empty_note": "Si la valeur est vide / nulle / zéro selon les règles UI : ne pas afficher la ligne (pas de surcharge visuelle nécessaire pour le PO créature)."
+        },
+        "value_and_norms": {
+          "min": "0",
+          "max": "6",
+          "formula": null,
+          "formula_display": "Base 0, max 6 (équipement +6, forgemagie +1). 1 PO = 1,5 m. S’ajoute aux sorts à portée modifiable (2.2.2).",
+          "default_value": "0",
+          "norms_grid": null,
+          "norms_conditions": null,
+          "norms_description": null,
+          "norms_help_section_id": null
+        },
+        "conversion": {
+          "conversion_formula": "[d]",
+          "conversion_function": null,
+          "conversion_dofus_sample": {
+            "1": 0,
+            "40": 0,
+            "80": 0,
+            "120": 0,
+            "160": 1,
+            "200": 0
+          },
+          "conversion_krosmoz_sample": {
+            "1": 0,
+            "4": 1,
+            "8": 2,
+            "12": 4,
+            "16": 5,
+            "20": 6
+          },
+          "conversion_sample_rows": null,
+          "_conversion_sample_rows_note": "Table optionnelle de lignes (niveau Dofus, valeur Dofus, niveau Krosmoz, valeur Krosmoz) pour documenter ou afficher un barème détaillé dans l’admin ; les formules restent la source de vérité pour le calcul."
+        },
+        "mapping": {
+          "entity": "*",
+          "_entity_note": "« * » = défaut pour tout le groupe créature (monstre, classe, PNJ). Une valeur précise (ex. monster) restreint cette ligne : les autres types utilisent la ligne « * » ou l’absence de ligne spécifique.",
+          "dofusdb_characteristic_id": null,
+          "_dofusdb_characteristic_id_note": "Identifiant renvoyé par l’API DofusDB (GET /characteristics) pour lier l’import ou le scrapping à la même notion ; pas une copie de ce fichier JSON.",
+          "db_column": "po",
+          "_db_column_vs_key": "key = identifiant stable applicatif (range_creature). db_column = nom de colonne SQL sur la table cible (ex. creatures.po) quand la valeur y est stockée. Pour un même key, une ligne entity différente peut théoriquement mapper autrement ; en pratique key + groupe suffisent souvent.",
+          "labels": null,
+          "validation": null,
+          "value_available": null
+        },
+        "relations": {
+          "po_equipement": "range_object",
+          "sort_portee_modifiable": "range_editable_spell"
+        }
+      }
+    },
+    "object": {
+      "range_object": {
+        "general": {
+          "key": "range_object",
+          "name": "Bonus de portée",
+          "short_name": "PO",
+          "helper": "Anneaux : bonus de portée en cases (plancher / plafond selon le niveau de l’objet).",
+          "descriptions": "Bonus de portée conféré par l’équipement (anneaux). Base 0 sur la fiche, total max 6. 1 PO = 1,5 m. Équipement +6, forgemagie +1 (2.2.2).",
+          "group": "object",
+          "type": "int",
+          "unit": null,
+          "sort_order": 22,
+          "linked_to_characteristic_id": null
+        },
+        "display": {
+          "icon": "range.webp",
+          "value_overrides": null,
+          "hide_when_empty": false
+        },
+        "value_and_norms": {
+          "min": "0",
+          "max": "6",
+          "formula": {
+            "1": "0",
+            "5": "1",
+            "11": "2",
+            "17": "3",
+            "characteristic": "level"
+          },
+          "_formula_storage_note": "En base, souvent une chaîne JSON ; ici objet pour lisibilité.",
+          "formula_display": "Bonus PO (anneaux). Base créature 0, max total 6. 1 PO = 1,5 m. Équip. +6, forgemagie +1 (2.2.2).",
+          "default_value": "0",
+          "norms_grid": null,
+          "norms_conditions": null,
+          "norms_description": null,
+          "norms_help_section_id": null
+        },
+        "conversion": {
+          "conversion_formula": "[d]",
+          "conversion_function": null,
+          "conversion_dofus_sample": null,
+          "conversion_krosmoz_sample": null,
+          "conversion_sample_rows": null
+        },
+        "mapping": {
+          "entity": "*",
+          "dofusdb_characteristic_id": null,
+          "db_column": null,
+          "_db_column_null_note": "Objet : la valeur peut venir uniquement du barème (formula) sans colonne dédiée sur item.",
+          "item_type_ids": [9],
+          "_item_type_ids_note": "Types d’objets autorisés (ex. 9 = anneaux) — vérifier la table item_types.",
+          "base_price_per_unit": "800.00",
+          "rune_price_per_unit": "1600.00"
+        },
+        "economy_object": {
+          "forgemagie_max": 1,
+          "_forgemagie_note": "Un seul entier : 0 ou absence = pas de forgemagie pour cette caractéristique (inutile d’ajouter un booléen forgemagie_allowed en plus)."
+        },
+        "relations": {
+          "po_fiche": "range_creature"
+        }
+      }
+    },
+    "spell": {
+      "range_spell": {
+        "general": {
+          "key": "range_spell",
+          "name": "Portée",
+          "short_name": "PO",
+          "helper": "Cases de portée ajoutées ou retirées par certains effets du sort (hors portée min/max affichée sur la carte du sort).",
+          "descriptions": "Variation de portée (1.2.2, 2.2.2). Base 0 sur la fiche, max 6 via l’équipement ; cette valeur peut aller jusqu’à 8 pour un effet de sort. S’ajoute aux sorts à portée modifiable. ",
+          "group": "spell",
+          "type": "int",
+          "unit": null,
+          "sort_order": 72,
+          "linked_to_characteristic_id": null
+        },
+        "display": {
+          "icon": "range.webp",
+          "value_overrides": [
+            {
+              "value": 0,
+              "subtitle": "Aucun bonus de portée via cet effet."
+            },
+            {
+              "value": 1,
+              "subtitle": "+1 case de portée (effet du sort)."
+            },
+            {
+              "value": 8,
+              "icon": "range.webp",
+              "color": "amber",
+              "subtitle": "Plafond Krosmoz pour cette variation (formule min(8, …))."
+            }
+          ],
+          "hide_when_empty": false
+        },
+        "value_and_norms": {
+          "min": "0",
+          "max": "8",
+          "formula": null,
+          "formula_display": "Variation PO via effet de sort (1.2.2, 2.2.2). Base 0, max 6 sur la fiche (équipement +6, forgemagie +1) ; plafond 8 pour l’effet. S’ajoute aux sorts à portée modifiable.",
+          "default_value": "0",
+          "norms_grid": null,
+          "norms_conditions": null,
+          "norms_description": null,
+          "norms_help_section_id": null,
+          "value_available": null
+        },
+        "conversion": {
+          "conversion_formula": "round(min(8,max(0,[d])))",
+          "conversion_function": null,
+          "conversion_dofus_sample": null,
+          "conversion_krosmoz_sample": null,
+          "conversion_sample_rows": [
+            {
+              "dofus_level": 1,
+              "dofus_value": 0,
+              "krosmoz_level": 1,
+              "krosmoz_value": 0
+            }
+          ]
+        },
+        "mapping": {
+          "entity": "*",
+          "dofusdb_characteristic_id": null,
+          "db_column": "po",
+          "_db_column_note": "Ici la colonne cible est sur la ligne d’effet / paramètres d’effet liés au sort, pas sur spells.po_min / po_max."
+        },
+        "relations": {
+          "portee_modifiable": "range_editable_spell",
+          "po_min_cases": "spell_range_min_spell",
+          "po_max_cases": "spell_range_max_spell",
+          "po_fiche": "range_creature",
+          "po_equipement": "range_object"
+        }
+      }
+    }
+  }
+}

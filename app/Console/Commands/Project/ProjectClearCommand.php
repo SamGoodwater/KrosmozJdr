@@ -9,7 +9,7 @@ use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
 
 /**
- * Nettoyages caches / vues / queues ({@see ProjectRunService}).
+ * Nettoyages caches / vues / queues ({@see ProjectRunService}). L’option --test retire uniquement les artefacts PHPUnit / coverage / storage testing.
  */
 class ProjectClearCommand extends Command
 {
@@ -23,6 +23,7 @@ class ProjectClearCommand extends Command
 
     protected $signature = 'project:clear
         {--all : Tout nettoyer (cache, config, routes, vues, CSS générés, etc.)}
+        {--test : Supprimer uniquement les artefacts de tests (PHPUnit, coverage, storage/framework/testing)}
         {--kill : Arrêter les serveurs sur les ports 8000, 8001, 8002, 5173}
         {--css : Supprimer les CSS générés}
         {--cache : Vider le cache applicatif}
@@ -44,6 +45,9 @@ class ProjectClearCommand extends Command
         }
 
         $map = [];
+        if ($this->option('test')) {
+            $map['clear:test'] = true;
+        }
         if ($this->option('all')) {
             $map['clear:all'] = true;
         }

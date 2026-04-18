@@ -2,23 +2,18 @@
 
 namespace App\Models\Entity;
 
+use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Entity\Npc;
-use App\Models\Entity\Item;
-use App\Models\Entity\Consumable;
-use App\Models\Entity\Resource;
-use App\Models\Entity\Scenario;
-use App\Models\Entity\Campaign;
-use App\Models\Entity\Panoply;
-use App\Models\Concerns\HasEntityImageMedia;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -28,25 +23,26 @@ use Spatie\MediaLibrary\HasMedia;
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property int|null $npc_id
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
  * @property-read Npc|null $npc
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
+ * @property-read Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
+ *
  * @method static \Database\Factories\Entity\ShopFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop newQuery()
@@ -68,16 +64,23 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withoutTrashed()
+ *
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ *
  * @mixin \Eloquent
  */
 class Shop extends Model implements HasMedia
 {
     /** @use HasFactory<\\Database\\Factories\\ShopFactory> */
-    use HasFactory, SoftDeletes, HasEntityImageMedia;
+    use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     /** Répertoire Media Library pour ce modèle. */
@@ -130,6 +133,7 @@ class Shop extends Model implements HasMedia
     {
         return $this->belongsTo(Npc::class, 'npc_id');
     }
+
     /**
      * Les objets vendus dans cette hotel de vente.
      */
@@ -137,6 +141,7 @@ class Shop extends Model implements HasMedia
     {
         return $this->belongsToMany(Item::class, 'item_shop')->withPivot('quantity', 'price', 'comment');
     }
+
     /**
      * Les panoplies vendues dans cette hotel de vente.
      */
@@ -144,6 +149,7 @@ class Shop extends Model implements HasMedia
     {
         return $this->belongsToMany(Panoply::class, 'panoply_shop');
     }
+
     /**
      * Les consommables vendus dans cette hotel de vente.
      */
@@ -151,6 +157,7 @@ class Shop extends Model implements HasMedia
     {
         return $this->belongsToMany(Consumable::class, 'consumable_shop')->withPivot('quantity', 'price', 'comment');
     }
+
     /**
      * Les ressources vendues dans cette hotel de vente.
      */
@@ -158,6 +165,7 @@ class Shop extends Model implements HasMedia
     {
         return $this->belongsToMany(Resource::class, 'resource_shop')->withPivot('quantity', 'price', 'comment');
     }
+
     /**
      * Les scénarios associés à cette hotel de vente.
      */
@@ -165,6 +173,7 @@ class Shop extends Model implements HasMedia
     {
         return $this->belongsToMany(Scenario::class, 'scenario_shop');
     }
+
     /**
      * Les campagnes associées à cette hotel de vente vente.
      */

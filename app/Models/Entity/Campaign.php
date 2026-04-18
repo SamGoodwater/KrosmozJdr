@@ -2,29 +2,20 @@
 
 namespace App\Models\Entity;
 
+use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Page;
+use App\Models\User;
+use Database\Factories\Entity\CampaignFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Page;
-use App\Models\Entity\Scenario;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use App\Models\Concerns\HasEntityImageMedia;
-use App\Models\Entity\Item;
-use App\Models\Entity\Consumable;
-use App\Models\Entity\Resource;
-use App\Models\Entity\Shop;
-use App\Models\Entity\Npc;
-use App\Models\Entity\Monster;
-use App\Models\Entity\Spell;
-use App\Models\Entity\Panoply;
-
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -36,35 +27,36 @@ use App\Models\Entity\Panoply;
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
+ * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Npc> $npcs
+ * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Page> $pages
+ * @property-read Collection<int, Page> $pages
  * @property-read int|null $pages_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
+ * @property-read Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $users
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Database\Factories\Entity\CampaignFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign newQuery()
@@ -87,16 +79,20 @@ use App\Models\Entity\Panoply;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Campaign extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\Entity\CampaignFactory> */
-    use HasFactory, SoftDeletes, InteractsWithMedia, HasEntityImageMedia;
+    /** @use HasFactory<CampaignFactory> */
+    use HasEntityImageMedia, HasFactory, InteractsWithMedia, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     /** Répertoire Media Library pour ce modèle. */
@@ -158,6 +154,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(User::class, 'campaign_user');
     }
+
     /**
      * Les scénarios de cette campagne.
      */
@@ -165,6 +162,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(Scenario::class, 'campaign_scenario');
     }
+
     /**
      * Les pages de cette campagne.
      */
@@ -172,6 +170,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(Page::class, 'campaign_page');
     }
+
     /**
      * Les objets de cette campagne.
      */
@@ -179,6 +178,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(Item::class, 'item_campaign');
     }
+
     /**
      * Les consommables de cette campagne.
      */
@@ -186,6 +186,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(Consumable::class, 'consumable_campaign');
     }
+
     /**
      * Les ressources de cette campagne.
      */
@@ -193,6 +194,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(Resource::class, 'resource_campaign');
     }
+
     /**
      * Les hotels de vente vente de cette campagne.
      */
@@ -200,6 +202,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(Shop::class, 'campaign_shop');
     }
+
     /**
      * Les PNJ de cette campagne.
      */
@@ -207,6 +210,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(Npc::class, 'npc_campaign');
     }
+
     /**
      * Les monstres de cette campagne.
      */
@@ -214,6 +218,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(Monster::class, 'monster_campaign');
     }
+
     /**
      * Les sorts de cette campagne.
      */
@@ -221,6 +226,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(Spell::class, 'campaign_spell');
     }
+
     /**
      * Les panoplies de cette campagne.
      */
@@ -228,6 +234,7 @@ class Campaign extends Model implements HasMedia
     {
         return $this->belongsToMany(Panoply::class, 'campaign_panoply');
     }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('files');

@@ -11,7 +11,10 @@
 
 import { computed, toValue } from "vue";
 import { useEntityPropertyDisplay } from "@/Composables/entity/useEntityPropertyDisplay";
-import { resolveDef } from "@/Composables/entity/useCharacteristicDisplay";
+import {
+    resolveDef,
+    shouldHideCharacteristicLine,
+} from "@/Composables/entity/useCharacteristicDisplay";
 
 /**
  * Groupes de caractéristiques à interroger selon le type d'entité (aligné resolveDef).
@@ -98,6 +101,9 @@ export function useCharacteristicViewModel(options) {
                   ? ep.levelTable.value
                   : [];
 
+        const hideWhenEmpty = Boolean(def.hide_when_empty);
+        const characteristicType = def.type != null ? String(def.type) : "";
+
         return {
             key,
             name,
@@ -110,6 +116,12 @@ export function useCharacteristicViewModel(options) {
             unit: ep.unit.value || def.unit || "",
             displayValue: ep.displayValue.value,
             rawValue: val,
+            hideWhenEmpty,
+            characteristicType,
+            hiddenWhenEmpty: shouldHideCharacteristicLine(
+                { hide_when_empty: hideWhenEmpty, type: characteristicType },
+                val,
+            ),
             formulaBdd: String(formulaBdd || ""),
             formulaDisplay: String(formulaDisplay || ""),
             formulaMetaResolved: String(ep.formulaResolved.value || ""),
@@ -170,6 +182,8 @@ export function viewModelFromFormulaGroupItem(item) {
     const v = item?.value;
     const valStr = v === null || v === undefined || v === "" ? "—" : String(v);
     const displayValue = unit ? `${valStr} ${unit}`.trim() : valStr;
+    const hideWhenEmpty = Boolean(def.hide_when_empty);
+    const characteristicType = def.type != null ? String(def.type) : "";
     return {
         key: def.key || "unknown",
         name: def.name || def.key || "—",
@@ -182,6 +196,12 @@ export function viewModelFromFormulaGroupItem(item) {
         unit,
         displayValue,
         rawValue: v,
+        hideWhenEmpty,
+        characteristicType,
+        hiddenWhenEmpty: shouldHideCharacteristicLine(
+            { hide_when_empty: hideWhenEmpty, type: characteristicType },
+            v,
+        ),
         formulaBdd: String(def.formula || ""),
         formulaDisplay: String(def.formula_display || ""),
         formulaMetaResolved: String(item?.formulaResolved || ""),

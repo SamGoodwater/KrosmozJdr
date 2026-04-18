@@ -18,6 +18,7 @@ import {
     mergeRuntimeIntoViewModel,
     viewModelFromFormulaGroupItem,
 } from "@/Composables/entity/useCharacteristicViewModel";
+import { shouldHideCharacteristicLine } from "@/Composables/entity/useCharacteristicDisplay";
 import {
     CHARACTERISTIC_PROPERTY_BADGE,
     CHARACTERISTIC_PROPERTY_DENSITY,
@@ -58,7 +59,7 @@ function formulaViewModel(item) {
         <div class="flex flex-wrap gap-2">
             <template v-for="(item, i) in list" :key="item.def?.key ?? i">
                 <CharacteristicProperty
-                    v-if="item.type === 'formula'"
+                    v-if="item.type === 'formula' && !shouldHideCharacteristicLine(item.def, item.value)"
                     :view-model="formulaViewModel(item)"
                     :density="compact ? CHARACTERISTIC_PROPERTY_DENSITY.iconOnly : CHARACTERISTIC_PROPERTY_DENSITY.full"
                     :layout="compact ? CHARACTERISTIC_PROPERTY_LAYOUT.inline : CHARACTERISTIC_PROPERTY_LAYOUT.card"

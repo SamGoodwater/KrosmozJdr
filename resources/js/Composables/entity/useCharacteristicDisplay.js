@@ -191,6 +191,45 @@ export function resolveValueOverride(overrides, value) {
 }
 
 /**
+ * Masque la ligne en fiche joueur lorsque `hide_when_empty` est actif et la valeur est considérée vide.
+ *
+ * @param {Object|null|undefined} def - Définition (`hide_when_empty`, `type`)
+ * @param {unknown} rawValue
+ * @returns {boolean}
+ */
+export function shouldHideCharacteristicLine(def, rawValue) {
+    if (!def?.hide_when_empty) {
+        return false;
+    }
+    if (rawValue === null || rawValue === undefined || rawValue === "") {
+        return true;
+    }
+
+    const t = String(def.type ?? "").toLowerCase();
+    if (t === "int") {
+        if (rawValue === 0 || rawValue === "0") {
+            return true;
+        }
+        const n = Number(rawValue);
+        if (!Number.isNaN(n) && n === 0) {
+            return true;
+        }
+        return false;
+    }
+    if (t === "bool") {
+        return false;
+    }
+    if (t === "array") {
+        return Array.isArray(rawValue) && rawValue.length === 0;
+    }
+    if (t === "string") {
+        return String(rawValue).trim() === "";
+    }
+
+    return false;
+}
+
+/**
  * Résout une définition depuis le store (key, db_column ou dofusdb_id).
  *
  * @param {string|number} keyOrId - characteristic_key, db_column, ou dofusdb_characteristic_id

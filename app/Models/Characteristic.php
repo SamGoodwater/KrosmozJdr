@@ -5,15 +5,19 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\HasMediaCustomNaming;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Caractéristique générale : propriétés communes et id unique.
+ *
  * Une ligne = une caractéristique (ex. PA créature, PA sort, PA objet = 3 lignes).
  *
  * @property int $id
@@ -26,11 +30,48 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $icon_false
  * @property string|null $color
  * @property array|null $value_overrides
+ * @property bool $hide_when_empty
  * @property string|null $unit
  * @property string $type
  * @property int $sort_order
  * @property string|null $group
  * @property int|null $linked_to_characteristic_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, CharacteristicCreature> $creatureRows
+ * @property-read int|null $creature_rows_count
+ * @property-read Collection<int, Characteristic> $linkedCharacteristics
+ * @property-read int|null $linked_characteristics_count
+ * @property-read Characteristic|null $masterCharacteristic
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @property-read Collection<int, CharacteristicObject> $objectRows
+ * @property-read int|null $object_rows_count
+ * @property-read Collection<int, CharacteristicSpell> $spellRows
+ * @property-read int|null $spell_rows_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereColor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereDescriptions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereGroup($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHelper($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereIconFalse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereLinkedToCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereShortName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereValueOverrides($value)
+ *
+ * @mixin \Eloquent
  */
 class Characteristic extends Model implements HasMedia
 {
@@ -56,6 +97,7 @@ class Characteristic extends Model implements HasMedia
         'icon_false',
         'color',
         'value_overrides',
+        'hide_when_empty',
         'unit',
         'type',
         'sort_order',
@@ -67,6 +109,7 @@ class Characteristic extends Model implements HasMedia
     protected $casts = [
         'sort_order' => 'integer',
         'value_overrides' => 'array',
+        'hide_when_empty' => 'boolean',
     ];
 
     /**

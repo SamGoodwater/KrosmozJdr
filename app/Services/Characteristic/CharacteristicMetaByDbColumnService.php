@@ -9,6 +9,7 @@ use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -391,12 +392,13 @@ final class CharacteristicMetaByDbColumnService
             'value_overrides' => $this->normalizeValueOverridesIcons($c->value_overrides),
             'unit' => $c->unit,
             'type' => $c->type,
+            'hide_when_empty' => (bool) ($c->hide_when_empty ?? false),
         ], array_filter($extra, fn ($v) => $v !== null));
     }
 
     /**
      * @param  array<string, mixed>  $extra  Champs additionnels (ex. value_available)
-     * @return array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null, value_available?: array|null}|null
+     * @return array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null, hide_when_empty?: bool, value_available?: array|null}|null
      */
     private function rowToDefinition(mixed $dbColumn, ?Characteristic $characteristic, array $extra = []): ?array
     {
@@ -424,6 +426,7 @@ final class CharacteristicMetaByDbColumnService
             'value_overrides' => $this->normalizeValueOverridesIcons($c->value_overrides),
             'unit' => $c->unit,
             'type' => $c->type,
+            'hide_when_empty' => (bool) ($c->hide_when_empty ?? false),
         ], array_filter($extra, fn ($v) => $v !== null));
     }
 
@@ -431,7 +434,7 @@ final class CharacteristicMetaByDbColumnService
      * Lignes pivot : `entity = *` d'abord, puis surcharge (valeurs finales prioritaires).
      *
      * @param  EloquentCollection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>  $rows
-     * @return \Illuminate\Support\Collection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>
+     * @return Collection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>
      */
     private function sortPivotRowsEntityOverlayLast(EloquentCollection $rows)
     {

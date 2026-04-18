@@ -2,29 +2,20 @@
 
 namespace App\Models\Entity;
 
+use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Page;
+use App\Models\Type\ScenarioLink;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Page;
-use App\Models\Entity\Campaign;
-use App\Models\Entity\Npc;
-use App\Models\Entity\Monster;
-use App\Models\Entity\Item;
-use App\Models\Entity\Consumable;
-use App\Models\Entity\Resource;
-use App\Models\Entity\Shop;
-use App\Models\Entity\Spell;
-use App\Models\Entity\Panoply;
-use App\Models\Type\ScenarioLink;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use App\Models\Concerns\HasEntityImageMedia;
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -36,37 +27,38 @@ use App\Models\Concerns\HasEntityImageMedia;
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
+ * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Npc> $npcs
+ * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Page> $pages
+ * @property-read Collection<int, Page> $pages
  * @property-read int|null $pages_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
+ * @property-read Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ScenarioLink> $scenarioLinks
+ * @property-read Collection<int, ScenarioLink> $scenarioLinks
  * @property-read int|null $scenario_links_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $users
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Database\Factories\Entity\ScenarioFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario newQuery()
@@ -89,16 +81,20 @@ use App\Models\Concerns\HasEntityImageMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Scenario extends Model implements HasMedia
 {
     /** @use HasFactory<\\Database\\Factories\\ScenarioFactory> */
-    use HasFactory, SoftDeletes, InteractsWithMedia, HasEntityImageMedia;
+    use HasEntityImageMedia, HasFactory, InteractsWithMedia, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     /** Répertoire Media Library pour ce modèle. */
@@ -153,6 +149,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(User::class, 'scenario_user');
     }
+
     /**
      * Les pages associées à ce scénario.
      */
@@ -160,6 +157,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(Page::class, 'scenario_page');
     }
+
     /**
      * Les campagnes associées à ce scénario.
      */
@@ -167,6 +165,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(Campaign::class, 'campaign_scenario');
     }
+
     /**
      * Les PNJ associés à ce scénario.
      */
@@ -174,6 +173,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(Npc::class, 'npc_scenario');
     }
+
     /**
      * Les monstres associés à ce scénario.
      */
@@ -181,6 +181,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(Monster::class, 'monster_scenario');
     }
+
     /**
      * Les objets associés à ce scénario.
      */
@@ -188,6 +189,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(Item::class, 'item_scenario');
     }
+
     /**
      * Les consommables associés à ce scénario.
      */
@@ -195,6 +197,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(Consumable::class, 'consumable_scenario');
     }
+
     /**
      * Les ressources associées à ce scénario.
      */
@@ -202,6 +205,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(Resource::class, 'resource_scenario');
     }
+
     /**
      * Les hotels de vente associées à ce scénario.
      */
@@ -209,6 +213,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(Shop::class, 'scenario_shop');
     }
+
     /**
      * Les sorts associés à ce scénario.
      */
@@ -216,6 +221,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(Spell::class, 'scenario_spell');
     }
+
     /**
      * Les panoplies associées à ce scénario.
      */
@@ -223,6 +229,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->belongsToMany(Panoply::class, 'scenario_panoply');
     }
+
     /**
      * Les liens de scénario (scénario -> next_scenario).
      */
@@ -230,6 +237,7 @@ class Scenario extends Model implements HasMedia
     {
         return $this->hasMany(ScenarioLink::class, 'scenario_id');
     }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('files');

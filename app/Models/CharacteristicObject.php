@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Type\ItemType;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Définition d’une caractéristique pour une entité du groupe objet (item, consumable, resource, panoply).
@@ -26,7 +28,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string|null $conversion_function Identifiant d'une fonction de conversion enregistrée
  * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
  * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
- * @property bool $forgemagie_allowed
  * @property int $forgemagie_max
  * @property float|null $base_price_per_unit
  * @property float|null $rune_price_per_unit
@@ -35,7 +36,45 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string|null $norms_description Description libre de la norme
  * @property int|null $norms_help_section_id Section CMS (texte) affichée sous la charte
  * @property array|null $value_available
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ItemType> $allowedItemTypes
+ * @property-read Collection<int, ItemType> $allowedItemTypes
+ * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read int|null $allowed_item_types_count
+ * @property-read Characteristic $characteristic
+ * @property-read Section|null $normsHelpSection
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereBasePricePerUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionDofusSample($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionFunction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionKrosmozSample($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionSampleRows($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereDbColumn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereDefaultValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereDofusdbCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereForgemagieAllowed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereForgemagieMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereFormulaDisplay($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereNormsConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereNormsDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereNormsGrid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereNormsHelpSectionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereRunePricePerUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereValueAvailable($value)
+ *
+ * @mixin \Eloquent
  */
 class CharacteristicObject extends Model
 {
@@ -80,7 +119,6 @@ class CharacteristicObject extends Model
         'norms_conditions',
         'norms_description',
         'norms_help_section_id',
-        'forgemagie_allowed',
         'forgemagie_max',
         'base_price_per_unit',
         'rune_price_per_unit',
@@ -95,7 +133,6 @@ class CharacteristicObject extends Model
         'conversion_sample_rows' => 'array',
         'norms_grid' => 'array',
         'norms_conditions' => 'array',
-        'forgemagie_allowed' => 'boolean',
         'forgemagie_max' => 'integer',
         'base_price_per_unit' => 'decimal:2',
         'rune_price_per_unit' => 'decimal:2',

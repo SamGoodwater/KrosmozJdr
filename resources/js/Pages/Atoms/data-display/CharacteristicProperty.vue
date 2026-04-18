@@ -40,6 +40,7 @@ import { useCharacteristicViewModel } from "@/Composables/entity/useCharacterist
 import {
     getCharacteristicColorStyle,
     getCharacteristicContainerStyle,
+    shouldHideCharacteristicLine,
 } from "@/Composables/entity/useCharacteristicDisplay";
 import {
     CHARACTERISTIC_PROPERTY_BADGE,
@@ -118,6 +119,21 @@ const model = computed(() => {
         return vmFromEntity.value;
     }
     return {};
+});
+
+/** Masquage fiche joueur : définition `hide_when_empty` + valeur vide (voir {@link shouldHideCharacteristicLine}). */
+const hiddenWhenEmpty = computed(() => {
+    const m = model.value;
+    if (m?.hiddenWhenEmpty != null) {
+        return m.hiddenWhenEmpty;
+    }
+    return shouldHideCharacteristicLine(
+        {
+            hide_when_empty: m?.hideWhenEmpty,
+            type: m?.characteristicType ?? "",
+        },
+        m?.rawValue,
+    );
 });
 
 const displayText = computed(() => {
@@ -228,6 +244,7 @@ const badgeVariant = computed(() =>
 </script>
 
 <template>
+    <template v-if="!hiddenWhenEmpty">
     <Tooltip
         placement="top"
         class="inline-flex max-w-full min-w-0"
@@ -346,4 +363,5 @@ const badgeVariant = computed(() =>
             </template>
         </span>
     </Tooltip>
+    </template>
 </template>

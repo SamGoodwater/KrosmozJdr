@@ -7,10 +7,16 @@ use App\Models\EffectUsage;
 use App\Models\ObjectEffect;
 use App\Models\Type\ResourceType;
 use App\Models\User;
+use Database\Factories\ResourceFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @property int $id
@@ -29,22 +35,22 @@ use Spatie\MediaLibrary\HasMedia;
  * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  * @property int|null $resource_type_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Creature> $creatures
+ * @property-read Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
  * @property-read ResourceType|null $resourceType
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
  *
  * @method static \Database\Factories\Entity\ResourceFactory factory($count = null, $state = [])
@@ -76,11 +82,22 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
  *
+ * @property-read Collection<int, Campaign> $campaigns
+ * @property-read int|null $campaigns_count
+ * @property-read Collection<int, EffectUsage> $effectUsages
+ * @property-read int|null $effect_usages_count
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @property-read Collection<int, ObjectEffect> $objectEffects
+ * @property-read int|null $object_effects_count
+ * @property-read Collection<int, resource> $recipeIngredients
+ * @property-read int|null $recipe_ingredients_count
+ *
  * @mixin \Eloquent
  */
 class Resource extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\ResourceFactory> */
+    /** @use HasFactory<ResourceFactory> */
     use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
@@ -188,7 +205,7 @@ class Resource extends Model implements HasMedia
      * Recette de fabrication : ressources (ingrédients) nécessaires avec quantités.
      * Une ressource craftable est fabriquée à partir d'autres ressources.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<resource, resource>
+     * @return BelongsToMany<resource, resource>
      */
     public function recipeIngredients()
     {

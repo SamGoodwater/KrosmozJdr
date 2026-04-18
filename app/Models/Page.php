@@ -2,25 +2,26 @@
 
 namespace App\Models;
 
+use App\Models\Entity\Campaign;
+use App\Models\Entity\Scenario;
+use Database\Factories\PageFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\User;
-use App\Models\Section;
-use App\Models\Entity\Campaign;
-use App\Models\Entity\Scenario;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * Modèle Eloquent Page
- * 
+ *
  * Représente une page dynamique du site (menu, arborescence, sections, droits, etc.).
  * Gère la hiérarchie, la visibilité, l'état, les utilisateurs associés, les campagnes et scénarios liés.
  * Utilisé pour la construction dynamique du contenu et la gestion des droits d'accès.
- * 
+ *
  * Relations : sections, parent, children, users, campaigns, scenarios, createdBy
  *
  * @property int $id
@@ -34,17 +35,18 @@ use App\Models\Entity\Scenario;
  * @property int $menu_order
  * @property string|null $menu_group
  * @property int|null $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Page> $children
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read Collection<int, Page> $children
  * @property-read int|null $children_count
- * @property-read \App\Models\User|null $createdBy
+ * @property-read User|null $createdBy
  * @property-read Page|null $parent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Section> $sections
+ * @property-read Collection<int, Section> $sections
  * @property-read int|null $sections_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Database\Factories\PageFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page newQuery()
@@ -65,21 +67,45 @@ use App\Models\Entity\Scenario;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page withoutTrashed()
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ *
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
+ * @property string|null $entity_key
+ * @property string|null $icon
+ * @property string|null $page_css_classes
+ * @property string|null $title_css_classes
+ * @property string|null $menu_item_css_classes
+ *
+ * @method static Builder<static>|Page forMenu(?\App\Models\User $user = null)
+ * @method static Builder<static>|Page inMenu()
+ * @method static Builder<static>|Page ordered()
+ * @method static Builder<static>|Page playable()
+ * @method static Builder<static>|Page readableFor(?\App\Models\User $user = null)
+ * @method static Builder<static>|Page whereEntityKey($value)
+ * @method static Builder<static>|Page whereIcon($value)
+ * @method static Builder<static>|Page whereMenuItemCssClasses($value)
+ * @method static Builder<static>|Page wherePageCssClasses($value)
+ * @method static Builder<static>|Page whereReadLevel($value)
+ * @method static Builder<static>|Page whereTitleCssClasses($value)
+ * @method static Builder<static>|Page whereWriteLevel($value)
+ *
  * @mixin \Eloquent
  */
 class Page extends Model
 {
-    /** @use HasFactory<\Database\Factories\PageFactory> */
+    /** @use HasFactory<PageFactory> */
     use HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
+
     public const RESERVED_CRITICAL_SLUGS = ['accueil', 'cgu'];
 
     /**
@@ -139,6 +165,7 @@ class Page extends Model
     {
         return $this->belongsTo(Page::class, 'parent_id');
     }
+
     /**
      * Les pages enfants.
      */
@@ -146,6 +173,7 @@ class Page extends Model
     {
         return $this->hasMany(Page::class, 'parent_id');
     }
+
     /**
      * Les campagnes associées à cette page.
      */
@@ -255,11 +283,11 @@ class Page extends Model
             return true;
         }
 
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
-        if (!$this->relationLoaded('users')) {
+        if (! $this->relationLoaded('users')) {
             try {
                 $this->load('users');
             } catch (\Exception $e) {
@@ -286,7 +314,7 @@ class Page extends Model
         }
 
         // Sinon : uniquement les pages "jouables"
-        if (!$this->isPlayable()) {
+        if (! $this->isPlayable()) {
             return false;
         }
 
@@ -303,7 +331,7 @@ class Page extends Model
             return true;
         }
 
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
@@ -313,7 +341,7 @@ class Page extends Model
         }
 
         // Si l'utilisateur est associé à la page via la relation users, il peut la modifier
-        if (!$this->relationLoaded('users')) {
+        if (! $this->relationLoaded('users')) {
             try {
                 $this->load('users');
             } catch (\Exception $e) {
@@ -325,6 +353,7 @@ class Page extends Model
         }
 
         $level = (int) $user->role;
+
         return $level >= (int) $this->write_level;
     }
 

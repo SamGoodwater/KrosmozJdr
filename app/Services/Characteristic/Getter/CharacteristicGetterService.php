@@ -9,6 +9,7 @@ use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
 use App\Services\Characteristic\Formula\FormulaResolutionService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -237,7 +238,7 @@ final class CharacteristicGetterService
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Collection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>  $rows
+     * @param  Collection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>  $rows
      * @return array<string, string>
      */
     private function accumulateFieldAliases($rows): array
@@ -472,6 +473,7 @@ final class CharacteristicGetterService
             'color' => $characteristic->color,
             'unit' => $characteristic->unit,
             'type' => $characteristic->type,
+            'hide_when_empty' => (bool) ($characteristic->hide_when_empty ?? false),
             'entity' => $entity,
             'db_column' => $this->pickGroupValue($base, $overlay, 'db_column') ?? $characteristic->key,
             'min' => $this->pickGroupValue($base, $overlay, 'min'),
@@ -485,7 +487,6 @@ final class CharacteristicGetterService
             'conversion_krosmoz_sample' => $this->pickGroupValue($base, $overlay, 'conversion_krosmoz_sample'),
         ];
         if ($row instanceof CharacteristicObject) {
-            $out['forgemagie_allowed'] = $this->pickGroupValue($base, $overlay, 'forgemagie_allowed') ?? $row->forgemagie_allowed;
             $out['forgemagie_max'] = $this->pickGroupValue($base, $overlay, 'forgemagie_max') ?? $row->forgemagie_max;
             $out['base_price_per_unit'] = $this->pickGroupValue($base, $overlay, 'base_price_per_unit');
             $out['rune_price_per_unit'] = $this->pickGroupValue($base, $overlay, 'rune_price_per_unit');

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Entrée en attente pour envoi en digest (quotidien, hebdo, mensuel).
@@ -16,8 +17,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $notification_type
  * @property string $frequency
  * @property array $payload
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon $created_at
  * @property-read User $user
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereFrequency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereNotificationType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue wherePayload($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereUserId($value)
+ *
+ * @mixin \Eloquent
  */
 class NotificationDigestQueue extends Model
 {

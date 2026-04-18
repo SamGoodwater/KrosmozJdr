@@ -2,29 +2,31 @@
 
 namespace App\Models\Type;
 
+use App\Models\CharacteristicObject;
+use App\Models\Entity\Item;
+use App\Models\User;
+use Database\Factories\ItemTypeFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\CharacteristicObject;
-use App\Models\Entity\Item;
-use App\Models\User;
+use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
+ *
  * @method static \Database\Factories\Type\ItemTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType newQuery()
@@ -41,20 +43,41 @@ use App\Models\User;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withoutTrashed()
+ *
+ * @property int|null $dofusdb_type_id
+ * @property string $decision
+ * @property int $seen_count
+ * @property Carbon|null $last_seen_at
+ * @property-read Collection<int, CharacteristicObject> $allowedCharacteristicObjects
+ * @property-read int|null $allowed_characteristic_objects_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType allowed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType blocked()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType pending()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereLastSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereSeenCount($value)
+ *
  * @mixin \Eloquent
  */
 class ItemType extends Model
 {
-    /** @use HasFactory<\Database\Factories\ItemTypeFactory> */
+    /** @use HasFactory<ItemTypeFactory> */
     use HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     public const DECISION_PENDING = 'pending';
+
     public const DECISION_ALLOWED = 'allowed';
+
     public const DECISION_BLOCKED = 'blocked';
 
     /**
@@ -121,8 +144,9 @@ class ItemType extends Model
     {
         $type = static::where('dofusdb_type_id', $typeId)->first();
 
-        if (!$type) {
+        if (! $type) {
             static::touchDofusdbType($typeId);
+
             return false;
         }
 
@@ -132,9 +156,7 @@ class ItemType extends Model
     /**
      * Enregistre/actualise un typeId DofusDB détecté (pour revue dans le dashboard).
      *
-     * @param int $typeId
-     * @param string|null $label Libellé optionnel pour initialiser ou améliorer `name`.
-     * @return static
+     * @param  string|null  $label  Libellé optionnel pour initialiser ou améliorer `name`.
      */
     public static function touchDofusdbType(int $typeId, ?string $label = null): static
     {
@@ -186,7 +208,7 @@ class ItemType extends Model
     /**
      * Définitions de caractéristiques (groupe object) qui sont réservées à ce type d'équipement.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<CharacteristicObject, self>
+     * @return BelongsToMany<CharacteristicObject, self>
      */
     public function allowedCharacteristicObjects(): BelongsToMany
     {

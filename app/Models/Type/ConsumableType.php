@@ -2,27 +2,29 @@
 
 namespace App\Models\Type;
 
+use App\Models\Entity\Consumable;
+use App\Models\User;
+use Database\Factories\ConsumableTypeFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Entity\Consumable;
+use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User|null $createdBy
+ *
  * @method static \Database\Factories\Type\ConsumableTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType newQuery()
@@ -39,20 +41,39 @@ use App\Models\Entity\Consumable;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withoutTrashed()
+ *
+ * @property int|null $dofusdb_type_id
+ * @property string $decision
+ * @property int $seen_count
+ * @property Carbon|null $last_seen_at
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType allowed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType blocked()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType pending()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereLastSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereSeenCount($value)
+ *
  * @mixin \Eloquent
  */
 class ConsumableType extends Model
 {
-    /** @use HasFactory<\Database\Factories\ConsumableTypeFactory> */
+    /** @use HasFactory<ConsumableTypeFactory> */
     use HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     public const DECISION_PENDING = 'pending';
+
     public const DECISION_ALLOWED = 'allowed';
+
     public const DECISION_BLOCKED = 'blocked';
 
     /**
@@ -119,8 +140,9 @@ class ConsumableType extends Model
     {
         $type = static::where('dofusdb_type_id', $typeId)->first();
 
-        if (!$type) {
+        if (! $type) {
             static::touchDofusdbType($typeId);
+
             return false;
         }
 
@@ -130,9 +152,7 @@ class ConsumableType extends Model
     /**
      * Enregistre/actualise un typeId DofusDB détecté (pour revue dans le dashboard).
      *
-     * @param int $typeId
-     * @param string|null $label Libellé optionnel pour initialiser ou améliorer `name`.
-     * @return static
+     * @param  string|null  $label  Libellé optionnel pour initialiser ou améliorer `name`.
      */
     public static function touchDofusdbType(int $typeId, ?string $label = null): static
     {

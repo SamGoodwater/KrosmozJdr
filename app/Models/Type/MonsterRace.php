@@ -2,32 +2,33 @@
 
 namespace App\Models\Type;
 
+use App\Models\Entity\Monster;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Entity\Monster;
+use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property int|null $dofusdb_race_id
  * @property string $name
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property int|null $id_super_race
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
+ * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, MonsterRace> $subRaces
+ * @property-read Collection<int, MonsterRace> $subRaces
  * @property-read int|null $sub_races_count
  * @property-read MonsterRace|null $superRace
+ *
  * @method static \Database\Factories\Type\MonsterRaceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace newQuery()
@@ -45,6 +46,8 @@ use App\Models\Entity\Monster;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereDofusdbRaceId($value)
+ *
  * @mixin \Eloquent
  */
 class MonsterRace extends Model
@@ -53,8 +56,11 @@ class MonsterRace extends Model
     use HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     /**
@@ -89,12 +95,14 @@ class MonsterRace extends Model
     public static function touchDofusdbRace(int $dofusdbRaceId, ?string $name = null): void
     {
         $dofusdbRaceId = (int) $dofusdbRaceId;
-        if ($dofusdbRaceId === 0) return;
+        if ($dofusdbRaceId === 0) {
+            return;
+        }
 
         try {
             $model = self::query()->where('dofusdb_race_id', $dofusdbRaceId)->first();
-            if (!$model) {
-                $model = new self();
+            if (! $model) {
+                $model = new self;
                 $model->dofusdb_race_id = $dofusdbRaceId;
                 $model->name = $name ?: ("DofusDB race #{$dofusdbRaceId}");
                 $model->state = self::STATE_DRAFT;
@@ -103,6 +111,7 @@ class MonsterRace extends Model
                 $model->created_by = null;
                 $model->id_super_race = null;
                 $model->save();
+
                 return;
             }
 

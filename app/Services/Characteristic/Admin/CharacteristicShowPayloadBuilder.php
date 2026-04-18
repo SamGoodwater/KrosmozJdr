@@ -59,6 +59,7 @@ final class CharacteristicShowPayloadBuilder
 
         $hasIconFalse = Schema::hasColumn('characteristics', 'icon_false');
         $hasValueOverrides = Schema::hasColumn('characteristics', 'value_overrides');
+        $hasHideWhenEmpty = Schema::hasColumn('characteristics', 'hide_when_empty');
 
         $selected = [
             'id' => $characteristic->key,
@@ -70,6 +71,7 @@ final class CharacteristicShowPayloadBuilder
             'icon_false' => $hasIconFalse ? $effective->icon_false : null,
             'color' => $effective->color,
             'value_overrides' => $hasValueOverrides ? $effective->value_overrides : null,
+            'hide_when_empty' => $hasHideWhenEmpty ? (bool) $effective->hide_when_empty : false,
             'type' => $effective->type,
             'unit' => $effective->unit,
             'sort_order' => $characteristic->sort_order,
@@ -169,7 +171,6 @@ final class CharacteristicShowPayloadBuilder
             'conversion_dofus_sample' => null,
             'conversion_krosmoz_sample' => null,
             'conversion_sample_rows' => $this->defaultConversionSampleRows(),
-            'forgemagie_allowed' => false,
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
             'rune_price_per_unit' => null,
@@ -248,7 +249,6 @@ final class CharacteristicShowPayloadBuilder
             'conversion_dofus_sample' => $def['conversion_dofus_sample'] ?? null,
             'conversion_krosmoz_sample' => $def['conversion_krosmoz_sample'] ?? null,
             'conversion_sample_rows' => null,
-            'forgemagie_allowed' => false,
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
             'rune_price_per_unit' => null,
@@ -257,9 +257,6 @@ final class CharacteristicShowPayloadBuilder
             'norms_description' => $def['norms_description'] ?? null,
             'norms_help_section_id' => $def['norms_help_section_id'] ?? null,
         ];
-        if (isset($def['forgemagie_allowed'])) {
-            $out['forgemagie_allowed'] = (bool) $def['forgemagie_allowed'];
-        }
         if (isset($def['forgemagie_max'])) {
             $out['forgemagie_max'] = (int) $def['forgemagie_max'];
         }
@@ -296,7 +293,6 @@ final class CharacteristicShowPayloadBuilder
             'conversion_dofus_sample' => $row->conversion_dofus_sample,
             'conversion_krosmoz_sample' => $row->conversion_krosmoz_sample,
             'conversion_sample_rows' => $row->conversion_sample_rows,
-            'forgemagie_allowed' => false,
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
             'rune_price_per_unit' => null,
@@ -306,7 +302,6 @@ final class CharacteristicShowPayloadBuilder
             'norms_help_section_id' => $row->norms_help_section_id,
         ];
         if ($row instanceof CharacteristicObject) {
-            $out['forgemagie_allowed'] = $row->forgemagie_allowed;
             $out['forgemagie_max'] = $row->forgemagie_max;
             $out['base_price_per_unit'] = $row->base_price_per_unit;
             $out['rune_price_per_unit'] = $row->rune_price_per_unit;

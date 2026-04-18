@@ -2,24 +2,19 @@
 
 namespace App\Models\Entity;
 
+use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\User;
+use Database\Factories\CreatureFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Entity\Attribute;
-use App\Models\Entity\Capability;
-use App\Models\Entity\Item;
-use App\Models\Entity\Resource;
-use App\Models\Entity\Spell;
-use App\Models\Entity\Consumable;
-use App\Models\Entity\Npc;
-use App\Models\Entity\Monster;
-use App\Models\Concerns\HasEntityImageMedia;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -122,25 +117,26 @@ use Spatie\MediaLibrary\HasMedia;
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Attribute> $attributes
+ * @property-read Collection<int, Attribute> $attributes
  * @property-read int|null $attributes_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Capability> $capabilities
+ * @property-read Collection<int, Capability> $capabilities
  * @property-read int|null $capabilities_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
  * @property-read Monster|null $monster
  * @property-read Npc|null $npc
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
+ *
  * @method static \Database\Factories\Entity\CreatureFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature newQuery()
@@ -238,16 +234,44 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereVitality($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withoutTrashed()
+ *
+ * @property string $critical_hit
+ * @property string $heal_bonus
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereCriticalHit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoSagesse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoVitalite($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereHealBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResSagesse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResVitalite($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveAgilityBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveAgilityMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveChanceBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveChanceMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveIntelligenceBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveIntelligenceMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveStrengthBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveStrengthMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveVitalityBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveVitalityMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomMastery($value)
+ *
  * @mixin \Eloquent
  */
 class Creature extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\CreatureFactory> */
-    use HasFactory, SoftDeletes, HasEntityImageMedia;
+    /** @use HasFactory<CreatureFactory> */
+    use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     /** Répertoire Media Library pour ce modèle. */
@@ -394,6 +418,7 @@ class Creature extends Model implements HasMedia
     {
         return $this->belongsToMany(Attribute::class, 'attribute_creature');
     }
+
     /**
      * Les capacités de la créature.
      */
@@ -401,6 +426,7 @@ class Creature extends Model implements HasMedia
     {
         return $this->belongsToMany(Capability::class, 'capability_creature');
     }
+
     /**
      * Les objets de la créature.
      */
@@ -408,6 +434,7 @@ class Creature extends Model implements HasMedia
     {
         return $this->belongsToMany(Item::class, 'creature_item')->withPivot('quantity');
     }
+
     /**
      * Les ressources de la créature.
      */
@@ -415,6 +442,7 @@ class Creature extends Model implements HasMedia
     {
         return $this->belongsToMany(Resource::class, 'creature_resource')->withPivot('quantity');
     }
+
     /**
      * Les sorts de la créature.
      */
@@ -422,6 +450,7 @@ class Creature extends Model implements HasMedia
     {
         return $this->belongsToMany(Spell::class, 'creature_spell');
     }
+
     /**
      * Les consommables de la créature.
      */
@@ -429,6 +458,7 @@ class Creature extends Model implements HasMedia
     {
         return $this->belongsToMany(Consumable::class, 'consumable_creature')->withPivot('quantity');
     }
+
     /**
      * Le PNJ associé à la créature.
      */
@@ -436,6 +466,7 @@ class Creature extends Model implements HasMedia
     {
         return $this->hasOne(Npc::class, 'creature_id');
     }
+
     /**
      * Le monstre associé à la créature.
      */

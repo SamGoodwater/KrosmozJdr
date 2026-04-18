@@ -25,6 +25,7 @@ class StoreProjectDepsWebRequest extends FormRequest
     {
         return [
             'all' => ['sometimes', 'boolean'],
+            'with_system' => ['sometimes', 'boolean'],
             'apt' => ['sometimes', 'boolean'],
             'composer' => ['sometimes', 'boolean'],
             'pnpm' => ['sometimes', 'boolean'],
@@ -32,8 +33,7 @@ class StoreProjectDepsWebRequest extends FormRequest
             'docs' => ['sometimes', 'boolean'],
             'dump' => ['sometimes', 'boolean'],
             'migrate' => ['sometimes', 'boolean'],
-            'ide' => ['sometimes', 'boolean'],
-            'laravel_clear' => ['sometimes', 'boolean'],
+            'optimize' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -45,10 +45,14 @@ class StoreProjectDepsWebRequest extends FormRequest
         $opts = [];
         if ($this->boolean('all')) {
             $opts['--all'] = true;
+            if ($this->boolean('with_system')) {
+                $opts['--with-system'] = true;
+            }
 
             return $opts;
         }
         foreach ([
+            'with_system' => '--with-system',
             'apt' => '--apt',
             'composer' => '--composer',
             'pnpm' => '--pnpm',
@@ -56,8 +60,7 @@ class StoreProjectDepsWebRequest extends FormRequest
             'docs' => '--docs',
             'dump' => '--dump',
             'migrate' => '--migrate',
-            'ide' => '--ide',
-            'laravel_clear' => '--laravel-clear',
+            'optimize' => '--optimize',
         ] as $key => $flag) {
             if ($this->boolean($key)) {
                 $opts[$flag] = true;

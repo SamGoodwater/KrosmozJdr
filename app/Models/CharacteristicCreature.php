@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Définition d’une caractéristique pour une entité du groupe créature (monster, class, npc).
@@ -30,6 +31,40 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $norms_help_section_id Section CMS (texte) affichée sous la charte
  * @property array|null $labels
  * @property array|null $validation
+ * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Characteristic $characteristic
+ * @property-read Section|null $normsHelpSection
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionDofusSample($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionFunction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionKrosmozSample($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionSampleRows($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereDbColumn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereDefaultValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereDofusdbCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereFormulaDisplay($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereLabels($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereNormsConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereNormsDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereNormsGrid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereNormsHelpSectionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereValidation($value)
+ *
+ * @mixin \Eloquent
  */
 class CharacteristicCreature extends Model
 {

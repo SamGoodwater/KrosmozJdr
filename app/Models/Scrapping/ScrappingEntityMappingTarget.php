@@ -6,9 +6,11 @@ namespace App\Models\Scrapping;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Cible d'une règle de mapping : un couple (model, field) Krosmoz.
+ *
  * Une règle peut avoir plusieurs cibles (ex. item → resources, consumables, items).
  *
  * @property int $id
@@ -16,6 +18,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $target_model
  * @property string $target_field
  * @property int $sort_order
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read ScrappingEntityMapping $scrappingEntityMapping
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereScrappingEntityMappingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereTargetField($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereTargetModel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class ScrappingEntityMappingTarget extends Model
 {

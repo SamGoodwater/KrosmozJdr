@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Compte OAuth lié à un utilisateur (GitHub, Discord).
@@ -17,9 +19,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $provider_email
  * @property string|null $provider_name
  * @property string|null $avatar_url
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property-read User $user
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount forUser(int $userId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount provider(string $provider)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereAvatarUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereProvider($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereProviderEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereProviderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereProviderName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereUserId($value)
+ *
+ * @mixin \Eloquent
  */
 class OAuthAccount extends Model
 {
@@ -54,10 +73,10 @@ class OAuthAccount extends Model
     /**
      * Scope pour filtrer par provider.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<OAuthAccount> $query
-     * @return \Illuminate\Database\Eloquent\Builder<OAuthAccount>
+     * @param  Builder<OAuthAccount>  $query
+     * @return Builder<OAuthAccount>
      */
-    public function scopeProvider(\Illuminate\Database\Eloquent\Builder $query, string $provider): \Illuminate\Database\Eloquent\Builder
+    public function scopeProvider(Builder $query, string $provider): Builder
     {
         return $query->where('provider', $provider);
     }
@@ -65,10 +84,10 @@ class OAuthAccount extends Model
     /**
      * Scope pour filtrer par utilisateur.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<OAuthAccount> $query
-     * @return \Illuminate\Database\Eloquent\Builder<OAuthAccount>
+     * @param  Builder<OAuthAccount>  $query
+     * @return Builder<OAuthAccount>
      */
-    public function scopeForUser(\Illuminate\Database\Eloquent\Builder $query, int $userId): \Illuminate\Database\Eloquent\Builder
+    public function scopeForUser(Builder $query, int $userId): Builder
     {
         return $query->where('user_id', $userId);
     }

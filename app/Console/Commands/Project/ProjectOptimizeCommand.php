@@ -9,7 +9,10 @@ use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
 
 /**
- * IDE Helper et optimise Laravel ({@see ProjectRunService}).
+ * Optimisation locale : optimize:clear, IDE Helper, dump-autoload, optimize.
+ *
+ * @example php artisan project:optimize
+ * @example php artisan project:optimize --ide-only
  */
 class ProjectOptimizeCommand extends Command
 {
@@ -22,11 +25,10 @@ class ProjectOptimizeCommand extends Command
     }
 
     protected $signature = 'project:optimize
-        {--all : IDE Helper + optimize:clear Laravel}
-        {--ide : Générer les fichiers IDE Helper uniquement}
-        {--laravel : Nettoyer les optimisations Laravel uniquement}';
+        {--clear-only : optimize:clear Laravel uniquement}
+        {--ide-only : IDE Helper + dump-autoload uniquement}';
 
-    protected $description = 'Régénère IDE Helper et/ou nettoie les optimisations Laravel.';
+    protected $description = 'optimize:clear → ide-helper → dump-autoload → optimize (pipeline dev).';
 
     public function handle(): int
     {
@@ -34,24 +36,23 @@ class ProjectOptimizeCommand extends Command
             return self::FAILURE;
         }
 
-        $map = [];
-        if ($this->option('all')) {
-            $map['optimise:all'] = true;
-        } else {
-            if ($this->option('ide')) {
-                $map['optimise:ide'] = true;
-            }
-            if ($this->option('laravel')) {
-                $map['optimise:laravel'] = true;
-            }
-        }
+        $clearOnly = (bool) $this->option('clear-only');
+        $ideOnly = (bool) $this->option('ide-only');
 
-        if ($map === []) {
-            $this->warn('Indiquez --all, --ide et/ou --laravel.');
+        if ($clearOnly && $ideOnly) {
+            $this->error('Incompatible : --clear-only et --ide-only.');
 
             return self::FAILURE;
         }
 
-        return $this->projectRunService->runOptionMap($map, $this);
+        if ($clearOnly) {
+            return $this->projectRunService->runProjectOptimizePipeline($this, 'clear-only');
+        }
+
+        if ($ideOnly) {
+            return $this->projectRunService->runProjectOptimizePipeline($this, 'ide-only');
+        }
+
+        return $this->projectRunService->runProjectOptimizePipeline($this, 'full');
     }
 }

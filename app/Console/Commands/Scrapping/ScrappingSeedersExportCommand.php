@@ -17,6 +17,7 @@ use App\Models\Type\ItemType;
 use App\Models\Type\ResourceType;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use ZipArchive;
@@ -262,7 +263,6 @@ class ScrappingSeedersExportCommand extends Command
                 'conversion_formula' => $r->conversion_formula,
                 'conversion_dofus_sample' => $r->conversion_dofus_sample,
                 'conversion_krosmoz_sample' => $r->conversion_krosmoz_sample,
-                'forgemagie_allowed' => $r->forgemagie_allowed,
                 'forgemagie_max' => $r->forgemagie_max,
                 'base_price_per_unit' => $r->base_price_per_unit,
                 'rune_price_per_unit' => $r->rune_price_per_unit,
@@ -337,7 +337,7 @@ class ScrappingSeedersExportCommand extends Command
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Collection<int, ResourceType|ConsumableType|ItemType>  $rows
+     * @param  Collection<int, ResourceType|ConsumableType|ItemType>  $rows
      */
     private function exportItemTypesTable(string $dir, $rows, string $filename, string $label, string $comment): void
     {

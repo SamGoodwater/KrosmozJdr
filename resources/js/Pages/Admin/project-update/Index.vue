@@ -28,6 +28,7 @@ function onPasswordConfirmed() {
 
 const form = useForm({
     all: true,
+    with_system: false,
     apt: false,
     composer: false,
     pnpm: false,
@@ -35,8 +36,7 @@ const form = useForm({
     docs: false,
     dump: false,
     migrate: false,
-    ide: false,
-    laravel_clear: false,
+    optimize: false,
 });
 
 const canSubmit = computed(
@@ -55,8 +55,9 @@ function submit() {
         <div>
             <h1 class="text-2xl font-semibold text-base-content">Mise à jour de la stack</h1>
             <p class="mt-2 text-sm text-base-content/70">
-                Enfile un job qui exécute <code class="rounded bg-base-300 px-1">project:deps</code> (apt, composer,
-                pnpm, CSS, etc.). <strong>Interdit en production</strong> — réservé aux machines de développement.
+                Enfile un job qui exécute <code class="rounded bg-base-300 px-1">project:deps</code> (mise à jour
+                Composer + pnpm, puis <code class="rounded bg-base-300 px-1">project:optimize</code> en mode « tout »).
+                <strong>Interdit en production</strong> — réservé aux machines de développement.
             </p>
         </div>
 
@@ -75,7 +76,14 @@ function submit() {
         <form v-else class="space-y-4 rounded-box border border-base-content/10 bg-base-100/50 p-4" @submit.prevent="submit">
             <label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
                 <input v-model="form.all" type="checkbox" class="checkbox checkbox-sm" />
-                Tout (défaut commande : stack + migrate)
+                Tout (composer update + pnpm up + project:optimize)
+            </label>
+            <label
+                v-if="form.all"
+                class="flex items-center gap-2 cursor-pointer text-sm text-base-content/80"
+            >
+                <input v-model="form.with_system" type="checkbox" class="checkbox checkbox-sm" />
+                Inclure la mise à jour système (apt / setup --update)
             </label>
             <p class="text-xs text-base-content/60">Décochez « Tout » pour ne sélectionner que des cibles précises :</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
@@ -103,11 +111,8 @@ function submit() {
                     migrate</label
                 >
                 <label class="flex items-center gap-2 cursor-pointer"
-                    ><input v-model="form.ide" type="checkbox" class="checkbox checkbox-sm" :disabled="form.all" /> IDE helper</label
-                >
-                <label class="flex items-center gap-2 cursor-pointer"
-                    ><input v-model="form.laravel_clear" type="checkbox" class="checkbox checkbox-sm" :disabled="form.all" />
-                    optimize:clear Laravel</label
+                    ><input v-model="form.optimize" type="checkbox" class="checkbox checkbox-sm" :disabled="form.all" />
+                    project:optimize (IDE + caches Laravel)</label
                 >
             </div>
 

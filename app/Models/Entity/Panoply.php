@@ -2,19 +2,14 @@
 
 namespace App\Models\Entity;
 
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Entity\Item;
-use App\Models\Entity\Scenario;
-use App\Models\Entity\Campaign;
-use App\Models\Entity\Shop;
-use App\Models\Entity\Npc;
+use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -22,21 +17,22 @@ use App\Models\Entity\Npc;
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Npc> $npcs
+ * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Shop> $shops
+ * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
+ *
  * @method static \Database\Factories\Entity\PanoplyFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply newQuery()
@@ -55,6 +51,11 @@ use App\Models\Entity\Npc;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withoutTrashed()
+ *
+ * @property string|null $dofusdb_id
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereDofusdbId($value)
+ *
  * @mixin \Eloquent
  */
 class Panoply extends Model
@@ -63,8 +64,11 @@ class Panoply extends Model
     use HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     /**

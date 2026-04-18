@@ -1,0 +1,19 @@
+{
+  "_about": "Fichier d’aide uniquement — non chargé par CharacteristicSeeder (nom commence par _). Copier vers un fichier seedable : même contenu sans les clés _, nom = key + .json",
+  "_naming": "Nom de fichier = clé BDD en snake_case, ex. action_points_creature.json. Pas d’alias courts type pa.json : la clé complète évite les collisions entre groupes.",
+  "_seedable_files": "Inclus : ^[a-z0-9_]+\\.json$. Exclus : préfixe _, suffixe .demo.json, caractères hors [a-z0-9_].",
+  "_empty_dir": "Si aucun JSON seedable n’existe, le seeder utilise database/seeders/data/characteristics.php.",
+  "key": "action_points_creature",
+  "name": "Points d'action",
+  "short_name": "PA",
+  "helper": "Exemple : nombre de PA par tour.",
+  "descriptions": "Exemple de description longue pour la fiche règle.",
+  "icon": "actionPoints.webp",
+  "color": "blue",
+  "unit": null,
+  "type": "int",
+  "sort_order": 1,
+  "group": "creature",
+  "linked_to_key": null,
+  "hide_when_empty": false
+}

@@ -2,18 +2,17 @@
 
 namespace App\Models\Type;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Entity\Scenario;
+use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
- *
  * @property int $id
  * @property int $scenario_id
  * @property int $next_scenario_id
  * @property string|null $condition
  * @property-read Scenario $nextScenario
  * @property-read Scenario $scenario
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink query()
@@ -21,11 +20,13 @@ use App\Models\Entity\Scenario;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink whereNextScenarioId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink whereScenarioId($value)
+ *
  * @mixin \Eloquent
  */
 class ScenarioLink extends Model
 {
     protected $table = 'scenario_link';
+
     public $timestamps = false;
 
     protected $fillable = [

@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Console\Commands\Development;
 
 use App\Console\Concerns\GuardsProductionEnvironment;
-use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
 
 /**
- * Alias de confort vers le même flux que `project:dev` (serveur Laravel + Vite).
+ * Alias de confort vers `project:dev` (prepare + optimize + serveurs Laravel + Vite).
  *
  * Pour lancer aussi la file d’attente et le CSS en parallèle : `composer run dev` (voir composer.json).
  */
@@ -17,15 +16,9 @@ class LoadDevelopmentServersCommand extends Command
 {
     use GuardsProductionEnvironment;
 
-    public function __construct(
-        private readonly ProjectRunService $projectRunService
-    ) {
-        parent::__construct();
-    }
-
     protected $signature = 'server:load';
 
-    protected $description = 'Lance l’environnement dev (optimize + ProjectRunService, comme project:dev)';
+    protected $description = 'Équivalent à project:dev (prepare, optimize, puis serveurs)';
 
     public function handle(): int
     {
@@ -33,9 +26,6 @@ class LoadDevelopmentServersCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info('Optimisation Laravel (cache)…');
-        $this->call('optimize');
-
-        return $this->projectRunService->runOptionMap(['dev' => true], $this);
+        return $this->call('project:dev');
     }
 }

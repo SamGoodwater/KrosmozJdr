@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Models\Scrapping;
 
 use App\Models\Characteristic;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Règle de mapping : une clé logique (ex. level, name) pour une source+entité DofusDB.
+ *
  * Lie un chemin API (from_path) à une ou plusieurs cibles Krosmoz (model.field) avec formatters.
  *
  * @property int $id
@@ -25,8 +28,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $spell_level_aggregation first|max|min|last (agrégation multi spell-level)
  * @property int $sort_order
  *
- * @example
- * ScrappingEntityMapping::where('source', 'dofusdb')->where('entity', 'monster')->orderBy('sort_order')->get();
+ * @example ScrappingEntityMapping::where('source', 'dofusdb')->where('entity', 'monster')->orderBy('sort_order')->get();
+ *
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Characteristic|null $characteristic
+ * @property-read Collection<int, Characteristic> $characteristics
+ * @property-read int|null $characteristics_count
+ * @property-read Collection<int, ScrappingEntityMappingTarget> $targets
+ * @property-read int|null $targets_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereFormatters($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereFromLangAware($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereFromPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereMappingKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSpellLevelAggregation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class ScrappingEntityMapping extends Model
 {

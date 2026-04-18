@@ -2,15 +2,16 @@
 
 namespace App\Models\Type;
 
+use App\Models\Entity\Spell;
+use App\Models\User;
+use Database\Factories\SpellTypeFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Entity\Spell;
+use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -19,13 +20,14 @@ use App\Models\Entity\Spell;
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
+ *
  * @method static \Database\Factories\Type\SpellTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType newQuery()
@@ -45,16 +47,20 @@ use App\Models\Entity\Spell;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class SpellType extends Model
 {
-    /** @use HasFactory<\Database\Factories\SpellTypeFactory> */
+    /** @use HasFactory<SpellTypeFactory> */
     use HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     /**

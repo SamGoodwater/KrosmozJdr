@@ -8,6 +8,7 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Effet appliqué à un sort (instance).
@@ -29,6 +30,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read Spell $spell
  * @property-read SpellEffectType $spellEffectType
  * @property-read Monster|null $summonMonster
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereDiceNum($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereDiceSide($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereDispellable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereRawDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereSpellEffectTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereSpellId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereSummonMonsterId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereTargetScope($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereValueMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereValueMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereZoneShape($value)
+ *
+ * @mixin \Eloquent
  */
 class SpellEffect extends Model
 {
@@ -62,9 +87,13 @@ class SpellEffect extends Model
     ];
 
     public const TARGET_SELF = 'self';
+
     public const TARGET_ALLY = 'ally';
+
     public const TARGET_ENEMY = 'enemy';
+
     public const TARGET_CELL = 'cell';
+
     public const TARGET_ZONE = 'zone';
 
     public function spell(): BelongsTo

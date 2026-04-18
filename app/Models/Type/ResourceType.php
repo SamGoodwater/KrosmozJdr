@@ -2,27 +2,30 @@
 
 namespace App\Models\Type;
 
+use App\Models\Entity\Resource;
+use App\Models\User;
+use Database\Factories\ResourceTypeFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Models\Entity\Resource;
+use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $resources
+ * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
+ *
  * @method static \Database\Factories\Type\ResourceTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType newQuery()
@@ -39,20 +42,39 @@ use App\Models\Entity\Resource;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withoutTrashed()
+ *
+ * @property int|null $dofusdb_type_id
+ * @property string $decision
+ * @property int $seen_count
+ * @property Carbon|null $last_seen_at
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType allowed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType blocked()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType pending()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereLastSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereSeenCount($value)
+ *
  * @mixin \Eloquent
  */
 class ResourceType extends Model
 {
-    /** @use HasFactory<\Database\Factories\ResourceTypeFactory> */
+    /** @use HasFactory<ResourceTypeFactory> */
     use HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
 
     public const DECISION_PENDING = 'pending';
+
     public const DECISION_ALLOWED = 'allowed';
+
     public const DECISION_BLOCKED = 'blocked';
 
     /**
@@ -88,8 +110,8 @@ class ResourceType extends Model
     /**
      * Scope: types explicitement autorisés (whitelist).
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query
+     * @return Builder
      *
      * @example
      * ResourceType::query()->allowed()->get();
@@ -102,8 +124,8 @@ class ResourceType extends Model
     /**
      * Scope: types bloqués (blacklist).
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query
+     * @return Builder
      */
     public function scopeBlocked($query)
     {
@@ -113,8 +135,8 @@ class ResourceType extends Model
     /**
      * Scope: types en attente de validation UX.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query
+     * @return Builder
      */
     public function scopePending($query)
     {
@@ -128,8 +150,6 @@ class ResourceType extends Model
      * - Si le type n'existe pas encore, il est créé en `decision=pending` (à valider via UX)
      *   et la méthode retourne false (sécurité par défaut).
      *
-     * @param int $typeId
-     * @return bool
      *
      * @example
      * if (ResourceType::isDofusdbTypeAllowed(15)) {
@@ -140,8 +160,9 @@ class ResourceType extends Model
     {
         $type = static::where('dofusdb_type_id', $typeId)->first();
 
-        if (!$type) {
+        if (! $type) {
             static::touchDofusdbType($typeId);
+
             return false;
         }
 
@@ -151,9 +172,7 @@ class ResourceType extends Model
     /**
      * Enregistre/actualise un typeId DofusDB détecté (pour revue dans le dashboard).
      *
-     * @param int $typeId
-     * @param string|null $label Libellé optionnel pour initialiser ou améliorer `name`.
-     * @return static
+     * @param  string|null  $label  Libellé optionnel pour initialiser ou améliorer `name`.
      *
      * @example
      * ResourceType::touchDofusdbType(35, 'Fleur');

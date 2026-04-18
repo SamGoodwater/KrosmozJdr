@@ -9,10 +9,15 @@ use App\Models\SpellState;
 use App\Models\Type\SpellType;
 use App\Models\User;
 use App\Support\AreaConstants;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @property int $id
@@ -48,20 +53,20 @@ use Spatie\MediaLibrary\HasMedia;
  * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
+ * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Creature> $creatures
+ * @property-read Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
+ * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
+ * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, SpellType> $spellTypes
+ * @property-read Collection<int, SpellType> $spellTypes
  * @property-read int|null $spell_types_count
  *
  * @method static \Database\Factories\Entity\SpellFactory factory($count = null, $state = [])
@@ -100,6 +105,31 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
+ *
+ * @property string|null $duration
+ * @property-read Collection<int, Breed> $breeds
+ * @property-read int|null $breeds_count
+ * @property-read Collection<int, Effect> $effects
+ * @property-read int|null $effects_count
+ * @property-read string|null $area
+ * @property-read string $po_display
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @property-read Collection<int, SpellEffect> $spellEffects
+ * @property-read int|null $spell_effects_count
+ * @property-read Collection<int, SpellState> $spellStates
+ * @property-read int|null $spell_states_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAllowsReaction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAttackCharacteristicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAutoSuccessIfWillingTarget($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastingTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereResolutionMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereRitualAvailable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveCharacteristicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveDcFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveSuccessNote($value)
  *
  * @mixin \Eloquent
  */
@@ -303,7 +333,7 @@ class Spell extends Model implements HasMedia
     /**
      * Les effets de ce sort (instances liées aux types d'effet).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<SpellEffect, $this>
+     * @return HasMany<SpellEffect, $this>
      */
     public function spellEffects()
     {

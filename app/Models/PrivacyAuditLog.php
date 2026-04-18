@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Journal d'audit des actions RGPD (export, suppression).
@@ -15,17 +16,38 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array|null $context Contexte additionnel
  * @property string|null $ip_address
  * @property string|null $user_agent
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon $created_at
+ * @property-read User|null $actor
+ * @property-read User|null $subjectUser
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereActorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereSubjectUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereUserAgent($value)
+ *
+ * @mixin \Eloquent
  */
 class PrivacyAuditLog extends Model
 {
     public const UPDATED_AT = null;
 
     public const ACTION_EXPORT_REQUESTED = 'export_requested';
+
     public const ACTION_EXPORT_DOWNLOADED = 'export_downloaded';
+
     public const ACTION_ERASURE_REQUESTED = 'erasure_requested';
+
     public const ACTION_ERASURE_CANCELLED = 'erasure_cancelled';
+
     public const ACTION_ERASURE_STARTED = 'erasure_started';
+
     public const ACTION_ERASURE_EXECUTED = 'erasure_executed';
 
     protected $fillable = [

@@ -7,6 +7,13 @@ namespace App\Console\Commands\Project;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
 use App\Console\Concerns\PromptsPrimarySuperAdmin;
 use App\Services\NotificationService;
+use Database\Seeders\CriticalPagesSeeder;
+use Database\Seeders\NavMenuSeeder;
+use Database\Seeders\PageSeeder;
+use Database\Seeders\SectionSeeder;
+use Database\Seeders\SubEffectSeeder;
+use Database\Seeders\Type\SpellTypeSeeder;
+use Database\Seeders\UserSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
@@ -29,7 +36,7 @@ class ProjectInitCommand extends Command
     use PromptsPrimarySuperAdmin;
 
     protected $signature = 'project:init|init
-        {--deps : Exécuter d’abord project:deps (apt/composer/pnpm + migrate + CSS)}
+        {--deps : Exécuter d’abord project:deps (composer update + pnpm up + project:optimize)}
         {--fresh : migrate:fresh --force avant tout}
         {--skip-migrate : Ne pas lancer les migrations}
         {--skip-seeders : Ne pas exécuter les seeders (socle déjà fait)}
@@ -72,7 +79,7 @@ class ProjectInitCommand extends Command
         $this->newLine();
 
         if ((bool) $this->option('deps')) {
-            $this->info('Phase 0 : dépendances (project:deps --all)');
+            $this->info('Phase 0 : dépendances (project:deps — composer + pnpm + optimize)');
             $code = Artisan::call('project:deps', ['--all' => true]);
             $this->output->write(Artisan::output());
             if ($code !== 0) {
@@ -184,12 +191,12 @@ class ProjectInitCommand extends Command
         }
 
         $seeders = [
-            \Database\Seeders\UserSeeder::class,
-            \Database\Seeders\CriticalPagesSeeder::class,
-            \Database\Seeders\NavMenuSeeder::class,
-            \Database\Seeders\PageSeeder::class,
-            \Database\Seeders\SectionSeeder::class,
-            \Database\Seeders\SubEffectSeeder::class,
+            UserSeeder::class,
+            CriticalPagesSeeder::class,
+            NavMenuSeeder::class,
+            PageSeeder::class,
+            SectionSeeder::class,
+            SubEffectSeeder::class,
         ];
         foreach ($seeders as $seeder) {
             $this->line("  → {$seeder}");
@@ -197,7 +204,7 @@ class ProjectInitCommand extends Command
             $this->output->write(Artisan::output());
             if ($code !== 0) {
                 $this->warn("  Avertissement : échec partiel de {$seeder}");
-            } elseif ($seeder === \Database\Seeders\UserSeeder::class) {
+            } elseif ($seeder === UserSeeder::class) {
                 $this->runPrimarySuperAdminPrompt();
             }
         }
@@ -228,7 +235,7 @@ class ProjectInitCommand extends Command
         }
 
         $this->line('  → SpellTypeSeeder (types de sorts, référentiel métier)');
-        $code = Artisan::call('db:seed', ['--class' => \Database\Seeders\Type\SpellTypeSeeder::class, '--force' => true]);
+        $code = Artisan::call('db:seed', ['--class' => SpellTypeSeeder::class, '--force' => true]);
         $this->output->write(Artisan::output());
         if ($code !== 0) {
             $this->warn('  Avertissement : seed types de sorts a échoué.');

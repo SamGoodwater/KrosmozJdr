@@ -27,68 +27,76 @@ C’est l’**interface principale** du projet : dépendances, dev local, nettoy
 
 **Garde-fous :** beaucoup de commandes ci-dessous sont **interdites en production** (`GuardsProductionEnvironment`) ou réservées au **développement local** — voir la colonne « Environnement » ou `php artisan <cmd> -h`.
 
-### 1.1 `project:deps` — stack (apt, composer, pnpm, CSS, doc, migrate)
+### 1.1 `project:deps` — dépendances Composer & pnpm
 
-Met à jour l’environnement de développement. **Par défaut** (aucune option ou `--all`) : apt + composer + pnpm + CSS + doc + dump-autoload + **migrate**.
-
-| Option | Effet |
-|--------|--------|
-| *(défaut)* / `--all` | Stack complète + migrate |
-| `--apt` | Mise à jour système (via `setup`) |
-| `--composer` | `composer update` |
-| `--pnpm` | Mise à jour pnpm / deps front |
-| `--css` | Rebuild CSS |
-| `--docs` | Index + schéma documentation |
-| `--dump` | `composer dump-autoload` |
-| `--migrate` | Migrations (`setup --db`) |
-| `--ide` | IDE Helper + méta |
-| `--laravel-clear` | `optimize:clear` Laravel |
+**Par défaut** : `composer update` + `pnpm up`, puis **`project:optimize`**. Option **`--with-system`** pour enchaîner `setup --update` (apt / outils). Cibles CSS, doc, migrate, etc. : voir `php artisan project:deps -h`.
 
 ```bash
 php artisan project:deps
-php artisan project:deps --pnpm --css
+php artisan project:deps --with-system
 ```
 
 **Non destiné à la production** (déploiements contrôlés à la place).
 
-### 1.2 `project:dev` — serveurs PHP + Vite
+### 1.2 `project:prepare` — CSS, caches, doc, migrations
+
+Prépare le dépôt avant un `project:dev` (rebuild CSS, caches, doc, `setup --db`).
 
 | Option | Effet |
 |--------|--------|
-| *(défaut)* | Serveur PHP + Vite (flux dev principal) |
-| `--prepare` | Nettoyage, deps de base, optimisations, **migrate** |
+| `--clear` | Avant la préparation : supprime les artefacts de tests (`.phpunit.cache`, `.phpunit.result.cache`, dossier `coverage/`, contenu de `storage/framework/testing/`) — sans toucher à la BDD ni aux vendors |
+| `--dev` | Après la préparation : enchaîne `project:optimize` puis les serveurs (équivalent à enchaîner prepare + optimize + dev sans double préparation) |
+
+```bash
+php artisan project:prepare
+php artisan project:prepare --clear
+php artisan project:prepare --clear --dev
+```
+
+**Interdit en production.**
+
+### 1.3 `project:dev` — prepare + optimize + serveurs PHP + Vite
+
+| Option | Effet |
+|--------|--------|
+| *(défaut)* | `project:prepare` + `project:optimize` + serveurs |
+| `--no-prepare` / `--no-optimize` | Sauter une étape |
+| `--prepare` | Uniquement `project:prepare` puis quitter |
+| `--clear` | Passe `--clear` à `project:prepare` (nettoyage artefacts de tests avant préparation) |
 | `--migrate` | Migrations uniquement (`setup --db`) |
 | `--watch` | Watch CSS au lieu du serveur dev optimisé |
 
 ```bash
-php artisan project:dev --prepare
 php artisan project:dev
+php artisan project:dev --no-prepare --no-optimize
+php artisan project:dev --prepare --clear
 ```
 
 **Interdit en production.**
 
-### 1.3 `project:clear` — caches et artefacts
+### 1.4 `project:clear` — caches et artefacts
 
-Combiner les options selon le besoin ; `--all` couvre un nettoyage large (cache, config, routes, vues, CSS générés, etc.). `--kill` arrête les processus sur les ports dev habituels (8000, 8001, 8002, 5173).
+Combiner les options selon le besoin ; `--all` couvre un nettoyage large (cache, config, routes, vues, CSS générés, etc.). `--test` ne supprime que les artefacts laissés par les tests (PHPUnit, coverage, `storage/framework/testing`). `--kill` arrête les processus sur les ports dev habituels (8000, 8001, 8002, 5173).
 
 ```bash
 php artisan project:clear --all
 php artisan project:clear --kill --cache
+php artisan project:clear --test
 ```
 
 **Interdit en production.**
 
-### 1.4 `project:optimize` — IDE Helper / Laravel
+### 1.5 `project:optimize` — IDE Helper & Laravel
 
-Indiquer au moins une cible : `--all`, et/ou `--ide`, et/ou `--laravel`.
+Pipeline : `optimize:clear` → IDE Helper → `composer dump-autoload` → `optimize`. Options `--clear-only` et `--ide-only` pour des sous-ensembles.
 
 ```bash
-php artisan project:optimize --all
+php artisan project:optimize
 ```
 
 **Interdit en production.**
 
-### 1.5 `project:reset` — réinitialisations lourdes
+### 1.6 `project:reset` — réinitialisations lourdes
 
 | Option | Effet |
 |--------|--------|
@@ -99,7 +107,7 @@ php artisan project:optimize --all
 
 **Interdit en production.**
 
-### 1.6 `project:fix-permissions` — propriétaire des fichiers
+### 1.7 `project:fix-permissions` — propriétaire des fichiers
 
 ```bash
 php artisan project:fix-permissions www-data
@@ -107,13 +115,13 @@ php artisan project:fix-permissions www-data
 
 Attribue le dépôt à l’utilisateur système indiqué (`chown` / chmod Laravel). **Interdit en production** (sauf besoin d’infra documenté).
 
-### 1.7 `project:effects` — qualité / pipeline effets de sorts
+### 1.8 `project:effects` — qualité / pipeline effets de sorts
 
 Raccourci vers la quality gate et le pipeline scrapping effets (strict ou dev, avec options de pagination / filtres pour le pipeline). Voir `php artisan project:effects --help`.
 
 **Interdit en production.**
 
-### 1.8 `project:refresh` — base vide + caches (local)
+### 1.9 `project:refresh` — base vide + caches (local)
 
 Destructif : `migrate:fresh` (avec confirmation sauf `--force`).
 
@@ -127,7 +135,7 @@ Enchaîne un nettoyage complet type `project:clear --all`.
 
 **Interdit en production.**
 
-### 1.9 `setup` — machine & projet (apt, deps, BDD, clean, refresh)
+### 1.10 `setup` — machine & projet (apt, deps, BDD, clean, refresh)
 
 Installe ou met à jour paquets apt, dépendances PHP/JS, base MySQL/Postgres (création user/base si besoin), ou nettoie / réinstalle.
 
@@ -147,7 +155,7 @@ php artisan setup --db --no-seed
 
 Liste des paquets apt : `app/Console/Commands/Project/SetupCommand.php`.
 
-### 1.10 `project:data` — entrée « données DofusDB »
+### 1.11 `project:data` — entrée « données DofusDB »
 
 **Action** obligatoire : `sync` | `updates` | `init` | `fill` | `upgrade`.
 
@@ -165,18 +173,18 @@ php artisan project:data init --fresh
 
 **Détail des alias d’entités, interaction `--type` / `--entity`, sync admin web :** [PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md).
 
-### 1.11 `project:data:sync` — alias `project:update`
+### 1.12 `project:data:sync` — alias `project:update`
 
 Met à jour les fiches en base avec `auto_update=true` depuis DofusDB. Planifiable :
 
 - `PROJECT_UPDATE_AUTO_ENABLED=true`
 - `PROJECT_UPDATE_CRON="..."`
 
-### 1.12 `project:data:import-rules-toc`
+### 1.13 `project:data:import-rules-toc`
 
 Importe la table des matières des règles vers le CMS — **délègue** à `pages:import-rules-toc`. Préférer cette entrée pour le domaine « données ».
 
-### 1.13 `project:init` / `init` — installation complète
+### 1.14 `project:init` / `init` — installation complète
 
 Migrations, seeders, types, scrapping, capacités selon options. **`--deps`** enchaîne d’abord `project:deps`.
 
@@ -185,11 +193,11 @@ php artisan project:init --deps --fresh
 php artisan project:init -h
 ```
 
-### 1.14 `project:super-admin`
+### 1.15 `project:super-admin`
 
 Création interactive du premier compte **super_admin** si aucun n’existe (hors flux `init`). Partage la logique avec `project:init`.
 
-### 1.15 `project:backup` — sauvegardes locales
+### 1.16 `project:backup` — sauvegardes locales
 
 Dump BDD (gzip) + archive `storage/app` (tar.gz ou ZIP), rotation selon rétention. Configuration : `config/project-backup.php`, variables `PROJECT_BACKUP_*`.
 
@@ -201,10 +209,10 @@ php artisan project:backup --prune-only --dry-run
 
 Voir [PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md) (section backup) pour les options complètes.
 
-### 1.16 Flux dev courant
+### 1.17 Flux dev courant
 
-- **`project:dev`**, **`project:clear`**, **`project:optimize`** pour le quotidien.
-- **`server:load`** : `optimize` puis équivalent **`project:dev`** (section [Development](#9-development--outils-locaux)).
+- **`project:dev`** (prepare + optimize + serveurs), **`project:clear`**, **`project:optimize`** pour le quotidien.
+- **`server:load`** : alias de **`project:dev`** (section [Development](#9-development--outils-locaux)).
 - **PHP + queue + CSS en parallèle :** `composer run dev` (scripts Composer du projet).
 
 ---
@@ -292,8 +300,8 @@ Les audits effets et la quality gate partagent le même domaine métier ; la gat
 
 | Commande | Garde-fou | Rôle |
 |----------|-----------|------|
-| `server:load` | `guardNotProduction` | `optimize` puis équivalent `project:dev` |
-| `server:prepare` | `guardDevelopmentOnly` | Bootstrap large : `composer update`, ide-helper, `pnpm install`, `migrate`, … (voir `PrepareProjectCommand` — chevauche partiellement `project:dev --prepare`) |
+| `server:load` | `guardNotProduction` | Alias de `project:dev` |
+| `server:prepare` | `guardDevelopmentOnly` | **[Déprécié]** — appelle `project:prepare` |
 | `generate:test {name}` | `guardDevelopmentOnly` | Esquisse de test PHPUnit Feature pour un modèle |
 
 ---

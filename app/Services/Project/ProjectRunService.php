@@ -6,8 +6,10 @@ namespace App\Services\Project;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\File;
 use PDOException;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 /**
  * Orchestration des actions CLI partagées par les commandes `project:*` (clear, deps, dev, effets, etc.).
@@ -40,11 +42,15 @@ class ProjectRunService
             $actions[] = 'resetFull';
         }
 
-        if ($this->opt($o, 'kill') || $this->opt($o, 'prepare') || $this->opt($o, 'all')) {
+        if ($this->opt($o, 'kill') || $this->opt($o, 'all')) {
             $actions[] = 'killServers';
         }
 
-        if ($this->opt($o, 'clear:all') || $this->opt($o, 'prepare') || $this->opt($o, 'all')) {
+        if ($this->opt($o, 'clear:test')) {
+            $actions[] = 'clearTestArtifacts';
+        }
+
+        if ($this->opt($o, 'clear:all') || $this->opt($o, 'all')) {
             $actions = array_merge($actions, [
                 'clearCss',
                 'clearCache',
@@ -90,11 +96,11 @@ class ProjectRunService
             }
         }
 
-        if ($this->opt($o, 'update:all') || $this->opt($o, 'all')) {
+        if ($this->opt($o, 'update:all')) {
             $actions[] = 'runSetupInstall';
-            $actions[] = 'runSetupUpdate';
-            $actions = array_merge($actions, ['updateCss', 'updateDocs', 'dumpAutoload']);
-        } elseif ($this->opt($o, 'update:base') || $this->opt($o, 'prepare')) {
+            $actions[] = 'runComposerProjectUpdate';
+            $actions[] = 'runPnpmProjectUpdate';
+        } elseif ($this->opt($o, 'update:base')) {
             $actions[] = 'runSetupInstall';
             $actions = array_merge($actions, ['updateCss', 'updateDocs', 'dumpAutoload']);
         } else {
@@ -118,7 +124,7 @@ class ProjectRunService
             }
         }
 
-        if ($this->opt($o, 'optimise:all') || $this->opt($o, 'prepare') || $this->opt($o, 'all')) {
+        if ($this->opt($o, 'optimise:all') || $this->opt($o, 'all')) {
             $actions = array_merge($actions, [
                 'optimiseIde',
                 'optimiseLaravel',
@@ -132,7 +138,7 @@ class ProjectRunService
             }
         }
 
-        if ($this->opt($o, 'migrate') || $this->opt($o, 'update:all') || $this->opt($o, 'update:base') || $this->opt($o, 'prepare') || $this->opt($o, 'all')) {
+        if ($this->opt($o, 'migrate') || $this->opt($o, 'update:base') || $this->opt($o, 'all')) {
             $actions[] = 'runSetupDb';
         }
 
@@ -260,6 +266,41 @@ class ProjectRunService
         exec('lsof -t -i:8000 -i:8001 -i:8002 -i:5173 | xargs -r kill -9');
     }
 
+    /**
+     * Supprime les artefacts laissés par les tests (PHPUnit, couverture, stockage testing).
+     * Ne touche pas à la base ni aux dépendances — pour un nettoyage léger avant/après tests.
+     */
+    public function clearTestArtifacts(Command $command): void
+    {
+        $command->info('Suppression des artefacts de tests (PHPUnit, coverage, storage/framework/testing)…');
+
+        $base = base_path();
+        $paths = [
+            $base.'/.phpunit.cache',
+            $base.'/.phpunit.result.cache',
+            $base.'/coverage',
+        ];
+
+        foreach ($paths as $path) {
+            if (! File::exists($path)) {
+                continue;
+            }
+            if (File::isDirectory($path)) {
+                File::deleteDirectory($path);
+                $command->line('  Supprimé : '.basename($path).'/');
+            } else {
+                File::delete($path);
+                $command->line('  Supprimé : '.basename($path));
+            }
+        }
+
+        $testingDir = storage_path('framework/testing');
+        if (File::isDirectory($testingDir)) {
+            File::cleanDirectory($testingDir);
+            $command->line('  Vidé : storage/framework/testing/');
+        }
+    }
+
     public function clearCss(Command $command): void
     {
         $command->info('Suppression des fichiers CSS générés...');
@@ -344,6 +385,72 @@ class ProjectRunService
         $command->call('setup', ['--db' => true]);
     }
 
+    /**
+     * Met à jour les paquets Composer du projet (respecte composer.json / lock).
+     */
+    public function runComposerProjectUpdate(Command $command): int
+    {
+        if (! is_file(base_path('composer.json'))) {
+            return Command::SUCCESS;
+        }
+
+        $command->info('Mise à jour des dépendances Composer (composer update)…');
+
+        return $this->runShellInProject($command, 'composer update');
+    }
+
+    /**
+     * Met à jour les dépendances npm selon package.json (pnpm up).
+     */
+    public function runPnpmProjectUpdate(Command $command): int
+    {
+        if (! is_file(base_path('package.json'))) {
+            return Command::SUCCESS;
+        }
+
+        $command->info('Mise à jour des paquets npm (pnpm up)…');
+
+        return $this->runShellInProject($command, 'pnpm up');
+    }
+
+    /**
+     * Pipeline unique : optimize:clear → IDE Helper → dump-autoload → optimize.
+     */
+    public function runProjectOptimizePipeline(Command $command, string $mode = 'full'): int
+    {
+        if ($mode === 'clear-only') {
+            $this->optimiseLaravel($command);
+
+            return Command::SUCCESS;
+        }
+
+        if ($mode === 'ide-only') {
+            $this->optimiseIde($command);
+            $this->dumpAutoload($command);
+
+            return Command::SUCCESS;
+        }
+
+        $this->optimiseLaravel($command);
+        $this->optimiseIde($command);
+        $this->dumpAutoload($command);
+
+        return $command->call('optimize');
+    }
+
+    /**
+     * Prépare l’environnement dev : CSS, caches de vues, doc, migrations.
+     */
+    public function runProjectPrepare(Command $command): int
+    {
+        $this->updateCss($command);
+        $this->clearCache($command);
+        $command->call('view:clear');
+        $this->updateDocs($command);
+
+        return $command->call('setup', ['--db' => true]);
+    }
+
     public function updateCss(Command $command): void
     {
         $command->info('Rebuild CSS...');
@@ -361,14 +468,14 @@ class ProjectRunService
 
     public function dumpAutoload(Command $command): void
     {
-        $command->info('Composer dump-autoload...');
+        $command->info('Composer dump-autoload…');
         exec('composer dump-autoload');
     }
 
     public function optimiseIde(Command $command): void
     {
-        $command->info('Génération des fichiers IDE Helper...');
-        $command->call('ide-helper:models', ['--nowrite' => true]);
+        $command->info('Génération des fichiers IDE Helper…');
+        $command->call('ide-helper:models');
         $php = defined('PHP_BINARY') ? PHP_BINARY : 'php';
         $artisan = base_path('artisan');
         $commands = ['ide-helper:generate', 'ide-helper:eloquent', 'ide-helper:meta'];
@@ -658,6 +765,26 @@ class ProjectRunService
             }
         } else {
             $command->error("Impossible de lancer $shellCommand");
+        }
+    }
+
+    /**
+     * Exécute une commande shell dans la racine du projet et renvoie le code de sortie.
+     */
+    private function runShellInProject(Command $command, string $commandLine): int
+    {
+        try {
+            $process = Process::fromShellCommandline($commandLine, base_path());
+            $process->setTimeout(null);
+            $process->run(function (string $type, string $buffer) use ($command): void {
+                $command->getOutput()->write($buffer);
+            });
+
+            return $process->isSuccessful() ? Command::SUCCESS : Command::FAILURE;
+        } catch (Throwable $e) {
+            $command->error($e->getMessage());
+
+            return Command::FAILURE;
         }
     }
 }

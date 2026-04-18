@@ -24,6 +24,7 @@ use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 use Database\Seeders\Data\CharacteristicPaletteResolver;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
@@ -49,6 +50,11 @@ class CharacteristicController extends Controller
     private function characteristicsTableHasValueOverridesColumn(): bool
     {
         return Schema::hasColumn('characteristics', 'value_overrides');
+    }
+
+    private function characteristicsTableHasHideWhenEmptyColumn(): bool
+    {
+        return Schema::hasColumn('characteristics', 'hide_when_empty');
     }
 
     /**
@@ -158,7 +164,6 @@ class CharacteristicController extends Controller
             'conversion_dofus_sample' => null,
             'conversion_krosmoz_sample' => null,
             'conversion_sample_rows' => null,
-            'forgemagie_allowed' => false,
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
             'rune_price_per_unit' => null,
@@ -255,7 +260,7 @@ class CharacteristicController extends Controller
      * La clé est normalisée : si elle ne se termine pas par _creature, _object ou _spell,
      * le suffixe correspondant au groupe choisi est ajouté automatiquement (ex. life_dice → life_dice_creature).
      */
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $createMode = $request->input('create_mode', 'new');
         if ($createMode === 'link') {
@@ -288,6 +293,7 @@ class CharacteristicController extends Controller
             'value_overrides.*.icon' => 'nullable|string|max:64',
             'value_overrides.*.color' => ['nullable', 'string', 'max:32', Rule::in(CharacteristicPaletteResolver::ALLOWED_PALETTES)],
             'value_overrides.*.subtitle' => 'nullable|string|max:500',
+            'hide_when_empty' => 'nullable|boolean',
             'entities' => 'array',
             'entities.*.entity' => 'required|string|max:32',
             'entities.*.db_column' => 'nullable|string|max:64',
@@ -298,7 +304,6 @@ class CharacteristicController extends Controller
             'entities.*.default_value' => 'nullable|string|max:512',
             'entities.*.conversion_formula' => 'nullable|string',
             'entities.*.conversion_function' => 'nullable|string|max:64',
-            'entities.*.forgemagie_allowed' => 'nullable|boolean',
             'entities.*.forgemagie_max' => 'nullable|integer',
             'entities.*.base_price_per_unit' => 'nullable|numeric',
             'entities.*.rune_price_per_unit' => 'nullable|numeric',
@@ -341,6 +346,9 @@ class CharacteristicController extends Controller
         if ($this->characteristicsTableHasValueOverridesColumn()) {
             $createPayload['value_overrides'] = $this->parseValueOverridesInput($data['value_overrides'] ?? null);
         }
+        if ($this->characteristicsTableHasHideWhenEmptyColumn()) {
+            $createPayload['hide_when_empty'] = (bool) ($data['hide_when_empty'] ?? false);
+        }
 
         $characteristic = Characteristic::create($createPayload);
 
@@ -359,7 +367,7 @@ class CharacteristicController extends Controller
     /**
      * Crée une caractéristique liée (pas de lignes de groupe, config = maître).
      */
-    private function storeLink(Request $request): \Illuminate\Http\RedirectResponse
+    private function storeLink(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'linked_to_characteristic_id' => ['required', 'integer', 'exists:characteristics,id'],
@@ -450,7 +458,7 @@ class CharacteristicController extends Controller
      * Supprime une caractéristique (et ses lignes de groupe par cascade).
      * Une maître ne peut pas être supprimée tant qu'elle a des caractéristiques liées.
      */
-    public function destroy(string $characteristic_key): \Illuminate\Http\RedirectResponse
+    public function destroy(string $characteristic_key): RedirectResponse
     {
         $characteristic = Characteristic::where('key', $characteristic_key)->withCount('linkedCharacteristics')->first();
         if ($characteristic === null) {
@@ -888,7 +896,7 @@ class CharacteristicController extends Controller
         return $out ?: null;
     }
 
-    public function update(Request $request, string $characteristic_key): \Illuminate\Http\RedirectResponse
+    public function update(Request $request, string $characteristic_key): RedirectResponse
     {
         $characteristic = Characteristic::where('key', $characteristic_key)->first();
         if ($characteristic === null) {
@@ -941,7 +949,6 @@ class CharacteristicController extends Controller
             'entities.*.conversion_sample_rows.*.dofus_value' => 'nullable|numeric',
             'entities.*.conversion_sample_rows.*.krosmoz_level' => 'nullable|numeric',
             'entities.*.conversion_sample_rows.*.krosmoz_value' => 'nullable|numeric',
-            'entities.*.forgemagie_allowed' => 'nullable|boolean',
             'entities.*.forgemagie_max' => 'nullable|integer',
             'entities.*.base_price_per_unit' => 'nullable|numeric',
             'entities.*.rune_price_per_unit' => 'nullable|numeric',
@@ -973,6 +980,7 @@ class CharacteristicController extends Controller
             'value_overrides.*.icon' => 'nullable|string|max:64',
             'value_overrides.*.color' => ['nullable', 'string', 'max:32', Rule::in(CharacteristicPaletteResolver::ALLOWED_PALETTES)],
             'value_overrides.*.subtitle' => 'nullable|string|max:500',
+            'hide_when_empty' => 'nullable|boolean',
         ]);
 
         $updatePayload = [
@@ -991,6 +999,9 @@ class CharacteristicController extends Controller
         }
         if ($this->characteristicsTableHasValueOverridesColumn()) {
             $updatePayload['value_overrides'] = $this->parseValueOverridesInput($data['value_overrides'] ?? null);
+        }
+        if ($this->characteristicsTableHasHideWhenEmptyColumn()) {
+            $updatePayload['hide_when_empty'] = (bool) ($data['hide_when_empty'] ?? false);
         }
 
         $characteristic->update($updatePayload);
@@ -1035,7 +1046,7 @@ class CharacteristicController extends Controller
     /**
      * Convertit une caractéristique autonome en caractéristique liée : lie à une maître et supprime les lignes entité.
      */
-    private function convertToLinked(Request $request, Characteristic $characteristic): \Illuminate\Http\RedirectResponse
+    private function convertToLinked(Request $request, Characteristic $characteristic): RedirectResponse
     {
         $validated = $request->validate([
             'linked_to_characteristic_id' => ['required', 'integer', 'exists:characteristics,id'],
@@ -1176,7 +1187,6 @@ class CharacteristicController extends Controller
             'conversion_dofus_sample' => $row->conversion_dofus_sample,
             'conversion_krosmoz_sample' => $row->conversion_krosmoz_sample,
             'conversion_sample_rows' => $row->conversion_sample_rows,
-            'forgemagie_allowed' => false,
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
             'rune_price_per_unit' => null,
@@ -1186,7 +1196,6 @@ class CharacteristicController extends Controller
             'norms_help_section_id' => $row->norms_help_section_id,
         ];
         if ($row instanceof CharacteristicObject) {
-            $out['forgemagie_allowed'] = $row->forgemagie_allowed;
             $out['forgemagie_max'] = $row->forgemagie_max;
             $out['base_price_per_unit'] = $row->base_price_per_unit;
             $out['rune_price_per_unit'] = $row->rune_price_per_unit;
@@ -1261,7 +1270,6 @@ class CharacteristicController extends Controller
                 'default_value' => null,
                 'conversion_formula' => null,
                 'conversion_function' => null,
-                'forgemagie_allowed' => false,
                 'forgemagie_max' => 0,
                 'base_price_per_unit' => null,
                 'rune_price_per_unit' => null,
@@ -1323,7 +1331,6 @@ class CharacteristicController extends Controller
             $charObj = CharacteristicObject::updateOrCreate(
                 ['characteristic_id' => $characteristicId, 'entity' => $entity],
                 array_merge($common, [
-                    'forgemagie_allowed' => (bool) ($data['forgemagie_allowed'] ?? false),
                     'forgemagie_max' => (int) ($data['forgemagie_max'] ?? 0),
                     'base_price_per_unit' => $basePrice !== null && $basePrice !== '' ? (float) $basePrice : null,
                     'rune_price_per_unit' => $runePrice !== null && $runePrice !== '' ? (float) $runePrice : null,

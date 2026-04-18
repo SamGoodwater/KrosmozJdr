@@ -2,27 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\User;
-use App\Models\Page;
 use App\Enums\SectionType;
 use App\Models\Concerns\HasMediaCustomNaming;
+use Database\Factories\SectionFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Modèle Eloquent Section
- * 
+ *
  * Représente une section dynamique appartenant à une page (bloc de contenu, composant Vue).
  * Gère l'ordre, le type, les paramètres dynamiques, la visibilité, l'état, les utilisateurs et fichiers associés.
  * Utilisé pour la construction flexible des pages et la gestion fine des droits d'accès.
- * 
+ *
  * Relations : page, users, createdBy ; médias via Media Library (collection files)
  *
  * @property int $id
@@ -30,22 +31,23 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $title
  * @property string|null $slug
  * @property int $order
- * @property \App\Enums\SectionType $template
+ * @property SectionType $template
  * @property array<array-key, mixed>|null $settings
  * @property array<array-key, mixed>|null $data
  * @property string $state
  * @property int $read_level
  * @property int $write_level
  * @property int|null $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read User|null $createdBy
+ * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \App\Models\Page $page
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read Page $page
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Database\Factories\SectionFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section newQuery()
@@ -66,18 +68,35 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withoutTrashed()
+ *
+ * @property SectionType|null $type
+ * @property array<array-key, mixed>|null $params
+ *
+ * @method static Builder<static>|Section displayable(?\App\Models\User $user = null)
+ * @method static Builder<static>|Section ordered()
+ * @method static Builder<static>|Section playable()
+ * @method static Builder<static>|Section published()
+ * @method static Builder<static>|Section readableFor(?\App\Models\User $user = null)
+ * @method static Builder<static>|Section whereParams($value)
+ * @method static Builder<static>|Section whereReadLevel($value)
+ * @method static Builder<static>|Section whereType($value)
+ * @method static Builder<static>|Section whereWriteLevel($value)
+ *
  * @mixin \Eloquent
  */
 class Section extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\SectionFactory> */
-    use HasFactory, SoftDeletes, InteractsWithMedia, HasMediaCustomNaming;
+    /** @use HasFactory<SectionFactory> */
+    use HasFactory, HasMediaCustomNaming, InteractsWithMedia, SoftDeletes;
 
     public const STATE_RAW = 'raw';
+
     public const STATE_DRAFT = 'draft';
+
     public const STATE_PLAYABLE = 'playable';
+
     public const STATE_ARCHIVED = 'archived';
-    
+
     /** Répertoire Media Library pour ce modèle. */
     public const MEDIA_PATH = 'sections/files';
 
@@ -254,11 +273,11 @@ class Section extends Model implements HasMedia
             return true;
         }
 
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
-        if (!$this->relationLoaded('users')) {
+        if (! $this->relationLoaded('users')) {
             try {
                 $this->load('users');
             } catch (\Exception $e) {
@@ -285,7 +304,7 @@ class Section extends Model implements HasMedia
         }
 
         // Sinon : uniquement "jouable"
-        if (!$this->isPlayable()) {
+        if (! $this->isPlayable()) {
             return false;
         }
 
@@ -311,7 +330,7 @@ class Section extends Model implements HasMedia
     /**
      * Vérifie si la section peut être modifiée par un utilisateur selon write_level,
      * et en respectant aussi les droits d'écriture sur la page parente.
-     * 
+     *
      * **Logique de vérification :**
      * - Les super_admin peuvent toujours modifier
      * - L'auteur de la section peut modifier sa section (même sans niveau de permission)
@@ -319,8 +338,8 @@ class Section extends Model implements HasMedia
      * - Les utilisateurs associés à la section peuvent modifier (mais doivent avoir les droits sur la page)
      * - Sinon : l'utilisateur doit avoir un niveau \(\ge\) `write_level` de la section
      *   ET pouvoir modifier la page parente (selon ses propres règles d'écriture)
-     * 
-     * @param User|null $user Utilisateur (null pour invité)
+     *
+     * @param  User|null  $user  Utilisateur (null pour invité)
      * @return bool True si l'utilisateur peut modifier la section
      */
     public function canBeEditedBy(?User $user = null): bool
@@ -330,7 +349,7 @@ class Section extends Model implements HasMedia
             return true;
         }
 
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
@@ -345,7 +364,7 @@ class Section extends Model implements HasMedia
         // (même sans avoir le niveau de permission requis)
         // MAIS il faut vérifier les droits sur la page parente
         // car l'utilisateur associé peut modifier cette section, mais doit pouvoir modifier la page
-        if (!$this->relationLoaded('users')) {
+        if (! $this->relationLoaded('users')) {
             try {
                 $this->load('users');
             } catch (\Exception $e) {
@@ -354,7 +373,7 @@ class Section extends Model implements HasMedia
         }
         if ($this->relationLoaded('users') && $this->users->contains($user->id)) {
             // Charger la page si nécessaire pour vérifier les droits
-            if (!$this->relationLoaded('page')) {
+            if (! $this->relationLoaded('page')) {
                 try {
                     $this->load('page');
                 } catch (\Exception $e) {
@@ -362,12 +381,12 @@ class Section extends Model implements HasMedia
                     return true;
                 }
             }
-            
+
             // Vérifier les droits sur la page
             if ($this->relationLoaded('page') && $this->page) {
                 return $this->page->canBeEditedBy($user);
             }
-            
+
             return true;
         }
 
@@ -379,7 +398,7 @@ class Section extends Model implements HasMedia
 
         // Vérifier AUSSI les droits sur la page parente
         // Charger la page si nécessaire
-        if (!$this->relationLoaded('page')) {
+        if (! $this->relationLoaded('page')) {
             try {
                 $this->load('page');
             } catch (\Exception $e) {
@@ -387,12 +406,12 @@ class Section extends Model implements HasMedia
                 return true;
             }
         }
-        
+
         // Si la page est chargée, vérifier les droits sur la page
         if ($this->relationLoaded('page') && $this->page) {
             return $this->page->canBeEditedBy($user);
         }
-        
+
         // Si la page n'est pas chargée, on retourne true car les droits sur la section sont OK
         return true;
     }

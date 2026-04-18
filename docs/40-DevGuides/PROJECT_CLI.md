@@ -10,8 +10,9 @@ L’ancienne commande **`php artisan run`** a été **retirée**. Tout passe par
 
 | Préfixe | Rôle |
 |---------|------|
-| `project:deps` | Outils et librairies (apt, composer, pnpm), CSS, doc, migrations. |
-| `project:dev` | Préparation locale + serveurs PHP / Vite. |
+| `project:deps` | Mise à jour **Composer** + **pnpm**, puis `project:optimize` (option `--with-system` pour apt). |
+| `project:prepare` | CSS, caches, doc, migrations — avant un `project:dev`. |
+| `project:dev` | `project:prepare` + `project:optimize` par défaut, puis serveurs PHP / Vite. |
 | `project:refresh` | Repartir de zéro (libs optionnelles + `migrate:fresh`). |
 | `project:data` | Données DofusDB (sync, init catalogue, guide fill). |
 | `project:data:sync` | Mise à jour des entités déjà en base avec `auto_update=true`. |
@@ -21,38 +22,82 @@ L’ancienne commande **`php artisan run`** a été **retirée**. Tout passe par
 
 La logique commune vit dans **`App\Services\Project\ProjectRunService`** ; les commandes **`project:*`** sont les **entrées** pour le dev local.
 
-**Historique :** l’option **`run --regenerate`** avait été renommée **`run --prepare`** ; l’équivalent actuel est **`project:dev --prepare`** (ou les commandes dédiées `project:clear`, etc.).
+**Historique :** l’option **`run --regenerate`** avait été renommée **`run --prepare`** ; l’équivalent actuel est **`project:prepare`** (ou **`project:dev`** qui l’enchaîne par défaut).
 
 **Collision résolue :** l’ancien `project:update` (sync auto_update) devient la commande canonique **`project:data:sync`**. L’alias **`project:update`** est conservé (scheduler, scripts, habitude).
 
+### Repérer une commande Artisan obsolète ou inutilisée
+
+1. **`php artisan list`** — inventaire des commandes enregistrées.
+2. **Rechercher les références** : `rg "ma:commande" --type php` et dans `docs/`, `composer.json`, CI.
+3. **Usages dynamiques** : `routes/console.php`, jobs (`Artisan::call`), seeders, tests.
+4. **Sans référence** + non documentée + doublon d’une commande `project:*` → candidat à **alias déprécié** ou suppression après une version.
+
 ---
 
-## `project:deps` — stack & build
+## `project:deps` — dépendances projet
 
-Met à jour l’environnement de développement.
+Par défaut (aucune option) : **`composer update`** + **`pnpm up`**, puis **`project:optimize`**.
 
-| Option | Effet (via `ProjectRunService`) |
-|--------|-------------------------|
-| *(aucune option)* | Équivalent **`--all`** : apt + composer + pnpm + CSS + doc + dump-autoload + **migrate**. |
-| `--all` | Idem. |
-| `--apt` | `--update:system` |
-| `--composer` | `--update:composer` |
-| `--pnpm` | `--update:pnpm` |
-| `--css` | `--update:css` |
-| `--docs` | `--update:docs` |
-| `--dump` | `--dump` |
-| `--migrate` | `--migrate` |
-| `--ide` | `--optimise:ide` |
-| `--laravel-clear` | `--optimise:laravel` |
+| Option | Effet |
+|--------|--------|
+| *(défaut)* / `--all` | `composer update` + `pnpm up` + `project:optimize` |
+| `--with-system` | Avec le mode par défaut : exécute aussi `setup --update` (apt / outils). |
+| `--apt` | `setup --update` uniquement |
+| `--composer` | `composer update` |
+| `--pnpm` | `pnpm up` |
+| `--css`, `--docs`, `--dump`, `--migrate` | Délégation inchangée au `ProjectRunService` (rebuild CSS, doc, autoload, `setup --db`). |
+| `--optimize` | Enchaîne `project:optimize` après les autres cibles (hors enchaînement déjà inclus dans le mode par défaut). |
 
 **Exemples**
 
 ```bash
-php artisan project:deps              # tout (défaut)
-php artisan project:deps --pnpm --css # ciblé
+php artisan project:deps
+php artisan project:deps --with-system
+php artisan project:deps --pnpm --css --optimize
 ```
 
 **Init + deps :** `php artisan project:init --deps` enchaîne `project:deps` puis le pipeline `init`.
+
+---
+
+## `project:prepare` — prêt pour le dev
+
+Rebuild CSS (`pnpm run css`), vide caches applicatifs et vues, régénère la doc, migrations (`setup --db`). Utilisé seul ou appelé automatiquement par **`project:dev`**.
+
+| Option | Effet |
+|--------|--------|
+| `--clear` | Avant la préparation : supprime les artefacts de tests (cache PHPUnit, `.phpunit.result.cache`, dossier `coverage/`, contenu de `storage/framework/testing/`) — sans `migrate:fresh` ni vendor |
+| `--dev` | Après la préparation : enchaîne `project:optimize` puis les serveurs (équivalent à `project:dev` sans refaire deux fois `project:prepare`) |
+
+```bash
+php artisan project:prepare
+php artisan project:prepare --clear
+php artisan project:prepare --clear --dev
+```
+
+---
+
+## `project:clear` — caches et artefacts
+
+Voir aussi **`app/Console/README.md`**. Options courantes : `--all` (large), `--kill` (ports dev), **`--test`** (uniquement artefacts PHPUnit / coverage / `storage/framework/testing`).
+
+```bash
+php artisan project:clear --test
+php artisan project:clear --all
+```
+
+---
+
+## `project:optimize` — IDE & caches Laravel
+
+Pipeline fixe : **`optimize:clear`** → **IDE Helper** (models, generate, eloquent, meta) → **`composer dump-autoload`** → **`optimize`**.
+
+| Option | Effet |
+|--------|--------|
+| *(défaut)* | Pipeline complet |
+| `--clear-only` | `optimize:clear` uniquement |
+| `--ide-only` | IDE Helper + dump-autoload |
 
 ---
 
@@ -60,10 +105,17 @@ php artisan project:deps --pnpm --css # ciblé
 
 | Option | Effet |
 |--------|--------|
-| *(défaut)* | Serveur PHP + Vite optimisé (équiv. ancien `run --dev`). |
-| `--prepare` | Nettoyage, deps de base, optimisations, **migrate** (équiv. ancien `run --prepare`). |
+| *(défaut)* | `project:prepare` + `project:optimize` + serveurs PHP + Vite |
+| `--no-prepare` | Ne pas exécuter `project:prepare` |
+| `--no-optimize` | Ne pas exécuter `project:optimize` |
+| `--prepare` | Exécuter uniquement `project:prepare` puis quitter |
+| `--clear` | Passe `--clear` à `project:prepare` (nettoyage artefacts de tests avant préparation) |
 | `--migrate` | Migrations uniquement (`setup --db`). |
 | `--watch` | Watch CSS (équiv. ancien `run --dev:watch`). |
+
+```bash
+php artisan project:dev --prepare --clear
+```
 
 ---
 
@@ -262,8 +314,8 @@ Crée le **premier** super_admin interactif si aucun super_admin humain n’exis
 | Ancien usage | Préféré |
 |--------------|---------|
 | `project:update` | `project:data:sync` ou `project:data sync` |
-| `run --update:all --migrate` (stack + migrate) | `project:deps` |
-| `run --prepare` puis `run --dev` | `project:dev --prepare` puis `project:dev` |
+| `run --update:all --migrate` (stack + migrate) | `project:deps` puis `project:prepare` si besoin de migrate/CSS/doc |
+| `run --prepare` puis `run --dev` | `project:dev` (prepare + optimize + serveurs) ou `project:prepare` seul |
 | `run --clear:*` / `--kill` | `project:clear` |
 | `run --optimise:*` | `project:optimize` |
 | `run --reset:*` | `project:reset` |
