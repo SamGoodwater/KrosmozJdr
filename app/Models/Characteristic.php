@@ -49,7 +49,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $object_rows_count
  * @property-read Collection<int, CharacteristicSpell> $spellRows
  * @property-read int|null $spell_rows_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic query()
@@ -70,7 +69,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereValueOverrides($value)
- *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHideWhenEmpty($value)
  * @mixin \Eloquent
  */
 class Characteristic extends Model implements HasMedia

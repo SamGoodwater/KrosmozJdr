@@ -46,7 +46,6 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $sections_count
  * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
- *
  * @method static \Database\Factories\PageFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page newQuery()
@@ -67,7 +66,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page withoutTrashed()
- *
  * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read Collection<int, Scenario> $scenarios
@@ -77,7 +75,6 @@ use Illuminate\Support\Carbon;
  * @property string|null $page_css_classes
  * @property string|null $title_css_classes
  * @property string|null $menu_item_css_classes
- *
  * @method static Builder<static>|Page forMenu(?\App\Models\User $user = null)
  * @method static Builder<static>|Page inMenu()
  * @method static Builder<static>|Page ordered()
@@ -90,7 +87,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Page whereReadLevel($value)
  * @method static Builder<static>|Page whereTitleCssClasses($value)
  * @method static Builder<static>|Page whereWriteLevel($value)
- *
  * @mixin \Eloquent
  */
 class Page extends Model

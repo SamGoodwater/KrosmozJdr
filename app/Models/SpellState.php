@@ -37,7 +37,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState query()
@@ -63,7 +62,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState wherePreventsSpellCast($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereRaw($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class SpellState extends Model

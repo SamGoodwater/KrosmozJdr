@@ -42,16 +42,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $npcs_count
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
- *
  * @method static \Database\Factories\Entity\BreedFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed query()
- *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereAutoUpdate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedBy($value)
@@ -74,7 +71,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
- *
  * @mixin \Eloquent
  */
 class Breed extends Model implements HasMedia

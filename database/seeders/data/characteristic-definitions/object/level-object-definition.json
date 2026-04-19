@@ -19,7 +19,7 @@
     },
     "entities": {
         "*": {
-            "dofusdb_characteristic_id": null,
+            "dofusdb_characteristic_id": 5,
             "db_column": "level",
             "min": "1",
             "max": "20",

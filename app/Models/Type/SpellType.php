@@ -27,7 +27,6 @@ use Illuminate\Support\Carbon;
  * @property-read User|null $createdBy
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
- *
  * @method static \Database\Factories\Type\SpellTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType newQuery()
@@ -47,7 +46,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withoutTrashed()
- *
  * @mixin \Eloquent
  */
 class SpellType extends Model

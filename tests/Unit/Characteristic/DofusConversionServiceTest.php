@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Characteristic;
 
 use App\Services\Characteristic\Conversion\DofusConversionService;
+use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Database\Seeders\CharacteristicSeeder;
 use Database\Seeders\CreatureCharacteristicSeeder;
 use Database\Seeders\ObjectCharacteristicSeeder;
@@ -93,13 +94,13 @@ class DofusConversionServiceTest extends TestCase
 
     public function test_convert_initiative_returns_integer(): void
     {
-        $result = $this->service->convert('ini_creature', ['d' => 50.0], 'monster', 50.0);
+        $result = $this->service->convert('initiative_creature', ['d' => 50.0], 'monster', 50.0);
         $this->assertIsInt($result);
     }
 
     public function test_clamp_to_limits_returns_value_in_limits(): void
     {
-        $getter = $this->app->make(\App\Services\Characteristic\Getter\CharacteristicGetterService::class);
+        $getter = $this->app->make(CharacteristicGetterService::class);
         $limits = $getter->getLimits('life_points_creature', 'monster');
         $this->assertNotNull($limits);
         $mid = (int) (($limits['min'] + $limits['max']) / 2);

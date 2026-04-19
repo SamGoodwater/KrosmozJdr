@@ -44,7 +44,7 @@
     },
     "entities": {
         "*": {
-            "dofusdb_characteristic_id": null,
+            "dofusdb_characteristic_id": 18,
             "db_column": null,
             "min": "0",
             "max": "3",

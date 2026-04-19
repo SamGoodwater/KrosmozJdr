@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 /**
- * consumable_types – Consommables (superTypes 6, 70, 15-19, 26, 27) - typeIds.
- * Généré par : php artisan scrapping:types:extract
- * Régénéré depuis la BDD par : php artisan scrapping:seeders:export --item-types
+ * consumable_types – Consommables (superTypes 6, 70). Régénéré par : php artisan scrapping:seeders:export --item-types
  */
 
 return array (
@@ -15,6 +13,8 @@ return array (
     'name' => 'Potion',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   1 => 
   array (
@@ -22,6 +22,8 @@ return array (
     'name' => 'Parchemin d\'expérience',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   2 => 
   array (
@@ -29,6 +31,8 @@ return array (
     'name' => 'Objet de dons',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   3 => 
   array (
@@ -36,6 +40,8 @@ return array (
     'name' => 'Document',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   4 => 
   array (
@@ -43,6 +49,8 @@ return array (
     'name' => 'Objet de Mutation',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   5 => 
   array (
@@ -50,6 +58,8 @@ return array (
     'name' => 'Nourriture boost',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   6 => 
   array (
@@ -57,6 +67,8 @@ return array (
     'name' => 'Bénédiction',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   7 => 
   array (
@@ -64,6 +76,8 @@ return array (
     'name' => 'Malédiction',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   8 => 
   array (
@@ -71,6 +85,8 @@ return array (
     'name' => 'Roleplay Buffs',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   9 => 
   array (
@@ -78,6 +94,8 @@ return array (
     'name' => 'Pain',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   10 => 
   array (
@@ -85,6 +103,8 @@ return array (
     'name' => 'Bière',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   11 => 
   array (
@@ -92,6 +112,8 @@ return array (
     'name' => 'Friandise',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   12 => 
   array (
@@ -99,6 +121,8 @@ return array (
     'name' => 'Potion de téléportation',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   13 => 
   array (
@@ -106,6 +130,8 @@ return array (
     'name' => 'Poisson comestible',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   14 => 
   array (
@@ -113,6 +139,8 @@ return array (
     'name' => 'Viande comestible',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   15 => 
   array (
@@ -120,6 +148,8 @@ return array (
     'name' => 'Fée d\'artifice',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   16 => 
   array (
@@ -127,6 +157,8 @@ return array (
     'name' => 'Parchemin de sortilège',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   17 => 
   array (
@@ -134,6 +166,8 @@ return array (
     'name' => 'Parchemin de caractéristique',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   18 => 
   array (
@@ -141,6 +175,8 @@ return array (
     'name' => 'Boisson',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   19 => 
   array (
@@ -148,6 +184,8 @@ return array (
     'name' => 'Objet de mission',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   20 => 
   array (
@@ -155,6 +193,8 @@ return array (
     'name' => 'Pierre d\'âme',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   21 => 
   array (
@@ -162,6 +202,8 @@ return array (
     'name' => 'Pierre d\'âme pleine',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   22 => 
   array (
@@ -169,6 +211,8 @@ return array (
     'name' => 'Parchemin de recherche',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   23 => 
   array (
@@ -176,6 +220,8 @@ return array (
     'name' => 'Pierre magique',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   24 => 
   array (
@@ -183,6 +229,8 @@ return array (
     'name' => 'Cadeau',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   25 => 
   array (
@@ -190,6 +238,8 @@ return array (
     'name' => 'Objet utilisable',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   26 => 
   array (
@@ -197,6 +247,8 @@ return array (
     'name' => 'Certificat de Dragodinde',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   27 => 
   array (
@@ -204,6 +256,8 @@ return array (
     'name' => 'Filet de capture',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   28 => 
   array (
@@ -211,6 +265,8 @@ return array (
     'name' => 'Sac de ressources',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   29 => 
   array (
@@ -218,6 +274,8 @@ return array (
     'name' => 'Prisme',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   30 => 
   array (
@@ -225,6 +283,8 @@ return array (
     'name' => 'Figurine',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   31 => 
   array (
@@ -232,6 +292,8 @@ return array (
     'name' => 'Potion de conquête',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   32 => 
   array (
@@ -239,6 +301,8 @@ return array (
     'name' => 'Mimibiote',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   33 => 
   array (
@@ -246,6 +310,8 @@ return array (
     'name' => 'Coffre',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   34 => 
   array (
@@ -253,6 +319,8 @@ return array (
     'name' => 'Parchemin d\'attitude',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   35 => 
   array (
@@ -260,6 +328,8 @@ return array (
     'name' => 'Boîte de fragments',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   36 => 
   array (
@@ -267,6 +337,8 @@ return array (
     'name' => 'Conteneur',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   37 => 
   array (
@@ -274,6 +346,8 @@ return array (
     'name' => 'Viande primitive',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   38 => 
   array (
@@ -281,6 +355,8 @@ return array (
     'name' => 'Parchemin d\'émoticônes',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   39 => 
   array (
@@ -288,6 +364,8 @@ return array (
     'name' => 'Certificat de Muldo',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   40 => 
   array (
@@ -295,6 +373,8 @@ return array (
     'name' => 'Parchemin de titre',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   41 => 
   array (
@@ -302,6 +382,8 @@ return array (
     'name' => 'Objet invisible',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   42 => 
   array (
@@ -309,6 +391,8 @@ return array (
     'name' => 'Potion de monture',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   43 => 
   array (
@@ -316,6 +400,8 @@ return array (
     'name' => 'Certificat de Volkorne',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   44 => 
   array (
@@ -323,6 +409,8 @@ return array (
     'name' => 'Potion d\'attitude',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   45 => 
   array (
@@ -330,6 +418,8 @@ return array (
     'name' => 'Bourse',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   46 => 
   array (
@@ -337,6 +427,8 @@ return array (
     'name' => 'Popoche de Havre-Sac',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   47 => 
   array (
@@ -344,6 +436,8 @@ return array (
     'name' => 'Parchemin d\'ornement',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   48 => 
   array (
@@ -351,6 +445,8 @@ return array (
     'name' => 'Objet utilisable de Temporis',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   49 => 
   array (
@@ -358,6 +454,8 @@ return array (
     'name' => 'Mots de haïku',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   50 => 
   array (
@@ -365,6 +463,8 @@ return array (
     'name' => 'Bouataklône',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   51 => 
   array (
@@ -372,6 +472,8 @@ return array (
     'name' => 'Relique d\'Incarnation',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   52 => 
   array (
@@ -379,6 +481,8 @@ return array (
     'name' => 'Globe de lumière',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   53 => 
   array (
@@ -386,6 +490,8 @@ return array (
     'name' => 'Monture domptée',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   54 => 
   array (
@@ -393,6 +499,8 @@ return array (
     'name' => 'Tatouage de la Foire du Trool',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   55 => 
   array (
@@ -400,6 +508,8 @@ return array (
     'name' => 'Ballon',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   56 => 
   array (
@@ -407,6 +517,8 @@ return array (
     'name' => 'Visage',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   57 => 
   array (
@@ -414,6 +526,8 @@ return array (
     'name' => 'Éklâme',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   58 => 
   array (
@@ -421,6 +535,8 @@ return array (
     'name' => 'Éclats',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   59 => 
   array (
@@ -428,6 +544,8 @@ return array (
     'name' => 'Âme de gardien de donjon',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   60 => 
   array (
@@ -435,6 +553,8 @@ return array (
     'name' => 'Âme d\'archimonstre',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   61 => 
   array (
@@ -442,6 +562,8 @@ return array (
     'name' => 'Corps',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
   62 => 
   array (
@@ -449,5 +571,7 @@ return array (
     'name' => 'Poses',
     'decision' => 'pending',
     'state' => 'draft',
+    'read_level' => 0,
+    'write_level' => 4,
   ),
 );

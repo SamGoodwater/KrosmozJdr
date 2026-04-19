@@ -31,7 +31,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read User|null $createdBy
  * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
- *
  * @method static \Database\Factories\Entity\SpecializationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization newQuery()
@@ -50,10 +49,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withoutTrashed()
- *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- *
  * @mixin \Eloquent
  */
 class Specialization extends Model implements HasMedia

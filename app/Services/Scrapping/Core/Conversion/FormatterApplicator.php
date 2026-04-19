@@ -151,7 +151,7 @@ final class FormatterApplicator
                 $entityType = (string) ($c['entityType'] ?? 'monster');
                 $d = $this->numericValue($v);
 
-                return $this->conversionService->convert('ini_creature', ['d' => $d], $entityType, $d, $c);
+                return $this->conversionService->convert('initiative_creature', ['d' => $d], $entityType, $d, $c);
             };
         }
 

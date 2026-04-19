@@ -28,7 +28,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read User|null $createdBy
  * @property-read Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
- *
  * @method static \Database\Factories\Entity\AttributeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute newQuery()
@@ -47,10 +46,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withoutTrashed()
- *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- *
  * @mixin \Eloquent
  */
 class Attribute extends Model implements HasMedia

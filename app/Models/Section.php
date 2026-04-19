@@ -47,7 +47,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read Page $page
  * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
- *
  * @method static \Database\Factories\SectionFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section newQuery()
@@ -68,10 +67,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withoutTrashed()
- *
  * @property SectionType|null $type
  * @property array<array-key, mixed>|null $params
- *
  * @method static Builder<static>|Section displayable(?\App\Models\User $user = null)
  * @method static Builder<static>|Section ordered()
  * @method static Builder<static>|Section playable()
@@ -81,7 +78,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static Builder<static>|Section whereReadLevel($value)
  * @method static Builder<static>|Section whereType($value)
  * @method static Builder<static>|Section whereWriteLevel($value)
- *
  * @mixin \Eloquent
  */
 class Section extends Model implements HasMedia

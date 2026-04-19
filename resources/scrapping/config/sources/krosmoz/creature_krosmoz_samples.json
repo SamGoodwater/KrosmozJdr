@@ -29,7 +29,7 @@
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 4, "16": 5, "20": 6 },
       "source_rule": "2.2.2 : PO 0 à 6"
     },
-    "ini_creature": {
+    "initiative_creature": {
       "conversion_krosmoz_sample": { "1": 0, "4": 5, "8": 15, "12": 25, "16": 35, "20": 50 },
       "source_rule": "2.2.2.1 : 1d20 + mod. Intelligence + bonus équipement"
     },

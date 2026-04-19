@@ -28,7 +28,6 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, MonsterRace> $subRaces
  * @property-read int|null $sub_races_count
  * @property-read MonsterRace|null $superRace
- *
  * @method static \Database\Factories\Type\MonsterRaceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace newQuery()
@@ -47,7 +46,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withoutTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereDofusdbRaceId($value)
- *
  * @mixin \Eloquent
  */
 class MonsterRace extends Model

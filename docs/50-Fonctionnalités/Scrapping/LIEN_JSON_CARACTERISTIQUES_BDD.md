@@ -14,7 +14,7 @@ JSON entité (mapping[].from.path + formatters[].args)
     → BDD : characteristics + characteristic_creature / characteristic_object / characteristic_spell
 ```
 
-La **clé de caractéristique** (ex. `level_creature`, `strong_creature`, `ini_creature`) est ce qui relie le formatter à la définition en BDD (formule de conversion, min/max, type).
+La **clé de caractéristique** (ex. `level_creature`, `strong_creature`, `initiative_creature`) est ce qui relie le formatter à la définition en BDD (formule de conversion, min/max, type).
 
 ---
 
@@ -29,7 +29,7 @@ Dans les JSON d’entité (`entities/*.json`), les formatters **dofusdb_*** reç
 | **dofusdb_level**  | — (aucun)                     | Clé fixe selon l’entité : `level_creature` (monster, class, npc), `level_object` (item, consumable, resource, panoply). |
 | **dofusdb_life**   | `levelPath` (ex. `grades.0.level`) | Toujours `life_creature` ; la formule reçoit aussi le niveau Krosmoz (lu depuis `raw` via levelPath). |
 | **dofusdb_attribute** | `characteristicId` (ex. `"strength"`, `"intelligence"`) | **`characteristicId + "_creature"`** → ex. `strength` → `strength_creature`. Pour que la formule et les limites BDD soient utilisées, la table `characteristics` doit contenir une entrée avec **`key` = cette valeur** (ex. en BDD les clés sont parfois abrégées : `strong_creature`, `intel_creature`, `agi_creature` ; dans ce cas mettre `characteristicId: "strong"`, `"intel"`, `"agi"` dans le JSON pour obtenir la même clé). |
-| **dofusdb_ini**    | —                             | Toujours **`ini_creature`**. |
+| **dofusdb_ini**    | —                             | Toujours **`initiative_creature`** (clé `characteristics.key`, alignée sur les JSON de définition). |
 
 Convention côté code : pour les créatures, **DofusConversionService::convertAttribute()** fait `$key = $characteristicId . '_creature'`. Donc la **clé en BDD** doit être exactement `{characteristicId}_creature` (ex. `strong_creature` si `characteristicId = "strong"`).
 
@@ -76,4 +76,4 @@ La **convention dans les JSON d’entité** (args `characteristicId`, etc.) est 
    - `limitService->clamp("strong_creature", $k, "monster")` → limites BDD.
 5. La valeur finale est écrite dans la structure convertie (ex. `creatures.strength`) puis validée et intégrée.
 
-**En résumé** : le lien est **l’argument du formatter** (ex. `characteristicId`) qui, via une convention fixe dans le code (`_creature`, `level_creature`, `life_creature`, `ini_creature`), produit la **clé de caractéristique**. Cette clé doit correspondre à une entrée en BDD (`characteristics.key` et lignes dans les tables par groupe) pour que formules et limites soient appliquées.
+**En résumé** : le lien est **l’argument du formatter** (ex. `characteristicId`) qui, via une convention fixe dans le code (`_creature`, `level_creature`, `life_creature`, `initiative_creature`), produit la **clé de caractéristique**. Cette clé doit correspondre à une entrée en BDD (`characteristics.key` et lignes dans les tables par groupe) pour que formules et limites soient appliquées.
