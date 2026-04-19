@@ -1,0 +1,54 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "range_editable_spell",
+        "name": "Portée modifiable",
+        "short_name": "PO mod.",
+        "helper": "Si oui, la portée effective du sort peut être ajustée en jeu en fonction du PO du lanceur ou de la lanceuse (3.3.2.2). Si non, la portée reste celle indiquée sans cette modulation.",
+        "descriptions": "Portée modifiable (3.3.2.2) : si oui, le bonus PO du lanceur (max 6, règles 2.2.2) augmente la portée. Si non, portée fixe.",
+        "icon": "rangeEditable.webp",
+        "icon_false": "noPoEditable.webp",
+        "color": "indigo",
+        "value_overrides": [
+            {
+                "value": true,
+                "icon": "rangeEditable.webp",
+                "subtitle": "La portée peut être augmentée par le bonus PO du lanceur."
+            },
+            {
+                "value": false,
+                "icon": "noPoEditable.webp",
+                "color": "slate",
+                "subtitle": "La portée est fixe et ne peut pas être modifiée."
+            }
+        ],
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "bool",
+        "sort_order": 70,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "po_editable",
+            "min": "0",
+            "max": "1",
+            "formula": null,
+            "formula_display": "Portée modifiable par le PO du lanceur (3.3.2.2). Si oui (1), le bonus PO de la créature (max 6, règles 2.2.2) s'ajoute à la portée du sort. Si non (0), la portée est fixe.",
+            "default_value": "1",
+            "conversion_formula": "min(1,max(0,round([d])))",
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

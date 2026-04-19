@@ -1,0 +1,125 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "element_spell",
+        "name": "Élément",
+        "short_name": "Élém.",
+        "helper": "Élément du sort : Neutre, Terre, Feu, Air, Eau ou combinaisons.",
+        "descriptions": "Élément(s) du sort : masque 7 bits (2.2.1, 2.3.3). Neutre (1), Terre/Force (2), Feu/Intel (4), Air/Agi (8), Eau/Chance (16), Sagesse (32), Vitalité (64). Combinaisons possibles.",
+        "icon": "neutral.webp",
+        "icon_false": null,
+        "color": "brown",
+        "value_overrides": [
+            {
+                "value": 1,
+                "icon": "neutral.webp",
+                "color": "slate",
+                "subtitle": "Neutre — dégâts indépendants de tout élément."
+            },
+            {
+                "value": 2,
+                "icon": "earth.webp",
+                "color": "orange",
+                "subtitle": "Terre — dégâts liés à la Force."
+            },
+            {
+                "value": 4,
+                "icon": "fire.webp",
+                "color": "red",
+                "subtitle": "Feu — dégâts liés à l'Intelligence."
+            },
+            {
+                "value": 8,
+                "icon": "air.webp",
+                "color": "teal",
+                "subtitle": "Air — dégâts liés à l'Agilité."
+            },
+            {
+                "value": 16,
+                "icon": "water.webp",
+                "color": "blue",
+                "subtitle": "Eau — dégâts liés à la Chance."
+            },
+            {
+                "value": 32,
+                "icon": "wisdom.webp",
+                "color": "purple",
+                "subtitle": "Sagesse — effet lié à la Sagesse."
+            },
+            {
+                "value": 64,
+                "icon": "vitality.webp",
+                "color": "lime",
+                "subtitle": "Vitalité — effet lié à la Vitalité."
+            },
+            {
+                "value": 3,
+                "subtitle": "Neutre-Terre — sort multi-élémentaire."
+            },
+            {
+                "value": 5,
+                "subtitle": "Neutre-Feu — sort multi-élémentaire."
+            },
+            {
+                "value": 6,
+                "subtitle": "Terre-Feu — sort multi-élémentaire."
+            },
+            {
+                "value": 9,
+                "subtitle": "Neutre-Air — sort multi-élémentaire."
+            },
+            {
+                "value": 10,
+                "subtitle": "Terre-Air — sort multi-élémentaire."
+            },
+            {
+                "value": 12,
+                "subtitle": "Feu-Air — sort multi-élémentaire."
+            },
+            {
+                "value": 17,
+                "subtitle": "Neutre-Eau — sort multi-élémentaire."
+            },
+            {
+                "value": 18,
+                "subtitle": "Terre-Eau — sort multi-élémentaire."
+            },
+            {
+                "value": 20,
+                "subtitle": "Feu-Eau — sort multi-élémentaire."
+            },
+            {
+                "value": 24,
+                "subtitle": "Air-Eau — sort multi-élémentaire."
+            }
+        ],
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "int",
+        "sort_order": 70,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "element",
+            "min": "0",
+            "max": "127",
+            "formula": null,
+            "formula_display": "Élément(s) du sort : masque 7 bits (2.2.1, 2.3.3). Bit 0 = Neutre (1), Bit 1 = Terre/Force (2), Bit 2 = Feu/Intelligence (4), Bit 3 = Air/Agilité (8), Bit 4 = Eau/Chance (16), Bit 5 = Sagesse (32), Bit 6 = Vitalité (64). Combinaisons possibles (ex. Terre-Feu = 6). Conservé tel quel depuis Dofus.",
+            "default_value": "1",
+            "conversion_formula": "[d]",
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

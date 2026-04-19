@@ -4,38 +4,24 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\Characteristic;
 use App\Models\CharacteristicObject;
-use App\Models\Type\ItemType;
 
 /**
  * Seed characteristic_object (groupe object : item, consumable, resource, panoply).
- * Enrichit les lignes avec les samples depuis storage/app/characteristics_object_samples.json si présent.
  */
 class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
 {
-    /** Niveaux Dofus de référence (alignés sur l'admin). */
-    private const DOFUS_REFERENCE_LEVELS = [1, 40, 80, 120, 160, 200];
-
-    /** Niveaux Krosmoz de référence (alignés sur l'admin). */
-    private const KROSMOZ_REFERENCE_LEVELS = [1, 4, 8, 12, 16, 20];
-
-    protected function dataPath(): string
-    {
-        return 'database/seeders/data/characteristic_object.php';
-    }
-
-    protected function normsDataPath(): ?string
-    {
-        return 'database/seeders/data/characteristic_object_norms.php';
-    }
-
     /**
      * @return class-string<CharacteristicObject>
      */
     protected function modelClass(): string
     {
         return CharacteristicObject::class;
+    }
+
+    protected function jsonGroupSubdirectory(): string
+    {
+        return 'object';
     }
 
     /**
@@ -50,141 +36,5 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
             'rune_price_per_unit' => isset($row['rune_price_per_unit']) ? (float) $row['rune_price_per_unit'] : null,
             'value_available' => isset($row['value_available']) ? $row['value_available'] : null,
         ]);
-    }
-
-    /**
-     * Résout les ids pivot `item_types.id` à partir des id DofusDB (`item_types.dofusdb_type_id`).
-     *
-     * @param  list<int>  $dofusdbTypeIds
-     * @return list<int>
-     */
-    protected function resolveItemTypeIdsFromDofusTypeIds(array $dofusdbTypeIds): array
-    {
-        if ($dofusdbTypeIds === []) {
-            return [];
-        }
-
-        return ItemType::query()
-            ->whereIn('dofusdb_type_id', $dofusdbTypeIds)
-            ->orderBy('id')
-            ->pluck('id')
-            ->map(fn (int|string $id): int => (int) $id)
-            ->all();
-    }
-
-    /**
-     * Charge les samples depuis le JSON d'extraction (optionnel).
-     *
-     * @return array<string, array<string, mixed>>
-     */
-    protected function loadObjectSamples(): array
-    {
-        $path = storage_path('app/characteristics_object_samples.json');
-        if (! is_file($path)) {
-            return [];
-        }
-        $json = file_get_contents($path);
-        $data = json_decode($json, true);
-        if (! is_array($data) || ! isset($data['by_characteristic_key'])) {
-            return [];
-        }
-
-        return $data['by_characteristic_key'];
-    }
-
-    /**
-     * Construit conversion_sample_rows à partir des deux échantillons (paires dofus_level / krosmoz_level).
-     *
-     * @param  array<string, int|float>  $dofusSample
-     * @param  array<string, int|float>  $krosmozSample
-     * @return list<array{dofus_level: int, dofus_value: int|float|null, krosmoz_level: int, krosmoz_value: int|float|null}>
-     */
-    protected function buildConversionSampleRows(array $dofusSample, array $krosmozSample): array
-    {
-        $rows = [];
-        foreach (self::DOFUS_REFERENCE_LEVELS as $i => $dofusLevel) {
-            $krosmozLevel = self::KROSMOZ_REFERENCE_LEVELS[$i] ?? $dofusLevel;
-            $dofusKey = (string) $dofusLevel;
-            $krosmozKey = (string) $krosmozLevel;
-            $rows[] = [
-                'dofus_level' => $dofusLevel,
-                'dofus_value' => array_key_exists($dofusKey, $dofusSample) ? $dofusSample[$dofusKey] : null,
-                'krosmoz_level' => $krosmozLevel,
-                'krosmoz_value' => array_key_exists($krosmozKey, $krosmozSample) ? $krosmozSample[$krosmozKey] : null,
-            ];
-        }
-
-        return $rows;
-    }
-
-    public function run(): void
-    {
-        $rows = $this->loadDataFile($this->dataPath());
-        $samplesByKey = $this->loadObjectSamples();
-        $normsData = $this->loadNormsData();
-        $allowlistPath = base_path('database/seeders/data/characteristic_object_equipment_slot_dofus_type_ids.php');
-        $equipmentSlotDofusIdsByKey = is_file($allowlistPath) ? require $allowlistPath : [];
-        if (! is_array($equipmentSlotDofusIdsByKey)) {
-            $equipmentSlotDofusIdsByKey = [];
-        }
-        $modelClass = $this->modelClass();
-        $enrichedCount = 0;
-        $normsApplied = 0;
-
-        foreach ($rows as $row) {
-            $key = $row['characteristic_key'] ?? '';
-
-            if ($key !== '' && isset($equipmentSlotDofusIdsByKey[$key]) && is_array($equipmentSlotDofusIdsByKey[$key])) {
-                $row['item_type_ids'] = $this->resolveItemTypeIdsFromDofusTypeIds(array_map('intval', $equipmentSlotDofusIdsByKey[$key]));
-            }
-
-            if (isset($normsData[$key])) {
-                $row['norms_grid'] = $normsData[$key]['norms_grid'] ?? null;
-                $row['norms_conditions'] = $normsData[$key]['norms_conditions'] ?? null;
-                $row['norms_description'] = $normsData[$key]['norms_description'] ?? null;
-                $normsApplied++;
-            }
-
-            if ($key !== '' && isset($samplesByKey[$key])) {
-                $samples = $samplesByKey[$key];
-                $dofusRef = $samples['conversion_dofus_sample_reference'] ?? $samples['conversion_dofus_sample'] ?? [];
-                $krosmozRef = $samples['conversion_krosmoz_sample_reference'] ?? $samples['conversion_krosmoz_sample'] ?? [];
-                $dofusRef = is_array($dofusRef) ? $dofusRef : [];
-                $krosmozRef = is_array($krosmozRef) ? $krosmozRef : [];
-                if ($dofusRef !== [] || $krosmozRef !== []) {
-                    $row['conversion_dofus_sample'] = $dofusRef !== [] ? $dofusRef : null;
-                    $row['conversion_krosmoz_sample'] = $krosmozRef !== [] ? $krosmozRef : null;
-                    $row['conversion_sample_rows'] = $this->buildConversionSampleRows($dofusRef, $krosmozRef);
-                    $enrichedCount++;
-                }
-            }
-
-            $char = Characteristic::where('key', $key)->first();
-            if ($char === null) {
-                continue;
-            }
-            $entity = $row['entity'] ?? $this->defaultEntity();
-            $charObj = $modelClass::updateOrCreate(
-                [
-                    'characteristic_id' => $char->id,
-                    'entity' => $entity,
-                ],
-                $this->mapRowToAttributes($row)
-            );
-            if (isset($row['item_type_ids']) && is_array($row['item_type_ids'])) {
-                $charObj->allowedItemTypes()->sync(array_values(array_filter($row['item_type_ids'], 'is_numeric')));
-            }
-        }
-
-        if ($this->command) {
-            $extra = [];
-            if ($enrichedCount > 0) {
-                $extra[] = "{$enrichedCount} avec samples";
-            }
-            if ($normsApplied > 0) {
-                $extra[] = "{$normsApplied} avec normes";
-            }
-            $this->command->info(class_basename(static::class).' : '.count($rows).' ligne(s)'.($extra !== [] ? ', '.implode(', ', $extra) : '').'.');
-        }
     }
 }

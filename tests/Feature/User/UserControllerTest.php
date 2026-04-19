@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\User;
 
+use App\Http\Middleware\CheckRole;
 use App\Models\User;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -27,11 +29,11 @@ class UserControllerTest extends TestCase
     {
         parent::setUp();
         // Désactiver le middleware role pour les tests (on teste les policies directement)
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
 
         // Désactiver explicitement le CSRF pour les tests
         $this->withoutMiddleware([
-            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            VerifyCsrfToken::class,
         ]);
     }
 
@@ -68,10 +70,12 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create(['role' => User::ROLE_USER]);
         $otherUser = User::factory()->create();
 
-        $response = $this->actingAs($user)->patch(route('user.admin.update', $otherUser), [
-            'name' => 'Hacked Name',
-            'email' => 'hacked@example.com',
-        ]);
+        $response = $this->actingAs($user)
+            ->withSession($this->passwordConfirmedSession())
+            ->patch(route('user.admin.update', $otherUser), [
+                'name' => 'Hacked Name',
+                'email' => 'hacked@example.com',
+            ]);
 
         $response->assertForbidden();
         $this->assertDatabaseMissing('users', [
@@ -258,9 +262,11 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create(['role' => User::ROLE_USER]);
         $targetUser = User::factory()->create(['role' => User::ROLE_USER]);
 
-        $response = $this->actingAs($user)->patch(route('user.admin.updateRole', $targetUser), [
-            'role' => User::ROLE_ADMIN,
-        ]);
+        $response = $this->actingAs($user)
+            ->withSession($this->passwordConfirmedSession())
+            ->patch(route('user.admin.updateRole', $targetUser), [
+                'role' => User::ROLE_ADMIN,
+            ]);
 
         $response->assertForbidden();
     }

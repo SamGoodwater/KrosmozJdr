@@ -9,7 +9,7 @@ use App\Services\Characteristic\Formula\SafeExpressionEvaluator;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Vérifie que chaque conversion_formula du seeder characteristic_spell est valide et évaluable.
+ * Vérifie que chaque conversion_formula des définitions JSON sort (groupe spell) est valide et évaluable.
  *
  * Test sans bootstrap Laravel (pas de BDD) : pure logique de formules.
  */
@@ -25,21 +25,36 @@ class CharacteristicSpellConversionFormulasTest extends TestCase
 
     public function test_all_conversion_formulas_validate_and_evaluate(): void
     {
-        /** @var array<int, array<string, mixed>> $rows */
-        $rows = require dirname(__DIR__, 3).'/database/seeders/data/characteristic_spell.php';
+        $spellDir = dirname(__DIR__, 3).'/database/seeders/data/characteristic-definitions/spell';
+        $paths = glob($spellDir.'/*-definition.json') ?: [];
+        self::assertNotEmpty($paths, 'Aucun fichier *-definition.json dans spell/');
 
         $vars = ['d' => 42, 'level' => 8];
 
-        foreach ($rows as $row) {
-            $key = $row['characteristic_key'] ?? 'unknown';
-            $formula = $row['conversion_formula'] ?? null;
-            $this->assertIsString($formula, $key);
+        foreach ($paths as $path) {
+            $raw = file_get_contents($path);
+            self::assertNotFalse($raw, $path);
+            $decoded = json_decode($raw, true);
+            self::assertIsArray($decoded, $path);
+            $entities = $decoded['entities'] ?? [];
+            self::assertIsArray($entities, $path);
+            foreach ($entities as $entity => $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $key = (string) $entity;
+                $formula = $row['conversion_formula'] ?? null;
+                if ($formula === null || $formula === '') {
+                    continue;
+                }
+                self::assertIsString($formula, $key);
 
-            $errors = $this->resolver->validateFormula($formula);
-            $this->assertSame([], $errors, 'Validation échoue pour '.$key.': '.json_encode($errors));
+                $errors = $this->resolver->validateFormula($formula);
+                self::assertSame([], $errors, 'Validation échoue pour '.$key.' dans '.basename($path).': '.json_encode($errors));
 
-            $value = $this->resolver->evaluate($formula, $vars);
-            $this->assertNotNull($value, 'Évaluation null pour '.$key.' avec vars '.json_encode($vars));
+                $value = $this->resolver->evaluate($formula, $vars);
+                self::assertNotNull($value, 'Évaluation null pour '.$key.' dans '.basename($path).' avec vars '.json_encode($vars));
+            }
         }
     }
 }

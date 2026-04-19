@@ -1,0 +1,53 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "sight_line_spell",
+        "name": "Ligne de vue",
+        "short_name": "Ligne vue",
+        "helper": "Si oui, le lanceur doit disposer d’une ligne de vue vers la zone cible. Si non, le sort peut être lancé sans cette contrainte.",
+        "descriptions": "Ligne de vue requise (3.3.2.2). Si oui, vue dégagée vers la cible nécessaire. Si non, le sort traverse les obstacles.",
+        "icon": "sightLine.webp",
+        "icon_false": "noSightLine.webp",
+        "color": "slate",
+        "value_overrides": [
+            {
+                "value": true,
+                "icon": "sightLine.webp",
+                "subtitle": "Nécessite une ligne de vue dégagée vers la zone ciblée."
+            },
+            {
+                "value": false,
+                "icon": "noSightLine.webp",
+                "subtitle": "Aucune ligne de vue requise — le sort traverse les obstacles."
+            }
+        ],
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "bool",
+        "sort_order": 70,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "sight_line",
+            "min": "0",
+            "max": "1",
+            "formula": null,
+            "formula_display": "Ligne de vue requise (3.3.2.2). Si oui (1), le lanceur doit avoir une vue dégagée vers la cible/zone. Si non (0), le sort traverse les obstacles. Conservé depuis Dofus.",
+            "default_value": "1",
+            "conversion_formula": "min(1,max(0,round([d])))",
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

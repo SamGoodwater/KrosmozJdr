@@ -1,0 +1,68 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "category_spell",
+        "name": "Catégorie",
+        "short_name": "Cat.",
+        "helper": "Catégorie du sort (offensif, soin, etc.).",
+        "descriptions": "Catégorie du sort (3.3.1) : classe (0), créature (1), apprenable (2, apprentissage 2j × niveau, ÷4 avec maître), consommable (3).",
+        "icon": "heal.webp",
+        "icon_false": null,
+        "color": "zinc",
+        "value_overrides": [
+            {
+                "value": 0,
+                "color": "blue",
+                "subtitle": "Sort de classe — sort lié à une classe de personnage."
+            },
+            {
+                "value": 1,
+                "color": "red",
+                "subtitle": "Sort de créature — sort propre à un monstre ou une créature."
+            },
+            {
+                "value": 2,
+                "color": "green",
+                "subtitle": "Sort apprenable — sort pouvant être appris par n'importe quel personnage."
+            },
+            {
+                "value": 3,
+                "color": "amber",
+                "subtitle": "Sort consommable — sort issu d'un objet consommable à usage limité."
+            }
+        ],
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "int",
+        "sort_order": 70,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "category",
+            "min": "0",
+            "max": "3",
+            "formula": null,
+            "formula_display": "Catégorie du sort (3.3.1). 0 = sort de classe (progression par niveaux), 1 = sort de créature, 2 = sort apprenable (apprentissage 2 jours × niveau, ÷4 avec maître), 3 = sort consommable.",
+            "default_value": "0",
+            "conversion_formula": "[d]",
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "value_available": [
+                "Sort de classe",
+                "Sort de créature",
+                "Sort apprenable",
+                "Sort consommable"
+            ]
+        }
+    },
+    "relations": null
+}

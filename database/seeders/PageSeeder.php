@@ -9,6 +9,8 @@ use App\Models\Characteristic;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use App\Services\Characteristics\CharacteristicDefinitionReader;
+use App\Support\Characteristics\CharacteristicDefinitionNaming;
 use Illuminate\Database\Seeder;
 
 /**
@@ -111,11 +113,10 @@ class PageSeeder extends Seeder
         // Sous-pages par groupe d'entité
         $menuOrder = 0;
         foreach (self::ENTITY_GROUPS as $group => $meta) {
-            $normsFile = base_path("database/seeders/data/characteristic_{$group}_norms.php");
-            if (! is_file($normsFile)) {
+            $normsKeys = $this->characteristicKeysWithNormsFromDefinitions($group);
+            if ($normsKeys === []) {
                 continue;
             }
-            $normsKeys = array_keys(require $normsFile);
 
             $subPage = $this->createOrRestorePage([
                 'title' => $meta['title'],
@@ -159,7 +160,9 @@ class PageSeeder extends Seeder
                 );
             }
 
-            $this->command?->info("📄 Page {$meta['slug']} : {$order} sections (intro + ".count($normsKeys).' chartes).');
+            if ($this->command) {
+                $this->command->info("📄 Page {$meta['slug']} : {$order} sections (intro + ".count($normsKeys).' chartes).');
+            }
         }
     }
 
@@ -177,13 +180,17 @@ class PageSeeder extends Seeder
             }
             $page->fill($attributes);
             $page->save();
-            $this->command?->info("♻️ Page {$slug} restaurée/mise à jour");
+            if ($this->command) {
+                $this->command->info("♻️ Page {$slug} restaurée/mise à jour");
+            }
 
             return $page;
         }
 
         $page = Page::create($attributes);
-        $this->command?->info("✅ Page {$slug} créée");
+        if ($this->command) {
+            $this->command->info("✅ Page {$slug} créée");
+        }
 
         return $page;
     }
@@ -282,21 +289,79 @@ class PageSeeder extends Seeder
             // Table non disponible, fallback sur le fichier
         }
 
-        $path = base_path('database/seeders/data/characteristics.php');
-        if (! is_file($path)) {
-            return [];
-        }
+        return $this->loadCharacteristicNamesFromDefinitionFiles();
+    }
 
-        $rows = require $path;
+    /**
+     * Libellés depuis les définitions JSON (fallback si la table `characteristics` est vide).
+     *
+     * @return array<string, string>
+     */
+    private function loadCharacteristicNamesFromDefinitionFiles(): array
+    {
         $names = [];
-        foreach ($rows as $row) {
-            $key = $row['key'] ?? '';
-            if ($key !== '') {
-                $names[$key] = $row['name'] ?? $key;
+        foreach (CharacteristicDefinitionReader::allDefinitionAbsolutePaths() as $path) {
+            try {
+                $def = CharacteristicDefinitionReader::load($path);
+            } catch (\Throwable) {
+                continue;
             }
+            $c = $def['characteristic'] ?? [];
+            if (! is_array($c)) {
+                continue;
+            }
+            $key = $c['key'] ?? '';
+            if (! is_string($key) || $key === '') {
+                continue;
+            }
+            $names[$key] = is_string($c['name'] ?? null) && $c['name'] !== '' ? $c['name'] : $key;
         }
 
         return $names;
+    }
+
+    /**
+     * Clés ayant au moins une norme dans les définitions JSON du groupe.
+     *
+     * @return list<string>
+     */
+    private function characteristicKeysWithNormsFromDefinitions(string $group): array
+    {
+        $dir = base_path(CharacteristicDefinitionNaming::RELATIVE_ROOT.'/'.$group);
+        if (! is_dir($dir)) {
+            return [];
+        }
+        $found = [];
+        foreach (glob($dir.DIRECTORY_SEPARATOR.'*-definition.json') ?: [] as $path) {
+            if (! is_file($path)) {
+                continue;
+            }
+            try {
+                $def = CharacteristicDefinitionReader::load($path);
+            } catch (\Throwable) {
+                continue;
+            }
+            $key = $def['characteristic']['key'] ?? '';
+            if (! is_string($key) || $key === '') {
+                continue;
+            }
+            foreach ($def['entities'] as $payload) {
+                if (! is_array($payload)) {
+                    continue;
+                }
+                $hasNorms = ! empty($payload['norms_grid'])
+                    || ! empty($payload['norms_conditions'])
+                    || (isset($payload['norms_description']) && is_string($payload['norms_description']) && $payload['norms_description'] !== '');
+                if ($hasNorms) {
+                    $found[$key] = true;
+                    break;
+                }
+            }
+        }
+        $list = array_keys($found);
+        sort($list);
+
+        return $list;
     }
 
     private function resolveDefaultCreatorId(): ?int

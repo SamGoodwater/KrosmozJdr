@@ -1,0 +1,165 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "level_creature",
+        "name": "Niveau",
+        "short_name": "Niv.",
+        "helper": "Puissance générale du monstre, de la classe ou du PNJ.",
+        "descriptions": "Niveau Krosmoz 1–20. Conversion Dofus floor(niv/10). Monstres : racine carrée (4.2.2).",
+        "icon": "level.webp",
+        "icon_false": null,
+        "color": "gray",
+        "value_overrides": null,
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "int",
+        "sort_order": 0,
+        "group": "creature",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "level",
+            "min": "1",
+            "max": "20",
+            "formula": null,
+            "formula_display": "Niveau Krosmoz 1\\u201320. Conversion Dofus : floor(niv/10). PJ : libre, monstres : formule racine carr\\u00e9e (4.2.2).",
+            "default_value": "1",
+            "conversion_formula": "{\"1\":\"floor([d]/10)\",\"characteristic\":\"d\"}",
+            "conversion_function": null,
+            "conversion_dofus_sample": {
+                "1": 3,
+                "40": 44,
+                "80": 83,
+                "120": 122,
+                "160": 162,
+                "200": 247
+            },
+            "conversion_krosmoz_sample": {
+                "1": 1,
+                "4": 4,
+                "8": 8,
+                "12": 12,
+                "16": 16,
+                "20": 20
+            },
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": 3,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": 1
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": 44,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": 4
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": 83,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": 8
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": 122,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": 12
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": 162,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": 16
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": 247,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": 20
+                }
+            ],
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
+        },
+        "monster": {
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "1",
+            "max": "40",
+            "formula": null,
+            "formula_display": "Niveau monstre 1\\u201340. Conversion Dofus 1\\u2013200 : racine carr\\u00e9e (niv < 800) puis lin\\u00e9aire (niv \\u2265 800) (4.2.2.4).",
+            "default_value": "1",
+            "conversion_formula": "{\"1\":\"1 + 19 * sqrt(([d] - 1) / 799)\",\"800\":\"20 + 10 * (([d] - 800) / 400)\",\"characteristic\":\"d\"}",
+            "conversion_function": null,
+            "conversion_dofus_sample": {
+                "1": 3,
+                "40": 44,
+                "80": 83,
+                "120": 122,
+                "160": 162,
+                "200": 247
+            },
+            "conversion_krosmoz_sample": {
+                "1": 1,
+                "4": 4,
+                "8": 8,
+                "12": 12,
+                "16": 16,
+                "20": 20
+            },
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": 3,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": 1
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": 44,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": 4
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": 83,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": 8
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": 122,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": 12
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": 162,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": 16
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": 247,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": 20
+                }
+            ],
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
+        }
+    },
+    "relations": null
+}

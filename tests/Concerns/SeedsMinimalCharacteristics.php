@@ -8,8 +8,8 @@ use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 
 /**
- * Fournit le seed minimal des caractéristiques pour les tests lorsque les fichiers
- * database/seeders/data/*.php sont vides ou absents.
+ * Fournit le seed minimal des caractéristiques pour les tests lorsque la table
+ * `characteristics` / pivots est vide (hors jeu complet de définitions JSON).
  */
 trait SeedsMinimalCharacteristics
 {

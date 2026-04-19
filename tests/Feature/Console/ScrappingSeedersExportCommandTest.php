@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console;
 
+use App\Console\Commands\Scrapping\ScrappingSeedersExportCommand;
+use Database\Seeders\CharacteristicSeeder;
+use Database\Seeders\CreatureCharacteristicSeeder;
+use Database\Seeders\ObjectCharacteristicSeeder;
+use Database\Seeders\SpellCharacteristicSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -12,7 +17,7 @@ use Tests\TestCase;
 /**
  * Tests de la commande scrapping:seeders:export (export, backup ZIP, nettoyage des anciens backups).
  *
- * @see \App\Console\Commands\Scrapping\ScrappingSeedersExportCommand
+ * @see ScrappingSeedersExportCommand
  */
 class ScrappingSeedersExportCommandTest extends TestCase
 {
@@ -45,10 +50,10 @@ class ScrappingSeedersExportCommandTest extends TestCase
 
     public function test_command_export_characteristics_exits_success(): void
     {
-        $this->seed(\Database\Seeders\CharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\CreatureCharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\ObjectCharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\SpellCharacteristicSeeder::class);
+        $this->seed(CharacteristicSeeder::class);
+        $this->seed(CreatureCharacteristicSeeder::class);
+        $this->seed(ObjectCharacteristicSeeder::class);
+        $this->seed(SpellCharacteristicSeeder::class);
 
         $code = Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
 
@@ -57,30 +62,30 @@ class ScrappingSeedersExportCommandTest extends TestCase
 
     public function test_command_export_characteristics_creates_data_files(): void
     {
-        $this->seed(\Database\Seeders\CharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\CreatureCharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\ObjectCharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\SpellCharacteristicSeeder::class);
+        $this->seed(CharacteristicSeeder::class);
+        $this->seed(CreatureCharacteristicSeeder::class);
+        $this->seed(ObjectCharacteristicSeeder::class);
+        $this->seed(SpellCharacteristicSeeder::class);
 
         Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
 
-        $path = $this->dataDir.'/characteristics.php';
-        $this->assertFileExists($path);
-        $this->assertStringContainsString('return', file_get_contents($path));
-        $this->assertFileExists($this->dataDir.'/characteristic_creature.php');
-        $this->assertFileExists($this->dataDir.'/characteristic_object.php');
-        $this->assertFileExists($this->dataDir.'/characteristic_spell.php');
+        $defRoot = $this->dataDir.'/characteristic-definitions';
+        $this->assertDirectoryExists($defRoot);
+        $jsonFiles = File::glob($defRoot.'/*/*-definition.json');
+        $this->assertNotEmpty($jsonFiles, 'Au moins un fichier *-definition.json doit être exporté.');
+        $sample = file_get_contents($jsonFiles[0]);
+        $this->assertStringContainsString('"characteristic"', $sample);
     }
 
     public function test_command_creates_backup_zip_when_data_files_exist(): void
     {
-        $this->seed(\Database\Seeders\CharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\CreatureCharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\ObjectCharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\SpellCharacteristicSeeder::class);
+        $this->seed(CharacteristicSeeder::class);
+        $this->seed(CreatureCharacteristicSeeder::class);
+        $this->seed(ObjectCharacteristicSeeder::class);
+        $this->seed(SpellCharacteristicSeeder::class);
 
         Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
-        $this->assertFileExists($this->dataDir.'/characteristics.php');
+        $this->assertDirectoryExists($this->dataDir.'/characteristic-definitions');
 
         Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
 
@@ -105,10 +110,10 @@ class ScrappingSeedersExportCommandTest extends TestCase
             touch($path, $cutoff);
         }
 
-        $this->seed(\Database\Seeders\CharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\CreatureCharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\ObjectCharacteristicSeeder::class);
-        $this->seed(\Database\Seeders\SpellCharacteristicSeeder::class);
+        $this->seed(CharacteristicSeeder::class);
+        $this->seed(CreatureCharacteristicSeeder::class);
+        $this->seed(ObjectCharacteristicSeeder::class);
+        $this->seed(SpellCharacteristicSeeder::class);
         Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
 
         $zips = File::glob($this->backupDir.'/seeder-data-*.zip');

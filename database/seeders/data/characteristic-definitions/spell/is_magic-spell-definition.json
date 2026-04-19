@@ -1,0 +1,55 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "is_magic_spell",
+        "name": "Physique ou Wakfu",
+        "short_name": "Phys. / Wakfu",
+        "helper": "Physique : le sort puise dans la force physique. Wakfu : le sort puise dans le Wakfu (équivalent du « magique » côté Dofus).",
+        "descriptions": "Orientation du sort (3.3.2.3). Wakfu (1) : jet de sauvegarde de la cible. Physique (0) : jet de touche vs CA.",
+        "icon": "spellMagic.webp",
+        "icon_false": "spellPhysic.webp",
+        "color": "blue",
+        "value_overrides": [
+            {
+                "value": true,
+                "icon": "spellMagic.webp",
+                "color": "blue",
+                "subtitle": "Wakfu — le sort puise dans le Wakfu du lanceur ou de la lanceuse."
+            },
+            {
+                "value": false,
+                "icon": "spellPhysic.webp",
+                "color": "stone",
+                "subtitle": "Physique — le sort se sert de la force physique du lanceur ou de la lanceuse."
+            }
+        ],
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "bool",
+        "sort_order": 70,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "is_magic",
+            "min": "0",
+            "max": "1",
+            "formula": null,
+            "formula_display": "Orientation du sort (3.3.2.3). Wakfu (1) : sort magique, jet de sauvegarde de la cible. Physique (0) : sort physique, jet de touche vs CA. Dofus : dérivé de la nature du sort.",
+            "default_value": "1",
+            "conversion_formula": "min(1,max(0,round([d])))",
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

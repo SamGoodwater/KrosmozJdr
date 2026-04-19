@@ -1,0 +1,43 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "sleight_of_hand_creature",
+        "name": "Escamotage",
+        "short_name": "Esc.",
+        "helper": "Agilité. Total = mod. Agilité + bonus maîtrise × palier (0–2) + bonus équipement. Plafond bonus au jet : 24 (2.2.2).",
+        "descriptions": "Escamotage (créature). Agilité.",
+        "icon": "skillAgility.webp",
+        "icon_false": null,
+        "color": "neutral",
+        "value_overrides": null,
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "int",
+        "sort_order": 11,
+        "group": "creature",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "-2",
+            "max": "24",
+            "formula": "[modifier_agility_creature]+[mastery_bonus_creature]*[escamotage_mastery]+[escamotage_bonus]",
+            "formula_display": "Mod. Agi + BM\\u00d7palier + bonus \\u00e9quip. \\u2014 max 24 (2.2.2 / 3.5)",
+            "default_value": "0",
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
+        }
+    },
+    "relations": null
+}

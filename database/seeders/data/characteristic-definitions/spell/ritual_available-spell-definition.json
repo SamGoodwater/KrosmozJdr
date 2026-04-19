@@ -1,0 +1,54 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "ritual_available_spell",
+        "name": "Rituel disponible",
+        "short_name": "Rituel",
+        "helper": "Indique si le sort ou la capacité peut être utilisé en mode rituel (incantation prolongée hors combat).",
+        "descriptions": "Mode rituel (3.3.2.1) : sans coût PA mais temps d'incantation ≥ 10 minutes (hors combat).",
+        "icon": "ritual.webp",
+        "icon_false": "notRitual.webp",
+        "color": "indigo",
+        "value_overrides": [
+            {
+                "value": true,
+                "icon": "ritual.webp",
+                "subtitle": "Peut être lancé en rituel — sans coût en PA, mais avec un temps d'incantation d'au moins 10 minutes."
+            },
+            {
+                "value": false,
+                "icon": "notRitual.webp",
+                "color": "slate",
+                "subtitle": "Ne peut pas être lancé en mode rituel."
+            }
+        ],
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "bool",
+        "sort_order": 70,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "ritual_available",
+            "min": "0",
+            "max": "1",
+            "formula": null,
+            "formula_display": "Mode rituel (3.3.2.1). Si oui (1), le sort peut être lancé sans coût en PA mais avec un temps d'incantation d'au moins 10 minutes (hors combat). Si non (0), lancer standard uniquement.",
+            "default_value": "0",
+            "conversion_formula": "min(1,max(0,round([d])))",
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

@@ -1,0 +1,100 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "spell_type_spell",
+        "name": "Type de sort",
+        "short_name": "Type",
+        "helper": "Orientation stratégique du sort.",
+        "descriptions": "Type de sort : orientation stratégique (dégâts, soin, protection, amélioration, entrave, invocation, placement, tank). Relation spell_types, plusieurs types possibles.",
+        "icon": null,
+        "icon_false": null,
+        "color": "neutral",
+        "value_overrides": [
+            {
+                "value": "degats",
+                "icon": "icons/spell_type/degats.svg",
+                "color": "red",
+                "subtitle": "Dégâts — sort offensif infligeant des dommages directs."
+            },
+            {
+                "value": "soin",
+                "icon": "icons/spell_type/soin.svg",
+                "color": "pink",
+                "subtitle": "Soin — sort restaurant des points de vie."
+            },
+            {
+                "value": "protection",
+                "icon": "icons/spell_type/protection.svg",
+                "color": "purple",
+                "subtitle": "Protection — sort renforçant la défense ou générant un bouclier."
+            },
+            {
+                "value": "amelioration",
+                "icon": "icons/spell_type/amelioration.svg",
+                "color": "sky",
+                "subtitle": "Amélioration — sort augmentant les caractéristiques ou capacités du lanceur ou d'un allié."
+            },
+            {
+                "value": "entrave",
+                "icon": "icons/spell_type/entrave.svg",
+                "color": "purple",
+                "subtitle": "Entrave — sort affaiblissant, contrôlant ou limitant les actions d'un ennemi."
+            },
+            {
+                "value": "invocation",
+                "icon": "icons/spell_type/invocation.svg",
+                "color": "yellow",
+                "subtitle": "Invocation — sort faisant apparaître une créature ou un objet sur le terrain."
+            },
+            {
+                "value": "placement",
+                "icon": "icons/spell_type/placement.svg",
+                "color": "lime",
+                "subtitle": "Placement — sort de déplacement, repositionnement ou téléportation."
+            },
+            {
+                "value": "tank",
+                "icon": "icons/spell_type/tank.svg",
+                "color": "orange",
+                "subtitle": "Tank — sort orienté encaissement, aggro ou absorption de dégâts."
+            }
+        ],
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "string",
+        "sort_order": 71,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "spell_type",
+            "min": null,
+            "max": null,
+            "formula": null,
+            "formula_display": "Type de sort : orientation stratégique (dégâts, soin, protection, amélioration, entrave, invocation, placement, tank). Relation spell_types, pas une colonne directe. Un sort peut avoir plusieurs types.",
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "value_available": {
+                "degats": "Dégâts",
+                "soin": "Soin",
+                "protection": "Protection",
+                "amelioration": "Amélioration",
+                "entrave": "Entrave",
+                "invocation": "Invocation",
+                "placement": "Placement",
+                "tank": "Tank"
+            }
+        }
+    },
+    "relations": null
+}

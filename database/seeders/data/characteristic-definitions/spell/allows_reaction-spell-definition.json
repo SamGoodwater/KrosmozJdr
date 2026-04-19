@@ -1,0 +1,51 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "allows_reaction_spell",
+        "name": "Utilisable en réaction",
+        "short_name": "Réaction",
+        "helper": "Indique si le sort peut être lancé en réaction : une réaction par round et par créature ; les PA dépensés ne sont pas récupérés au tour suivant.",
+        "descriptions": "Utilisable en réaction (3.2.2). Hors du tour du lanceur, 1 réaction/round/créature. PA dépensés non récupérés au tour suivant. Coût 2–3 PA.",
+        "icon": "icons/caracteristics/is_reaction.webp",
+        "icon_false": null,
+        "color": "brown",
+        "value_overrides": [
+            {
+                "value": true,
+                "subtitle": "Peut être lancé en réaction durant le tour d'un autre combattant."
+            },
+            {
+                "value": false,
+                "subtitle": "Ne peut pas être lancé en réaction."
+            }
+        ],
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "bool",
+        "sort_order": 71,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "allows_reaction",
+            "min": "0",
+            "max": "1",
+            "formula": null,
+            "formula_display": "Utilisable en réaction (3.2.2). Si oui (1), le sort peut être lancé hors du tour du lanceur. Une réaction par round par créature ; les PA dépensés ne sont pas récupérés au tour suivant. Coût réaction : 2–3 PA.",
+            "default_value": "0",
+            "conversion_formula": "min(1,max(0,round([d])))",
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

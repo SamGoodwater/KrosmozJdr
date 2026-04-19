@@ -1,0 +1,157 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "weight_object",
+        "name": "Poids",
+        "short_name": "Poids",
+        "helper": "Poids en pods (ressources principalement).",
+        "descriptions": "Poids en pods. Armes 2–8, armures 1–4. Influence la charge totale du porteur.",
+        "icon": "pod.webp",
+        "icon_false": null,
+        "color": "brown",
+        "value_overrides": null,
+        "hide_when_empty": null,
+        "unit": "pods",
+        "type": "int",
+        "sort_order": 21,
+        "group": "object",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "weight",
+            "min": "0",
+            "max": null,
+            "formula": null,
+            "formula_display": "Poids en pods. Armes 2–8, armures 1–4. Influence la charge totale du porteur.",
+            "default_value": null,
+            "conversion_formula": "[d]",
+            "conversion_function": null,
+            "conversion_dofus_sample": {
+                "1": 114,
+                "40": 151,
+                "80": 233,
+                "120": 389,
+                "160": 500,
+                "200": 500
+            },
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": 114,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": 151,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": 233,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": 389,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": 500,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": 500,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "forgemagie_max": 0,
+            "base_price_per_unit": null,
+            "rune_price_per_unit": null,
+            "value_available": null,
+            "item_type_ids": []
+        },
+        "resource": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "weight",
+            "min": "0",
+            "max": null,
+            "formula": null,
+            "formula_display": "Poids ressource en kg. Herbes 0,1–0,5, minerais 1–5, bois 0,5–2 (4.4.3).",
+            "default_value": "0",
+            "conversion_formula": "[d]",
+            "conversion_function": null,
+            "conversion_dofus_sample": {
+                "1": 114,
+                "40": 151,
+                "80": 233,
+                "120": 389,
+                "160": 500,
+                "200": 500
+            },
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": 114,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": 151,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": 233,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": 389,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": 500,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": 500,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "forgemagie_max": 0,
+            "base_price_per_unit": null,
+            "rune_price_per_unit": null,
+            "value_available": null,
+            "item_type_ids": []
+        }
+    },
+    "relations": null
+}

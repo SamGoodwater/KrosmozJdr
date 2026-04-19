@@ -11,27 +11,22 @@ use App\Models\CharacteristicSpell;
  */
 class SpellCharacteristicSeeder extends CharacteristicGroupSeeder
 {
-    protected function dataPath(): string
-    {
-        return 'database/seeders/data/characteristic_spell.php';
-    }
-
-    protected function normsDataPath(): ?string
-    {
-        return 'database/seeders/data/characteristic_spell_norms.php';
-    }
-
     protected function defaultEntity(): string
     {
         return 'spell';
     }
 
     /**
-     * @return class-string<\App\Models\CharacteristicSpell>
+     * @return class-string<CharacteristicSpell>
      */
     protected function modelClass(): string
     {
         return CharacteristicSpell::class;
+    }
+
+    protected function jsonGroupSubdirectory(): string
+    {
+        return 'spell';
     }
 
     /**

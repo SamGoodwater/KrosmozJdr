@@ -186,7 +186,6 @@ class Spell extends Model implements HasMedia
         'number_between_two_cast' => '0',
         'po_editable' => true,
         'sight_line' => true,
-        'element' => 1,
         'category' => 0,
         'is_magic' => true,
         'powerful' => 0,

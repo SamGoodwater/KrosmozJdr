@@ -1,0 +1,43 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "performance_passive_creature",
+        "name": "Représentation (passif)",
+        "short_name": "Repr. pass.",
+        "helper": "Valeur fixe sans jet : total compétence + 10 (2.2.2.4). Max lié au jet de compétence. Pas de conversion DofusDB.",
+        "descriptions": "Compétence passive : bonus au jet + 10 (2.2.2.4).",
+        "icon": "skillChance.webp",
+        "icon_false": null,
+        "color": "violet",
+        "value_overrides": null,
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "int",
+        "sort_order": 12,
+        "group": "creature",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "8",
+            "max": "34",
+            "formula": "[modifier_chance_creature]+[mastery_bonus_creature]*[representation_mastery]+[representation_bonus]+10",
+            "formula_display": "Bonus au jet + 10 \\u2014 passif sans d20 (2.2.2.4)",
+            "default_value": "10",
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
+        }
+    },
+    "relations": null
+}

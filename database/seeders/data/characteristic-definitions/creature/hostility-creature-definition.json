@@ -1,0 +1,74 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "hostility_creature",
+        "name": "Hostilité",
+        "short_name": "Hostil.",
+        "helper": "Comportement par défaut de la créature envers les aventurier·euses (rencontre, réactions, négociation).",
+        "descriptions": "Échelle 0–4 : Amical (0), Curieux (1), Neutre (2), Hostile (3), Agressif (4). Référence MJ, rencontres et réactions (4.2.2).",
+        "icon": "hostility.webp",
+        "icon_false": null,
+        "color": "slate",
+        "value_overrides": [
+            {
+                "value": 0,
+                "icon": "hostility.webp",
+                "color": "green",
+                "subtitle": "Amical — comportement favorable par défaut."
+            },
+            {
+                "value": 1,
+                "icon": "hostility.webp",
+                "color": "lime",
+                "subtitle": "Curieux — intéressé mais pas hostile."
+            },
+            {
+                "value": 2,
+                "icon": "hostility.webp",
+                "color": "slate",
+                "subtitle": "Neutre — ni amical ni agressif."
+            },
+            {
+                "value": 3,
+                "icon": "hostility.webp",
+                "color": "amber",
+                "subtitle": "Hostile — menaçant ou opposé aux PJ."
+            },
+            {
+                "value": 4,
+                "icon": "hostility.webp",
+                "color": "red",
+                "subtitle": "Agressif — attaque ou confrontation probable."
+            }
+        ],
+        "hide_when_empty": null,
+        "unit": null,
+        "type": "int",
+        "sort_order": 3,
+        "group": "creature",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "hostility",
+            "min": "0",
+            "max": "4",
+            "formula": null,
+            "formula_display": "Échelle 0\\u20134 : Amical \\u2192 Agressif.",
+            "default_value": "2",
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
+        }
+    },
+    "relations": null
+}

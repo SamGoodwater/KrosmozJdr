@@ -1297,7 +1297,7 @@
   {
     "path": "50-Fonctionnalités/Characteristics-DB/SEEDERS_DONNEES.md",
     "title": "Données des seeders de caractéristiques",
-    "description": "Ce document décrit le contenu des fichiers de données des seeders (`database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`) et le lien avec les autres modules (équipements, effets de sorts). Pour **régénérer** ces fichiers à partir de la BDD : `php artisan scrapping:seeders:export` (option `--characteristics`, alias legacy : `db:export-seeder-data`). Fichiers produits : `database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`. Voir [ARCHITECTURE_SOUS_SERVICES.md](./ARCHITECTURE_SOUS_SERVICES.md) § 6."
+    "description": "Référentiel JSON des caractéristiques sous `database/seeders/data/characteristic-definitions/` (fichiers `*-definition.json`). Régénération depuis la BDD : `php artisan scrapping:seeders:export --characteristics` (alias `db:export-seeder-data`). Voir [ARCHITECTURE_SOUS_SERVICES.md](./ARCHITECTURE_SOUS_SERVICES.md) § 6."
   },
   {
     "path": "50-Fonctionnalités/Characteristics-DB/SOURCE_SAMPLES_KROSMOZ.md",

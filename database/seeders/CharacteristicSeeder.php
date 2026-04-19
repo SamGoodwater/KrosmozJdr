@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Characteristic;
-use Database\Seeders\Concerns\LoadsSeederDataFile;
-use Database\Seeders\Support\CharacteristicDefinitionJsonLoader;
+use App\Services\Characteristics\CharacteristicDefinitionReader;
+use App\Support\Characteristics\CharacteristicDefinitionNaming;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -15,15 +15,6 @@ use Illuminate\Support\Facades\Schema;
  */
 class CharacteristicSeeder extends Seeder
 {
-    use LoadsSeederDataFile;
-
-    private const DATA_FILE = 'database/seeders/data/characteristics.php';
-
-    /** Définitions 1 fichier / clé ; si au moins un `.json` seedable est présent, il remplace {@see self::DATA_FILE}. */
-    private const JSON_DEFINITIONS_DIR = 'database/seeders/data/caracterictis-definition';
-
-    private const ICONS_COLORS_FILE = 'database/seeders/data/characteristic_icons_colors.php';
-
     /**
      * Clés `*_spell` → `*_creature` quand le nommage ne suit pas la règle suffixe `_spell` → `_creature`.
      * Les autres sorts alignés sur une caractéristique créature sont résolus automatiquement.
@@ -60,10 +51,12 @@ class CharacteristicSeeder extends Seeder
 
     public function run(): void
     {
-        $fromJson = CharacteristicDefinitionJsonLoader::loadFromDirectory(self::JSON_DEFINITIONS_DIR);
-        $rows = $fromJson ?? $this->loadDataFile(self::DATA_FILE);
-        if ($fromJson !== null && $this->command) {
-            $this->command->info('CharacteristicSeeder : source JSON `'.self::JSON_DEFINITIONS_DIR.'` ('.count($rows).' fichier(s)).');
+        $rows = $this->loadCharacteristicRowsFromDefinitionFiles();
+        if ($rows === []) {
+            throw new \RuntimeException(
+                'Aucune définition caractéristique JSON. Attendu : des fichiers *-definition.json sous '
+                .CharacteristicDefinitionNaming::RELATIVE_ROOT.'/{creature,object,spell}/'
+            );
         }
         // Dédoublonnage par clé pour éviter les violations de contrainte unique (ex. exécution parallèle de tests).
         $byKey = [];
@@ -82,6 +75,9 @@ class CharacteristicSeeder extends Seeder
 
         $rows = $this->applySpellVisualsFromCreatureCharacteristics($rows);
 
+        // Surcharges centralisées (surtout visuels) : fusionnées quand la ligne ne les fixe pas.
+        // - descriptions, value_overrides, icon_false : null ou absent → repli sur ce fichier.
+        // - icon / color : repli seulement si la clé est absente sur la ligne (voir JSON : clés omises si null dans toSeederRow).
         $defaults = $this->loadIconsAndColorsDefaults();
         $icons = $defaults['icons'] ?? [];
         $iconsFalse = $defaults['icons_false'] ?? [];
@@ -128,13 +124,14 @@ class CharacteristicSeeder extends Seeder
         }
 
         // 2) Deuxième passage : rattacher les caractéristiques liées à leur maître via linked_to_key
+        $idsByKey = Characteristic::query()->pluck('id', 'key')->all();
         foreach ($rows as $row) {
             if (empty($row['linked_to_key'])) {
                 continue;
             }
 
-            $master = Characteristic::where('key', $row['linked_to_key'])->first();
-            if (! $master) {
+            $masterId = $idsByKey[$row['linked_to_key']] ?? null;
+            if ($masterId === null) {
                 if ($this->command) {
                     $this->command->warn(sprintf(
                         'CharacteristicSeeder : caractéristique maître introuvable pour %s (linked_to_key=%s).',
@@ -146,8 +143,13 @@ class CharacteristicSeeder extends Seeder
                 continue;
             }
 
-            Characteristic::where('key', $row['key'])->update([
-                'linked_to_characteristic_id' => $master->id,
+            $childId = $idsByKey[$row['key']] ?? null;
+            if ($childId === null) {
+                continue;
+            }
+
+            Characteristic::whereKey($childId)->update([
+                'linked_to_characteristic_id' => $masterId,
             ]);
         }
 
@@ -250,25 +252,36 @@ class CharacteristicSeeder extends Seeder
     }
 
     /**
-     * Charge le mapping clé → icône et clé → couleur (fichier characteristic_icons_colors.php).
+     * Surcharges visuelles optionnelles (réserve ; tout est porté par les JSON de définition).
      *
      * @return array{icons: array<string, string>, icons_false: array<string, string>, colors: array<string, string>, descriptions: array<string, string>, value_overrides: array<string, list<array<string, mixed>>>}
      */
     private function loadIconsAndColorsDefaults(): array
     {
-        $path = base_path(self::ICONS_COLORS_FILE);
-        if (! is_file($path)) {
-            return ['icons' => [], 'icons_false' => [], 'colors' => [], 'descriptions' => [], 'value_overrides' => []];
+        return ['icons' => [], 'icons_false' => [], 'colors' => [], 'descriptions' => [], 'value_overrides' => []];
+    }
+
+    /**
+     * Une ligne par fichier `stem-groupe-definition.json` (bloc `characteristic`).
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function loadCharacteristicRowsFromDefinitionFiles(): array
+    {
+        $rows = [];
+        foreach (CharacteristicDefinitionReader::allDefinitionAbsolutePaths() as $path) {
+            try {
+                $def = CharacteristicDefinitionReader::load($path);
+            } catch (\Throwable) {
+                continue;
+            }
+            $c = $def['characteristic'];
+            if (! is_array($c) || ! isset($c['key']) || ! is_string($c['key']) || $c['key'] === '') {
+                continue;
+            }
+            $rows[] = $c;
         }
 
-        $data = require $path;
-
-        return [
-            'icons' => is_array($data['icons'] ?? null) ? $data['icons'] : [],
-            'icons_false' => is_array($data['icons_false'] ?? null) ? $data['icons_false'] : [],
-            'colors' => is_array($data['colors'] ?? null) ? $data['colors'] : [],
-            'descriptions' => is_array($data['descriptions'] ?? null) ? $data['descriptions'] : [],
-            'value_overrides' => is_array($data['value_overrides'] ?? null) ? $data['value_overrides'] : [],
-        ];
+        return $rows;
     }
 }

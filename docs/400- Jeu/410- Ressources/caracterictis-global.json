@@ -1,5 +1,7 @@
 {
   "_schema_version": "2",
+  "_obsolete": true,
+  "_obsolete_notice": "Ce fichier est conservé à titre historique / illustration. Le référent de définitions est désormais database/seeders/data/characteristic-definitions/ (un fichier stem-groupe-definition.json par caractéristique ; modèles dans _templates/).",
   "_description": "Une entrée = une caractéristique logique (characteristic_key). Champs regroupés par rôle : general, display, value_and_norms, conversion, mapping, relations. Les tables SQL restent characteristics + pivot groupe ; ce découpage est pour la lisibilité et l’import.",
   "_champs_meta": {
     "color_false": "Colonne supprimée (migration 2026_04_18). Ne plus utiliser : préférer value_overrides (ex. entrée value: false).",

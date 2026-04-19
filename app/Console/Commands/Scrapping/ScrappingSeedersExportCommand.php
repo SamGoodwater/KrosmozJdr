@@ -5,10 +5,6 @@ declare(strict_types=1);
 namespace App\Console\Commands\Scrapping;
 
 use App\Console\Concerns\GuardsProductionEnvironment;
-use App\Models\Characteristic;
-use App\Models\CharacteristicCreature;
-use App\Models\CharacteristicObject;
-use App\Models\CharacteristicSpell;
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\Scrapping\ScrappingEntityMappingTarget;
 use App\Models\SpellEffectType;
@@ -16,6 +12,7 @@ use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
 use App\Models\Type\ResourceType;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Characteristics\CharacteristicDefinitionsExportFromDatabaseService;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
@@ -24,7 +21,8 @@ use ZipArchive;
 
 /**
  * Exporte les données de la BDD vers database/seeders/data/ pour que les seeders
- * utilisent ces fichiers comme source (au lieu de config/).
+ * utilisent ces fichiers comme source (au lieu de config/). Les caractéristiques
+ * sont exportées en JSON (`characteristic-definitions/{groupe}/*.json`).
  *
  * À lancer après modification des caractéristiques / formules / types d'effets via l'interface.
  * Crée une sauvegarde ZIP des fichiers existants avant export, puis nettoie les backups > 7 ou > 7 jours.
@@ -48,7 +46,7 @@ class ScrappingSeedersExportCommand extends Command
                             {--scrapping-mappings : Exporter les règles de mapping scrapping (DofusDB → Krosmoz)}
                             {--item-types : Exporter resource_types, consumable_types, item_types (types item scrapping)}';
 
-    protected $description = 'Exporte characteristics, formules, spell_effect_types, mapping scrapping et types item vers database/seeders/data/';
+    protected $description = 'Exporte définitions JSON caractéristiques, spell_effect_types, mapping scrapping et types item vers database/seeders/data/';
 
     protected $aliases = ['db:export-seeder-data'];
 
@@ -109,14 +107,16 @@ class ScrappingSeedersExportCommand extends Command
      */
     private function getFilesToExportForCurrentRun(bool $all): array
     {
+        $dataDir = database_path('seeders/data');
         $files = [];
         if ($all || $this->option('characteristics')) {
-            $files = array_merge($files, [
-                'characteristics.php',
-                'characteristic_creature.php',
-                'characteristic_object.php',
-                'characteristic_spell.php',
-            ]);
+            $defRoot = $dataDir.'/characteristic-definitions';
+            if (is_dir($defRoot)) {
+                foreach (File::allFiles($defRoot) as $fileInfo) {
+                    $rel = str_replace($dataDir.DIRECTORY_SEPARATOR, '', $fileInfo->getPathname());
+                    $files[] = str_replace(DIRECTORY_SEPARATOR, '/', $rel);
+                }
+            }
         }
         if ($all || $this->option('formulas')) {
             // formules exportées avec --characteristics
@@ -196,106 +196,14 @@ class ScrappingSeedersExportCommand extends Command
     {
         $this->getter->clearCache();
 
-        if (Schema::hasTable('characteristics')) {
-            $rows = Characteristic::with('masterCharacteristic')
-                ->orderBy('sort_order')
-                ->orderBy('key')
-                ->get();
-            $data = $rows->map(
-                fn (Characteristic $r) => [
-                    'key' => $r->key,
-                    'name' => $r->name,
-                    'short_name' => $r->short_name,
-                    'helper' => $r->helper,
-                    'descriptions' => $r->descriptions,
-                    'icon' => $r->icon,
-                    'color' => $r->color,
-                    'unit' => $r->unit,
-                    'type' => $r->type,
-                    'sort_order' => $r->sort_order,
-                    // Nouveau : groupe principal explicite (creature, object, spell) pour éviter de le recalculer.
-                    'group' => $r->group,
-                    // Nouveau : lien logique vers la caractéristique maître (clé), pour reconstruire linked_to_characteristic_id au seed.
-                    'linked_to_key' => $r->masterCharacteristic?->key,
-                ]
-            )->all();
-            $path = $dir.'/characteristics.php';
-            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Table générale characteristics. Régénéré par : php artisan scrapping:seeders:export --characteristics\n */\n\nreturn ".$this->varExportShort($data).";\n";
-            file_put_contents($path, $content);
-            $this->info('Exported '.count($data).' characteristics → '.$path);
+        if (! Schema::hasTable('characteristics')) {
+            $this->warn('Table characteristics absente : export des définitions JSON ignoré.');
+
+            return;
         }
 
-        if (Schema::hasTable('characteristic_creature')) {
-            $rows = CharacteristicCreature::with('characteristic')->orderBy('characteristic_id')->orderBy('entity')->get();
-            $data = $rows->map(fn ($r) => [
-                'characteristic_key' => $r->characteristic->key,
-                'entity' => $r->entity,
-                'db_column' => $r->db_column,
-                'min' => $r->min,
-                'max' => $r->max,
-                'formula' => $r->formula,
-                'formula_display' => $r->formula_display,
-                'default_value' => $r->default_value,
-                'conversion_formula' => $r->conversion_formula,
-                'conversion_dofus_sample' => $r->conversion_dofus_sample,
-                'conversion_krosmoz_sample' => $r->conversion_krosmoz_sample,
-            ])->all();
-            $path = $dir.'/characteristic_creature.php';
-            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe creature (monster, class, npc). Régénéré par : php artisan scrapping:seeders:export --characteristics\n */\n\nreturn ".$this->varExportShort($data).";\n";
-            file_put_contents($path, $content);
-            $this->info('Exported '.count($data).' characteristic_creature → '.$path);
-        }
-
-        if (Schema::hasTable('characteristic_object')) {
-            $rows = CharacteristicObject::with(['characteristic', 'allowedItemTypes'])
-                ->orderBy('characteristic_id')
-                ->orderBy('entity')
-                ->get();
-            $data = $rows->map(fn ($r) => [
-                'characteristic_key' => $r->characteristic->key,
-                'entity' => $r->entity,
-                'db_column' => $r->db_column,
-                'min' => $r->min,
-                'max' => $r->max,
-                'formula' => $r->formula,
-                'formula_display' => $r->formula_display,
-                'default_value' => $r->default_value,
-                'conversion_formula' => $r->conversion_formula,
-                'conversion_dofus_sample' => $r->conversion_dofus_sample,
-                'conversion_krosmoz_sample' => $r->conversion_krosmoz_sample,
-                'forgemagie_max' => $r->forgemagie_max,
-                'base_price_per_unit' => $r->base_price_per_unit,
-                'rune_price_per_unit' => $r->rune_price_per_unit,
-                'value_available' => $r->value_available,
-                'item_type_ids' => $r->allowedItemTypes->pluck('id')->values()->all(),
-            ])->all();
-            $path = $dir.'/characteristic_object.php';
-            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe object : item, consumable, resource, panoply.\n * Régénéré par : php artisan scrapping:seeders:export --characteristics\n */\n\nreturn ".$this->varExportShort($data).";\n";
-            file_put_contents($path, $content);
-            $this->info('Exported '.count($data).' characteristic_object → '.$path);
-        }
-
-        if (Schema::hasTable('characteristic_spell')) {
-            $rows = CharacteristicSpell::with('characteristic')->orderBy('characteristic_id')->orderBy('entity')->get();
-            $data = $rows->map(fn ($r) => [
-                'characteristic_key' => $r->characteristic->key,
-                'entity' => $r->entity,
-                'db_column' => $r->db_column,
-                'min' => $r->min,
-                'max' => $r->max,
-                'formula' => $r->formula,
-                'formula_display' => $r->formula_display,
-                'default_value' => $r->default_value,
-                'conversion_formula' => $r->conversion_formula,
-                'conversion_dofus_sample' => $r->conversion_dofus_sample,
-                'conversion_krosmoz_sample' => $r->conversion_krosmoz_sample,
-                'value_available' => $r->value_available,
-            ])->all();
-            $path = $dir.'/characteristic_spell.php';
-            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe spell. Régénéré par : php artisan scrapping:seeders:export --characteristics\n */\n\nreturn ".$this->varExportShort($data).";\n";
-            file_put_contents($path, $content);
-            $this->info('Exported '.count($data).' characteristic_spell → '.$path);
-        }
+        $n = app(CharacteristicDefinitionsExportFromDatabaseService::class)->exportToDataDirectory();
+        $this->info("Exported {$n} définitions JSON → {$dir}/characteristic-definitions/");
     }
 
     private function exportConversionFormulasInGroups(string $dir): void

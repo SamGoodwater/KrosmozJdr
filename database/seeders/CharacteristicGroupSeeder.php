@@ -5,28 +5,18 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Characteristic;
-use Database\Seeders\Concerns\LoadsSeederDataFile;
+use App\Models\CharacteristicObject;
+use App\Services\Characteristics\CharacteristicDefinitionReader;
+use App\Support\Characteristics\CharacteristicDefinitionNaming;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 
 /**
  * Base pour les seeders des tables characteristic_creature, characteristic_object, characteristic_spell.
- * Charge le fichier data, résout characteristic_id par characteristic_key, puis updateOrCreate avec les attributs mappés.
+ * Source : fichiers `stem-groupe-definition.json` sous {@see CharacteristicDefinitionNaming::RELATIVE_ROOT}.
  */
 abstract class CharacteristicGroupSeeder extends Seeder
 {
-    use LoadsSeederDataFile;
-
-    abstract protected function dataPath(): string;
-
-    /**
-     * Fichier de normes séparé (optionnel). Retourne null si aucun fichier de normes.
-     */
-    protected function normsDataPath(): ?string
-    {
-        return null;
-    }
-
     /**
      * @return class-string<Model>
      */
@@ -41,29 +31,6 @@ abstract class CharacteristicGroupSeeder extends Seeder
     }
 
     /**
-     * Charge le fichier de normes et retourne un tableau characteristic_key → données.
-     * N'utilise pas loadDataFile car les normes sont indexées par clé (string), pas par index.
-     *
-     * @return array<string, array<string, mixed>>
-     */
-    protected function loadNormsData(): array
-    {
-        $path = $this->normsDataPath();
-        if ($path === null) {
-            return [];
-        }
-
-        $fullPath = base_path($path);
-        if (! is_file($fullPath)) {
-            return [];
-        }
-
-        $data = require $fullPath;
-
-        return is_array($data) ? $data : [];
-    }
-
-    /**
      * Attributs communs à creature, object et spell (limites, formules, conversion).
      *
      * @param  array<string, mixed>  $row
@@ -72,6 +39,7 @@ abstract class CharacteristicGroupSeeder extends Seeder
     protected function commonAttributes(array $row): array
     {
         return [
+            'dofusdb_characteristic_id' => $row['dofusdb_characteristic_id'] ?? null,
             'db_column' => $row['db_column'] ?? null,
             'min' => $row['min'] ?? null,
             'max' => $row['max'] ?? null,
@@ -86,7 +54,133 @@ abstract class CharacteristicGroupSeeder extends Seeder
             'norms_grid' => $row['norms_grid'] ?? null,
             'norms_conditions' => $row['norms_conditions'] ?? null,
             'norms_description' => $row['norms_description'] ?? null,
+            'norms_help_section_id' => $row['norms_help_section_id'] ?? null,
         ];
+    }
+
+    /**
+     * Sous-dossier de {@see CharacteristicDefinitionNaming::RELATIVE_ROOT} (creature|object|spell).
+     */
+    abstract protected function jsonGroupSubdirectory(): string;
+
+    /**
+     * Chemins absolus des fichiers `*-definition.json` pour ce groupe (triés).
+     *
+     * @return list<string>
+     */
+    protected function jsonDefinitionPaths(): array
+    {
+        $dir = base_path(CharacteristicDefinitionNaming::RELATIVE_ROOT.'/'.$this->jsonGroupSubdirectory());
+        if (! is_dir($dir)) {
+            return [];
+        }
+        $paths = glob($dir.DIRECTORY_SEPARATOR.'*-definition.json') ?: [];
+        $out = [];
+        foreach ($paths as $path) {
+            if (is_file($path)) {
+                $out[] = $path;
+            }
+        }
+        sort($out);
+
+        return $out;
+    }
+
+    /**
+     * Ids des caractéristiques indexées par clé métier (une requête).
+     *
+     * @return array<string, int>
+     */
+    protected function characteristicIdsByKey(): array
+    {
+        /** @var array<string, int> */
+        return Characteristic::query()->pluck('id', 'key')->all();
+    }
+
+    /**
+     * Normalise les ids `item_types` pour la table pivot (entiers strictement positifs, uniques).
+     *
+     * @param  array<mixed>  $raw
+     * @return list<int>
+     */
+    protected function normalizeItemTypeIdsForSync(array $raw): array
+    {
+        $ids = [];
+        foreach ($raw as $id) {
+            if (is_int($id) && $id > 0) {
+                $ids[] = $id;
+            } elseif (is_string($id) && $id !== '' && ctype_digit($id)) {
+                $v = (int) $id;
+                if ($v > 0) {
+                    $ids[] = $v;
+                }
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    /**
+     * Seed depuis les fichiers `stem-groupe-definition.json`.
+     */
+    protected function seedPivotsFromJsonDefinitions(): void
+    {
+        $paths = $this->jsonDefinitionPaths();
+        $modelClass = $this->modelClass();
+        $idsByKey = $this->characteristicIdsByKey();
+        $n = 0;
+        foreach ($paths as $path) {
+            try {
+                $def = CharacteristicDefinitionReader::load($path);
+            } catch (\Throwable) {
+                continue;
+            }
+            $key = $def['characteristic']['key'] ?? '';
+            if (! is_string($key) || $key === '') {
+                continue;
+            }
+            $characteristicId = $idsByKey[$key] ?? null;
+            if ($characteristicId === null) {
+                continue;
+            }
+            foreach ($def['entities'] as $entity => $payload) {
+                if (! is_string($entity) || $entity === '') {
+                    continue;
+                }
+                if (! is_array($payload)) {
+                    continue;
+                }
+                $row = array_merge($payload, [
+                    'characteristic_key' => $key,
+                    'entity' => $entity,
+                ]);
+                $model = $modelClass::updateOrCreate(
+                    [
+                        'characteristic_id' => $characteristicId,
+                        'entity' => $entity,
+                    ],
+                    $this->mapRowToAttributes($row)
+                );
+                if ($model instanceof CharacteristicObject && isset($row['item_type_ids']) && is_array($row['item_type_ids'])) {
+                    $model->allowedItemTypes()->sync($this->normalizeItemTypeIdsForSync($row['item_type_ids']));
+                }
+                $n++;
+            }
+        }
+        if ($this->command) {
+            $this->command->info(class_basename(static::class).' : '.$n.' ligne(s) pivot (JSON).');
+        }
+    }
+
+    public function run(): void
+    {
+        if ($this->jsonDefinitionPaths() === []) {
+            throw new \RuntimeException(
+                'Aucune définition JSON pour '.static::class.'. Attendu : '
+                .CharacteristicDefinitionNaming::RELATIVE_ROOT.'/'.$this->jsonGroupSubdirectory().'/*-definition.json'
+            );
+        }
+        $this->seedPivotsFromJsonDefinitions();
     }
 
     /**
@@ -96,55 +190,4 @@ abstract class CharacteristicGroupSeeder extends Seeder
      * @return array<string, mixed>
      */
     abstract protected function mapRowToAttributes(array $row): array;
-
-    public function run(): void
-    {
-        $rows = $this->loadDataFile($this->dataPath());
-        $normsData = $this->loadNormsData();
-
-        // Dédoublonnage par (characteristic_key, entity) pour éviter les violations de contrainte unique.
-        $byKeyEntity = [];
-        foreach ($rows as $row) {
-            $key = $row['characteristic_key'] ?? '';
-            $entity = $row['entity'] ?? $this->defaultEntity();
-            if ($key !== '') {
-                $byKeyEntity[$key."\0".$entity] = $row;
-            }
-        }
-        $rows = array_values($byKeyEntity);
-
-        $normsApplied = 0;
-        $modelClass = $this->modelClass();
-        foreach ($rows as $row) {
-            $key = $row['characteristic_key'] ?? '';
-
-            // Fusionner les normes depuis le fichier dédié si disponible.
-            if (isset($normsData[$key])) {
-                $row['norms_grid'] = $normsData[$key]['norms_grid'] ?? null;
-                $row['norms_conditions'] = $normsData[$key]['norms_conditions'] ?? null;
-                $row['norms_description'] = $normsData[$key]['norms_description'] ?? null;
-                $normsApplied++;
-            }
-
-            $char = Characteristic::where('key', $key)->first();
-            if ($char === null) {
-                continue;
-            }
-            $entity = $row['entity'] ?? $this->defaultEntity();
-            $modelClass::updateOrCreate(
-                [
-                    'characteristic_id' => $char->id,
-                    'entity' => $entity,
-                ],
-                $this->mapRowToAttributes($row)
-            );
-        }
-        if ($this->command) {
-            $info = class_basename(static::class).' : '.count($rows).' ligne(s)';
-            if ($normsApplied > 0) {
-                $info .= ", {$normsApplied} avec normes";
-            }
-            $this->command->info($info.'.');
-        }
-    }
 }
