@@ -23,7 +23,7 @@
                 "subtitle": "Expertise — palier 2 : maîtrise maximale pour cette compétence (2.2.2)."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 10,

@@ -131,7 +131,7 @@ Example: `action_points_creature`, `fixed_damage_earth_object`, `range_spell`.
 ## 10. Where this applies
 
 - **Database** : `characteristics.key`, `characteristic_creature.db_column`, `characteristic_object.db_column`, `characteristic_spell.db_column`
-- **Seeders** : `database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`, `characteristic_icons_colors.php`
+- **Seeders** : définitions JSON `database/seeders/data/characteristic-definitions/{creature,object,spell}/*-definition.json` (voir `database/seeders/data/README.md`)
 - **Config** : `config/effect_sub_effects.php` (keys and labels used for machine identifiers), scrapping mapping configs, DofusDB → Krosmoz mapping JSON
 - **Migrations** : Column names that store these concepts (if any new columns are added)
 - **Services** : Method names, variable names, and mapping keys that refer to characteristics (e.g. `DofusDbEffectMapping::ELEMENT_ID_TO_KEY`, formatter context)

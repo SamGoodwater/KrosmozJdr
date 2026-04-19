@@ -41,7 +41,7 @@
                 "subtitle": "Agressif — attaque ou confrontation probable."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 3,

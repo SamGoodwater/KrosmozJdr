@@ -10,7 +10,7 @@
         "icon_false": null,
         "color": "slate",
         "value_overrides": null,
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "string",
         "sort_order": 20,
@@ -39,7 +39,7 @@
             "base_price_per_unit": null,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_ids": []
+            "item_type_ids": null
         }
     },
     "relations": null

@@ -10,7 +10,7 @@
         "icon_false": null,
         "color": "orange",
         "value_overrides": null,
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 25,
@@ -150,7 +150,7 @@
             "base_price_per_unit": 500,
             "rune_price_per_unit": 1000,
             "value_available": null,
-            "item_type_ids": []
+            "item_type_ids": null
         }
     },
     "relations": null

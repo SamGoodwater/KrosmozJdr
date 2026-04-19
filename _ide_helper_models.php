@@ -27,6 +27,7 @@ namespace App\Models{
  * @property string|null $icon_false
  * @property string|null $color
  * @property array|null $value_overrides
+ * @property bool $hide_when_empty
  * @property string|null $unit
  * @property string $type
  * @property int $sort_order
@@ -66,6 +67,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereValueOverrides($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHideWhenEmpty($value)
  */
 	class Characteristic extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -148,7 +150,6 @@ namespace App\Models{
  * @property string|null $conversion_function Identifiant d'une fonction de conversion enregistrée
  * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
  * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
- * @property bool $forgemagie_allowed
  * @property int $forgemagie_max
  * @property float|null $base_price_per_unit
  * @property float|null $rune_price_per_unit

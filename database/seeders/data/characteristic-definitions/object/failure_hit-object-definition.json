@@ -35,7 +35,7 @@
                 "subtitle": "Échec critique sur un 1 à 4."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 27,
@@ -175,7 +175,7 @@
             "base_price_per_unit": 1200,
             "rune_price_per_unit": 2400,
             "value_available": null,
-            "item_type_ids": []
+            "item_type_ids": null
         }
     },
     "relations": null

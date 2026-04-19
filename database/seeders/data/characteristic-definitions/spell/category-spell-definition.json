@@ -31,7 +31,7 @@
                 "subtitle": "Sort consommable — sort issu d'un objet consommable à usage limité."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 70,

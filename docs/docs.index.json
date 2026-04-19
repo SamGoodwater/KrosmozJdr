@@ -575,6 +575,11 @@
     "description": "Ce document vérifie la cohérence entre :"
   },
   {
+    "path": "400- Jeu/410- Ressources/CARACTERISTIQUES_CREATION_REFERENCE.md",
+    "title": "Création d’une caractéristique — référence et cas de figure",
+    "description": "Ce document complète le fichier exemple [`caracterictis-global.json`](./caracterictis-global.json) (schéma `_schema_version` **2**). Il décrit les champs, le vocabulaire produit, et les combinaisons usuelles à la création ou à l’import d’une caractéristique."
+  },
+  {
     "path": "400- Jeu/410- Ressources/COHERENCE_FICHE_PERSO_VS_PROJET.md",
     "title": "Cohérence fiche personnage 0.1.3.8 vs projet Krosmoz-JDR",
     "description": "Analyse de la cohérence entre la **fiche personnage** (fiche_perso 0.1.3.8.pdf/pptx) et les caractéristiques définies dans le projet (`characteristic_creature`, `characteristics`, etc.)."
@@ -588,11 +593,6 @@
     "path": "400- Jeu/410- Ressources/PROPOSITIONS_FORMULES_ET_PROPRIETES.md",
     "title": "Propositions de modifications — Formules et propriétés",
     "description": "Ce document propose des modifications pour aligner les seeders et les caractéristiques sur les règles du jeu (docs 400) et les références PDF : **Equipements et forgemagie.pdf** et **CaractéristiquesAvecLien avec Dofus.pdf**."
-  },
-  {
-    "path": "400- Jeu/410- Ressources/CARACTERISTIQUES_CREATION_REFERENCE.md",
-    "title": "Création d’une caractéristique — référence et cas de figure",
-    "description": "Référence des champs (entity, dofusdb_characteristic_id, db_column, conversion_sample_rows, forgemagie), schéma JSON v2 (general, display, value_and_norms, conversion, mapping), règles de rédaction joueur, et checklist des cas à la création ou à l’import."
   },
   {
     "path": "400- Jeu/420- Règles/1-Introduction/1.1-presentation-du-jeu/1.1.1-concept-general.md",
@@ -1297,7 +1297,7 @@
   {
     "path": "50-Fonctionnalités/Characteristics-DB/SEEDERS_DONNEES.md",
     "title": "Données des seeders de caractéristiques",
-    "description": "Référentiel JSON des caractéristiques sous `database/seeders/data/characteristic-definitions/` (fichiers `*-definition.json`). Régénération depuis la BDD : `php artisan scrapping:seeders:export --characteristics` (alias `db:export-seeder-data`). Voir [ARCHITECTURE_SOUS_SERVICES.md](./ARCHITECTURE_SOUS_SERVICES.md) § 6."
+    "description": "La source versionnée est le répertoire **`database/seeders/data/characteristic-definitions/{creature,object,spell}/`** : un fichier JSON par caractéristique (`{stem}-{groupe}-definition.json`), avec un bloc `characteristic` (table `characteristics`) et un objet `entities` (lignes pivot par entité)."
   },
   {
     "path": "50-Fonctionnalités/Characteristics-DB/SOURCE_SAMPLES_KROSMOZ.md",

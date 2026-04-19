@@ -23,7 +23,7 @@
                 "subtitle": "Physique — le sort se sert de la force physique du lanceur ou de la lanceuse."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "bool",
         "sort_order": 70,

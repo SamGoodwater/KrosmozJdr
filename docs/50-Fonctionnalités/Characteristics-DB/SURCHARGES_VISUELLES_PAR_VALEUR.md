@@ -81,7 +81,7 @@ Dans la page admin des caractéristiques (`Admin/characteristics/Index.vue`), un
 
 ## Données pré-remplies (seeder)
 
-Les valeurs par défaut sont définies dans `database/seeders/data/characteristic_icons_colors.php` (clé `value_overrides`, fusionnée avec les paliers maîtrise créature via `array_merge`) et appliquées par `CharacteristicSeeder` lorsque la ligne dans `characteristics.php` ne définit pas déjà un `value_overrides` explicite.
+Les surcharges **`value_overrides`** (et icônes / couleurs associées) sont portées par le bloc **`characteristic`** de chaque fichier `*-definition.json` sous `database/seeders/data/characteristic-definitions/`. `CharacteristicSeeder` les applique telles quelles ; il n’y a plus de fichier PHP de fusion séparé.
 
 ### Sorts (`group` spell)
 

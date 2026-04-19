@@ -174,7 +174,6 @@ erDiagram
     norms_conditions : longtext
     norms_description : text
     norms_help_section_id : bigint(20) unsigned
-    forgemagie_allowed : tinyint(1)
     forgemagie_max : tinyint(3) unsigned
     base_price_per_unit : decimal(12,2)
     rune_price_per_unit : decimal(12,2)
@@ -231,6 +230,7 @@ erDiagram
     linked_to_characteristic_id : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp
+    hide_when_empty : tinyint(1)
   }
   CONSUMABLE_CAMPAIGN {
     consumable_id : bigint(20) unsigned

@@ -59,7 +59,7 @@
                 "subtitle": "Tank — sort orienté encaissement, aggro ou absorption de dégâts."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "string",
         "sort_order": 71,

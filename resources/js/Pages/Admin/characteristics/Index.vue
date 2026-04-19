@@ -451,7 +451,15 @@ const seederImportLoading = ref(false);
 const seederMessage = ref({ type: '', text: '' });
 
 async function runExportSeederData() {
-    if (!confirm('Mettre à jour les fichiers seeders à partir de la BDD actuelle ? (scrapping:seeders:export)\nDésactivé en production.')) return;
+    if (
+        !confirm(
+            'Mettre à jour les fichiers seeders à partir de la BDD actuelle ?\n\n' +
+                '• Caractéristiques → database/seeders/data/characteristic-definitions/**/*.json\n' +
+                '• Autres données (types effet sorts, mappings scrapping, types item, …)\n\n' +
+                'Commande : scrapping:seeders:export (désactivé en production).'
+        )
+    )
+        return;
     seederMessage.value = { type: '', text: '' };
     seederExportLoading.value = true;
     try {

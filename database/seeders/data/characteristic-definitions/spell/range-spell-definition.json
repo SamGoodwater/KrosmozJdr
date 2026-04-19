@@ -21,7 +21,7 @@
                 "subtitle": "Corps à corps — portée de 1 case de distance."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 72,

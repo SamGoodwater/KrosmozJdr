@@ -37,6 +37,40 @@ final class CharacteristicDefinitionReaderTest extends TestCaseNoDatabase
         CharacteristicDefinitionReader::load(base_path('composer.json'));
     }
 
+    /**
+     * Cohérence globale des 268 fichiers (nom de fichier = stem-groupe, groupe SQL, entités ou lien maître).
+     */
+    public function test_all_definitions_match_naming_and_have_entities_or_master_link(): void
+    {
+        $paths = CharacteristicDefinitionReader::allDefinitionAbsolutePaths();
+        self::assertCount(268, $paths, 'Nombre attendu de définitions JSON (import historique PHP).');
+
+        foreach ($paths as $path) {
+            $def = CharacteristicDefinitionReader::load($path);
+            $key = $def['characteristic']['key'] ?? '';
+            self::assertIsString($key);
+            self::assertNotSame('', $key);
+
+            $parsed = CharacteristicDefinitionNaming::parseCharacteristicKey($key);
+            self::assertNotNull($parsed, $key);
+            self::assertSame(
+                CharacteristicDefinitionNaming::definitionFilename($parsed['stem'], $parsed['group']),
+                basename($path),
+                $path
+            );
+            self::assertSame($parsed['group'], $def['characteristic']['group'] ?? null, $key);
+
+            $entities = $def['entities'] ?? null;
+            self::assertIsArray($entities, $key);
+            if ($entities === []) {
+                self::assertNotEmpty(
+                    $def['characteristic']['linked_to_key'] ?? null,
+                    'entities vide uniquement si linked_to_key (ex. level_spell → level_creature) : '.$key
+                );
+            }
+        }
+    }
+
     public function test_strip_underscore_keys_removes_meta_keys(): void
     {
         $data = [

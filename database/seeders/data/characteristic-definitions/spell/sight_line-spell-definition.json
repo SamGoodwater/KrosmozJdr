@@ -21,7 +21,7 @@
                 "subtitle": "Aucune ligne de vue requise — le sort traverse les obstacles."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "bool",
         "sort_order": 70,

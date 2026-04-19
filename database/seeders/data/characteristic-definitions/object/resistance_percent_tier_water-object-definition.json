@@ -27,7 +27,7 @@
                 "subtitle": "Invulnérabilité"
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 26,
@@ -174,7 +174,7 @@
             "base_price_per_unit": 2500,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_ids": []
+            "item_type_ids": null
         }
     },
     "relations": null

@@ -22,7 +22,7 @@
                 "subtitle": "La portée est fixe et ne peut pas être modifiée."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "bool",
         "sort_order": 70,

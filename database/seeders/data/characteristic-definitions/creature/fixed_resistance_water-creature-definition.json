@@ -10,7 +10,7 @@
         "icon_false": null,
         "color": "violet",
         "value_overrides": null,
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 7,

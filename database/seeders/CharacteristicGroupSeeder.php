@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Characteristic;
 use App\Models\CharacteristicObject;
+use App\Models\Type\ItemType;
 use App\Services\Characteristics\CharacteristicDefinitionReader;
 use App\Support\Characteristics\CharacteristicDefinitionNaming;
 use Illuminate\Database\Eloquent\Model;
@@ -121,6 +122,43 @@ abstract class CharacteristicGroupSeeder extends Seeder
     }
 
     /**
+     * Résout les ids pivot `item_types.id` pour une ligne entité objet : préfère `item_type_dofus_ids`
+     * (dofusdb_type_id, stable avec ItemTypeSeeder) puis repli sur `item_type_ids` (ids BDD).
+     *
+     * @param  array<string, mixed>  $row
+     * @return list<int>
+     */
+    protected function resolveCharacteristicObjectItemTypeIdsForSync(array $row): array
+    {
+        if (isset($row['item_type_dofus_ids']) && is_array($row['item_type_dofus_ids'])) {
+            $dofus = [];
+            foreach ($row['item_type_dofus_ids'] as $id) {
+                if (is_int($id) && $id > 0) {
+                    $dofus[] = $id;
+                } elseif (is_string($id) && $id !== '' && ctype_digit($id)) {
+                    $v = (int) $id;
+                    if ($v > 0) {
+                        $dofus[] = $v;
+                    }
+                }
+            }
+            $dofus = array_values(array_unique($dofus));
+            if ($dofus !== []) {
+                /** @var list<int> */
+                return ItemType::query()
+                    ->whereIn('dofusdb_type_id', $dofus)
+                    ->pluck('id')
+                    ->all();
+            }
+        }
+        if (isset($row['item_type_ids']) && is_array($row['item_type_ids'])) {
+            return $this->normalizeItemTypeIdsForSync($row['item_type_ids']);
+        }
+
+        return [];
+    }
+
+    /**
      * Seed depuis les fichiers `stem-groupe-definition.json`.
      */
     protected function seedPivotsFromJsonDefinitions(): void
@@ -161,8 +199,11 @@ abstract class CharacteristicGroupSeeder extends Seeder
                     ],
                     $this->mapRowToAttributes($row)
                 );
-                if ($model instanceof CharacteristicObject && isset($row['item_type_ids']) && is_array($row['item_type_ids'])) {
-                    $model->allowedItemTypes()->sync($this->normalizeItemTypeIdsForSync($row['item_type_ids']));
+                if ($model instanceof CharacteristicObject) {
+                    $itemTypeIds = $this->resolveCharacteristicObjectItemTypeIdsForSync($row);
+                    if ($itemTypeIds !== []) {
+                        $model->allowedItemTypes()->sync($itemTypeIds);
+                    }
                 }
                 $n++;
             }

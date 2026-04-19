@@ -21,7 +21,7 @@
                 "subtitle": "Corps à corps — portée minimale de 1 case."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 70,

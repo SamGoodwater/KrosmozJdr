@@ -142,7 +142,7 @@ En complément, une caractéristique peut être **autorisée ou non** à la forg
 
 Une caractéristique du groupe **object** peut être **réservée à certains types d’équipement** (slots du PDF *Equipements et forgemagie*), via la table pivot `characteristic_object_item_type` qui lie `characteristic_object` aux **id** (`item_types.id`) de la table **item_types**.
 
-Le périmètre par caractéristique (quels slots peuvent porter le bonus) est décrit dans **`database/seeders/data/characteristic_object_equipment_slot_dofus_type_ids.php`** : tableau `characteristic_key` → liste de **dofusdb_type_id** (référence stable DofusDB), résolu en ids BDD au seed par `ObjectCharacteristicSeeder`. Les caractéristiques absentes de ce fichier ou sans ligne pivot restent valables sur **tous** les types d’objets.
+Le périmètre par caractéristique (quels types d’objets peuvent porter le bonus) est porté par le champ **`item_type_ids`** (liste d’**id** `item_types.id`) dans les entités des définitions JSON groupe **object**, puis synchronisé vers la pivot au seed par `ObjectCharacteristicSeeder`. Sans entrée pivot (ou sans liste restrictive dans la définition), la caractéristique reste valable sur **tous** les types d’objets.
 
 | Propriété | Rôle | Type / remarque |
 |-----------|------|------------------|

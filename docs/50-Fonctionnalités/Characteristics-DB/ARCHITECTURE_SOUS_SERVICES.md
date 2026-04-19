@@ -128,19 +128,16 @@ Les **propriétés de conversion** (champ `conversion_formula` au format fixe / 
 
 ## 6. Export des données vers les seeders
 
-Pour que l’initialisation du projet dispose déjà de caractéristiques bien définies, la base de données peut être **exportée** vers des fichiers PHP utilisables par les seeders.
+Pour que l’initialisation du projet dispose déjà de caractéristiques bien définies, la base de données peut être **exportée** vers des **fichiers JSON** utilisables par les seeders.
 
 **Commande :**  
 `php artisan scrapping:seeders:export` (alias legacy : `db:export-seeder-data`)  
 Options : `--characteristics` (exporte uniquement les caractéristiques), `--formulas` (formules de conversion dans les tables de groupe), etc.
 
 **Fichiers générés (pour les caractéristiques) :**  
-`database/seeders/data/characteristics.php`,  
-`characteristic_creature.php`,  
-`characteristic_object.php`,  
-`characteristic_spell.php`.
+`database/seeders/data/characteristic-definitions/{creature,object,spell}/*-definition.json`
 
-Voir [SEEDERS_DONNEES.md](./SEEDERS_DONNEES.md) pour le contenu de ces fichiers et la commande d’export.
+Voir [SEEDERS_DONNEES.md](./SEEDERS_DONNEES.md) pour le contenu et la commande d’export.
 
 ---
 
@@ -148,7 +145,7 @@ Voir [SEEDERS_DONNEES.md](./SEEDERS_DONNEES.md) pour le contenu de ces fichiers 
 
 **Objectif métier :** Pour les caractéristiques du groupe **object**, indiquer **quels types d’items** (équipements) peuvent porter cette caractéristique (ex. « PA bonus » uniquement sur armes et amulettes).
 
-**Solution retenue (source unique de vérité) :** La table pivot **characteristic_object_item_type** associe chaque ligne `characteristic_object` aux **id** de la table **item_types**. Si une définition n’a aucune entrée dans cette pivot, la caractéristique s’applique à tous les types ; sinon elle ne s’applique qu’aux types listés. Les données de périmètre (PDF équipements) sont amorcées depuis **`characteristic_object_equipment_slot_dofus_type_ids.php`** au seed. Le Getter expose **allowed_item_type_restricted** et **allowed_item_type_ids** dans la définition (voir [TYPES_VALEURS_ET_CONTENU_JSON.md](./TYPES_VALEURS_ET_CONTENU_JSON.md) § 5.3).
+**Solution retenue (source unique de vérité) :** La table pivot **characteristic_object_item_type** associe chaque ligne `characteristic_object` aux **id** de la table **item_types**. Si une définition n’a aucune entrée dans cette pivot, la caractéristique s’applique à tous les types ; sinon elle ne s’applique qu’aux types listés. Les **ids** autorisés sont portés par le champ **`item_type_ids`** dans les entités des définitions JSON (groupe object), puis synchronisés au seed. Le Getter expose **allowed_item_type_restricted** et **allowed_item_type_ids** dans la définition (voir [TYPES_VALEURS_ET_CONTENU_JSON.md](./TYPES_VALEURS_ET_CONTENU_JSON.md) § 5.3).
 
 ---
 

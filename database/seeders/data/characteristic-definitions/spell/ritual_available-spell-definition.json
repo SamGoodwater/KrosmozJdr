@@ -22,7 +22,7 @@
                 "subtitle": "Ne peut pas être lancé en mode rituel."
             }
         ],
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "bool",
         "sort_order": 70,
