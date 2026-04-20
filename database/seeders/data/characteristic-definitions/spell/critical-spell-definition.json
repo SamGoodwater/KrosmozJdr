@@ -5,7 +5,7 @@
         "name": "Critiques",
         "short_name": "Crit.",
         "helper": "Critiques appliqués par les sous-effets de sort.",
-        "descriptions": "Bonus critiques (2.2.2, 5.3.1). Seuil = 20 − bonus. 0 avant niv 7, +1 niv 7–13, +2 niv 14+. Critique sort : ×1.5 dégâts + 1d6.",
+        "descriptions": "Le sort élargit ou resserre la zone de coup critique sur le dé : tu critiques plus souvent ou plus rarement selon le bonus affiché (2.2.2, 5.3.1).",
         "icon": "critical.webp",
         "icon_false": null,
         "color": "red",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 72,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "2",
             "formula": null,
-            "formula_display": "Bonus critiques (2.2.2, 5.3.1). Seuil critique = 20 − bonus (0 = seulement nat 20). Table par niveau : 0 avant niv 7, +1 de 7 à 13, +2 à partir de 14. Critique : ×1.5 dégâts sort + 1d6.",
+            "formula_display": "Effet sur les critiques : modifie le seuil ou la zone de critique selon les règles du jeu et ton niveau ; les dégâts critiques restent ceux décrits au combat (2.2.2, 5.3.1).",
             "default_value": "0",
             "conversion_formula": "{\"characteristic\":\"level\",\"1\":0,\"7\":1,\"14\":2}",
             "conversion_function": null,

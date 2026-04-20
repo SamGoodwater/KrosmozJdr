@@ -5,17 +5,18 @@
         "name": "Agilité",
         "short_name": "Agi",
         "helper": "Dextérité et esquive. Associée à l'élément Air.",
-        "descriptions": "Agilité (Air). Score 6–24. Liée à la Fuite et à l'esquive (2.2.1).",
+        "descriptions": "Agilité (élément Air). Elle représente la vivacité, la précision et l’esquive. En création, tu pars souvent vers 8 ; l’équipement et la forgemagie peuvent encore augmenter le score (2.2.1).",
         "icon": "air.webp",
         "icon_false": null,
-        "color": "neutral",
+        "color": "cyan",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 3,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "6",
             "max": "24",
             "formula": null,
-            "formula_display": "Score 6\\u201324 (cr\\u00e9ation 8, \\u00e9quip. +6, forgemagie +2). Mod = floor((score\\u221210)/2), plafonn\\u00e9 par niveau. Li\\u00e9e \\u00e0 l'Air, Fuite, Esquive (2.2.1).",
+            "formula_display": "Score habituel entre 6 et 24. Le modificateur utilisé dans les jets dépend du score et du niveau ; cette caractéristique sert surtout à la fuite et à l’esquive (2.2.1). Liée à l’air.",
             "default_value": "8",
             "conversion_formula": "[d]",
             "conversion_function": null,

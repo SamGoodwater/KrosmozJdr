@@ -5,7 +5,7 @@
         "name": "Catégorie",
         "short_name": "Cat.",
         "helper": "Catégorie du sort (offensif, soin, etc.).",
-        "descriptions": "Catégorie du sort (3.3.1) : classe (0), créature (1), apprenable (2, apprentissage 2j × niveau, ÷4 avec maître), consommable (3).",
+        "descriptions": "Catégorie ou famille du sort (affichage et règles associées).",
         "icon": "heal.webp",
         "icon_false": null,
         "color": "zinc",
@@ -36,7 +36,8 @@
         "type": "int",
         "sort_order": 70,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

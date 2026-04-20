@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 70,
         "group": "spell",
-        "linked_to_key": "level_creature"
+        "linked_to_key": "level_creature",
+        "status": "a_valider"
     },
     "entities": [],
     "relations": null

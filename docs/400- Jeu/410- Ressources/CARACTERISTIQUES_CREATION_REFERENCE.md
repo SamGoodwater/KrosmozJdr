@@ -19,7 +19,7 @@ Le JSON d’exemple **regroupe** ces deux niveaux en blocs logiques (`general`, 
 
 | Bloc | Contenu |
 |------|---------|
-| **general** | `key`, `name`, `short_name`, `helper`, `descriptions`, `group`, `type`, `unit`, `sort_order`, `linked_to_characteristic_id` |
+| **general** | `key`, `name`, `short_name`, `helper`, `descriptions`, `group`, `type`, `status`, `unit`, `sort_order`, `linked_to_characteristic_id` |
 | **display** | `icon`, `value_overrides`, `hide_when_empty` (voir § 6) |
 | **value_and_norms** | `min`, `max`, `formula`, `formula_display`, `default_value`, `norms_*`, `value_available` (selon groupe) |
 | **conversion** | `conversion_formula`, `conversion_function`, `conversion_dofus_sample`, `conversion_krosmoz_sample`, `conversion_sample_rows` |
@@ -70,8 +70,12 @@ la **formule** (`conversion_formula` / `conversion_function`) reste la source de
 
 En schéma JSON simplifié :
 
-- **`forgemagie_max`** : entier ≥ 0. **`0` ou absence** ⇒ pas de forgemagie pour cette caractéristique.
+- **`max`** (pivot objet, avec `min`) : plafond du **bonus conféré par l’équipement seul**, **sans** compter la forgemagie. Ce n’est **pas** le plafond « total » jouable sur la ligne : voir ci‑dessous.
+- **`forgemagie_max`** : entier ≥ 0 — plafond du **bonus supplémentaire** autorisé **via la forgemagie** pour cette caractéristique. **`0` ou absence** ⇒ pas de forgemagie pour cette caractéristique.
+- **Plafond total** (lorsque la forgemagie s’applique) : **`max` + `forgemagie_max`**, dans le respect des règles publiques (notamment [2.2.2 — Caractéristiques secondaires](../420-%20Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.2-caracteristiques-secondaires.md) et [2.6.1 — Équipements de base](../420-%20Règles/2-Creer-un-personnage/2.6-s-equiper/2.6.1-equipements-de-base.md) pour les limites par emplacement).
 - Inutile de dupliquer un booléen `forgemagie_allowed` : il est **redondant** avec `forgemagie_max === 0`.
+
+Dans les fichiers `*-object-definition.json`, une clé **`_comment_limits`** (préfixe `_`, **ignorée au seed**, voir `CharacteristicDefinitionJson::stripUnderscoreKeys`) rappelle cette convention sur le bloc `entities`.
 
 *Note : la base peut encore porter les deux colonnes pour compatibilité ; à l’import on peut dériver `forgemagie_allowed` de `forgemagie_max > 0`.*
 
@@ -96,6 +100,15 @@ Les textes **techniques** (seeders internes, commentaires outil) peuvent garder 
 ---
 
 ## 7. Cas de figure à la création (checklist)
+
+### 7.0 Statut de validation interne
+
+- **`status`** : suivi éditorial interne des caractéristiques (sans impact direct gameplay).
+- Valeurs autorisées :
+  - `a_valider`
+  - `en_cours_de_validation`
+  - `validee`
+- Valeur par défaut recommandée : `a_valider`.
 
 ### 7.1 Caractéristique numérique avec colonne SQL (ex. créature)
 

@@ -73,6 +73,7 @@ final class CharacteristicShowPayloadBuilder
             'value_overrides' => $hasValueOverrides ? $effective->value_overrides : null,
             'hide_when_empty' => $hasHideWhenEmpty ? (bool) $effective->hide_when_empty : false,
             'type' => $effective->type,
+            'status' => Schema::hasColumn('characteristics', 'status') ? ($effective->status ?? Characteristic::STATUS_A_VALIDER) : Characteristic::STATUS_A_VALIDER,
             'unit' => $effective->unit,
             'sort_order' => $characteristic->sort_order,
             'entities' => $entities,

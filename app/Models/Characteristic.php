@@ -33,6 +33,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property bool $hide_when_empty
  * @property string|null $unit
  * @property string $type
+ * @property string $status
  * @property int $sort_order
  * @property string|null $group
  * @property int|null $linked_to_characteristic_id
@@ -77,6 +78,16 @@ class Characteristic extends Model implements HasMedia
     use HasMediaCustomNaming;
     use InteractsWithMedia;
 
+    public const STATUS_A_VALIDER = 'a_valider';
+    public const STATUS_EN_COURS_VALIDATION = 'en_cours_de_validation';
+    public const STATUS_VALIDEE = 'validee';
+
+    public const STATUSES = [
+        self::STATUS_A_VALIDER,
+        self::STATUS_EN_COURS_VALIDATION,
+        self::STATUS_VALIDEE,
+    ];
+
     /** Répertoire Media Library pour ce modèle. */
     public const MEDIA_PATH = 'images/entity/characteristics';
 
@@ -99,6 +110,7 @@ class Characteristic extends Model implements HasMedia
         'hide_when_empty',
         'unit',
         'type',
+        'status',
         'sort_order',
         'group',
         'linked_to_characteristic_id',

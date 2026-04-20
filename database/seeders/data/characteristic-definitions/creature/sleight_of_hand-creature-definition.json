@@ -4,7 +4,7 @@
         "key": "sleight_of_hand_creature",
         "name": "Escamotage",
         "short_name": "Esc.",
-        "helper": "Agilité. Total = mod. Agilité + bonus maîtrise × palier (0–2) + bonus équipement. Plafond bonus au jet : 24 (2.2.2).",
+        "helper": "Compétence d’Agilité : modificateur d’Agilité, bonus de maîtrise, équipement. Total au jet limité (2.2.2).",
         "descriptions": "Escamotage (créature). Agilité.",
         "icon": "skillAgility.webp",
         "icon_false": null,
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 11,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

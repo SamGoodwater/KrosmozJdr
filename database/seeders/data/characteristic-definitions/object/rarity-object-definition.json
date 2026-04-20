@@ -5,46 +5,40 @@
         "name": "Rareté",
         "short_name": "Rar.",
         "helper": "Commun, rare, mythique, épique ou légendaire.",
-        "descriptions": "Rareté 0–5 : commun, rare, mythique, épique, légendaire, relique. Dérivée du niveau (2.6.1.5).",
-        "icon": "critical.webp",
+        "descriptions": "Commun, peu commun, rare, très rare, légendaire, unique",
+        "icon": "rarity.webp",
         "icon_false": null,
-        "color": "zinc",
+        "color": "stone",
         "value_overrides": [
             {
                 "value": 0,
-                "icon": "critical.webp",
-                "color": "zinc",
+                "color": "neutral",
                 "subtitle": "Commun"
             },
             {
                 "value": 1,
-                "icon": "critical.webp",
-                "color": "green",
-                "subtitle": "Rare"
+                "color": "stone",
+                "subtitle": "Peu commun"
             },
             {
                 "value": 2,
-                "icon": "critical.webp",
-                "color": "sky",
-                "subtitle": "Mythique"
+                "color": "blue",
+                "subtitle": "Rare"
             },
             {
                 "value": 3,
-                "icon": "critical.webp",
-                "color": "purple",
-                "subtitle": "Épique"
+                "color": "sky",
+                "subtitle": "Très rare"
             },
             {
                 "value": 4,
-                "icon": "critical.webp",
-                "color": "amber",
+                "color": "violet",
                 "subtitle": "Légendaire"
             },
             {
                 "value": 5,
-                "icon": "critical.webp",
-                "color": "yellow",
-                "subtitle": "Relique"
+                "color": "indigo",
+                "subtitle": "Unique"
             }
         ],
         "hide_when_empty": false,
@@ -52,7 +46,8 @@
         "type": "int",
         "sort_order": 21,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -61,13 +56,50 @@
             "min": "0",
             "max": "5",
             "formula": null,
-            "formula_display": "Rareté 0–5 : commun, rare, mythique, épique, légendaire, relique. Dérivée du niveau (2.6.1.5).",
+            "formula_display": "Rareté 0–5 : commun, peu commun, rare, très rare, légendaire, unique",
             "default_value": "0",
-            "conversion_formula": "{\"0\":\"0\",\"1\":\"0\",\"3\":\"0\",\"8\":\"1\",\"23\":\"1\",\"characteristic\":\"level\"}",
+            "conversion_formula": "{\"0\":\"0\",\"2\":\"0\",\"7\":\"1\",\"15\":\"2\",\"20\":\"3\",\"characteristic\":\"level\"}",
             "conversion_function": null,
             "conversion_dofus_sample": null,
             "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
             "norms_grid": null,
             "norms_conditions": null,
             "norms_description": null,
@@ -76,7 +108,8 @@
             "base_price_per_unit": null,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

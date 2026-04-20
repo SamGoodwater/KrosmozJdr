@@ -4,18 +4,19 @@
         "key": "movement_points_object",
         "name": "Bonus de points de mouvement",
         "short_name": "PM",
-        "helper": "Équipement (bottes) : points de mouvement ajoutés. Max +5, forgemagie +1.",
-        "descriptions": "Bonus de PM conféré par l'équipement (bottes). Base créature 3, max total 6. 1 PM = 1 case = 1,5 m. Équip. +3, forgemagie +1 (2.2.2).",
+        "helper": "Équipement (bottes) : points de mouvement supplémentaires (2.2.2).",
+        "descriptions": "Bonus de PM conféré par l'équipement (bottes). Il augmente ta mobilité en combat selon les règles de déplacement (2.2.2).",
         "icon": "movementPoints.webp",
         "icon_false": null,
         "color": "green",
         "value_overrides": null,
-        "hide_when_empty": false,
+        "hide_when_empty": true,
         "unit": null,
         "type": "int",
         "sort_order": 22,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "3",
             "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus PM (bottes). Base créature 3, max total 6. 1 PM = 1 case = 1,5 m. Équip. +3, forgemagie +1 (2.2.2).",
+            "formula_display": "Bonus de PM sur bottes ; détail des totaux et du déplacement dans les règles (2.2.2).",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,
@@ -158,13 +159,14 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Bonus PM d'équipement. Très rare, +1 au mieux neutre.",
+            "norms_description": "Bonus de points de mouvement porté par l’équipement ; reste en pratique modeste (2.2.2).",
             "norms_help_section_id": null,
             "forgemagie_max": 1,
             "base_price_per_unit": 1000,
             "rune_price_per_unit": 2000,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

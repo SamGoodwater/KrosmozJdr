@@ -5,7 +5,7 @@
         "name": "Bonus maîtrise",
         "short_name": "Bonus maîtrise",
         "helper": "Bonus de maîtrise appliqué par les sous-effets de sort.",
-        "descriptions": "Bonus de maîtrise temporaire via sous-effet (2.2.2). Base : min(6, 1+floor(niveau/4)). S'ajoute aux jets d'attaque et DD de sauvegarde. Max 6.",
+        "descriptions": "Bonus de maîtrise accordé temporairement par un sort. Il s’ajoute comme le bonus de maîtrise habituel, sans dépasser la limite globale (2.2.2).",
         "icon": "masterBonus.webp",
         "icon_false": null,
         "color": "stone",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 72,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "6",
             "formula": null,
-            "formula_display": "Bonus de maîtrise temporaire via sous-effet de sort (2.2.2). Base créature : min(6, 1+floor(niveau/4)). S'ajoute aux jets d'attaque et DD de sauvegarde. Max 6.",
+            "formula_display": "Effet de sort : reprend la valeur Dofus telle quelle pour le bonus de maîtrise, dans la limite du jeu (2.2.2).",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

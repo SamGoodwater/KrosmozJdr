@@ -5,7 +5,7 @@
         "name": "Force",
         "short_name": "For",
         "helper": "Puissance physique et dégâts de corps à corps. Associée à la Terre.",
-        "descriptions": "Force (Terre). Score 6–24 (création 8, équip. +6, forgemagie +2). Mod = floor((score−10)/2), plafonné par niveau (2.2.1).",
+        "descriptions": "Force (élément Terre). Elle mesure la puissance physique et les dégâts au corps à corps. En création, tu pars souvent vers 8 ; l’équipement et la forgemagie peuvent encore augmenter le score (2.2.1).",
         "icon": "earth.webp",
         "icon_false": null,
         "color": "brown",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 3,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "6",
             "max": "24",
             "formula": null,
-            "formula_display": "Score 6\\u201324 (cr\\u00e9ation 8, \\u00e9quip. +6, forgemagie +2). Mod = floor((score\\u221210)/2). Li\\u00e9e \\u00e0 la Terre, d\\u00e9g\\u00e2ts physiques (2.2.1).",
+            "formula_display": "Score habituel entre 6 et 24. Le modificateur utilisé dans les jets dépend du score et du niveau (2.2.1). Liée à la Terre.",
             "default_value": "8",
             "conversion_formula": "[d]",
             "conversion_function": null,

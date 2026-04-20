@@ -11,6 +11,20 @@ La source versionnée est **`characteristic-definitions/{creature,object,spell}/
 
 Les anciens fichiers PHP (`characteristics.php`, pivots, normes, `characteristic_icons_colors.php`, etc.) ont été retirés au profit de ce référentiel JSON.
 
+### Couleurs « élément / carac » (cohérence des trois groupes)
+
+Pour les notions liées aux éléments Dofus et aux caracs associées, utiliser les **mêmes** noms de palette Tailwind (sans nuance) dans `characteristic.color` et, si présent, dans `value_overrides[].color` :
+
+| Axe | `color` |
+|-----|---------|
+| Air + Agilité | `cyan` |
+| Eau + Chance | `blue` |
+| Feu + Intelligence | `orange` |
+| Terre + Force | `brown` |
+| Neutre | `slate` |
+| Vitalité | `emerald` |
+| Sagesse | `indigo` |
+
 ## Autres fichiers
 
 Les autres données (types, mappings scrapping, etc.) restent sous forme de fichiers PHP ou JSON selon le seeder concerné ; voir les seeders dans `database/seeders/`.

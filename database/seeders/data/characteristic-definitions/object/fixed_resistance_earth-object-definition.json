@@ -5,26 +5,27 @@
         "name": "Bonus de résistance fixe (Terre)",
         "short_name": "Rés. T",
         "helper": "Équipement (boucliers) : réduction des dégâts fixes Terre.",
-        "descriptions": "Bonus de résistance fixe Terre conféré par l'équipement (boucliers). Réduit les dégâts Terre fixes. Équip. max +7, forgemagie +3 (2.2.2).",
+        "descriptions": "Bonus de résistance fixe Terre conféré par l'équipement (boucliers). Réduit les dégâts fixes de l’élément concerné ; plafonds selon équipement et forgemagie (2.2.2).",
         "icon": "resEarth.webp",
         "icon_false": null,
         "color": "brown",
         "value_overrides": null,
-        "hide_when_empty": false,
+        "hide_when_empty": true,
         "unit": null,
         "type": "int",
         "sort_order": 26,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
             "dofusdb_characteristic_id": 54,
             "db_column": null,
             "min": "0",
-            "max": "7",
+            "max": "10",
             "formula": "{\"1\":\"1\",\"3\":\"2\",\"7\":\"3\",\"9\":\"4\",\"13\":\"5\",\"15\":\"6\",\"19\":\"7\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus résistance fixe Terre (boucliers). Réduit dégâts Terre fixes. Équip. max +7, forgemagie +3 (2.2.2).",
+            "formula_display": "Bonus résistance fixe Terre (boucliers). Réduction des dégâts fixes ; plafonds selon les règles (2.2.2).",
             "default_value": "0",
             "conversion_formula": "floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",
             "conversion_function": null,
@@ -157,7 +158,8 @@
             "base_price_per_unit": 600,
             "rune_price_per_unit": 1200,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

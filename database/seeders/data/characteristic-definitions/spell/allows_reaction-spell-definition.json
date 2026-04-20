@@ -24,7 +24,8 @@
         "type": "bool",
         "sort_order": 71,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

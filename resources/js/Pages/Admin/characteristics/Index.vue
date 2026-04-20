@@ -59,6 +59,18 @@ const props = defineProps({
     itemTypes: { type: Array, default: () => [] },
 });
 
+const characteristicStatusOptions = [
+    { value: 'a_valider', label: 'À valider' },
+    { value: 'en_cours_de_validation', label: 'En cours de validation' },
+    { value: 'validee', label: 'Validée' },
+];
+
+const characteristicStatusDotMap = {
+    a_valider: { label: 'À valider', class: 'bg-slate-500' },
+    en_cours_de_validation: { label: 'En cours de validation', class: 'bg-emerald-700' },
+    validee: { label: 'Validée', class: 'bg-green-700' },
+};
+
 /** Options du select "Fonction de conversion" : depuis selected (édition) ou props (création). */
 const conversionFunctionSelectOptions = computed(() =>
     (props.selected?.conversionFunctionOptions ?? props.conversionFunctionOptions ?? []).map((opt) => ({
@@ -287,6 +299,7 @@ function buildFormData(selected, entitiesByGroup = null) {
             icon: '',
             color: '',
             type: 'int',
+            status: 'a_valider',
             unit: '',
             sort_order: 0,
             hide_when_empty: false,
@@ -315,6 +328,7 @@ function buildFormData(selected, entitiesByGroup = null) {
         icon: selected.icon ?? '',
         color: selected.color ?? '',
         type: selected.type ?? 'int',
+        status: selected.status ?? 'a_valider',
         unit: selected.unit ?? '',
         sort_order: selected.sort_order ?? 0,
         hide_when_empty: selected.hide_when_empty ?? false,
@@ -360,6 +374,7 @@ watch(
         form.icon = data.icon;
         form.color = data.color;
         form.type = data.type;
+        form.status = data.status;
         form.unit = data.unit;
         form.sort_order = data.sort_order;
         form.hide_when_empty = data.hide_when_empty;
@@ -427,6 +442,7 @@ async function removeEntityOverride(entityKey) {
         icon: form.icon,
         color: form.color,
         type: form.type,
+        status: form.status,
         unit: form.unit,
         sort_order: form.sort_order,
         hide_when_empty: form.hide_when_empty,
@@ -504,6 +520,7 @@ watch(
             form.icon = src.icon ?? '';
             form.color = src.color ?? '';
             form.type = src.type ?? 'int';
+            form.status = src.status ?? 'a_valider';
             form.unit = src.unit ?? '';
             form.sort_order = src.sort_order ?? 0;
             form.hide_when_empty = src.hide_when_empty ?? false;
@@ -811,6 +828,7 @@ function submit() {
         icon: form.icon,
         color: form.color,
         type: form.type,
+        status: form.status,
         unit: form.unit,
         sort_order: form.sort_order,
         hide_when_empty: form.hide_when_empty,
@@ -891,6 +909,18 @@ function submitConvertToLinked() {
             :get-item-label-secondary="(c) => (c.id ? `[${c.id}]` : null)"
             icon-base-path="/storage/images/icons/caracteristics"
         >
+            <template #item-suffix="{ item }">
+                <Tooltip
+                    :content="characteristicStatusDotMap[item?.status]?.label ?? 'À valider'"
+                    placement="left"
+                >
+                    <span
+                        class="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-base-300/80"
+                        :class="characteristicStatusDotMap[item?.status]?.class ?? 'bg-slate-500'"
+                        aria-hidden="true"
+                    />
+                </Tooltip>
+            </template>
             <template #empty>
                 Aucune caractéristique. Exécutez le seeder ou ajoutez-en via un groupe ci-dessous (ou exportez après modification via l'interface) :
             </template>
@@ -1151,6 +1181,9 @@ function submitConvertToLinked() {
                                                 label="Max"
                                                 placeholder="ex: 100, 200 ou [level]*10"
                                             />
+                                            <p v-if="isObjectCharacteristicGroup" class="mt-1 text-xs text-base-content/70">
+                                                Groupe objet : max = bonus équipement seul ; total avec forgemagie = max + max forgemagie (champ dédié après enregistrement).
+                                            </p>
                                         </div>
                                         <div class="sm:col-span-2">
                                             <label class="label">
@@ -1172,7 +1205,7 @@ function submitConvertToLinked() {
                                     </div>
                                 </div>
                             </div>
-                    <div class="flex justify-end gap-2">
+                    <div class="sticky bottom-0 z-20 mt-4 flex justify-end gap-2 border-t border-base-300 bg-base-100/95 px-2 py-3 backdrop-blur">
                         <Link :href="route('admin.characteristics.index')" class="btn btn-ghost">Annuler</Link>
                         <Btn type="submit" color="primary" :disabled="form.processing">Créer</Btn>
                     </div>
@@ -1189,21 +1222,39 @@ function submitConvertToLinked() {
                         Modifier la caractéristique maître
                     </Link>
                 </div>
-                <h1 class="mb-1 text-2xl font-bold flex flex-wrap items-center gap-2" :style="displayColor(form.color) ? { borderLeftColor: displayColor(form.color) } : {}" :class="displayColor(form.color) ? 'pl-3 border-l-4' : ''">
-                    {{ selected.name || selected.id }}
-                    <span v-if="selected.group" class="badge badge-sm badge-ghost">{{ groupLabels[selected.group] || selected.group }}</span>
-                    <button
-                        v-if="!selected.is_linked && characteristicsForConvertToLinked?.length"
-                        type="button"
-                        class="btn btn-sm btn-ghost btn-outline border-warning/50 text-warning gap-1"
-                        :class="{ 'btn-active': showConvertToLinkedPanel }"
-                        :title="showConvertToLinkedPanel ? 'Masquer le panneau Lier' : 'Lier cette caractéristique à une maître'"
-                        @click="showConvertToLinkedPanel = !showConvertToLinkedPanel"
-                    >
-                        <i class="fa fa-link text-xs" />
-                        Lier
-                    </button>
-                </h1>
+                <div class="mb-1 flex flex-wrap items-start justify-between gap-3">
+                    <h1 class="text-2xl font-bold flex flex-wrap items-center gap-2" :style="displayColor(form.color) ? { borderLeftColor: displayColor(form.color) } : {}" :class="displayColor(form.color) ? 'pl-3 border-l-4' : ''">
+                        {{ selected.name || selected.id }}
+                        <span v-if="selected.group" class="badge badge-sm badge-ghost">{{ groupLabels[selected.group] || selected.group }}</span>
+                    </h1>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <select
+                            v-model="form.status"
+                            class="select select-bordered select-sm min-w-[220px]"
+                            :disabled="!!selected.is_linked"
+                            :title="selected.is_linked ? 'Cette caractéristique est liée : statut non modifiable ici.' : 'État de validation interne'"
+                        >
+                            <option
+                                v-for="opt in characteristicStatusOptions"
+                                :key="opt.value"
+                                :value="opt.value"
+                            >
+                                {{ opt.label }}
+                            </option>
+                        </select>
+                        <button
+                            v-if="!selected.is_linked && characteristicsForConvertToLinked?.length"
+                            type="button"
+                            class="btn btn-sm btn-ghost btn-outline border-warning/50 text-warning gap-1"
+                            :class="{ 'btn-active': showConvertToLinkedPanel }"
+                            :title="showConvertToLinkedPanel ? 'Masquer le panneau Lier' : 'Lier cette caractéristique à une maître'"
+                            @click="showConvertToLinkedPanel = !showConvertToLinkedPanel"
+                        >
+                            <i class="fa fa-link text-xs" />
+                            Lier
+                        </button>
+                    </div>
+                </div>
                 <p class="mb-1 text-sm italic text-base-content/60" :title="`Clé utilisée dans les formules (non modifiable)`">
                     Clé formule : <code class="rounded bg-base-200 px-1 font-mono">[{{ selected.id }}]</code>
                 </p>
@@ -1504,6 +1555,9 @@ function submitConvertToLinked() {
                                         label="Max (valeur fixe, formule ou table)"
                                         placeholder="ex: 100 ou [level]*10"
                                     />
+                                    <p v-if="isObjectCharacteristicGroup" class="mt-1 text-xs text-base-content/70">
+                                        Groupe objet : ce max est le plafond bonus équipement seul (hors forgemagie). Total avec forgemagie = ce max + « Max forgemagie » ci‑dessous.
+                                    </p>
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="label">
@@ -2022,7 +2076,10 @@ function submitConvertToLinked() {
                     </section>
 
                     </fieldset>
-                    <div v-if="!selected.is_linked" class="flex flex-wrap items-center justify-end gap-2 mt-6">
+                    <div
+                        v-if="!selected.is_linked"
+                        class="mt-6 flex flex-wrap items-center justify-end gap-2 border-t border-base-300 bg-base-100/95 px-2 py-3"
+                    >
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="label-text">Spécifier pour une entité :</span>
                             <select class="select select-bordered select-sm max-w-xs" @change="(e) => { const v = e.target.value; if (v) { addEntityOverride(v); e.target.value = ''; } }">
@@ -2034,6 +2091,20 @@ function submitConvertToLinked() {
                         <Btn type="submit" color="primary" :disabled="form.processing">Enregistrer</Btn>
                     </div>
                 </form>
+                <div
+                    v-if="!selected.is_linked"
+                    class="fixed bottom-4 right-4 z-50"
+                >
+                    <Btn
+                        type="button"
+                        color="primary"
+                        class="shadow-lg"
+                        :disabled="form.processing"
+                        @click="submit"
+                    >
+                        Enregistrer
+                    </Btn>
+                </div>
                 </div>
             </template>
             <div v-else class="flex h-64 flex-col items-center justify-center gap-2 text-base-content/60">

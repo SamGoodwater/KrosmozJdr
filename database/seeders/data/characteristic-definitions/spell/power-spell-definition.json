@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 70,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

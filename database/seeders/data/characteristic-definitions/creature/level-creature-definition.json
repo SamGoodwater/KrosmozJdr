@@ -5,7 +5,7 @@
         "name": "Niveau",
         "short_name": "Niv.",
         "helper": "Puissance générale du monstre, de la classe ou du PNJ.",
-        "descriptions": "Niveau Krosmoz 1–20. Conversion Dofus floor(niv/10). Monstres : racine carrée (4.2.2).",
+        "descriptions": "Niveau en Krosmoz JDR (échelle 1 à 20). Pour les personnages importés depuis Dofus, le niveau est ramené à cette échelle ; pour les monstres, une autre convention peut s’appliquer (4.2.2).",
         "icon": "level.webp",
         "icon_false": null,
         "color": "gray",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 0,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "1",
             "max": "20",
             "formula": null,
-            "formula_display": "Niveau Krosmoz 1\\u201320. Conversion Dofus : floor(niv/10). PJ : libre, monstres : formule racine carr\\u00e9e (4.2.2).",
+            "formula_display": "Niveau 1–20 côté Krosmoz. Correspondance avec le niveau Dofus et les monstres : voir règles de conversion et 4.2.2.",
             "default_value": "1",
             "conversion_formula": "{\"1\":\"floor([d]/10)\",\"characteristic\":\"d\"}",
             "conversion_function": null,

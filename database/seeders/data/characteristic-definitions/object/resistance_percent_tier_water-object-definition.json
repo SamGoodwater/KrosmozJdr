@@ -4,11 +4,11 @@
         "key": "resistance_percent_tier_water_object",
         "name": "Bonus de résistance en % (Eau, palier)",
         "short_name": "Rés. % E",
-        "helper": "Équipement (boucliers) : palier de résistance % Eau (0 / 50 % / 100 %). DofusDB id 35.",
-        "descriptions": "Bonus de résistance en pourcentage pour l'Eau, conféré par l'équipement (bouclier). Conversion DofusDB en palier 0 / 1 / 2. Sous-textes selon la valeur.",
+        "helper": "Équipement (boucliers) : palier de résistance en pourcentage pour cet élément.",
+        "descriptions": "Réduction en pourcentage pour cet élément, portée par le bouclier. La fiche indique le palier ; le détail est dans les sous-textes et les règles de résistance.",
         "icon": null,
         "icon_false": null,
-        "color": "sky",
+        "color": "blue",
         "value_overrides": [
             {
                 "value": 0,
@@ -17,22 +17,23 @@
             {
                 "value": 1,
                 "icon": "resWaterResistance.webp",
-                "color": "sky",
+                "color": "blue",
                 "subtitle": "Résistance"
             },
             {
                 "value": 2,
                 "icon": "resWaterInvulnerability.webp",
-                "color": "sky",
+                "color": "blue",
                 "subtitle": "Invulnérabilité"
             }
         ],
-        "hide_when_empty": false,
+        "hide_when_empty": true,
         "unit": null,
         "type": "int",
         "sort_order": 26,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -41,7 +42,7 @@
             "min": "0",
             "max": "2",
             "formula": null,
-            "formula_display": "Eau (id DofusDB 35) : palier 0 / 1 / 2 remplace le % Dofus. Conversion : <80 → 0 ; 80–94 → 1 ; ≥95 → 2.",
+            "formula_display": "Palier affiché sur la fiche ; la correspondance avec les valeurs d’origine est gérée à l’import.",
             "default_value": "0",
             "conversion_formula": "{\"characteristic\":\"d\",\"0\":0,\"80\":1,\"95\":2}",
             "conversion_function": null,
@@ -168,13 +169,14 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Palier résistance % Eau (aucune / 50 % / 100 %).",
+            "norms_description": "Palier de résistance en pourcentage pour l’eau ; plusieurs degrés selon la fiche.",
             "norms_help_section_id": null,
             "forgemagie_max": 0,
             "base_price_per_unit": 2500,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

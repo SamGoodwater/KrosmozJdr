@@ -4,18 +4,19 @@
         "key": "save_vitality_spell",
         "name": "Sauvegarde Vitalité",
         "short_name": "Sav Vit",
-        "helper": "Bonus jet sauvegarde Vitalité appliqué par les sous-effets de sort.",
-        "descriptions": "Bonus jet sauvegarde Vitalité via sous-effet (2.2.2). Sauvegarde : 1d20 + mod + maîtrise si formé. DD = 8 + mod + maîtrise. Max 5.",
+        "helper": "Bonus temporaire au jet de sauvegarde (Vitalité) quand un sort le modifie.",
+        "descriptions": "Le sort augmente ou diminue un moment ton jet de sauvegarde en Vitalité. Les règles habituelles des sauvegardes s’appliquent ; l’effet reste limité (2.2.2).",
         "icon": "saveVitality.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "emerald",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 72,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": null,
-            "formula_display": "Bonus temporaire au jet de sauvegarde Vitalité via sous-effet de sort (2.2.2). Sauvegarde : 1d20 + mod Vitalité (+ maîtrise si formé). DD = 8 + mod + maîtrise. Équipement +3, effet sort max 5.",
+            "formula_display": "Bonus au jet de sauvegarde en Vitalité : valeur importée depuis Dofus et adaptée, dans la limite affichée sur la fiche (2.2.2).",
             "default_value": "0",
             "conversion_formula": "round(min(5,max(0,0.28*pow(max(1,[d]),0.52))))",
             "conversion_function": null,

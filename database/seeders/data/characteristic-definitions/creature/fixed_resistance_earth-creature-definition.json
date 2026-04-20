@@ -8,14 +8,15 @@
         "descriptions": "Réduction fixe dégâts Terre. 0–10 (équip. +10, forgemagie +3) (2.2.2).",
         "icon": "resEarth.webp",
         "icon_false": null,
-        "color": "stone",
+        "color": "brown",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 7,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

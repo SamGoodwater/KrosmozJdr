@@ -66,8 +66,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereValueOverrides($value)
- * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHideWhenEmpty($value)
+ * @mixin \Eloquent
  */
 	class Characteristic extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }

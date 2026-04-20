@@ -4,7 +4,7 @@
         "key": "athletics_creature",
         "name": "Athlétisme",
         "short_name": "Athl.",
-        "helper": "Force. Total = mod. Force + bonus maîtrise × palier (0 aucune, 1 maîtrise, 2 expertise) + bonus équipement. Plafond bonus au jet : 24 (2.2.2).",
+        "helper": "Compétence de Force : modificateur de Force, bonus de maîtrise, équipement. Total au jet limité (2.2.2).",
         "descriptions": "Athlétisme (créature). Force. Palier maîtrise 0–2.",
         "icon": "skillStrength.webp",
         "icon_false": null,
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 11,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

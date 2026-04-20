@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 72,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": null,
-            "formula_display": "CA temporaire (2.2.2). Base : 10 + mod Vitalité + bonus bouclier. Équipement +5 max. Effet sort max +5. Dofus rare en sorts ; compression agressive pow(0.78).",
+            "formula_display": "CA temporaire (2.2.2). Base : 10 + mod Vitalité + bonus bouclier. Équipement +5 max. Effet sort max +5.78).",
             "default_value": "0",
             "conversion_formula": "round(min(5,max(0,0.45*pow(max(1,abs([d])),0.78))))",
             "conversion_function": null,

@@ -4,8 +4,8 @@
         "key": "mastery_bonus_creature",
         "name": "Bonus de maîtrise",
         "short_name": "Bonus maîtrise",
-        "helper": "[1 + niveau / 4]. Spécifique Krosmoz JDR.",
-        "descriptions": "Bonus de maîtrise : min(6, 1 + floor(niveau/4)). Niv 1–3 : 1, niv 20 : 6 (2.2.2).",
+        "helper": "Représente l’expérience du personnage : il augmente par paliers de niveau jusqu’à atteindre 6 au niveau 20 (2.2.2).",
+        "descriptions": "Bonus ajouté aux jets où tu es compétent, et aux difficultés de tes sorts. Il grimpe avec le niveau : de 1 au début à 6 pour un personnage de niveau 20 (2.2.2).",
         "icon": "masterBonus.webp",
         "icon_false": null,
         "color": "stone",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 10,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "6",
             "formula": "min(6, 1+floor([level_creature]/4))",
-            "formula_display": "min(6, 1 + floor(niveau/4)). Niv 1\\u20133 : 1, niv 4\\u20137 : 2, ..., niv 20 : 6 (2.2.2).",
+            "formula_display": "Augmente avec le niveau : 1 aux tout premiers niveaux, jusqu’à 6 au niveau 20 (2.2.2).",
             "default_value": "1",
             "conversion_formula": "[d]",
             "conversion_function": null,

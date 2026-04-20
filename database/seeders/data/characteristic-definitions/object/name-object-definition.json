@@ -15,7 +15,8 @@
         "type": "string",
         "sort_order": 20,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": null,
             "max": null,
             "formula": null,
-            "formula_display": "Nom affiché (items, consommables, ressources, panoplies). Colonne SQL `name`.",
+            "formula_display": "Nom affiché (items, consommables, ressources, panoplies).",
             "default_value": null,
             "conversion_formula": null,
             "conversion_function": null,
@@ -76,7 +77,8 @@
             "base_price_per_unit": null,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

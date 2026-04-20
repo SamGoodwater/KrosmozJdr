@@ -4,8 +4,8 @@
         "key": "summoning_spell",
         "name": "Invocations",
         "short_name": "Invoc.",
-        "helper": "Nombre d'invocations appliqué par les sous-effets de sort.",
-        "descriptions": "Invocations temporaires via sous-effet (2.2.2). Max = bonus de maîtrise, équipement +5. Effet sort +1 à +3.",
+        "helper": "Modifie brièvement combien de créatures tu peux garder près de toi en même temps.",
+        "descriptions": "Un sort peut repousser un instant ta limite d’invocations. Équipement et expérience comptent aussi ; l’effet du sort reste modeste et plafonné (2.2.2).",
         "icon": "summoning.webp",
         "icon_false": null,
         "color": "brown",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 72,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "3",
             "formula": null,
-            "formula_display": "Invocations temporaires via sous-effet de sort (2.2.2). Max simultané = bonus de maîtrise, équipement +5. Effet sort typ. +1 à +3. Dofus maxSummonedCreaturesBoost 1–6. Compression pow(0.78).",
+            "formula_display": "Bonus aux invocations simultanées : valeur issue de Dofus et adaptée à une petite fourchette sur la fiche (2.2.2).",
             "default_value": "0",
             "conversion_formula": "round(min(3,max(0,0.55*pow(max(1,[d]),0.78))))",
             "conversion_function": null,

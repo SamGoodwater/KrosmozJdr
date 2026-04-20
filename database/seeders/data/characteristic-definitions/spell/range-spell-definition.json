@@ -26,7 +26,8 @@
         "type": "int",
         "sort_order": 72,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -35,7 +36,7 @@
             "min": "0",
             "max": "8",
             "formula": null,
-            "formula_display": "Variation PO via sous-effet de sort (1.2.2, 2.2.2). Base créature 0, max 6 (équipement +6, forgemagie +1). S'ajoute aux sorts à portée modifiable. Dofus arrondi, max Krosmoz 8.",
+            "formula_display": "Variation PO via sous-effet de sort (1.2.2, 2.2.2). Base créature 0, max 6 (équipement +6, forgemagie +1). S'ajoute aux sorts à portée modifiable.",
             "default_value": "0",
             "conversion_formula": "round(min(8,max(0,[d])))",
             "conversion_function": null,

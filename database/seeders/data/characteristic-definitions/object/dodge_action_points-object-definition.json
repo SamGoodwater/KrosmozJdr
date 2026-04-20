@@ -4,27 +4,28 @@
         "key": "dodge_action_points_object",
         "name": "Bonus d'esquive aux points d'action",
         "short_name": "Esq. PA",
-        "helper": "Équipement (amulettes) : esquive liée aux PA. Max +3, forgemagie +2.",
-        "descriptions": "Bonus d'esquive aux points d'action conféré par l'équipement (amulettes). Base : 8 + mod Sagesse. Équip. max +3, forgemagie +2, total +5 (2.2.2).",
+        "helper": "Équipement (amulettes) : esquive face aux effets qui retirent des PA (2.2.2).",
+        "descriptions": "Bonus d'esquive aux points d'action conféré par l'équipement (amulettes). Il s’appuie sur ta Sagesse et les règles d’esquive PA (2.2.2).",
         "icon": "dodgeActionPoints.webp",
         "icon_false": null,
         "color": "blue",
         "value_overrides": null,
-        "hide_when_empty": false,
+        "hide_when_empty": true,
         "unit": null,
         "type": "int",
         "sort_order": 22,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
             "dofusdb_characteristic_id": 27,
             "db_column": null,
             "min": "0",
-            "max": "5",
-            "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"11\":\"4\",\"15\":\"5\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus Esquive PA (amulettes). Base : 8 + mod Sagesse. Équip. max +3, forgemagie +2, total +5 (2.2.2).",
+            "max": "3",
+            "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"11\":\"3\",\"15\":\"3\",\"characteristic\":\"level\"}",
+            "formula_display": "Esquive PA sur amulette ; calcul et limites dans les règles (2.2.2).",
             "default_value": "0",
             "conversion_formula": "floor(0.1202 * [d] + 0.5109)",
             "conversion_function": null,
@@ -34,8 +35,8 @@
                 "4": 1,
                 "8": 2,
                 "12": 3,
-                "16": 4,
-                "20": 5
+                "16": 3,
+                "20": 3
             },
             "conversion_sample_rows": null,
             "norms_grid": {
@@ -157,7 +158,8 @@
             "base_price_per_unit": 300,
             "rune_price_per_unit": 600,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

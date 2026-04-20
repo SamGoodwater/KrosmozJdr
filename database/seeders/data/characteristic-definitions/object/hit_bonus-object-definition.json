@@ -4,18 +4,19 @@
         "key": "hit_bonus_object",
         "name": "Bonus de touche",
         "short_name": "Touche",
-        "helper": "Équipement (armes) : bonus au jet d'attaque. Max +5, pas de forgemagie.",
-        "descriptions": "Bonus de touche conféré par l'équipement (armes). Jet : 1d20 + mod + bonus vs CA. Équip. max +5, pas de forgemagie (2.2.2).",
+        "helper": "Équipement (armes) : bonus au jet d'attaque ; pas de forgemagie sur cette ligne (2.2.2).",
+        "descriptions": "Bonus de touche conféré par l’arme ; s’ajoute au jet d’attaque contre la classe d’armure (2.2.2).",
         "icon": "touch.webp",
         "icon_false": null,
         "color": "brown",
         "value_overrides": null,
-        "hide_when_empty": false,
+        "hide_when_empty": true,
         "unit": null,
         "type": "int",
         "sort_order": 22,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"9\":\"4\",\"11\":\"5\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus touche (armes). Jet : 1d20 + mod + bonus vs CA. Équip. max +5, pas de forgemagie (2.2.2).",
+            "formula_display": "Bonus de touche sur arme (2.2.2).",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,
@@ -150,7 +151,8 @@
             "base_price_per_unit": 1200,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

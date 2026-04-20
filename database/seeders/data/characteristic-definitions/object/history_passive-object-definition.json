@@ -4,18 +4,19 @@
         "key": "history_passive_object",
         "name": "Bonus passif (Histoire)",
         "short_name": "Hist. pass.",
-        "helper": "Équipement (chapeaux) : bonus au total sans jet pour Histoire. Max +3, forgemagie +2.",
-        "descriptions": "Bonus passif à Histoire conféré par l'équipement (chapeaux) : total sans jet = compétence + 10 (2.2.2.4). Équip. max +3, forgemagie +2 (2.2.2).",
+        "helper": "Équipement (chapeaux) : bonus au score passif (sans jet) pour Histoire (2.2.2.4). Plafonds : équipement et forgemagie (2.2.2).",
+        "descriptions": "Bonus passif à Histoire conféré par l'équipement (chapeaux) : améliore le score passif lorsqu’aucun jet n’est demandé pour cette compétence (2.2.2.4). Les limites viennent de l’équipement et de la forgemagie (2.2.2).",
         "icon": "skillIntelligence.webp",
         "icon_false": null,
         "color": "orange",
         "value_overrides": null,
-        "hide_when_empty": false,
+        "hide_when_empty": true,
         "unit": null,
         "type": "int",
         "sort_order": 25,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "3",
             "formula": "{\"1\":\"0\",\"5\":\"1\",\"7\":\"2\",\"11\":\"3\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus compétence passive (chapeaux). Bonus au jet +10 par compétence. Équip. max +3, forgemagie +2 (2.2.2).",
+            "formula_display": "Bonus passif sur chapeau : voir les règles des compétences sans jet (2.2.2.4, 2.2.2).",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,
@@ -144,13 +145,14 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Bonus compétence passive (chapeaux). Max +3 sur la valeur d’équipement (2.2.2.4).",
+            "norms_description": "Bonus de compétence passive sur chapeau (2.2.2.4).",
             "norms_help_section_id": null,
             "forgemagie_max": 2,
             "base_price_per_unit": 500,
             "rune_price_per_unit": 1000,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

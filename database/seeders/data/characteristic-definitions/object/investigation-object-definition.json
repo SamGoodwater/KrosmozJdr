@@ -4,27 +4,28 @@
         "key": "investigation_object",
         "name": "Bonus d'Investigation",
         "short_name": "Inv.",
-        "helper": "Équipement : bonus plat à la compétence Investigation (max +8). Pas de conversion DofusDB.",
-        "descriptions": "Bonus d'Investigation conféré par l'équipement (chapeau ou cape). Max +8 (équip. +5, forgemagie +3) (2.2.2).",
+        "helper": "Équipement : bonus à la compétence Investigation sur chapeau ou cape (2.2.2).",
+        "descriptions": "Bonus d'Investigation conféré par l'équipement (chapeau ou cape). Il s’ajoute à la compétence ; les plafonds sont dans les règles d’équipement et de forgemagie (2.2.2).",
         "icon": "skillIntelligence.webp",
         "icon_false": null,
         "color": "orange",
         "value_overrides": null,
-        "hide_when_empty": false,
+        "hide_when_empty": true,
         "unit": null,
         "type": "int",
         "sort_order": 25,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": null,
             "min": "0",
-            "max": "8",
+            "max": "5",
             "formula": null,
-            "formula_display": "Bonus compétence active (chapeau ou cape). Max +8 (équip. +5, forgemagie +3) (2.2.2).",
+            "formula_display": "Bonus de compétence sur chapeau ou cape ; plafonds selon les règles (2.2.2).",
             "default_value": "0",
             "conversion_formula": null,
             "conversion_function": null,
@@ -150,7 +151,8 @@
             "base_price_per_unit": 400,
             "rune_price_per_unit": 800,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

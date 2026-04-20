@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 72,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "20",
             "formula": null,
-            "formula_display": "Esquive PM temporaire via sous-effet de sort (2.2.2). Base créature : 8 + mod Sagesse. Évite les effets retirant des PM. Équipement +3, forgemagie +2. Compression Dofus pow(0.48).",
+            "formula_display": "Esquive PM temporaire via sous-effet de sort (2.2.2). Base créature : 8 + mod Sagesse. Évite les effets retirant des PM. Équipement +3, forgemagie +2.",
             "default_value": "0",
             "conversion_formula": "round(min(20,max(0,0.65*pow(max(1,[d]),0.48))))",
             "conversion_function": null,

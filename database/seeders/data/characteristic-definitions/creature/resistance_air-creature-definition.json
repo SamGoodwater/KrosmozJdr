@@ -8,14 +8,15 @@
         "descriptions": "Résistance % Air. Valeurs : 0 %, 50 %, 100 %. Issu conversion Dofus (2.2.2).",
         "icon": "resAir.webp",
         "icon_false": null,
-        "color": "neutral",
+        "color": "cyan",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": "%",
         "type": "int",
         "sort_order": 7,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

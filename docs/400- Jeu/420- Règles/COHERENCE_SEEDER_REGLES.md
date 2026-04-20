@@ -21,28 +21,32 @@ Ce document compare les valeurs min/max, formules et limites des caractéristiqu
 
 ---
 
-## 2. Incohérences corrigées (objet / règles 2.6.1)
+## 2. Convention `max` / `forgemagie_max` (objets)
 
-Les règles 2.6.1 (Équipements de base) fixent le **maximum par type d’objet**. Le seeder `characteristic_object` définissait des `max` par caractéristique qui dépassaient ces plafonds.
+Dans les JSON `*-object-definition.json` :
 
-| Caractéristique | Règles (2.6.1) | Seeder (avant) | Correction |
-|-----------------|----------------|----------------|------------|
-| **PM (bottes)** | PM : +3 maximum | `movement_points_object` max 5 | max 5 → **3** |
-| **PA (amulettes)** | PA : +6 maximum | `action_points_object` max 5 | max 5 → **6** |
-| **PO (anneaux)** | Portée (PO) : +6 maximum | `range_object` max 5 | max 5 → **6** |
+- **`max`** = bonus **équipement seul**, **hors** forgemagie (validation via `CharacteristicGetterService::getLimits`).
+- **`forgemagie_max`** = plafond **forgemagie** à part.
+- **Total** (si forgemagie autorisée) = **`max` + `forgemagie_max`**.
+
+Une clé **`_comment_limits`** (préfixe `_`, ignorée au seed) rappelle cette convention. Détail : [CARACTERISTIQUES_CREATION_REFERENCE.md](../../410-%20Ressources/CARACTERISTIQUES_CREATION_REFERENCE.md) §4.
 
 ---
 
-## 3. Point à trancher (bonus par objet)
+## 3. Alignements récents (objet / règles 2.2.2 et 2.6.1)
 
-**Règles 2.6.1** : Chapeaux (Vitalité, Sagesse) et Capes (Force, Intelligence, Chance, Agilité) : **+4 maximum** par objet.
-
-**Seeder** : `vitality_object`, `strength_object`, `intelligence_object`, etc. ont `max` = **8** et une formule `[level]*(8/20)` (à niveau 20, bonus théorique 8).
-
-- Soit le **max 8** sert à la conversion Dofus / génération et le plafond « règle » +4 est appliqué ailleurs (validation, affichage) → à documenter.
-- Soit le seeder doit refléter la règle : **max 4** pour ces caractéristiques d’objet.
-
-À décider : garder 8 pour la génération et documenter, ou passer les `max` à 4 dans `characteristic_object` pour ces carac.
+| Zone | Règles | Seeder (objet) | Remarque |
+|------|--------|----------------|----------|
+| **PA** | +6 équip., +1 forgem. (2.2.2) | `action_points_object` `max` 6, `forgemagie_max` 1 | Plafond amulette 2.6.1 cohérent avec +6 équip. |
+| **Caracs principales** (chapeau / cape) | +6 équip., +2 forgem. (2.6.1) | `*_object` Force, Int, etc. : `max` 6, `forgemagie_max` 2 ; formule-table plafonnée à +6 | Ancien `max` 8 cumulait visuellement équip. + forgem. |
+| **Compétences (actives)** | +5 équip., +3 forgem. (2.2.2) | `acrobatics_object`, etc. : `max` 5, `forgemagie_max` 3 | Ancien `max` 8 = total 5+3. |
+| **Compétences passives** | bonus équip. / forgem. distincts | `*_passive_object` : `max` 3, `forgemagie_max` 2 | Inchangé (déjà séparé). |
+| **Tacle / Fuite** | +10 équip., +2 forgem. (2.2.2) | `tackle_object`, `dodge_object` : `max` 10, `forgemagie_max` 2 ; formule étendue jusqu’à 20 | Ancien `max` 8 cumulait mal la règle globale. |
+| **Esquive PA / PM** | +3 équip., +2 forgem. (2.2.2) | `dodge_action_points_object`, `dodge_movement_points_object` : `max` 3 | Ancien `max` 5 était incohérent. |
+| **Résistances fixes** | +10 équip., +3 forgem. (2.2.2) | `fixed_resistance_*_object` : `max` 10, `forgemagie_max` 3 | Bouclier seul : +7 par emplacement (2.6.1) ; cumul global en 2.2.2. |
+| **Dommages fixes** | +10 équip., +5 forgem. (2.2.2) | `fixed_damage_*` (éléments) : `max` 10 | Ancien `max` 5 + `forgemagie_max` 5 = total OK mais `max` sous-plafonnait l’équipement. |
+| **Bonus de soins** | 7 au total, dont +2 forgem. (2.2.2) | `heal_bonus_object` : `max` 5, `forgemagie_max` 2 | Ancien `max` 7 incluait la forgemagie. |
+| **Critique / échec critique** | 0–3, sans forgem. (2.2.2 / fiche) | `critical_hit_object`, `failure_hit_object` : `forgemagie_max` **0** | Ancien `failure_hit_object` avait `forgemagie_max` 1. |
 
 ---
 
@@ -56,6 +60,6 @@ Les règles 2.6.1 (Équipements de base) fixent le **maximum par type d’objet*
 
 ## 5. Vérifications recommandées
 
-- [ ] Utilisation de `characteristic_object.max` dans le code : validation côté app (création d’objets, équipement) doit respecter les plafonds des règles (2.6.1).
-- [ ] Si des objets « générés » peuvent dépasser +4 (Force, etc.) ou +3 (PM), prévoir un plafond explicite (min(seeder_max, rules_max)) ou aligner le seeder sur les règles.
+- [ ] Utilisation de `characteristic_object.max` dans le code : validation côté app (création d’objets, équipement) doit respecter les plafonds **par emplacement** (2.6.1) et, le cas échéant, le **total** `max` + `forgemagie_max` pour la ligne.
+- [ ] UI / outils MJ : si un écran doit afficher le plafond « jouable » total, combiner explicitement **`max` + `forgemagie_max`** (et ne pas supposer que `max` est déjà le total).
 - [ ] Après modification des seeders : relancer les seeds / tests et mettre à jour ce document.

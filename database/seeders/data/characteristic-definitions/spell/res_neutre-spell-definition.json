@@ -8,14 +8,15 @@
         "descriptions": "Résistance % Neutre temporaire via sous-effet (5.3.1). Faible 10–20 %, moyenne 30–50 %, forte 60–80 %. Max 50.",
         "icon": "resNeutral.webp",
         "icon_false": null,
-        "color": "zinc",
+        "color": "slate",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 72,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "50",
             "formula": null,
-            "formula_display": "Résistance % Neutre temporaire via sous-effet de sort (5.3.1). Échelles MJ : faible 10–20 %, moyenne 30–50 %, forte 60–80 %. Compression Dofus pow(0.52), max 50.",
+            "formula_display": "Résistance % Neutre temporaire via sous-effet de sort (5.3.1). Échelles MJ : faible 10–20 %, moyenne 30–50 %, forte 60–80 %.",
             "default_value": "0",
             "conversion_formula": "round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",
             "conversion_function": null,

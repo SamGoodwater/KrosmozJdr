@@ -57,6 +57,11 @@ class CharacteristicController extends Controller
         return Schema::hasColumn('characteristics', 'hide_when_empty');
     }
 
+    private function characteristicsTableHasStatusColumn(): bool
+    {
+        return Schema::hasColumn('characteristics', 'status');
+    }
+
     /**
      * Les selects de palettes envoient une chaîne vide ; {@see Rule::in} ne l’accepte pas. Normalise en null.
      */
@@ -248,6 +253,7 @@ class CharacteristicController extends Controller
             'color' => $characteristic->color,
             'value_overrides' => $this->characteristicsTableHasValueOverridesColumn() ? $characteristic->value_overrides : null,
             'type' => $characteristic->type,
+            'status' => $this->characteristicsTableHasStatusColumn() ? $characteristic->status : Characteristic::STATUS_A_VALIDER,
             'unit' => $characteristic->unit,
             'sort_order' => $characteristic->sort_order,
             'group' => $group,
@@ -285,6 +291,7 @@ class CharacteristicController extends Controller
             'icon_false' => 'nullable|string|max:64',
             'color' => ['nullable', 'string', 'max:32', Rule::in(CharacteristicPaletteResolver::ALLOWED_PALETTES)],
             'type' => 'required|in:int,string,array,bool',
+            'status' => ['nullable', 'string', Rule::in(Characteristic::STATUSES)],
             'unit' => 'nullable|string|max:64',
             'sort_order' => 'nullable|integer',
             'group' => 'required|in:creature,object,spell',
@@ -340,6 +347,9 @@ class CharacteristicController extends Controller
             'sort_order' => (int) ($data['sort_order'] ?? 0),
             'group' => $data['group'],
         ];
+        if ($this->characteristicsTableHasStatusColumn()) {
+            $createPayload['status'] = $data['status'] ?? Characteristic::STATUS_A_VALIDER;
+        }
         if ($this->characteristicsTableHasIconFalseColumn()) {
             $createPayload['icon_false'] = $data['icon_false'] ?? null;
         }
@@ -389,7 +399,7 @@ class CharacteristicController extends Controller
             ['key' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_]+$/', 'unique:characteristics,key']]
         )->validate();
 
-        $characteristic = Characteristic::create([
+        $linkPayload = [
             'key' => $key,
             'name' => null,
             'short_name' => null,
@@ -402,7 +412,11 @@ class CharacteristicController extends Controller
             'sort_order' => $master->sort_order,
             'group' => $data['group'],
             'linked_to_characteristic_id' => $master->id,
-        ]);
+        ];
+        if ($this->characteristicsTableHasStatusColumn()) {
+            $linkPayload['status'] = Characteristic::STATUS_A_VALIDER;
+        }
+        $characteristic = Characteristic::create($linkPayload);
 
         $this->getter->clearCache();
         $this->colorCssGenerator->generate();
@@ -930,6 +944,7 @@ class CharacteristicController extends Controller
             'icon_false' => 'nullable|string|max:64',
             'color' => ['nullable', 'string', 'max:32', Rule::in(CharacteristicPaletteResolver::ALLOWED_PALETTES)],
             'type' => 'required|in:int,string,array,bool',
+            'status' => ['nullable', 'string', Rule::in(Characteristic::STATUSES)],
             'unit' => 'nullable|string|max:64',
             'sort_order' => 'nullable|integer',
             'entities' => 'array',
@@ -996,6 +1011,9 @@ class CharacteristicController extends Controller
             'unit' => $data['unit'] ?? null,
             'sort_order' => $data['sort_order'] ?? $characteristic->sort_order,
         ];
+        if ($this->characteristicsTableHasStatusColumn()) {
+            $updatePayload['status'] = $data['status'] ?? $characteristic->status ?? Characteristic::STATUS_A_VALIDER;
+        }
         if ($this->characteristicsTableHasIconFalseColumn()) {
             $updatePayload['icon_false'] = $data['icon_false'] ?? null;
         }
@@ -1112,7 +1130,7 @@ class CharacteristicController extends Controller
     /**
      * Liste des caractéristiques regroupées par groupe (creature, object, spell) pour le menu gauche.
      *
-     * @return array<string, list<array{id: string, name: string, short_name: string|null, icon: string|null, color: string|null}>>
+     * @return array<string, list<array{id: string, name: string, short_name: string|null, icon: string|null, color: string|null, status: string}>>
      */
     private function buildCharacteristicsByGroup(): array
     {
@@ -1133,6 +1151,7 @@ class CharacteristicController extends Controller
                 'short_name' => $effective->short_name,
                 'icon' => $effective->icon,
                 'color' => $effective->color,
+                'status' => $this->characteristicsTableHasStatusColumn() ? ($c->status ?? Characteristic::STATUS_A_VALIDER) : Characteristic::STATUS_A_VALIDER,
                 'is_linked' => $c->isLinked(),
                 'master_key' => $c->isLinked() ? $effective->key : null,
             ];

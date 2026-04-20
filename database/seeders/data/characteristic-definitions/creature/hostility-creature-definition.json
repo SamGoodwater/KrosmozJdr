@@ -46,7 +46,8 @@
         "type": "int",
         "sort_order": 3,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

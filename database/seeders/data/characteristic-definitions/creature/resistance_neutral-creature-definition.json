@@ -8,14 +8,15 @@
         "descriptions": "Résistance % Neutre. Valeurs : 0 %, 50 %, 100 %. Issu conversion Dofus. Appliquée après réduction fixe (2.2.2).",
         "icon": "resNeutral.webp",
         "icon_false": null,
-        "color": "zinc",
+        "color": "slate",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": "%",
         "type": "int",
         "sort_order": 7,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

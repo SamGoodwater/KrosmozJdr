@@ -8,14 +8,15 @@
         "descriptions": "Bonus dégâts fixes Air. 0–10 (équip. +10, forgemagie +5) (2.2.2).",
         "icon": "dmgAir.webp",
         "icon_false": null,
-        "color": "neutral",
+        "color": "cyan",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 6,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

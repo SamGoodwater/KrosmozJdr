@@ -5,7 +5,7 @@
         "name": "Intelligence",
         "short_name": "Int",
         "helper": "Puissance des sorts et initiative. Associée à l'élément Feu.",
-        "descriptions": "Intelligence (Feu). Score 6–24. Liée à l'Initiative (2.2.1).",
+        "descriptions": "Intelligence (élément Feu). Elle mesure la vivacité d’esprit, la connaissance des arcanes et l’initiative au combat. En création, tu pars souvent vers 8 ; l’équipement et la forgemagie peuvent encore augmenter le score (2.2.1).",
         "icon": "fire.webp",
         "icon_false": null,
         "color": "orange",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 3,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "6",
             "max": "24",
             "formula": null,
-            "formula_display": "Score 6\\u201324 (cr\\u00e9ation 8, \\u00e9quip. +6, forgemagie +2). Mod = floor((score\\u221210)/2). Li\\u00e9e au Feu, Initiative (2.2.1).",
+            "formula_display": "Score habituel entre 6 et 24. Le modificateur dépend du score et du niveau ; cette caractéristique est liée au feu et à l’initiative (2.2.1).",
             "default_value": "8",
             "conversion_formula": "[d]",
             "conversion_function": null,

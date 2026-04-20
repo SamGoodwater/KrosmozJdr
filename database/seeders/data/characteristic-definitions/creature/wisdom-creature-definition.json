@@ -5,7 +5,7 @@
         "name": "Sagesse",
         "short_name": "Sag",
         "helper": "Perception, soins et jets de sauvegarde. Liée aux sorts de soutien.",
-        "descriptions": "Sagesse. Score 6–24. Liée à la perception, soins et esquive PA/PM (2.2.1).",
+        "descriptions": "Sagesse. Elle couvre la perception, les soins, la survie et l’esquive face aux effets qui visent tes points d’action ou de mouvement. En création, tu pars souvent vers 8 ; l’équipement et la forgemagie peuvent encore augmenter le score (2.2.1).",
         "icon": "wisdom.webp",
         "icon_false": null,
         "color": "indigo",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 3,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "6",
             "max": "24",
             "formula": null,
-            "formula_display": "Score 6\\u201324 (cr\\u00e9ation 8, \\u00e9quip. +6, forgemagie +2). Mod = floor((score\\u221210)/2). Li\\u00e9e \\u00e0 la Sagesse, perception, soins, esquive PA/PM (2.2.1).",
+            "formula_display": "Score habituel entre 6 et 24. Le modificateur dépend du score et du niveau ; cette caractéristique sert surtout à la perception, aux soins et à l’esquive PA/PM (2.2.1).",
             "default_value": "8",
             "conversion_formula": "[d]",
             "conversion_function": null,

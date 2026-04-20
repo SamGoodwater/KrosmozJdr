@@ -8,14 +8,15 @@
         "descriptions": "Jet de sauvegarde Agilité : 1d20 + mod + maîtrise (si formé) + équip. Esquive, réflexes (2.2.2).",
         "icon": "saveAgi.webp",
         "icon_false": null,
-        "color": "neutral",
+        "color": "cyan",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 8,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

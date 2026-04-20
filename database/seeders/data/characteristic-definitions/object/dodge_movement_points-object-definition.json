@@ -4,27 +4,28 @@
         "key": "dodge_movement_points_object",
         "name": "Bonus d'esquive aux points de mouvement",
         "short_name": "Esq. PM",
-        "helper": "Équipement (bottes) : esquive liée aux PM. Max +3, forgemagie +2.",
-        "descriptions": "Bonus d'esquive aux points de mouvement conféré par l'équipement (bottes). Base : 8 + mod Sagesse. Équip. max +3, forgemagie +2, total +5 (2.2.2).",
+        "helper": "Équipement (bottes) : esquive face aux effets qui retirent des PM (2.2.2).",
+        "descriptions": "Bonus d'esquive aux points de mouvement conféré par l'équipement (bottes). Il s’appuie sur ta Sagesse et les règles d’esquive PM (2.2.2).",
         "icon": "dodgeMovementPoints.webp",
         "icon_false": null,
         "color": "neutral",
         "value_overrides": null,
-        "hide_when_empty": false,
+        "hide_when_empty": true,
         "unit": null,
         "type": "int",
         "sort_order": 22,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
             "dofusdb_characteristic_id": 28,
             "db_column": null,
             "min": "0",
-            "max": "5",
-            "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"11\":\"4\",\"15\":\"5\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus Esquive PM (bottes). Base : 8 + mod Sagesse. Équip. max +3, forgemagie +2, total +5 (2.2.2).",
+            "max": "3",
+            "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"11\":\"3\",\"15\":\"3\",\"characteristic\":\"level\"}",
+            "formula_display": "Esquive PM sur bottes ; calcul et limites dans les règles (2.2.2).",
             "default_value": "0",
             "conversion_formula": "floor(0.1202 * [d] + 0.5109)",
             "conversion_function": null,
@@ -41,8 +42,8 @@
                 "4": 1,
                 "8": 2,
                 "12": 3,
-                "16": 4,
-                "20": 5
+                "16": 3,
+                "20": 3
             },
             "conversion_sample_rows": null,
             "norms_grid": {
@@ -164,7 +165,8 @@
             "base_price_per_unit": 300,
             "rune_price_per_unit": 600,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

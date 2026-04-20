@@ -78,6 +78,7 @@ final class CharacteristicDefinitionsExportFromDatabaseService
             'hide_when_empty' => $c->hide_when_empty,
             'unit' => $c->unit,
             'type' => $c->type,
+            'status' => $c->status ?? Characteristic::STATUS_A_VALIDER,
             'sort_order' => $c->sort_order,
             'group' => $c->group,
             'linked_to_key' => $c->masterCharacteristic?->key,

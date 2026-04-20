@@ -4,18 +4,19 @@
         "key": "save_intelligence_object",
         "name": "Bonus de sauvegarde (Intelligence)",
         "short_name": "Sauv. Int",
-        "helper": "Équipement (capes) : bonus aux jets de sauvegarde en Intelligence. Max +3.",
-        "descriptions": "Bonus de sauvegarde en Intelligence conféré par l'équipement (capes). Jet : 1d20 + mod + maîtrise (si formé) + équip. Équip. max +3 (2.2.2).",
+        "helper": "Équipement (capes) : bonus aux jets de sauvegarde en Intelligence (2.2.2).",
+        "descriptions": "Bonus de sauvegarde en Intelligence conféré par l'équipement (capes). S’ajoute à ton jet de sauvegarde habituel ; les limites viennent des règles d’équipement (2.2.2).",
         "icon": "saveIntel.webp",
         "icon_false": null,
         "color": "orange",
         "value_overrides": null,
-        "hide_when_empty": false,
+        "hide_when_empty": true,
         "unit": null,
         "type": "int",
         "sort_order": 24,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "3",
             "formula": "{\"1\":\"0\",\"7\":\"1\",\"11\":\"2\",\"17\":\"3\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus sauvegarde Intelligence (capes). Jet : 1d20 + mod + maîtrise. Équip. max +3 (2.2.2).",
+            "formula_display": "Bonus de sauvegarde sur cape ; détail des jets dans les règles de sauvegarde (2.2.2).",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,
@@ -144,13 +145,14 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Bonus jet de sauvegarde (chapeau ou cape). Max +3 équipement (2.2.2).",
+            "norms_description": "Bonus de sauvegarde porté par l'équipement (2.2.2).",
             "norms_help_section_id": null,
             "forgemagie_max": 0,
             "base_price_per_unit": 700,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

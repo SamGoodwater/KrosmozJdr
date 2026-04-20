@@ -5,7 +5,7 @@
         "name": "Points de vie",
         "short_name": "PV",
         "helper": "Santé de la créature en points de vie.",
-        "descriptions": "Points de vie. Vitalité × 10 + dés de vie. Dés de vie = floor(niveau/2), max 10 (2.2.2).",
+        "descriptions": "Tes points de vie : ils montent avec la Vitalité (chaque point de Vitalité ajoute 10 points de vie) et avec tes dés de vie. Le nombre de dés suit ton niveau, sans dépasser dix dés (2.2.2).",
         "icon": "life.webp",
         "icon_false": null,
         "color": "red",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 1,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "1",
             "max": "{\"1\":\"9999\",\"characteristic\":\"level_creature\"}",
             "formula": "[vitality_creature]*10+[hit_dice_creature]",
-            "formula_display": "Vitalit\\u00e9 \\u00d7 10 + d\\u00e9s de vie. D\\u00e9s de vie = floor(niveau/2), max 10, type selon classe (2.2.2).",
+            "formula_display": "Points de vie : Vitalité × 10, plus les dés de vie. Les dés de vie augmentent avec le niveau (plafond 10 dés), le type de dé dépend de la classe (2.2.2).",
             "default_value": "1",
             "conversion_formula": "floor([d]/200)+[level]*5",
             "conversion_function": null,

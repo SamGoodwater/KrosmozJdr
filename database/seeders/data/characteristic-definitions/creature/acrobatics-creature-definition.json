@@ -4,7 +4,7 @@
         "key": "acrobatics_creature",
         "name": "Acrobaties",
         "short_name": "Acr.",
-        "helper": "Agilité. Total = mod. Agilité + bonus maîtrise × palier (0–2) + bonus équipement. Plafond bonus au jet : 24 (2.2.2).",
+        "helper": "Compétence d’Agilité : modificateur d’Agilité, bonus selon ta maîtrise (aucune, maîtrise ou expertise), plus l’équipement. Le total au jet est limité (2.2.2).",
         "descriptions": "Acrobaties (créature). Agilité.",
         "icon": "skillAgility.webp",
         "icon_false": null,
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 11,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

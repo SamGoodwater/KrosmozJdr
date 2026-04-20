@@ -5,7 +5,7 @@
         "name": "Dommages",
         "short_name": "Dmg",
         "helper": "Montant de dégâts infligés par un sous-effet frapper. Conversion Dofus → Krosmoz.",
-        "descriptions": "Dégâts (sous-effet frapper, 3.3.2). Barèmes 5.2.3 : niv 1–3 1d6+mod, niv 16–20 5d6+mod. Dofus compressé pow(0.475) puis notation dés.",
+        "descriptions": "Dégâts supplémentaires de type neutre appliqués par l’effet du sort (2.2.2).",
         "icon": "dmgNeutral.webp",
         "icon_false": null,
         "color": "slate",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 71,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "96",
             "formula": null,
-            "formula_display": "Dégâts (sous-effet frapper, 3.3.2). Barèmes 5.2.3 : niv 1–3 1d6+mod (~5–10), niv 16–20 5d6+mod (~40–50). Dofus centaines compressées pow(0.475) puis notation dés (convertToDice). Élément détermine la carac de mod.",
+            "formula_display": "Dégâts fixes neutres : valeur issue de Dofus, adaptée au jeu (2.2.2).",
             "default_value": "0",
             "conversion_formula": "round(min(96, max(1, 1.12 * pow(max(1,[d]), 0.475))))",
             "conversion_function": "convertToDice",

@@ -4,7 +4,7 @@
         "key": "intimidation_creature",
         "name": "Intimidation",
         "short_name": "Intim.",
-        "helper": "Force (Krosmoz JDR). Total = mod. Force + bonus maîtrise × palier (0–2) + bonus équipement. Plafond bonus au jet : 24 (2.2.2).",
+        "helper": "Compétence : modificateur de Force ou de Chance selon la scène, bonus de maîtrise, équipement. Total au jet limité (2.2.2).",
         "descriptions": "Intimidation (créature). Force (Krosmoz JDR).",
         "icon": "skillStrength.webp",
         "icon_false": null,
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 11,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {

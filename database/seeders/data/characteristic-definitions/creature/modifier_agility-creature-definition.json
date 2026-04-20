@@ -4,18 +4,19 @@
         "key": "modifier_agility_creature",
         "name": "Modificateur d'Agilité",
         "short_name": "Mod. Agi",
-        "helper": "Calculé : floor((Agilité-10)/2). Max = min(floor(niv/2)+1, 7). Non stocké en BDD.",
-        "descriptions": "Modificateur d'Agilité : floor((score−10)/2). Min −2, max plafonné par niveau (2.2.1).",
+        "helper": "Dérivé du score de l’Agilité sur la fiche : bonus ou malus pour les jets qui s’appuient sur cette caractéristique. Une limite haute dépend du niveau (2.2.1). Valeur calculée automatiquement.",
+        "descriptions": "Résume l’écart entre ton score de l’Agilité et la moyenne de référence. Sert notamment pour l’Acrobatie, la Discrétion, l’Initiative, etc. ; reste borné selon le niveau (2.2.1).",
         "icon": "modAgi.webp",
         "icon_false": null,
-        "color": "stone",
+        "color": "cyan",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 4,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "-2",
             "max": "7",
             "formula": "min(max(floor(([agility_creature]-10)/2), -2), min(floor([level_creature]/2)+1, 7))",
-            "formula_display": "floor((carac\\u221210)/2). Min \\u22122. Max = min(floor(niv/2)+1, 7) (2.2.1.2)",
+            "formula_display": "Calculé à partir du score sur la fiche : bonus ou malus, avec un minimum et un plafond liés au niveau (2.2.1).",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,
@@ -151,7 +152,7 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Modificateur d'agilité. D&D : floor((score-10)/2). Échelle -2 à +7.",
+            "norms_description": "Modificateur d'Agilité : bonus ou malus issu du score sur la fiche, avec un plafond lié au niveau (ordre de grandeur habituel : −2 à +7).",
             "norms_help_section_id": null,
             "labels": null,
             "validation": null

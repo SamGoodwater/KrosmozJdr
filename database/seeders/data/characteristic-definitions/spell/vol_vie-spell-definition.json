@@ -4,8 +4,8 @@
         "key": "vol_vie_spell",
         "name": "Vol de vie",
         "short_name": "Vol PV",
-        "helper": "Montant de PV volés via frapper + formule life_steal_formula (vol de vie). Conversion Dofus → Krosmoz.",
-        "descriptions": "Vol de vie (frapper + life_steal_formula, 3.2.4). Dégâts + soins proportionnels. Ne passe pas par les boucliers.",
+        "helper": "Part des dégâts du sort qui revient en soins pour le lanceur, selon les règles du vol de vie.",
+        "descriptions": "Une portion des dégâts infligés soigne le lanceur. L’effet ne passe pas par les boucliers de la cible (3.2.4).",
         "icon": "life.webp",
         "icon_false": null,
         "color": "red",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 71,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "96",
             "formula": null,
-            "formula_display": "Vol de vie (sous-effet frapper + life_steal_formula, 3.2.4). Dégâts infligés + soins proportionnels au lanceur. Le vol de vie ne passe pas par les boucliers de la cible. Même barème que dommages.",
+            "formula_display": "Vol de vie : les soins du lanceur suivent les dégâts du sort, avec la même conversion d’échelle que les dommages (3.2.4).",
             "default_value": "0",
             "conversion_formula": "round(min(96, max(1, 1.12 * pow(max(1,[d]), 0.475))))",
             "conversion_function": null,

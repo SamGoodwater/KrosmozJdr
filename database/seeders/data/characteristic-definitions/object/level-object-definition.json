@@ -5,17 +5,18 @@
         "name": "Niveau",
         "short_name": "Niv.",
         "helper": "Niveau de l'objet (équipements et ressources).",
-        "descriptions": "Niveau objet 1–20. Conversion Dofus : floor(niv/10). Détermine puissance et rareté accessible.",
+        "descriptions": "Niveau de l’objet sur l’échelle Krosmoz 1–20 (barèmes d’équipement, prix, etc.).",
         "icon": "level.webp",
         "icon_false": null,
         "color": "gray",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": null,
-        "type": "int",
+        "type": "string",
         "sort_order": 20,
         "group": "object",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "1",
             "max": "20",
             "formula": null,
-            "formula_display": "Niveau objet 1–20. Conversion Dofus : floor(niv/10). Détermine puissance et rareté accessible.",
+            "formula_display": "Niveau de l’objet de 1 à 20. À l’import depuis Dofus, ce niveau est ramené sur cette échelle ; il indique surtout la puissance et la rareté possibles.",
             "default_value": "1",
             "conversion_formula": "floor([d]/10)",
             "conversion_function": null,
@@ -90,7 +91,8 @@
             "base_price_per_unit": null,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
         }
     },
     "relations": null

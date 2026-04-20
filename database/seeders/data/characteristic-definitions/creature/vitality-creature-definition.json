@@ -5,17 +5,18 @@
         "name": "Vitalité",
         "short_name": "Vit",
         "helper": "Résistance physique et santé. Lie le corps et l'endurance.",
-        "descriptions": "Vitalité (Constitution). Score 6–24. Liée aux PV (Vitalité × 10), CA (2.2.1).",
+        "descriptions": "Vitalité (souvent assimilée à la Constitution). Elle représente la résistance et la santé. Elle alimente fortement tes points de vie et intervient aussi dans la classe d’armure (2.2.1).",
         "icon": "vitality.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "emerald",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
         "sort_order": 3,
         "group": "creature",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "6",
             "max": "24",
             "formula": null,
-            "formula_display": "Score 6\\u201324 (cr\\u00e9ation 8, \\u00e9quip. +6, forgemagie +2). Mod = floor((score\\u221210)/2). Li\\u00e9e aux PV (Vitalit\\u00e9 \\u00d7 10), CA (2.2.1).",
+            "formula_display": "Score habituel entre 6 et 24. Chaque point de Vitalité compte pour 10 points de vie ; le modificateur sert aussi pour la CA (2.2.1).",
             "default_value": "8",
             "conversion_formula": "[d]",
             "conversion_function": null,

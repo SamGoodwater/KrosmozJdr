@@ -5,7 +5,7 @@
         "name": "Intelligence",
         "short_name": "Int.",
         "helper": "Intelligence appliquée par les sous-effets de sort.",
-        "descriptions": "Boost/retrait temporaire d'Intelligence via sous-effet (2.2.1). Intelligence liée au Feu. Score 6–24 (plafond absolu, 2.2.1).",
+        "descriptions": "Augmente ou diminue temporairement l’Intelligence tant que l’effet de sort dure. Lié à l’élément Feu. Sur une fiche, ce score reste en pratique entre 6 et 24 (2.2.1).",
         "icon": "fire.webp",
         "icon_false": null,
         "color": "orange",
@@ -15,7 +15,8 @@
         "type": "int",
         "sort_order": 72,
         "group": "spell",
-        "linked_to_key": null
+        "linked_to_key": null,
+        "status": "a_valider"
     },
     "entities": {
         "*": {
@@ -24,7 +25,7 @@
             "min": "0",
             "max": "30",
             "formula": null,
-            "formula_display": "Boost/retrait temporaire d'Intelligence via sous-effet de sort (2.2.1). Feu ; scores créature 6–24 (2.2.1). Bonus converti depuis Dofus, plafond effet +30, pow(0.42).",
+            "formula_display": "Effet de sort sur l’Intelligence : valeur prise depuis Dofus et adaptée au jeu, dans la limite prévue pour ce type d’effet (2.2.1).",
             "default_value": "0",
             "conversion_formula": "round(min(30,max(0,2.0*pow(max(1,[d]),0.42))))",
             "conversion_function": null,
