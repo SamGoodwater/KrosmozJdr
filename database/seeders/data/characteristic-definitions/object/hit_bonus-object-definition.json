@@ -25,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"9\":\"4\",\"11\":\"5\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus de touche sur arme (2.2.2).",
+            "formula_display": "level_object",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

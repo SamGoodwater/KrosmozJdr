@@ -25,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": null,
-            "formula_display": "Bonus de touche temporaire via sous-effet de sort (2.2.2). S'ajoute au jet d'attaque (1d20 + mod + bonus). Équipement +5 max, forgemagie +1.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(5,max(0,0.45*pow(max(1,abs([d])),0.78))))",
             "conversion_function": null,

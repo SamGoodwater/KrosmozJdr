@@ -25,7 +25,7 @@
             "min": "0",
             "max": "3",
             "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"11\":\"3\",\"15\":\"3\",\"characteristic\":\"level\"}",
-            "formula_display": "Esquive PM sur bottes ; calcul et limites dans les règles (2.2.2).",
+            "formula_display": "level_object",
             "default_value": "0",
             "conversion_formula": "floor(0.1202 * [d] + 0.5109)",
             "conversion_function": null,

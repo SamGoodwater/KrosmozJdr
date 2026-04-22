@@ -25,7 +25,7 @@
             "min": "0",
             "max": "2",
             "formula": null,
-            "formula_display": "Effet sur les critiques : modifie le seuil ou la zone de critique selon les règles du jeu et ton niveau ; les dégâts critiques restent ceux décrits au combat (2.2.2, 5.3.1).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "{\"characteristic\":\"level\",\"1\":0,\"7\":1,\"14\":2}",
             "conversion_function": null,

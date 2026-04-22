@@ -25,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": null,
-            "formula_display": "Bonus de PA sur amulette ; totaux et limites dans les règles (2.2.2, 4.3.4).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

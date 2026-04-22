@@ -25,7 +25,7 @@
             "min": "0",
             "max": "10",
             "formula": null,
-            "formula_display": "R\\u00e9duction fixe d\\u00e9g\\u00e2ts Eau. 0\\u201310 (\\u00e9quip. +10, forgemagie +3). Soustrait avant application % (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

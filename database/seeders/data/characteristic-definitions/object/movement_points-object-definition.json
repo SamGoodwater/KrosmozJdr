@@ -25,7 +25,7 @@
             "min": "0",
             "max": "3",
             "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus de PM sur bottes ; détail des totaux et du déplacement dans les règles (2.2.2).",
+            "formula_display": "level_object",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

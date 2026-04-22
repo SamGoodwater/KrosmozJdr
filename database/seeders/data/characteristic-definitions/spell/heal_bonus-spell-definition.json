@@ -25,7 +25,7 @@
             "min": "0",
             "max": "7",
             "formula": null,
-            "formula_display": "Effet de sort : bonus aux soins, valeur importée depuis Dofus et ramenée à l’échelle Krosmoz (plafond indiqué dans les limites de l’effet, 2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(7,max(0,0.5*pow(max(1,[d]),0.82))))",
             "conversion_function": null,

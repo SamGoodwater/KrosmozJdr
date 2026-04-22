@@ -36,7 +36,7 @@
             "min": "0",
             "max": "63",
             "formula": null,
-            "formula_display": "Portée minimale en cases (3.3.2.2). DofusDB levels.0.minRange. 0 = le sort peut cibler la case du lanceur.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

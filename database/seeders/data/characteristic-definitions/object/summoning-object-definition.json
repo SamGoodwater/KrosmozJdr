@@ -25,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": "{\"1\":\"0\",\"5\":\"1\",\"11\":\"2\",\"17\":\"3\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus invocations sur anneau (2.2.2).",
+            "formula_display": "level_object",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

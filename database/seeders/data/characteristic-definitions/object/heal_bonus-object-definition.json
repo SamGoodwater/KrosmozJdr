@@ -25,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": null,
-            "formula_display": "Bonus soins (anneaux). S’ajoute à tes jets de soins ; plafonds selon équipement et forgemagie (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",
             "conversion_function": null,

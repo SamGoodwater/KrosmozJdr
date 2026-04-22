@@ -108,7 +108,7 @@
             "min": "0",
             "max": "127",
             "formula": null,
-            "formula_display": "Élément(s) du sort : masque 7 bits (2.2.1, 2.3.3). Bit 0 = Neutre (1), Bit 1 = Terre/Force (2), Bit 2 = Feu/Intelligence (4), Bit 3 = Air/Agilité (8), Bit 4 = Eau/Chance (16), Bit 5 = Sagesse (32), Bit 6 = Vitalité (64). Combinaisons possibles (ex. Terre-Feu = 6). Conservé tel quel depuis Dofus.",
+            "formula_display": null,
             "default_value": "1",
             "conversion_formula": "[d]",
             "conversion_function": null,

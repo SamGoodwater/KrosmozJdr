@@ -25,7 +25,7 @@
             "min": "0",
             "max": "63",
             "formula": null,
-            "formula_display": "Tours minimum entre deux lancers du même sort (3.3.2.1). 0 = pas de délai. Valeurs Dofus : 0–63, conservées telles quelles.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

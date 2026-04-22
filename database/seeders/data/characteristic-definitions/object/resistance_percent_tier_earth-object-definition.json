@@ -42,7 +42,7 @@
             "min": "0",
             "max": "2",
             "formula": null,
-            "formula_display": "Palier Terre sur la fiche ; correspondance à l’import depuis les données de jeu.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "{\"characteristic\":\"d\",\"0\":0,\"80\":1,\"95\":2}",
             "conversion_function": null,

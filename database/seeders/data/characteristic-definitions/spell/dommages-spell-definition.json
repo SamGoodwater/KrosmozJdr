@@ -25,7 +25,7 @@
             "min": "0",
             "max": "96",
             "formula": null,
-            "formula_display": "Dégâts fixes neutres : valeur issue de Dofus, adaptée au jeu (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(96, max(1, 1.12 * pow(max(1,[d]), 0.475))))",
             "conversion_function": "convertToDice",

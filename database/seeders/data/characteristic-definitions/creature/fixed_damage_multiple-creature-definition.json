@@ -25,7 +25,7 @@
             "min": "0",
             "max": "10",
             "formula": null,
-            "formula_display": "D\\u00e9g\\u00e2ts fixes multi-\\u00e9l\\u00e9ments. 0\\u20135 (\\u00e9quip. +5, forgemagie +2). S'ajoutent \\u00e0 tous les \\u00e9l\\u00e9ments (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

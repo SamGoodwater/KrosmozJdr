@@ -25,7 +25,7 @@
             "min": "0",
             "max": "6",
             "formula": null,
-            "formula_display": "Variation PM via sous-effet de sort (1.2.2, 2.2.2). Base créature 3, max 6. 1 PM = 1 case = 1,5 m. Déplacement fragmentable, diagonales autorisées.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(6,max(0,[d])))",
             "conversion_function": null,

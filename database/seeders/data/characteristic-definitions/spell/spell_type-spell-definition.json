@@ -74,7 +74,7 @@
             "min": null,
             "max": null,
             "formula": null,
-            "formula_display": "Type de sort : orientation stratégique (dégâts, soin, protection, amélioration, entrave, invocation, placement, tank). Relation spell_types, pas une colonne directe. Un sort peut avoir plusieurs types.",
+            "formula_display": null,
             "default_value": null,
             "conversion_formula": null,
             "conversion_function": null,

@@ -25,7 +25,7 @@
             "min": "0",
             "max": "3",
             "formula": null,
-            "formula_display": "Bonus recharge Wakfu sur ceinture ; non forgemageable (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

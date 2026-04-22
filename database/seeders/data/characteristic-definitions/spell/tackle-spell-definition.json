@@ -25,7 +25,7 @@
             "min": "0",
             "max": "10",
             "formula": null,
-            "formula_display": "Tacle temporaire via sous-effet de sort (2.2.2). Jet de tacle : 1d20 + mod Chance + bonus, opposé au jet de fuite. Équipement +8, forgemagie +2.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(10,max(0,0.55*pow(max(1,[d]),0.45))))",
             "conversion_function": null,

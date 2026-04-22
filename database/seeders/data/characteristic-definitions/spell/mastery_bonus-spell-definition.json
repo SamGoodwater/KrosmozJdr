@@ -25,7 +25,7 @@
             "min": "0",
             "max": "6",
             "formula": null,
-            "formula_display": "Effet de sort : reprend la valeur Dofus telle quelle pour le bonus de maîtrise, dans la limite du jeu (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

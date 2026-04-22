@@ -56,7 +56,7 @@
             "min": "0",
             "max": "5",
             "formula": null,
-            "formula_display": "Rareté 0–5 : commun, peu commun, rare, très rare, légendaire, unique",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "{\"0\":\"0\",\"2\":\"0\",\"7\":\"1\",\"15\":\"2\",\"20\":\"3\",\"characteristic\":\"level\"}",
             "conversion_function": null,

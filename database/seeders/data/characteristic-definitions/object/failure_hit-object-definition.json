@@ -50,7 +50,7 @@
             "min": "0",
             "max": "3",
             "formula": null,
-            "formula_display": "Bonus d’échec critique sur amulette (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "floor(0.1202 * [d] + 0.5109)",
             "conversion_function": null,

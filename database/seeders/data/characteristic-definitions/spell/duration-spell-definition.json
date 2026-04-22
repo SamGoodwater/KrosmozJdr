@@ -25,7 +25,7 @@
             "min": null,
             "max": null,
             "formula": null,
-            "formula_display": "Durée de l'effet. Valeur texte libre : « 3 tours », « 24h », « concentration », « permanent ». Dofus : souvent exprimé en tours, converti manuellement.",
+            "formula_display": null,
             "default_value": null,
             "conversion_formula": "[d]",
             "conversion_function": null,

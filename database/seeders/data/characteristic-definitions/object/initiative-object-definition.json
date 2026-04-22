@@ -25,7 +25,7 @@
             "min": "0",
             "max": null,
             "formula": null,
-            "formula_display": "Bonus d’initiative sur l’objet : s’ajoute au jet d’ordre de tour, dans les limites d’équipement et de forgemagie (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

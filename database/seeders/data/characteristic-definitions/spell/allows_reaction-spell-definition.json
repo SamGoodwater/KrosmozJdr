@@ -34,7 +34,7 @@
             "min": "0",
             "max": "1",
             "formula": null,
-            "formula_display": "Utilisable en réaction (3.2.2). Si oui (1), le sort peut être lancé hors du tour du lanceur. Une réaction par round par créature ; les PA dépensés ne sont pas récupérés au tour suivant. Coût réaction : 2–3 PA.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "min(1,max(0,round([d])))",
             "conversion_function": null,

@@ -25,7 +25,7 @@
             "min": "0",
             "max": "10",
             "formula": null,
-            "formula_display": "Bonus d\\u00e9g\\u00e2ts fixes Vitalit\\u00e9. 0\\u201310. Sp\\u00e9cifique Krosmoz JDR.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

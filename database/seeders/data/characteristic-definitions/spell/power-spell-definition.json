@@ -25,7 +25,7 @@
             "min": "0",
             "max": "30",
             "formula": null,
-            "formula_display": "Puissance du sort (3.3.2). Échelle Krosmoz 0–30, compressée depuis Dofus (1–250+). Affecte les dégâts/soins via formule ndX (barèmes 5.2.3). Profil sous-linéaire sqrt.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(30, max(1, 2 + 14 * pow(max(1,[d])/250, 0.5))))",
             "conversion_function": null,

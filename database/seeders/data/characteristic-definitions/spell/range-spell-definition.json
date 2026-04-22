@@ -36,7 +36,7 @@
             "min": "0",
             "max": "8",
             "formula": null,
-            "formula_display": "Variation PO via sous-effet de sort (1.2.2, 2.2.2). Base créature 0, max 6 (équipement +6, forgemagie +1). S'ajoute aux sorts à portée modifiable.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(8,max(0,[d])))",
             "conversion_function": null,

@@ -25,7 +25,7 @@
             "min": "0",
             "max": "6",
             "formula": null,
-            "formula_display": "Réserve Wakfu temporaire via sous-effet de sort (3.3.4). Réserve base = bonus de maîtrise + équipement (max +3). 1 point = débloque les PA max en une tranche hors combat. Effet sort conservé tel quel.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

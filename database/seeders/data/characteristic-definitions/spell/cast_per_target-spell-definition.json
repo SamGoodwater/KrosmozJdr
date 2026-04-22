@@ -25,7 +25,7 @@
             "min": "0",
             "max": "99",
             "formula": null,
-            "formula_display": "Lancers par cible et par tour (3.3.2.1). 0 = illimité. Valeurs courantes Dofus : 1–4, conservées telles quelles.",
+            "formula_display": null,
             "default_value": "1",
             "conversion_formula": "[d]",
             "conversion_function": null,

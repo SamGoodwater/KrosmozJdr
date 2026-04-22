@@ -25,7 +25,7 @@
             "min": "0",
             "max": "6",
             "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"9\":\"4\",\"11\":\"5\",\"13\":\"6\",\"15\":\"6\",\"17\":\"6\",\"20\":\"6\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus de Chance sur l’objet (anneaux, bottes), lié à l’eau. S’ajoute à ton score dans la limite d’équipement et de forgemagie (2.2.1).",
+            "formula_display": "level_object",
             "default_value": "0",
             "conversion_formula": "floor(0.0408 * pow([d], 0.9412))",
             "conversion_function": null,

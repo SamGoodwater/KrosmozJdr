@@ -4,6 +4,7 @@ import axios from "axios";
 import { usePage } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import NormsViewer from "@/Pages/Organismes/data-display/NormsViewer.vue";
+import CharacteristicFormulaRichText from "@/Pages/Molecules/data-display/CharacteristicFormulaRichText.vue";
 import { getCharacteristicColorStyle, resolveDef } from "@/Composables/entity/useCharacteristicDisplay";
 
 const props = defineProps({
@@ -20,6 +21,7 @@ const expandedRowKey = ref(null);
 const normsByRow = ref({});
 const page = usePage();
 const TABLE_COLSPAN = 8;
+const DETAIL_COLSPAN = TABLE_COLSPAN - 1;
 
 const group = computed(() => props.settings?.group || "all");
 const entity = computed(() => props.settings?.entity || "*");
@@ -290,6 +292,18 @@ function resolvedNameForEntry(entry) {
     return resolvedNameForRow(primaryRowForEntry(entry));
 }
 
+function formulaTextForEntry(entry) {
+    const creatureFormula = String(entry?.creature?.formula_display || entry?.creature?.formula || "").trim();
+    if (creatureFormula !== "") return creatureFormula;
+    const objectFormula = String(entry?.object?.formula_display || entry?.object?.formula || "").trim();
+    return objectFormula;
+}
+
+function formulaSourceGroupsForEntry(entry) {
+    const base = primaryRowForEntry(entry);
+    return sourceGroupsForRow(base);
+}
+
 function resolvedStatusForEntry(entry) {
     const base = primaryRowForEntry(entry);
     return base?.status ?? null;
@@ -376,12 +390,13 @@ const categorizedRows = computed(() => {
     for (const category of categoryOrder) {
         const entries = buckets.get(category) || [];
         if (entries.length === 0) continue;
+        const hasExpandedInCategory = entries.some((entry) => entry?.key === expandedRowKey.value);
         entries.forEach((entry, idx) => {
             flattened.push({
                 entry,
                 categoryLabel: category,
                 showCategoryCell: idx === 0,
-                categoryRowSpan: idx === 0 ? entries.length : 0,
+                categoryRowSpan: idx === 0 ? entries.length + (hasExpandedInCategory ? 1 : 0) : 0,
                 isGroupStart: idx === 0,
                 isGroupEnd: idx === entries.length - 1,
             });
@@ -557,7 +572,12 @@ watch([group, entity, search, sortBy, sortDir, statusFilter, onlyWithEquipment, 
                         </td>
 
                         <td class="text-base font-extrabold text-primary">{{ cellValue(row.entry.creature, "default_value") }}</td>
-                        <td class="max-w-56 whitespace-normal text-sm text-base-content/85">{{ cellValue(row.entry.creature, "formula_display") !== "—" ? row.entry.creature?.formula_display : cellValue(row.entry.creature, "formula") }}</td>
+                        <td class="max-w-56 whitespace-normal text-sm text-base-content/85">
+                            <CharacteristicFormulaRichText
+                                :formula="formulaTextForEntry(row.entry)"
+                                :source-groups="formulaSourceGroupsForEntry(row.entry)"
+                            />
+                        </td>
                         <td class="text-base font-bold">{{ cellValue(row.entry.creature, "min") }}</td>
                         <td class="text-base font-bold">{{ cellValue(row.entry.creature, "max") }}</td>
 
@@ -575,7 +595,7 @@ watch([group, entity, search, sortBy, sortDir, statusFilter, onlyWithEquipment, 
                         </td>
                     </tr>
                     <tr v-if="expandedRowKey === row.entry.key" :key="`${row.entry.key}-details`" class="bg-base-200/15">
-                        <td :colspan="TABLE_COLSPAN" class="p-4">
+                        <td :colspan="DETAIL_COLSPAN" class="p-4">
                             <div class="space-y-4">
                                 <div class="rounded-box border border-base-content/15 bg-base-100/60 p-3 space-y-2">
                                     <div v-if="!row.entry.creature" class="text-xs text-base-content/70">

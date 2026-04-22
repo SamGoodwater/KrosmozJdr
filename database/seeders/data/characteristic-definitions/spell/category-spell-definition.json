@@ -46,7 +46,7 @@
             "min": "0",
             "max": "3",
             "formula": null,
-            "formula_display": "Catégorie du sort (3.3.1). 0 = sort de classe (progression par niveaux), 1 = sort de créature, 2 = sort apprenable (apprentissage 2 jours × niveau, ÷4 avec maître), 3 = sort consommable.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

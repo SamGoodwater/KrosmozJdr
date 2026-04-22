@@ -37,7 +37,7 @@
             "min": "0",
             "max": "1",
             "formula": null,
-            "formula_display": "Portée modifiable par le PO du lanceur (3.3.2.2). Si oui (1), le bonus PO de la créature (max 6, règles 2.2.2) s'ajoute à la portée du sort. Si non (0), la portée est fixe.",
+            "formula_display": null,
             "default_value": "1",
             "conversion_formula": "min(1,max(0,round([d])))",
             "conversion_function": null,

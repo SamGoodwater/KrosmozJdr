@@ -25,7 +25,7 @@
             "min": null,
             "max": null,
             "formula": null,
-            "formula_display": "Délai avant relance. Valeur texte libre : « 1 tour », « 24h », « 1 fois avant repos long/court ». Déterminé par le MJ pour les adaptations Krosmoz.",
+            "formula_display": null,
             "default_value": null,
             "conversion_formula": "[d]",
             "conversion_function": null,

@@ -25,7 +25,7 @@
             "min": "1",
             "max": "20",
             "formula": null,
-            "formula_display": "Niveau de l’objet de 1 à 20. À l’import depuis Dofus, ce niveau est ramené sur cette échelle ; il indique surtout la puissance et la rareté possibles.",
+            "formula_display": null,
             "default_value": "1",
             "conversion_formula": "floor([d]/10)",
             "conversion_function": null,

@@ -25,7 +25,7 @@
             "min": null,
             "max": null,
             "formula": null,
-            "formula_display": "Nom affiché (items, consommables, ressources, panoplies).",
+            "formula_display": null,
             "default_value": null,
             "conversion_formula": null,
             "conversion_function": null,

@@ -25,7 +25,7 @@
             "min": "0",
             "max": "50",
             "formula": null,
-            "formula_display": "Résistance % Terre temporaire via sous-effet de sort (5.3.1). Échelles MJ : faible 10–20 %, moyenne 30–50 %, forte 60–80 %. Vulnérabilité Terre ↔ Air.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",
             "conversion_function": null,

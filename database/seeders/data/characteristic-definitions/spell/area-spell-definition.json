@@ -25,7 +25,7 @@
             "min": "0",
             "max": "10",
             "formula": null,
-            "formula_display": "Zone d'effet en cases (3.3.2.4). Lignes, cônes, cercles, carrés. Calculée à partir des sous-effets du sort. 0 = cible unique.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

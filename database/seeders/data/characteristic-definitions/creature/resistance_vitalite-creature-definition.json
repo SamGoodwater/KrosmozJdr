@@ -25,7 +25,7 @@
             "min": "0",
             "max": "100",
             "formula": null,
-            "formula_display": "R\\u00e9sistance % Vitalit\\u00e9. 0\\u2013100 %. Sp\\u00e9cifique Krosmoz JDR.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

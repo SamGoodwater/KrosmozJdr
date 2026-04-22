@@ -25,7 +25,7 @@
             "min": "0",
             "max": "100",
             "formula": null,
-            "formula_display": "R\\u00e9sistance % Feu. Valeurs : 0 %, 50 %, 100 %. Issu conversion Dofus. Appliqu\\u00e9e apr\\u00e8s r\\u00e9duction fixe (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

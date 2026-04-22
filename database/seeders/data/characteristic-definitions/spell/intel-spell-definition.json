@@ -25,7 +25,7 @@
             "min": "0",
             "max": "30",
             "formula": null,
-            "formula_display": "Effet de sort sur l’Intelligence : valeur prise depuis Dofus et adaptée au jeu, dans la limite prévue pour ce type d’effet (2.2.1).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(30,max(0,2.0*pow(max(1,[d]),0.42))))",
             "conversion_function": null,

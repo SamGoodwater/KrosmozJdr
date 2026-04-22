@@ -25,7 +25,7 @@
             "min": "0",
             "max": null,
             "formula": null,
-            "formula_display": "Bonus aux points de vie maximum ; détail dans les règles (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "floor(-0.4+ 13.8587 * pow(([d]-10)/340, 0.8))",
             "conversion_function": null,

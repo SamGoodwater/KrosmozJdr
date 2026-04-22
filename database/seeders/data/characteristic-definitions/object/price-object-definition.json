@@ -25,7 +25,7 @@
             "min": "0",
             "max": null,
             "formula": null,
-            "formula_display": "Prix en kamas. Équipements : prix des composants +  bonus (2.6.1)",
+            "formula_display": null,
             "default_value": null,
             "conversion_formula": "[d]",
             "conversion_function": null,

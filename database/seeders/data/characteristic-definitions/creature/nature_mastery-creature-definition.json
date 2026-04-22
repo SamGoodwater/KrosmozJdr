@@ -5,22 +5,22 @@
         "name": "Nature (palier maîtrise)",
         "short_name": "Nat. pal.",
         "helper": "0 = non formé, 1 = maîtrise, 2 = expertise. Pas de conversion DofusDB.",
-        "descriptions": "Palier 0–2 : non formé, maîtrise, expertise (2.2.2).",
+        "descriptions": "Palier 0–2 : non formé, maîtrise, expertise.",
         "icon": "skillIntelligence.webp",
         "icon_false": null,
         "color": "orange",
         "value_overrides": [
             {
                 "value": 0,
-                "subtitle": "Non formé — palier 0 : pas de bonus de maîtrise à cette compétence (2.2.2)."
+                "subtitle": "Non formé — palier 0 : pas de bonus de maîtrise à cette compétence."
             },
             {
                 "value": 1,
-                "subtitle": "Maîtrise — palier 1 : entraînement confirmé, jets avec bonus habituel (2.2.2)."
+                "subtitle": "Maîtrise — palier 1 : entraînement confirmé, jets avec bonus habituel."
             },
             {
                 "value": 2,
-                "subtitle": "Expertise — palier 2 : maîtrise maximale pour cette compétence (2.2.2)."
+                "subtitle": "Expertise — palier 2 : maîtrise maximale pour cette compétence."
             }
         ],
         "hide_when_empty": false,
@@ -38,7 +38,7 @@
             "min": "0",
             "max": "2",
             "formula": null,
-            "formula_display": "0 = non form\\u00e9, 1 = ma\\u00eetrise, 2 = expertise (2.2.2)",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": null,
             "conversion_function": null,

@@ -25,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": null,
-            "formula_display": "Bonus au jet de sauvegarde en Chance : valeur importée depuis Dofus et adaptée, dans la limite affichée sur la fiche (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(5,max(0,0.28*pow(max(1,[d]),0.52))))",
             "conversion_function": null,

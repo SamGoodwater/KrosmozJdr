@@ -25,7 +25,7 @@
             "min": "0",
             "max": "10",
             "formula": null,
-            "formula_display": "Bonus d\\u00e9g\\u00e2ts fixes Neutre. 0\\u201310 (\\u00e9quip. +10, forgemagie +5). Ajout\\u00e9 \\u00e0 chaque attaque Neutre (2.2.2).",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "-0.1704 + 8.418 * pow(([d]-0)/40, 1.3)",
             "conversion_function": null,

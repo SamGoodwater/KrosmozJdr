@@ -25,7 +25,7 @@
             "min": null,
             "max": null,
             "formula": null,
-            "formula_display": "Temps d'incantation (3.3.2.1). Valeur texte libre : « 1 » (instantané, 1 action), « 10m » (rituel), etc. Dofus : pas d'équivalent direct, déterminé par le MJ.",
+            "formula_display": null,
             "default_value": null,
             "conversion_formula": "[d]",
             "conversion_function": null,

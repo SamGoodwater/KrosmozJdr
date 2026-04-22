@@ -25,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": null,
-            "formula_display": "Bonus dégâts fixe Feu via sous-effet de sort (2.2.2). S'ajoute aux dégâts Feu. Équipement créature 0–10, sort ~moitié.",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",
             "conversion_function": null,

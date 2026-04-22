@@ -25,7 +25,7 @@
             "min": "0",
             "max": "10",
             "formula": "{\"1\":\"1\",\"3\":\"2\",\"5\":\"3\",\"7\":\"4\",\"9\":\"5\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus dégâts fixes Terre (armes). S’ajoutent aux dégâts de l’élément sur l’arme ; plafonds selon les règles (2.2.2, 4.3.4).",
+            "formula_display": "level_object",
             "default_value": "0",
             "conversion_formula": "floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",
             "conversion_function": null,

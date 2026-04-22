@@ -38,7 +38,7 @@
             "min": "0",
             "max": "1",
             "formula": null,
-            "formula_display": "Orientation du sort (3.3.2.3). Wakfu (1) : sort magique, jet de sauvegarde de la cible. Physique (0) : sort physique, jet de touche vs CA. Dofus : dérivé de la nature du sort.",
+            "formula_display": null,
             "default_value": "1",
             "conversion_formula": "min(1,max(0,round([d])))",
             "conversion_function": null,

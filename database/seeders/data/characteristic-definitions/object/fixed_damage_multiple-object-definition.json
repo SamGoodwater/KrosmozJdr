@@ -25,7 +25,7 @@
             "min": "0",
             "max": "5",
             "formula": "{\"1\":\"0\",\"9\":\"1\",\"11\":\"2\",\"15\":\"3\",\"characteristic\":\"level\"}",
-            "formula_display": "Bonus dégâts fixes multi-éléments (armes). S’ajoutent sur plusieurs éléments ; plafonds selon les règles (2.2.2).",
+            "formula_display": "level_object",
             "default_value": "0",
             "conversion_formula": "floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",
             "conversion_function": null,

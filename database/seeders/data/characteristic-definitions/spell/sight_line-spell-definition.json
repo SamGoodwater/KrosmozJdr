@@ -36,7 +36,7 @@
             "min": "0",
             "max": "1",
             "formula": null,
-            "formula_display": "Ligne de vue requise (3.3.2.2). Si oui (1), le lanceur doit avoir une vue dégagée vers la cible/zone. Si non (0), le sort traverse les obstacles. Conservé depuis Dofus.",
+            "formula_display": null,
             "default_value": "1",
             "conversion_formula": "min(1,max(0,round([d])))",
             "conversion_function": null,
