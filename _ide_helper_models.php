@@ -30,6 +30,7 @@ namespace App\Models{
  * @property bool $hide_when_empty
  * @property string|null $unit
  * @property string $type
+ * @property string $status
  * @property int $sort_order
  * @property string|null $group
  * @property int|null $linked_to_characteristic_id
@@ -68,6 +69,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereValueOverrides($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHideWhenEmpty($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereStatus($value)
  */
 	class Characteristic extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }

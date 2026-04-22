@@ -25,6 +25,8 @@ enum SectionType: string
     case CHARACTERISTIC_NORMS = 'characteristic_norms';
     /** Catalogue de chartes (plusieurs caractéristiques en accordéon). */
     case CHARACTERISTIC_NORMS_CATALOG = 'characteristic_norms_catalog';
+    /** Référentiel tabulaire des caractéristiques (formules, bornes, économie indicative). */
+    case CHARACTERISTIC_REFERENCE_TABLE = 'characteristic_reference_table';
 
     /**
      * Retourne le label traduit du type.
@@ -40,6 +42,7 @@ enum SectionType: string
             self::LEGAL_MARKDOWN => 'Document légal (Markdown)',
             self::CHARACTERISTIC_NORMS => 'Charte caractéristique',
             self::CHARACTERISTIC_NORMS_CATALOG => 'Catalogue de chartes (normes)',
+            self::CHARACTERISTIC_REFERENCE_TABLE => 'Référentiel des caractéristiques',
         };
     }
 
@@ -57,6 +60,7 @@ enum SectionType: string
             self::LEGAL_MARKDOWN => 'fa-scale-balanced',
             self::CHARACTERISTIC_NORMS => 'fa-chart-bar',
             self::CHARACTERISTIC_NORMS_CATALOG => 'fa-table-list',
+            self::CHARACTERISTIC_REFERENCE_TABLE => 'fa-table-columns',
         };
     }
 
@@ -109,6 +113,15 @@ enum SectionType: string
                 'group' => 'string (required: creature|object|spell)',
                 'entity' => 'string (optional, default: *)',
                 'characteristic_keys' => 'array (optional, filtre de clés)',
+            ],
+            self::CHARACTERISTIC_REFERENCE_TABLE => [
+                'group' => 'string (optional: creature|object|spell|all, default: all)',
+                'entity' => 'string (optional, default: *)',
+                'search' => 'string (optional)',
+                'sort_by' => 'string (optional: group|entity|name|key|equipment_max_bonus|forgemagie_max)',
+                'sort_dir' => 'string (optional: asc|desc)',
+                'show_prices' => 'boolean (optional, default: true)',
+                'show_only_with_equipment' => 'boolean (optional, default: false)',
             ],
         };
     }

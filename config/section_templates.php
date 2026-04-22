@@ -90,4 +90,17 @@ return [
         ],
         'data' => [],
     ],
+    'characteristic_reference_table' => [
+        'settings' => [
+            'group' => 'all',
+            'entity' => '*',
+            'search' => '',
+            'sort_by' => 'group',
+            'sort_dir' => 'asc',
+            'status_filter' => 'all',
+            'show_prices' => true,
+            'show_only_with_equipment' => false,
+        ],
+        'data' => [],
+    ],
 ];

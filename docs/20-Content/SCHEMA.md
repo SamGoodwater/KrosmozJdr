@@ -225,6 +225,7 @@ erDiagram
     value_overrides : longtext
     unit : varchar(32)
     type : varchar(16)
+    status : varchar(32)
     sort_order : smallint(5) unsigned
     group : varchar(16)
     linked_to_characteristic_id : bigint(20) unsigned

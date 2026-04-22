@@ -8,15 +8,15 @@
         "descriptions": "Bonus d'esquive aux points de mouvement conféré par l'équipement (bottes). Il s’appuie sur ta Sagesse et les règles d’esquive PM (2.2.2).",
         "icon": "dodgeMovementPoints.webp",
         "icon_false": null,
-        "color": "neutral",
+        "color": "lime",
         "value_overrides": null,
         "hide_when_empty": true,
         "unit": null,
         "type": "int",
+        "status": "validee",
         "sort_order": 22,
         "group": "object",
-        "linked_to_key": null,
-        "status": "a_valider"
+        "linked_to_key": null
     },
     "entities": {
         "*": {
@@ -45,7 +45,44 @@
                 "16": 3,
                 "20": 3
             },
-            "conversion_sample_rows": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -165,8 +202,7 @@
             "base_price_per_unit": 300,
             "rune_price_per_unit": 600,
             "value_available": null,
-            "item_type_ids": null,
-            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
+            "item_type_ids": null
         }
     },
     "relations": null

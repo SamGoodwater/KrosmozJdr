@@ -106,6 +106,7 @@ class ProjectInitCommand extends Command
 
             if (! (bool) $this->option('skip-seeders')) {
                 $this->runSeeders();
+                $this->runRulesPagesImport();
             } else {
                 $this->warn('Seeders ignorés (--skip-seeders).');
             }
@@ -210,6 +211,19 @@ class ProjectInitCommand extends Command
         }
 
         // MonsterRaceSeeder est inclus dans TypeSeeder (scrapping:setup)
+    }
+
+    /**
+     * Importe la table des matières des règles dans les pages CMS pour un projet initialisé "clé en main".
+     */
+    private function runRulesPagesImport(): void
+    {
+        $this->line('  → project:data:import-rules-toc (pages règles CMS)');
+        $code = Artisan::call('project:data:import-rules-toc');
+        $this->output->write(Artisan::output());
+        if ($code !== 0) {
+            $this->warn('  Avertissement : import des pages règles échoué.');
+        }
     }
 
     private function runTypesSetup(): void

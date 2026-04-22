@@ -24,7 +24,7 @@ class ProjectDataCommand extends Command
         {--skip-cache : (init|sync|catalogue) ignorer le cache HTTP scrapping}
         {--simulate : (init) ne pas écrire en base}
         {--entity= : (sync) Entités (virgules) : breed|class, spell, monster, panoply, resource, item, consumable — sans --type/--races : sync seul ; avec catalogue : exige ce filtre pour lancer aussi le sync entités}
-        {--type= : (sync) Référentiels catalogue (virgules) : all | monster (races) | resource | consumable | item | equipment | spell (types de sorts en BDD)}
+        {--type= : (sync) L\'Essentiels catalogue (virgules) : all | monster (races) | resource | consumable | item | equipment | spell (types de sorts en BDD)}
         {--races : (sync) Raccourci pour --type=monster (races monstres DofusDB)}
         {--lang=fr : (sync catalogue) langue DofusDB pour types/races}
         {--skip-scrapping : (init)}

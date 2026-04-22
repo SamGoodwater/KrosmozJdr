@@ -21,7 +21,7 @@ app/Services/Scrapping/
 │   ├── Orchestrator/       # Orchestrator (runOne, runMany)
 │   ├── Relation/           # RelationResolutionService
 │   └── Validation/        # ValidationService
-├── Catalog/                # Référentiels DofusDB (types, races)
+├── Catalog/                # L'Essentiels DofusDB (types, races)
 │   ├── DofusDbItemTypesCatalogService
 │   ├── DofusDbMonsterRacesCatalogService
 │   └── DofusDbItemSuperTypeMappingService

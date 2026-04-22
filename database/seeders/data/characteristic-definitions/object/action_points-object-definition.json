@@ -13,17 +13,17 @@
         "hide_when_empty": true,
         "unit": null,
         "type": "int",
+        "status": "validee",
         "sort_order": 22,
         "group": "object",
-        "linked_to_key": null,
-        "status": "a_valider"
+        "linked_to_key": null
     },
     "entities": {
         "*": {
             "dofusdb_characteristic_id": 1,
             "db_column": null,
             "min": "0",
-            "max": "6",
+            "max": "5",
             "formula": null,
             "formula_display": "Bonus de PA sur amulette ; totaux et limites dans les règles (2.2.2, 4.3.4).",
             "default_value": "0",
@@ -204,8 +204,7 @@
             "value_available": null,
             "item_type_ids": [
                 1
-            ],
-            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
+            ]
         }
     },
     "relations": null

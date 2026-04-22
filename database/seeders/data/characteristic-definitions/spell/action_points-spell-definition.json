@@ -13,10 +13,10 @@
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
+        "status": "a_valider",
         "sort_order": 70,
         "group": "spell",
-        "linked_to_key": null,
-        "status": "a_valider"
+        "linked_to_key": null
     },
     "entities": {
         "*": {

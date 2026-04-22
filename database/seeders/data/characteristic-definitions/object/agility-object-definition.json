@@ -13,10 +13,10 @@
         "hide_when_empty": true,
         "unit": null,
         "type": "int",
+        "status": "a_valider",
         "sort_order": 23,
         "group": "object",
-        "linked_to_key": null,
-        "status": "a_valider"
+        "linked_to_key": null
     },
     "entities": {
         "*": {
@@ -165,8 +165,7 @@
             "base_price_per_unit": 500,
             "rune_price_per_unit": 1000,
             "value_available": null,
-            "item_type_ids": null,
-            "_comment_limits": "Convention limites (objet) : `max` = bonus équipement seul, hors forgemagie. Plafond total avec forgemagie = max + forgemagie_max lorsque la forgemagie s'applique (2.2.2, CARACTERISTIQUES_CREATION_REFERENCE.md §4)."
+            "item_type_ids": null
         }
     },
     "relations": null

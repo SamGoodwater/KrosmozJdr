@@ -306,6 +306,7 @@ class PageController extends Controller
 
         $tree = collect($menuTree);
         $reglesItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Règles')->sortBy('order')->values()->toArray();
+        $referentielsItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'L\'Essentiels')->sortBy('order')->values()->toArray();
         $informationsItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Informations')->sortBy('order')->values()->toArray();
 
         $bibliothequesItems = collect(config('nav_menu.bibliotheques', []))
@@ -326,6 +327,7 @@ class PageController extends Controller
             ->toArray();
 
         $allGroups = [
+            ['id' => 'referentiels', 'title' => 'L\'Essentiels', 'menu_group' => 'L\'Essentiels', 'order' => 0, 'icon' => 'fa-book-bookmark', 'children' => $referentielsItems],
             ['id' => 'regles', 'title' => 'Règles', 'menu_group' => 'Règles', 'order' => 1, 'icon' => 'fa-book', 'children' => $reglesItems],
             ['id' => 'bibliotheques', 'title' => 'Bibliothèques', 'menu_group' => 'Bibliothèques', 'order' => 2, 'icon' => 'fa-book-open-reader', 'children' => $bibliothequesItems],
             ['id' => 'informations', 'title' => 'Informations', 'menu_group' => 'Informations', 'order' => 4, 'icon' => 'fa-circle-info', 'children' => $informationsItems],

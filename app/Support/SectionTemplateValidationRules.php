@@ -104,6 +104,16 @@ class SectionTemplateValidationRules
                 'settings.characteristic_keys' => ['sometimes', 'nullable', 'array'],
                 'settings.characteristic_keys.*' => ['string', 'max:128'],
             ],
+            SectionType::CHARACTERISTIC_REFERENCE_TABLE => [
+                'settings.group' => ['sometimes', 'nullable', 'string', Rule::in(['all', 'creature', 'object', 'spell'])],
+                'settings.entity' => ['sometimes', 'nullable', 'string', 'max:32'],
+                'settings.search' => ['sometimes', 'nullable', 'string', 'max:255'],
+                'settings.sort_by' => ['sometimes', 'nullable', 'string', Rule::in(['group', 'entity', 'name', 'key', 'equipment_max_bonus', 'forgemagie_max'])],
+                'settings.sort_dir' => ['sometimes', 'nullable', 'string', Rule::in(['asc', 'desc'])],
+                'settings.status_filter' => ['sometimes', 'nullable', 'string', Rule::in(['all', 'a_valider', 'en_cours_de_validation', 'validee'])],
+                'settings.show_prices' => ['sometimes', 'boolean'],
+                'settings.show_only_with_equipment' => ['sometimes', 'boolean'],
+            ],
             default => [],
         };
     }
