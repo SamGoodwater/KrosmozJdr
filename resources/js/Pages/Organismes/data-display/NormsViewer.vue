@@ -9,6 +9,7 @@ import { computed, ref, toRef } from 'vue';
 import NormsTable from '@/Pages/Molecules/data-display/NormsTable.vue';
 import NormsChart from '@/Pages/Molecules/data-display/NormsChart.vue';
 import NormsConditionSelector from '@/Pages/Molecules/data-input/NormsConditionSelector.vue';
+import ResponsiveActionButton from '@/Pages/Atoms/action/ResponsiveActionButton.vue';
 import { useNormsReader } from '@/Composables/characteristic/useNormsReader';
 import { sanitizeHtml } from '@/Utils/security/sanitizeHtml';
 import { resolveCharacteristicUiColor } from '@/Utils/color/Color';
@@ -31,6 +32,12 @@ const props = defineProps({
     /** Contenu brut (sanitisé côté client comme SectionTextRead). */
     helpSectionHtml: { type: String, default: '' },
     helpSectionTitle: { type: String, default: '' },
+    /** Active un switch Tableau/Graphique (au lieu d'un affichage côte à côte). */
+    enableViewToggle: { type: Boolean, default: false },
+    /** Affiche le bandeau titre + bouton d'aide. */
+    showHeader: { type: Boolean, default: true },
+    /** Affiche le switch en mode compact (icônes uniquement). */
+    compactToggle: { type: Boolean, default: false },
 });
 
 const gridRef = toRef(props, 'grid');
@@ -48,6 +55,7 @@ const {
 } = useNormsReader(gridRef, conditionsRef);
 
 const helpOpen = ref(false);
+const activeView = ref('chart');
 
 function parseNumericLimit(limit) {
     if (limit === null || limit === undefined) return null;
@@ -69,17 +77,40 @@ const resolvedCharacteristicColor = computed(() => resolveCharacteristicUiColor(
 <template>
     <div class="space-y-4">
         <div class="flex items-center justify-between gap-3">
-            <h4 class="text-sm font-semibold text-base-content/80">
+            <h4 v-if="showHeader" class="text-sm font-semibold text-base-content/80">
                 {{ characteristicName || "Charte de caractéristique" }}
             </h4>
-            <button
-                type="button"
-                class="btn btn-ghost btn-xs"
-                @click="helpOpen = !helpOpen"
-            >
-                <i class="fa-solid fa-circle-question text-info mr-1" />
-                Aide à la lecture
-            </button>
+            <div v-else />
+
+            <div class="flex items-center gap-2">
+                <button
+                    type="button"
+                    class="btn btn-ghost btn-xs"
+                    @click="helpOpen = !helpOpen"
+                >
+                    <i class="fa-solid fa-circle-question text-info mr-1" />
+                    Aide
+                </button>
+
+                <div v-if="enableViewToggle" class="flex items-center gap-1">
+                    <ResponsiveActionButton
+                        :label="compactToggle ? '' : 'Tableau'"
+                        icon="fa-solid fa-table-cells"
+                        :color="activeView === 'table' ? 'primary' : 'neutral'"
+                        size="xs"
+                        :aria-label="'Vue tableau'"
+                        @click="activeView = 'table'"
+                    />
+                    <ResponsiveActionButton
+                        :label="compactToggle ? '' : 'Graphique'"
+                        icon="fa-solid fa-chart-line"
+                        :color="activeView === 'chart' ? 'primary' : 'neutral'"
+                        size="xs"
+                        :aria-label="'Vue graphique'"
+                        @click="activeView = 'chart'"
+                    />
+                </div>
+            </div>
         </div>
 
         <div
@@ -120,9 +151,8 @@ const resolvedCharacteristicColor = computed(() => resolveCharacteristicUiColor(
             </span>
         </div>
 
-        <!-- Table + chart en 2 colonnes -->
-        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-4 items-start">
-            <div class="min-w-0 space-y-3">
+        <div class="space-y-3">
+            <div v-show="!enableViewToggle || activeView === 'table'" class="min-w-0 space-y-3">
                 <NormsTable
                     :grid="grid"
                     :effective-power-index="effectivePowerIndex"
@@ -162,7 +192,7 @@ const resolvedCharacteristicColor = computed(() => resolveCharacteristicUiColor(
                 </div>
             </div>
 
-            <div class="w-full xl:w-[360px]">
+            <div v-show="!enableViewToggle || activeView === 'chart'" class="w-full">
                 <NormsChart
                     :grid="grid"
                     :effective-power-index="effectivePowerIndex"

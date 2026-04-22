@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import axios from "axios";
 import { usePage } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import NormsViewer from "@/Pages/Organismes/data-display/NormsViewer.vue";
 import { getCharacteristicColorStyle, resolveDef } from "@/Composables/entity/useCharacteristicDisplay";
 
 const props = defineProps({
@@ -15,7 +16,10 @@ const loading = ref(false);
 const error = ref(null);
 const rows = ref([]);
 const meta = ref({});
+const expandedRowKey = ref(null);
+const normsByRow = ref({});
 const page = usePage();
+const TABLE_COLSPAN = 8;
 
 const group = computed(() => props.settings?.group || "all");
 const entity = computed(() => props.settings?.entity || "*");
@@ -61,28 +65,6 @@ function fmtNumber(value) {
     const n = Number(value);
     if (!Number.isFinite(n)) return String(value);
     return new Intl.NumberFormat("fr-FR").format(n);
-}
-
-function statusLabel(status) {
-    switch (status) {
-        case "validee":
-            return "Validée";
-        case "en_cours_de_validation":
-            return "En cours";
-        default:
-            return "À valider";
-    }
-}
-
-function statusClass(status) {
-    switch (status) {
-        case "validee":
-            return "badge-success";
-        case "en_cours_de_validation":
-            return "badge-warning";
-        default:
-            return "badge-neutral";
-    }
 }
 
 function pickPreferredGroupRow(groupRows = []) {
@@ -313,6 +295,74 @@ function resolvedStatusForEntry(entry) {
     return base?.status ?? null;
 }
 
+function showStatusDot(entry) {
+    const status = String(resolvedStatusForEntry(entry) || "");
+    return status !== "validee" && status !== "";
+}
+
+function statusDotClass(entry) {
+    const status = String(resolvedStatusForEntry(entry) || "");
+    if (status === "en_cours_de_validation") return "bg-warning";
+    return "bg-neutral";
+}
+
+function ensureNormsState(rowKey) {
+    if (!normsByRow.value[rowKey]) {
+        normsByRow.value[rowKey] = {
+            creature: { loading: false, loaded: false, error: null, data: null },
+            object: { loading: false, loaded: false, error: null, data: null },
+        };
+    }
+    return normsByRow.value[rowKey];
+}
+
+async function loadNormsFor(entry, groupType) {
+    const row = groupType === "creature" ? entry?.creature : entry?.object;
+    if (!row?.key) return;
+
+    const rowKey = entry?.key;
+    const state = ensureNormsState(rowKey)[groupType];
+    if (state.loading || state.loaded) return;
+
+    state.loading = true;
+    state.error = null;
+    try {
+        const url = `/api/characteristics/${encodeURIComponent(String(row.key))}/norms/${encodeURIComponent(String(row.entity || "*"))}`;
+        const { data } = await axios.get(url, {
+            params: { group: groupType },
+        });
+        state.data = data;
+        state.loaded = true;
+    } catch (e) {
+        state.error = e?.response?.data?.error || "Erreur de chargement des normes.";
+    } finally {
+        state.loading = false;
+    }
+}
+
+async function toggleRowDetails(entry) {
+    if (!entry?.key) return;
+    if (expandedRowKey.value === entry.key) {
+        expandedRowKey.value = null;
+        return;
+    }
+    expandedRowKey.value = entry.key;
+    ensureNormsState(entry.key);
+    await Promise.all([
+        loadNormsFor(entry, "creature"),
+        loadNormsFor(entry, "object"),
+    ]);
+}
+
+function normsState(entry, groupType) {
+    return ensureNormsState(entry?.key || "")[groupType];
+}
+
+function hasNormsData(entry, groupType) {
+    const state = normsState(entry, groupType);
+    return Boolean(state?.data?.norms?.grid);
+}
+
 const categorizedRows = computed(() => {
     const categoryOrder = ["Général", "Principal", "Offensif", "Défensif", "Compétences"];
     const buckets = new Map(categoryOrder.map((c) => [c, []]));
@@ -332,6 +382,8 @@ const categorizedRows = computed(() => {
                 categoryLabel: category,
                 showCategoryCell: idx === 0,
                 categoryRowSpan: idx === 0 ? entries.length : 0,
+                isGroupStart: idx === 0,
+                isGroupEnd: idx === entries.length - 1,
             });
         });
     }
@@ -392,36 +444,85 @@ watch([group, entity, search, sortBy, sortDir, statusFilter, onlyWithEquipment, 
             <span>Aucune caractéristique trouvée pour ces filtres.</span>
         </div>
 
-        <div v-else class="overflow-x-auto rounded-box border border-base-content/20 bg-base-100/40">
+        <div v-else class="max-h-[72vh] overflow-auto rounded-box border border-base-content/20 bg-base-100/40">
             <table class="table w-full">
                 <thead>
-                    <tr class="bg-base-200/70 text-sm">
-                        <th rowspan="2" class="text-base font-extrabold">Groupe</th>
-                        <th rowspan="2" class="text-base font-extrabold">Caractéristique</th>
-                        <th v-if="canSeeStatus" rowspan="2" class="font-bold">Statut</th>
-                        <th colspan="4" class="text-center text-base font-extrabold tracking-wide">Valeurs de référence (Créature)</th>
-                        <th colspan="2" class="text-center text-base font-extrabold tracking-wide">Équipements (Objet)</th>
+                    <tr class="sticky top-0 z-40 bg-base-200/95 text-sm shadow-[0_1px_0_rgba(0,0,0,0.25)]">
+                        <th
+                            rowspan="2"
+                            class="text-base font-extrabold"
+                        >
+                            Groupe
+                        </th>
+                        <th
+                            rowspan="2"
+                            class="text-base font-extrabold"
+                        >
+                            Caractéristique
+                        </th>
+                        <th
+                            colspan="4"
+                            class="text-center text-base font-extrabold tracking-wide"
+                        >
+                            Valeurs de référence (Créature)
+                        </th>
+                        <th
+                            colspan="2"
+                            class="text-center text-base font-extrabold tracking-wide"
+                        >
+                            Équipements (Objet)
+                        </th>
                     </tr>
-                    <tr class="bg-base-200/45 text-xs uppercase tracking-wide text-base-content/85">
-                        <th class="text-sm font-extrabold">Défaut</th>
-                        <th class="font-semibold">Formule</th>
-                        <th class="text-sm font-extrabold">Min</th>
-                        <th class="text-sm font-extrabold">Max</th>
-                        <th class="text-sm font-extrabold">Équipement</th>
-                        <th class="text-sm font-extrabold">Forgemagie</th>
+                    <tr class="sticky top-[44px] z-30 bg-base-200/95 text-xs uppercase tracking-wide text-base-content/85 shadow-[0_1px_0_rgba(0,0,0,0.2)]">
+                        <th
+                            class="text-sm font-extrabold"
+                        >
+                            Défaut
+                        </th>
+                        <th
+                            class="font-semibold"
+                        >
+                            Formule
+                        </th>
+                        <th
+                            class="text-sm font-extrabold"
+                        >
+                            Min
+                        </th>
+                        <th
+                            class="text-sm font-extrabold"
+                        >
+                            Max
+                        </th>
+                        <th
+                            class="text-sm font-extrabold"
+                        >
+                            Équipement
+                        </th>
+                        <th
+                            class="text-sm font-extrabold"
+                        >
+                            Forgemagie
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
+                    <template v-for="(row, rowIndex) in categorizedRows" :key="row.entry.key">
                     <tr
-                        v-for="row in categorizedRows"
-                        :key="row.entry.key"
                         :style="rowAccentStyle(row.entry)"
-                        class="hover:bg-base-200/30"
+                        :class="[
+                            rowIndex % 2 === 0 ? 'bg-base-100/70' : 'bg-base-200/30',
+                            row.isGroupStart ? 'border-t-2 border-primary/30' : 'border-t border-base-content/10',
+                            row.isGroupEnd ? 'border-b-2 border-primary/25' : '',
+                            expandedRowKey === row.entry.key ? 'bg-base-200/40' : '',
+                            'hover:bg-base-200/30 cursor-pointer'
+                        ]"
+                        @click="toggleRowDetails(row.entry)"
                     >
                         <td
                             v-if="row.showCategoryCell"
                             :rowspan="row.categoryRowSpan"
-                            class="w-10 min-w-10 border-r border-base-content/10 bg-base-200/35 px-1 text-center align-middle"
+                            class="w-10 min-w-10 border-b border-white/20 bg-base-200/60 px-1 text-center align-middle"
                         >
                             <span class="inline-block text-[11px] font-extrabold uppercase tracking-wider text-base-content/80 [writing-mode:vertical-rl] rotate-180">
                                 {{ row.categoryLabel }}
@@ -429,6 +530,12 @@ watch([group, entity, search, sortBy, sortDir, statusFilter, onlyWithEquipment, 
                         </td>
                         <td class="py-3">
                             <span class="inline-flex items-center gap-2">
+                                <span
+                                    v-if="showStatusDot(row.entry)"
+                                    class="inline-block h-2.5 w-2.5 rounded-full"
+                                    :class="statusDotClass(row.entry)"
+                                    title="Statut non validé"
+                                />
                                 <Icon
                                     v-if="resolvedIconForEntry(row.entry)"
                                     :source="resolvedIconForEntry(row.entry)"
@@ -446,11 +553,6 @@ watch([group, entity, search, sortBy, sortDir, statusFilter, onlyWithEquipment, 
                                 <span class="text-base font-extrabold leading-tight" :style="getCharacteristicColorStyle(resolvedColorForEntry(row.entry)) || {}">
                                     {{ resolvedNameForEntry(row.entry) }}
                                 </span>
-                            </span>
-                        </td>
-                        <td v-if="canSeeStatus" class="py-3">
-                            <span class="badge badge-xs" :class="statusClass(resolvedStatusForEntry(row.entry))">
-                                {{ statusLabel(resolvedStatusForEntry(row.entry)) }}
                             </span>
                         </td>
 
@@ -472,6 +574,76 @@ watch([group, entity, search, sortBy, sortDir, statusFilter, onlyWithEquipment, 
                             </div>
                         </td>
                     </tr>
+                    <tr v-if="expandedRowKey === row.entry.key" :key="`${row.entry.key}-details`" class="bg-base-200/15">
+                        <td :colspan="TABLE_COLSPAN" class="p-4">
+                            <div class="space-y-4">
+                                <div class="rounded-box border border-base-content/15 bg-base-100/60 p-3 space-y-2">
+                                    <div v-if="!row.entry.creature" class="text-xs text-base-content/70">
+                                        Aucune définition créature pour cette caractéristique.
+                                    </div>
+                                    <div v-else-if="normsState(row.entry, 'creature').loading" class="flex items-center gap-2 text-xs text-base-content/70">
+                                        <span class="loading loading-spinner loading-xs" />
+                                        Chargement des normes créature...
+                                    </div>
+                                    <div v-else-if="normsState(row.entry, 'creature').error" class="alert alert-warning py-2">
+                                        <span>{{ normsState(row.entry, "creature").error }}</span>
+                                    </div>
+                                    <div v-else-if="!hasNormsData(row.entry, 'creature')" class="text-xs text-base-content/70">
+                                        Aucune norme créature disponible.
+                                    </div>
+                                    <NormsViewer
+                                        v-else
+                                        :grid="normsState(row.entry, 'creature').data.norms.grid"
+                                        :conditions="normsState(row.entry, 'creature').data.norms.conditions || []"
+                                        :description="normsState(row.entry, 'creature').data.norms.description || ''"
+                                        :min-limit="normsState(row.entry, 'creature').data.norms.limits?.min ?? null"
+                                        :max-limit="normsState(row.entry, 'creature').data.norms.limits?.max ?? null"
+                                        :characteristic-name="''"
+                                        :characteristic-color="resolvedColorForEntry(row.entry) || 'indigo'"
+                                        :available-characteristics="normsState(row.entry, 'creature').data.available_characteristics || {}"
+                                        :help-section-html="normsState(row.entry, 'creature').data.norms.help_section?.html || ''"
+                                        :help-section-title="normsState(row.entry, 'creature').data.norms.help_section?.title || ''"
+                                        :enable-view-toggle="true"
+                                        :show-header="false"
+                                        :compact-toggle="true"
+                                    />
+                                </div>
+
+                                <div class="rounded-box border border-base-content/15 bg-base-100/60 p-3 space-y-2">
+                                    <div v-if="!row.entry.object" class="text-xs text-base-content/70">
+                                        Aucune définition objet pour cette caractéristique.
+                                    </div>
+                                    <div v-else-if="normsState(row.entry, 'object').loading" class="flex items-center gap-2 text-xs text-base-content/70">
+                                        <span class="loading loading-spinner loading-xs" />
+                                        Chargement des normes objet...
+                                    </div>
+                                    <div v-else-if="normsState(row.entry, 'object').error" class="alert alert-warning py-2">
+                                        <span>{{ normsState(row.entry, "object").error }}</span>
+                                    </div>
+                                    <div v-else-if="!hasNormsData(row.entry, 'object')" class="text-xs text-base-content/70">
+                                        Aucune norme objet disponible.
+                                    </div>
+                                    <NormsViewer
+                                        v-else
+                                        :grid="normsState(row.entry, 'object').data.norms.grid"
+                                        :conditions="normsState(row.entry, 'object').data.norms.conditions || []"
+                                        :description="normsState(row.entry, 'object').data.norms.description || ''"
+                                        :min-limit="normsState(row.entry, 'object').data.norms.limits?.min ?? null"
+                                        :max-limit="normsState(row.entry, 'object').data.norms.limits?.max ?? null"
+                                        :characteristic-name="''"
+                                        :characteristic-color="resolvedColorForEntry(row.entry) || 'indigo'"
+                                        :available-characteristics="normsState(row.entry, 'object').data.available_characteristics || {}"
+                                        :help-section-html="normsState(row.entry, 'object').data.norms.help_section?.html || ''"
+                                        :help-section-title="normsState(row.entry, 'object').data.norms.help_section?.title || ''"
+                                        :enable-view-toggle="true"
+                                        :show-header="false"
+                                        :compact-toggle="true"
+                                    />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </template>
                 </tbody>
             </table>
         </div>
