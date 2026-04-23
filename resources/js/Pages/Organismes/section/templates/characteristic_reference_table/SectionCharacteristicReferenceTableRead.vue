@@ -300,8 +300,15 @@ function formulaTextForEntry(entry) {
 }
 
 function formulaSourceGroupsForEntry(entry) {
-    const base = primaryRowForEntry(entry);
-    return sourceGroupsForRow(base);
+    const groups = new Set();
+    // Une formule de créature peut référencer des clés objet (ex: initiative_object),
+    // donc on garde volontairement un scope multi-groupes.
+    sourceGroupsForRow(entry?.creature).forEach((g) => groups.add(g));
+    sourceGroupsForRow(entry?.object).forEach((g) => groups.add(g));
+    if (groups.size === 0) {
+        sourceGroupsForRow(primaryRowForEntry(entry)).forEach((g) => groups.add(g));
+    }
+    return Array.from(groups);
 }
 
 function resolvedStatusForEntry(entry) {
@@ -571,15 +578,30 @@ watch([group, entity, search, sortBy, sortDir, statusFilter, onlyWithEquipment, 
                             </span>
                         </td>
 
-                        <td class="text-base font-extrabold text-primary">{{ cellValue(row.entry.creature, "default_value") }}</td>
+                        <td class="text-base font-extrabold text-primary">
+                            <CharacteristicFormulaRichText
+                                :formula="cellValue(row.entry.creature, 'default_value')"
+                                :source-groups="formulaSourceGroupsForEntry(row.entry)"
+                            />
+                        </td>
                         <td class="max-w-56 whitespace-normal text-sm text-base-content/85">
                             <CharacteristicFormulaRichText
                                 :formula="formulaTextForEntry(row.entry)"
                                 :source-groups="formulaSourceGroupsForEntry(row.entry)"
                             />
                         </td>
-                        <td class="text-base font-bold">{{ cellValue(row.entry.creature, "min") }}</td>
-                        <td class="text-base font-bold">{{ cellValue(row.entry.creature, "max") }}</td>
+                        <td class="text-base font-bold">
+                            <CharacteristicFormulaRichText
+                                :formula="cellValue(row.entry.creature, 'min')"
+                                :source-groups="formulaSourceGroupsForEntry(row.entry)"
+                            />
+                        </td>
+                        <td class="text-base font-bold">
+                            <CharacteristicFormulaRichText
+                                :formula="cellValue(row.entry.creature, 'max')"
+                                :source-groups="formulaSourceGroupsForEntry(row.entry)"
+                            />
+                        </td>
 
                         <td class="text-sm">
                             <div class="font-extrabold text-secondary">{{ cellValue(row.entry.object, "equipment_max_bonus") }}</div>

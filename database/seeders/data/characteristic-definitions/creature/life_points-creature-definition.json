@@ -13,7 +13,7 @@
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 1,
         "group": "creature",
         "linked_to_key": null
@@ -22,11 +22,11 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": "life",
-            "min": "1",
-            "max": "{\"1\":\"9999\",\"characteristic\":\"level_creature\"}",
-            "formula": "[vitality_creature]*10+[hit_dice_creature]",
-            "formula_display": "vitality_creature + hit_dice_creature",
-            "default_value": "1",
+            "min": "[hit_dice_creature]",
+            "max": "∞",
+            "formula": "[hit_dice_creature] + [modifier_vitality_creature]*[level_creature] + ([level_creature]-1)*(round([hit_dice_creature]/2)) + [life_points_max_object]",
+            "formula_display": "[hit_dice_creature] + [modifier_vitality_creature]×[level_creature] + ([level_creature]-1)×(round([hit_dice_creature]/2)) + life_points_max_object",
+            "default_value": "[hit_dice_creature]",
             "conversion_formula": "floor([d]/200)+[level]*5",
             "conversion_function": null,
             "conversion_dofus_sample": {
@@ -45,7 +45,44 @@
                 "16": 110,
                 "20": 140
             },
-            "conversion_sample_rows": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     4,

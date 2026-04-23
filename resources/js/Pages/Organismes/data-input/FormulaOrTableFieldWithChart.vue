@@ -16,6 +16,10 @@ const props = defineProps({
     modelValue: { type: String, default: '' },
     /** Options pour le select "Caractéristique de référence" dans la table. */
     characteristicOptions: { type: Array, default: () => [] },
+    /** Autocomplétion des clés dans les champs formule (min/max/table…). */
+    characteristicKeySuggestions: { type: Array, default: () => [] },
+    /** Insertion [clé] (true) ou clé seule (false). */
+    autocompleteUseBrackets: { type: Boolean, default: true },
     label: { type: String, default: '' },
     placeholder: { type: String, default: 'ex: [level]*2 ou 42' },
     /**
@@ -124,6 +128,8 @@ const hasPoints = computed(() => Array.isArray(points.value) && points.value.len
                 :model-value="modelValue"
                 @update:model-value="emit('update:modelValue', $event)"
                 :characteristic-options="characteristicOptions"
+                :characteristic-key-suggestions="characteristicKeySuggestions"
+                :autocomplete-use-brackets="autocompleteUseBrackets"
                 :label="label"
                 :placeholder="placeholder"
             />

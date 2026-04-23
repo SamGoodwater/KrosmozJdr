@@ -71,6 +71,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereValueOverrides($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHideWhenEmpty($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereStatus($value)
  * @mixin \Eloquent
  */
 class Characteristic extends Model implements HasMedia

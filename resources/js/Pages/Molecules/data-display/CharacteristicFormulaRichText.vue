@@ -8,10 +8,19 @@ import { parseCharacteristicFormulaRichText } from "@/Composables/characteristic
 const props = defineProps({
     formula: { type: String, default: "" },
     sourceGroups: { type: Array, default: () => [] },
+    /** `descriptions_first` : tooltip = description (+ helper si différent). `helper_first` : ordre inverse. */
+    tooltipOrder: {
+        type: String,
+        default: "descriptions_first",
+        validator: (v) => v === "descriptions_first" || v === "helper_first",
+    },
 });
 
 const segments = computed(() =>
-    parseCharacteristicFormulaRichText(props.formula, { sourceGroups: props.sourceGroups }),
+    parseCharacteristicFormulaRichText(props.formula, {
+        sourceGroups: props.sourceGroups,
+        tooltipOrder: props.tooltipOrder,
+    }),
 );
 
 function segmentStyle(segment) {

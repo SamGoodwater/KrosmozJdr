@@ -11,12 +11,17 @@
  */
 import { computed } from 'vue';
 import { decodeFormulaConfig, encodeFormulaConfig } from '@/Utils/characteristic/formulaConfig';
+import FormulaExpressionInput from '@/Pages/Molecules/data-input/FormulaExpressionInput.vue';
 
 const props = defineProps({
     /** Valeur : formule simple (string) ou JSON table {"characteristic":"...", "1": ..., "7": ...} */
     modelValue: { type: String, default: '' },
     /** Options pour le select "Caractéristique de référence" : [{ id, name }] */
     characteristicOptions: { type: Array, default: () => [] },
+    /** Autocomplétion des clés (creature / object / spell) dans les champs texte */
+    characteristicKeySuggestions: { type: Array, default: () => [] },
+    /** Si true, insertion au format [clé] (moteur PHP). Si false, clé seule (ex. formule d’affichage). */
+    autocompleteUseBrackets: { type: Boolean, default: true },
     label: { type: String, default: '' },
     placeholder: { type: String, default: 'ex: [level]*2 ou 42' },
 });
@@ -156,12 +161,13 @@ const canRemoveRow = computed(() => tableEntries.value.length > 1);
         </label>
         <!-- Mode simple : un input + bouton [+] -->
         <div v-if="!isTableExpanded" class="flex gap-2 items-center">
-            <input
-                type="text"
-                :value="simpleInputValue"
-                class="input input-bordered input-sm w-full min-w-0 font-mono text-sm"
+            <FormulaExpressionInput
+                class="min-w-0 flex-1"
+                :model-value="simpleInputValue"
+                :suggestions="characteristicKeySuggestions"
+                :use-brackets="autocompleteUseBrackets"
                 :placeholder="placeholder"
-                @input="simpleInputValue = $event.target.value"
+                @update:model-value="(v) => (simpleInputValue = v)"
             />
             <button
                 type="button"
@@ -219,12 +225,14 @@ const canRemoveRow = computed(() => tableEntries.value.length > 1);
                                     />
                                 </td>
                                 <td>
-                                    <input
-                                        type="text"
-                                        class="input input-bordered input-xs w-full font-mono"
-                                        :value="row.value"
+                                    <FormulaExpressionInput
+                                        class="w-full"
+                                        input-class="input input-bordered input-xs w-full font-mono"
+                                        :model-value="row.value"
+                                        :suggestions="characteristicKeySuggestions"
+                                        :use-brackets="autocompleteUseBrackets"
                                         placeholder="0 ou [level]*2"
-                                        @input="updateEntryValue(idx, $event.target.value)"
+                                        @update:model-value="(v) => updateEntryValue(idx, v)"
                                     />
                                 </td>
                                 <td>

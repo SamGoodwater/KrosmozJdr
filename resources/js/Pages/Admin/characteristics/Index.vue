@@ -15,6 +15,7 @@ import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import ColorCore from '@/Pages/Atoms/data-input/ColorCore.vue';
 import FormulaOrTableField from '@/Pages/Molecules/data-input/FormulaOrTableField.vue';
 import FormulaOrTableFieldWithChart from '@/Pages/Organismes/data-input/FormulaOrTableFieldWithChart.vue';
+import FormulaExpressionInput from '@/Pages/Molecules/data-input/FormulaExpressionInput.vue';
 import ConversionChartBlock from '@/Pages/Admin/characteristics/ConversionChartBlock.vue';
 import MappingPanel from '@/Pages/Admin/characteristics/MappingPanel.vue';
 import NormsPanel from '@/Pages/Admin/characteristics/NormsPanel.vue';
@@ -30,11 +31,13 @@ const notificationStore = inject('notificationStore', null);
 /** Contenu d’aide pour les champs formule (affiché dans le popover « ? »). */
 const formulaHelpContent = {
     title: 'Construire une formule',
-    variables: 'Variables : [id] avec id = level, vitality, d, etc. Selon le contexte (calcul ou conversion Dofus).',
+    variables:
+        'Variables évaluées côté serveur : toujours entre crochets, ex. [vitality_creature], [modifier_intelligence_creature], [initiative_object], [level], [d] (conversion). Les champs proposent l’autocomplétion après 3 caractères.',
     operators: 'Opérateurs : + - * / et parenthèses ( ).',
     funcs1: 'Fonctions à 1 argument : floor, ceil, round, sqrt, abs, cos, sin, tan, asin, acos, atan.',
     funcs2: 'Fonctions à 2 arguments : pow(base, exp), min(a, b), max(a, b).',
-    examples: 'Exemples : [level]*2, floor([d]/10), sqrt([vitality]), pow(2,[level]), min(10, [level]*2).',
+    examples:
+        'Exemples : [modifier_intelligence_creature]+[initiative_object], [level_creature]*2, floor([d]/10), min(10,[level]*2). Formule d’affichage (site) : clés nudes reliées par +.',
 };
 
 const props = defineProps({
@@ -684,6 +687,38 @@ const limitCharacteristicOptions = computed(() => {
     return props.characteristicsByGroup?.[group] ?? [];
 });
 
+/** Variables réservées + toutes les clés (creature, object, spell) pour l’autocomplétion des formules. */
+const reservedFormulaVariableSuggestions = [
+    { id: 'd', name: 'Valeur Dofus (conversion)' },
+    { id: 'level', name: 'Niveau JDR' },
+];
+
+const allCharacteristicKeySuggestions = computed(() => {
+    const groups = ['creature', 'object', 'spell'];
+    const seen = new Set();
+    const out = [];
+    for (const r of reservedFormulaVariableSuggestions) {
+        if (r.id) {
+            seen.add(r.id);
+            out.push(r);
+        }
+    }
+    for (const g of groups) {
+        const list = props.characteristicsByGroup?.[g] ?? [];
+        for (const c of list) {
+            const id = c.id;
+            if (!id || seen.has(id)) continue;
+            seen.add(id);
+            out.push({
+                id,
+                name: c.name ?? id,
+                short_name: c.short_name ?? null,
+            });
+        }
+    }
+    return out;
+});
+
 /** Clé finale en création : ajoute le suffixe du groupe si absent (ex. life_dice → life_dice_creature). */
 const normalizedCreateKey = computed(() => {
     const key = (form.key ?? '').trim();
@@ -1169,6 +1204,8 @@ function submitConvertToLinked() {
                                                 :model-value="ent.min"
                                                 @update:model-value="(v) => (ent.min = v)"
                                                 :characteristic-options="limitCharacteristicOptions"
+                                                :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                                :autocomplete-use-brackets="true"
                                                 label="Min"
                                                 placeholder="ex: 0, 1 ou [level]*2"
                                             />
@@ -1178,6 +1215,8 @@ function submitConvertToLinked() {
                                                 :model-value="ent.max"
                                                 @update:model-value="(v) => (ent.max = v)"
                                                 :characteristic-options="limitCharacteristicOptions"
+                                                :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                                :autocomplete-use-brackets="true"
                                                 label="Max"
                                                 placeholder="ex: 100, 200 ou [level]*10"
                                             />
@@ -1196,12 +1235,35 @@ function submitConvertToLinked() {
                                                 :model-value="ent.formula"
                                                 @update:model-value="(v) => (ent.formula = v)"
                                                 :characteristic-options="limitCharacteristicOptions"
+                                                :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                                :autocomplete-use-brackets="true"
                                                 placeholder="ex: [level]*2 ou table par niveau"
                                             />
                                             <p v-if="ent.formula" class="mt-2 text-xs text-base-content/60">Le graphique sera disponible après enregistrement.</p>
                                         </div>
-                                        <InputField v-model="ent.formula_display" label="Formule (affichage)" class="sm:col-span-2" />
-                                        <InputField v-model="ent.default_value" label="Valeur par défaut" />
+                                        <div class="sm:col-span-2">
+                                            <label class="label"><span class="label-text">Formule (affichage)</span></label>
+                                            <FormulaExpressionInput
+                                                :model-value="ent.formula_display"
+                                                :suggestions="allCharacteristicKeySuggestions"
+                                                :use-brackets="false"
+                                                placeholder="ex: vitality_creature + hit_dice_creature"
+                                                input-class="input input-bordered w-full font-mono text-sm"
+                                                @update:model-value="(v) => (ent.formula_display = v)"
+                                            />
+                                            <p class="mt-1 text-xs text-base-content/70">Clés nues pour l’affichage enrichi (site).</p>
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <label class="label"><span class="label-text">Valeur par défaut</span></label>
+                                            <FormulaExpressionInput
+                                                :model-value="ent.default_value"
+                                                :suggestions="allCharacteristicKeySuggestions"
+                                                :use-brackets="true"
+                                                placeholder="ex: 8 ou [level_creature]"
+                                                input-class="input input-bordered w-full font-mono text-sm"
+                                                @update:model-value="(v) => (ent.default_value = v)"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1543,6 +1605,8 @@ function submitConvertToLinked() {
                                         :model-value="ent.min"
                                         @update:model-value="(v) => (ent.min = v)"
                                         :characteristic-options="limitCharacteristicOptions"
+                                        :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                        :autocomplete-use-brackets="true"
                                         label="Min (valeur fixe, formule ou table)"
                                         placeholder="ex: 0, 1 ou [level]*2"
                                     />
@@ -1552,6 +1616,8 @@ function submitConvertToLinked() {
                                         :model-value="ent.max"
                                         @update:model-value="(v) => (ent.max = v)"
                                         :characteristic-options="limitCharacteristicOptions"
+                                        :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                        :autocomplete-use-brackets="true"
                                         label="Max (valeur fixe, formule ou table)"
                                         placeholder="ex: 100 ou [level]*10"
                                     />
@@ -1570,6 +1636,8 @@ function submitConvertToLinked() {
                                         :model-value="ent.formula"
                                         @update:model-value="(v) => (ent.formula = v)"
                                         :characteristic-options="characteristicsForFormulaOptions"
+                                        :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                        :autocomplete-use-brackets="true"
                                         placeholder="ex: [vitality]*10+[level]*2"
                                         :preview="{ characteristicKey: selected.id, entity: ent.entity, variable: 'level', mode: 'formula' }"
                                         chart-y-label="Résultat"
@@ -1578,15 +1646,27 @@ function submitConvertToLinked() {
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="label"><span class="label-text">Formule (affichage)</span></label>
-                                    <input
-                                        v-model="ent.formula_display"
-                                        type="text"
-                                        class="input input-bordered w-full"
-                                        placeholder="ex: Vitalité × 10 + Niveau × 2"
+                                    <FormulaExpressionInput
+                                        :model-value="ent.formula_display"
+                                        :suggestions="allCharacteristicKeySuggestions"
+                                        :use-brackets="false"
+                                        placeholder="ex: vitality_creature + initiative_object"
+                                        input-class="input input-bordered w-full font-mono text-sm"
+                                        @update:model-value="(v) => (ent.formula_display = v)"
                                     />
-                                    <p class="mt-1 text-xs text-base-content/70">Version lisible affichée à l’utilisateur (sans code).</p>
+                                    <p class="mt-1 text-xs text-base-content/70">Clés nues pour l’affichage enrichi (site).</p>
                                 </div>
-                                <InputField v-model="ent.default_value" label="Valeur par défaut" type="text" />
+                                <div class="sm:col-span-2">
+                                    <label class="label"><span class="label-text">Valeur par défaut</span></label>
+                                    <FormulaExpressionInput
+                                        :model-value="ent.default_value"
+                                        :suggestions="allCharacteristicKeySuggestions"
+                                        :use-brackets="true"
+                                        placeholder="ex: 8 ou [level_creature]"
+                                        input-class="input input-bordered w-full font-mono text-sm"
+                                        @update:model-value="(v) => (ent.default_value = v)"
+                                    />
+                                </div>
                                 <!-- Forgemagie et prix : uniquement pour le groupe object -->
                                 <template v-if="isObjectCharacteristicGroup">
                                     <div class="sm:col-span-2 border-t border-base-300 pt-4 mt-2">
@@ -1659,6 +1739,8 @@ function submitConvertToLinked() {
                                         :model-value="generalEntityRow().conversion_formula"
                                         @update:model-value="(v) => (generalEntityRow().conversion_formula = v)"
                                         :characteristic-options="conversionTableCharacteristicOptions"
+                                        :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                        :autocomplete-use-brackets="true"
                                         placeholder="ex: [d]/10 ou floor([d]/200)+[level]*5"
                                     />
                                     <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
@@ -1685,13 +1767,15 @@ function submitConvertToLinked() {
                                 </div>
                                 <div>
                                     <label class="label"><span class="label-text">Formule (affichage)</span></label>
-                                    <input
-                                        v-model="generalEntityRow().formula_display"
-                                        type="text"
-                                        class="input input-bordered w-full"
-                                        placeholder="ex: k = d / 10"
+                                    <FormulaExpressionInput
+                                        :model-value="generalEntityRow().formula_display"
+                                        :suggestions="allCharacteristicKeySuggestions"
+                                        :use-brackets="false"
+                                        placeholder="ex: vitality_creature + initiative_object"
+                                        input-class="input input-bordered w-full font-mono text-sm"
+                                        @update:model-value="(v) => (generalEntityRow().formula_display = v)"
                                     />
-                                    <p class="mt-1 text-xs text-base-content/70">Version lisible affichée à l'utilisateur.</p>
+                                    <p class="mt-1 text-xs text-base-content/70">Clés nues pour l’affichage enrichi (site).</p>
                                 </div>
 
                                 <!-- Graphique en grand sous la formule -->
@@ -1874,6 +1958,8 @@ function submitConvertToLinked() {
                                             :model-value="entityRow(entityKey).min"
                                             @update:model-value="(v) => (entityRow(entityKey).min = v)"
                                             :characteristic-options="limitCharacteristicOptions"
+                                            :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                            :autocomplete-use-brackets="true"
                                             label="Min"
                                             placeholder="ex: 0 ou [level]*2"
                                         />
@@ -1883,6 +1969,8 @@ function submitConvertToLinked() {
                                             :model-value="entityRow(entityKey).max"
                                             @update:model-value="(v) => (entityRow(entityKey).max = v)"
                                             :characteristic-options="limitCharacteristicOptions"
+                                            :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                            :autocomplete-use-brackets="true"
                                             label="Max"
                                             placeholder="ex: 100 ou [level]*10"
                                         />
@@ -1899,14 +1987,36 @@ function submitConvertToLinked() {
                                         :model-value="entityRow(entityKey).formula"
                                         @update:model-value="(v) => (entityRow(entityKey).formula = v)"
                                         :characteristic-options="characteristicsForFormulaOptions"
+                                        :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                        :autocomplete-use-brackets="true"
                                         placeholder="ex: [level]*2"
                                         :preview="{ characteristicKey: selected.id, entity: entityKey, variable: 'level', mode: 'formula' }"
                                         chart-y-label="Résultat"
                                     />
                                     <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
                                 </div>
-                                <InputField v-model="entityRow(entityKey).formula_display" label="Formule (affichage)" class="sm:col-span-2" />
-                                <InputField v-model="entityRow(entityKey).default_value" label="Valeur par défaut" />
+                                <div class="sm:col-span-2">
+                                    <label class="label"><span class="label-text">Formule (affichage)</span></label>
+                                    <FormulaExpressionInput
+                                        :model-value="entityRow(entityKey).formula_display"
+                                        :suggestions="allCharacteristicKeySuggestions"
+                                        :use-brackets="false"
+                                        placeholder="ex: vitality_creature + initiative_object"
+                                        input-class="input input-bordered w-full font-mono text-sm"
+                                        @update:model-value="(v) => (entityRow(entityKey).formula_display = v)"
+                                    />
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="label"><span class="label-text">Valeur par défaut</span></label>
+                                    <FormulaExpressionInput
+                                        :model-value="entityRow(entityKey).default_value"
+                                        :suggestions="allCharacteristicKeySuggestions"
+                                        :use-brackets="true"
+                                        placeholder="ex: 8 ou [level_creature]"
+                                        input-class="input input-bordered w-full font-mono text-sm"
+                                        @update:model-value="(v) => (entityRow(entityKey).default_value = v)"
+                                    />
+                                </div>
                             </div>
 
                             <!-- Conversion (même interface que Général) -->
@@ -1933,6 +2043,8 @@ function submitConvertToLinked() {
                                         :model-value="entityRow(entityKey).conversion_formula"
                                         @update:model-value="(v) => (entityRow(entityKey).conversion_formula = v)"
                                         :characteristic-options="conversionTableCharacteristicOptions"
+                                        :characteristic-key-suggestions="allCharacteristicKeySuggestions"
+                                        :autocomplete-use-brackets="true"
                                         placeholder="ex: [d]/10 (vide = même que le groupe)"
                                     />
                                     <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
@@ -1957,13 +2069,15 @@ function submitConvertToLinked() {
                                 </div>
                                 <div>
                                     <label class="label"><span class="label-text">Formule (affichage)</span></label>
-                                    <input
-                                        v-model="entityRow(entityKey).formula_display"
-                                        type="text"
-                                        class="input input-bordered w-full"
-                                        placeholder="ex: k = d / 10"
+                                    <FormulaExpressionInput
+                                        :model-value="entityRow(entityKey).formula_display"
+                                        :suggestions="allCharacteristicKeySuggestions"
+                                        :use-brackets="false"
+                                        placeholder="ex: vitality_creature + initiative_object"
+                                        input-class="input input-bordered w-full font-mono text-sm"
+                                        @update:model-value="(v) => (entityRow(entityKey).formula_display = v)"
                                     />
-                                    <p class="mt-1 text-xs text-base-content/70">Version lisible affichée à l'utilisateur.</p>
+                                    <p class="mt-1 text-xs text-base-content/70">Clés nues pour l’affichage enrichi (site).</p>
                                 </div>
 
                                 <!-- Graphique en grand sous la formule -->

@@ -118,6 +118,8 @@ final class CharacteristicMetaByDbColumnService
                     'persuasion_passive_creature',
                     'performance_passive_creature',
                     'deception_passive_creature',
+                    'hit_dice_creature',
+                    'mastery_bonus_creature',
                 ]))
                 ->with(['characteristic.masterCharacteristic'])
                 ->get();

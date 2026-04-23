@@ -2628,6 +2628,13 @@
     "file": "data-input/FormulaOrTableField.vue"
   },
   {
+    "name": "FormulaExpressionInput",
+    "description": "Champ texte avec autocomplétion des clés de caractéristiques (admin formules, min, max, défaut). — Souris : clic sur une proposition remplace l’identifiant en cours de frappe. — Clavier : ↑/↓ pour naviguer, Entrée ou → pour valider, Échap ferme la liste.",
+    "props": [],
+    "slots": [],
+    "file": "data-input/FormulaExpressionInput.vue"
+  },
+  {
     "name": "FilterField",
     "description": "FilterField Molecule (DaisyUI, Atomic Design)",
     "props": [],
@@ -2758,6 +2765,13 @@
     ],
     "slots": [],
     "file": "data-display/CharacteristicGroup.vue"
+  },
+  {
+    "name": "CharacteristicFormulaRichText",
+    "description": "`descriptions_first` : tooltip = description (+ helper si différent). `helper_first` : ordre inverse.",
+    "props": [],
+    "slots": [],
+    "file": "data-display/CharacteristicFormulaRichText.vue"
   },
   {
     "name": "CharacteristicEffectsGrid",

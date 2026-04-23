@@ -241,10 +241,12 @@ export function resolveDef(keyOrId, value, options = {}) {
     const sourceGroups = options?.sourceGroups ?? ["creature", "item", "resource", "spell", "capability"];
     const keyStr = keyOrId != null ? String(keyOrId).trim() : "";
     if (!keyStr) return null;
+    const keyWithoutGroupSuffix = keyStr.replace(/_(creature|object|spell)$/, "");
 
     for (const group of sourceGroups) {
         let def =
             getByDbColumn(group, keyStr) ??
+            getByDbColumn(group, keyWithoutGroupSuffix) ??
             getByDbColumn(group, keyStr.replace(/_object$/, "")) ??
             getByCharacteristicKey(group, keyStr) ??
             getByCharacteristicKey(group, keyStr.replace(/_object$/, "") + "_object") ??
@@ -282,6 +284,28 @@ export function resolveDef(keyOrId, value, options = {}) {
             return def;
         }
     }
+
+    // Colonnes SQL de formule (save_*_mastery / save_*_bonus) sans ligne caractéristique dédiée :
+    // même famille visuelle que la sauvegarde calculée (save_*_creature).
+    const saveMasteryBonus = keyStr.match(
+        /^save_(vitality|wisdom|strength|intelligence|agility|chance)_(mastery|bonus)$/,
+    );
+    if (saveMasteryBonus) {
+        const parentKey = `save_${saveMasteryBonus[1]}_creature`;
+        const base = resolveDef(parentKey, value, options);
+        if (base) {
+            const isMastery = saveMasteryBonus[2] === "mastery";
+            const out = { ...base };
+            out._formulaTokenLabel = isMastery
+                ? `${base.short_name ?? base.name ?? parentKey} · palier`
+                : `${base.short_name ?? base.name ?? parentKey} · bonus`;
+            out._formulaTokenTooltipExtra = isMastery
+                ? "Terme du calcul : palier de maîtrise sur cette sauvegarde (0 = non formé, 1 = maîtrise, 2 = expertise)."
+                : "Terme du calcul : bonus d’équipement et autres modificateurs cumulés sur ce jet de sauvegarde.";
+            return out;
+        }
+    }
+
     return null;
 }
 
