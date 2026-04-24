@@ -48,20 +48,66 @@ function parseDocBlock(docBlock) {
     };
     parsed.tags.forEach((tag) => {
         if (tag.tag === "props" || tag.tag === "prop") {
-            item.props.push({
-                name: tag.name,
-                type: tag.type,
-                desc: tag.description,
+            const names = normalizeTagNames(tag.name);
+            if (names.length === 0) {
+                item.props.push({
+                    name: "",
+                    type: tag.type ?? "",
+                    desc: normalizeTagDescription(tag.description),
+                });
+                return;
+            }
+
+            names.forEach((name) => {
+                item.props.push({
+                    name,
+                    type: tag.type ?? "",
+                    desc: normalizeTagDescription(tag.description),
+                });
             });
         }
         if (tag.tag === "slot") {
+            const slotName = normalizeTagName(tag.name);
             item.slots.push({
-                name: tag.name,
-                desc: tag.description,
+                name: slotName,
+                desc: normalizeTagDescription(tag.description),
             });
         }
     });
+
+    item.props = dedupeEntries(item.props);
+    item.slots = dedupeEntries(item.slots);
     return item;
+}
+
+function normalizeTagDescription(description) {
+    return String(description ?? "").trim();
+}
+
+function normalizeTagNames(rawName) {
+    if (!rawName) return [];
+    return String(rawName)
+        .split(",")
+        .map((name) => normalizeTagName(name))
+        .filter(Boolean);
+}
+
+function normalizeTagName(rawName) {
+    if (!rawName) return "";
+    return String(rawName)
+        .trim()
+        .replace(/[,;:]+$/g, "")
+        .replace(/\s+/g, " ");
+}
+
+function dedupeEntries(entries) {
+    const seen = new Set();
+    return entries.filter((entry) => {
+        const key = `${entry.name}::${entry.type ?? ""}::${entry.desc ?? ""}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
 }
 
 function generateIndex({ name, dir, output }) {

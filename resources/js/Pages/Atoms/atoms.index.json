@@ -34,12 +34,12 @@
         "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       },
@@ -104,12 +104,12 @@
         "desc": "- État custom (optionnel, pour variantes avancées)"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
@@ -166,12 +166,12 @@
         "desc": "- Nom de la route Inertia/Laravel (optionnel)"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
@@ -390,12 +390,12 @@
         "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
@@ -431,7 +431,7 @@
         "desc": "- Applique text-sm (défaut false)"
       },
       {
-        "name": "class,",
+        "name": "class",
         "type": "String",
         "desc": "id, ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -521,12 +521,12 @@
         "desc": "- Classes custom supplémentaires"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - accessibilité"
       }
@@ -569,12 +569,12 @@
         "desc": "- Classes custom supplémentaires"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - accessibilité"
       }
@@ -632,12 +632,12 @@
         "desc": "- Label à afficher (optionnel, sinon slot)"
       },
       {
-        "name": "class,",
+        "name": "class",
         "type": "String|Object",
         "desc": "id, ariaLabel, role, tabindex - hérités de commonProps"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom"
       }
@@ -710,12 +710,12 @@
         "desc": "- Texte simple à afficher (optionnel, prioritaire sur slot #content)"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -766,7 +766,7 @@
         "desc": "- classes custom (optionnel)"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -789,12 +789,12 @@
         "desc": "- v-model (état activé/désactivé)"
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly, required"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -809,7 +809,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -819,7 +819,7 @@
         "desc": "- État de validation pour l'accessibilité"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -847,17 +847,17 @@
         "desc": ""
       },
       {
-        "name": "rows,",
+        "name": "rows",
         "type": "Number",
         "desc": "cols, maxlength, minlength"
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly, required"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -872,7 +872,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -897,7 +897,7 @@
         "desc": "- Active le mode floating label"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -947,12 +947,12 @@
         "desc": "- Nombre d'options visibles (pour multiple)"
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly, required"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -967,7 +967,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -977,7 +977,7 @@
         "desc": "- État de validation pour l'accessibilité"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1010,12 +1010,12 @@
         "desc": "- Support des demi-étoiles"
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly, required"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -1030,7 +1030,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -1040,7 +1040,7 @@
         "desc": "- État de validation pour l'accessibilité"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1078,12 +1078,12 @@
         "desc": "- Pas d'incrémentation"
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly, required"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -1098,7 +1098,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -1108,7 +1108,7 @@
         "desc": "- État de validation pour l'accessibilité"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1141,12 +1141,12 @@
         "desc": "- Valeur de ce bouton radio"
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly, required"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -1161,7 +1161,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -1171,7 +1171,7 @@
         "desc": "- État de validation pour l'accessibilité"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1209,12 +1209,12 @@
         "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - accessibilité"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1247,12 +1247,12 @@
         "desc": ""
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -1267,7 +1267,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -1292,7 +1292,7 @@
         "desc": "- Active le mode floating label"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1347,12 +1347,12 @@
         "desc": "- Icône FontAwesome (optionnel)"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - accessibilité"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1390,12 +1390,12 @@
         "desc": "- Nom du groupe de radio buttons"
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly, required"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -1410,7 +1410,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -1435,7 +1435,7 @@
         "desc": "- Active le mode floating label"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1485,12 +1485,12 @@
         "desc": "- Capture média (\"user\", \"environment\")"
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly, required"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -1505,7 +1505,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -1530,7 +1530,7 @@
         "desc": "- Active le mode floating label"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1585,12 +1585,12 @@
         "desc": "- Locale pour l'affichage (fr par défaut)"
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly, required"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -1605,7 +1605,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -1615,7 +1615,7 @@
         "desc": "- État de validation pour l'accessibilité"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1658,12 +1658,12 @@
         "desc": "- Valeur du checkbox (pour les groupes)"
       },
       {
-        "name": "disabled,",
+        "name": "disabled",
         "type": "Boolean",
         "desc": "readonly, required"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -1678,7 +1678,7 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
       },
@@ -1688,7 +1688,7 @@
         "desc": "- État de validation pour l'accessibilité"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -1723,7 +1723,7 @@
         "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
       },
       {
-        "name": "class,",
+        "name": "class",
         "type": "String|Object",
         "desc": "id, ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -1786,12 +1786,12 @@
         "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -1845,12 +1845,12 @@
         "desc": "- Classes custom supplémentaires"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "rounded, backdrop, opacity - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - accessibilité"
       }
@@ -1901,12 +1901,12 @@
         "desc": "- Classes custom supplémentaires"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "rounded, backdrop, opacity - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - accessibilité"
       }
@@ -1942,12 +1942,12 @@
         "desc": "- Classes custom supplémentaires"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - accessibilité"
       }
@@ -2072,7 +2072,7 @@
         "desc": "- Pack FontAwesome (solid, regular, brands, duotone)"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -2225,12 +2225,12 @@
         "desc": "- Bordure (classe Tailwind, ex: border-gray-200)"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - accessibilité"
       }
@@ -2278,12 +2278,12 @@
         "desc": "- Commence ouvert (checkbox checked par défaut)"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - accessibilité"
       }
@@ -2574,7 +2574,7 @@
         "desc": "- Opacité custom ('' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl') → .bd-opacity-*"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -2667,7 +2667,7 @@
         "desc": "- Style DaisyUI ('', 'outline', 'dash', 'soft', 'ghost'), défaut ''"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -2739,12 +2739,12 @@
         "desc": "- Couleur du ring-offset (idem ringColor)"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, disabled - hérités de commonProps"
       }
@@ -2803,7 +2803,7 @@
         "desc": "- Désactive le swap (hérité de commonProps)"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -2864,7 +2864,7 @@
         "desc": "- Affiche le soulignement uniquement au survol (link-hover)"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -2912,7 +2912,7 @@
         "desc": "- Désactive le bouton"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -3068,7 +3068,7 @@
         "desc": "- Désactivé (btn-disabled + HTML, hérité de commonProps)"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -3101,12 +3101,12 @@
         "desc": "- Classes custom supplémentaires"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }
@@ -3153,7 +3153,7 @@
         "desc": "- Classes custom supplémentaires"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }

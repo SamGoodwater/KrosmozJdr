@@ -353,6 +353,7 @@ const { canAccess, isSuperAdmin } = usePermissions();
 
 // Vérifier si l'utilisateur est game_master, admin ou super_admin
 const canManagePages = computed(() => canAccess('pagesManager'));
+const isAdminModeUnlocked = computed(() => Boolean(page.props.auth?.password_recently_confirmed));
 
 // Fonction de déconnexion
 const logout = () => {
@@ -558,14 +559,34 @@ const logout = () => {
         <div class="flex flex-col text-right">
             <Dropdown :close-on-content-click="false">
                 <template #trigger>
-                    <Btn color="neutral" variant="ghost">
+                    <Btn color="neutral" variant="ghost" class="overflow-visible">
                         <div class="flex items-center gap-2">
-                            <Avatar
-                                :src="user.avatar"
-                                :label="user.name"
-                                :alt="user.name"
-                                size="md"
-                            />
+                            <div class="relative inline-flex">
+                                <Avatar
+                                    :src="user.avatar"
+                                    :label="user.name"
+                                    :alt="user.name"
+                                    size="md"
+                                />
+                                <Tooltip
+                                    v-if="isAdminModeUnlocked"
+                                    content="Mode admin actif : pas de nouvelle demande de mot de passe pendant environ 1 h."
+                                    placement="top"
+                                >
+                                    <span
+                                        class="absolute -left-1.5 -bottom-1.5 z-10 inline-flex h-3.5 w-3.5 items-center justify-center text-emerald-800 shadow-sm"
+                                        aria-label="Mode admin déverrouillé"
+                                    >
+                                        <Icon
+                                            source="fa-lock-open"
+                                            pack="solid"
+                                            size="xs"
+                                            class="origin-center"
+                                            alt="Mode admin déverrouillé"
+                                        />
+                                    </span>
+                                </Tooltip>
+                            </div>
                             <span>{{ user.name.charAt(0).toUpperCase() + user.name.slice(1) }}</span>
                         </div>
                     </Btn>

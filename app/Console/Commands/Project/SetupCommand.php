@@ -185,23 +185,35 @@ class SetupCommand extends Command
         if (! file_exists(base_path('package.json'))) {
             return;
         }
-        if (is_dir(base_path('node_modules'))) {
-            $this->info('Dépendances pnpm déjà présentes.');
-
-            return;
-        }
         $pnpm = trim((string) shell_exec('which pnpm 2>/dev/null'));
         if ($pnpm === '') {
             $this->warn('pnpm non trouvé. Installez-le (npm install -g pnpm ou corepack enable pnpm).');
 
             return;
         }
-        $this->info('Installation des dépendances pnpm...');
-        $code = $this->runShell('pnpm install');
-        if ($code === 0) {
-            $this->info('pnpm install OK.');
+
+        if (is_dir(base_path('node_modules'))) {
+            $this->info('Dépendances pnpm déjà présentes, vérification de l’intégrité...');
+            if ($this->isTailwindNativeBindingHealthy()) {
+                $this->info('Binding natif Tailwind OK.');
+
+                return;
+            }
+            $this->warn('Binding natif Tailwind manquant/cassé, réparation automatique...');
         } else {
+            $this->info('Installation des dépendances pnpm...');
+        }
+
+        $code = $this->runPnpmInstallWithRecovery();
+        if ($code !== 0) {
             $this->warn('Échec pnpm install.');
+
+            return;
+        }
+
+        $this->info('pnpm install OK.');
+        if (! $this->isTailwindNativeBindingHealthy()) {
+            $this->warn('Le binding natif Tailwind reste indisponible après réparation.');
         }
     }
 
@@ -440,5 +452,50 @@ class SetupCommand extends Command
         }
 
         return $code;
+    }
+
+    private function runPnpmInstallWithRecovery(): int
+    {
+        $result = $this->runShellCapture('CI=true pnpm install');
+        if ($result['code'] === 0) {
+            return 0;
+        }
+
+        if (! str_contains($result['output'], 'EBUSY')) {
+            return $result['code'];
+        }
+
+        $this->warn('Conflit de fichiers détecté pendant pnpm install (EBUSY), nettoyage ciblé puis nouvelle tentative...');
+        $this->runShell('rm -rf node_modules/.pnpm/*/node_modules/*/.vscode 2>/dev/null || true');
+
+        $retry = $this->runShellCapture('CI=true pnpm install');
+
+        return $retry['code'];
+    }
+
+    /**
+     * @return array{code:int, output:string}
+     */
+    private function runShellCapture(string $command): array
+    {
+        $full = "{$command} 2>&1";
+        $output = [];
+        exec($full, $output, $code);
+        $text = implode("\n", $output);
+
+        if ($text !== '') {
+            $this->line($text);
+        }
+
+        return ['code' => $code, 'output' => $text];
+    }
+
+    private function isTailwindNativeBindingHealthy(): bool
+    {
+        $full = "node -e \"require('@tailwindcss/oxide');\" 2>&1";
+        $output = [];
+        exec($full, $output, $code);
+
+        return $code === 0;
     }
 }

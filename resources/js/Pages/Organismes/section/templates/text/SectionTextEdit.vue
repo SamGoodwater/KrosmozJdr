@@ -18,6 +18,7 @@ import { computed, ref, watch, onMounted } from 'vue';
 import axios from 'axios';
 import RichTextEditorField from '@/Pages/Molecules/data-input/RichTextEditorField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
+import CheckboxField from '@/Pages/Molecules/data-input/CheckboxField.vue';
 import InlineSaveStatus from '@/Pages/Atoms/feedback/InlineSaveStatus.vue';
 import { useSectionSave } from '../../composables/useSectionSave';
 
@@ -45,6 +46,7 @@ const content = ref(props.data?.content || '');
 const localSettings = ref({
   align: String(props.settings?.align || 'left'),
   size: String(props.settings?.size || 'md'),
+  enableRichReferences: Boolean(props.settings?.enableRichReferences),
 });
 const syncFromProps = ref(false);
 const syncContentFromProps = ref(false);
@@ -97,6 +99,7 @@ const handleManualSave = () => {
   const normalizedSettings = {
     align: String(localSettings.value?.align || 'left'),
     size: String(localSettings.value?.size || 'md'),
+    enableRichReferences: Boolean(localSettings.value?.enableRichReferences),
   };
   const newData = {
     ...props.data,
@@ -179,6 +182,7 @@ watch(
     localSettings.value = {
       align: String(newSettings?.align || 'left'),
       size: String(newSettings?.size || 'md'),
+      enableRichReferences: Boolean(newSettings?.enableRichReferences),
     };
     lastSavedSettingsSignature.value = JSON.stringify(localSettings.value);
     syncFromProps.value = false;
@@ -221,6 +225,7 @@ watch(
     const normalized = {
       align: String(newSettings?.align || 'left'),
       size: String(newSettings?.size || 'md'),
+      enableRichReferences: Boolean(newSettings?.enableRichReferences),
     };
     const signature = JSON.stringify(normalized);
     if (signature === lastSavedSettingsSignature.value) return;
@@ -268,13 +273,22 @@ onMounted(() => {
         :searchable="false"
       />
     </div>
+    <div class="mb-4">
+      <CheckboxField
+        v-model="localSettings.enableRichReferences"
+        label="Références riches (@)"
+        helper="Mentions @ : caractéristiques, entités, pages et sections. Modifie l’éditeur et l’affichage lecture."
+      />
+    </div>
     <RichTextEditorField
+      :key="'rte-' + String(Boolean(localSettings.enableRichReferences))"
       v-model="content"
       label=""
       :height="'min-h-[300px]'"
       :show-save-button="true"
       save-button-label="Enregistrer"
       :upload-file-handler="uploadEditorFile"
+      :enable-rich-references="Boolean(localSettings.enableRichReferences)"
       @save-request="handleManualSave"
     />
   </div>

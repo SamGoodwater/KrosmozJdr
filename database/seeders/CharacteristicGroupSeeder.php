@@ -122,15 +122,20 @@ abstract class CharacteristicGroupSeeder extends Seeder
     }
 
     /**
-     * Résout les ids pivot `item_types.id` pour une ligne entité objet : préfère `item_type_dofus_ids`
-     * (dofusdb_type_id, stable avec ItemTypeSeeder) puis repli sur `item_type_ids` (ids BDD).
+     * Résout les ids pivot `item_types.id` pour une ligne entité objet.
+     * Si `item_type_dofus_ids` est renseigné : résolution par `dofusdb_type_id` uniquement (pas de repli
+     * sur `item_type_ids`, souvent des ids BDD d’un autre environnement).
+     * Sinon : `item_type_ids` filtrés pour ne garder que des ids présents en base.
      *
      * @param  array<string, mixed>  $row
      * @return list<int>
      */
     protected function resolveCharacteristicObjectItemTypeIdsForSync(array $row): array
     {
-        if (isset($row['item_type_dofus_ids']) && is_array($row['item_type_dofus_ids'])) {
+        $dofusProvided = isset($row['item_type_dofus_ids']) && is_array($row['item_type_dofus_ids'])
+            && $row['item_type_dofus_ids'] !== [];
+
+        if ($dofusProvided) {
             $dofus = [];
             foreach ($row['item_type_dofus_ids'] as $id) {
                 if (is_int($id) && $id > 0) {
@@ -145,14 +150,33 @@ abstract class CharacteristicGroupSeeder extends Seeder
             $dofus = array_values(array_unique($dofus));
             if ($dofus !== []) {
                 /** @var list<int> */
-                return ItemType::query()
+                $resolved = ItemType::query()
                     ->whereIn('dofusdb_type_id', $dofus)
                     ->pluck('id')
+                    ->map(static fn ($id) => (int) $id)
                     ->all();
+                if ($resolved !== []) {
+                    return $resolved;
+                }
             }
+
+            // DofusDb ids fournis mais aucun enregistrement : ne pas retomber sur `item_type_ids`
+            // (souvent des ids BDD copiés depuis un autre environnement → violation FK).
+            return [];
         }
+
         if (isset($row['item_type_ids']) && is_array($row['item_type_ids'])) {
-            return $this->normalizeItemTypeIdsForSync($row['item_type_ids']);
+            $candidates = $this->normalizeItemTypeIdsForSync($row['item_type_ids']);
+            if ($candidates === []) {
+                return [];
+            }
+
+            /** @var list<int> */
+            return ItemType::query()
+                ->whereIn('id', $candidates)
+                ->pluck('id')
+                ->map(static fn ($id) => (int) $id)
+                ->all();
         }
 
         return [];

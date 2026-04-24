@@ -126,6 +126,8 @@ export function getMonsterFieldMeta() {
     return raw && typeof raw === "object" ? raw : {};
 }
 
+export { getRawData };
+
 export function useCharacteristicsStore() {
     return {
         getRawData,

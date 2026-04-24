@@ -8,9 +8,19 @@ export default {
   value: 'text',
   supportsAutoSave: true,
   // Valeurs par défaut pour les settings (paramètres d'affichage)
-  defaultSettings: {},
+  defaultSettings: {
+    enableRichReferences: false,
+  },
   // Paramètres configurables dans le modal
   parameters: [
+    {
+      key: 'enableRichReferences',
+      type: 'checkbox',
+      label: 'Références riches (@)',
+      description:
+        'Active les mentions @ (caractéristiques, entités, pages, sections) et le rendu TipTap en lecture.',
+      default: false,
+    },
     {
       key: 'align',
       type: 'select',

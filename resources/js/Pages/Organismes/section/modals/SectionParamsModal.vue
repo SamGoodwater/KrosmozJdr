@@ -26,6 +26,7 @@ import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import TextareaField from '@/Pages/Molecules/data-input/TextareaField.vue';
+import CheckboxField from '@/Pages/Molecules/data-input/CheckboxField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { useSectionAPI } from '../composables/useSectionAPI';
@@ -409,6 +410,11 @@ const updateTemplateSetting = (key, value) => {
         [key]: value,
     };
 };
+
+const checkboxTemplateValue = (key, fallback) => {
+    const v = getTemplateSettingValue(key, fallback);
+    return v === true || v === 'true' || v === 1 || v === '1';
+};
 </script>
 
 <template>
@@ -540,6 +546,14 @@ const updateTemplateSetting = (key, value) => {
                         :helper="param.description || ''"
                         :options="param.options || []"
                         :searchable="false"
+                        @update:model-value="updateTemplateSetting(param.key, $event)"
+                    />
+
+                    <CheckboxField
+                        v-else-if="param.type === 'checkbox'"
+                        :model-value="checkboxTemplateValue(param.key, param.default ?? false)"
+                        :label="param.label || param.key"
+                        :helper="param.description || ''"
                         @update:model-value="updateTemplateSetting(param.key, $event)"
                     />
 

@@ -1230,6 +1230,11 @@
     "description": "Ce document recense les **doublons supprimés**, les **extractions déjà faites** et les **recommandations** pour garder un code simple, sans duplication, avec des responsabilités claires."
   },
   {
+    "path": "50-Fonctionnalités/CMS/RICH_TEXT_KREF_PREVIEW.md",
+    "title": "Aperçu au survol des références vers les sections (style Wikipédia)",
+    "description": "Lorsque le template de section texte active **références riches** (`settings.enableRichReferences`), le contenu TipTap peut contenir des mentions `span.kref` (caractéristique, entité, page, **section de page**)."
+  },
+  {
     "path": "50-Fonctionnalités/Characteristics-DB/ANALYSE_PDF_CARACTERISTIQUES_EQUIPEMENTS.md",
     "title": "Analyse des PDF Caractéristiques et Équipements / Forgemagie",
     "description": "Ce document compare le contenu des documents **Caractéristiques.pdf** et **Equipements et forgemagie.pdf** (règles Krosmoz JDR α 0.1.3.0) avec l’architecture du service de caractéristiques documentée dans ce dossier. Objectif : vérifier que l’architecture proposée permet de décrire l’ensemble des caractéristiques et des règles liées aux équipements et à la forgemagie."

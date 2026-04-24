@@ -144,12 +144,12 @@
         "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
@@ -177,12 +177,12 @@
         "desc": "- Responsive DaisyUI (ex: 'vertical lg:horizontal')"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
@@ -200,12 +200,12 @@
     "description": "Navbar Molecule (DaisyUI + Custom Utility)",
     "props": [
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
@@ -241,12 +241,12 @@
         "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
@@ -294,12 +294,12 @@
         "desc": "- Couleur du texte (text-neutral-content, etc.)"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
@@ -361,12 +361,12 @@
         "desc": "- Couleur du texte DaisyUI (text-neutral-content, etc.)"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
@@ -401,12 +401,12 @@
         "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
@@ -500,7 +500,7 @@
         "desc": "- Classes custom"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
@@ -2574,12 +2574,12 @@
         "desc": "- Configuration de validation (nouvelle API)"
       },
       {
-        "name": "helper,",
+        "name": "helper",
         "type": "String",
         "desc": "errorMessage"
       },
       {
-        "name": "color,",
+        "name": "color",
         "type": "String",
         "desc": "size, variant"
       },
@@ -2594,27 +2594,27 @@
         "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "useFieldComposable,",
+        "name": "useFieldComposable",
         "type": "Boolean",
         "desc": "showPasswordToggle"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
     ],
     "slots": [
       {
-        "name": "labelTop,",
+        "name": "labelTop",
         "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
       },
       {
-        "name": "overStart,",
+        "name": "overStart",
         "desc": "overEnd - Slots pour éléments positionnés en absolute (toggle, reset, etc.)"
       },
       {
-        "name": "helper,",
+        "name": "helper",
         "desc": "validator - Slots pour contenu d'aide et validation"
       }
     ],
@@ -2675,6 +2675,20 @@
     "props": [],
     "slots": [],
     "file": "data-input/CheckboxField.vue"
+  },
+  {
+    "name": "RichTextReadonlyView",
+    "description": "Affichage HTML TipTap en lecture seule (mêmes extensions que l’éditeur, dont références kref).",
+    "props": [],
+    "slots": [],
+    "file": "data-display/RichTextReadonlyView.vue"
+  },
+  {
+    "name": "RichTextKrefInteractions",
+    "description": "Survol type « Wikipédia » + navigation au clic pour les spans `.kref` (références riches). À placer sur un ancêtre du contenu ProseMirror (édition ou lecture).",
+    "props": [],
+    "slots": [],
+    "file": "data-display/RichTextKrefInteractions.vue"
   },
   {
     "name": "ResourceIngredientsList",
@@ -2816,12 +2830,12 @@
         "desc": "- Nombre max d'avatars affichés, le reste en \"+N\""
       },
       {
-        "name": "ring,",
+        "name": "ring",
         "type": "String",
         "desc": "ringColor, ringOffset, ringOffsetColor - Props DaisyUI pour Avatar"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom"
       }
@@ -2853,7 +2867,7 @@
         "desc": "- Etat coché (v-model natif)"
       },
       {
-        "name": "ariaLabel,",
+        "name": "ariaLabel",
         "type": "String",
         "desc": "id, class - hérités de commonProps"
       }

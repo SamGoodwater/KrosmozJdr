@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Section;
-use App\Models\Page;
-use App\Models\User;
 use App\Enums\SectionType;
+use App\Models\Page;
+use App\Models\Section;
+use App\Models\User;
+use App\Support\SectionRichReferencesValidator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -13,14 +14,14 @@ use Mews\Purifier\Facades\Purifier;
 
 /**
  * Service pour la gestion des sections.
- * 
+ *
  * Centralise la logique métier liée aux sections :
  * - Création avec valeurs par défaut
  * - Mise à jour avec validation
  * - Réorganisation
  * - Gestion des permissions
  * - Récupération des sections affichables
- * 
+ *
  * @example
  * $section = SectionService::create($data, $user);
  * $sections = SectionService::getDisplayableSections($page, $user);
@@ -30,13 +31,33 @@ class SectionService
     /**
      * Nettoie les champs HTML potentiellement dangereux selon le template.
      *
-     * @param string $template Template (ex: 'text')
-     * @param array<string, mixed> $data Données de section (tableau complet contenant potentiellement 'data')
+     * @param  string  $template  Template (ex: 'text')
+     * @param  array<string, mixed>  $data  Données de section (tableau complet contenant potentiellement 'data')
      * @return array<string, mixed> Données nettoyées
      */
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private static function validateRichReferencesIfNeeded(string $template, array $data, User $user): void
+    {
+        if ($template !== SectionType::TEXT->value) {
+            return;
+        }
+        $settings = is_array($data['settings'] ?? null) ? $data['settings'] : [];
+        $rich = (bool) ($settings['enableRichReferences'] ?? false);
+        if (! $rich) {
+            return;
+        }
+        $content = $data['data']['content'] ?? null;
+        if (! is_string($content) || $content === '') {
+            return;
+        }
+        (new SectionRichReferencesValidator)->validate($content, $user);
+    }
+
     private static function sanitizeSectionPayload(string $template, array $data): array
     {
-        if (!isset($data['data']) || !is_array($data['data'])) {
+        if (! isset($data['data']) || ! is_array($data['data'])) {
             return $data;
         }
 
@@ -53,10 +74,11 @@ class SectionService
 
     /**
      * Crée une nouvelle section avec des valeurs par défaut.
-     * 
-     * @param array<string, mixed> $data Données de la section
-     * @param User $user Utilisateur créateur
+     *
+     * @param  array<string, mixed>  $data  Données de la section
+     * @param  User  $user  Utilisateur créateur
      * @return Section Section créée
+     *
      * @throws \Exception Si la création échoue
      */
     public static function create(array $data, User $user): Section
@@ -64,39 +86,41 @@ class SectionService
         DB::beginTransaction();
         try {
             // Compat legacy: type/params -> template/data (+ sync inverse)
-            if (!isset($data['template']) && isset($data['type'])) {
+            if (! isset($data['template']) && isset($data['type'])) {
                 $data['template'] = $data['type'];
             }
-            if (!isset($data['type']) && isset($data['template'])) {
+            if (! isset($data['type']) && isset($data['template'])) {
                 $data['type'] = $data['template'];
             }
-            if (!isset($data['data']) && isset($data['params']) && is_array($data['params'])) {
+            if (! isset($data['data']) && isset($data['params']) && is_array($data['params'])) {
                 $data['data'] = $data['params'];
             }
-            if (!isset($data['params']) && isset($data['data']) && is_array($data['data'])) {
+            if (! isset($data['params']) && isset($data['data']) && is_array($data['data'])) {
                 $data['params'] = $data['data'];
             }
 
             // Calculer l'ordre automatiquement si non fourni
-            if (!isset($data['order']) || $data['order'] === 0) {
+            if (! isset($data['order']) || $data['order'] === 0) {
                 $data['order'] = self::calculateNextOrder($data['page_id']);
             }
 
             // Ajouter les valeurs par défaut pour settings et data
             $template = $data['template'] ?? SectionType::TEXT->value;
             $defaults = self::getDefaultValues($template);
-            
+
             $data['settings'] = array_merge($defaults['settings'], $data['settings'] ?? []);
             $data['data'] = array_merge($defaults['data'], $data['data'] ?? []);
             // Garder params en sync avec data (legacy)
             $data['params'] = array_merge($defaults['data'], (is_array($data['params'] ?? null) ? $data['params'] : []));
 
+            self::validateRichReferencesIfNeeded($template, $data, $user);
+
             // Sanitization (anti-XSS) sur les champs HTML
             $data = self::sanitizeSectionPayload($template, $data);
-            
+
             // Valeurs par défaut pour les autres champs
             $data['created_by'] = $user->id;
-            $data['state'] = $data['state'] ?? \App\Models\Section::STATE_DRAFT;
+            $data['state'] = $data['state'] ?? Section::STATE_DRAFT;
             $data['read_level'] = $data['read_level'] ?? User::ROLE_GUEST;
             $data['write_level'] = $data['write_level'] ?? User::ROLE_ADMIN;
 
@@ -104,13 +128,14 @@ class SectionService
             $section->load(['page', 'users', 'createdBy']);
 
             DB::commit();
+
             return $section;
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la création de la section', [
                 'data' => $data,
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -118,21 +143,22 @@ class SectionService
 
     /**
      * Met à jour une section existante.
-     * 
+     *
      * Fusionne intelligemment les données existantes avec les nouvelles :
      * - Les `settings` et `data` sont fusionnés (merge) pour préserver les valeurs non modifiées
      * - Les autres champs sont remplacés directement
-     * 
-     * @param Section $section Section à mettre à jour
-     * @param array<string, mixed> $data Données à mettre à jour (peut contenir settings, data, title, etc.)
-     * @param User $user Utilisateur effectuant la mise à jour
+     *
+     * @param  Section  $section  Section à mettre à jour
+     * @param  array<string, mixed>  $data  Données à mettre à jour (peut contenir settings, data, title, etc.)
+     * @param  User  $user  Utilisateur effectuant la mise à jour
      * @return Section Section mise à jour avec relations chargées
+     *
      * @throws \Exception Si la mise à jour échoue (transaction rollback)
-     * 
+     *
      * @example
      * // Mise à jour partielle (seulement le titre)
      * SectionService::update($section, ['title' => 'Nouveau titre'], $user);
-     * 
+     *
      * // Mise à jour des données (fusion avec les données existantes)
      * SectionService::update($section, ['data' => ['content' => 'Nouveau contenu']], $user);
      */
@@ -141,16 +167,16 @@ class SectionService
         DB::beginTransaction();
         try {
             // Compat legacy: type/params -> template/data (+ sync inverse)
-            if (!isset($data['template']) && isset($data['type'])) {
+            if (! isset($data['template']) && isset($data['type'])) {
                 $data['template'] = $data['type'];
             }
-            if (!isset($data['type']) && isset($data['template'])) {
+            if (! isset($data['type']) && isset($data['template'])) {
                 $data['type'] = $data['template'];
             }
-            if (!isset($data['data']) && isset($data['params']) && is_array($data['params'])) {
+            if (! isset($data['data']) && isset($data['params']) && is_array($data['params'])) {
                 $data['data'] = $data['params'];
             }
-            if (!isset($data['params']) && isset($data['data']) && is_array($data['data'])) {
+            if (! isset($data['params']) && isset($data['data']) && is_array($data['data'])) {
                 $data['params'] = $data['data'];
             }
 
@@ -170,6 +196,7 @@ class SectionService
             // Sanitization (anti-XSS) : utiliser le template effectif (nouveau si fourni, sinon existant)
             $effectiveTemplate = $data['template'] ?? ($section->template instanceof SectionType ? $section->template->value : (string) $section->template);
             if ($effectiveTemplate) {
+                self::validateRichReferencesIfNeeded((string) $effectiveTemplate, $data, $user);
                 $data = self::sanitizeSectionPayload((string) $effectiveTemplate, $data);
             }
 
@@ -178,6 +205,7 @@ class SectionService
             $section->load(['page', 'users', 'createdBy']);
 
             DB::commit();
+
             return $section;
         } catch (\Exception $e) {
             DB::rollBack();
@@ -185,7 +213,7 @@ class SectionService
                 'section_id' => $section->id,
                 'data' => $data,
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -193,15 +221,15 @@ class SectionService
 
     /**
      * Réorganise l'ordre des sections (drag & drop).
-     * 
+     *
      * Met à jour l'ordre de plusieurs sections en une seule transaction.
      * Utilisé lors du réordonnancement via drag & drop dans l'interface.
-     * 
-     * @param array $sections Tableau de sections avec structure : [['id' => int, 'order' => int], ...]
-     * @param User $user Utilisateur effectuant la réorganisation (pour logs)
-     * @return void
+     *
+     * @param  array  $sections  Tableau de sections avec structure : [['id' => int, 'order' => int], ...]
+     * @param  User  $user  Utilisateur effectuant la réorganisation (pour logs)
+     *
      * @throws \Exception Si la réorganisation échoue (transaction rollback)
-     * 
+     *
      * @example
      * SectionService::reorder([
      *     ['id' => 1, 'order' => 1],
@@ -225,7 +253,7 @@ class SectionService
             Log::error('Erreur lors de la réorganisation des sections', [
                 'sections' => $sections,
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -233,10 +261,11 @@ class SectionService
 
     /**
      * Supprime une section (soft delete).
-     * 
-     * @param Section $section Section à supprimer
-     * @param User $user Utilisateur effectuant la suppression
+     *
+     * @param  Section  $section  Section à supprimer
+     * @param  User  $user  Utilisateur effectuant la suppression
      * @return bool True si la suppression a réussi
+     *
      * @throws \Exception Si la suppression échoue
      */
     public static function delete(Section $section, User $user): bool
@@ -245,14 +274,15 @@ class SectionService
             $section->delete();
             Log::info('Section supprimée', [
                 'section_id' => $section->id,
-                'user_id' => $user->id
+                'user_id' => $user->id,
             ]);
+
             return true;
         } catch (\Exception $e) {
             Log::error('Erreur lors de la suppression de la section', [
                 'section_id' => $section->id,
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -260,10 +290,10 @@ class SectionService
 
     /**
      * Récupère les sections affichables pour une page et un utilisateur.
-     * 
-     * @param Page $page Page concernée
-     * @param User|null $user Utilisateur (null pour invité)
-     * @return \Illuminate\Database\Eloquent\Collection<int, Section> Collection de sections affichables
+     *
+     * @param  Page  $page  Page concernée
+     * @param  User|null  $user  Utilisateur (null pour invité)
+     * @return Collection<int, Section> Collection de sections affichables
      */
     public static function getDisplayableSections(Page $page, ?User $user = null): Collection
     {
@@ -276,21 +306,21 @@ class SectionService
 
     /**
      * Récupère toutes les sections d'une page selon les permissions de l'utilisateur.
-     * 
+     *
      * **Logique de récupération :**
      * - Si l'utilisateur peut modifier la page : retourne TOUTES les sections (drafts inclus)
      *   → Permet d'éditer toutes les sections, même non publiées
      * - Sinon : retourne uniquement les sections affichables (publiées + visibles)
      *   → Respecte la visibilité et l'état pour les utilisateurs sans droits d'édition
-     * 
-     * @param Page $page Page concernée
-     * @param User|null $user Utilisateur (null pour invité)
-     * @return \Illuminate\Database\Eloquent\Collection<int, Section> Collection de sections (toutes ou affichables selon permissions)
-     * 
+     *
+     * @param  Page  $page  Page concernée
+     * @param  User|null  $user  Utilisateur (null pour invité)
+     * @return Collection<int, Section> Collection de sections (toutes ou affichables selon permissions)
+     *
      * @example
      * // Pour un éditeur : toutes les sections
      * $allSections = SectionService::getSectionsForPage($page, $editor);
-     * 
+     *
      * // Pour un visiteur : seulement les sections publiées et visibles
      * $visibleSections = SectionService::getSectionsForPage($page, null);
      */
@@ -304,53 +334,52 @@ class SectionService
                 ->orderBy('order')
                 ->get();
         }
-        
+
         // Sinon, retourner uniquement les sections affichables (publiées et visibles)
         return self::getDisplayableSections($page, $user);
     }
 
     /**
      * Calcule le prochain ordre pour une nouvelle section.
-     * 
-     * @param int $pageId ID de la page
+     *
+     * @param  int  $pageId  ID de la page
      * @return int Prochain ordre disponible
      */
     private static function calculateNextOrder(int $pageId): int
     {
         $maxOrder = Section::where('page_id', $pageId)
             ->max('order') ?? 0;
-        
+
         return $maxOrder + 1;
     }
 
     /**
      * Retourne les valeurs par défaut pour un template de section.
-     * 
+     *
      * **Source des données :**
      * - Les valeurs par défaut sont définies dans `config/section_templates.php`
      * - Ce fichier doit être synchronisé avec les fichiers `config.js` des templates frontend
      * - Aucune référence hardcodée aux templates spécifiques dans cette méthode
-     * 
+     *
      * **Synchronisation :**
      * - Lors de la modification d'un `config.js` frontend, mettre à jour ce fichier PHP
      * - Un script de synchronisation automatique pourrait être créé à l'avenir
-     * 
-     * @param string $template Type de template (text, image, gallery, video, entity_table)
+     *
+     * @param  string  $template  Type de template (text, image, gallery, video, entity_table)
      * @return array Structure : ['settings' => array, 'data' => array]
-     * 
+     *
      * @example
      * $defaults = SectionService::getDefaultValues('text');
      * // ['settings' => [], 'data' => ['content' => null]]
-     * 
+     *
      * @see config/section_templates.php
      * @see resources/js/Pages/Organismes/section/templates/ pour les fichiers config.js de chaque template
      */
-
     public static function getDefaultValues(string $template): array
     {
         // Charger la configuration depuis le fichier de config
         $templatesConfig = config('section_templates', []);
-        
+
         // Retourner les defaults du template ou des valeurs vides par défaut
         return $templatesConfig[$template] ?? [
             'settings' => [],
@@ -358,4 +387,3 @@ class SectionService
         ];
     }
 }
-

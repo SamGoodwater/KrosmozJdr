@@ -410,7 +410,11 @@ class ProjectRunService
 
         $command->info('Mise à jour des paquets npm (pnpm up)…');
 
-        return $this->runShellInProject($command, 'pnpm up');
+        if ($this->runShellInProject($command, 'pnpm up') !== Command::SUCCESS) {
+            return Command::FAILURE;
+        }
+
+        return $this->ensureTailwindNativeBinding($command);
     }
 
     /**
@@ -446,6 +450,7 @@ class ProjectRunService
         $this->updateCss($command);
         $this->clearCache($command);
         $command->call('view:clear');
+        $this->updateAtomicIndexes($command);
         $this->updateDocs($command);
 
         return $command->call('setup', ['--db' => true]);
@@ -458,6 +463,12 @@ class ProjectRunService
         if ($result !== null) {
             $command->info($result);
         }
+    }
+
+    public function updateAtomicIndexes(Command $command): void
+    {
+        $command->info('Régénération des index Atomic Design (atoms/molecules/organisms)...');
+        exec('pnpm run update:atomic-index');
     }
 
     public function updateDocs(Command $command): void
@@ -555,7 +566,7 @@ class ProjectRunService
         }
 
         $command->info('Démarrage de Vite sur le port 5173...');
-        $this->runProcess($command, 'pnpm run dev:optimized');
+        $this->runViteDevWithSelfHeal($command);
     }
 
     public function runDevWatch(Command $command): void
@@ -766,6 +777,94 @@ class ProjectRunService
         } else {
             $command->error("Impossible de lancer $shellCommand");
         }
+    }
+
+    /**
+     * Démarre Vite et tente une réparation automatique en cas de binding natif manquant.
+     */
+    private function runViteDevWithSelfHeal(Command $command): void
+    {
+        $result = $this->runShellWithStreaming($command, 'pnpm run dev:optimized');
+        if ($result['exitCode'] === Command::SUCCESS) {
+            return;
+        }
+
+        if (! $this->isTailwindNativeBindingError($result['output'])) {
+            $command->error('Erreur lors de pnpm run dev:optimized');
+
+            return;
+        }
+
+        $command->warn('⚠️ Dépendance native Tailwind manquante détectée. Tentative de réparation automatique...');
+        $repair = $this->runShellInProject($command, 'CI=true pnpm install');
+        if ($repair !== Command::SUCCESS) {
+            $command->error('Échec de la réparation automatique des dépendances pnpm.');
+
+            return;
+        }
+
+        $command->info('Relance de Vite après réparation des dépendances...');
+        $retry = $this->runShellWithStreaming($command, 'pnpm run dev:optimized');
+        if ($retry['exitCode'] !== Command::SUCCESS) {
+            $command->error('Erreur lors de pnpm run dev:optimized (après réparation automatique).');
+        }
+    }
+
+    /**
+     * Exécute une commande shell en streamant la sortie et la conserve pour diagnostic.
+     *
+     * @return array{exitCode:int, output:string}
+     */
+    private function runShellWithStreaming(Command $command, string $commandLine): array
+    {
+        $output = '';
+
+        try {
+            $process = Process::fromShellCommandline($commandLine, base_path());
+            $process->setTimeout(null);
+            $process->run(function (string $type, string $buffer) use ($command, &$output): void {
+                $output .= $buffer;
+                $command->getOutput()->write($buffer);
+            });
+
+            return [
+                'exitCode' => $process->isSuccessful() ? Command::SUCCESS : Command::FAILURE,
+                'output' => $output,
+            ];
+        } catch (Throwable $e) {
+            $command->error($e->getMessage());
+
+            return [
+                'exitCode' => Command::FAILURE,
+                'output' => $output.$e->getMessage(),
+            ];
+        }
+    }
+
+    private function isTailwindNativeBindingError(string $output): bool
+    {
+        return str_contains($output, 'Cannot find native binding')
+            && str_contains($output, '@tailwindcss/oxide');
+    }
+
+    private function ensureTailwindNativeBinding(Command $command): int
+    {
+        $check = $this->runShellWithStreaming($command, "node -e \"require('@tailwindcss/oxide');\"");
+        if ($check['exitCode'] === Command::SUCCESS) {
+            return Command::SUCCESS;
+        }
+
+        $command->warn('Binding natif Tailwind indisponible après mise à jour pnpm. Réparation automatique...');
+        $repair = $this->runShellInProject($command, 'CI=true pnpm install');
+        if ($repair !== Command::SUCCESS) {
+            $command->error('Échec de la réparation automatique des dépendances pnpm.');
+
+            return Command::FAILURE;
+        }
+
+        $retry = $this->runShellWithStreaming($command, "node -e \"require('@tailwindcss/oxide');\"");
+
+        return $retry['exitCode'];
     }
 
     /**

@@ -26,27 +26,12 @@
  * />
  */
 import { computed, onBeforeUnmount, onMounted, watch, ref } from 'vue'
+import { searchRichReferenceItems } from '@/Composables/richText/useRichReferenceSearch'
 import DOMPurify from 'dompurify'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
-import Link from '@tiptap/extension-link'
-import Image from '@tiptap/extension-image'
-import TextAlign from '@tiptap/extension-text-align'
-import Highlight from '@tiptap/extension-highlight'
-import Color from '@tiptap/extension-color'
-import Underline from '@tiptap/extension-underline'
-import Subscript from '@tiptap/extension-subscript'
-import Superscript from '@tiptap/extension-superscript'
-import Table from '@tiptap/extension-table'
-import TableRow from '@tiptap/extension-table-row'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import TaskList from '@tiptap/extension-task-list'
-import TaskItem from '@tiptap/extension-task-item'
-import Placeholder from '@tiptap/extension-placeholder'
-import CharacterCount from '@tiptap/extension-character-count'
-import Focus from '@tiptap/extension-focus'
 
+import { createRichTextExtensions } from '@/Composables/richText/richTextExtensions'
+import RichTextKrefInteractions from '@/Pages/Molecules/data-display/RichTextKrefInteractions.vue'
 import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue'
 import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
 
@@ -90,6 +75,11 @@ const props = defineProps({
   uploadFileHandler: {
     type: Function,
     default: null
+  },
+  /** Références riches (@) : nœud TipTap + UI de saisie (sections texte). */
+  enableRichReferences: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -130,6 +120,23 @@ const slashActiveIndex = ref(0)
 const localFileInputRef = ref(null)
 const imageFileInputRef = ref(null)
 
+/** Mentions @ (références riches) */
+const showAtMenu = ref(false)
+const atQuery = ref('')
+const atCommandRange = ref(null)
+const atActiveIndex = ref(0)
+const atItems = ref([])
+const atLoading = ref(false)
+let atSearchTimer = null
+
+const showRefPickerModal = ref(false)
+const refPickerQuery = ref('')
+const refPickerItems = ref([])
+const refPickerLoading = ref(false)
+let refPickerSearchTimer = null
+
+const richEditorRootRef = ref(null)
+
 /**
  * Nettoie le HTML collé depuis Word/Google Docs pour limiter les styles inline parasites.
  *
@@ -145,6 +152,14 @@ const normalizePastedHtml = (html) => {
   const allElements = Array.from(doc.body.querySelectorAll('*'))
 
   allElements.forEach((el) => {
+    // Préserver les références riches (payload dans `title` base64url, ou legacy data-*).
+    if (
+      el.tagName === 'SPAN' &&
+      el.classList?.contains('kref') &&
+      (el.hasAttribute('title') || el.hasAttribute('data-kref-type'))
+    ) {
+      return
+    }
     // Nettoyage des attributs purement décoratifs
     el.removeAttribute('class')
     el.removeAttribute('id')
@@ -220,82 +235,22 @@ const buildAnchoredHtmlAndToc = (html) => {
 // Éditeur TipTap avec toutes les extensions
 const editor = useEditor({
   content: props.modelValue || '',
-  extensions: [
-    StarterKit.configure({
-      heading: {
-        levels: [1, 2, 3, 4, 5, 6]
-      }
-      // horizontalRule, dropcursor et gapcursor sont inclus par défaut dans StarterKit
-    }),
-    // Formatage de texte
-    Underline,
-    Subscript,
-    Superscript,
-    Color,
-    Highlight.configure({
-      multicolor: true
-    }),
-    // Alignement
-    TextAlign.configure({
-      types: ['heading', 'paragraph'],
-      defaultAlignment: 'left'
-    }),
-    // Liens
-    Link.configure({
-      openOnClick: false,
-      linkOnPaste: true,
-      HTMLAttributes: {
-        class: 'text-primary underline'
-      }
-    }),
-    // Images
-    Image.configure({
-      inline: true,
-      allowBase64: true,
-      HTMLAttributes: {
-        class: 'max-w-full h-auto rounded'
-      }
-    }),
-    // Tableaux
-    Table.configure({
-      resizable: true,
-      HTMLAttributes: {
-        class: 'border-collapse border border-base-300'
-      }
-    }),
-    TableRow,
-    TableHeader,
-    TableCell,
-    // Listes de tâches
-    TaskList,
-    TaskItem.configure({
-      nested: true
-    }),
-    // Ligne horizontale, dropcursor et gapcursor sont inclus dans StarterKit
-    // Placeholder
-    Placeholder.configure({
-      placeholder: props.placeholder
-    }),
-    // Compteur de caractères
-    CharacterCount.configure({
-      limit: props.maxCharacters || undefined
-    }),
-    // Focus
-    Focus.configure({
-      className: 'has-focus',
-      mode: 'all'
-    })
-    // Dropcursor et Gapcursor sont inclus dans StarterKit
-  ],
+  extensions: createRichTextExtensions({
+    placeholder: props.placeholder,
+    maxCharacters: props.maxCharacters,
+    enableReferenceInline: props.enableRichReferences,
+  }),
   onUpdate: ({ editor }) => {
     const { html, toc } = buildAnchoredHtmlAndToc(editor.getHTML())
     tocItems.value = toc
     lastEmittedHtml.value = html
     emit('update:modelValue', html)
     syncSlashMenu()
+    syncAtMenu()
   },
   onSelectionUpdate: () => {
     syncSlashMenu()
+    syncAtMenu()
   },
   onBlur: ({ editor }) => {
     if (typeof pendingExternalHtml.value !== 'string') return
@@ -335,6 +290,33 @@ const editor = useEditor({
       return true
     },
     handleKeyDown(_view, event) {
+      if (props.enableRichReferences && showAtMenu.value) {
+        if (event.key === 'Escape') {
+          event.preventDefault()
+          closeAtMenu()
+          return true
+        }
+        if (event.key === 'ArrowDown' || event.key === 'Tab') {
+          event.preventDefault()
+          if (!atItems.value.length) return true
+          atActiveIndex.value = (atActiveIndex.value + 1) % atItems.value.length
+          return true
+        }
+        if (event.key === 'ArrowUp') {
+          event.preventDefault()
+          if (!atItems.value.length) return true
+          atActiveIndex.value = (atActiveIndex.value - 1 + atItems.value.length) % atItems.value.length
+          return true
+        }
+        if (event.key === 'Enter') {
+          const selected = atItems.value[atActiveIndex.value] || atItems.value[0]
+          if (!selected) return false
+          event.preventDefault()
+          runAtItem(selected)
+          return true
+        }
+        return false
+      }
       if (!showSlashMenu.value) return false
       if (event.key === 'Escape') {
         event.preventDefault()
@@ -567,6 +549,7 @@ const syncSlashMenu = () => {
     return
   }
 
+  showAtMenu.value = false
   showSlashMenu.value = true
   slashQuery.value = String(match[1] || '').toLowerCase()
   slashCommandRange.value = {
@@ -574,6 +557,129 @@ const syncSlashMenu = () => {
     to: selection.from,
   }
 }
+
+const syncAtMenu = () => {
+  if (!props.enableRichReferences || !editor.value) return
+  const state = editor.value.state
+  const selection = state.selection
+  if (!selection?.empty) {
+    showAtMenu.value = false
+    return
+  }
+
+  const parent = selection.$from.parent
+  const offset = selection.$from.parentOffset
+  const textBefore = parent.textBetween(0, offset, '\0', '\0')
+  const match = textBefore.match(/@([a-zA-Z0-9_.-]*)$/)
+  if (!match) {
+    showAtMenu.value = false
+    atQuery.value = ''
+    atCommandRange.value = null
+    return
+  }
+
+  showSlashMenu.value = false
+  showAtMenu.value = true
+  atQuery.value = String(match[1] || '')
+  atCommandRange.value = {
+    from: selection.from - match[0].length,
+    to: selection.from,
+  }
+}
+
+const closeAtMenu = () => {
+  showAtMenu.value = false
+  atQuery.value = ''
+  atCommandRange.value = null
+  atActiveIndex.value = 0
+  atItems.value = []
+}
+
+const insertRichReference = (item, options = {}) => {
+  const replaceTriggerRange = options.replaceTriggerRange !== false
+  if (!editor.value || !item) return
+  if (replaceTriggerRange && atCommandRange.value) {
+    editor.value.chain().focus().deleteRange(atCommandRange.value).run()
+  }
+  editor.value.chain().focus().insertReferenceInline({
+    krefType: item.krefType,
+    payload: item.krefPayload,
+    label: item.label,
+  }).run()
+}
+
+const runAtItem = (item) => {
+  if (!editor.value || !item) return
+  insertRichReference(item, { replaceTriggerRange: true })
+  closeAtMenu()
+}
+
+const openReferencePicker = () => {
+  if (!props.enableRichReferences || !editor.value) return
+  editor.value.chain().focus().run()
+  showRefPickerModal.value = true
+  refPickerQuery.value = ''
+  refPickerItems.value = []
+}
+
+const closeReferencePicker = () => {
+  showRefPickerModal.value = false
+  refPickerQuery.value = ''
+  refPickerItems.value = []
+}
+
+const runRefPickerItem = (item) => {
+  if (!item) return
+  insertRichReference(item, { replaceTriggerRange: false })
+  closeReferencePicker()
+}
+
+watch([atQuery, showAtMenu], () => {
+  if (!props.enableRichReferences) return
+  if (!showAtMenu.value) {
+    atItems.value = []
+    return
+  }
+  clearTimeout(atSearchTimer)
+  atSearchTimer = setTimeout(async () => {
+    const q = String(atQuery.value || '').trim()
+    if (q.length < 2) {
+      atItems.value = []
+      return
+    }
+    atLoading.value = true
+    try {
+      atItems.value = await searchRichReferenceItems(q)
+      if (atActiveIndex.value >= atItems.value.length) {
+        atActiveIndex.value = 0
+      }
+    } finally {
+      atLoading.value = false
+    }
+  }, 200)
+})
+
+watch([refPickerQuery, showRefPickerModal], () => {
+  if (!props.enableRichReferences) return
+  if (!showRefPickerModal.value) {
+    refPickerItems.value = []
+    return
+  }
+  clearTimeout(refPickerSearchTimer)
+  refPickerSearchTimer = setTimeout(async () => {
+    const q = String(refPickerQuery.value || '').trim()
+    if (q.length < 2) {
+      refPickerItems.value = []
+      return
+    }
+    refPickerLoading.value = true
+    try {
+      refPickerItems.value = await searchRichReferenceItems(q)
+    } finally {
+      refPickerLoading.value = false
+    }
+  }, 250)
+})
 
 const closeSlashMenu = () => {
   showSlashMenu.value = false
@@ -1098,6 +1204,15 @@ const sanitizedPreviewHtml = computed(() => {
             >
               <i class="fa-solid fa-minus" />
             </button>
+            <button
+              v-if="enableRichReferences"
+              type="button"
+              class="btn btn-xs btn-ghost"
+              @click="openReferencePicker"
+              title="Insérer une référence (mention @)"
+            >
+              <i class="fa-solid fa-at" />
+            </button>
           </div>
 
           <div v-if="!isFocusMode" class="divider divider-horizontal mx-1" />
@@ -1204,6 +1319,38 @@ const sanitizedPreviewHtml = computed(() => {
               @click="runSlashCommand(command)"
             >
               /{{ command.key }} - {{ command.label }}
+            </button>
+          </div>
+        </div>
+
+        <div
+          v-if="enableRichReferences && showAtMenu"
+          class="mb-2 rounded-box border border-base-300 bg-base-100 p-2 shadow"
+        >
+          <div class="mb-1 text-[11px] text-base-content/60">
+            Références @ — min. 2 caractères (`↑`/`↓`, `Tab`, `Entrée`, `Esc`)
+          </div>
+          <div v-if="atLoading" class="text-xs text-base-content/60 py-1">Recherche…</div>
+          <div v-else-if="atQuery.trim().length < 2" class="text-xs text-base-content/60 py-1">
+            Saisissez au moins 2 caractères après @
+          </div>
+          <div v-else-if="!atItems.length" class="text-xs text-base-content/60 py-1">Aucun résultat</div>
+          <div v-else class="flex flex-col gap-0.5 max-h-48 overflow-auto">
+            <button
+              v-for="(item, idx) in atItems"
+              :key="item.key"
+              type="button"
+              class="btn btn-xs btn-ghost justify-start h-auto min-h-8 py-1 text-left normal-case"
+              :class="idx === atActiveIndex ? 'btn-primary text-primary-content' : ''"
+              @click="runAtItem(item)"
+            >
+              <span class="inline-flex w-full items-start gap-2">
+                <i v-if="item.icon" :class="item.icon" class="mt-0.5 shrink-0 opacity-80" />
+                <span class="min-w-0">
+                  <span class="font-medium block truncate">{{ item.label }}</span>
+                  <span v-if="item.subtitle" class="text-[10px] opacity-80 block truncate">{{ item.subtitle }}</span>
+                </span>
+              </span>
             </button>
           </div>
         </div>
@@ -1338,6 +1485,7 @@ const sanitizedPreviewHtml = computed(() => {
           :class="isPreviewSplit ? 'grid-cols-1 xl:grid-cols-2' : 'grid-cols-1'"
         >
           <div
+            ref="richEditorRootRef"
             class="section-rich-editor w-full rounded-box border border-base-300 bg-base-100 px-3 py-2 prose prose-sm max-w-none focus-within:border-primary transition-colors"
             :class="[
               height,
@@ -1346,6 +1494,11 @@ const sanitizedPreviewHtml = computed(() => {
             ]"
           >
             <EditorContent :editor="editor" />
+            <RichTextKrefInteractions
+              v-if="enableRichReferences"
+              :root-element="richEditorRootRef"
+              :enabled="enableRichReferences"
+            />
           </div>
           <div
             v-if="isPreviewSplit"
@@ -1437,6 +1590,44 @@ const sanitizedPreviewHtml = computed(() => {
         </div>
         <form method="dialog" class="modal-backdrop" @click="showImageModal = false">
           <button>close</button>
+        </form>
+      </dialog>
+
+      <dialog v-if="enableRichReferences" :class="{ 'modal-open': showRefPickerModal }" class="modal">
+        <div class="modal-box max-w-lg">
+          <h3 class="font-bold text-lg mb-2">Insérer une référence</h3>
+          <p class="text-sm text-base-content/70 mb-3">
+            Recherche (min. 2 caractères) : caractéristiques, entités, pages et sections.
+          </p>
+          <input
+            v-model="refPickerQuery"
+            type="search"
+            class="input input-bordered w-full mb-2"
+            placeholder="Ex. vitalité, monstre, règles…"
+            autofocus
+          />
+          <div v-if="refPickerLoading" class="text-sm text-base-content/60 py-2">Recherche…</div>
+          <div v-else-if="refPickerQuery.trim().length < 2" class="text-sm text-base-content/60 py-2">
+            Saisissez au moins 2 caractères.
+          </div>
+          <div v-else-if="!refPickerItems.length" class="text-sm text-base-content/60 py-2">Aucun résultat</div>
+          <ul v-else class="menu menu-sm rounded-box border border-base-300 bg-base-200/40 max-h-64 overflow-y-auto p-0">
+            <li v-for="item in refPickerItems" :key="item.key">
+              <button type="button" class="flex w-full items-start gap-2 text-left" @click="runRefPickerItem(item)">
+                <i v-if="item.icon" :class="item.icon" class="mt-1 shrink-0 opacity-80" />
+                <span class="min-w-0">
+                  <span class="font-medium block truncate">{{ item.label }}</span>
+                  <span v-if="item.subtitle" class="text-xs opacity-70 block truncate">{{ item.subtitle }}</span>
+                </span>
+              </button>
+            </li>
+          </ul>
+          <div class="modal-action">
+            <button type="button" class="btn btn-ghost" @click="closeReferencePicker">Fermer</button>
+          </div>
+        </div>
+        <form method="dialog" class="modal-backdrop" @click="closeReferencePicker">
+          <button type="button">close</button>
         </form>
       </dialog>
 
@@ -1609,6 +1800,25 @@ const sanitizedPreviewHtml = computed(() => {
   &.has-focus {
     outline: 2px solid hsl(var(--p));
     outline-offset: 2px;
+  }
+
+  // Références riches (nœud atom sérialisé en span.kref)
+  .kref {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 0.05em 0.45em;
+    margin: 0 0.05em;
+    border-radius: 0.35rem;
+    font-size: 0.85em;
+    font-weight: 600;
+    vertical-align: baseline;
+    background: hsl(var(--p) / 0.18);
+    color: hsl(var(--p));
+    border: 1px solid hsl(var(--p) / 0.35);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 </style>

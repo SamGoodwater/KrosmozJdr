@@ -1,0 +1,18 @@
+<?php
+
+use App\Http\Controllers\Api\CmsPageSectionPickerController;
+use App\Http\Controllers\Api\CmsSectionPreviewController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| API — CMS (mentions pages / sections)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['web'])->prefix('cms')->group(function () {
+    Route::get('/page-section-picker', [CmsPageSectionPickerController::class, 'index'])
+        ->name('api.cms.page-section-picker');
+    Route::get('/sections/{section}/preview-snippet', [CmsSectionPreviewController::class, 'show'])
+        ->name('api.cms.sections.preview-snippet');
+});

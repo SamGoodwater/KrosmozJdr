@@ -281,9 +281,6 @@ const pageIconSource = computed(() => {
                     <Icon source="fa-edit" pack="solid" alt="Modifier la page" size="sm" />
                 </Btn>
             </div>
-            <div v-if="pageModel?.createdByUser" class="text-sm text-base-content/70">
-                Par {{ pageModel.createdByUser?.name || pageModel.createdByUser?.email }}
-            </div>
         </header>
 
         <!-- Sections -->

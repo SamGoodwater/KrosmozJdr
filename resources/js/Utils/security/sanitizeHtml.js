@@ -19,6 +19,7 @@ export function sanitizeHtml(html) {
   if (typeof html !== 'string' || html.length === 0) return '';
   return DOMPurify.sanitize(html, {
     USE_PROFILES: { html: true },
+    ADD_ATTR: ['data-kref-type', 'data-kref-payload'],
   });
 }
 

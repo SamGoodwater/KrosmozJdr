@@ -23,3 +23,4 @@ require __DIR__.'/api/table-presets.php';
 require __DIR__.'/api/entities.php';
 require __DIR__.'/api/effects.php';
 require __DIR__.'/api/object-effects.php';
+require __DIR__.'/api/cms.php';

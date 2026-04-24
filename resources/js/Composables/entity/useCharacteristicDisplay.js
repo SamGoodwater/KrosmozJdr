@@ -151,16 +151,6 @@ export const SPELL_EFFECT_CHIP_SOURCE_GROUPS = Object.freeze([
     "panoply",
 ]);
 
-/** Groupes par défaut pour la résolution (ordre de priorité). */
-const DEFAULT_SOURCE_GROUPS = {
-    creature: ["creature"],
-    spell: ["spell", "capability"],
-    item: ["item", "resource"],
-    resource: ["resource", "item"],
-    consumable: ["consumable", "resource"],
-    panoply: ["panoply", "item"],
-};
-
 /**
  * Cherche dans un tableau value_overrides l'entrée correspondant à la valeur donnée.
  * Priorité stricte (===) puis comparaison souple (true/1/"1", false/0/"0", string cast).
@@ -285,23 +275,40 @@ export function resolveDef(keyOrId, value, options = {}) {
         }
     }
 
-    // Colonnes SQL de formule (save_*_mastery / save_*_bonus) sans ligne caractéristique dédiée :
-    // même famille visuelle que la sauvegarde calculée (save_*_creature).
-    const saveMasteryBonus = keyStr.match(
-        /^save_(vitality|wisdom|strength|intelligence|agility|chance)_(mastery|bonus)$/,
-    );
-    if (saveMasteryBonus) {
-        const parentKey = `save_${saveMasteryBonus[1]}_creature`;
-        const base = resolveDef(parentKey, value, options);
-        if (base) {
-            const isMastery = saveMasteryBonus[2] === "mastery";
+    // Fallback générique pour les tokens de formule qui référencent des colonnes "virtuelles"
+    // non définies comme caractéristiques dédiées (ex: *_bonus, *_mastery).
+    const tokenParts = keyStr.match(/^(.*)_(bonus|mastery)(?:_(creature|object|spell))?$/);
+    if (tokenParts) {
+        const baseToken = String(tokenParts[1] || "").trim();
+        const tokenKind = String(tokenParts[2] || "").trim();
+        const explicitGroup = tokenParts[3] ? String(tokenParts[3]) : null;
+
+        const parentCandidates = [
+            baseToken,
+            `${baseToken}_creature`,
+            `${baseToken}_object`,
+            `${baseToken}_spell`,
+            `${baseToken}_item`,
+            `${baseToken}_resource`,
+            `${baseToken}_consumable`,
+            `${baseToken}_panoply`,
+            `${baseToken}_capability`,
+        ];
+        if (explicitGroup) {
+            parentCandidates.unshift(`${baseToken}_${explicitGroup}`);
+        }
+
+        for (const parentKey of parentCandidates) {
+            const base = resolveDef(parentKey, value, options);
+            if (!base) continue;
+
             const out = { ...base };
-            out._formulaTokenLabel = isMastery
+            out._formulaTokenLabel = tokenKind === "mastery"
                 ? `${base.short_name ?? base.name ?? parentKey} · palier`
                 : `${base.short_name ?? base.name ?? parentKey} · bonus`;
-            out._formulaTokenTooltipExtra = isMastery
-                ? "Terme du calcul : palier de maîtrise sur cette sauvegarde (0 = non formé, 1 = maîtrise, 2 = expertise)."
-                : "Terme du calcul : bonus d’équipement et autres modificateurs cumulés sur ce jet de sauvegarde.";
+            out._formulaTokenTooltipExtra = tokenKind === "mastery"
+                ? "Terme du calcul : palier de maîtrise appliqué à cette valeur."
+                : "Terme du calcul : bonus additionnel appliqué à cette valeur.";
             return out;
         }
     }

@@ -878,12 +878,12 @@
         "desc": "- Titre du fieldset (optionnel, sinon slot #legend)"
       },
       {
-        "name": "shadow,",
+        "name": "shadow",
         "type": "String",
         "desc": "backdrop, opacity - utilitaires custom"
       },
       {
-        "name": "id,",
+        "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
       }

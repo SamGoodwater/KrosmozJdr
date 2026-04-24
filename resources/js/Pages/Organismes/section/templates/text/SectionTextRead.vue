@@ -14,6 +14,7 @@
 import { computed } from 'vue';
 import { SectionStyleService } from '@/Utils/Services';
 import { sanitizeHtml } from '@/Utils/security/sanitizeHtml';
+import RichTextReadonlyView from '@/Pages/Molecules/data-display/RichTextReadonlyView.vue';
 
 const props = defineProps({
   section: {
@@ -37,6 +38,8 @@ const content = computed(() => {
   return sanitizeHtml(props.data?.content || '');
 });
 
+const enableRichReferences = computed(() => Boolean(props.settings?.enableRichReferences));
+
 /**
  * Classes CSS depuis les settings (utilise le service)
  */
@@ -47,8 +50,17 @@ const containerClasses = computed(() => {
 
 <template>
   <div class="section-text-content" :class="containerClasses">
-    <!-- eslint-disable-next-line vue/no-v-html -- contenu sanitizé (DOMPurify) via `sanitizeHtml()` -->
-    <div v-if="content" class="prose prose-invert max-w-none" v-html="content" />
+    <template v-if="content">
+      <RichTextReadonlyView
+        v-if="enableRichReferences"
+        :key="'rte-read-' + String(enableRichReferences)"
+        class="prose prose-invert max-w-none"
+        :html="content"
+        :enable-rich-references="true"
+      />
+      <!-- eslint-disable-next-line vue/no-v-html -- contenu sanitizé (DOMPurify) via `sanitizeHtml()` -->
+      <div v-else class="prose prose-invert max-w-none" v-html="content" />
+    </template>
     <p v-else class="text-base-content/50 italic">
       Aucun contenu disponible.
     </p>

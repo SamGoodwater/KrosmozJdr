@@ -16,7 +16,11 @@
 
 return [
     'text' => [
-        'settings' => [],
+        'settings' => [
+            'align' => 'left',
+            'size' => 'md',
+            'enableRichReferences' => false,
+        ],
         'data' => [
             'content' => null, // null au lieu de '' pour éviter les problèmes de validation
         ],
