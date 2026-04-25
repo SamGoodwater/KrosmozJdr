@@ -3,6 +3,7 @@
 
 Cet index alphabétique permet de retrouver rapidement les termes et concepts importants du livre de règles.
 
+**Navigation** : [Table des matières](TABLE_DES_MATIERES.md) · [Clés caractéristiques (`vitality_creature`, `action_points_creature`, …)](REFERENCE_CLES_CARACTERISTIQUES.md) · [Guide de rédaction](FORMAT_REGLES.md)
 
 ---
 

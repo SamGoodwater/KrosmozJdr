@@ -25,6 +25,9 @@ use Illuminate\Validation\ValidationException;
  */
 class SectionRichReferencesValidator
 {
+    private const MAX_KREF_TITLE_LEN = 4096;
+    private const MAX_KREF_LEGACY_PAYLOAD_LEN = 2048;
+
     /**
      * @param  array<int, string>  $allowedEntityTypes
      */
@@ -66,7 +69,7 @@ class SectionRichReferencesValidator
 
                 continue;
             }
-            $type = $decoded['type'];
+            $type = $this->normalizeType($decoded['type']);
             $payload = $decoded['payload'];
 
             try {
@@ -96,6 +99,9 @@ class SectionRichReferencesValidator
     {
         $title = trim((string) $node->getAttribute('title'));
         if ($title !== '') {
+            if (mb_strlen($title) > self::MAX_KREF_TITLE_LEN) {
+                return null;
+            }
             $b64 = strtr($title, '-_', '+/');
             $pad = strlen($b64) % 4;
             if ($pad !== 0) {
@@ -111,7 +117,12 @@ class SectionRichReferencesValidator
             }
             $payload = isset($data['p']) && is_array($data['p']) ? $data['p'] : [];
 
-            return ['type' => (string) $data['t'], 'payload' => $payload];
+            $type = $this->normalizeType((string) $data['t']);
+            if (! $this->isSupportedType($type)) {
+                return null;
+            }
+
+            return ['type' => $type, 'payload' => $payload];
         }
 
         $type = (string) $node->getAttribute('data-kref-type');
@@ -119,9 +130,29 @@ class SectionRichReferencesValidator
         if ($type === '') {
             return null;
         }
+        if (mb_strlen($payloadRaw) > self::MAX_KREF_LEGACY_PAYLOAD_LEN) {
+            return null;
+        }
         $payload = json_decode($payloadRaw, true);
 
-        return ['type' => $type, 'payload' => is_array($payload) ? $payload : []];
+        $normalizedType = $this->normalizeType($type);
+        if (! $this->isSupportedType($normalizedType)) {
+            return null;
+        }
+
+        return ['type' => $normalizedType, 'payload' => is_array($payload) ? $payload : []];
+    }
+
+    private function normalizeType(string $type): string
+    {
+        $t = trim($type);
+
+        return $t === 'page_section' ? 'pageSection' : $t;
+    }
+
+    private function isSupportedType(string $type): bool
+    {
+        return in_array($type, ['characteristic', 'entity', 'page', 'pageSection'], true);
     }
 
     /**

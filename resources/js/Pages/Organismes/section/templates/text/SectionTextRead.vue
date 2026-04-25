@@ -38,7 +38,9 @@ const content = computed(() => {
   return sanitizeHtml(props.data?.content || '');
 });
 
-const enableRichReferences = computed(() => Boolean(props.settings?.enableRichReferences));
+const enableRichReferences = computed(() =>
+  Boolean(props.settings?.enableRichReferences || props.settings?.enableReferenceMapper),
+);
 
 /**
  * Classes CSS depuis les settings (utilise le service)

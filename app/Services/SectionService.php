@@ -44,7 +44,7 @@ class SectionService
             return;
         }
         $settings = is_array($data['settings'] ?? null) ? $data['settings'] : [];
-        $rich = (bool) ($settings['enableRichReferences'] ?? false);
+        $rich = (bool) (($settings['enableRichReferences'] ?? false) || ($settings['enableReferenceMapper'] ?? false));
         if (! $rich) {
             return;
         }

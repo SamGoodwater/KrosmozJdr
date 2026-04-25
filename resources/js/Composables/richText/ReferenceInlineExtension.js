@@ -1,59 +1,14 @@
 import { Node, mergeAttributes } from "@tiptap/core";
+import { VueNodeViewRenderer } from "@tiptap/vue-3";
+import ReferenceInlineNodeView from "@/Composables/richText/ReferenceInlineNodeView.vue";
+import {
+    encodeKrefTitle,
+    decodeKrefElement,
+    normalizeKrefType,
+} from "@/Composables/richText/krefCodec";
+import { getReferenceClassName } from "@/Composables/richText/referenceRenderService";
 
-function safeJsonParse(raw, fallback = {}) {
-    if (raw == null || raw === "") return { ...fallback };
-    try {
-        const v = JSON.parse(String(raw));
-        return v && typeof v === "object" ? v : { ...fallback };
-    } catch {
-        return { ...fallback };
-    }
-}
-
-/**
- * Encode refs pour l’attribut `title` (HTMLPurifier n’accepte pas fiablement data-* sur span).
- *
- * @param {{ krefType: string, krefPayload: string, label: string }} attrs
- * @returns {string}
- */
-export function encodeKrefTitle(attrs) {
-    const obj = {
-        t: String(attrs.krefType || ""),
-        p: safeJsonParse(attrs.krefPayload, {}),
-        l: String(attrs.label || "").trim(),
-    };
-    const json = JSON.stringify(obj);
-    const utf8 = new TextEncoder().encode(json);
-    let bin = "";
-    for (let i = 0; i < utf8.length; i += 1) {
-        bin += String.fromCharCode(utf8[i]);
-    }
-    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-/**
- * @param {string} title
- * @returns {{ krefType: string, krefPayload: string, label: string }|null}
- */
-export function decodeKrefTitle(title) {
-    if (title == null || String(title).trim() === "") return null;
-    try {
-        const b64 = String(title).replace(/-/g, "+").replace(/_/g, "/");
-        const pad = b64.length % 4 === 0 ? "" : "=".repeat(4 - (b64.length % 4));
-        const bin = atob(b64 + pad);
-        const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
-        const json = new TextDecoder().decode(bytes);
-        const o = JSON.parse(json);
-        if (!o || typeof o !== "object" || !o.t) return null;
-        return {
-            krefType: String(o.t),
-            krefPayload: JSON.stringify(o.p && typeof o.p === "object" ? o.p : {}),
-            label: String(o.l || "").trim(),
-        };
-    } catch {
-        return null;
-    }
-}
+export { encodeKrefTitle } from "@/Composables/richText/krefCodec";
 
 /**
  * Nœud inline atomique : puce de référence.
@@ -103,12 +58,12 @@ export const ReferenceInline = Node.create({
                 getAttrs: (el) => {
                     if (typeof el === "string" || !(el instanceof HTMLElement)) return false;
                     const title = el.getAttribute("title");
-                    const decoded = decodeKrefTitle(title || "");
-                    if (!decoded) return false;
+                    const parsed = decodeKrefElement(el);
+                    if (!parsed) return false;
                     return {
-                        krefType: decoded.krefType,
-                        krefPayload: decoded.krefPayload,
-                        label: decoded.label || el.textContent?.trim() || "",
+                        krefType: parsed.krefType,
+                        krefPayload: parsed.krefPayload,
+                        label: parsed.label || el.textContent?.trim() || "",
                         refTitle: title || "",
                     };
                 },
@@ -123,9 +78,11 @@ export const ReferenceInline = Node.create({
             krefPayload: node.attrs.krefPayload,
             label: node.attrs.label,
         });
-        const kt = String(node.attrs.krefType || "");
-        const navigable = kt === "page" || kt === "pageSection" || kt === "entity";
-        const cls = navigable ? "kref kref--nav" : "kref";
+        const cls = getReferenceClassName({
+            krefType: normalizeKrefType(node.attrs.krefType),
+            krefPayload: node.attrs.krefPayload,
+            label: node.attrs.label,
+        });
         return [
             "span",
             mergeAttributes(HTMLAttributes, {
@@ -134,6 +91,10 @@ export const ReferenceInline = Node.create({
             }),
             label,
         ];
+    },
+
+    addNodeView() {
+        return VueNodeViewRenderer(ReferenceInlineNodeView);
     },
 
     renderText({ node }) {
@@ -153,11 +114,11 @@ export const ReferenceInline = Node.create({
                     return commands.insertContent({
                         type: this.name,
                         attrs: {
-                            krefType: String(krefType),
+                            krefType: normalizeKrefType(krefType),
                             krefPayload,
                             label,
                             refTitle: encodeKrefTitle({
-                                krefType: String(krefType),
+                                krefType: normalizeKrefType(krefType),
                                 krefPayload,
                                 label,
                             }),
@@ -167,7 +128,3 @@ export const ReferenceInline = Node.create({
         };
     },
 });
-
-export function parseKrefPayload(raw) {
-    return safeJsonParse(raw, {});
-}

@@ -2,6 +2,8 @@
 
 Ce document compare les valeurs min/max, formules et limites des caractéristiques entre les seeders (`database/seeders/data/`) et le livre de règles (`docs/400- Jeu/420- Règles/`).
 
+**Alignement noms ↔ clés BDD** : voir [REFERENCE_CLES_CARACTERISTIQUES.md](REFERENCE_CLES_CARACTERISTIQUES.md).
+
 ---
 
 ## 1. Ce qui est cohérent

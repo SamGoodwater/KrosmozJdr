@@ -21,6 +21,7 @@ class SectionTextSanitizationTest extends TestCase
 
     public function test_section_text_content_is_sanitized_on_update(): void
     {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $page = Page::factory()->create([
@@ -57,6 +58,7 @@ class SectionTextSanitizationTest extends TestCase
 
     public function test_section_text_preserves_kref_spans_after_sanitization(): void
     {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $page = Page::factory()->create([
@@ -98,6 +100,7 @@ class SectionTextSanitizationTest extends TestCase
 
     public function test_section_text_preserves_kref_nav_class_for_navigable_references(): void
     {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $page = Page::factory()->create([
@@ -144,5 +147,111 @@ class SectionTextSanitizationTest extends TestCase
 
         $this->assertStringContainsString('kref--nav', $content);
         $this->assertStringContainsString('class="kref kref--nav"', $content);
+    }
+
+    public function test_section_text_rejects_unsupported_kref_type(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $page = Page::factory()->create([
+            'created_by' => $admin->id,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $admin->id,
+            'template' => SectionType::TEXT->value,
+            'data' => ['content' => '<p>ok</p>'],
+            'settings' => ['enableRichReferences' => true],
+            'state' => Section::STATE_PLAYABLE,
+        ]);
+
+        $krefTitle = rtrim(strtr(base64_encode(json_encode([
+            't' => 'javascript',
+            'p' => ['x' => 1],
+            'l' => 'bad',
+        ], JSON_UNESCAPED_UNICODE)), '+/', '-_'), '=');
+        $html = '<span class="kref" title="'.$krefTitle.'">bad</span>';
+
+        $this->from(route('pages.show', $page->slug))
+            ->actingAs($admin)
+            ->patch(route('sections.update', ['section' => $section->id]), [
+                'data' => ['content' => $html],
+                'settings' => ['enableRichReferences' => true],
+            ])
+            ->assertRedirect(route('pages.show', $page->slug))
+            ->assertSessionHasErrors('data.content');
+    }
+
+    public function test_section_text_rejects_overly_long_kref_title(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $page = Page::factory()->create([
+            'created_by' => $admin->id,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $admin->id,
+            'template' => SectionType::TEXT->value,
+            'data' => ['content' => '<p>ok</p>'],
+            'settings' => ['enableRichReferences' => true],
+            'state' => Section::STATE_PLAYABLE,
+        ]);
+
+        $html = '<span class="kref" title="'.str_repeat('A', 4500).'">bad</span>';
+
+        $this->from(route('pages.show', $page->slug))
+            ->actingAs($admin)
+            ->patch(route('sections.update', ['section' => $section->id]), [
+                'data' => ['content' => $html],
+                'settings' => ['enableRichReferences' => true],
+            ])
+            ->assertRedirect(route('pages.show', $page->slug))
+            ->assertSessionHasErrors('data.content');
+    }
+
+    public function test_section_text_rejects_overly_long_legacy_kref_payload(): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $page = Page::factory()->create([
+            'created_by' => $admin->id,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $admin->id,
+            'template' => SectionType::TEXT->value,
+            'data' => ['content' => '<p>ok</p>'],
+            'settings' => ['enableRichReferences' => true],
+            'state' => Section::STATE_PLAYABLE,
+        ]);
+
+        $html = '<span class="kref" data-kref-type="entity" data-kref-payload="'.
+            str_repeat('x', 2500).
+            '">bad</span>';
+
+        $this->from(route('pages.show', $page->slug))
+            ->actingAs($admin)
+            ->patch(route('sections.update', ['section' => $section->id]), [
+                'data' => ['content' => $html],
+                'settings' => ['enableRichReferences' => true],
+            ])
+            ->assertRedirect(route('pages.show', $page->slug))
+            ->assertSessionHasErrors('data.content');
     }
 }

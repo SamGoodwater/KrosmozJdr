@@ -1187,7 +1187,7 @@
   {
     "path": "400- Jeu/420- Règles/FORMAT_REGLES.md",
     "title": "Guide de Rédaction des Règles – KrosmozJDR",
-    "description": "Ce document sert de référence pour toute personne qui contribue à la rédaction ou à la mise à jour des règles. Il décrit le format attendu, les bonnes pratiques et les éléments à inclure afin de garantir l'homogénéité du livre de règles."
+    "description": "Ce document sert de référence pour toute personne qui contribue à la rédaction ou à la mise à jour des règles."
   },
   {
     "path": "400- Jeu/420- Règles/INDEX.md",
@@ -1198,6 +1198,11 @@
     "path": "400- Jeu/420- Règles/RECAP.md",
     "title": "",
     "description": "| Niveau | Sorts                | Caractéristiques    | Spécialisation             |"
+  },
+  {
+    "path": "400- Jeu/420- Règles/REFERENCE_CLES_CARACTERISTIQUES.md",
+    "title": "Référence — clés caractéristiques (alignement outil / BDD)",
+    "description": "Ce document aligne les **noms lisibles** du livre de règles sur les **`characteristic.key`** utilisés dans la base (`characteristics.key`), les définitions JSON sous `database/seeders/data/characteristic-definitions/`, et les **mentions riches** (`@…`) côté éditeur (payload `characteristic` → `{ \"key\": \"<id>\" }` où `<id>` est la clé ci‑dessous)."
   },
   {
     "path": "400- Jeu/420- Règles/Readme.md",
@@ -1232,7 +1237,7 @@
   {
     "path": "50-Fonctionnalités/CMS/RICH_TEXT_KREF_PREVIEW.md",
     "title": "Aperçu au survol des références vers les sections (style Wikipédia)",
-    "description": "Lorsque le template de section texte active **références riches** (`settings.enableRichReferences`), le contenu TipTap peut contenir des mentions `span.kref` (caractéristique, entité, page, **section de page**)."
+    "description": "Documentation du système de références riches TipTap (`span.kref`) : formats supportés, rendu visuel, navigation, contrôles de sécurité et tests associés."
   },
   {
     "path": "50-Fonctionnalités/Characteristics-DB/ANALYSE_PDF_CARACTERISTIQUES_EQUIPEMENTS.md",

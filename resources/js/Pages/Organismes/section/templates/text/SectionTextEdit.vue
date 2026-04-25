@@ -46,7 +46,7 @@ const content = ref(props.data?.content || '');
 const localSettings = ref({
   align: String(props.settings?.align || 'left'),
   size: String(props.settings?.size || 'md'),
-  enableRichReferences: Boolean(props.settings?.enableRichReferences),
+  enableRichReferences: Boolean(props.settings?.enableRichReferences || props.settings?.enableReferenceMapper),
 });
 const syncFromProps = ref(false);
 const syncContentFromProps = ref(false);
@@ -182,7 +182,7 @@ watch(
     localSettings.value = {
       align: String(newSettings?.align || 'left'),
       size: String(newSettings?.size || 'md'),
-      enableRichReferences: Boolean(newSettings?.enableRichReferences),
+      enableRichReferences: Boolean(newSettings?.enableRichReferences || newSettings?.enableReferenceMapper),
     };
     lastSavedSettingsSignature.value = JSON.stringify(localSettings.value);
     syncFromProps.value = false;

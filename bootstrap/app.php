@@ -7,6 +7,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
 use Inertia\Inertia;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -119,5 +120,52 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return null;
+        });
+
+        /**
+         * Rendu personnalisé des erreurs HTTP (403, 404, 419, 429, 500, 503, etc.).
+         */
+        $exceptions->render(function (HttpExceptionInterface $e, Request $request) {
+            $status = $e->getStatusCode();
+            $messages = [
+                403 => ['title' => 'Accès refusé', 'description' => 'Tu n’as pas les permissions nécessaires pour accéder à cette page.'],
+                404 => ['title' => 'Page introuvable', 'description' => 'La page demandée n’existe pas ou a été déplacée.'],
+                419 => ['title' => 'Session expirée', 'description' => 'Ta session a expiré. Recharge la page et réessaie.'],
+                429 => ['title' => 'Trop de requêtes', 'description' => 'Tu envoies trop de requêtes en peu de temps. Patiente quelques instants.'],
+                500 => ['title' => 'Erreur serveur', 'description' => 'Une erreur interne est survenue. Réessaie dans quelques instants.'],
+                503 => ['title' => 'Service indisponible', 'description' => 'Le service est temporairement indisponible. Réessaie un peu plus tard.'],
+            ];
+            $meta = $messages[$status] ?? [
+                'title' => 'Une erreur est survenue',
+                'description' => 'Une erreur inattendue s’est produite lors du traitement de la requête.',
+            ];
+            $hint = (bool) config('app.debug')
+                ? 'Mode debug actif : consulte les logs Laravel (storage/logs/laravel.log) et la console navigateur pour plus de détails.'
+                : null;
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $meta['title'],
+                    'description' => $meta['description'],
+                    'hint' => $hint,
+                    'status' => $status,
+                ], $status);
+            }
+
+            if ($request->header('X-Inertia')) {
+                return Inertia::render('Errors/HttpError', [
+                    'status' => $status,
+                    'title' => $meta['title'],
+                    'description' => $meta['description'],
+                    'hint' => $hint,
+                ])->toResponse($request)->setStatusCode($status);
+            }
+
+            return response()->view('errors.http', [
+                'status' => $status,
+                'title' => $meta['title'],
+                'description' => $meta['description'],
+                'hint' => $hint,
+            ], $status);
         });
     })->create();

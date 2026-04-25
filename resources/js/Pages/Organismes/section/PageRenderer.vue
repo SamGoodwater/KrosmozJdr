@@ -17,7 +17,7 @@
  * @example
  * <PageRenderer :page="page" :user="user" :pages="pages" />
  */
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import SectionRenderer from './SectionRenderer.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import EditPageModal from './modals/EditPageModal.vue';
@@ -246,6 +246,46 @@ const pageIconSource = computed(() => {
     if (entityKey) return getEntityIconPath(entityKey);
     return '';
 });
+
+/**
+ * Ancre `#section-{id}` (liens depuis références riches pageSection) : scroll une fois le DOM prêt.
+ */
+function scrollToSectionFromHash() {
+    const raw = (typeof window !== 'undefined' ? window.location.hash : '').replace(/^#/, '');
+    if (!raw || !raw.startsWith('section-')) return;
+    nextTick(() => {
+        requestAnimationFrame(() => {
+            const el = document.getElementById(raw);
+            if (el && typeof el.scrollIntoView === 'function') {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+}
+
+function onInertiaFinish() {
+    scrollToSectionFromHash();
+}
+
+onMounted(() => {
+    scrollToSectionFromHash();
+    if (typeof document !== 'undefined') {
+        document.addEventListener('inertia:finish', onInertiaFinish);
+        window.addEventListener('hashchange', scrollToSectionFromHash);
+    }
+});
+
+onBeforeUnmount(() => {
+    if (typeof document !== 'undefined') {
+        document.removeEventListener('inertia:finish', onInertiaFinish);
+        window.removeEventListener('hashchange', scrollToSectionFromHash);
+    }
+});
+
+watch(
+    () => sortedSections.value.map((s) => s?.id).join(','),
+    () => scrollToSectionFromHash(),
+);
 </script>
 
 <template>

@@ -18,6 +18,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * Initialisation complète du projet : migrations, seeders, scrapping, capabilities.
@@ -74,6 +75,16 @@ class ProjectInitCommand extends Command
     {
         set_time_limit(0);
         $startedAt = microtime(true);
+        $phaseStatuses = [
+            'migrations' => 'pending',
+            'storage_link' => 'pending',
+            'seeders' => 'pending',
+            'rules_import' => 'pending',
+            'types' => 'pending',
+            'scrapping' => 'pending',
+            'capabilities' => 'pending',
+            'scheduler' => 'pending',
+        ];
 
         $this->info('=== Initialisation du projet KrosmozJDR ===');
         $this->newLine();
@@ -96,59 +107,83 @@ class ProjectInitCommand extends Command
         try {
             if (! (bool) $this->option('skip-migrate')) {
                 $this->runMigrations();
+                $phaseStatuses['migrations'] = 'ok';
             } else {
                 $this->warn('Migrations ignorées (--skip-migrate).');
+                $phaseStatuses['migrations'] = 'skipped';
             }
             $this->newLine();
 
             $this->runStorageLink();
+            $phaseStatuses['storage_link'] = $this->runStorageLink() ? 'ok' : 'warn';
             $this->newLine();
 
             if (! (bool) $this->option('skip-seeders')) {
-                $this->runSeeders();
-                $this->runRulesPagesImport();
+                $phaseStatuses['seeders'] = $this->runSeeders() ? 'ok' : 'warn';
+                $phaseStatuses['rules_import'] = $this->runRulesPagesImport() ? 'ok' : 'warn';
             } else {
                 $this->warn('Seeders ignorés (--skip-seeders).');
+                $this->warn('Import des règles ignoré (dépend de la création des pages/sections seedées).');
+                $phaseStatuses['seeders'] = 'skipped';
+                $phaseStatuses['rules_import'] = 'skipped';
             }
             $this->newLine();
 
             if (! (bool) $this->option('skip-types')) {
-                $this->runTypesSetup();
+                $phaseStatuses['types'] = $this->runTypesSetup() ? 'ok' : 'warn';
+            } else {
+                $phaseStatuses['types'] = 'skipped';
             }
             $this->newLine();
 
             if (! (bool) $this->option('skip-scrapping')) {
-                $this->runScrapping();
+                $phaseStatuses['scrapping'] = $this->runScrapping() ? 'ok' : 'warn';
             } else {
                 $this->warn('Scrapping ignoré (--skip-scrapping).');
+                $phaseStatuses['scrapping'] = 'skipped';
             }
             $this->newLine();
 
             if (! (bool) $this->option('skip-capabilities')) {
-                $this->runCapabilitiesImport();
+                $phaseStatuses['capabilities'] = $this->runCapabilitiesImport() ? 'ok' : 'warn';
+            } else {
+                $phaseStatuses['capabilities'] = 'skipped';
             }
             $this->newLine();
 
             if ((bool) $this->option('init-scheduler')) {
                 $this->runInitScheduler();
+                $phaseStatuses['scheduler'] = 'ok';
+            } else {
+                $phaseStatuses['scheduler'] = 'skipped';
             }
             $this->newLine();
 
             $success = true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
+            foreach ($phaseStatuses as $phase => $status) {
+                if ($status === 'pending') {
+                    $phaseStatuses[$phase] = 'not_run';
+                }
+            }
             $lastError = $e->getMessage();
             throw $e;
         } finally {
             $duration = microtime(true) - $startedAt;
             $finishedAt = now()->format('d/m/Y à H:i:s');
+            $this->printInitSummary($phaseStatuses, $success, $duration, $finishedAt, $lastError);
             if (! (bool) $this->option('skip-notify')) {
-                NotificationService::notifyProjectMaintenance(
-                    'init',
-                    $success,
-                    $duration,
-                    $finishedAt,
-                    $lastError,
-                );
+                try {
+                    NotificationService::notifyProjectMaintenance(
+                        'init',
+                        $success,
+                        $duration,
+                        $finishedAt,
+                        $lastError,
+                    );
+                } catch (Throwable $notifyError) {
+                    $this->warn('Notification maintenance ignorée : '.$notifyError->getMessage());
+                }
             }
         }
 
@@ -157,12 +192,64 @@ class ProjectInitCommand extends Command
         return self::SUCCESS;
     }
 
-    private function runStorageLink(): void
+    /**
+     * @param array<string, string> $phaseStatuses
+     */
+    private function printInitSummary(
+        array $phaseStatuses,
+        bool $success,
+        float $duration,
+        string $finishedAt,
+        ?string $lastError
+    ): void {
+        $this->info('=== Récapitulatif initialisation ===');
+        $labels = [
+            'migrations' => 'Migrations',
+            'storage_link' => 'Storage link',
+            'seeders' => 'Seeders',
+            'rules_import' => 'Import règles CMS',
+            'types' => 'Types',
+            'scrapping' => 'Scrapping',
+            'capabilities' => 'Capabilities',
+            'scheduler' => 'Scheduler',
+        ];
+
+        foreach ($labels as $key => $label) {
+            $status = $phaseStatuses[$key] ?? 'unknown';
+            $badge = match ($status) {
+                'ok' => '<info>OK</info>',
+                'warn' => '<comment>WARN</comment>',
+                'skipped' => '<comment>SKIP</comment>',
+                'not_run' => '<fg=gray>NON LANCÉ</>',
+                default => '<error>ERREUR</error>',
+            };
+            $this->line(" - {$label}: {$badge}");
+        }
+
+        $global = $success ? '<info>SUCCÈS</info>' : '<error>ÉCHEC</error>';
+        $this->line('Statut global : '.$global);
+        $this->line('Durée : '.number_format($duration, 1, ',', ' ').' s');
+        $this->line('Fin : '.$finishedAt);
+        if ($lastError !== null && trim($lastError) !== '') {
+            $this->line('Dernière erreur : '.$lastError);
+        }
+        $this->newLine();
+    }
+
+    private function runStorageLink(): bool
     {
         $this->info('Phase 1b : Lien symbolique storage');
         $this->line('  → storage:link');
-        Artisan::call('storage:link');
+        $code = Artisan::call('storage:link');
         $this->output->write(Artisan::output());
+
+        if ($code !== 0) {
+            $this->warn('  Avertissement : storage:link a remonté un code non nul (souvent lien déjà existant).');
+
+            return false;
+        }
+
+        return true;
     }
 
     private function runMigrations(): void
@@ -177,9 +264,10 @@ class ProjectInitCommand extends Command
         }
     }
 
-    private function runSeeders(): void
+    private function runSeeders(): bool
     {
         $this->info('Phase 2 : Seeders');
+        $hasWarnings = false;
 
         $this->line('  → scrapping:setup (socle scrapping)');
         $code = Artisan::call('scrapping:setup', [
@@ -205,30 +293,40 @@ class ProjectInitCommand extends Command
             $this->output->write(Artisan::output());
             if ($code !== 0) {
                 $this->warn("  Avertissement : échec partiel de {$seeder}");
+                $hasWarnings = true;
             } elseif ($seeder === UserSeeder::class) {
                 $this->runPrimarySuperAdminPrompt();
             }
         }
 
         // MonsterRaceSeeder est inclus dans TypeSeeder (scrapping:setup)
+        return ! $hasWarnings;
     }
 
     /**
      * Importe la table des matières des règles dans les pages CMS pour un projet initialisé "clé en main".
      */
-    private function runRulesPagesImport(): void
+    private function runRulesPagesImport(): bool
     {
+        $this->info('Phase 2b : Import des règles (TABLE_DES_MATIERES.md → pages CMS)');
         $this->line('  → project:data:import-rules-toc (pages règles CMS)');
         $code = Artisan::call('project:data:import-rules-toc');
         $this->output->write(Artisan::output());
         if ($code !== 0) {
             $this->warn('  Avertissement : import des pages règles échoué.');
+            $this->warn('  Vérifiez le fichier TABLE_DES_MATIERES.md et les logs de pages:import-rules-toc.');
+            return false;
         }
+
+        $this->info('  ✅ Import des règles terminé.');
+
+        return true;
     }
 
-    private function runTypesSetup(): void
+    private function runTypesSetup(): bool
     {
         $this->info('Phase 3 : Récupération de tous les types depuis DofusDB');
+        $hasWarnings = false;
 
         $typeArgs = ['--skip-cache' => (bool) $this->option('skip-cache')];
 
@@ -237,8 +335,7 @@ class ProjectInitCommand extends Command
         $this->output->write(Artisan::output());
         if ($code !== 0) {
             $this->warn('  Avertissement : seed types item a échoué.');
-
-            return;
+            return false;
         }
 
         $this->line('  → scrapping:races:seed (races monstres)');
@@ -246,6 +343,7 @@ class ProjectInitCommand extends Command
         $this->output->write(Artisan::output());
         if ($code !== 0) {
             $this->warn('  Avertissement : seed races monstres a échoué.');
+            $hasWarnings = true;
         }
 
         $this->line('  → SpellTypeSeeder (types de sorts, référentiel métier)');
@@ -253,14 +351,18 @@ class ProjectInitCommand extends Command
         $this->output->write(Artisan::output());
         if ($code !== 0) {
             $this->warn('  Avertissement : seed types de sorts a échoué.');
+            $hasWarnings = true;
         }
 
         $this->line('  Types récupérés : ressources, consommables, équipements, races monstres, types de sorts');
+
+        return ! $hasWarnings;
     }
 
-    private function runScrapping(): void
+    private function runScrapping(): bool
     {
         $this->info('Phase 4 : Scrapping DofusDB');
+        $hasWarnings = false;
         DB::reconnect();
 
         if (! (bool) $this->option('skip-clear-queue')) {
@@ -297,12 +399,15 @@ class ProjectInitCommand extends Command
             $entity = strtolower(trim($entity));
             if (! in_array($entity, self::SCRAPPING_ENTITIES, true)) {
                 $this->warn("  Entité inconnue ignorée : {$entity}");
+                $hasWarnings = true;
 
                 continue;
             }
 
             if ($entity === 'monster') {
-                $this->runScrappingMonsters($scrapArgs);
+                if (! $this->runScrappingMonsters($scrapArgs)) {
+                    $hasWarnings = true;
+                }
                 $this->newLine();
 
                 continue;
@@ -322,16 +427,20 @@ class ProjectInitCommand extends Command
             }
             if ($code !== 0) {
                 $this->warn("  Avertissement : scrapping {$entity} a échoué.");
+                $hasWarnings = true;
             }
             DB::reconnect();
             $this->newLine();
         }
+
+        return ! $hasWarnings;
     }
 
-    private function runScrappingMonsters(array $baseArgs): void
+    private function runScrappingMonsters(array $baseArgs): bool
     {
         $maxLevel = 250;
         $chunk = self::MONSTER_LEVEL_CHUNK;
+        $hasWarnings = false;
 
         for ($min = 1; $min <= $maxLevel; $min += $chunk) {
             $max = min($min + $chunk - 1, $maxLevel);
@@ -343,19 +452,22 @@ class ProjectInitCommand extends Command
             ]));
             if ($code !== 0) {
                 $this->warn("  Avertissement : scrapping monster niveau {$min}-{$max} a échoué.");
+                $hasWarnings = true;
             }
             DB::reconnect();
         }
+
+        return ! $hasWarnings;
     }
 
-    private function runCapabilitiesImport(): void
+    private function runCapabilitiesImport(): bool
     {
         $this->info('Phase 5 : Capabilities');
         $path = base_path('database/seeders/data/capability.json');
         if (! is_file($path)) {
             $this->line('  Fichier capability.json absent, import ignoré.');
 
-            return;
+            return true;
         }
         $this->line("  → capabilities:import-legacy {$path}");
         $code = Artisan::call('capabilities:import-legacy', [
@@ -364,7 +476,10 @@ class ProjectInitCommand extends Command
         $this->output->write(Artisan::output());
         if ($code !== 0) {
             $this->warn('  Avertissement : import capabilities a échoué.');
+            return false;
         }
+
+        return true;
     }
 
     private function runInitScheduler(): void

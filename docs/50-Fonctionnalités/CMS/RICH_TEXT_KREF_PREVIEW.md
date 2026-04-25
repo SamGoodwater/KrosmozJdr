@@ -1,54 +1,71 @@
-# Aperçu au survol des références vers les sections (style Wikipédia)
+# Références riches TipTap (kref)
 
-## Contexte
+## Périmètre
 
-Lorsque le template de section texte active **références riches** (`settings.enableRichReferences`), le contenu TipTap peut contenir des mentions `span.kref` (caractéristique, entité, page, **section de page**).
+Les sections texte peuvent activer les références riches via :
+- `settings.enableRichReferences`
+- `settings.enableReferenceMapper`
 
-Pour les références **`pageSection`**, l’interface affiche un **cartel d’aperçu** après un court délai au survol (environ 380 ms), sur le modèle des aperçus Wikipédia. Le HTML affiché dans le cartel est fourni par l’API, déjà passé par **HTMLPurifier** (`section_text`), puis **sanitisé une seconde fois** côté navigateur avec `sanitizeHtml` (DOMPurify).
+Quand ce mode est actif, le contenu TipTap supporte des références inline `span.kref` pour :
+- `characteristic`
+- `entity`
+- `page`
+- `pageSection`
 
-Les références **navigables** (`page`, `pageSection`, `entité`) portent les classes `kref kref--nav` : soulignement pointillé, curseur pointeur, **clic** pour ouvrir la cible via **Inertia** (`router.visit`).
+## Format de données
 
-## Fichiers concernés
+Le format principal stocke le payload dans l’attribut `title` (base64url JSON), avec ce schéma logique :
+- `t` : type de référence
+- `p` : payload objet
+- `l` : libellé affiché
+
+Le format `data-kref-type` / `data-kref-payload` est également pris en charge.
+
+## Rendu et interactions
+
+- Le nœud TipTap `referenceInline` rend les références en puces visuelles.
+- Les classes de rendu sont calculées de façon unifiée (`kref`, `kref--type-*`, `kref--nav`, `kref--invalid`).
+- Les références navigables (`page`, `pageSection`, `entity`) ouvrent la cible au clic via Inertia.
+- Les références `pageSection` ouvrent un aperçu au survol (titre + extrait).
+- La navigation vers `pageSection` utilise l’ancre `#section-{id}`.
+
+## Sécurité
+
+- Validation stricte du type de référence (whitelist).
+- Rejet des encodages invalides.
+- Limite de taille sur l’attribut `title` des références.
+- Limite de taille sur le payload legacy `data-kref-payload`.
+- Validation serveur des cibles (existence + droits de lecture) avant persistance.
+- Double sanitation du HTML d’aperçu section (serveur + client).
+
+## Fichiers clés
 
 | Rôle | Fichier |
 |------|---------|
-| Encodage / parsing des `kref` | `resources/js/Composables/richText/ReferenceInlineExtension.js`, `resources/js/Composables/richText/krefDomUtils.js` |
-| Survol + clic | `resources/js/Pages/Molecules/data-display/RichTextKrefInteractions.vue` |
-| Branchement édition | `resources/js/Pages/Molecules/data-input/RichTextEditorField.vue` |
-| Branchement lecture | `resources/js/Pages/Molecules/data-display/RichTextReadonlyView.vue` |
-| API JSON | `app/Http/Controllers/Api/CmsSectionPreviewController.php`, route nommée `api.cms.sections.preview-snippet` |
-| Classes HTML autorisées | `config/purifier.php` (`kref`, `kref--nav`) |
+| Codec / parsing / normalisation | `resources/js/Composables/richText/krefCodec.js` |
+| Extension TipTap inline | `resources/js/Composables/richText/ReferenceInlineExtension.js` |
+| Présentation visuelle des références | `resources/js/Composables/richText/referenceRenderService.js` |
+| NodeView Vue des références inline | `resources/js/Composables/richText/ReferenceInlineNodeView.vue` |
+| Helpers DOM (décodage + href) | `resources/js/Composables/richText/krefDomUtils.js` |
+| Survol / clic | `resources/js/Pages/Molecules/data-display/RichTextKrefInteractions.vue` |
+| Éditeur | `resources/js/Pages/Molecules/data-input/RichTextEditorField.vue` |
+| Lecture readonly | `resources/js/Pages/Molecules/data-display/RichTextReadonlyView.vue` |
+| Lecture section texte | `resources/js/Pages/Organismes/section/templates/text/SectionTextRead.vue` |
+| Validation backend des références | `app/Support/SectionRichReferencesValidator.php` |
+| Contrôle update section | `app/Services/SectionService.php` |
+| API preview section | `app/Http/Controllers/Api/CmsSectionPreviewController.php` |
 
-## API
+## API preview section
 
 - **GET** `/api/cms/sections/{section}/preview-snippet`
 - Nom Ziggy : `api.cms.sections.preview-snippet`
-- Réponse typique : `{ "canView": true, "title": "…", "html": "…" }`
-- Autorisations : policy **`view`** sur le modèle `Section` (même logique que la page publique).
+- Réponse type : `{ "canView": true, "title": "…", "html": "…" }`
+- Contrôle d’accès : policy `view` sur `Section`
 
-## Comportement UX
-
-1. Survol d’un `span.kref` dont le type est **`pageSection`** → requête d’aperçu sur la section cible.
-2. Survol d’une **`page`** → cartel avec titre + texte d’aide (pas d’extrait HTML).
-3. Autres types (ex. caractéristique) → message indiquant l’absence d’aperçu structuré.
-4. Entrée souris dans le cartel : l’aperçu **reste affiché** (délai de fermeture annulé) pour permettre le défilement du texte.
-5. Clic sur une référence navigable : navigation Inertia vers la page (ancre `#section-{id}` pour les sections).
-
-## Collage depuis Word / navigateur
-
-Les `span.kref` dont le payload est dans l’attribut **`title`** (et non plus uniquement `data-kref-*`) sont **laissés intacts** par `normalizePastedHtml` dans `RichTextEditorField.vue`.
-
-## Tests automatisés
+## Tests
 
 ```bash
+pnpm exec vitest run tests/unit/composables/richText/krefCodec.test.js
+php artisan test tests/Feature/PagesSections/SectionTextSanitizationTest.php
 php artisan test --filter=CmsSectionPreviewApiTest
-php artisan test --filter=SectionTextSanitizationTest
 ```
-
-- `CmsSectionPreviewApiTest` : droits invité / joueur, contenu HTML nettoyé (pas de `<script>` dans la réponse JSON).
-- `SectionTextSanitizationTest::test_section_text_preserves_kref_nav_class_for_navigable_references` : persistance des classes `kref kref--nav` après Purifier + validation des références.
-
-## Limites connues
-
-- L’aperçu enrichi est réservé aux références **section** ; les entités / caractéristiques n’ouvrent pas de carte HTML (navigation au clic reste possible pour les **entités** lorsque la route existe).
-- Après modification de `config/purifier.php`, exécuter `php artisan config:clear` en environnement où la configuration est mise en cache.

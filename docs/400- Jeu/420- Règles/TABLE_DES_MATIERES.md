@@ -3,6 +3,7 @@
 
 Cette table des matières présente la structure complète du livre de règles KrosmozJDR.
 
+**Navigation** : [Index alphabétique](INDEX.md) · [Clés caractéristiques (BDD / @)](REFERENCE_CLES_CARACTERISTIQUES.md) · [Guide de rédaction](FORMAT_REGLES.md) · [Cohérence seeders / règles](COHERENCE_SEEDER_REGLES.md)
 
 ---
 

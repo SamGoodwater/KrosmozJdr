@@ -1,6 +1,8 @@
 # Guide de Rédaction des Règles – KrosmozJDR
 
-Ce document sert de référence pour toute personne qui contribue à la rédaction ou à la mise à jour des règles. Il décrit le format attendu, les bonnes pratiques et les éléments à inclure afin de garantir l'homogénéité du livre de règles.
+Ce document sert de référence pour toute personne qui contribue à la rédaction ou à la mise à jour des règles.
+
+**Navigation** : [Table des matières](TABLE_DES_MATIERES.md) · [Index](INDEX.md) · [Clés caractéristiques](REFERENCE_CLES_CARACTERISTIQUES.md) Il décrit le format attendu, les bonnes pratiques et les éléments à inclure afin de garantir l'homogénéité du livre de règles.
 
 ---
 
@@ -131,6 +133,14 @@ Pour plus de détails, consulte :
 ```
 
 - Utiliser des ancres internes lorsque possible (`[voir section 3.2.2](#3-2-2---tour-de-jeu)`).
+- **Navigation globale** : renvoie aussi vers [TABLE_DES_MATIERES.md](TABLE_DES_MATIERES.md), [INDEX.md](INDEX.md) et [REFERENCE_CLES_CARACTERISTIQUES.md](REFERENCE_CLES_CARACTERISTIQUES.md) quand tu documentes un concept transversal.
+
+### 4.1. Fichiers Markdown ↔ pages CMS (import TOC)
+
+La commande `php artisan pages:import-rules-toc` (alias `project:data:import-rules-toc`) lit [TABLE_DES_MATIERES.md](TABLE_DES_MATIERES.md) et les fichiers `N.N.N-*.md` pour créer / mettre à jour les **pages** et **sections** du site.
+
+- Les **liens relatifs** entre `.md` (dossier `420- Règles/`) restent la référence pour la lecture dans le dépôt et pour l’import (conversion Markdown → HTML des sections).
+- Les **liens profonds côté site** utilisent l’identifiant de section en base : `/pages/{slug}#section-{id}` (l’`id` est attribué à l’import ; il n’est en général **pas** figé dans les sources Markdown du dépôt). Pour le texte riche **édité dans le CMS** avec références riches, utilise le sélecteur de pages/sections (`@`) plutôt que de deviner l’`id`.
 
 ---
 
@@ -175,6 +185,24 @@ Pour plus de détails, consulte :
 - [ ] Liens vers sections connexes
 - [ ] Sources listées
 - [ ] Formatage cohérent (titres, listes, tableaux)
+- [ ] Clés caractéristiques (voir §7) aux endroits données / outils
+
+---
+
+## 7. Caractéristiques : nom lisible + clé système
+
+Pour rester aligné avec la BDD et les mentions `@` :
+
+1. **Table de correspondance** : [REFERENCE_CLES_CARACTERISTIQUES.md](REFERENCE_CLES_CARACTERISTIQUES.md).
+2. **Rédaction** : à la première mention notable d’une stat dans une sous‑section, indique la clé entre parenthèses avec **backticks** :
+
+```markdown
+### Points d'Action (PA)
+
+La ressource **Points d'action** (`action_points_creature`) définit…
+```
+
+3. Les **exemples narratifs** peuvent garder « PA », « PM » seuls si le contexte est évident ; réintroduis la clé lorsque tu parles de **données**, d’**équipement** ou d’**API / outils**.
 
 ---
 

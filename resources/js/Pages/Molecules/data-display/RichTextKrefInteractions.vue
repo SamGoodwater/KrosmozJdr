@@ -318,11 +318,53 @@ function onPopoverLeave() {
 
 <style lang="scss">
 /* Hors scoped : éditeur + lecture (ProseMirror / TipTap) */
+.section-rich-editor :deep(.ProseMirror span.kref),
+.rich-text-readonly :deep(.ProseMirror span.kref) {
+    gap: 0.2em;
+}
+
 .section-rich-editor :deep(.ProseMirror span.kref--nav),
 .rich-text-readonly :deep(.ProseMirror span.kref--nav) {
     cursor: pointer;
     text-decoration: underline;
     text-decoration-style: dotted;
     text-underline-offset: 2px;
+}
+
+.section-rich-editor :deep(.ProseMirror span.kref--type-characteristic),
+.rich-text-readonly :deep(.ProseMirror span.kref--type-characteristic) {
+    color: var(--color-warning);
+    background: color-mix(in oklch, var(--color-warning) 16%, transparent);
+    border-color: color-mix(in oklch, var(--color-warning) 35%, transparent);
+}
+
+.section-rich-editor :deep(.ProseMirror span.kref--type-entity),
+.rich-text-readonly :deep(.ProseMirror span.kref--type-entity) {
+    color: var(--color-secondary);
+    background: color-mix(in oklch, var(--color-secondary) 16%, transparent);
+    border-color: color-mix(in oklch, var(--color-secondary) 35%, transparent);
+}
+
+.section-rich-editor :deep(.ProseMirror span.kref--type-page),
+.rich-text-readonly :deep(.ProseMirror span.kref--type-page) {
+    color: var(--color-info);
+    background: color-mix(in oklch, var(--color-info) 16%, transparent);
+    border-color: color-mix(in oklch, var(--color-info) 35%, transparent);
+}
+
+.section-rich-editor :deep(.ProseMirror span.kref--type-pageSection),
+.rich-text-readonly :deep(.ProseMirror span.kref--type-pageSection) {
+    color: var(--color-accent);
+    background: color-mix(in oklch, var(--color-accent) 16%, transparent);
+    border-color: color-mix(in oklch, var(--color-accent) 35%, transparent);
+}
+
+.section-rich-editor :deep(.ProseMirror span.kref--invalid),
+.rich-text-readonly :deep(.ProseMirror span.kref--invalid) {
+    border-style: dashed;
+    opacity: 0.95;
+    color: var(--color-error);
+    background: color-mix(in oklch, var(--color-error) 14%, transparent);
+    border-color: color-mix(in oklch, var(--color-error) 38%, transparent);
 }
 </style>

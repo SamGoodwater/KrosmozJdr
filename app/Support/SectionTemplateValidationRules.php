@@ -43,6 +43,7 @@ class SectionTemplateValidationRules
                 'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
                 'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl'])],
                 'settings.enableRichReferences' => ['sometimes', 'boolean'],
+                'settings.enableReferenceMapper' => ['sometimes', 'boolean'],
             ],
             SectionType::IMAGE => [
                 'data.src' => ['nullable', 'string', 'max:2048'],
