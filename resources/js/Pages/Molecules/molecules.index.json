@@ -2725,6 +2725,24 @@
     "file": "data-display/LevelBadge.vue"
   },
   {
+    "name": "KrefEntityTooltipBody",
+    "description": "Corps d’infobulle pour une référence kref « entité » (aperçu léger, chargé au survol puis mis en cache).",
+    "props": [
+      {
+        "name": "entityType",
+        "type": "string",
+        "desc": "— ex. spells, items"
+      },
+      {
+        "name": "id",
+        "type": "string|number",
+        "desc": "— identifiant numérique"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/KrefEntityTooltipBody.vue"
+  },
+  {
     "name": "ImageViewer",
     "description": "ImageViewer Molecule (PhotoSwipe)",
     "props": [],

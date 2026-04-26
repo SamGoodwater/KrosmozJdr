@@ -21,6 +21,10 @@ import FormulaHelpHint from '@/Pages/Molecules/entity/FormulaHelpHint.vue';
 import EntityEditFormFieldBody from '@/Pages/Molecules/entity/EntityEditFormFieldBody.vue';
 import { FORMULA_PLACEHOLDER } from '@/Utils/entity/formula-help';
 import { registerSaveShortcut } from '@/Composables/utils/saveShortcutRegistry';
+import {
+    invalidateKrefEntityPreviewCache,
+    toKrefPreviewApiEntityType,
+} from '@/Composables/richText/krefEntityPreviewCache';
 
 const props = defineProps({
     entity: {
@@ -823,6 +827,12 @@ const submit = async () => {
                 props.isUpdating ? 'Modifications enregistrées avec succès' : 'Création effectuée avec succès',
                 { duration: 3000, placement: 'top-right' }
             );
+            if (props.isUpdating && entityId != null) {
+                invalidateKrefEntityPreviewCache(
+                    toKrefPreviewApiEntityType(props.entityType),
+                    entityId,
+                );
+            }
             emit('submit', form.data());
         },
         onError: (errors) => {

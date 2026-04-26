@@ -10,13 +10,15 @@ use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
 use App\Services\Characteristics\CharacteristicDefinitionReader;
+use App\Services\PageService;
 use App\Support\Characteristics\CharacteristicDefinitionNaming;
 use Illuminate\Database\Seeder;
 
 /**
- * Seed les pages de contribution : présentation du projet puis une sous-page
- * par groupe d'entité (créature, objet, sort), chacune avec une introduction
- * puis deux sections par caractéristique normée (texte + charte interactive).
+ * Seed les pages de contribution : page « Nous rejoindre », présentation
+ * du groupe puis une sous-page par type d'entité (créature, objet, sort),
+ * chacune avec une introduction puis des sections par caractéristique normée
+ * (texte + charte interactive).
  */
 class PageSeeder extends Seeder
 {
@@ -215,39 +217,45 @@ class PageSeeder extends Seeder
             'created_by' => $creatorId,
         ]);
 
-        // Section introduction de contribution.
+        // Section introduction de la page parente « Contribution » (aperçu + liens vers sous-pages).
         $this->ensureTextSection(
             $contributionPage,
             'contribution-intro',
-            'Contribuer au projet',
-            '<h2>Bienvenue, contributeur !</h2>'
-            .'<p><strong>Krosmoz JDR</strong> est un jeu de rôle sur table inspiré de l\'univers du Krosmoz (Dofus, Wakfu). '
-            .'Ce projet est le fruit d\'un travail collaboratif qui vise à adapter les mécaniques du jeu vidéo '
-            .'en un système de JDR complet et équilibré, jouable avec des dés et une feuille de personnage.</p>'
-            .'<h3>Les piliers du projet</h3>'
-            .'<ul>'
-            .'<li><strong>Fidélité à l\'univers</strong> : respecter le lore et l\'ambiance du Krosmoz tout en l\'adaptant au format JDR.</li>'
-            .'<li><strong>Équilibre</strong> : chaque classe, sort et objet doit être viable. Les chartes de caractéristiques (présentées dans les sous-pages) servent de référence.</li>'
-            .'<li><strong>Accessibilité</strong> : le système doit rester simple à prendre en main, même pour les novices du JDR.</li>'
-            .'<li><strong>Modularité</strong> : le MJ peut activer ou désactiver des modules (crafting, PvP, exploration) selon sa campagne.</li>'
-            .'</ul>'
-            .'<h3>Comment contribuer ?</h3>'
-            .'<ul>'
-            .'<li><strong>Équilibrage</strong> : utilise les chartes ci-dessous pour vérifier que les valeurs d\'une créature, d\'un objet ou d\'un sort sont cohérentes.</li>'
-            .'<li><strong>Contenu</strong> : propose de nouvelles classes, sorts, monstres ou objets en respectant les normes établies.</li>'
-            .'<li><strong>Relecture</strong> : signale les incohérences, fautes ou déséquilibres que tu repères.</li>'
-            .'<li><strong>Playtest</strong> : joue des sessions et remonte tes retours d\'expérience.</li>'
-            .'</ul>'
-            .'<p>Les sous-pages suivantes détaillent les <strong>chartes de caractéristiques</strong> pour chaque type d\'entité. '
-            .'Chaque charte est un tableau interactif montrant les valeurs de référence par niveau et par puissance.</p>',
+            'Contribution au projet',
+            '<h2>Contribution au projet</h2>'
+            .'<p>Cette section regroupe les ressources pour participer à <strong>Krosmoz JDR</strong> : rejoindre la communauté, obtenir les accès d’édition, puis consulter les <strong>chartes de caractéristiques</strong> par type d’entité (créatures, objets, sorts).</p>'
+            .'<p>Commence par <strong>Nous rejoindre</strong> pour Discord, GitHub et la procédure de demande de droits. Ensuite, ouvre les sous-pages pour vérifier l’équilibre des valeurs grâce aux tableaux interactifs.</p>',
             1,
+            $creatorId
+        );
+
+        $nousRejoindrePage = $this->createOrRestorePage([
+            'title' => 'Nous rejoindre',
+            'slug' => 'nous-rejoindre',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'menu_order' => 0,
+            'menu_group' => null,
+            'parent_id' => $contributionPage->id,
+            'icon' => 'fa-solid fa-users',
+            'created_by' => $creatorId,
+        ]);
+
+        $this->ensureTextSection(
+            $nousRejoindrePage,
+            'nous-rejoindre-intro',
+            'Introduction',
+            $this->nousRejoindreIntroHtml(),
+            0,
             $creatorId
         );
 
         $this->seedEssentialPages($creatorId);
 
-        // Sous-pages par groupe d'entité
-        $menuOrder = 0;
+        // Sous-pages par groupe d'entité (menu_order ≥ 10 pour rester après « Nous rejoindre »).
+        $menuOrder = 10;
         foreach (self::ENTITY_GROUPS as $group => $meta) {
             $normsKeys = $this->characteristicKeysWithNormsFromDefinitions($group);
             if ($normsKeys === []) {
@@ -300,6 +308,37 @@ class PageSeeder extends Seeder
                 $this->command->info("📄 Page {$meta['slug']} : {$order} sections (intro + ".count($normsKeys).' chartes).');
             }
         }
+
+        PageService::clearMenuCache();
+    }
+
+    private function nousRejoindreIntroHtml(): string
+    {
+        return <<<'HTML'
+<h2>Nous rejoindre</h2>
+<p><strong>Krosmoz JDR</strong> est un jeu de rôle sur table inspiré du Krosmoz (Dofus, Wakfu). Ce site rassemble les règles, outils et chartes ; le développement du contenu et du code est collaboratif.</p>
+
+<h3>Discord</h3>
+<p>Rejoins le serveur pour échanger, suivre les annonces et demander l’accès au contenu éditorial.</p>
+<p><strong>Droits de modification :</strong> pour créer ou modifier des pages et des entités (créatures, objets, sorts, etc.) dans l’interface, ouvre un fil sur Discord et indique clairement ton <strong>nom de compte</strong> sur cette plateforme — le même identifiant que ton compte utilisateur Krosmoz JDR — afin que l’équipe puisse t’attribuer les permissions adaptées.</p>
+<p><a href="https://discord.com/invite/XVu4VWFskj" target="_blank" rel="noopener noreferrer">Rejoindre le Discord</a></p>
+
+<h3>GitHub</h3>
+<p>Le code source (Laravel, Vue), les issues et les propositions de correctifs ou de fonctionnalités.</p>
+<p><a href="https://github.com/SamGoodwater/KrosmozJdr" target="_blank" rel="noopener noreferrer">Ouvrir le dépôt GitHub</a></p>
+
+<h3>Plateforme collaborative</h3>
+<p>Fichiers et discussions autour du projet (inscription requise).</p>
+<p><a href="https://project.krosmoz-jdr.fr" target="_blank" rel="noopener noreferrer">Projet Krosmoz JDR (Nextcloud)</a></p>
+
+<h3>Chartes de conception des entités Dofus</h3>
+<p>Pages internes : normes de référence pour équilibrer les caractéristiques (monstres, classes jouables et PNJ sont regroupés sous « Créatures »).</p>
+<ul>
+<li><a href="/pages/contribution-creatures">Créatures</a> (monstres, classes jouables, PNJ)</li>
+<li><a href="/pages/contribution-objets">Objets</a></li>
+<li><a href="/pages/contribution-sorts">Sorts</a></li>
+</ul>
+HTML;
     }
 
     /**
@@ -337,14 +376,20 @@ class PageSeeder extends Seeder
         string $title,
         string $contentHtml,
         int $order,
-        ?int $creatorId
+        ?int $creatorId,
+        bool $enableRichReferences = false
     ): Section {
+        $settings = ['align' => 'left', 'size' => 'md'];
+        if ($enableRichReferences) {
+            $settings['enableRichReferences'] = true;
+        }
+
         return $this->ensureSection($page, $slug, [
             'title' => $title,
             'order' => $order,
             'template' => SectionType::TEXT->value,
             'type' => SectionType::TEXT->value,
-            'settings' => ['align' => 'left', 'size' => 'md'],
+            'settings' => $settings,
             'data' => ['content' => $contentHtml],
             'params' => ['content' => $contentHtml],
             'state' => Section::STATE_PLAYABLE,
@@ -444,7 +489,8 @@ class PageSeeder extends Seeder
                 $pageConfig['intro_title'],
                 $pageConfig['intro_html'],
                 $order++,
-                $creatorId
+                $creatorId,
+                true
             );
 
             foreach ($pageConfig['sections'] as $section) {
@@ -454,7 +500,8 @@ class PageSeeder extends Seeder
                     $section['title'],
                     $section['html'],
                     $order++,
-                    $creatorId
+                    $creatorId,
+                    true
                 );
             }
 

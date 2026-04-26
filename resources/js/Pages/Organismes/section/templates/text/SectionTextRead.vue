@@ -14,6 +14,7 @@
 import { computed } from 'vue';
 import { SectionStyleService } from '@/Utils/Services';
 import { sanitizeHtml } from '@/Utils/security/sanitizeHtml';
+import { htmlContainsKrefMarkers } from '@/Utils/richText/htmlContainsKrefMarkers';
 import RichTextReadonlyView from '@/Pages/Molecules/data-display/RichTextReadonlyView.vue';
 
 const props = defineProps({
@@ -39,7 +40,11 @@ const content = computed(() => {
 });
 
 const enableRichReferences = computed(() =>
-  Boolean(props.settings?.enableRichReferences || props.settings?.enableReferenceMapper),
+  Boolean(
+    props.settings?.enableRichReferences ||
+      props.settings?.enableReferenceMapper ||
+      htmlContainsKrefMarkers(content.value),
+  ),
 );
 
 /**

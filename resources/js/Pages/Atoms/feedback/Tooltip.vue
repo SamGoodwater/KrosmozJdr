@@ -82,11 +82,12 @@ const props = defineProps({
 const slots = useSlots();
 
 const hasTooltip = computed(() => {
-    if (slots.content?.()?.length) {
+    const c = typeof props.content === "string" ? props.content.trim() : "";
+    if (c !== "") {
         return true;
     }
-    const c = props.content;
-    return typeof c === "string" && c.trim() !== "";
+    const nodes = slots.content?.();
+    return Array.isArray(nodes) && nodes.length > 0;
 });
 
 const triggerRef = ref(null);

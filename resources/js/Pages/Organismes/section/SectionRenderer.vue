@@ -66,6 +66,11 @@ const sectionId = computed(() => {
   // Priorité à props.section.id (toujours disponible grâce au validator)
   return props.section?.id || sectionModel.value?.id;
 });
+
+/** Slug CMS (ancre {@code #ssec-…} + références riches importées). */
+const sectionWebSlug = computed(
+  () => String(sectionModel.value?.slug || props.section?.slug || "").trim() || null,
+);
 const { isEditing, toggleEditMode, setEditMode } = useSectionMode(sectionId);
 const { saveSectionImmediate } = useSectionSave();
 const registry = useTemplateRegistry();
@@ -210,9 +215,11 @@ const handleCopyLink = async () => {
   if (!sectionModel.value || !sectionModel.value.page) return;
   
   const pageSlug = sectionModel.value.page.slug || sectionModel.value.pageId;
-  const sectionId = sectionModel.value.id ?? props.section?.id;
-  if (!sectionId) return;
-  const url = `${window.location.origin}${route('pages.show', pageSlug)}#section-${sectionId}`;
+  const sid = sectionModel.value.id ?? props.section?.id;
+  if (!sid) return;
+  const slug = sectionWebSlug.value;
+  const hash = slug ? `ssec-${slug}` : `section-${sid}`;
+  const url = `${window.location.origin}${route('pages.show', pageSlug)}#${hash}`;
   
   await copyToClipboard(url, 'Lien de la section copié !');
 };
@@ -296,14 +303,21 @@ const handleDeleteSection = async () => {
 <template>
     <div 
         :id="sectionId ? `section-${sectionId}` : undefined"
-        class="section-renderer group relative" 
+        class="section-renderer section-renderer-surface group relative rounded-2xl border border-base-300/40 bg-base-100/40 px-3 pb-4 pt-2 shadow-sm backdrop-blur-[1px] md:px-5 md:pb-6 md:pt-3" 
         :class="uiData.containerClass"
         :data-section-id="sectionModel?.id" 
+        :data-section-slug="sectionWebSlug || undefined"
         :data-section-template="templateValue"
         :data-section-state="stateInfo.value"
         @mouseenter="isHovered = true"
         @mouseleave="isHovered = false"
     >
+    <span
+        v-if="sectionWebSlug"
+        :id="`ssec-${sectionWebSlug}`"
+        class="section-scroll-anchor pointer-events-none absolute left-0 top-0 block h-px w-px -translate-y-20 opacity-0"
+        aria-hidden="true"
+    />
     <!-- Header toujours visible -->
     <SectionHeader
       :title="section.title || sectionModel?.title"

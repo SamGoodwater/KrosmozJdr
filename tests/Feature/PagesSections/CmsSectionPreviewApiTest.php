@@ -110,4 +110,74 @@ class CmsSectionPreviewApiTest extends TestCase
 
         $this->assertStringContainsString('Contenu joueur', (string) $res->json('html'));
     }
+
+    public function test_preview_snippet_by_page_and_section_slug_returns_excerpt_for_text_section(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $page = Page::factory()->create([
+            'slug' => 'regles-test-kref-scroll',
+            'created_by' => $admin->id,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'slug' => 'regle-9-9-9-apercu',
+            'created_by' => $admin->id,
+            'template' => SectionType::TEXT->value,
+            'data' => ['content' => '<p>Extrait slug</p>'],
+            'settings' => [],
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $res = $this->getJson(route('api.cms.sections.preview-snippet-query', [
+            'page_slug' => 'regles-test-kref-scroll',
+            'section_slug' => 'regle-9-9-9-apercu',
+        ]));
+
+        $res->assertOk()
+            ->assertJsonPath('canView', true)
+            ->assertJsonMissingPath('textPreviewOnly');
+
+        $this->assertStringContainsString('Extrait slug', (string) $res->json('html'));
+    }
+
+    public function test_preview_snippet_by_slug_returns_empty_html_for_non_text_template(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $page = Page::factory()->create([
+            'slug' => 'regles-test-kref-scroll-2',
+            'created_by' => $admin->id,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'slug' => 'regle-8-8-8-image',
+            'created_by' => $admin->id,
+            'template' => SectionType::IMAGE->value,
+            'data' => ['content' => '<p>X</p>'],
+            'settings' => [],
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $res = $this->getJson(route('api.cms.sections.preview-snippet-query', [
+            'page_slug' => 'regles-test-kref-scroll-2',
+            'section_slug' => 'regle-8-8-8-image',
+        ]));
+
+        $res->assertOk()
+            ->assertJsonPath('textPreviewOnly', true)
+            ->assertJsonPath('html', '');
+    }
 }

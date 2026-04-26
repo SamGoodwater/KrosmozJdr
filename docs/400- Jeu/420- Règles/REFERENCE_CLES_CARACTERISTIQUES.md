@@ -64,7 +64,15 @@ Convention recommandée : **première occurrence** d’une grandeur dans une sou
 
 > **Vitalité** (`vitality_creature`) — …
 
+Pour générer une référence riche importable vers le CMS :
+
+```markdown
+[[kref:characteristic:vitality_creature|Vitalité]]
+```
+
 Voir aussi [FORMAT_REGLES.md](FORMAT_REGLES.md), section sur les clés et les liens.
+
+Liste des **conversions automatiques** (libellé → shortcode) pour les fichiers Markdown : [REFERENCE_KREF_CONVERSIONS_CARACTERISTIQUES.md](REFERENCE_KREF_CONVERSIONS_CARACTERISTIQUES.md).
 
 ---
 

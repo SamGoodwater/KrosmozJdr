@@ -248,11 +248,14 @@ const pageIconSource = computed(() => {
 });
 
 /**
- * Ancre `#section-{id}` (liens depuis références riches pageSection) : scroll une fois le DOM prêt.
+ * Ancres `#section-{id}` (id numérique) ou `#ssec-{slug}` (slug section, règles / liens stables) : scroll une fois le DOM prêt.
  */
 function scrollToSectionFromHash() {
     const raw = (typeof window !== 'undefined' ? window.location.hash : '').replace(/^#/, '');
-    if (!raw || !raw.startsWith('section-')) return;
+    if (!raw) return;
+    const isNumericSection = raw.startsWith('section-') && raw !== 'section-';
+    const isSlugSection = raw.startsWith('ssec-') && raw.length > 'ssec-'.length;
+    if (!isNumericSection && !isSlugSection) return;
     nextTick(() => {
         requestAnimationFrame(() => {
             const el = document.getElementById(raw);
@@ -289,42 +292,47 @@ watch(
 </script>
 
 <template>
-    <Container
-        class="page-renderer"
-        :class="pageModel?.pageCssClasses"
-    >
-        <!-- Titre de la page -->
-        <header class="mb-8">
-            <div class="flex items-center gap-3 mb-2">
-                <Icon
-                    v-if="pageIconSource"
-                    :source="pageIconSource"
-                    alt="Icône de la page"
-                    size="xl"
-                    class="page-renderer__icon shrink-0"
-                />
-                <h1
-                    class="text-4xl font-bold text-primary"
-                    :class="pageModel?.titleCssClasses"
-                >
-                    {{ pageModel?.title || props.page?.title || 'Page' }}
-                </h1>
-                <!-- Bouton pour modifier la page à côté du titre (seulement si droits d'écriture) -->
-                <Btn
-                    v-if="canEdit"
-                    @click="handleOpenEditModal"
-                    variant="ghost"
-                    size="sm"
-                    title="Modifier les options de la page"
-                    class="ml-2"
-                >
-                    <Icon source="fa-edit" pack="solid" alt="Modifier la page" size="sm" />
-                </Btn>
-            </div>
-        </header>
+    <main class="page-show-main">
+        <Container
+            class="page-renderer"
+            :class="pageModel?.pageCssClasses"
+        >
+            <!-- Titre de la page -->
+            <header class="page-show-header mb-10 rounded-box border border-base-300/40 bg-base-100/45 px-5 py-6 shadow-sm md:px-8 md:py-8">
+                <div class="flex flex-wrap items-center gap-3">
+                    <Icon
+                        v-if="pageIconSource"
+                        :source="pageIconSource"
+                        alt="Icône de la page"
+                        size="xl"
+                        class="page-renderer__icon shrink-0 drop-shadow-sm"
+                    />
+                    <div class="min-w-0 flex-1">
+                        <p class="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-base-content/55">
+                            Contenu
+                        </p>
+                        <h1
+                            class="text-3xl font-extrabold tracking-tight text-primary md:text-4xl"
+                            :class="pageModel?.titleCssClasses"
+                        >
+                            {{ pageModel?.title || props.page?.title || 'Page' }}
+                        </h1>
+                    </div>
+                    <Btn
+                        v-if="canEdit"
+                        @click="handleOpenEditModal"
+                        variant="ghost"
+                        size="sm"
+                        title="Modifier les options de la page"
+                        class="ml-auto shrink-0"
+                    >
+                        <Icon source="fa-edit" pack="solid" alt="Modifier la page" size="sm" />
+                    </Btn>
+                </div>
+            </header>
 
-        <!-- Sections -->
-        <div v-if="sortedSections.length > 0" class="sections space-y-8">
+            <!-- Sections -->
+            <div v-if="sortedSections.length > 0" class="sections space-y-8 md:space-y-10">
             <SectionRenderer
                 v-for="section in sortedSections"
                 :key="section.id"
@@ -379,18 +387,32 @@ watch(
             @close="handleCloseCreateSectionModal"
             @created="handleSectionCreated"
         />
-    </Container>
+        </Container>
+    </main>
 </template>
 
 <style scoped lang="scss">
+.page-show-main {
+    min-height: 40vh;
+    padding: 1.5rem 1rem 2.5rem;
+    @media (min-width: 768px) {
+        padding: 2rem 1.5rem 3rem;
+    }
+    background: linear-gradient(
+        185deg,
+        color-mix(in oklch, hsl(var(--b3)) 35%, transparent) 0%,
+        transparent 42%
+    );
+}
+
 .page-renderer {
     max-width: 4xl;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 0;
 }
 
 .page-renderer__icon {
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
 .sections {

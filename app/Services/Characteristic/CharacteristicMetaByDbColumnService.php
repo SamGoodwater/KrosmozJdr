@@ -46,6 +46,13 @@ final class CharacteristicMetaByDbColumnService
                 $entry = $this->rowToDefinition($row->db_column, $row->characteristic);
                 if ($entry !== null) {
                     $out[$entry['db_column']] = $entry;
+                    // Alias : les krefs / docs utilisent la clé métier (`strength_creature`) alors que la colonne
+                    // modèle est distincte (`strong`, `agi`, `intel`, …). Sans cette entrée, le frontend ne résout
+                    // pas l’icône (fallback graphique).
+                    $canonicalKey = (string) ($entry['key'] ?? '');
+                    if ($canonicalKey !== '' && $canonicalKey !== $entry['db_column']) {
+                        $out[$canonicalKey] = $entry;
+                    }
                 }
             }
         } catch (\Throwable $e) {

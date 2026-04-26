@@ -86,5 +86,13 @@ describe("krefCodec", () => {
         expect(isKrefPayloadComplete("entity", { entityType: "spells", id: 2 })).toBe(true);
         expect(isKrefPayloadComplete("entity", { entityType: "spells" })).toBe(false);
         expect(isKrefPayloadComplete("unknown", { x: 1 })).toBe(false);
+        expect(
+            isKrefPayloadComplete("pageSection", {
+                pageSlug: "regles-2-2-les-caracteristiques",
+                sectionSlug: "regle-2-2-2-caracteristiques-secondaires",
+            }),
+        ).toBe(true);
+        expect(isKrefPayloadComplete("pageSection", { pageSlug: "x", sectionId: 1 })).toBe(true);
+        expect(isKrefPayloadComplete("pageSection", { pageSlug: "x" })).toBe(false);
     });
 });

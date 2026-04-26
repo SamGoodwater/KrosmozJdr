@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 use App\Models\Page;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,5 +24,10 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/contribuer', function () {
-    return Inertia::render('Statics/contribute');
+    $joinPage = Page::query()->where('slug', 'nous-rejoindre')->first();
+    if ($joinPage && $joinPage->canBeViewedBy(Auth::user())) {
+        return redirect()->route('pages.show', $joinPage->slug);
+    }
+
+    return Inertia::render('Pages/statics/Contribute');
 })->name('contribute');

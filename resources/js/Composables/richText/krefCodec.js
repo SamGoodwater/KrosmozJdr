@@ -140,6 +140,10 @@ export function isKrefPayloadComplete(krefType, payload) {
     if (t === "characteristic") return Boolean(p.key);
     if (t === "entity") return Boolean(p.entityType) && p.id != null && p.id !== "";
     if (t === "page") return Boolean(p.pageSlug);
-    if (t === "pageSection") return Boolean(p.pageSlug) && p.sectionId != null && p.sectionId !== "";
+    if (t === "pageSection") {
+        if (!p.pageSlug) return false;
+        if (p.sectionSlug != null && String(p.sectionSlug).trim() !== "") return true;
+        return p.sectionId != null && p.sectionId !== "";
+    }
     return Boolean(t);
 }

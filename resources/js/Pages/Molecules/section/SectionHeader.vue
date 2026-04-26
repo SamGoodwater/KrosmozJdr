@@ -75,9 +75,10 @@ const handleTitleKeydown = (event) => {
 </script>
 
 <template>
-  <div class="section-header flex items-center justify-between gap-4 py-2 border-b border-base-300/50">
+  <div class="section-header flex items-center justify-between gap-4 border-b border-base-300/45 py-3">
     <!-- Titre à gauche -->
-    <div class="section-header__title flex-1 min-w-0">
+    <div class="section-header__title flex min-w-0 flex-1 items-start gap-2">
+      <span class="mt-1.5 hidden h-8 w-1 shrink-0 rounded-full bg-primary/70 sm:block" aria-hidden="true" />
       <input
         v-if="isEditing"
         v-model="localTitle"
@@ -87,7 +88,7 @@ const handleTitleKeydown = (event) => {
         class="input input-sm input-ghost w-full"
         placeholder="Titre de la section"
       />
-      <h3 v-else class="text-lg font-semibold truncate">
+      <h3 v-else class="truncate text-xl font-bold tracking-tight text-base-content md:text-2xl">
         {{ title || 'Sans titre' }}
       </h3>
     </div>

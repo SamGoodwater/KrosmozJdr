@@ -206,5 +206,38 @@ La ressource **Points d'action** (`action_points_creature`) définit…
 
 ---
 
+## 8. Références inline compatibles CMS
+
+Les fichiers de règles supportent une syntaxe dédiée pour créer des références riches à l’import :
+
+```markdown
+[[kref:characteristic:action_points_creature|Points d'action]]
+[[kref:page:regles-2-2-les-caracteristiques|Caractéristiques]]
+[[kref:pageSection:regles-2-2-les-caracteristiques:123|Répartition des points]]
+[[kref:entity:spells:42|Boule de feu]]
+```
+
+À l’import (`php artisan pages:import-rules-toc`), le pipeline enrichit aussi :
+
+- les **libellés caractéristiques** reconnus (liste alignée sur [REFERENCE_CLES_CARACTERISTIQUES.md](REFERENCE_CLES_CARACTERISTIQUES.md), sans doubler un shortcode déjà présent) ;
+- les **liens Markdown relatifs** vers un fichier `N[.N]+-titre.md` sous ce dossier de règles en **`[[kref:pageSection:regles-…@regle-…|libellé]]`** (ancre `#ssec-…` + aperçu au survol pour les sections **texte**) lorsque la section est listée dans la table des matières ; sinon `[[kref:page:regles-…|libellé]]`.
+
+Les références **`pageSection`** avec **id numérique** (`slug:123`) et **`entity`** (type + id BDD) restent utiles pour cibler hors arbre règles ou pour des liens déjà figés en base.
+
+### Règles de format
+
+- `characteristic` : cible = clé (`action_points_creature`)
+- `page` : cible = slug de page
+- `pageSection` : cible = `slug:sectionId`
+- `entity` : cible = `entityType:id` (ex. `spells:42`)
+
+### Bonnes pratiques
+
+- Mets un libellé lisible après `|` pour l’affichage.
+- Utilise les clés de [REFERENCE_CLES_CARACTERISTIQUES.md](REFERENCE_CLES_CARACTERISTIQUES.md) pour `characteristic`.
+- Si la référence est trop technique pour le lecteur, conserve le texte naturel et ajoute la référence inline sur le terme principal uniquement.
+
+---
+
 En suivant ce guide, nous garantissons une qualité homogène sur l'ensemble du livre de règles et facilitons la contribution de nouveaux rédacteurs.
 

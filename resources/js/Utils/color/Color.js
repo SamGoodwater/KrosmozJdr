@@ -100,9 +100,16 @@ export function hexToRgba(hex, a) {
  */
 export function resolveCharacteristicUiColor(color) {
   if (!color || typeof color !== 'string') return '';
-  const t = color.trim();
+  let t = color.trim();
   if (!t) return '';
   if (t.startsWith('#')) return t;
+  // `brown` : la palette complète n’est pas toujours exposée en `--color-brown-*` selon le thème Vite/Tailwind ;
+  // on mappe vers `amber` (ton « terre » lisible sur fonds sombres, proche des usages Force / Terre).
+  const lower = t.toLowerCase();
+  if (lower === 'brown' || lower.startsWith('brown-')) {
+    const shade = lower === 'brown' ? '600' : lower.slice('brown-'.length);
+    t = `amber-${shade}`;
+  }
   if (t.includes('-')) return `var(--color-${t})`;
   const low = t.toLowerCase();
   if (CHARACTERISTIC_PALETTE_NAMES.has(low)) {

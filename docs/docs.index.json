@@ -627,7 +627,7 @@
   {
     "path": "400- Jeu/420- Règles/1-Introduction/1.2-concepts-de-base/1.2.2-ressources-principales.md",
     "title": "1.2.2. Ressources principales",
-    "description": "**Description** : Décrire PA, PM, PO, Wakfu, initiative, ainsi que leur utilisation et récupération."
+    "description": "**Description** : Décrire [[kref:characteristic:action_points_creature|PA]], [[kref:characteristic:movement_points_creature|PM]], [[kref:characteristic:range_creature|PO]], Wakfu, initiative, ainsi que leur utilisation et récupération."
   },
   {
     "path": "400- Jeu/420- Règles/1-Introduction/1.2-concepts-de-base/1.2.3-structure-d-un-tour.md",
@@ -697,7 +697,7 @@
   {
     "path": "400- Jeu/420- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.2-caracteristiques-secondaires.md",
     "title": "2.2.2. Caractéristiques secondaires",
-    "description": "**Description** : Détaille toutes les caractéristiques dérivées et calculées, issues de Dofus (PA, PM, PO, etc.) ou de DnD (CA, sauvegardes, etc.), ainsi que la réserve de Wakfu spécifique à KrosmozJDR."
+    "description": "**Description** : Détaille toutes les caractéristiques dérivées et calculées, issues de Dofus ([[kref:characteristic:action_points_creature|PA]], [[kref:characteristic:movement_points_creature|PM]], [[kref:characteristic:range_creature|PO]], etc.) ou de DnD ([[kref:characteristic:armor_class_creature|CA]], sauvegardes, etc.), ainsi que la réserve de Wakfu spécifique à KrosmozJDR."
   },
   {
     "path": "400- Jeu/420- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.3-repartition-des-points.md",
@@ -837,12 +837,12 @@
   {
     "path": "400- Jeu/420- Règles/3-Jouer/3.2-combat/3.2.2-tour-de-jeu-et-actions.md",
     "title": "3.2.2. Tour de jeu et actions",
-    "description": "**Description** : Expliquer la structure d'un tour (PA/PM/PO), les types d'actions disponibles (simples, fortes, bonus), et la gestion des opportunités."
+    "description": "**Description** : Expliquer la structure d'un tour ([[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]]/[[kref:characteristic:range_creature|PO]]), les types d'actions disponibles (simples, fortes, bonus), et la gestion des opportunités."
   },
   {
     "path": "400- Jeu/420- Règles/3-Jouer/3.2-combat/3.2.3-systeme-de-reaction.md",
     "title": "3.2.3. Système de réaction",
-    "description": "**Description** : Adapter les réactions de D&D au système KrosmozJDR : tacle, fuite, attaques d'opportunité, limitations et utilisation des PA/PM."
+    "description": "**Description** : Adapter les réactions de D&D au système KrosmozJDR : tacle, fuite, attaques d'opportunité, limitations et utilisation des [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]]."
   },
   {
     "path": "400- Jeu/420- Règles/3-Jouer/3.2-combat/3.2.4-gerer-la-sante.md",
@@ -876,7 +876,7 @@
   },
   {
     "path": "400- Jeu/420- Règles/3-Jouer/3.3-sorts/3.3.4-reserve-de-wakfu.md",
-    "title": "3.3.4. Réserve de Wakfu",
+    "title": "3.3.4. [[kref:characteristic:wakfu_reserve_creature|Réserve de Wakfu]]",
     "description": "**Description** : Définir la réserve de Wakfu, son calcul, son usage pour lancer des sorts, sa récupération, et les limites qu'elle impose."
   },
   {
@@ -922,7 +922,7 @@
   {
     "path": "400- Jeu/420- Règles/3-Jouer/3.5-competences/3.5.1-liste-des-competences.md",
     "title": "3.5.1. Liste des compétences",
-    "description": "**Description** : Présenter l'ensemble des compétences disponibles (Arcane, Athlétisme, Discrétion, Perception, etc.), leur définition et leur usage."
+    "description": "**Description** : Présenter l'ensemble des compétences disponibles ([[kref:characteristic:arcana_creature|Arcane]], [[kref:characteristic:athletics_creature|Athlétisme]], [[kref:characteristic:stealth_creature|Discrétion]], [[kref:characteristic:perception_creature|Perception]], etc.), leur définition et leur usage."
   },
   {
     "path": "400- Jeu/420- Règles/3-Jouer/3.5-competences/3.5.2-tests-de-competence.md",
@@ -992,7 +992,7 @@
   {
     "path": "400- Jeu/420- Règles/4-Le-monde-des-douze/4.2-les-creatures/4.2.2-caracteristiques-et-statistiques.md",
     "title": "4.2.2. Caractéristiques et statistiques",
-    "description": "**Description** : Décrire les attributs propres aux créatures (caractéristiques, PV, résistances) et leur adaptation depuis le jeu vidéo."
+    "description": "**Description** : Décrire les attributs propres aux créatures (caractéristiques, [[kref:characteristic:life_points_creature|PV]], résistances) et leur adaptation depuis le jeu vidéo."
   },
   {
     "path": "400- Jeu/420- Règles/4-Le-monde-des-douze/4.2-les-creatures/4.2.3-competences-et-aptitudes.md",
@@ -1112,7 +1112,7 @@
   {
     "path": "400- Jeu/420- Règles/5-Ressources-et-equilibrage/5.2-principes-d-equilibrage/5.2.1-conversion-d-d-krosmoz.md",
     "title": "5.2.1. Conversion D&D → Krosmoz",
-    "description": "**Description** : Méthodologie pour adapter des créatures, objets ou scénarios de D&D vers KrosmozJDR, en tenant compte des PA/PM/PO."
+    "description": "**Description** : Méthodologie pour adapter des créatures, objets ou scénarios de D&D vers KrosmozJDR, en tenant compte des [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]]/[[kref:characteristic:range_creature|PO]]."
   },
   {
     "path": "400- Jeu/420- Règles/5-Ressources-et-equilibrage/5.2-principes-d-equilibrage/5.2.2-classes-et-specialisations.md",
@@ -1205,6 +1205,11 @@
     "description": "Ce document aligne les **noms lisibles** du livre de règles sur les **`characteristic.key`** utilisés dans la base (`characteristics.key`), les définitions JSON sous `database/seeders/data/characteristic-definitions/`, et les **mentions riches** (`@…`) côté éditeur (payload `characteristic` → `{ \"key\": \"<id>\" }` où `<id>` est la clé ci‑dessous)."
   },
   {
+    "path": "400- Jeu/420- Règles/REFERENCE_KREF_CONVERSIONS_CARACTERISTIQUES.md",
+    "title": "Référence — conversions kref « caractéristique » (Markdown règles)",
+    "description": "Ce document liste **toutes** les chaînes que le catalogue `RulesCharacteristicKrefReplacementCatalog` (PHP) transforme en shortcode :"
+  },
+  {
     "path": "400- Jeu/420- Règles/Readme.md",
     "title": "",
     "description": ""
@@ -1236,8 +1241,8 @@
   },
   {
     "path": "50-Fonctionnalités/CMS/RICH_TEXT_KREF_PREVIEW.md",
-    "title": "Aperçu au survol des références vers les sections (style Wikipédia)",
-    "description": "Documentation du système de références riches TipTap (`span.kref`) : formats supportés, rendu visuel, navigation, contrôles de sécurité et tests associés."
+    "title": "Références riches TipTap (kref)",
+    "description": "Les sections texte peuvent activer les références riches via :"
   },
   {
     "path": "50-Fonctionnalités/Characteristics-DB/ANALYSE_PDF_CARACTERISTIQUES_EQUIPEMENTS.md",

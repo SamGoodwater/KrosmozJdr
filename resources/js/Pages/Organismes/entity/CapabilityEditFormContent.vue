@@ -16,6 +16,7 @@ import {
     buildCapabilityFormFieldsConfig,
     CAPABILITY_FORM_FIELD_SECTIONS_EDIT,
 } from "@/Entities/capability/capability-form-config";
+import { invalidateKrefEntityPreviewCache } from "@/Composables/richText/krefEntityPreviewCache";
 
 const props = defineProps({
     capability: { type: Object, required: true },
@@ -59,6 +60,7 @@ function confirmDelete() {
     if (!ok) return;
     router.delete(route("entities.capabilities.delete", { capability: id }), {
         onSuccess: () => {
+            invalidateKrefEntityPreviewCache("capabilities", id);
             if (props.embeddedInModal) {
                 emit("cancel");
             }

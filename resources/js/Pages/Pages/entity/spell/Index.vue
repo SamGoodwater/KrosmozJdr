@@ -35,6 +35,7 @@ import {
     mergeSpellTypesFieldIntoSpellFormConfig,
 } from "@/Entities/spell/spell-form-config";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
+import { clearKrefEntityPreviewCache } from "@/Composables/richText/krefEntityPreviewCache";
 
 const props = defineProps({
     spells: {
@@ -149,6 +150,7 @@ const clearSelection = () => {
 const handleBulkApplied = async (payload) => {
     const ok = await bulkPatchJson({ url: "/api/entities/spells/bulk", payload });
     if (!ok) return;
+    clearKrefEntityPreviewCache();
     refreshToken.value++;
     selectedIds.value = [];
 };
@@ -297,7 +299,7 @@ const handleModalCopyLink = async (entity) => {
     }
 };
 
-const handleModalDownloadPdf = (entity) => {
+const handleModalDownloadPdf = (_entity) => {
     // TODO: Implémenter le téléchargement PDF
 };
 
@@ -309,7 +311,7 @@ const handleModalRefresh = async (entity) => {
     closeModal();
 };
 
-const handleModalDelete = (entity) => {
+const handleModalDelete = (_entity) => {
     // TODO: Implémenter la suppression avec confirmation
 };
 </script>

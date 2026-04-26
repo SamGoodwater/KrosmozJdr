@@ -32,11 +32,13 @@ const logoError = ref(false);
 
 const footerItems = [
     {
-        route: "contribute",
-        label: "Contribuer",
+        href: route("pages.show", "nous-rejoindre"),
+        route: "",
+        label: "Nous rejoindre",
         icon: "fa-handshake-angle",
         pack: "solid",
-        tooltip: "Tous les liens pour contribuer au projet KrosmozJDR",
+        tooltip:
+            "Discord, GitHub, droits d’édition et chartes de conception des entités",
     },
     {
         id: "tools",
@@ -90,8 +92,9 @@ const footerItems = [
                     placement="right"
                 >
                     <DockItem
-                        v-if="item.route"
+                        v-if="item.route || item.href"
                         :route="item.route"
+                        :href="item.href || ''"
                         :icon="item.icon"
                         :pack="item.pack"
                         :label="item.label"

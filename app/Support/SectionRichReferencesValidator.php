@@ -26,6 +26,7 @@ use Illuminate\Validation\ValidationException;
 class SectionRichReferencesValidator
 {
     private const MAX_KREF_TITLE_LEN = 4096;
+
     private const MAX_KREF_LEGACY_PAYLOAD_LEN = 2048;
 
     /**
@@ -219,10 +220,25 @@ class SectionRichReferencesValidator
     {
         $pageSlug = isset($payload['pageSlug']) ? trim((string) $payload['pageSlug']) : '';
         $sectionId = $payload['sectionId'] ?? null;
-        if ($pageSlug === '' || $sectionId === null || $sectionId === '') {
-            throw new \InvalidArgumentException('section incomplète (pageSlug / sectionId).');
+        $sectionSlug = isset($payload['sectionSlug']) ? trim((string) $payload['sectionSlug']) : '';
+
+        if ($pageSlug === '') {
+            throw new \InvalidArgumentException('section incomplète (pageSlug manquant).');
         }
-        $section = Section::query()->with('page')->find((int) $sectionId);
+
+        if ($sectionSlug !== '') {
+            $section = Section::query()
+                ->where('slug', $sectionSlug)
+                ->whereHas('page', static fn ($q) => $q->where('slug', $pageSlug))
+                ->with('page')
+                ->first();
+        } else {
+            if ($sectionId === null || $sectionId === '') {
+                throw new \InvalidArgumentException('section incomplète (sectionId ou sectionSlug requis).');
+            }
+            $section = Section::query()->with('page')->find((int) $sectionId);
+        }
+
         if ($section === null || $section->page === null) {
             throw new \InvalidArgumentException('section introuvable.');
         }

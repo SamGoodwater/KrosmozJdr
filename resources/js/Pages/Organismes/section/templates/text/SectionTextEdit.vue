@@ -15,6 +15,7 @@
  * @emits data-updated - Émis quand les données sont mises à jour
  */
 import { computed, ref, watch, onMounted } from 'vue';
+import { htmlContainsKrefMarkers } from '@/Utils/richText/htmlContainsKrefMarkers';
 import axios from 'axios';
 import RichTextEditorField from '@/Pages/Molecules/data-input/RichTextEditorField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
@@ -78,6 +79,11 @@ const lastSavedLabel = computed(() => {
   if (!lastSavedAt.value) return '';
   return `Derniere sauvegarde: ${lastSavedAt.value.toLocaleTimeString()}`;
 });
+
+/** TipTap kref : flag explicite ou contenu déjà sérialisé avec des spans kref (ex. import sans setting). */
+const enableRichReferencesEffective = computed(() =>
+  Boolean(localSettings.value?.enableRichReferences || htmlContainsKrefMarkers(content.value)),
+);
 
 const alignOptions = [
   { value: 'left', label: 'Gauche' },
@@ -281,14 +287,14 @@ onMounted(() => {
       />
     </div>
     <RichTextEditorField
-      :key="'rte-' + String(Boolean(localSettings.enableRichReferences))"
+      :key="'rte-' + String(enableRichReferencesEffective)"
       v-model="content"
       label=""
       :height="'min-h-[300px]'"
       :show-save-button="true"
       save-button-label="Enregistrer"
       :upload-file-handler="uploadEditorFile"
-      :enable-rich-references="Boolean(localSettings.enableRichReferences)"
+      :enable-rich-references="enableRichReferencesEffective"
       @save-request="handleManualSave"
     />
   </div>

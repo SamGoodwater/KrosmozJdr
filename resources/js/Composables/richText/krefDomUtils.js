@@ -43,8 +43,13 @@ export function buildHrefFromKref(info) {
         }
         if (t === "pageSection") {
             const slug = p.pageSlug;
+            if (!slug) return null;
+            const secSlug = p.sectionSlug != null && String(p.sectionSlug).trim() !== "" ? String(p.sectionSlug).trim() : null;
+            if (secSlug) {
+                return `${route("pages.show", slug)}#ssec-${secSlug}`;
+            }
             const sid = p.sectionId;
-            if (!slug || sid == null || sid === "") return null;
+            if (sid == null || sid === "") return null;
             return `${route("pages.show", slug)}#section-${sid}`;
         }
         if (t === "entity") {
@@ -71,4 +76,26 @@ export function getSectionIdForPreview(info) {
     if (sid == null || sid === "") return null;
     const n = Number(sid);
     return Number.isFinite(n) ? n : sid;
+}
+
+/**
+ * URL JSON d’aperçu section (popover) : id numérique ou couple page_slug / section_slug.
+ *
+ * @param {{ krefType: string, payload: object }} info
+ * @returns {string|null}
+ */
+export function buildSectionPreviewSnippetUrl(info) {
+    if (normalizeKrefType(info?.krefType) !== "pageSection") return null;
+    const p = info?.payload && typeof info.payload === "object" ? info.payload : {};
+    const pageSlug = p.pageSlug != null && String(p.pageSlug).trim() !== "" ? String(p.pageSlug).trim() : null;
+    const sectionSlug = p.sectionSlug != null && String(p.sectionSlug).trim() !== "" ? String(p.sectionSlug).trim() : null;
+    if (pageSlug && sectionSlug) {
+        return route("api.cms.sections.preview-snippet-query", {
+            page_slug: pageSlug,
+            section_slug: sectionSlug,
+        });
+    }
+    const sid = p.sectionId;
+    if (sid == null || sid === "") return null;
+    return route("api.cms.sections.preview-snippet", { section: sid });
 }

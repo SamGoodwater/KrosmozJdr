@@ -380,6 +380,11 @@
         "desc": "- Nom de la route Inertia/Laravel (optionnel)"
       },
       {
+        "name": "href",
+        "type": "String",
+        "desc": "- URL absolue ou chemin (prioritaire si route vide ; lien interne Inertia si même origine)"
+      },
+      {
         "name": "color",
         "type": "String",
         "desc": "- Couleur DaisyUI (optionnel)"

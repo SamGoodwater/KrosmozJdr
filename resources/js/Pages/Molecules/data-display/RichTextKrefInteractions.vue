@@ -5,7 +5,11 @@
  */
 import { ref, watch, onBeforeUnmount, nextTick } from "vue";
 import { router } from "@inertiajs/vue3";
-import { buildHrefFromKref, getDecodedKrefFromElement, getSectionIdForPreview } from "@/Composables/richText/krefDomUtils";
+import {
+    buildHrefFromKref,
+    buildSectionPreviewSnippetUrl,
+    getDecodedKrefFromElement,
+} from "@/Composables/richText/krefDomUtils";
 import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 
 const props = defineProps({
@@ -101,7 +105,7 @@ function cancelHide() {
     }
 }
 
-async function loadSectionPreview(sectionId) {
+async function loadSectionPreview(info) {
     popoverLoading.value = true;
     popoverHtml.value = "";
     popoverHint.value = "";
@@ -109,7 +113,11 @@ async function loadSectionPreview(sectionId) {
     const controller = new AbortController();
     abortFetch = controller;
     try {
-        const url = route("api.cms.sections.preview-snippet", { section: sectionId });
+        const url = buildSectionPreviewSnippetUrl(info);
+        if (!url) {
+            popoverHint.value = "Aperçu indisponible.";
+            return;
+        }
         const res = await fetch(url, {
             method: "GET",
             signal: controller.signal,
@@ -131,6 +139,9 @@ async function loadSectionPreview(sectionId) {
         popoverTitle.value = String(data?.title || "Section");
         const raw = String(data?.html || "");
         popoverHtml.value = raw ? sanitizeHtml(raw) : "";
+        if (data?.textPreviewOnly) {
+            popoverHint.value = "Aperçu détaillé réservé aux sections texte.";
+        }
         if (data?.canView === false) {
             popoverHint.value = "Contenu non accessible.";
         }
@@ -145,15 +156,20 @@ async function loadSectionPreview(sectionId) {
 
 function openForAnchor(anchor, info) {
     if (!props.enabled || !anchor) return;
+    const t = String(info?.krefType || "");
+    /** Infobulles riches gérées dans {@link ReferenceInlineNodeView.vue} (TipTap). */
+    if (t === "characteristic" || t === "entity") {
+        return;
+    }
     activeAnchor = anchor;
     positionNear(anchor);
     popoverVisible.value = true;
     resetPopoverContent();
 
-    const sid = getSectionIdForPreview(info);
-    if (sid != null) {
+    const previewUrl = buildSectionPreviewSnippetUrl(info);
+    if (previewUrl) {
         popoverTitle.value = info.label || "Section";
-        void loadSectionPreview(sid);
+        void loadSectionPreview(info);
         return;
     }
 
@@ -278,29 +294,31 @@ function onPopoverLeave() {
         <div
             v-show="popoverVisible"
             ref="popoverRef"
-            class="kref-preview-popover pointer-events-auto fixed z-9999 rounded-box border border-base-300 bg-base-100 p-3 text-sm shadow-xl"
+            class="kref-preview-popover kref-preview-popover--wiki pointer-events-auto fixed z-9999 rounded-box border border-base-300/80 bg-base-100/95 p-0 text-sm shadow-2xl backdrop-blur-sm"
             :style="{
                 top: `${popoverTop}px`,
                 left: `${popoverLeft}px`,
                 maxWidth: `${popoverMaxWidth}px`,
-                maxHeight: 'min(40vh, 280px)',
+                maxHeight: 'min(48vh, 320px)',
             }"
             role="tooltip"
             @mouseenter="onPopoverEnter"
             @mouseleave="onPopoverLeave"
         >
-            <div class="mb-2 border-b border-base-200 pb-1 font-semibold text-base-content">
+            <div
+                class="kref-preview-popover__title border-b border-base-200/80 bg-base-200/30 px-3 py-2 text-sm font-bold leading-snug text-base-content"
+            >
                 {{ popoverTitle }}
             </div>
-            <div v-if="popoverLoading" class="text-base-content/60 italic">Chargement…</div>
+            <div v-if="popoverLoading" class="px-3 py-3 text-base-content/60 italic">Chargement…</div>
             <!-- eslint-disable vue/no-v-html -- HTML issu de l’API + second passage sanitizeHtml() -->
             <div
                 v-else-if="popoverHtml"
-                class="kref-preview-popover__body prose prose-sm max-w-none overflow-y-auto text-base-content"
+                class="kref-preview-popover__body prose prose-sm max-w-none overflow-y-auto px-3 py-2 text-base-content"
                 v-html="popoverHtml"
             />
             <!-- eslint-enable vue/no-v-html -->
-            <p v-if="popoverHint" class="mt-2 text-xs text-base-content/70">
+            <p v-if="popoverHint" class="px-3 pb-2 pt-1 text-xs text-base-content/70">
                 {{ popoverHint }}
             </p>
         </div>
@@ -308,6 +326,11 @@ function onPopoverLeave() {
 </template>
 
 <style scoped lang="scss">
+.kref-preview-popover__title {
+    border-left: 3px solid hsl(var(--p) / 0.85);
+    padding-left: 0.65rem;
+}
+
 .kref-preview-popover__body :deep(p) {
     margin-bottom: 0.35rem;
 }

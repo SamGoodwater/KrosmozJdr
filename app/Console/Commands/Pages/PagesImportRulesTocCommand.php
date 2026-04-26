@@ -6,6 +6,11 @@ use App\Enums\SectionType;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use App\Support\Cms\RulesImportSlugHelper;
+use App\Support\Cms\RulesMarkdownCharacteristicKrefAutowrap;
+use App\Support\Cms\RulesMarkdownInternalRulesLinkToPageKref;
+use App\Support\Cms\RulesTocParser;
+use App\Support\Cms\RulesTocSlugIndex;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -25,7 +30,7 @@ class PagesImportRulesTocCommand extends Command
     protected $signature = 'pages:import-rules-toc
         {path? : Chemin du fichier TABLE_DES_MATIERES.md}
         {--dry-run : Affiche le plan sans écrire en base}
-        {--force-content : Écrase le contenu existant des sections avec les markdown source}';
+        {--force-content : Remplace le HTML des sections par celui généré depuis les .md (krefs, liens) ; sans ce flag, une section déjà remplie garde son ancien contenu}';
 
     protected $description = 'Crée/maj pages et sections depuis la table des matières des règles.';
 
@@ -37,6 +42,18 @@ class PagesImportRulesTocCommand extends Command
     private array $sectionContentByNumber = [];
 
     private bool $forceContent = false;
+
+    /** Nombre de sections existantes où le HTML issu des .md n’a pas été appliqué (contenu CMS déjà présent, sans --force-content). */
+    private int $skippedExistingSectionBodyFromMarkdown = 0;
+
+    /**
+     * Types de référence autorisés dans les shortcodes Markdown.
+     *
+     * @var array<int, string>
+     */
+    private array $allowedKrefTypes = ['characteristic', 'entity', 'page', 'pageSection', 'page_section'];
+
+    private ?RulesTocSlugIndex $rulesTocSlugIndex = null;
 
     public function handle(): int
     {
@@ -50,13 +67,14 @@ class PagesImportRulesTocCommand extends Command
             return self::FAILURE;
         }
 
-        $tree = $this->parseTocFile($path);
+        $tree = RulesTocParser::parse($path);
         if (count($tree) === 0) {
             $this->warn('Aucune hiérarchie détectée dans la table des matières.');
 
             return self::SUCCESS;
         }
 
+        $this->rulesTocSlugIndex = RulesTocSlugIndex::fromTree($tree);
         $rulesRootDirectory = dirname($path);
         $this->sectionContentByNumber = $this->buildSectionContentMap($rulesRootDirectory);
         $this->line(sprintf(
@@ -65,6 +83,12 @@ class PagesImportRulesTocCommand extends Command
         ));
         if ($this->forceContent) {
             $this->warn('Mode force-content: le contenu existant des sections sera écrasé.');
+        } else {
+            $this->comment(
+                'Sans --force-content, les sections texte déjà remplies en base conservent leur HTML '
+                .'(les changements dans les .md — y compris les [[kref:characteristic:…]] — ne sont appliqués au CMS '
+                .'qu’avec --force-content).'
+            );
         }
 
         if ($dryRun) {
@@ -75,6 +99,7 @@ class PagesImportRulesTocCommand extends Command
         }
 
         $creatorId = $this->resolveDefaultCreatorId();
+        $this->skippedExistingSectionBodyFromMarkdown = 0;
 
         DB::beginTransaction();
         try {
@@ -99,91 +124,16 @@ class PagesImportRulesTocCommand extends Command
         }
 
         $this->info('Import terminé avec succès.');
+        if (! $this->forceContent && $this->skippedExistingSectionBodyFromMarkdown > 0) {
+            $this->warn(sprintf(
+                '%d section(s) existante(s) : le HTML des fichiers Markdown n’a pas remplacé le contenu déjà '
+                .'enregistré. Pour appliquer les .md (références kref, etc.), relance : '
+                .'php artisan pages:import-rules-toc --force-content',
+                $this->skippedExistingSectionBodyFromMarkdown
+            ));
+        }
 
         return self::SUCCESS;
-    }
-
-    /**
-     * @return array<int, array{number:string,title:string,menu_order:int,children:array<int, array{number:string,title:string,menu_order:int,sections:array<int, array{number:string,title:string,order:int}>}>}>
-     */
-    private function parseTocFile(string $path): array
-    {
-        $lines = file($path, FILE_IGNORE_NEW_LINES);
-        if (! is_array($lines)) {
-            return [];
-        }
-
-        $level1Items = [];
-        $currentLevel1Number = null;
-        $currentLevel2Number = null;
-
-        foreach ($lines as $rawLine) {
-            $line = trim((string) $rawLine);
-            if ($line === '' || Str::startsWith($line, ['---', '# Table'])) {
-                continue;
-            }
-
-            if (preg_match('/^##\s+(\d+)\.\s+(.+)$/u', $line, $m)) {
-                $n1 = (string) $m[1];
-                $title = trim((string) $m[2]);
-                $currentLevel1Number = $n1;
-                $currentLevel2Number = null;
-
-                $level1Items[$n1] = [
-                    'number' => $n1,
-                    'title' => $title,
-                    'menu_order' => (int) $n1,
-                    'children' => $level1Items[$n1]['children'] ?? [],
-                ];
-
-                continue;
-            }
-
-            if (preg_match('/^###\s+(\d+\.\d+)\s+(.+)$/u', $line, $m) && $currentLevel1Number !== null) {
-                $n2 = (string) $m[1];
-                $title = trim((string) $m[2]);
-                $currentLevel2Number = $n2;
-
-                $level1Items[$currentLevel1Number]['children'][$n2] = [
-                    'number' => $n2,
-                    'title' => $title,
-                    'menu_order' => $this->extractSecondLevelOrder($n2),
-                    'sections' => $level1Items[$currentLevel1Number]['children'][$n2]['sections'] ?? [],
-                ];
-
-                continue;
-            }
-
-            // Exemples supportés:
-            // - **1.1.1** Concept général
-            // - 2.5. Personnalité et historique
-            if ($currentLevel1Number !== null && $currentLevel2Number !== null) {
-                if (preg_match('/^\-\s*(?:\*\*)?(\d+(?:\.\d+){1,2})\.?(?:\*\*)?\s*(.+)$/u', $line, $m)) {
-                    $n3 = (string) $m[1];
-                    $title = trim((string) $m[2], " \t\n\r\0\x0B*-");
-                    if ($title === '') {
-                        continue;
-                    }
-
-                    $level1Items[$currentLevel1Number]['children'][$currentLevel2Number]['sections'][] = [
-                        'number' => $n3,
-                        'title' => $title,
-                        'order' => $this->extractThirdLevelOrder($n3),
-                    ];
-                }
-            }
-        }
-
-        // Réindexer proprement
-        $result = array_values(array_map(function (array $l1): array {
-            $l1['children'] = array_values(array_map(function (array $l2): array {
-                return $l2;
-            }, $l1['children']));
-
-            return $l1;
-        }, $level1Items));
-
-        return $result;
     }
 
     /**
@@ -191,7 +141,7 @@ class PagesImportRulesTocCommand extends Command
      */
     private function upsertLevel1Page(array $level1, ?int $creatorId): Page
     {
-        $slug = $this->buildPageSlug($level1['number'], $level1['title']);
+        $slug = RulesImportSlugHelper::buildPageSlug($level1['number'], $level1['title']);
 
         return $this->upsertPageBySlug($slug, [
             'title' => $level1['title'],
@@ -211,7 +161,7 @@ class PagesImportRulesTocCommand extends Command
      */
     private function upsertLevel2Page(array $level2, int $parentId, ?int $creatorId): Page
     {
-        $slug = $this->buildPageSlug($level2['number'], $level2['title']);
+        $slug = RulesImportSlugHelper::buildPageSlug($level2['number'], $level2['title']);
 
         return $this->upsertPageBySlug($slug, [
             'title' => $level2['title'],
@@ -239,6 +189,12 @@ class PagesImportRulesTocCommand extends Command
             ->where('slug', $slug)
             ->first();
 
+        $textSettings = [
+            'align' => 'left',
+            'size' => 'md',
+            'enableRichReferences' => true,
+        ];
+
         $attributes = [
             'page_id' => $pageId,
             'title' => $level3['title'],
@@ -246,7 +202,7 @@ class PagesImportRulesTocCommand extends Command
             'order' => $level3['order'],
             'template' => SectionType::TEXT->value,
             'type' => SectionType::TEXT->value,
-            'settings' => ['align' => 'left', 'size' => 'md'],
+            'settings' => $textSettings,
             'state' => Section::STATE_PLAYABLE,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_ADMIN,
@@ -258,6 +214,12 @@ class PagesImportRulesTocCommand extends Command
                 $existing->restore();
             }
 
+            $mergedSettings = array_merge(
+                is_array($existing->settings) ? $existing->settings : [],
+                $textSettings,
+            );
+            $attributes['settings'] = $mergedSettings;
+
             // Respecter un éventuel contenu édité à la main: on ne l'écrase pas.
             $existingData = is_array($existing->data) ? $existing->data : [];
             $existingParams = is_array($existing->params) ? $existing->params : [];
@@ -268,6 +230,10 @@ class PagesImportRulesTocCommand extends Command
                 $attributes['data'] = $this->replaceSectionContent($existingData, $content);
                 $attributes['params'] = $this->replaceSectionContent($existingParams, $content);
             } else {
+                $hasMarkdownForNumber = isset($this->sectionContentByNumber[$level3['number']]);
+                if ($hasMarkdownForNumber && ($hasCustomDataContent || $hasCustomParamsContent)) {
+                    $this->skippedExistingSectionBodyFromMarkdown++;
+                }
                 $attributes['data'] = $hasCustomDataContent ? $existingData : ['content' => $content];
                 $attributes['params'] = $hasCustomParamsContent ? $existingParams : ['content' => $content];
             }
@@ -318,6 +284,8 @@ class PagesImportRulesTocCommand extends Command
             return [];
         }
 
+        $rulesRootReal = realpath($rulesRootDirectory) ?: $rulesRootDirectory;
+
         $contentByNumber = [];
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($rulesRootDirectory, RecursiveDirectoryIterator::SKIP_DOTS)
@@ -346,6 +314,14 @@ class PagesImportRulesTocCommand extends Command
             }
 
             $normalizedMarkdown = $this->stripFirstMarkdownHeading($rawMarkdown);
+            $normalizedMarkdown = RulesMarkdownInternalRulesLinkToPageKref::apply(
+                $normalizedMarkdown,
+                $path,
+                $rulesRootReal,
+                $this->rulesTocSlugIndex,
+            );
+            $normalizedMarkdown = RulesMarkdownCharacteristicKrefAutowrap::apply($normalizedMarkdown);
+            $normalizedMarkdown = $this->replaceKrefShortcodes($normalizedMarkdown);
             $html = trim((string) Str::markdown($normalizedMarkdown));
             if ($html === '') {
                 continue;
@@ -383,6 +359,115 @@ class PagesImportRulesTocCommand extends Command
         }
 
         return implode(PHP_EOL, array_values($lines));
+    }
+
+    /**
+     * Remplace les shortcodes markdown de références riches par des spans `.kref`.
+     *
+     * Syntaxe :
+     * - [[kref:characteristic:action_points_creature|Points d'action]]
+     * - [[kref:page:regles-2-2-les-caracteristiques|Caractéristiques]]
+     * - [[kref:pageSection:regles-2-2-les-caracteristiques:123|Section cible]] (id numérique)
+     * - [[kref:pageSection:regles-2-2-les-caracteristiques@regle-2-2-2-…|Section]] (slug section, scroll + aperçu)
+     * - [[kref:entity:spells:42|Boule de feu]]
+     */
+    private function replaceKrefShortcodes(string $markdown): string
+    {
+        $pattern = '/\[\[kref:([a-zA-Z_]+):([^\]|]+)(?:\|([^\]]+))?\]\]/u';
+
+        return (string) preg_replace_callback($pattern, function (array $matches): string {
+            $rawType = trim((string) ($matches[1] ?? ''));
+            $rawTarget = trim((string) ($matches[2] ?? ''));
+            $label = trim((string) ($matches[3] ?? ''));
+
+            if ($rawType === '' || $rawTarget === '' || ! in_array($rawType, $this->allowedKrefTypes, true)) {
+                return (string) $matches[0];
+            }
+
+            $type = $rawType === 'page_section' ? 'pageSection' : $rawType;
+            $payload = $this->buildKrefPayload($type, $rawTarget);
+            if ($payload === null) {
+                return (string) $matches[0];
+            }
+
+            $finalLabel = $label !== '' ? $label : $rawTarget;
+            $title = $this->encodeKrefTitle($type, $payload, $finalLabel);
+            $classes = $this->isKrefNavigable($type) ? 'kref kref--nav' : 'kref';
+
+            return '<span class="'.$classes.'" title="'.e($title).'">'.e($finalLabel).'</span>';
+        }, $markdown);
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function buildKrefPayload(string $type, string $target): ?array
+    {
+        if ($type === 'characteristic') {
+            return ['key' => trim($target)];
+        }
+
+        if ($type === 'page') {
+            return ['pageSlug' => trim($target)];
+        }
+
+        if ($type === 'pageSection') {
+            if (str_contains($target, '@')) {
+                [$pageSlug, $sectionSlug] = array_pad(explode('@', $target, 2), 2, '');
+                $pageSlug = trim((string) $pageSlug);
+                $sectionSlug = trim((string) $sectionSlug);
+                if ($pageSlug === '' || $sectionSlug === '') {
+                    return null;
+                }
+
+                return ['pageSlug' => $pageSlug, 'sectionSlug' => $sectionSlug];
+            }
+
+            [$pageSlug, $sectionId] = array_pad(explode(':', $target, 2), 2, '');
+            $pageSlug = trim((string) $pageSlug);
+            $sectionId = trim((string) $sectionId);
+            if ($pageSlug === '' || $sectionId === '') {
+                return null;
+            }
+
+            return ['pageSlug' => $pageSlug, 'sectionId' => ctype_digit($sectionId) ? (int) $sectionId : $sectionId];
+        }
+
+        if ($type === 'entity') {
+            [$entityType, $id] = array_pad(explode(':', $target, 2), 2, '');
+            $entityType = trim((string) $entityType);
+            $id = trim((string) $id);
+            if ($entityType === '' || $id === '') {
+                return null;
+            }
+
+            return ['entityType' => $entityType, 'id' => ctype_digit($id) ? (int) $id : $id];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function encodeKrefTitle(string $type, array $payload, string $label): string
+    {
+        $json = json_encode([
+            't' => $type,
+            'p' => $payload,
+            'l' => trim($label),
+        ], JSON_UNESCAPED_UNICODE);
+
+        if (! is_string($json) || $json === '') {
+            return '';
+        }
+
+        return rtrim(strtr(base64_encode($json), '+/', '-_'), '=');
+    }
+
+    private function isKrefNavigable(string $type): bool
+    {
+        return in_array($type, ['entity', 'page', 'pageSection'], true);
     }
 
     /**
@@ -425,38 +510,9 @@ class PagesImportRulesTocCommand extends Command
         return $firstUser ? (int) $firstUser->id : null;
     }
 
-    private function buildPageSlug(string $number, string $title): string
-    {
-        $normalizedNumber = str_replace('.', '-', trim($number));
-
-        return Str::slug("regles-{$normalizedNumber}-{$title}");
-    }
-
     private function buildSectionSlug(string $number, string $title): string
     {
-        $normalizedNumber = str_replace('.', '-', trim($number));
-
-        return Str::slug("regle-{$normalizedNumber}-{$title}");
-    }
-
-    private function extractSecondLevelOrder(string $number): int
-    {
-        $parts = explode('.', $number);
-
-        return isset($parts[1]) ? (int) $parts[1] : 0;
-    }
-
-    private function extractThirdLevelOrder(string $number): int
-    {
-        $parts = explode('.', $number);
-        if (isset($parts[2])) {
-            return (int) $parts[2];
-        }
-        if (isset($parts[1])) {
-            return (int) $parts[1];
-        }
-
-        return 0;
+        return RulesImportSlugHelper::buildSectionSlug($number, $title);
     }
 
     /**

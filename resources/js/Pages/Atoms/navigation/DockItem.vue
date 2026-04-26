@@ -25,6 +25,7 @@ defineOptions({ inheritAttrs: false });
  * @props {String} pack - Pack FontAwesome (solid, regular, brands, duotone)
  * @props {String} label - Label du dock (optionnel, sinon slot #label)
  * @props {String} route - Nom de la route Inertia/Laravel (optionnel)
+ * @props {String} href - URL absolue ou chemin (prioritaire si route vide ; lien interne Inertia si même origine)
  * @props {String} color - Couleur DaisyUI (optionnel)
  * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
  * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
@@ -58,6 +59,7 @@ const props = defineProps({
     },
     label: { type: String, default: "" },
     route: { type: String, default: "" },
+    href: { type: String, default: "" },
     color: { type: String, default: "" },
     size: {
         type: String,
@@ -92,8 +94,9 @@ const attrs = computed(() => getCommonAttrs(props));
 <template>
     <li :class="atomClasses" v-bind="attrs" v-on="$attrs">
         <RouteAtom
-            v-if="route"
+            v-if="route || href"
             :route="route"
+            :href="href"
             :disabled="props.disabled"
             :aria-label="props.ariaLabel"
             :tabindex="props.tabindex"
