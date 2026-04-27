@@ -45,6 +45,8 @@ class UpdatePageRequest extends FormRequest
             'page_css_classes' => ['nullable', 'string', 'max:500'],
             'title_css_classes' => ['nullable', 'string', 'max:500'],
             'menu_item_css_classes' => ['nullable', 'string', 'max:500'],
+            'settings' => ['nullable', 'array'],
+            'settings.show_rules_breadcrumb' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -97,6 +99,17 @@ class UpdatePageRequest extends FormRequest
                 $val = trim((string) $data[$field]);
                 $this->merge([$field => $val === '' ? null : $val]);
             }
+        }
+
+        if (array_key_exists('settings', $data)) {
+            $settings = $data['settings'];
+            if (! is_array($settings)) {
+                $settings = [];
+            }
+            if (array_key_exists('show_rules_breadcrumb', $settings)) {
+                $settings['show_rules_breadcrumb'] = filter_var($settings['show_rules_breadcrumb'], FILTER_VALIDATE_BOOLEAN);
+            }
+            $this->merge(['settings' => $settings]);
         }
     }
 }

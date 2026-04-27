@@ -40,6 +40,7 @@ class PageResource extends JsonResource
             'page_css_classes' => $page->page_css_classes,
             'title_css_classes' => $page->title_css_classes,
             'menu_item_css_classes' => $page->menu_item_css_classes,
+            'settings' => $page->settings,
             'created_by' => $page->created_by,
             'created_at' => $page->created_at?->toISOString(),
             'updated_at' => $page->updated_at?->toISOString(),

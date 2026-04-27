@@ -42,6 +42,9 @@ export function usePageForm(initialData = null, options = {}) {
     page_css_classes: null,
     title_css_classes: null,
     menu_item_css_classes: null,
+    settings: {
+      show_rules_breadcrumb: true,
+    },
   };
   
   // Fusionner avec les données initiales si fournies

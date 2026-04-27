@@ -76,6 +76,17 @@ export class Page extends BaseModel {
         return this._data.menu_item_css_classes || null;
     }
 
+    get settings() {
+        const raw = this._data.settings;
+        return raw && typeof raw === 'object' ? raw : {};
+    }
+
+    get showRulesBreadcrumb() {
+        const value = this.settings?.show_rules_breadcrumb;
+        if (typeof value === 'boolean') return value;
+        return true;
+    }
+
 
     // ============================================
     // RELATIONS
@@ -118,7 +129,7 @@ export class Page extends BaseModel {
             }
             // Fallback
             return `/pages/${this.slug}`;
-        } catch (e) {
+        } catch {
             return `/pages/${this.slug}`;
         }
     }
@@ -176,6 +187,7 @@ export class Page extends BaseModel {
             page_css_classes: this.pageCssClasses,
             title_css_classes: this.titleCssClasses,
             menu_item_css_classes: this.menuItemCssClasses,
+            settings: this.settings,
         };
     }
 

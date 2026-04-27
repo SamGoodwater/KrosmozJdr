@@ -75,6 +75,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $page_css_classes
  * @property string|null $title_css_classes
  * @property string|null $menu_item_css_classes
+ * @property array<string, mixed>|null $settings
  * @method static Builder<static>|Page forMenu(?\App\Models\User $user = null)
  * @method static Builder<static>|Page inMenu()
  * @method static Builder<static>|Page ordered()
@@ -124,6 +125,7 @@ class Page extends Model
         'page_css_classes',
         'title_css_classes',
         'menu_item_css_classes',
+        'settings',
         'created_by',
     ];
 
@@ -136,6 +138,7 @@ class Page extends Model
         'in_menu' => 'boolean',
         'read_level' => 'integer',
         'write_level' => 'integer',
+        'settings' => 'array',
     ];
 
     /**

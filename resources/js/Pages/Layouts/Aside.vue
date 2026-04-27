@@ -65,18 +65,19 @@ const footerItems = [
         role="presentation"
     >
         <div class="flex flex-col justify-start flex-nowrap items-center flex-1 min-h-0 overflow-hidden">
-            <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-3 shrink-0">
-                <template v-if="!logoError">
-                    <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" size="md" class="mx-auto"
-                        @error="logoError = true" />
-                </template>
-                <template v-else>
-                    <div class="flex items-center justify-center h-16">
-                        <span class="text-subtitle/80 text-sm">{{ appName }}</span>
-                    </div>
-                </template>
-            </Route>
-            <p class="m-1.5 text-subtitle/80 text-sm shrink-0">{{ appSlogan }}</p>
+            <Tooltip :content="appSlogan" placement="right">
+                <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-3 shrink-0">
+                    <template v-if="!logoError">
+                        <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" size="md" class="mx-auto"
+                            @error="logoError = true" />
+                    </template>
+                    <template v-else>
+                        <div class="flex items-center justify-center h-16">
+                            <span class="text-subtitle/80 text-sm">{{ appName }}</span>
+                        </div>
+                    </template>
+                </Route>
+            </Tooltip>  
             <div class="flex-1 min-h-0 w-full overflow-y-auto scrollbar-hide">
                 <GlassMenuPanel class="aside-menu-panel" compact>
                     <DynamicMenu />

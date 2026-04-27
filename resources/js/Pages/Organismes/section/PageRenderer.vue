@@ -18,14 +18,17 @@
  * <PageRenderer :page="page" :user="user" :pages="pages" />
  */
 import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { router } from '@inertiajs/vue3';
 import SectionRenderer from './SectionRenderer.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import EditPageModal from './modals/EditPageModal.vue';
 import CreateSectionModal from './modals/CreateSectionModal.vue';
+import RulesPagePlan from './RulesPagePlan.vue';
+import RulesBreadcrumbSticky from './RulesBreadcrumbSticky.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { Page } from '@/Models';
-import { getEntityIconPath } from '@/config/entities';
+import { useDynamicMenu } from '@/Composables/layout/useDynamicMenu';
 
 const props = defineProps({
     page: {
@@ -65,12 +68,15 @@ const createSectionModalOpen = ref(false);
 // Section à ouvrir en mode édition après création
 const sectionToEdit = ref(null);
 const pendingSectionTemplate = ref(null); // Template de la section en attente
+const activeSectionId = ref(null);
+let sectionObserver = null;
 
 // Utiliser le modèle Page pour normaliser l'accès aux données
 const pageModel = computed(() => {
     if (!props.page) return null;
     return new Page(props.page);
 });
+const { menuItems } = useDynamicMenu();
 
 // Sections disponibles
 const sections = computed(() => {
@@ -238,14 +244,170 @@ const sortedSections = computed(() => {
     });
 });
 
-/** Chemin icône : page.icon ou page.entityKey */
-const pageIconSource = computed(() => {
-    const icon = pageModel.value?.icon;
-    const entityKey = pageModel.value?.entityKey;
-    if (icon) return getEntityIconPath(icon);
-    if (entityKey) return getEntityIconPath(entityKey);
-    return '';
+const sectionHash = (section) => {
+    if (!section) return '';
+    const slug = String(section.slug || '').trim();
+    if (slug) return `#ssec-${slug}`;
+    const sid = section.id;
+    return sid ? `#section-${sid}` : '';
+};
+
+const parseL4Headings = (section) => {
+    const html = String(section?.data?.content || '').trim();
+    if (!html || typeof DOMParser === 'undefined') return [];
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const used = new Set();
+        return Array.from(doc.body.querySelectorAll('h4, h5, h6'))
+            .map((el, idx) => {
+                const text = String(el.textContent || '').trim();
+                if (!text) return null;
+                const base = text
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .trim()
+                    .replace(/\s+/g, '-');
+                const local = base || `heading-${idx + 1}`;
+                const prefix = String(section?.slug || section?.id || '').trim();
+                const anchorPrefix = prefix ? `ssec-${prefix}` : `section-${String(section?.id || '')}`;
+                let id = `${anchorPrefix}-${local}`;
+                let n = 2;
+                while (used.has(id)) {
+                    id = `${anchorPrefix}-${local}-${n}`;
+                    n += 1;
+                }
+                used.add(id);
+                return {
+                    id,
+                    text,
+                    hash: `#${id}`,
+                };
+            })
+            .filter(Boolean);
+    } catch {
+        return [];
+    }
+};
+
+const planSections = computed(() =>
+    sortedSections.value.map((section, index) => ({
+        id: section.id ?? `section-${index + 1}`,
+        title: String(section?.title || '').trim() || `Section ${index + 1}`,
+        hash: sectionHash(section),
+        l4Headings: parseL4Headings(section),
+    })),
+);
+
+const activeSectionTitle = computed(() => {
+    const id = activeSectionId.value;
+    if (!id) return planSections.value[0]?.title || '';
+    return planSections.value.find((section) => section.id === id)?.title || planSections.value[0]?.title || '';
 });
+
+const flattenedMenuPages = computed(() => {
+    const tree = Array.isArray(menuItems.value) ? menuItems.value : [];
+    const currentUrl = String(pageModel.value?.url || '').trim();
+    if (!tree.length || !currentUrl) return [];
+
+    const normalize = (url) => String(url || '').replace(/\/+$/, '');
+    const current = normalize(currentUrl);
+
+    let siblingBranch = null;
+
+    const visit = (items = []) => {
+        if (!Array.isArray(items) || !items.length || siblingBranch) return;
+        for (const item of items) {
+            const children = Array.isArray(item?.children) ? item.children : [];
+            if (children.length) {
+                const matchedChild = children.some((child) => normalize(child?.url) === current);
+                if (matchedChild) {
+                    siblingBranch = children;
+                    return;
+                }
+                visit(children);
+                if (siblingBranch) return;
+            }
+        }
+    };
+
+    visit(tree);
+
+    // Fallback: si page courante non trouvée comme enfant, garder la liste actuelle minimale.
+    const branch = siblingBranch || [];
+    return branch
+        .filter((item) => item?.title && item?.url)
+        .map((item) => ({ title: item.title, url: item.url }));
+});
+
+const l1Pages = computed(() => {
+    const tree = Array.isArray(menuItems.value) ? menuItems.value : [];
+    const currentUrl = String(pageModel.value?.url || '').trim();
+    if (!tree.length || !currentUrl) return [];
+
+    const normalize = (url) => String(url || '').replace(/\/+$/, '');
+    const current = normalize(currentUrl);
+    let groupChildren = [];
+
+    const findGroupForCurrent = (groups = []) => {
+        for (const group of groups) {
+            const children = Array.isArray(group?.children) ? group.children : [];
+            if (!children.length) continue;
+            const hasCurrentInside = children.some((parentItem) => {
+                if (normalize(parentItem?.url) === current) return true;
+                const nested = Array.isArray(parentItem?.children) ? parentItem.children : [];
+                return nested.some((child) => normalize(child?.url) === current);
+            });
+            if (hasCurrentInside) {
+                groupChildren = children;
+                return true;
+            }
+        }
+        return false;
+    };
+
+    findGroupForCurrent(tree);
+
+    return (groupChildren || [])
+        .filter((item) => item?.title && item?.url)
+        .map((item) => ({ title: item.title, url: item.url }));
+});
+
+const l1Title = computed(() => {
+    const parentTitle = String(pageModel.value?.parent?.title || '').trim();
+    if (parentTitle) return parentTitle;
+    const menuGroup = String(pageModel.value?.menuGroup || '').trim();
+    if (menuGroup) return menuGroup;
+    return 'Règles';
+});
+
+const showRulesBreadcrumb = computed(() => pageModel.value?.showRulesBreadcrumb !== false);
+
+const navigateToSection = (section) => {
+    if (!section) return;
+    const hash = section.hash || '';
+    if (!hash) return;
+    if (typeof window !== 'undefined') {
+        window.location.hash = hash;
+        const targetId = hash.replace(/^#/, '');
+        requestAnimationFrame(() => {
+            const el = document.getElementById(targetId);
+            if (el && typeof el.scrollIntoView === 'function') {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+};
+
+const navigateToPage = (item) => {
+    const url = String(item?.url || '').trim();
+    if (!url) return;
+    router.visit(url, {
+        preserveScroll: true,
+    });
+};
 
 /**
  * Ancres `#section-{id}` (id numérique) ou `#ssec-{slug}` (slug section, règles / liens stables) : scroll une fois le DOM prêt.
@@ -270,8 +432,44 @@ function onInertiaFinish() {
     scrollToSectionFromHash();
 }
 
+const setupSectionObserver = () => {
+    if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') return;
+    if (sectionObserver) {
+        sectionObserver.disconnect();
+        sectionObserver = null;
+    }
+    const nodes = Array.from(document.querySelectorAll('[data-section-id]'));
+    if (!nodes.length) return;
+
+    sectionObserver = new IntersectionObserver(
+        (entries) => {
+            const visible = entries
+                .filter((entry) => entry.isIntersecting)
+                .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+            if (!visible.length) return;
+            const top = visible[0].target;
+            const rawId = Number(top?.getAttribute('data-section-id'));
+            if (!Number.isNaN(rawId) && rawId > 0) {
+                activeSectionId.value = rawId;
+            }
+        },
+        {
+            root: null,
+            threshold: [0.2, 0.45, 0.7],
+            rootMargin: '-18% 0px -58% 0px',
+        },
+    );
+
+    nodes.forEach((node) => sectionObserver.observe(node));
+    const firstId = Number(nodes[0]?.getAttribute('data-section-id'));
+    if (!Number.isNaN(firstId) && firstId > 0) {
+        activeSectionId.value = firstId;
+    }
+};
+
 onMounted(() => {
     scrollToSectionFromHash();
+    setupSectionObserver();
     if (typeof document !== 'undefined') {
         document.addEventListener('inertia:finish', onInertiaFinish);
         window.addEventListener('hashchange', scrollToSectionFromHash);
@@ -279,6 +477,10 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+    if (sectionObserver) {
+        sectionObserver.disconnect();
+        sectionObserver = null;
+    }
     if (typeof document !== 'undefined') {
         document.removeEventListener('inertia:finish', onInertiaFinish);
         window.removeEventListener('hashchange', scrollToSectionFromHash);
@@ -287,7 +489,10 @@ onBeforeUnmount(() => {
 
 watch(
     () => sortedSections.value.map((s) => s?.id).join(','),
-    () => scrollToSectionFromHash(),
+    () => {
+        scrollToSectionFromHash();
+        nextTick(() => setupSectionObserver());
+    },
 );
 </script>
 
@@ -296,40 +501,44 @@ watch(
         <Container
             class="page-renderer"
             :class="pageModel?.pageCssClasses"
+            :allow-overflow="true"
         >
-            <!-- Titre de la page -->
-            <header class="page-show-header mb-10 rounded-box border border-base-300/40 bg-base-100/45 px-5 py-6 shadow-sm md:px-8 md:py-8">
-                <div class="flex flex-wrap items-center gap-3">
-                    <Icon
-                        v-if="pageIconSource"
-                        :source="pageIconSource"
-                        alt="Icône de la page"
-                        size="xl"
-                        class="page-renderer__icon shrink-0 drop-shadow-sm"
+            <div class="rules-top-nav sticky top-2 z-40 mb-5 overflow-visible">
+                <div class="rules-top-nav__surface flex flex-wrap items-center justify-between gap-2 md:gap-3">
+                    <RulesBreadcrumbSticky
+                        v-if="showRulesBreadcrumb"
+                        class="min-w-0 flex-1"
+                        :l1-title="l1Title"
+                        :l1-pages="l1Pages"
+                        :page-title="pageModel?.title || props.page?.title || 'Page'"
+                        :active-section-title="activeSectionTitle"
+                        :pages="flattenedMenuPages"
+                        :sections="planSections"
+                        @navigate:page="navigateToPage"
+                        @navigate:section="navigateToSection"
                     />
-                    <div class="min-w-0 flex-1">
-                        <p class="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-base-content/55">
-                            Contenu
-                        </p>
-                        <h1
-                            class="text-3xl font-extrabold tracking-tight text-primary md:text-4xl"
-                            :class="pageModel?.titleCssClasses"
+
+                    <div class="flex items-center">
+                        <Btn
+                            v-if="canEdit"
+                            @click="handleOpenEditModal"
+                            variant="ghost"
+                            size="xs"
+                            title="Modifier les options de la page"
+                            class="shrink-0"
                         >
-                            {{ pageModel?.title || props.page?.title || 'Page' }}
-                        </h1>
+                            <Icon source="fa-edit" pack="solid" alt="Modifier la page" size="xs" />
+                        </Btn>
                     </div>
-                    <Btn
-                        v-if="canEdit"
-                        @click="handleOpenEditModal"
-                        variant="ghost"
-                        size="sm"
-                        title="Modifier les options de la page"
-                        class="ml-auto shrink-0"
-                    >
-                        <Icon source="fa-edit" pack="solid" alt="Modifier la page" size="sm" />
-                    </Btn>
                 </div>
-            </header>
+            </div>
+
+            <RulesPagePlan
+                class="mb-8"
+                :l1-title="l1Title"
+                :page-title="pageModel?.title || props.page?.title || 'Page'"
+                :sections="planSections"
+            />
 
             <!-- Sections -->
             <div v-if="sortedSections.length > 0" class="sections space-y-8 md:space-y-10">
@@ -409,10 +618,17 @@ watch(
     max-width: 4xl;
     margin: 0 auto;
     padding: 0;
+    overflow: visible;
 }
 
-.page-renderer__icon {
-    opacity: 0.9;
+.rules-top-nav__surface {
+    border-radius: var(--radius-box);
+    backdrop-filter: blur(18px) saturate(1.08);
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-slate-900) 10%, transparent) 0%,
+        color-mix(in srgb, var(--color-slate-900) 5%, transparent) 100%
+    );
 }
 
 .sections {

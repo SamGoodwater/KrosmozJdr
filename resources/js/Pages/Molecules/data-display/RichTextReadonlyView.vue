@@ -59,27 +59,3 @@ onBeforeUnmount(() => {
     </div>
 </template>
 
-<style scoped lang="scss">
-.rich-text-readonly :deep(.ProseMirror) {
-    outline: none;
-    min-height: 0;
-
-    .kref {
-        display: inline-flex;
-        align-items: center;
-        max-width: 100%;
-        padding: 0.05em 0.45em;
-        margin: 0 0.05em;
-        border-radius: 0.35rem;
-        font-size: 0.85em;
-        font-weight: 600;
-        vertical-align: baseline;
-        background: hsl(var(--p) / 0.18);
-        color: hsl(var(--p));
-        border: 1px solid hsl(var(--p) / 0.35);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-}
-</style>

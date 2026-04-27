@@ -33,10 +33,69 @@ const props = defineProps({
 });
 
 /**
+ * Retire les 2 premiers niveaux d'une numérotation de plan.
+ * Exemples:
+ * - "1.1.1 Titre" => "1 Titre"
+ * - "1.1.1.2 Sous-titre" => "1.2 Sous-titre"
+ * - "2.4.3- Mon titre" => "3 Mon titre"
+ */
+const stripFirstTwoPlanLevels = (label) => {
+  const text = String(label || '').trim();
+  if (!text) return text;
+  const match = text.match(/^(\d+(?:\.\d+)+)(?:\s*[-:]\s*|\s+)?(.*)$/);
+  if (!match) return text;
+
+  const fullNumber = String(match[1] || '');
+  const rest = String(match[2] || '').trim();
+  const parts = fullNumber.split('.');
+  if (parts.length <= 2) return text;
+
+  const trimmedNumber = parts.slice(2).join('.');
+  return rest ? `${trimmedNumber} ${rest}` : trimmedNumber;
+};
+
+/**
  * Contenu HTML
  */
 const content = computed(() => {
-  return sanitizeHtml(props.data?.content || '');
+  const sanitized = sanitizeHtml(props.data?.content || '');
+  if (!sanitized || typeof DOMParser === 'undefined') return sanitized;
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(sanitized, 'text/html');
+    const baseAnchor = String(props.section?.slug || props.section?.id || '').trim();
+    const prefix = baseAnchor ? `ssec-${baseAnchor}` : `section-${String(props.section?.id || '')}`;
+    const usedIds = new Set();
+    const slugify = (text) =>
+      String(text || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+
+    Array.from(doc.body.querySelectorAll('h3, h4, h5, h6')).forEach((heading, idx) => {
+      const label = String(heading.textContent || '').trim();
+      const displayLabel = stripFirstTwoPlanLevels(label);
+      if (displayLabel && displayLabel !== label) {
+        heading.textContent = displayLabel;
+      }
+      const local = slugify(displayLabel || label) || `heading-${idx + 1}`;
+      let id = `${prefix}-${local}`;
+      let n = 2;
+      while (usedIds.has(id)) {
+        id = `${prefix}-${local}-${n}`;
+        n += 1;
+      }
+      usedIds.add(id);
+      heading.setAttribute('id', id);
+    });
+
+    return doc.body.innerHTML;
+  } catch {
+    return sanitized;
+  }
 });
 
 const enableRichReferences = computed(() =>
@@ -85,10 +144,9 @@ const containerClasses = computed(() => {
     }
   }
   
-  :deep(h1, h2, h3, h4, h5, h6) {
+  :deep(h3, h4, h5, h6) {
     margin-top: 1.5rem;
     margin-bottom: 1rem;
-    font-weight: bold;
   }
   
   :deep(ul, ol) {

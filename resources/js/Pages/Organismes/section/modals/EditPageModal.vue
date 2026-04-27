@@ -107,6 +107,9 @@ const initializeForm = () => {
         page_css_classes: model.pageCssClasses || null,
         title_css_classes: model.titleCssClasses || null,
         menu_item_css_classes: model.menuItemCssClasses || null,
+        settings: {
+            show_rules_breadcrumb: model.showRulesBreadcrumb,
+        },
     };
     
     // Créer le formulaire via le composable
@@ -368,6 +371,14 @@ const handleClose = () => {
                         v-model="formInstance.in_menu"
                         label="Afficher dans le menu"
                         helper="Si activé, la page apparaîtra dans le menu de navigation"
+                    />
+                </div>
+
+                <div class="form-field">
+                    <ToggleField
+                        v-model="formInstance.settings.show_rules_breadcrumb"
+                        label="Afficher le breadcrumb des règles"
+                        helper="Affiche la navigation sticky (breadcrumb + sections) en haut de la page."
                     />
                 </div>
 

@@ -36,6 +36,7 @@ const props = defineProps({
     ...getCommonProps(),
     ...getCustomUtilityProps(),
     fluid: { type: Boolean, default: false },
+    allowOverflow: { type: Boolean, default: false },
     responsive: { type: String, default: '' }, // ex: 'md', 'lg', etc.
     class: { type: String, default: '' },
     color: { type: String, default: '' },
@@ -50,6 +51,7 @@ const atomClasses = computed(() =>
             !props.fluid && (props.responsive ? `${props.responsive}:container` : 'container'),
             !props.fluid && 'mx-auto',
             props.color,
+            props.allowOverflow && 'overflow-visible',
             props.border && `${props.border} border-1 border-solid`,
         ].filter(Boolean),
         getCustomUtilityClasses(props),
@@ -60,7 +62,7 @@ const atomClasses = computed(() =>
 
 <template>
     <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
-        <div class="w-full">
+        <div class="w-full" :class="{ 'overflow-visible': props.allowOverflow }">
             <slot />
         </div>
     </div>

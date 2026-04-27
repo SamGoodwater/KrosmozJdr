@@ -1,16 +1,29 @@
+:root {
+    --font-body: "Altone", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-heading: "Louis George Cafe", "Alte Haas Grotesk", var(--font-body);
+    --text-tone-body: var(--color-slate-200);
+    --text-tone-title: var(--color-slate-300);
+    --text-tone-subtitle: var(--color-slate-400);
+    --text-tone-strong: var(--color-slate-500);
+}
+
 * {
-    font-family: "Albert Sans", sans-serif;
+    font-family: var(--font-body);
     font-weight: 400;
+}
+
+body {
+    color: var(--text-tone-body);
 }
 
 .typography {
     font-size: var(--text-base);
     color: var(--color-gray-700);
-    font-family: "Albert Sans", sans-serif;
+    font-family: var(--font-body);
 }
 
 .Albert-Sans {
-    font-family: "Albert Sans", sans-serif;
+    font-family: var(--font-body);
 
     &-thin,
     &-100 {
@@ -32,6 +45,10 @@
     &-900 {
         font-weight: 900;
     }
+}
+
+.font-heading {
+    font-family: var(--font-heading);
 }
 
 // Relatif à tailwindcss plugin typography
@@ -58,25 +75,36 @@ $text-shadows: (
 }
 
 .text-title {
-    color: var(--color-title);
-    font-weight: 200;
+    color: var(--text-tone-title);
+    font-family: var(--font-heading);
+    font-weight: 300;
     font-size: 2rem;
 }
 
 .text-subtitle {
-    color: var(--color-subtitle);
+    color: var(--text-tone-subtitle);
+    font-family: var(--font-heading);
     font-weight: 500;
     font-size: 1.5rem;
 }
 
 .text-content {
-    color: var(--color-content);
+    color: var(--text-tone-body);
     font-weight: 400;
     font-size: 1rem;
 }
 
 .text-comment {
-    color: var(--color-comment);
+    color: var(--text-tone-subtitle);
     font-weight: 300;
     font-size: 0.875rem;
+}
+
+/* DaisyUI: libellés de groupe dans les menus */
+.menu :where(li > .menu-title) {
+    color: var(--text-tone-strong);
+    font-family: var(--font-heading);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
