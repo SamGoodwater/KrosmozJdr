@@ -750,6 +750,7 @@ erDiagram
     page_css_classes : varchar(500)
     title_css_classes : varchar(500)
     menu_item_css_classes : varchar(500)
+    settings : longtext
     created_by : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp

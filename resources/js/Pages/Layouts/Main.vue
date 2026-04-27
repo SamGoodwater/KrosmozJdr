@@ -181,12 +181,14 @@ onUnmounted(() => {
         <!-- Main content (z-index sous la sidebar pour que le drawer reste au-dessus) -->
         <main :class="mainClasses" class="main-animated z-20">
             <div class="min-h-full flex flex-col">
-                <!-- Contenu principal - utilise toute la largeur disponible -->
+                <!-- Contenu principal centré dans un cadre large -->
                 <div class="flex-1 w-full p-4">
-                    <Container fluid>
-                        <PendingErasureBanner />
-                        <slot />
-                    </Container>
+                    <div class="main-content-frame">
+                        <Container fluid>
+                            <PendingErasureBanner />
+                            <slot />
+                        </Container>
+                    </div>
                 </div>
                 
                 <!-- Footer -->
@@ -286,6 +288,15 @@ onUnmounted(() => {
     transition: 
         padding-top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
         left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cadre visuel du contenu principal pour éviter l'effet collé à gauche */
+.main-content-frame {
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 /* Styles pour le bouton toggle header */

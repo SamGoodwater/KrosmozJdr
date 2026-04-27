@@ -63,6 +63,11 @@ const templateRegistry = useTemplateRegistry();
 // Options pour les selects
 const roleOptions = computed(() => SectionParameterService.getVisibilityOptions());
 const stateOptions = computed(() => SectionParameterService.getStateOptions());
+const alignSelfOptions = computed(() => [
+    { value: 'center', label: 'Centre (défaut)' },
+    { value: 'start', label: 'Gauche' },
+    { value: 'end', label: 'Droite' },
+]);
 
 /**
  * Normalise la section en utilisant SectionMapper pour garantir un accès correct
@@ -516,6 +521,14 @@ const checkboxTemplateValue = (key, fallback) => {
                     label="Classes CSS"
                     helper="Classes CSS personnalisées à ajouter au conteneur (séparées par des espaces)"
                     placeholder="ex: my-custom-class another-class"
+                />
+
+                <SelectField
+                    v-model="formData.settings.layoutAlignSelf"
+                    label="Alignement horizontal de la section"
+                    helper="Positionne la section dans la page (gauche, centre, droite)."
+                    :options="alignSelfOptions"
+                    :searchable="false"
                 />
                 
                 <!-- CSS personnalisé -->

@@ -14,6 +14,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    showHeading: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const normalizedSections = computed(() =>
@@ -28,10 +32,10 @@ const normalizedSections = computed(() =>
 
 <template>
     <section class="rules-page-plan rounded-box border border-base-300/40 bg-base-100/40 p-4 md:p-5">
-        <p class="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-base-content/60">
+        <p v-if="showHeading" class="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-base-content/60">
             Plan de la page
         </p>
-        <p class="mb-3 text-sm text-base-content/70 truncate">
+        <p class="mb-3 text-sm text-base-content/70 truncate" :class="{ 'mt-0': !showHeading }">
             <span v-if="l1Title">{{ l1Title }} / </span>{{ pageTitle || "Page" }}
         </p>
 

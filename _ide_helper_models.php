@@ -1798,6 +1798,7 @@ namespace App\Models{
  * @property string|null $page_css_classes
  * @property string|null $title_css_classes
  * @property string|null $menu_item_css_classes
+ * @property array<string, mixed>|null $settings
  * @method static Builder<static>|Page forMenu(?\App\Models\User $user = null)
  * @method static Builder<static>|Page inMenu()
  * @method static Builder<static>|Page ordered()
@@ -1811,6 +1812,7 @@ namespace App\Models{
  * @method static Builder<static>|Page whereTitleCssClasses($value)
  * @method static Builder<static>|Page whereWriteLevel($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereSettings($value)
  */
 	class Page extends \Eloquent {}
 }
