@@ -692,8 +692,8 @@ watch(
 .rules-page-plan-popover {
     position: relative;
     width: fit-content;
-    max-width: 20rem;
-    min-width: 0;
+    min-width: min(20rem, calc(100vw - 2rem));
+    max-width: min(24rem, calc(100vw - 2rem));
 }
 
 .rules-page-plan-popover__trigger {
@@ -701,8 +701,9 @@ watch(
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    width: fit-content;
-    max-width: 20rem;
+    width: 100%;
+    min-width: min(20rem, calc(100vw - 2rem));
+    max-width: min(24rem, calc(100vw - 2rem));
     min-height: 0;
     padding: 0.5rem 0.75rem;
     border-radius: var(--radius-box);
@@ -741,7 +742,8 @@ watch(
     top: calc(100% + 0.45rem);
     right: 0;
     z-index: 60;
-    width: min(20rem, calc(100vw - 2rem));
+    width: min(24rem, calc(100vw - 2rem));
+    min-width: min(20rem, calc(100vw - 2rem));
     max-height: min(70vh, 34rem);
     overflow: auto;
     padding: 0.5rem;
