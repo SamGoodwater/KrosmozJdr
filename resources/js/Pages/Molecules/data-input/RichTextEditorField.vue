@@ -27,7 +27,9 @@
  */
 import { computed, onBeforeUnmount, onMounted, watch, ref } from 'vue'
 import { searchRichReferenceItems } from '@/Composables/richText/useRichReferenceSearch'
-import DOMPurify from 'dompurify'
+import { parseAtQuery } from '@/Composables/richText/parseAtQuery'
+import { KREF_ENTITY_CONFIGS } from '@/Composables/richText/krefEntityRegistry'
+import { sanitizeHtml } from '@/Utils/security/sanitizeHtml'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 
 import { createRichTextExtensions } from '@/Composables/richText/richTextExtensions'
@@ -128,6 +130,7 @@ const atActiveIndex = ref(0)
 const atItems = ref([])
 const atLoading = ref(false)
 let atSearchTimer = null
+let atAbortController = null
 
 const showRefPickerModal = ref(false)
 const refPickerQuery = ref('')
@@ -136,6 +139,39 @@ const refPickerLoading = ref(false)
 let refPickerSearchTimer = null
 
 const richEditorRootRef = ref(null)
+const atParsedQuery = ref(parseAtQuery(''))
+
+const atScopeLabel = computed(() => {
+  const parsed = atParsedQuery.value
+  if (!parsed?.isMatch) return 'Recherche globale'
+  if (parsed.mode === 'characteristic') return 'Recherche de caractéristiques'
+  if (parsed.mode === 'section') return 'Recherche de sections'
+  if (parsed.mode === 'entityType') {
+    const cfg = KREF_ENTITY_CONFIGS.find((item) => item.entityType === parsed.entityType)
+    return cfg ? `Recherche d’entités: ${cfg.label}` : 'Recherche d’entités'
+  }
+  return 'Recherche globale'
+})
+
+const atHintText = computed(() => {
+  const parsed = atParsedQuery.value
+  if (!parsed?.isMatch) return 'Tapez @ pour commencer une référence.'
+  if (!parsed.raw) return 'Exemples: @carac:force, @section:intro, @monstre:bouftou'
+  if (parsed.raw.endsWith(':')) return `${atScopeLabel.value}: saisissez au moins 2 caractères`
+  if (parsed.query.trim().length < 2) return 'Saisissez au moins 2 caractères.'
+  return `${atScopeLabel.value}...`
+})
+
+const atInsertPresets = computed(() => [
+  { key: 'all', label: 'Recherche globale', trigger: '@' },
+  { key: 'carac', label: 'Caractéristiques', trigger: '@carac:' },
+  { key: 'section', label: 'Sections', trigger: '@section:' },
+  ...KREF_ENTITY_CONFIGS.map((cfg) => ({
+    key: cfg.entityType,
+    label: `Entités: ${cfg.label}`,
+    trigger: `@${cfg.atPrefix}:`,
+  })),
+])
 
 /**
  * Nettoie le HTML collé depuis Word/Google Docs pour limiter les styles inline parasites.
@@ -377,6 +413,10 @@ onBeforeUnmount(() => {
     editor.value.destroy()
   }
   window.removeEventListener('keydown', handleEscapeForFullscreen)
+  if (atAbortController) {
+    atAbortController.abort()
+    atAbortController = null
+  }
 })
 
 const handleEscapeForFullscreen = (event) => {
@@ -570,19 +610,21 @@ const syncAtMenu = () => {
   const parent = selection.$from.parent
   const offset = selection.$from.parentOffset
   const textBefore = parent.textBetween(0, offset, '\0', '\0')
-  const match = textBefore.match(/@([a-zA-Z0-9_.-]*)$/)
-  if (!match) {
+  const parsed = parseAtQuery(textBefore)
+  if (!parsed.isMatch) {
     showAtMenu.value = false
     atQuery.value = ''
+    atParsedQuery.value = parseAtQuery('')
     atCommandRange.value = null
     return
   }
 
   showSlashMenu.value = false
   showAtMenu.value = true
-  atQuery.value = String(match[1] || '')
+  atQuery.value = String(parsed.query || '')
+  atParsedQuery.value = parsed
   atCommandRange.value = {
-    from: selection.from - match[0].length,
+    from: selection.from - parsed.trigger.length,
     to: selection.from,
   }
 }
@@ -590,9 +632,17 @@ const syncAtMenu = () => {
 const closeAtMenu = () => {
   showAtMenu.value = false
   atQuery.value = ''
+  atParsedQuery.value = parseAtQuery('')
   atCommandRange.value = null
   atActiveIndex.value = 0
   atItems.value = []
+}
+
+const insertReferenceTrigger = (triggerText) => {
+  if (!editor.value) return
+  const trigger = String(triggerText || '@')
+  editor.value.chain().focus().insertContent(trigger).run()
+  syncAtMenu()
 }
 
 const insertRichReference = (item, options = {}) => {
@@ -642,19 +692,38 @@ watch([atQuery, showAtMenu], () => {
   }
   clearTimeout(atSearchTimer)
   atSearchTimer = setTimeout(async () => {
-    const q = String(atQuery.value || '').trim()
+    const parsed = atParsedQuery.value
+    const q = String(parsed?.query || '').trim()
     if (q.length < 2) {
+      if (atAbortController) {
+        atAbortController.abort()
+        atAbortController = null
+      }
+      atLoading.value = false
       atItems.value = []
       return
     }
+    if (atAbortController) {
+      atAbortController.abort()
+    }
+    atAbortController = typeof AbortController !== 'undefined' ? new AbortController() : null
     atLoading.value = true
     try {
-      atItems.value = await searchRichReferenceItems(q)
+      atItems.value = await searchRichReferenceItems(q, {
+        mode: parsed?.mode || 'all',
+        entityType: parsed?.entityType || null,
+        maxResults: 12,
+        signal: atAbortController?.signal || null,
+      })
       if (atActiveIndex.value >= atItems.value.length) {
         atActiveIndex.value = 0
       }
+    } catch (error) {
+      if (error?.name === 'AbortError') return
+      atItems.value = []
     } finally {
       atLoading.value = false
+      atAbortController = null
     }
   }, 200)
 })
@@ -837,7 +906,7 @@ const togglePreviewSplit = () => {
 
 const sanitizedPreviewHtml = computed(() => {
   if (!editor.value) return ''
-  return DOMPurify.sanitize(editor.value.getHTML() || '')
+  return sanitizeHtml(editor.value.getHTML() || '')
 })
 </script>
 
@@ -1204,15 +1273,28 @@ const sanitizedPreviewHtml = computed(() => {
             >
               <i class="fa-solid fa-minus" />
             </button>
-            <button
-              v-if="enableRichReferences"
-              type="button"
-              class="btn btn-xs btn-ghost"
-              @click="openReferencePicker"
-              title="Insérer une référence (mention @)"
-            >
-              <i class="fa-solid fa-at" />
-            </button>
+            <div v-if="enableRichReferences" class="dropdown dropdown-end">
+              <button
+                type="button"
+                tabindex="0"
+                class="btn btn-xs btn-ghost"
+                title="Insérer une référence (mention @)"
+              >
+                <i class="fa-solid fa-at" />
+              </button>
+              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-56 p-2 shadow border border-base-300 max-h-72 overflow-auto">
+                <li>
+                  <button type="button" @click="openReferencePicker">Ouvrir le sélecteur complet</button>
+                </li>
+                <li class="menu-title"><span>Insérer un déclencheur</span></li>
+                <li v-for="preset in atInsertPresets" :key="preset.key">
+                  <button type="button" @click="insertReferenceTrigger(preset.trigger)">
+                    <span class="font-mono">{{ preset.trigger }}</span>
+                    <span class="opacity-70">{{ preset.label }}</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
 
           <div v-if="!isFocusMode" class="divider divider-horizontal mx-1" />
@@ -1323,16 +1405,39 @@ const sanitizedPreviewHtml = computed(() => {
           </div>
         </div>
 
+        <details
+          v-if="enableRichReferences && !isFocusMode"
+          class="mb-2 rounded-box border border-base-300/70 bg-base-100/70 px-2 py-1.5 text-xs text-base-content/75"
+        >
+          <summary class="cursor-pointer select-none font-medium text-base-content/80">
+            Aide rapide des références @
+          </summary>
+          <div class="mt-2 space-y-1 leading-relaxed">
+            <p>
+              Tape <span class="font-mono">@</span> puis ton terme pour une recherche globale.
+            </p>
+            <p>
+              Tu peux filtrer avec
+              <span class="font-mono">@carac:</span>,
+              <span class="font-mono">@section:</span>
+              ou <span class="font-mono">@monstre:</span> (et autres types d’entités).
+            </p>
+            <p>
+              Le bouton <span class="font-mono">@</span> de la toolbar permet d’insérer ces préfixes automatiquement.
+            </p>
+          </div>
+        </details>
+
         <div
           v-if="enableRichReferences && showAtMenu"
           class="mb-2 rounded-box border border-base-300 bg-base-100 p-2 shadow"
         >
           <div class="mb-1 text-[11px] text-base-content/60">
-            Références @ — min. 2 caractères (`↑`/`↓`, `Tab`, `Entrée`, `Esc`)
+            Références @ — {{ atScopeLabel }} (`↑`/`↓`, `Tab`, `Entrée`, `Esc`)
           </div>
           <div v-if="atLoading" class="text-xs text-base-content/60 py-1">Recherche…</div>
           <div v-else-if="atQuery.trim().length < 2" class="text-xs text-base-content/60 py-1">
-            Saisissez au moins 2 caractères après @
+            {{ atHintText }}
           </div>
           <div v-else-if="!atItems.length" class="text-xs text-base-content/60 py-1">Aucun résultat</div>
           <div v-else class="flex flex-col gap-0.5 max-h-48 overflow-auto">
@@ -1345,7 +1450,14 @@ const sanitizedPreviewHtml = computed(() => {
               @click="runAtItem(item)"
             >
               <span class="inline-flex w-full items-start gap-2">
-                <i v-if="item.icon" :class="item.icon" class="mt-0.5 shrink-0 opacity-80" />
+                <img
+                  v-if="item.iconUrl"
+                  :src="item.iconUrl"
+                  :alt="item.subtitle || item.label || 'Référence'"
+                  class="mt-0.5 h-4 w-4 shrink-0 object-contain opacity-90"
+                  loading="lazy"
+                />
+                <i v-else-if="item.icon" :class="item.icon" class="mt-0.5 shrink-0 opacity-80" />
                 <span class="min-w-0">
                   <span class="font-medium block truncate">{{ item.label }}</span>
                   <span v-if="item.subtitle" class="text-[10px] opacity-80 block truncate">{{ item.subtitle }}</span>
@@ -1614,7 +1726,14 @@ const sanitizedPreviewHtml = computed(() => {
           <ul v-else class="menu menu-sm rounded-box border border-base-300 bg-base-200/40 max-h-64 overflow-y-auto p-0">
             <li v-for="item in refPickerItems" :key="item.key">
               <button type="button" class="flex w-full items-start gap-2 text-left" @click="runRefPickerItem(item)">
-                <i v-if="item.icon" :class="item.icon" class="mt-1 shrink-0 opacity-80" />
+                <img
+                  v-if="item.iconUrl"
+                  :src="item.iconUrl"
+                  :alt="item.subtitle || item.label || 'Référence'"
+                  class="mt-1 h-4 w-4 shrink-0 object-contain opacity-90"
+                  loading="lazy"
+                />
+                <i v-else-if="item.icon" :class="item.icon" class="mt-1 shrink-0 opacity-80" />
                 <span class="min-w-0">
                   <span class="font-medium block truncate">{{ item.label }}</span>
                   <span v-if="item.subtitle" class="text-xs opacity-70 block truncate">{{ item.subtitle }}</span>

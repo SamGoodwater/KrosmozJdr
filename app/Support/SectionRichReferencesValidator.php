@@ -3,20 +3,9 @@
 namespace App\Support;
 
 use App\Models\Characteristic;
-use App\Models\Entity\Campaign;
-use App\Models\Entity\Capability;
-use App\Models\Entity\Consumable;
-use App\Models\Entity\Creature;
-use App\Models\Entity\Item;
-use App\Models\Entity\Monster;
-use App\Models\Entity\Npc;
-use App\Models\Entity\Panoply;
-use App\Models\Entity\Scenario;
-use App\Models\Entity\Spell;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
@@ -29,15 +18,16 @@ class SectionRichReferencesValidator
 
     private const MAX_KREF_LEGACY_PAYLOAD_LEN = 2048;
 
+    /** @var array<int, string> */
+    private array $allowedEntityTypes;
+
     /**
-     * @param  array<int, string>  $allowedEntityTypes
+     * @param  array<int, string>|null  $allowedEntityTypes
      */
-    public function __construct(
-        private readonly array $allowedEntityTypes = [
-            'campaigns', 'scenarios', 'spells', 'items', 'resources', 'consumables',
-            'monsters', 'npcs', 'panoplies', 'capabilities', 'creatures',
-        ],
-    ) {}
+    public function __construct(?array $allowedEntityTypes = null)
+    {
+        $this->allowedEntityTypes = $allowedEntityTypes ?? KrefEntityRegistry::allowedTypes();
+    }
 
     /**
      * @throws ValidationException
@@ -186,7 +176,7 @@ class SectionRichReferencesValidator
         if (! in_array($entityType, $this->allowedEntityTypes, true)) {
             throw new \InvalidArgumentException("type d'entité « {$entityType} » non autorisé.");
         }
-        $model = $this->resolveEntityModel($entityType, $id);
+        $model = KrefEntityRegistry::resolveModel($entityType, $id);
         if ($model === null) {
             throw new \InvalidArgumentException('entité introuvable.');
         }
@@ -250,23 +240,4 @@ class SectionRichReferencesValidator
         }
     }
 
-    private function resolveEntityModel(string $entityType, mixed $id): ?Model
-    {
-        $id = is_numeric($id) ? (int) $id : $id;
-
-        return match ($entityType) {
-            'spells' => Spell::query()->find($id),
-            'items' => Item::query()->find($id),
-            'resources' => \App\Models\Entity\Resource::query()->find($id),
-            'consumables' => Consumable::query()->find($id),
-            'monsters' => Monster::query()->find($id),
-            'npcs' => Npc::query()->find($id),
-            'campaigns' => Campaign::query()->find($id),
-            'scenarios' => Scenario::query()->find($id),
-            'panoplies' => Panoply::query()->find($id),
-            'capabilities' => Capability::query()->find($id),
-            'creatures' => Creature::query()->find($id),
-            default => null,
-        };
-    }
 }

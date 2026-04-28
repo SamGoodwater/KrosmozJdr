@@ -135,43 +135,11 @@ const containerClasses = computed(() => {
 
 <style scoped lang="scss">
 .section-text-content {
-  // Styles par défaut pour le texte
-  :deep(p) {
-    margin-bottom: 1rem;
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-  
-  :deep(h3, h4, h5, h6) {
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  :deep(ul, ol) {
-    margin-left: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  :deep(li) {
-    margin-bottom: 0.5rem;
-  }
-  
-  :deep(a) {
-    color: hsl(var(--p));
-    text-decoration: underline;
-    
-    &:hover {
-      color: hsl(var(--pf));
-    }
-  }
-  
-  :deep(img) {
-    max-width: 100%;
-    height: auto;
-    border-radius: 0.5rem;
-  }
+  /*
+   * Les règles typographiques globales TipTap sont centralisées dans `_rich-text.scss`.
+   * Ici, on garde seulement le conteneur pour éviter les conflits de cascade.
+   */
+  width: 100%;
 }
 </style>
 

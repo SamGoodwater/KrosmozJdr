@@ -1,3 +1,4 @@
+import { KREF_ENTITY_TYPES } from "@/Composables/richText/krefEntityRegistry";
 /**
  * Cache mémoire pour l’aperçu léger des entités référencées par kref (API au survol uniquement).
  *
@@ -14,17 +15,7 @@
 
 /** Types d’entité acceptés par l’API {@link CmsKrefEntityPreviewController} (pluriel). */
 export const KREF_PREVIEW_API_ENTITY_TYPES = new Set([
-    "campaigns",
-    "scenarios",
-    "spells",
-    "items",
-    "resources",
-    "consumables",
-    "monsters",
-    "npcs",
-    "panoplies",
-    "capabilities",
-    "creatures",
+    ...KREF_ENTITY_TYPES,
 ]);
 
 const cache = new Map();

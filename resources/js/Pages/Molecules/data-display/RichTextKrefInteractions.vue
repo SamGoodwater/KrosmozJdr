@@ -10,6 +10,10 @@ import {
     buildSectionPreviewSnippetUrl,
     getDecodedKrefFromElement,
 } from "@/Composables/richText/krefDomUtils";
+import {
+    getCachedKrefSectionPreview,
+    loadKrefSectionPreview,
+} from "@/Composables/richText/krefSectionPreviewCache";
 import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 
 const props = defineProps({
@@ -106,6 +110,15 @@ function cancelHide() {
 }
 
 async function loadSectionPreview(info) {
+    const cached = getCachedKrefSectionPreview(info);
+    if (cached) {
+        popoverTitle.value = String(cached?.title || info?.label || "Section");
+        popoverHtml.value = String(cached?.html || "");
+        popoverHint.value = String(cached?.hint || "");
+        popoverLoading.value = false;
+        return;
+    }
+
     popoverLoading.value = true;
     popoverHtml.value = "";
     popoverHint.value = "";
@@ -113,38 +126,44 @@ async function loadSectionPreview(info) {
     const controller = new AbortController();
     abortFetch = controller;
     try {
-        const url = buildSectionPreviewSnippetUrl(info);
-        if (!url) {
-            popoverHint.value = "Aperçu indisponible.";
-            return;
-        }
-        const res = await fetch(url, {
-            method: "GET",
-            signal: controller.signal,
-            credentials: "same-origin",
-            headers: {
-                Accept: "application/json",
-                "X-Requested-With": "XMLHttpRequest",
-            },
+        const payload = await loadKrefSectionPreview(info, async () => {
+            const url = buildSectionPreviewSnippetUrl(info);
+            if (!url) {
+                return { title: "", html: "", hint: "Aperçu indisponible." };
+            }
+            const res = await fetch(url, {
+                method: "GET",
+                signal: controller.signal,
+                credentials: "same-origin",
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+            if (res.status === 401) {
+                return { title: "", html: "", hint: "Connectez-vous pour voir l’aperçu." };
+            }
+            if (!res.ok) {
+                return { title: "", html: "", hint: "Aperçu indisponible." };
+            }
+            const data = await res.json();
+            const raw = String(data?.html || "");
+            let hint = "";
+            if (data?.textPreviewOnly) {
+                hint = "Aperçu détaillé réservé aux sections texte.";
+            }
+            if (data?.canView === false) {
+                hint = "Contenu non accessible.";
+            }
+            return {
+                title: String(data?.title || "Section"),
+                html: raw ? sanitizeHtml(raw) : "",
+                hint,
+            };
         });
-        if (res.status === 401) {
-            popoverHint.value = "Connectez-vous pour voir l’aperçu.";
-            return;
-        }
-        if (!res.ok) {
-            popoverHint.value = "Aperçu indisponible.";
-            return;
-        }
-        const data = await res.json();
-        popoverTitle.value = String(data?.title || "Section");
-        const raw = String(data?.html || "");
-        popoverHtml.value = raw ? sanitizeHtml(raw) : "";
-        if (data?.textPreviewOnly) {
-            popoverHint.value = "Aperçu détaillé réservé aux sections texte.";
-        }
-        if (data?.canView === false) {
-            popoverHint.value = "Contenu non accessible.";
-        }
+        popoverTitle.value = String(payload?.title || "Section");
+        popoverHtml.value = String(payload?.html || "");
+        popoverHint.value = String(payload?.hint || "");
     } catch (e) {
         if (e?.name === "AbortError") return;
         popoverHint.value = "Impossible de charger l’aperçu.";

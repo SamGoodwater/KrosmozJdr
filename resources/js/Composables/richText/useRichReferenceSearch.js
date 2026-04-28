@@ -1,19 +1,6 @@
 import { buildCharacteristicKeySuggestionsFromStore } from "@/Composables/characteristic/useCharacteristicKeySuggestions";
 import { resolveEntityRouteHref } from "@/Composables/entity/entityRouteRegistry";
-
-const ENTITY_TABLE_TYPES = [
-    { entityType: "campaigns", label: "Campagnes", icon: "fa-solid fa-flag" },
-    { entityType: "scenarios", label: "Scénarios", icon: "fa-solid fa-scroll" },
-    { entityType: "spells", label: "Sorts", icon: "fa-solid fa-wand-magic-sparkles" },
-    { entityType: "items", label: "Objets", icon: "fa-solid fa-sack-dollar" },
-    { entityType: "resources", label: "Ressources", icon: "fa-solid fa-box" },
-    { entityType: "consumables", label: "Consommables", icon: "fa-solid fa-flask" },
-    { entityType: "monsters", label: "Monstres", icon: "fa-solid fa-dragon" },
-    { entityType: "npcs", label: "PNJ", icon: "fa-solid fa-user" },
-    { entityType: "panoplies", label: "Panoplies", icon: "fa-solid fa-shirt" },
-    { entityType: "capabilities", label: "Capacités", icon: "fa-solid fa-bolt" },
-    { entityType: "creatures", label: "Créatures", icon: "fa-solid fa-paw" },
-];
+import { KREF_ENTITY_CONFIGS } from "@/Composables/richText/krefEntityRegistry";
 
 function buildEntityTableUrl(entityType, searchText, limit) {
     try {
@@ -38,12 +25,24 @@ function filterByQuery(items, q) {
     });
 }
 
-async function fetchEntityHits(q, perTypeLimit) {
-    const promises = ENTITY_TABLE_TYPES.map(async (cfg) => {
+function withAbortSignal(signal) {
+    if (!signal) return {};
+    return { signal };
+}
+
+async function fetchEntityHits(q, perTypeLimit, opts = {}) {
+    const { signal, entityType = null } = opts;
+    const targets = entityType
+        ? KREF_ENTITY_CONFIGS.filter((cfg) => cfg.entityType === entityType)
+        : KREF_ENTITY_CONFIGS;
+    const promises = targets.map(async (cfg) => {
         const url = buildEntityTableUrl(cfg.entityType, q, perTypeLimit);
         if (!url) return [];
         try {
-            const res = await fetch(url, { headers: { Accept: "application/json" } });
+            const res = await fetch(url, {
+                headers: { Accept: "application/json" },
+                ...withAbortSignal(signal),
+            });
             if (!res.ok) return [];
             const data = await res.json();
             const list = Array.isArray(data?.entities) ? data.entities : [];
@@ -65,13 +64,15 @@ async function fetchEntityHits(q, perTypeLimit) {
                     label,
                     subtitle: cfg.label,
                     icon: cfg.icon,
+                    iconUrl: cfg.iconUrl || "",
                     searchText: `${cfg.entityType} ${id} ${label}`,
                     krefType: "entity",
                     krefPayload: { entityType: cfg.entityType, id },
                     href: href || null,
                 };
             });
-        } catch {
+        } catch (error) {
+            if (error?.name === "AbortError") throw error;
             return [];
         }
     });
@@ -79,27 +80,33 @@ async function fetchEntityHits(q, perTypeLimit) {
     return chunks.flat();
 }
 
-async function fetchCmsHits(q) {
+async function fetchCmsHits(q, opts = {}) {
+    const { signal, sectionsOnly = false, maxResults = 30 } = opts;
     try {
-        const url = route("api.cms.page-section-picker", { q, limit: 30 });
-        const res = await fetch(url, { headers: { Accept: "application/json" } });
+        const url = route("api.cms.page-section-picker", { q, limit: maxResults });
+        const res = await fetch(url, {
+            headers: { Accept: "application/json" },
+            ...withAbortSignal(signal),
+        });
         if (!res.ok) return [];
         const data = await res.json();
         const pages = Array.isArray(data?.pages) ? data.pages : [];
         const sections = Array.isArray(data?.sections) ? data.sections : [];
         const out = [];
-        for (const p of pages) {
-            out.push({
-                key: `page:${p.pageSlug}`,
-                kind: "page",
-                label: String(p.title || p.pageSlug),
-                subtitle: "Page",
-                icon: "fa-solid fa-file-lines",
-                searchText: `page ${p.pageSlug} ${p.title}`,
-                krefType: "page",
-                krefPayload: { pageSlug: p.pageSlug },
-                href: p.href || null,
-            });
+        if (!sectionsOnly) {
+            for (const p of pages) {
+                out.push({
+                    key: `page:${p.pageSlug}`,
+                    kind: "page",
+                    label: String(p.title || p.pageSlug),
+                    subtitle: "Page",
+                    icon: "fa-solid fa-file-lines",
+                    searchText: `page ${p.pageSlug} ${p.title}`,
+                    krefType: "page",
+                    krefPayload: { pageSlug: p.pageSlug },
+                    href: p.href || null,
+                });
+            }
         }
         for (const s of sections) {
             out.push({
@@ -119,7 +126,8 @@ async function fetchCmsHits(q) {
             });
         }
         return out;
-    } catch {
+    } catch (error) {
+        if (error?.name === "AbortError") throw error;
         return [];
     }
 }
@@ -128,13 +136,16 @@ async function fetchCmsHits(q) {
  * Recherche unifiée pour mentions @ (caractéristiques, entités tables, pages/sections).
  *
  * @param {string} query
- * @param {{ perTypeEntityLimit?: number, maxResults?: number }} [opts]
+ * @param {{ perTypeEntityLimit?: number, maxResults?: number, mode?: "all"|"characteristic"|"section"|"entityType", entityType?: string|null, signal?: AbortSignal|null }} [opts]
  * @returns {Promise<Array<{ key: string, kind: string, label: string, subtitle?: string, icon?: string|null, href?: string|null, previewUrl?: string|null, krefType: string, krefPayload: object }>>}
  */
 export async function searchRichReferenceItems(query, opts = {}) {
     const q = String(query || "").trim();
     const perTypeEntityLimit = opts.perTypeEntityLimit ?? 4;
-    const maxResults = opts.maxResults ?? 40;
+    const maxResults = opts.maxResults ?? 12;
+    const mode = opts.mode ?? "all";
+    const entityType = opts.entityType ?? null;
+    const signal = opts.signal ?? null;
 
     if (q.length < 2) return [];
 
@@ -151,15 +162,27 @@ export async function searchRichReferenceItems(query, opts = {}) {
         previewUrl: null,
     }));
 
+    const charHits = filterByQuery(charSuggestions, q).slice(0, maxResults);
+    if (mode === "characteristic") {
+        return charHits;
+    }
+
+    if (mode === "entityType" && entityType) {
+        const entities = await fetchEntityHits(q, perTypeEntityLimit, { signal, entityType });
+        return filterByQuery(entities, q).slice(0, maxResults);
+    }
+
+    if (mode === "section") {
+        const cms = await fetchCmsHits(q, { signal, sectionsOnly: true, maxResults });
+        return filterByQuery(cms, q).slice(0, maxResults);
+    }
+
     const [entities, cms] = await Promise.all([
-        fetchEntityHits(q, perTypeEntityLimit),
-        fetchCmsHits(q),
+        fetchEntityHits(q, perTypeEntityLimit, { signal }),
+        fetchCmsHits(q, { signal, maxResults: Math.max(20, maxResults) }),
     ]);
 
-    const charHits = filterByQuery(charSuggestions, q).slice(0, maxResults);
     const entityHits = filterByQuery(entities, q).slice(0, maxResults);
     const cmsHits = filterByQuery(cms, q).slice(0, maxResults);
-
-    const merged = [...charHits, ...entityHits, ...cmsHits];
-    return merged.slice(0, maxResults);
+    return [...charHits, ...entityHits, ...cmsHits].slice(0, maxResults);
 }

@@ -14,17 +14,15 @@
 
 import { ref, computed, watch } from "vue";
 import { resolveEntityRouteHref } from "@/Composables/entity/entityRouteRegistry";
+import { KREF_ENTITY_CONFIGS } from "@/Composables/richText/krefEntityRegistry";
 
-const DEFAULT_GLOBAL_ENTITIES = [
-    { entityType: "campaigns", label: "Campagnes", icon: "fa-solid fa-flag", limit: 5 },
-    { entityType: "scenarios", label: "Scénarios", icon: "fa-solid fa-scroll", limit: 5 },
-    { entityType: "spells", label: "Sorts", icon: "fa-solid fa-wand-magic-sparkles", limit: 5 },
-    { entityType: "items", label: "Objets", icon: "fa-solid fa-sack-dollar", limit: 5 },
-    { entityType: "resources", label: "Ressources", icon: "fa-solid fa-box", limit: 5 },
-    { entityType: "consumables", label: "Consommables", icon: "fa-solid fa-flask", limit: 5 },
-    { entityType: "monsters", label: "Monstres", icon: "fa-solid fa-dragon", limit: 5 },
-    { entityType: "npcs", label: "PNJ", icon: "fa-solid fa-user", limit: 5 },
-];
+const DEFAULT_GLOBAL_ENTITIES = KREF_ENTITY_CONFIGS.map((cfg) => ({
+    entityType: cfg.entityType,
+    label: cfg.label,
+    icon: cfg.icon,
+    iconUrl: cfg.iconUrl,
+    limit: 5,
+}));
 
 /**
  * @param {Object} [options]
@@ -118,6 +116,7 @@ export function useGlobalEntitySearch(options = {}) {
             subtitle: subtitle ? String(subtitle) : "",
             href,
             icon: cfg.icon || "",
+            iconUrl: cfg.iconUrl || "",
         };
     };
 

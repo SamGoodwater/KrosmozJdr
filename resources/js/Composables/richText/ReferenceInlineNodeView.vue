@@ -4,13 +4,15 @@
  *
  * @description Le racine doit rester {@link NodeViewWrapper} pour TipTap.
  */
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { NodeViewWrapper, nodeViewProps } from "@tiptap/vue-3";
-import { encodeKrefTitle, parseKrefPayload, normalizeKrefType } from "@/Composables/richText/krefCodec";
+import { parseKrefPayload, normalizeKrefType } from "@/Composables/richText/krefCodec";
 import { getReferencePresentation } from "@/Composables/richText/referenceRenderService";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import KrefEntityTooltipBody from "@/Pages/Molecules/data-display/KrefEntityTooltipBody.vue";
+import { loadKrefCharacteristicReferenceMeta } from "@/Composables/richText/krefCharacteristicReferenceCache";
+import { parseCharacteristicFormulaRichText } from "@/Composables/characteristic/useCharacteristicFormulaRichText";
 import {
     resolveDef,
     getCharacteristicColorStyle,
@@ -22,14 +24,6 @@ const krefType = computed(() => normalizeKrefType(props.node.attrs.krefType));
 const payload = computed(() => parseKrefPayload(props.node.attrs.krefPayload));
 
 const presentation = computed(() => getReferencePresentation(props.node.attrs));
-
-const titleAttr = computed(() =>
-    encodeKrefTitle({
-        krefType: props.node.attrs.krefType,
-        krefPayload: props.node.attrs.krefPayload,
-        label: props.node.attrs.label,
-    }),
-);
 
 const wrapperClass = computed(() => {
     const fromEditor = props.HTMLAttributes?.class;
@@ -48,6 +42,8 @@ const charDef = computed(() => {
 });
 
 const charIcon = computed(() => charDef.value?._resolvedIcon ?? charDef.value?.icon ?? null);
+const charReferenceMeta = ref(null);
+let charReferenceLoadSeq = 0;
 
 /**
  * Texte affichable : trim + retrait ZWSP / tiret conditionnel, sinon chaîne vide.
@@ -118,6 +114,77 @@ const charTooltipText = computed(() => {
     return parts.join("\n\n");
 });
 
+function firstNonEmpty(...values) {
+    for (const value of values) {
+        if (value == null) continue;
+        const text = String(value).trim();
+        if (text !== "") return text;
+    }
+    return "";
+}
+
+function segmentStyle(segment) {
+    return getCharacteristicColorStyle(segment?.color) || {};
+}
+
+const charTooltipMeta = computed(() => {
+    const d = charDef.value;
+    const creatureMeta = charReferenceMeta.value?.creature || {};
+    const objectMeta = charReferenceMeta.value?.object || {};
+    if (!d && !charReferenceMeta.value) return [];
+
+    const formula = firstNonEmpty(
+        creatureMeta.formula_display,
+        creatureMeta.formula,
+        objectMeta.formula_display,
+        objectMeta.formula,
+        d?.formula_display,
+        d?.formula,
+        d?.conversion_formula,
+    );
+    const min = firstNonEmpty(creatureMeta.min, objectMeta.min, d?.min);
+    const max = firstNonEmpty(creatureMeta.max, objectMeta.max, d?.max);
+    const defaultValue = firstNonEmpty(
+        creatureMeta.default_value,
+        objectMeta.default_value,
+        d?.default_value,
+        d?.default,
+    );
+
+    const entries = [];
+    if (formula) entries.push({ key: "formula", label: "Formule de calcul", value: formula });
+    if (min) entries.push({ key: "min", label: "Valeur min", value: min });
+    if (max) entries.push({ key: "max", label: "Valeur max", value: max });
+    if (defaultValue) entries.push({ key: "default", label: "Valeur par défaut", value: defaultValue });
+    return entries.map((entry) => ({
+        ...entry,
+        segments: parseCharacteristicFormulaRichText(entry.value, {
+            sourceGroups: ["creature", "item", "resource", "spell", "capability", "consumable", "panoply"],
+            tooltipOrder: "descriptions_first",
+        }),
+    }));
+});
+
+watch(
+    () => [krefType.value, payload.value?.key],
+    async () => {
+        if (krefType.value !== "characteristic") {
+            charReferenceMeta.value = null;
+            return;
+        }
+        const key = typeof payload.value?.key === "string" ? payload.value.key.trim() : "";
+        if (!key) {
+            charReferenceMeta.value = null;
+            return;
+        }
+        const seq = ++charReferenceLoadSeq;
+        const meta = await loadKrefCharacteristicReferenceMeta(key);
+        if (seq !== charReferenceLoadSeq) return;
+        charReferenceMeta.value = meta;
+    },
+    { immediate: true },
+);
+
 const entityId = computed(() => {
     if (krefType.value !== "entity") return null;
     const id = payload.value?.id;
@@ -132,7 +199,9 @@ const entityTypeStr = computed(() => {
 });
 
 const wrapCharacteristicTooltip = computed(
-    () => krefType.value === "characteristic" && charTooltipText.value.trim() !== "",
+    () =>
+        krefType.value === "characteristic" &&
+        (charTooltipText.value.trim() !== "" || charTooltipMeta.value.length > 0),
 );
 
 const wrapEntityTooltip = computed(
@@ -141,10 +210,14 @@ const wrapEntityTooltip = computed(
 </script>
 
 <template>
-    <NodeViewWrapper as="span" :class="wrapperClass" :title="titleAttr">
+    <NodeViewWrapper
+        as="span"
+        :class="wrapperClass"
+        :data-kref-type="props.node.attrs.krefType"
+        :data-kref-payload="props.node.attrs.krefPayload"
+    >
         <Tooltip
             v-if="wrapCharacteristicTooltip"
-            :content="charTooltipText"
             placement="bottom"
             glass
             color="neutral"
@@ -152,7 +225,44 @@ const wrapEntityTooltip = computed(
         >
             <template #content>
                 <div class="max-w-sm whitespace-pre-wrap text-sm leading-snug text-base-content">
-                    {{ charTooltipText }}
+                    <p v-if="charTooltipText">{{ charTooltipText }}</p>
+                    <div
+                        v-if="charTooltipMeta.length"
+                        class="mt-2 border-t border-base-content/10 pt-2"
+                    >
+                        <div class="inline-flex flex-wrap items-center gap-1.5 text-xs text-base-content/80">
+                            <span
+                                v-for="entry in charTooltipMeta"
+                                :key="entry.key"
+                                class="inline-flex flex-wrap items-center gap-1 rounded-md border border-base-content/15 bg-base-200/35 px-1.5 py-0.5"
+                            >
+                                <span class="font-semibold text-base-content/70">{{ entry.label }}:</span>
+                                <template v-for="(segment, idx) in entry.segments" :key="`${entry.key}-seg-${idx}`">
+                                    <span v-if="segment.type === 'text'" class="whitespace-pre-wrap text-base-content/75">
+                                        {{ segment.text }}
+                                    </span>
+                                    <Tooltip
+                                        v-else
+                                        :content="segment.tooltip"
+                                        placement="top"
+                                    >
+                                        <span class="inline-flex items-center gap-1 rounded px-1 py-0.5 bg-base-200/40">
+                                            <Icon
+                                                v-if="segment.icon"
+                                                :source="segment.icon"
+                                                :alt="segment.label"
+                                                size="xs"
+                                                :style="segmentStyle(segment)"
+                                            />
+                                            <span class="font-semibold" :style="segmentStyle(segment)">
+                                                {{ segment.label }}
+                                            </span>
+                                        </span>
+                                    </Tooltip>
+                                </template>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </template>
             <span class="inline-flex max-w-full min-w-0 items-center gap-0.5 align-baseline">

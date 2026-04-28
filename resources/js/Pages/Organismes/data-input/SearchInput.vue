@@ -130,8 +130,15 @@ onUnmounted(() => {
                                 @click="handleSelectResult(result)"
                             >
                                 <span class="mt-0.5">
+                                    <img
+                                        v-if="result.iconUrl"
+                                        :src="result.iconUrl"
+                                        :alt="result.group || result.title || 'Entité'"
+                                        class="h-4 w-4 object-contain opacity-90"
+                                        loading="lazy"
+                                    />
                                     <Icon
-                                        v-if="result.icon"
+                                        v-else-if="result.icon"
                                         :source="result.icon.replace('fa ', '')"
                                         pack="custom"
                                         size="sm"

@@ -12,6 +12,26 @@ Quand ce mode est actif, le contenu TipTap supporte des références inline `spa
 - `page`
 - `pageSection`
 
+## Saisie `@` et préfixes typés
+
+La saisie dans l’éditeur supporte deux modes complémentaires :
+- mode libre : taper `@` puis la recherche globale (caractéristiques + entités + pages/sections),
+- mode guidé : taper un préfixe puis `:` pour limiter la recherche.
+
+Préfixes supportés :
+- `@carac:` (alias `@caracteristique:`),
+- `@section:`,
+- `@<type-entite>:` avec les types métier (ex. `@monstre:`, `@sort:`, `@campagne:`).
+
+Le bouton `@` de la toolbar propose :
+- ouverture du sélecteur complet,
+- insertion directe d’un déclencheur (`@`, `@carac:`, `@section:`, `@monstre:`, etc.).
+
+Règles UX de la recherche inline :
+- seuil minimum : 2 caractères après le déclencheur,
+- debounce + annulation des requêtes en vol (`AbortController`),
+- liste limitée à 12 résultats.
+
 ## Format de données
 
 Le format principal stocke le payload dans l’attribut `title` (base64url JSON), avec ce schéma logique :
@@ -54,8 +74,12 @@ Le format `data-kref-type` / `data-kref-payload` est également pris en charge.
 | Validation backend des références | `app/Support/SectionRichReferencesValidator.php` |
 | Contrôle update section | `app/Services/SectionService.php` |
 | API preview section | `app/Http/Controllers/Api/CmsSectionPreviewController.php` |
+| Cache aperçu section kref | `resources/js/Composables/richText/krefSectionPreviewCache.js` |
 | Cache + invalidation aperçu entité kref | `resources/js/Composables/richText/krefEntityPreviewCache.js` |
 | API preview entité kref | `app/Http/Controllers/Api/CmsKrefEntityPreviewController.php` |
+| Registre front des types d’entités kref | `resources/js/Composables/richText/krefEntityRegistry.js` |
+| Parseur de commande `@...` | `resources/js/Composables/richText/parseAtQuery.js` |
+| Registre backend des types d’entités kref | `app/Support/KrefEntityRegistry.php` |
 
 ## API preview section
 
@@ -80,6 +104,9 @@ Composant infobulle : `resources/js/Pages/Molecules/data-display/KrefEntityToolt
 ```bash
 pnpm exec vitest run tests/unit/composables/richText/krefCodec.test.js
 pnpm exec vitest run tests/unit/composables/richText/krefEntityPreviewCache.test.js
+pnpm exec vitest run tests/unit/composables/richText/parseAtQuery.test.js
+pnpm exec vitest run tests/unit/composables/richText/krefSectionPreviewCache.test.js
 php artisan test tests/Feature/PagesSections/SectionTextSanitizationTest.php
 php artisan test --filter=CmsSectionPreviewApiTest
+php artisan test tests/Unit/Support/KrefEntityRegistryTest.php
 ```

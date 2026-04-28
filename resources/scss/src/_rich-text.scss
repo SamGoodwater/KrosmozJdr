@@ -312,19 +312,42 @@
     display: inline-flex;
     align-items: center;
     max-width: 100%;
+    min-height: 1.45em;
     padding: 0.08em 0.52em;
     margin-inline: 0.22em;
     margin-block: 0.08em;
     border-radius: 0.35rem;
     font-size: 0.85em;
     font-weight: 600;
+    line-height: 1.15;
     vertical-align: baseline;
+    box-sizing: border-box;
     background: hsl(var(--p) / 0.18);
     color: hsl(var(--p));
     border: 1px solid hsl(var(--p) / 0.35);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .kref .kref__icon,
+  .kref .kref__iconimg {
+    flex: 0 0 auto;
+    line-height: 1;
+  }
+
+  .kref .kref__label {
+    min-width: 0;
+    line-height: 1.15;
+  }
+
+  .kref--invalid {
+    border-style: dashed;
+    border-width: 1px;
+    color: var(--color-error);
+    background: color-mix(in srgb, var(--color-error) 18%, transparent);
+    border-color: color-mix(in srgb, var(--color-error) 42%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-error) 18%, transparent) inset;
   }
 
   /* Garde les médias/blocs techniques en pleine largeur (tables, images, séparateurs). */
