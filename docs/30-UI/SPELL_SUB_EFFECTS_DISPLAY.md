@@ -32,7 +32,7 @@ La logique métier est centralisée dans :
 | `s-appliquer-etat` | **Appliquer l'état** : [état] **à soit-même** — Durée … |
 | `autre` | [valeur / texte] (éclair + badge critique si formule critique) — Durée … \| zone |
 | `booster` | **Ajout** de [badge] (éclair + critique si besoin) **en** [caractéristique icône + couleur] — Durée … \| zone |
-| `déplacer` | **Déplacement** de **X case(s) (Y m)** (1 case = 1,5 m ; une décimale pour les mètres ; formules dés/variables : suffixe « cases » sans conversion) [téléportation si bool] — Durée … \| zone |
+| `déplacer` | **Déplacement** de **X case(s) (Y m)** (1 case = 1,5 m ; une décimale pour les mètres ; formules dés/variables : suffixe « cases » sans conversion) + type (`movement_kind` : déplacement, saut, téléportation, repousse, attirance) — Durée … \| zone |
 | `frapper` | **Attaque** : [badge] (éclair + critique) ([élément]) — **Ajout de vol de vie** [badge] si `life_steal_formula` — **Poison :** [durée] \| zone |
 | `soigner` | **Soin** : [badge] (éclair + critique) ([élément]) — **Durée :** … \| zone |
 | `invoquer` | **Invocation** de [vue texte monstre] |

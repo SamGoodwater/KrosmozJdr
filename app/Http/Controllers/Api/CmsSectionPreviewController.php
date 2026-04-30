@@ -63,7 +63,7 @@ class CmsSectionPreviewController extends Controller
      */
     private function buildPreviewBody(Section $section, bool $textTemplateOnly): array
     {
-        $template = (string) ($section->template ?? $section->type ?? '');
+        $template = $this->sectionTypeValue($section->template ?? $section->type ?? null);
         if ($textTemplateOnly && $template !== SectionType::TEXT->value) {
             return [
                 'canView' => true,
@@ -120,5 +120,14 @@ class CmsSectionPreviewController extends Controller
         }
 
         return $clean;
+    }
+
+    private function sectionTypeValue(mixed $type): string
+    {
+        if ($type instanceof SectionType) {
+            return $type->value;
+        }
+
+        return is_string($type) ? $type : '';
     }
 }

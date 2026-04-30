@@ -20,8 +20,8 @@ use App\Services\Characteristic\Formula\CharacteristicFormulaService;
  * - Applique la logique AND / OR (avec condition numérique pour OR)
  * - Produit une structure machine + un texte résolu par sous-effet.
  *
- * @see \App\Services\Effect\EffectTextResolver
- * @see \App\Services\Characteristic\Formula\CharacteristicFormulaService
+ * @see EffectTextResolver
+ * @see CharacteristicFormulaService
  */
 final class EffectResolutionService
 {
@@ -169,6 +169,7 @@ final class EffectResolutionService
                 'summon_monster' => $this->summonMonsterBriefFromParams($params),
                 'state_name' => $stateNameResolved,
                 'cells_display' => $cellsDisplay,
+                'movement_kind' => is_string($params['movement_kind'] ?? null) ? (string) $params['movement_kind'] : null,
                 'teleport' => (bool) ($params['teleport'] ?? false),
             ];
         }

@@ -13,7 +13,7 @@
 | Fichier / zone | Ce qui est nommé | Risque |
 |----------------|------------------|--------|
 | **Migrations** (`database/migrations/`) | Colonnes des tables : `characteristics.key`, `characteristic_creature.db_column`, `characteristic_object.db_column`, `items.level`, `resources.weight`, etc. | Les noms de colonnes sont la **référence d’écriture** pour l’intégration (payload Laravel). Toute divergence avec les modèles ou le mapping scrapping casse l’écriture. |
-| **Tables characteristics** | `key` (ex. `level_creature`, `pa_spell`) — unique, utilisé partout comme identifiant logique. | Point central : cette clé doit être cohérente avec seeders, config, mapping DofusDB, icônes. |
+| **Tables characteristics** | `key` (ex. `level_creature`, `action_points_spell`) — unique, utilisé partout comme identifiant logique. | Point central : cette clé doit être cohérente avec seeders, config, mapping DofusDB, icônes. |
 | **Tables characteristic_creature / _object / _spell** | `db_column` (ex. `level`, `rarity`, `price`) — nom de la colonne sur l’entité cible (item, monster, etc.). | Doit correspondre exactement aux attributs des modèles Eloquent (Item, Resource, Creature, etc.). |
 
 **Fichiers clés** :
@@ -171,7 +171,7 @@
 ### 2.3 Clés courtes (effect_sub_effects) vs clés complètes (characteristics)
 
 - **effect_sub_effects.php** : `pa`, `pm`, `vita`, `force`, `intel`, `terre`, `feu`, etc.
-- **characteristics** : `pa_creature`, `pa_spell`, `pa_object`, `vitality_creature`, `strong_creature`, `do_fixe_terre_object`, etc.
+- **characteristics** : `action_points_creature`, `action_points_spell`, `action_points_object`, `vitality_creature`, `strong_creature`, `do_fixe_terre_object`, etc.
 
 Ce n’est pas une erreur mais **deux espaces de nommage** : un pour les sous-effets (contexte « action → caractéristique »), un pour les caractéristiques par groupe (creature/object/spell). Le risque est de **mélanger** les deux (ex. utiliser `pa` comme characteristic_key dans un mapping qui attend `pa_object`).
 

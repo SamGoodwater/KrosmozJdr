@@ -10,7 +10,7 @@
 
 Les étapes 3.1 à 3.7 ont été implémentées :
 
-- **3.1** : `SpellEffectConversionFormulaResolver` — résolution action → characteristic_key (power_spell pour frapper/soigner/voler-vie/protéger ; alias pa → action_points_spell, po → range_spell ; _spell pour booster/retirer/voler-caracteristiques).
+- **3.1** : `SpellEffectConversionFormulaResolver` — résolution action → characteristic_key (dommages_spell/soin_spell/vol_vie_spell/bouclier_spell pour frapper/soigner/voler-vie/protéger ; alias pa → action_points_variation_spell, po → range_spell ; _spell pour booster/retirer/voler-caracteristiques).
 - **3.2** : Calcul de `d` dans `SpellEffectsConversionService::computeDofusValueForConversion()` (moyenne dés ou valeur fixe).
 - **3.3** : Intégration dans `buildParams()` : injection du resolver et de `DofusConversionService`, appel à `applyValueConversion()` qui remplit `params.value_converted`.
 - **3.4 / 3.5** : Utilisation de `power_spell` et des clés existantes en `characteristic_spell` ; doc mise à jour dans CARACTERISTIQUES_EFFETS_PAR_ACTION.md (§ 2.5).
@@ -27,7 +27,7 @@ Le contrôleur de prévisualisation a été sécurisé pour ne pas appeler `getE
 - **Existant côté caractéristiques** : `DofusConversionService::convert($characteristicKey, $variables, $entityType)` utilise `conversion_formula` et limites depuis la BDD (groupe spell via `CharacteristicGetterService`). Variable d’entrée standard : `d` (valeur Dofus à convertir).
 - **Règles par action** : [CARACTERISTIQUES_EFFETS_PAR_ACTION.md](./CARACTERISTIQUES_EFFETS_PAR_ACTION.md) définit :
   - **Une règle par action** : frapper, soigner, voler-vie, protéger → une seule clé de caractéristique (ex. dommages_spell, soin_spell) ou une par élément selon config.
-  - **Une règle par caractéristique** : booster, retirer, voler-caracteristiques → formule selon `params.characteristic` (pa_spell, pm_spell, strong, etc.).
+  - **Une règle par caractéristique** : booster, retirer, voler-caracteristiques → formule selon `params.characteristic` (`action_points_variation_spell`, `movement_points_spell`, `strong_spell`, etc.).
   - **Aucune conversion** : déplacer, invoquer → pas d’appel conversion.
 
 ---
@@ -112,7 +112,7 @@ Le contrôleur de prévisualisation a été sécurisé pour ne pas appeler `getE
 
 ### Étape 3.5 — Actions « par caractéristique » (booster, retirer, voler-caracteristiques)
 
-**Objectif** : pour ces actions, la characteristic_key est déjà dans `params.characteristic` (ex. `pa`, `pm`, `strong`). Il faut s’assurer que la clé utilisée pour la BDD soit celle du **groupe spell** (ex. `pa_spell`, `pm_spell` si les formules sont en `characteristic_spell` sous ces clés).
+**Objectif** : pour ces actions, la characteristic_key est déjà dans `params.characteristic` (ex. `pa`, `pm`, `strong`). Il faut s’assurer que la clé utilisée pour la BDD soit celle du **groupe spell** (ex. `action_points_variation_spell`, `movement_points_spell` si les formules sont en `characteristic_spell` sous ces clés).
 
 - Dans le resolver (étape 3.1) : pour booster/retirer/voler-caracteristiques, prendre `params.characteristic` et :
   - soit utiliser tel quel si `characteristic_spell` a des lignes pour ces clés,

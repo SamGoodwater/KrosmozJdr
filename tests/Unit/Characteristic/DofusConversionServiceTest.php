@@ -101,10 +101,10 @@ class DofusConversionServiceTest extends TestCase
     public function test_clamp_to_limits_returns_value_in_limits(): void
     {
         $getter = $this->app->make(CharacteristicGetterService::class);
-        $limits = $getter->getLimits('life_points_creature', 'monster');
+        $limits = $getter->getLimits('level_creature', 'monster');
         $this->assertNotNull($limits);
         $mid = (int) (($limits['min'] + $limits['max']) / 2);
-        $result = $this->service->clampToLimits('life_points_creature', $mid, 'monster');
+        $result = $this->service->clampToLimits('level_creature', $mid, 'monster');
         $this->assertSame($mid, $result);
     }
 

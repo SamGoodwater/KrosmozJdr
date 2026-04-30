@@ -164,6 +164,7 @@ When migrating existing data and code, use this mapping. Each row is “old iden
 | objet_save_chance_creature | object_save_chance_creature *(only fix prefix: objet → object)* |
 | life_creature | life_points_creature *(if pv was ever used)* |
 | pa_creature, pa_spell, pa_object | action_points_creature, action_points_spell, action_points_object |
+| pa (effet de sort DofusDB) | action_points_variation_spell |
 | pm_creature, pm_object | movement_points_creature, movement_points_object |
 | po_creature, po_spell, po_object | range_creature, range_spell, range_object |
 | ini_creature, ini_object | initiative_creature, initiative_object |

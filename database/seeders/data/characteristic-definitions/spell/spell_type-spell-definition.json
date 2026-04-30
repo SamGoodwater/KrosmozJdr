@@ -62,7 +62,7 @@
         "hide_when_empty": false,
         "unit": null,
         "type": "string",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 71,
         "group": "spell",
         "linked_to_key": null
@@ -83,7 +83,7 @@
             "conversion_sample_rows": null,
             "norms_grid": null,
             "norms_conditions": null,
-            "norms_description": null,
+            "norms_description": "Grille 5×20 non utilisée : typologie de sort (discrète). L’équilibrage se lit dans les règles de sorts (doc 420) et la matrice A/B/C (MATRICE_ROLES_CARACTERISTIQUES_SPELL.md).",
             "norms_help_section_id": null,
             "value_available": {
                 "degats": "Dégâts",

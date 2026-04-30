@@ -1,0 +1,43 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "save_dc_formula_spell",
+        "name": "Formule du DD",
+        "short_name": "DD",
+        "helper": "Expression du DD de sauvegarde (texte ou formule affichable).",
+        "descriptions": "Formule du DD (`spells.save_dc_formula`), ex. « 8 + mod FOR + bonus maîtrise ». Conversion Dofus : non applicable.",
+        "icon": "castingTime.webp",
+        "icon_false": null,
+        "color": "amber",
+        "value_overrides": null,
+        "hide_when_empty": true,
+        "unit": null,
+        "type": "string",
+        "status": "validee",
+        "sort_order": 64,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "save_dc_formula",
+            "min": null,
+            "max": null,
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": "Grille 5×20 non utilisée : formule libre.",
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

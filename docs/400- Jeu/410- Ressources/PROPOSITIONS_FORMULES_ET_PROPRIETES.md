@@ -2,6 +2,8 @@
 
 Ce document propose des modifications pour aligner les seeders et les caractéristiques sur les règles du jeu (docs 400) et les références PDF : **Equipements et forgemagie.pdf** et **CaractéristiquesAvecLien avec Dofus.pdf**.
 
+Pour le **groupe sort**, la classification A/B/C (cadre / modificateur cible / effet d’action) et le lien vers les règles de sorts : [MATRICE_ROLES_CARACTERISTIQUES_SPELL.md](./MATRICE_ROLES_CARACTERISTIQUES_SPELL.md). Les **normes** 5×20 côté produit : [CAHIER_DES_CHARGES_NORMES_ENTITES.md](../../50-Fonctionnalités/Characteristics-DB/CAHIER_DES_CHARGES_NORMES_ENTITES.md).
+
 ---
 
 ## 1. Formules objet : tableaux par niveau (PDF Équipements)

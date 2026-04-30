@@ -12,17 +12,20 @@
         "value_overrides": [
             {
                 "value": true,
-                "subtitle": "Peut être lancé en réaction durant le tour d'un autre combattant."
+                "color": "brown",
+                "subtitle": "Peut être lancé en réaction pendant le tour d’un autre combattant.",
+                "icon": "is_reaction.webp"
             },
             {
                 "value": false,
+                "color": "neutral",
                 "subtitle": "Ne peut pas être lancé en réaction."
             }
         ],
         "hide_when_empty": false,
         "unit": null,
         "type": "bool",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 71,
         "group": "spell",
         "linked_to_key": null
@@ -43,7 +46,7 @@
             "conversion_sample_rows": null,
             "norms_grid": null,
             "norms_conditions": null,
-            "norms_description": null,
+            "norms_description": "Grille 5×20 non utilisée : booléen. Pas de norme par niveau pour cette clé ; réf. mécaniques de lancement (doc 420).",
             "norms_help_section_id": null,
             "value_available": null
         }

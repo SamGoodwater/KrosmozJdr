@@ -1,0 +1,43 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "save_success_note_spell",
+        "name": "Effet si sauvegarde réussie",
+        "short_name": "Succès sauv.",
+        "helper": "Texte décrivant l’effet lorsque la cible réussit sa sauvegarde.",
+        "descriptions": "Note libre (`spells.save_success_note`) : effet réduit, demi-dégâts, etc. Pas de conversion Dofus automatique.",
+        "icon": "heal.webp",
+        "icon_false": null,
+        "color": "teal",
+        "value_overrides": null,
+        "hide_when_empty": true,
+        "unit": null,
+        "type": "string",
+        "status": "validee",
+        "sort_order": 65,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "save_success_note",
+            "min": null,
+            "max": null,
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": "Grille 5×20 non utilisée : texte narratif / mécanique.",
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

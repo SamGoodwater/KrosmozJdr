@@ -5,19 +5,90 @@
         "name": "Niveau du sort",
         "short_name": "Niv.",
         "helper": "Niveau du sort.",
-        "descriptions": "Niveau du sort (1–200). Lié à level_creature pour les formules.",
+        "descriptions": "Niveau du sort (échelle Dofus 1–200 possible en base brute ; conversion vers le palier Krosmoz 1–20 comme pour les créatures — voir `level_creature`).",
         "icon": "level.webp",
         "icon_false": null,
         "color": "gray",
         "value_overrides": null,
-        "hide_when_empty": null,
+        "hide_when_empty": false,
         "unit": null,
         "type": "int",
-        "sort_order": 70,
+        "status": "validee",
+        "sort_order": 65,
         "group": "spell",
-        "linked_to_key": "level_creature",
-        "status": "a_valider"
+        "linked_to_key": "level_creature"
     },
-    "entities": [],
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "level",
+            "min": "1",
+            "max": "200",
+            "formula": null,
+            "formula_display": null,
+            "default_value": "1",
+            "conversion_formula": "{\"1\":\"floor([d]/10)\",\"characteristic\":\"d\"}",
+            "conversion_function": null,
+            "conversion_dofus_sample": {
+                "1": 3,
+                "40": 44,
+                "80": 83,
+                "120": 122,
+                "160": 162,
+                "200": 247
+            },
+            "conversion_krosmoz_sample": {
+                "1": 1,
+                "4": 4,
+                "8": 8,
+                "12": 12,
+                "16": 16,
+                "20": 20
+            },
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": 3,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": 1
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": 44,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": 4
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": 83,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": 8
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": 122,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": 12
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": 162,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": 16
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": 247,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": 20
+                }
+            ],
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": "Le niveau du sort est converti vers l’échelle Krosmoz 1–20 comme `level_creature` ; la grille 5×20 ne s’applique pas à cette donnée (axe niveau global).",
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
     "relations": null
 }

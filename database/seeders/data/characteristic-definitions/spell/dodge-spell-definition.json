@@ -13,14 +13,14 @@
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 72,
         "group": "spell",
         "linked_to_key": null
     },
     "entities": {
         "*": {
-            "dofusdb_characteristic_id": null,
+            "dofusdb_characteristic_id": 78,
             "db_column": "fuite",
             "min": "0",
             "max": "10",
@@ -35,8 +35,38 @@
                 "10": 5,
                 "20": 10
             },
-            "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": null,
+            "conversion_krosmoz_sample": {
+                "2": 1,
+                "6": 1,
+                "10": 2,
+                "20": 2
+            },
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 2,
+                    "dofus_value": 2,
+                    "krosmoz_level": 2,
+                    "krosmoz_value": 1
+                },
+                {
+                    "dofus_level": 6,
+                    "dofus_value": 6,
+                    "krosmoz_level": 6,
+                    "krosmoz_value": 1
+                },
+                {
+                    "dofus_level": 10,
+                    "dofus_value": 10,
+                    "krosmoz_level": 10,
+                    "krosmoz_value": 2
+                },
+                {
+                    "dofus_level": 20,
+                    "dofus_value": 20,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": 2
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     0,

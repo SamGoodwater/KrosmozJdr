@@ -16,7 +16,7 @@ import {
     getCharacteristicColorStyle,
     SPELL_EFFECT_CHIP_SOURCE_GROUPS,
 } from "@/Composables/entity/useCharacteristicDisplay";
-import { getElementLabel, getElementIcon, getElementColor } from "@/Utils/Entity/Elements";
+import { ELEMENT_PRIMARY_LABELS, getElementIcon, getElementColor } from "@/Utils/Entity/Elements";
 import {
     subEffectScopeAbbrev,
     subEffectCritShowsWord,
@@ -115,6 +115,10 @@ const elementStyle = computed(() => {
     return hex ? getCharacteristicColorStyle(hex) : undefined;
 });
 
+const elementLabel = computed(() =>
+    elementNum.value == null ? "" : (ELEMENT_PRIMARY_LABELS[elementNum.value] ?? ""),
+);
+
 const valueBadge = computed(() => {
     const v = m.value.valueDisplay;
     return v != null && String(v).trim() !== "" ? String(v).trim() : "";
@@ -145,6 +149,16 @@ const moveValue = computed(() => {
         return "";
     }
     return formatDisplacementForDisplay(String(d).trim());
+});
+
+const movementKindLabel = computed(() => {
+    const kind = m.value.movementKind;
+    if (kind === "jump") return "saut";
+    if (kind === "teleport") return "téléportation";
+    if (kind === "push") return "repousse";
+    if (kind === "pull") return "attirance";
+    if (m.value.teleport) return "téléportation";
+    return "";
 });
 
 const KNOWN_ACTIONS = new Set([
@@ -287,7 +301,7 @@ const isKnownAction = computed(() => KNOWN_ACTIONS.has(action.value));
                 class="badge badge-sm shrink-0 border-0 bg-primary-300/20 font-medium text-primary-100 tabular-nums"
                 >{{ moveValue }}</span
             >
-            <span v-if="m.teleport" class="text-base-content/80">téléportation</span>
+            <span v-if="movementKindLabel" class="text-base-content/80">{{ movementKindLabel }}</span>
             <template v-if="hasDuration">
                 <span class="text-base-content/70">—</span>
                 <span class="text-base-content/80">Durée {{ durationSeg }}</span>
@@ -322,11 +336,11 @@ const isKnownAction = computed(() => KNOWN_ACTIONS.has(action.value));
                 >
                     <Icon
                         :source="getElementIcon(elementNum)"
-                        :alt="getElementLabel(elementNum)"
+                        :alt="elementLabel"
                         size="xs"
                         class="shrink-0"
                     />
-                    <span>{{ getElementLabel(elementNum) }}</span>
+                    <span>{{ elementLabel }}</span>
                 </span>
                 <span class="text-base-content/60">)</span>
             </template>
@@ -373,11 +387,11 @@ const isKnownAction = computed(() => KNOWN_ACTIONS.has(action.value));
                 >
                     <Icon
                         :source="getElementIcon(elementNum)"
-                        :alt="getElementLabel(elementNum)"
+                        :alt="elementLabel"
                         size="xs"
                         class="shrink-0"
                     />
-                    <span>{{ getElementLabel(elementNum) }}</span>
+                    <span>{{ elementLabel }}</span>
                 </span>
                 <span class="text-base-content/60">)</span>
             </template>

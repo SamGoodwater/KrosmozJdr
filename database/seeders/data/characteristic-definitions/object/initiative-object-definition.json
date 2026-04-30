@@ -202,10 +202,7 @@
             "base_price_per_unit": 100,
             "rune_price_per_unit": 200,
             "value_available": null,
-            "item_type_ids": [
-                11,
-                13
-            ]
+            "item_type_ids": null
         }
     },
     "relations": null

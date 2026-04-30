@@ -121,6 +121,13 @@ class SubEffectSeeder extends Seeder
                     'action' => 'déplacer',
                     'params' => [
                         ['key' => 'cells_formula', 'type' => 'formula', 'label' => 'Nombre de cases (formule, décimales autorisées ; 1 case = 1,5 m)'],
+                        ['key' => 'movement_kind', 'type' => 'select', 'label' => 'Type de mouvement', 'optional' => true, 'options' => [
+                            ['value' => 'movement', 'label' => 'Déplacement'],
+                            ['value' => 'jump', 'label' => 'Saut / bond'],
+                            ['value' => 'teleport', 'label' => 'Téléportation'],
+                            ['value' => 'push', 'label' => 'Repousse'],
+                            ['value' => 'pull', 'label' => 'Attirance'],
+                        ]],
                         ['key' => 'teleport', 'type' => 'bool', 'label' => 'Téléportation'],
                     ],
                 ],

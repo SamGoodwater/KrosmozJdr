@@ -56,6 +56,41 @@ export function resolvePresentationActionSlug(slug) {
     return s;
 }
 
+const ELEMENT_CHARACTERISTIC_TO_PRIMARY = Object.freeze({
+    neutral: 0,
+    earth: 1,
+    fire: 2,
+    air: 3,
+    water: 4,
+    element_wisdom: 5,
+    element_vitality: 6,
+    fixed_damage_neutral_spell: 0,
+    fixed_damage_earth_spell: 1,
+    fixed_damage_fire_spell: 2,
+    fixed_damage_air_spell: 3,
+    fixed_damage_water_spell: 4,
+    fixed_damage_sagesse_spell: 5,
+    fixed_damage_vitalite_spell: 6,
+});
+
+/**
+ * Les rows d'édition ont parfois seulement `characteristic` (ex. earth) alors que
+ * les chips API exposent déjà `element`. On dérive une valeur primaire 0-6 commune.
+ *
+ * @param {unknown} rawElement
+ * @param {unknown} characteristic
+ * @returns {number|null}
+ */
+function resolveElementPrimary(rawElement, characteristic) {
+    if (rawElement != null && rawElement !== "" && Number.isFinite(Number(rawElement))) {
+        return Number(rawElement);
+    }
+    const key = characteristic != null ? String(characteristic).trim() : "";
+    return Object.prototype.hasOwnProperty.call(ELEMENT_CHARACTERISTIC_TO_PRIMARY, key)
+        ? ELEMENT_CHARACTERISTIC_TO_PRIMARY[key]
+        : null;
+}
+
 /**
  * Badge valeur (formule / nombre affiché).
  *
@@ -112,6 +147,10 @@ export function buildUnifiedSubEffectModel(input) {
                 : slugNorm === "déplacer" && String(valueDisplay).trim() !== ""
                   ? String(valueDisplay).trim()
                   : "";
+        const characteristic =
+            typeof params.characteristic === "string" && params.characteristic.trim() !== ""
+                ? params.characteristic.trim()
+                : null;
         return {
             layout,
             actionSlug: normalizeSubEffectSlug(sub.slug),
@@ -136,11 +175,8 @@ export function buildUnifiedSubEffectModel(input) {
                 params.life_steal_formula.trim() !== ""
                     ? params.life_steal_formula.trim()
                     : null,
-            characteristic:
-                typeof params.characteristic === "string" && params.characteristic.trim() !== ""
-                    ? params.characteristic.trim()
-                    : null,
-            element: params.element,
+            characteristic,
+            element: resolveElementPrimary(params.element, characteristic),
             durationFormula: typeof df === "string" && df.trim() !== "" ? df.trim() : null,
             durationLabel: null,
             summonMonster:
@@ -160,6 +196,10 @@ export function buildUnifiedSubEffectModel(input) {
             cellsFormula: cellsF !== "" ? cellsF : null,
             cellsDisplay: null,
             moveCellsDisplay: moveCells,
+            movementKind:
+                typeof params.movement_kind === "string" && params.movement_kind.trim() !== ""
+                    ? params.movement_kind.trim()
+                    : null,
             teleport: Boolean(params.teleport),
             textFallback: null,
             rawTextValue: null,
@@ -234,6 +274,10 @@ export function buildUnifiedSubEffectModel(input) {
         cellsFormula: null,
         cellsDisplay: cd !== "" ? cd : null,
         moveCellsDisplay: moveCellsChip,
+        movementKind:
+            typeof chip.movement_kind === "string" && chip.movement_kind.trim() !== ""
+                ? chip.movement_kind.trim()
+                : null,
         teleport: Boolean(chip.teleport),
         textFallback: rawText,
         rawTextValue: rawText,

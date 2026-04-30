@@ -11,7 +11,7 @@ Les caractéristiques spell se divisent en **deux types distincts** :
 | Type | Description | Stockage | Conversion Dofus |
 |------|-------------|----------|------------------|
 | **Type 1** | Caractéristiques qui **décrivent le sort** lui-même | Table `spells` ou `effects` | Oui |
-| **Type 2** | Caractéristiques **influençables par les sous-effets** | `effect_sub_effect.params` (characteristic, value_converted) | Oui |
+| **Type 2** | Caractéristiques **influençables par les sous-effets** | `effect_sub_effect.params` (characteristic, value_converted, effect_direction) | Oui |
 
 ---
 
@@ -31,17 +31,22 @@ Les caractéristiques spell se divisent en **deux types distincts** :
 | number_between_two_cast_spell | number_between_two_cast | spells | Délai entre lancers |
 | category_spell | category | spells | Type de sort |
 | is_magic_spell | is_magic | spells | Magique vs physique |
-| movement_points_spell | pm | spells | Var. PM (rare au niveau sort) |
-| range_spell | po | spells | Portée (po_min/po_max) |
+| movement_points_spell | *(effets)* | spell_effects / params | Variation PM sur cible (Type 2 — pas une colonne globale `spells.pm`) |
+| range_spell | po_min / po_max | spells | Portée agrégée |
 | range_editable_spell | po_editable | spells | Portée éditable |
 | spell_range_min_spell | spell_po_min | spells | Portée min |
 | spell_range_max_spell | spell_po_max | spells | Portée max |
-| casting_time_spell | casting_time | effect ? | Temps d'incantation |
-| duration_spell | duration | effect | Durée de l'effet |
-| time_before_use_again_spell | time_before_use_again | effect ? | Délai avant réutilisation |
+| casting_time_spell | casting_time | spells | Temps d'incantation |
+| duration_spell | duration | spells | Durée de l'effet |
 | ritual_available_spell | ritual_available | spells | Utilisable en rituel |
+| resolution_mode_spell | resolution_mode | spells | Jet d’attaque / sauvegarde / réussite auto |
+| attack_characteristic_key_spell | attack_characteristic_key | spells | Carac. pour jet d’attaque |
+| save_characteristic_key_spell | save_characteristic_key | spells | Carac. de sauvegarde |
+| save_dc_formula_spell | save_dc_formula | spells | Formule du DD |
+| save_success_note_spell | save_success_note | spells | Effet si sauvegarde réussie |
+| auto_success_if_willing_target_spell | auto_success_if_willing_target | spells | Réussite auto si cible consentante |
 
-**Note** : `casting_time`, `duration`, `time_before_use_again` — à vérifier dans les migrations (spells vs effects).
+**Note** : le délai entre deux lancers d’un **sort** est `number_between_two_cast` (`time_before_use_again` concerne les **capacités**, table `capabilities`). Voir [MATRICE_ROLES_CARACTERISTIQUES_SPELL.md](../../../400-%20Jeu/410-%20Ressources/MATRICE_ROLES_CARACTERISTIQUES_SPELL.md).
 
 ### 2.2 Flux
 
@@ -56,14 +61,18 @@ Les caractéristiques spell se divisent en **deux types distincts** :
 
 Toutes les caractéristiques de **characteristic_creature** peuvent être ciblées par les actions **booster**, **retirer**, **voler-caracteristiques** :
 
-- PA, PM, Ini, PO, Invocations
+- Variation PA, PM, Ini, PO, Invocations
 - 6 stats (Vitalité, Sagesse, Force, Intel, Chance, Agi)
 - Esquive PA/PM, Fuite, Tacle, CA
 - Dégâts fixes (5 éléments + multiple)
 - Bonus critique, Bonus soin
 - Résistances fixes et %
 
-Le paramètre `params.characteristic` du sous-effet référence une **characteristic_key** (ex. `pa`, `strong`, `res_terre`). Le `SpellEffectConversionFormulaResolver` normalise vers `*_spell` (ex. `pa` → `action_points_spell`).
+Le paramètre `params.characteristic` du sous-effet référence une **characteristic_key** (ex. `pa`, `strong`, `res_terre`). Le `SpellEffectConversionFormulaResolver` normalise vers une clé spell (ex. `pa` → `action_points_variation_spell`, `strong` → `strong_spell`).
+
+**Important** : l’alias `pa` → `action_points_variation_spell` sert aux **effets** Dofus sur une cible (variation de PA). Ne pas le confondre avec le **coût PA** du sort (`action_points_spell` / `spells.pa`), défini au niveau global du sort via l’intégration, pas via l’id caractéristique `1` des effets. Voir la note dans `dofusdb_characteristic_to_krosmoz_spell.json`.
+
+**Bonus / malus** : `SpellEffectsConversionService` ajoute `params.effect_direction` (`bonus`, `malus`, `steal`, `action`). Les retraits et vols de caractéristiques sont convertis à puissance réduite (environ moitié) afin de préserver une logique D&D bounded accuracy.
 
 **Important** : les caractéristiques spell Type 2 creature ne sont **pas liées** aux caractéristiques creature (`linked_to_key` = NULL). Les formules de conversion diffèrent : les valeurs spell concernent des effets **boost** ou **retrait** appliqués par des sorts, donc des amplitudes généralement plus faibles que les valeurs de base d'une créature.
 
@@ -77,8 +86,9 @@ Actions dont la valeur à convertir **ne dépend pas** d'une caractéristique cr
 | **soigner** | Soin | `soin_spell` | Valeur = montant soin |
 | **voler-vie** | Vol de vie | `vol_vie_spell` | Valeur = montant PV volés |
 | **protéger** | Bouclier / PV temporaires | `bouclier_spell` | Valeur = absorption |
+| **déplacer** | Mouvement | `movement_*_spell` selon `movement_kind` | Déplacement, saut, téléportation, repousse, attirance |
 
-**Implémenté** : les 4 caractéristiques sont définies dans `characteristics.php`, `characteristic_spell.php` (formule type power_spell) et `SpellEffectConversionFormulaResolver` (mapping action → characteristic_key).
+**Implémenté** : les caractéristiques d’action sont définies dans les JSON `characteristic-definitions/spell` et `SpellEffectConversionFormulaResolver` mappe l’action (et `movement_kind` pour `déplacer`) vers la bonne `characteristic_key`.
 
 ---
 
@@ -92,13 +102,14 @@ Actions dont la valeur à convertir **ne dépend pas** d'une caractéristique cr
 - category_spell, is_magic_spell
 - range_spell, range_editable_spell
 - spell_range_min_spell, spell_range_max_spell
-- casting_time_spell, duration_spell, time_before_use_again_spell
+- casting_time_spell, duration_spell
 - ritual_available_spell
+- resolution_mode_spell, attack_characteristic_key_spell, save_characteristic_key_spell, save_dc_formula_spell, save_success_note_spell, auto_success_if_willing_target_spell
 
 ### Type 2 créature (conversion par characteristic)
 
 - strong_spell, vitality_spell, sagesse_spell, chance_spell, agi_spell, intel_spell
-- movement_points_spell (ressource)
+- action_points_variation_spell, movement_points_spell (ressources)
 - dodge_spell, tackle_spell
 - dodge_action_points_spell, dodge_movement_points_spell
 - critical_spell
@@ -112,6 +123,7 @@ Actions dont la valeur à convertir **ne dépend pas** d'une caractéristique cr
 - soigner → **soin_spell**
 - voler-vie → **vol_vie_spell**
 - protéger → **bouclier_spell**
+- déplacer → **movement_distance_spell**, **jump_distance_spell**, **teleport_distance_spell**, **push_distance_spell**, **pull_distance_spell**
 
 ---
 
@@ -120,10 +132,11 @@ Actions dont la valeur à convertir **ne dépend pas** d'une caractéristique cr
 1. **SpellEffectsConversionService** reçoit un sous-effet (sub_effect_slug, params).
 2. **SpellEffectConversionFormulaResolver** résout la characteristic_key :
    - `frapper` → `dommages_spell`, `soigner` → `soin_spell`, `voler-vie` → `vol_vie_spell`, `protéger` → `bouclier_spell`
-   - `booster`/`retirer`/`voler-caracteristiques` → `params.characteristic` normalisé (ex. `po` → `range_spell`)
+   - `booster`/`retirer`/`voler-caracteristiques` → `params.characteristic` normalisé (ex. `pa` → `action_points_variation_spell`, `po` → `range_spell`)
 3. **CharacteristicGetterService** fournit min, max, conversion_formula pour cette characteristic_key (groupe spell).
 4. **DofusConversionService** applique la formule : `value_converted = f(value_dofus)`.
-5. Résultat stocké dans `params.value_converted`.
+5. Le service applique la politique bonus/malus (`retirer` et `voler-caracteristiques` réduits).
+6. Résultat stocké dans `params.value_converted` et direction dans `params.effect_direction`.
 
 ---
 

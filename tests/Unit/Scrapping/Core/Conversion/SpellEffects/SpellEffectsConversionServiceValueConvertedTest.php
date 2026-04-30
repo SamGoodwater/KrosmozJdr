@@ -41,7 +41,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
         $stateCatalog->method('get')->willReturn([]);
 
         $mappingService = $this->app->make(DofusdbEffectMappingService::class);
-        $resolver = new SpellEffectConversionFormulaResolver();
+        $resolver = new SpellEffectConversionFormulaResolver;
         $dofusConversion = $this->app->make(DofusConversionService::class);
         $characteristicGetter = $this->app->make(CharacteristicGetterService::class);
         $diceNotationService = $this->app->make(DiceNotationService::class);
@@ -139,7 +139,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
             $catalog,
             $stateCatalog,
             $mappingService,
-            new SpellEffectConversionFormulaResolver(),
+            new SpellEffectConversionFormulaResolver,
             $this->app->make(DofusConversionService::class),
             $this->app->make(CharacteristicGetterService::class),
             $this->app->make(DiceNotationService::class)
@@ -184,7 +184,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
             $catalog,
             $stateCatalog,
             $mappingService,
-            new SpellEffectConversionFormulaResolver(),
+            new SpellEffectConversionFormulaResolver,
             $this->app->make(DofusConversionService::class),
             $this->app->make(CharacteristicGetterService::class),
             $this->app->make(DiceNotationService::class)
@@ -206,7 +206,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
         );
 
         $params = $result->getEffects()[0]['sub_effects'][0]['params'] ?? [];
-        $this->assertSame('po', $params['characteristic'] ?? null);
+        $this->assertSame('range_spell', $params['characteristic'] ?? null);
         $this->assertArrayHasKey('value_converted', $params);
         $this->assertIsInt($params['value_converted']);
     }
@@ -231,7 +231,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
             $catalog,
             $stateCatalog,
             $this->app->make(DofusdbEffectMappingService::class),
-            new SpellEffectConversionFormulaResolver(),
+            new SpellEffectConversionFormulaResolver,
             $this->app->make(DofusConversionService::class),
             $this->app->make(CharacteristicGetterService::class),
             $this->app->make(DiceNotationService::class)

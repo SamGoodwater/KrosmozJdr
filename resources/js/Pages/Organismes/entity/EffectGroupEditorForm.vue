@@ -15,37 +15,9 @@ import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
 import { METERS_PER_CASE, previewMetersFromCellsFormula } from '@/Utils/Entity/displacementFormat.js';
-import { getElementIcon } from '@/Utils/Entity/Elements.js';
 
 /** Exposé au template (règle 1 case = 1,5 m). */
 const CASE_SIZE_METERS = METERS_PER_CASE;
-import { getByCharacteristicKey } from '@/Composables/store/useCharacteristicsStore';
-import {
-    getCharacteristicColorStyle,
-    getCharacteristicContainerStyle,
-} from '@/Composables/entity/useCharacteristicDisplay';
-
-/** Clés config effet → characteristic_key du groupe spell (store Inertia). */
-const EFFECT_CHAR_TO_SPELL_KEY = Object.freeze({
-    action_points: 'action_points_spell',
-    movement_points: 'movement_points_spell',
-    range: 'range_spell',
-    agility: 'agi_spell',
-    strength: 'strong_spell',
-    intelligence: 'intel_spell',
-    chance: 'chance_spell',
-    wisdom: 'sagesse_spell',
-    vitality: 'vitality_spell',
-    life_points: 'vitality_spell',
-    shield: 'bouclier_spell',
-    earth: 'res_terre_spell',
-    fire: 'res_feu_spell',
-    water: 'res_eau_spell',
-    air: 'res_air_spell',
-    neutral: 'res_neutre_spell',
-    element_wisdom: 'res_sagesse_spell',
-    element_vitality: 'res_vitalite_spell',
-});
 
 const props = defineProps({
     options: {
@@ -118,6 +90,7 @@ function defaultParamsForSubEffect() {
         state_name: '',
         dispellable: false,
         cells_formula: '',
+        movement_kind: 'movement',
         teleport: false,
     };
 }
@@ -239,6 +212,38 @@ function rowHasTeleportParam(row) {
     return schema?.params?.some((p) => p.key === 'teleport') ?? false;
 }
 
+/** @param {object} row */
+function rowHasMovementKindParam(row) {
+    const slug = subEffectSlugForRow(row);
+    if (slug === 'déplacer') {
+        return true;
+    }
+    const schema = getParamSchemaForRow(row);
+    return schema?.params?.some((p) => p.key === 'movement_kind') ?? false;
+}
+
+const MOVEMENT_KIND_OPTIONS = Object.freeze([
+    { value: 'movement', label: 'Déplacement' },
+    { value: 'jump', label: 'Saut / bond' },
+    { value: 'teleport', label: 'Téléportation' },
+    { value: 'push', label: 'Repousse' },
+    { value: 'pull', label: 'Attirance' },
+]);
+
+function syncMovementKindSideEffects(row) {
+    if (subEffectSlugForRow(row) !== 'déplacer') {
+        return;
+    }
+    row.params.teleport = row.params?.movement_kind === 'teleport';
+}
+
+function syncTeleportSideEffects(row) {
+    if (subEffectSlugForRow(row) !== 'déplacer') {
+        return;
+    }
+    row.params.movement_kind = row.params?.teleport ? 'teleport' : 'movement';
+}
+
 /** Garde value_formula alignée sur cells_formula pour le sous-effet déplacement (même source que le scrapping). */
 function syncDeplacementValueFormula(row) {
     if (subEffectSlugForRow(row) !== 'déplacer') {
@@ -259,72 +264,6 @@ function deplacementMetersPreview(row) {
         return null;
     }
     return previewMetersFromCellsFormula(row.params?.cells_formula);
-}
-
-/**
- * Métadonnées affichage badge caractéristique (élément, groupe object BDD, ou fallback spell).
- *
- * @param {object} c - entrée characteristics (config ou characteristics_object)
- * @returns {{ kind: string, label: string, primaryId?: number, icon?: string|null, containerStyle?: object, colorStyle?: object }}
- */
-function characteristicBadgeMeta(c) {
-    const label = c.label ?? c.key;
-    if (c.category === 'element') {
-        return {
-            kind: 'element',
-            label,
-            primaryId: elementKeyToPrimaryId(c.key),
-        };
-    }
-    if (c.category === 'object' || (typeof c.key === 'string' && c.key.endsWith('_object'))) {
-        const def = getByCharacteristicKey('item', c.key);
-        return {
-            kind: 'object',
-            label,
-            icon: def?.icon ?? null,
-            containerStyle: def?.color ? getCharacteristicContainerStyle(def.color) : {},
-            colorStyle: def?.color ? getCharacteristicColorStyle(def.color) : {},
-        };
-    }
-    const sk = EFFECT_CHAR_TO_SPELL_KEY[c.key];
-    const def = sk ? getByCharacteristicKey('spell', sk) : null;
-    return {
-        kind: 'spell',
-        label,
-        icon: def?.icon ?? null,
-        containerStyle: def?.color ? getCharacteristicContainerStyle(def.color) : {},
-        colorStyle: def?.color ? getCharacteristicColorStyle(def.color) : {},
-    };
-}
-
-/**
- * @param {object} row
- * @param {object} c
- */
-function characteristicBadgeButtonClass(row, c) {
-    const meta = characteristicBadgeMeta(c);
-    const sel = row.params.characteristic === c.key;
-    const base =
-        'btn btn-xs h-8 min-h-8 gap-1 font-normal border border-base-300';
-    if (!sel) {
-        return `${base} btn-ghost`;
-    }
-    if (meta.kind === 'element') {
-        return `${base} btn-primary border-primary`;
-    }
-    return `${base} border-primary/40`;
-}
-
-/**
- * @param {object} row
- * @param {object} c
- */
-function characteristicBadgeButtonStyle(row, c) {
-    const meta = characteristicBadgeMeta(c);
-    if (row.params.characteristic !== c.key || (meta.kind !== 'spell' && meta.kind !== 'object')) {
-        return {};
-    }
-    return meta.containerStyle && Object.keys(meta.containerStyle).length ? meta.containerStyle : {};
 }
 
 /**
@@ -416,20 +355,6 @@ function characteristicLabelForRow(row) {
     return param?.label ?? 'Caractéristique';
 }
 
-/** Clés primaires (config) → indice 0–6 pour icônes / pastilles Éléments. */
-function elementKeyToPrimaryId(key) {
-    const m = {
-        neutral: 0,
-        earth: 1,
-        fire: 2,
-        air: 3,
-        water: 4,
-        element_wisdom: 5,
-        element_vitality: 6,
-    };
-    return m[key] ?? 0;
-}
-
 /**
  * Texte d’aide sous le champ valeur selon l’action.
  *
@@ -514,6 +439,12 @@ function mapSubEffectsFromApi(subEffects) {
                 }
                 if (merged.teleport == null) {
                     merged.teleport = false;
+                }
+                if (!merged.movement_kind || merged.movement_kind === 'movement') {
+                    merged.movement_kind = merged.teleport ? 'teleport' : 'movement';
+                }
+                if (merged.movement_kind === 'teleport') {
+                    merged.teleport = true;
                 }
                 normalizeLegacyCharacteristicKeyForSubEffect(s.id, merged);
                 return merged;
@@ -977,7 +908,7 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                                         Lien avec le sous-effet précédent
                                     </div>
                                     <div class="mt-2 flex flex-wrap items-end gap-2">
-                                        <div class="min-w-[11rem]">
+                                        <div class="min-w-44">
                                             <label class="label text-xs py-0">Enchaînement</label>
                                             <select
                                                 v-model="row.logic_operator"
@@ -987,7 +918,7 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                                                 <option value="OR">OU — si la condition &gt; 0</option>
                                             </select>
                                         </div>
-                                        <div v-if="row.logic_operator === 'OR'" class="flex-1 min-w-[12rem] max-w-lg">
+                                        <div v-if="row.logic_operator === 'OR'" class="flex-1 min-w-48 max-w-lg">
                                             <label class="label text-xs py-0">Condition (formule &gt; 0)</label>
                                             <input
                                                 v-model="row.logic_condition"
@@ -1006,7 +937,7 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                                     <div
                                         class="flex flex-wrap items-end gap-2 gap-y-2 px-3 py-2 border-b border-base-300 bg-base-200/40"
                                     >
-                                        <div class="min-w-[10rem] flex-1">
+                                        <div class="min-w-40 flex-1">
                                             <label class="text-xs font-medium text-base-content/70">Action</label>
                                             <select
                                                 v-model="row.sub_effect_id"
@@ -1024,7 +955,7 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                                                 </option>
                                             </select>
                                         </div>
-                                        <div class="w-[7.25rem]">
+                                        <div class="w-29">
                                             <label class="text-xs font-medium text-base-content/70">Contexte</label>
                                             <select
                                                 v-model="row.scope"
@@ -1040,7 +971,7 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                                             </select>
                                         </div>
                                         <label
-                                            class="flex items-center gap-2 cursor-pointer shrink-0 max-w-[14rem] mb-0.5"
+                                            class="flex items-center gap-2 cursor-pointer shrink-0 max-w-56 mb-0.5"
                                         >
                                             <input v-model="row.crit_only" type="checkbox" class="checkbox checkbox-sm" />
                                             <span class="text-xs leading-snug">Uniquement si critique</span>
@@ -1126,7 +1057,7 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                                                     inputmode="decimal"
                                                     class="input input-bordered input-sm w-full"
                                                     placeholder="ex: 3, 0,33, [level], 1d3+1…"
-                                                    @update:model-value="syncDeplacementValueFormula(row)"
+                                                    @input="syncDeplacementValueFormula(row)"
                                                 />
                                                 <p class="text-[0.7rem] leading-snug text-base-content/55">
                                                     Distance en <span class="font-medium">cases</span>                                                     (1 case =
@@ -1145,9 +1076,29 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                                                     v-model="row.params.teleport"
                                                     type="checkbox"
                                                     class="checkbox checkbox-sm"
+                                                    @change="syncTeleportSideEffects(row)"
                                                 />
                                                 <span class="text-xs">Téléportation (sinon déplacement simple)</span>
                                             </label>
+                                            <div v-if="rowHasMovementKindParam(row)" class="space-y-1">
+                                                <label class="text-xs font-medium text-base-content/80">Type de mouvement</label>
+                                                <select
+                                                    v-model="row.params.movement_kind"
+                                                    class="select select-bordered select-sm w-full"
+                                                    @change="syncMovementKindSideEffects(row)"
+                                                >
+                                                    <option
+                                                        v-for="opt in MOVEMENT_KIND_OPTIONS"
+                                                        :key="opt.value"
+                                                        :value="opt.value"
+                                                    >
+                                                        {{ opt.label }}
+                                                    </option>
+                                                </select>
+                                                <p class="text-[0.7rem] leading-snug text-base-content/55">
+                                                    Sert aux normes et à la conversion : saut, téléportation, attirance et repousse n’ont pas les mêmes plafonds.
+                                                </p>
+                                            </div>
                                         </div>
 
                                         <!-- Caractéristique / élément -->

@@ -12,20 +12,20 @@
         "value_overrides": [
             {
                 "value": true,
-                "icon": "ritual.webp",
-                "subtitle": "Peut être lancé en rituel — sans coût en PA, mais avec un temps d'incantation d'au moins 10 minutes."
+                "color": "purple",
+                "subtitle": "Peut être lancé en rituel hors pression immédiate.",
+                "icon": "ritual.webp"
             },
             {
                 "value": false,
-                "icon": "notRitual.webp",
-                "color": "slate",
-                "subtitle": "Ne peut pas être lancé en mode rituel."
+                "color": "neutral",
+                "subtitle": "Ne peut pas être lancé en rituel."
             }
         ],
         "hide_when_empty": false,
         "unit": null,
         "type": "bool",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 70,
         "group": "spell",
         "linked_to_key": null
@@ -46,7 +46,7 @@
             "conversion_sample_rows": null,
             "norms_grid": null,
             "norms_conditions": null,
-            "norms_description": null,
+            "norms_description": "Grille 5×20 non utilisée : booléen (rituel).",
             "norms_help_section_id": null,
             "value_available": null
         }

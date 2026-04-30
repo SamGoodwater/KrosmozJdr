@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
 
+use App\Models\Effect;
 use App\Models\Entity\Spell;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
@@ -317,14 +318,14 @@ final class SpellEffectsConversionService
             }
             $triggers = $inst['triggers'] ?? null;
             if (is_string($triggers) && str_contains(strtoupper($triggers), 'P')) {
-                return \App\Models\Effect::TARGET_TRAP;
+                return Effect::TARGET_TRAP;
             }
             if (is_string($triggers) && str_contains(strtoupper($triggers), 'G')) {
-                return \App\Models\Effect::TARGET_GLYPH;
+                return Effect::TARGET_GLYPH;
             }
         }
 
-        return \App\Models\Effect::TARGET_DIRECT;
+        return Effect::TARGET_DIRECT;
     }
 
     /**
@@ -523,6 +524,8 @@ final class SpellEffectsConversionService
             'value_formula' => $this->buildValueFormula($instance),
             'value_formula_crit' => null,
         ];
+        $this->addEffectDirectionToParams($subEffectSlug, $params);
+        $this->addMovementKindToParams($subEffectSlug, $instance, $definition, $params);
         $this->addDurationToParams($instance, $params);
 
         if ($charSource === 'element') {
@@ -573,6 +576,11 @@ final class SpellEffectsConversionService
         }
         $cf = isset($params['cells_formula']) ? trim((string) $params['cells_formula']) : '';
         if ($cf !== '') {
+            return;
+        }
+        if (isset($params['value_converted']) && is_numeric($params['value_converted'])) {
+            $params['cells_formula'] = (string) $params['value_converted'];
+
             return;
         }
         $vf = isset($params['value_formula']) ? trim((string) $params['value_formula']) : '';
@@ -780,6 +788,7 @@ final class SpellEffectsConversionService
             $context
         );
         $params['value_converted'] = $converted;
+        $this->applyDirectionalBalanceToConvertedValue($subEffectSlug, $params);
 
         $conversionFunctionId = $this->characteristicGetter->getConversionFunctionId(
             $characteristicKey,
@@ -808,12 +817,102 @@ final class SpellEffectsConversionService
             if ($kMin > $kMax) {
                 [$kMin, $kMax] = [$kMax, $kMin];
             }
+            if ($this->isRestrictiveEffect($subEffectSlug)) {
+                $kMin = $this->scaleRestrictiveEffectValue((float) $kMin);
+                $kMax = $this->scaleRestrictiveEffectValue((float) $kMax);
+            }
             $params['dice_formula'] = $this->diceNotationService->toDiceNotation((float) $kMin, (float) $kMax);
 
             return;
         }
 
-        $params['dice_formula'] = $this->diceNotationService->toDiceNotation((float) $converted);
+        $params['dice_formula'] = $this->diceNotationService->toDiceNotation((float) $params['value_converted']);
+    }
+
+    /**
+     * Ajoute une indication lisible par l'UI et les outils d'équilibrage.
+     *
+     * @param  array<string, mixed>  $params
+     */
+    private function addEffectDirectionToParams(string $subEffectSlug, array &$params): void
+    {
+        $params['effect_direction'] = match ($subEffectSlug) {
+            'booster', 'soigner', 'protéger', 'invoquer' => 'bonus',
+            'retirer' => 'malus',
+            'voler-caracteristiques' => 'steal',
+            default => 'action',
+        };
+    }
+
+    /**
+     * Précise le type de déplacement afin de choisir la bonne norme/conversion :
+     * saut, téléportation, repousse, attirance ou déplacement générique.
+     *
+     * @param  array<string, mixed>  $instance
+     * @param  array<string, mixed>  $definition
+     * @param  array<string, mixed>  $params
+     */
+    private function addMovementKindToParams(string $subEffectSlug, array $instance, array $definition, array &$params): void
+    {
+        if ($subEffectSlug !== 'déplacer') {
+            return;
+        }
+
+        $text = $this->normalizeDecisionText(
+            implode(' ', array_filter([
+                $this->extractEffectDescription($definition, 'fr'),
+                $this->extractLocalizedValue($instance['description'] ?? null, 'fr') ?? '',
+                $this->extractLocalizedValue($instance['raw_description'] ?? null, 'fr') ?? '',
+            ]))
+        );
+
+        $kind = 'movement';
+        if (preg_match('/\b(attire|attirer|rapproche|vers le lanceur)\b/u', $text) === 1) {
+            $kind = 'pull';
+        } elseif (preg_match('/\b(repousse|repousser|pousse|eloigne|recule)\b/u', $text) === 1) {
+            $kind = 'push';
+        } elseif (preg_match('/\b(teleporte|teleportation|echange de position|transpose)\b/u', $text) === 1) {
+            $kind = 'teleport';
+            $params['teleport'] = true;
+        } elseif (preg_match('/\b(saute|saut|bond|bondit)\b/u', $text) === 1) {
+            $kind = 'jump';
+        }
+
+        $params['movement_kind'] = $kind;
+    }
+
+    /**
+     * Les retraits et vols de caractéristiques sont plus forts qu'un simple bonus :
+     * ils réduisent l'économie d'action ou la bounded accuracy adverse. On applique
+     * donc une conversion effective plus basse, sans créer une seconde famille de
+     * caractéristiques pour chaque stat.
+     *
+     * @param  array<string, mixed>  $params
+     */
+    private function applyDirectionalBalanceToConvertedValue(string $subEffectSlug, array &$params): void
+    {
+        if (! $this->isRestrictiveEffect($subEffectSlug)) {
+            return;
+        }
+        if (! isset($params['value_converted']) || ! is_numeric($params['value_converted'])) {
+            return;
+        }
+
+        $params['value_converted'] = $this->scaleRestrictiveEffectValue((float) $params['value_converted']);
+    }
+
+    private function isRestrictiveEffect(string $subEffectSlug): bool
+    {
+        return in_array($subEffectSlug, ['retirer', 'voler-caracteristiques'], true);
+    }
+
+    private function scaleRestrictiveEffectValue(float $value): int
+    {
+        if ($value <= 0) {
+            return 0;
+        }
+
+        return max(1, (int) floor($value / 2));
     }
 
     /**

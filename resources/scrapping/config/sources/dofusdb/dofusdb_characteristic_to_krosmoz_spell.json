@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "https://api.dofusdb.fr/characteristics",
-  "description": "Mapping id caractéristique DofusDB (champ effect.characteristic dans GET /effects/{id}) vers characteristic_key Krosmoz pour les effets de sorts (groupe spell). Utilisé pour valider ou compléter dofusdb_effect_mappings. Référence : docs/50-Fonctionnalités/Characteristics-DB/DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md et DOFUSDB_API_SPELLS_REFERENCE.md",
+  "description": "Mapping id caractéristique DofusDB (champ effect.characteristic dans GET /effects/{id}) vers characteristic_key Krosmoz pour les effets de sorts (groupe spell). Utilisé pour valider ou compléter dofusdb_effect_mappings. Référence : docs/50-Fonctionnalités/Characteristics-DB/DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md et DOFUSDB_API_SPELLS_REFERENCE.md. Note : le coût en PA pour lancer un sort provient des champs globaux du sort Dofus (intégration `spells.pa`), pas de ce mapping d’effets. L’id 1 (`actionPoints`) décrit une variation de PA sur une cible dans un effet ; la résolution passe par SPELL_KEY_ALIASES (`pa` → action_points_variation_spell — à traiter comme effet sur cible, pas comme coût de la fiche sort).",
   "notation": {
     "dofusdb_characteristic_id": "id renvoyé par GET /effects/{id}.characteristic (même référentiel que GET /characteristics)",
     "characteristic_key": "clé courte utilisée dans dofusdb_effect_mappings (SpellEffectConversionFormulaResolver normalise vers *_spell, ex. po → range_spell)"

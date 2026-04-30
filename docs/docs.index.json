@@ -595,6 +595,11 @@
     "description": "Ce document propose des modifications pour aligner les seeders et les caractéristiques sur les règles du jeu (docs 400) et les références PDF : **Equipements et forgemagie.pdf** et **CaractéristiquesAvecLien avec Dofus.pdf**."
   },
   {
+    "path": "400- Jeu/410- Ressources/MATRICE_ROLES_CARACTERISTIQUES_SPELL.md",
+    "title": "Matrice des caractéristiques spell — rôles A/B/C",
+    "description": "Classification cadre du sort / modificateur sur la cible / effet d’action ; liens vers règles 420, PROPOSITIONS_FORMULES_ET_PROPRIETES et architecture spell."
+  },
+  {
     "path": "400- Jeu/420- Règles/1-Introduction/1.1-presentation-du-jeu/1.1.1-concept-general.md",
     "title": "1.1.1. Concept général",
     "description": "**Description** : Présenter la fusion entre D&D et Dofus, les objectifs du système, ce qu'il conserve ou adapte."

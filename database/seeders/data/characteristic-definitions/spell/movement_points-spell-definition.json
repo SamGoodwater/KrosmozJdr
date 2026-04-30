@@ -4,8 +4,8 @@
         "key": "movement_points_spell",
         "name": "PM",
         "short_name": "PM",
-        "helper": "Variation de PM appliquée par les sous-effets de sort.",
-        "descriptions": "Variation PM via sous-effet (1.2.2, 2.2.2). Base créature 3, max 6. 1 PM = 1 case = 1,5 m.",
+        "helper": "Variation de PM sur une cible via effet de sort (retrait ou bonus), pas le coût PA du sort.",
+        "descriptions": "Variation PM via effet du sort sur une cible (1.2.2, 2.2.2). Variation bornée à 4 PM pour un effet de sort. 1 PM = 1 case = 1,5 m. Correspond au characteristic DofusDB **23** (`movementPoints`), distinct du coût en PA pour lancer (`action_points_spell` / `spells.pa`).",
         "icon": "movementPoints.webp",
         "icon_false": null,
         "color": "green",
@@ -13,25 +13,60 @@
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 72,
         "group": "spell",
         "linked_to_key": null
     },
     "entities": {
         "*": {
-            "dofusdb_characteristic_id": null,
+            "dofusdb_characteristic_id": 23,
             "db_column": "pm",
             "min": "0",
-            "max": "6",
+            "max": "4",
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "round(min(6,max(0,[d])))",
+            "conversion_formula": "round(min(4,max(0,[d])))",
             "conversion_function": null,
-            "conversion_dofus_sample": null,
-            "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": null,
+            "conversion_dofus_sample": {
+                "1": 1,
+                "2": 2,
+                "3": 3,
+                "6": 4
+            },
+            "conversion_krosmoz_sample": {
+                "1": 1,
+                "2": 2,
+                "3": 3,
+                "6": 4
+            },
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": 1,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": 1
+                },
+                {
+                    "dofus_level": 2,
+                    "dofus_value": 2,
+                    "krosmoz_level": 2,
+                    "krosmoz_value": 2
+                },
+                {
+                    "dofus_level": 3,
+                    "dofus_value": 3,
+                    "krosmoz_level": 3,
+                    "krosmoz_value": 3
+                },
+                {
+                    "dofus_level": 6,
+                    "dofus_value": 6,
+                    "krosmoz_level": 6,
+                    "krosmoz_value": 4
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -72,8 +107,8 @@
                     0,
                     0,
                     0,
-                    0,
-                    0,
+                    1,
+                    1,
                     1,
                     1
                 ],
@@ -83,6 +118,7 @@
                     0,
                     0,
                     0,
+                    0,
                     1,
                     1,
                     1,
@@ -93,7 +129,6 @@
                     1,
                     1,
                     1,
-                    2,
                     2,
                     2,
                     2,
@@ -103,14 +138,14 @@
                     0,
                     0,
                     0,
-                    0,
                     1,
                     1,
                     1,
                     1,
                     1,
                     1,
-                    2,
+                    1,
+                    1,
                     2,
                     2,
                     2,
@@ -124,28 +159,28 @@
                 "very_strong": [
                     0,
                     0,
-                    0,
                     1,
                     1,
                     1,
                     1,
+                    1,
                     2,
                     2,
                     2,
                     2,
                     2,
-                    3,
+                    2,
+                    2,
                     3,
                     3,
                     3,
                     3,
                     4,
-                    4,
-                    6
+                    4
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Bonus PM via sort.",
+            "norms_description": "Variation PM par sort. Bonus borné à +4 ; malus/retrait converti à puissance réduite (souvent moitié) pour éviter les contrôles abusifs.",
             "norms_help_section_id": null,
             "value_available": null
         }

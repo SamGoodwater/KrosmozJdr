@@ -137,7 +137,7 @@ Pour savoir quelle caractéristique Krosmoz est affectée par un effet, on s'app
 
 | DofusDB characteristic (ex. API) | Nom (keyword) | characteristic_key Krosmoz (spell) |
 |----------------------------------|---------------|-------------------------------------|
-| 1  | actionPoints   | pa → action_points_spell |
+| 1  | actionPoints   | pa → action_points_variation_spell |
 | 19 | range          | po → range_spell         |
 | 23 | movementPoints | pm → movement_points_spell |
 | 10 | strength       | strong                   |

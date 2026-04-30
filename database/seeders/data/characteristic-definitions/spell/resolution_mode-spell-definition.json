@@ -1,0 +1,43 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "resolution_mode_spell",
+        "name": "Mode de résolution",
+        "short_name": "Résol.",
+        "helper": "Comment le sort se résout au combat : jet d’attaque, sauvegarde ou réussite automatique.",
+        "descriptions": "Mode de résolution (`spells.resolution_mode`) : `attack_roll`, `saving_throw` ou `auto_success`. Pas d’équivalent DofusDB direct ; défini à la conception Krosmoz ou déduit lors de l’import.",
+        "icon": "icons/caracteristics/is_reaction.webp",
+        "icon_false": null,
+        "color": "indigo",
+        "value_overrides": null,
+        "hide_when_empty": false,
+        "unit": null,
+        "type": "string",
+        "status": "validee",
+        "sort_order": 61,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "resolution_mode",
+            "min": null,
+            "max": null,
+            "formula": null,
+            "formula_display": null,
+            "default_value": "attack_roll",
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": "Grille 5×20 non utilisée : énumération métier (chaîne). Voir formulaire sort — groupe Combat.",
+            "norms_help_section_id": null,
+            "value_available": ["attack_roll", "saving_throw", "auto_success"]
+        }
+    },
+    "relations": null
+}

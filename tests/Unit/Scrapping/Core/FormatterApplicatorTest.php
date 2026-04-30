@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Scrapping\Core;
 
-use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Core\Conversion\FormatterApplicator;
 use Database\Seeders\CharacteristicSeeder;
@@ -62,7 +61,7 @@ class FormatterApplicatorTest extends TestCase
         $this->assertTrue($applicator->supports('toJson'));
     }
 
-    public function test_apply_toInt_returns_integer(): void
+    public function test_apply_to_int_returns_integer(): void
     {
         $applicator = new FormatterApplicator(null, null);
 
@@ -71,7 +70,7 @@ class FormatterApplicatorTest extends TestCase
         $this->assertSame(0, $applicator->apply('toInt', 'invalid', [], [], []));
     }
 
-    public function test_apply_toString_returns_string(): void
+    public function test_apply_to_string_returns_string(): void
     {
         $applicator = new FormatterApplicator(null, null);
 
@@ -79,16 +78,16 @@ class FormatterApplicatorTest extends TestCase
         $this->assertSame('', $applicator->apply('toString', null, [], [], []));
     }
 
-    public function test_apply_clampToCharacteristic_uses_getter_limits(): void
+    public function test_apply_clamp_to_characteristic_uses_getter_limits(): void
     {
         $getter = $this->app->make(CharacteristicGetterService::class);
         $getter->clearCache();
         $applicator = new FormatterApplicator(null, $getter);
 
-        $result = $applicator->apply('clampToCharacteristic', 500, ['characteristicId' => 'life_points_creature'], [], ['entityType' => 'monster']);
+        $result = $applicator->apply('clampToCharacteristic', 500, ['characteristicId' => 'level_creature'], [], ['entityType' => 'monster']);
 
         $this->assertIsInt($result);
-        $limits = $getter->getLimits('life_points_creature', 'monster');
+        $limits = $getter->getLimits('level_creature', 'monster');
         $this->assertNotNull($limits);
         $this->assertLessThanOrEqual($limits['max'], $result);
         $this->assertGreaterThanOrEqual($limits['min'], $result);

@@ -67,7 +67,7 @@ class CharacteristicGetterServiceTest extends TestCase
 
     public function test_get_limits_returns_min_max_for_known_characteristic(): void
     {
-        $limits = $this->getter->getLimits('life_points_creature', 'monster');
+        $limits = $this->getter->getLimits('level_creature', 'monster');
         $this->assertNotNull($limits);
         $this->assertArrayHasKey('min', $limits);
         $this->assertArrayHasKey('max', $limits);
@@ -77,7 +77,7 @@ class CharacteristicGetterServiceTest extends TestCase
 
     public function test_get_limits_by_field_resolves_key(): void
     {
-        $limits = $this->getter->getLimitsByField('life', 'monster');
+        $limits = $this->getter->getLimitsByField('level', 'monster');
         $this->assertNotNull($limits);
         $this->assertArrayHasKey('min', $limits);
         $this->assertArrayHasKey('max', $limits);

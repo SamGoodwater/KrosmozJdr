@@ -40,7 +40,7 @@ Une caractéristique peut porter un **nom commun** (ex. « PA ») tout en ayant 
 | **Niveau**| Niveau de l’objet (équipement, ressource) | Niveau de la créature (monstre, PNJ, joueur) | Niveau du sort |
 | **Portée**| — | Portée de base de la créature | Portée du sort (cases / distance) |
 
-Ainsi, une **ligne de définition** est toujours associée à un **groupe** (et éventuellement à un type d’entité précis dans ce groupe). La clé technique (ex. `pa_object`, `pa_creature`, `pa_spell`) et la colonne BDD (ex. `pa`) permettent de faire le lien entre la caractéristique et la propriété de l’entité.
+Ainsi, une **ligne de définition** est toujours associée à un **groupe** (et éventuellement à un type d’entité précis dans ce groupe). La clé technique (ex. `action_points_object`, `action_points_creature`, `action_points_spell`) et la colonne BDD (ex. `pa`) permettent de faire le lien entre la caractéristique et la propriété de l’entité.
 
 ---
 
@@ -65,7 +65,7 @@ Toutes les caractéristiques partagent un ensemble de propriétés qui constitue
 
 | Propriété   | Rôle | Exemple |
 |-------------|------|--------|
-| **Clé**     | Identifiant technique ; correspond au nom de la colonne en BDD (ou à un suffixe par groupe : `_object`, `_creature`, `_spell`). | `pa_creature`, `level_object`, `pa_spell` |
+| **Clé**     | Identifiant technique ; correspond au nom de la colonne en BDD (ou à un suffixe par groupe : `_object`, `_creature`, `_spell`). | `action_points_creature`, `level_object`, `action_points_spell` |
 | **Nom**     | Libellé affiché à l’utilisateur. | « Points d’action », « Niveau », « Coût en PA » |
 | **Nom court** | Libellé abrégé (listes, tableaux, fiches compactes). | « PA », « Niv. », « PA » |
 | **Icône**   | Icône associée (clé ou chemin) pour affichage dans l’UI. | `fa-bolt`, `fa-heart` |

@@ -12,21 +12,21 @@
         "value_overrides": [
             {
                 "value": true,
-                "icon": "spellMagic.webp",
-                "color": "blue",
-                "subtitle": "Wakfu — le sort puise dans le Wakfu du lanceur ou de la lanceuse."
+                "color": "purple",
+                "subtitle": "Nature Wakfu / magique.",
+                "icon": "wakfu.webp"
             },
             {
                 "value": false,
-                "icon": "spellPhysic.webp",
-                "color": "stone",
-                "subtitle": "Physique — le sort se sert de la force physique du lanceur ou de la lanceuse."
+                "color": "brown",
+                "subtitle": "Nature physique.",
+                "icon": "physical.webp"
             }
         ],
         "hide_when_empty": false,
         "unit": null,
         "type": "bool",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 70,
         "group": "spell",
         "linked_to_key": null
@@ -47,7 +47,7 @@
             "conversion_sample_rows": null,
             "norms_grid": null,
             "norms_conditions": null,
-            "norms_description": null,
+            "norms_description": "Grille 5×20 non utilisée : booléen (Wakfu vs physique).",
             "norms_help_section_id": null,
             "value_available": null
         }

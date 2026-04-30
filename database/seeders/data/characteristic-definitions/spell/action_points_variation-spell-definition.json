@@ -1,37 +1,72 @@
 {
     "_schema_version": "1",
     "characteristic": {
-        "key": "time_before_use_again_spell",
-        "name": "Temps avant réutilisation",
-        "short_name": "Relance",
-        "helper": "Délai minimum avant de pouvoir réutiliser le sort ou la capacité (temps entre deux lancers).",
-        "descriptions": "Délai avant relance. Valeur texte : « 1 tour », « 24h », « 1 fois avant repos long ».",
-        "icon": "timeBeforeUseAgain.webp",
+        "key": "action_points_variation_spell",
+        "name": "Variation de PA",
+        "short_name": "Var. PA",
+        "helper": "Bonus ou retrait de PA appliqué à une cible par un effet de sort. Ne pas confondre avec le coût en PA du sort.",
+        "descriptions": "Variation de PA via effet du sort sur une cible. Le coût de lancement reste `action_points_spell` / `spells.pa`. Les retraits de PA sont réduits par la conversion pour préserver l’économie d’action.",
+        "icon": "actionPoints.webp",
         "icon_false": null,
-        "color": "neutral",
+        "color": "blue",
         "value_overrides": null,
         "hide_when_empty": false,
         "unit": null,
-        "type": "string",
-        "status": "a_valider",
-        "sort_order": 70,
+        "type": "int",
+        "status": "validee",
+        "sort_order": 72,
         "group": "spell",
         "linked_to_key": null
     },
     "entities": {
         "*": {
-            "dofusdb_characteristic_id": null,
-            "db_column": "time_before_use_again",
-            "min": null,
-            "max": null,
+            "dofusdb_characteristic_id": 1,
+            "db_column": null,
+            "min": "0",
+            "max": "3",
             "formula": null,
             "formula_display": null,
-            "default_value": null,
-            "conversion_formula": "[d]",
+            "default_value": "0",
+            "conversion_formula": "round(min(3,max(0,[d])))",
             "conversion_function": null,
-            "conversion_dofus_sample": null,
-            "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": null,
+            "conversion_dofus_sample": {
+                "1": 1,
+                "2": 2,
+                "3": 3,
+                "6": 6
+            },
+            "conversion_krosmoz_sample": {
+                "1": 1,
+                "2": 2,
+                "3": 3,
+                "6": 3
+            },
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": 1,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": 1
+                },
+                {
+                    "dofus_level": 2,
+                    "dofus_value": 2,
+                    "krosmoz_level": 2,
+                    "krosmoz_value": 2
+                },
+                {
+                    "dofus_level": 3,
+                    "dofus_value": 3,
+                    "krosmoz_level": 3,
+                    "krosmoz_value": 3
+                },
+                {
+                    "dofus_level": 6,
+                    "dofus_value": 6,
+                    "krosmoz_level": 6,
+                    "krosmoz_value": 3
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -70,11 +105,11 @@
                     0,
                     0,
                     0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
                     1
                 ],
                 "neutral": [
@@ -85,9 +120,6 @@
                     0,
                     0,
                     0,
-                    0,
-                    0,
-                    0,
                     1,
                     1,
                     1,
@@ -96,6 +128,9 @@
                     1,
                     1,
                     1,
+                    1,
+                    1,
+                    2,
                     2,
                     2
                 ],
@@ -104,8 +139,8 @@
                     0,
                     0,
                     0,
-                    0,
-                    0,
+                    1,
+                    1,
                     1,
                     1,
                     1,
@@ -117,19 +152,22 @@
                     2,
                     2,
                     2,
-                    3,
-                    3,
-                    3
+                    2,
+                    2,
+                    2
                 ],
                 "very_strong": [
                     0,
                     0,
-                    0,
-                    0,
                     1,
                     1,
                     1,
                     1,
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
                     2,
                     2,
                     2,
@@ -138,14 +176,11 @@
                     3,
                     3,
                     3,
-                    3,
-                    4,
-                    4,
-                    5
+                    3
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Cooldown global en tours. 0 = aucun cooldown. Les sorts très puissants (ultimates) ont un cooldown élevé.",
+            "norms_description": "Variation PA sur cible. Bonus très rare et retrait fortement contrôlé : retirer 1 PA est déjà impactant, 2–3 PA doit rester exceptionnel.",
             "norms_help_section_id": null,
             "value_available": null
         }

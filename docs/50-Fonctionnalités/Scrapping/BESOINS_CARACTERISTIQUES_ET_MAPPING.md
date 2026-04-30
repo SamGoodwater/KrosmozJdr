@@ -188,7 +188,7 @@ Les réponses ci-dessous sont choisies pour rester cohérentes avec la source de
 
 | # | Type de mapping | Rôle | Exemple |
 |---|-----------------|------|--------|
-| **M1** | **Propriété plate (chemin → caractéristique → champ)** | Une propriété DofusDB repérée par un **chemin** (dot-notation) alimente une caractéristique Krosmoz, donc un champ (model + field). | `grades.0.level` → level_creature → creatures.level ; `spell_global.apCost` → pa_spell → spells.pa |
+| **M1** | **Propriété plate (chemin → caractéristique → champ)** | Une propriété DofusDB repérée par un **chemin** (dot-notation) alimente une caractéristique Krosmoz, donc un champ (model + field). | `grades.0.level` → level_creature → creatures.level ; `spell_global.apCost` → action_points_spell → spells.pa |
 | **M2** | **Caractéristique par ID DofusDB** | Un **id** DofusDB (ex. `GET /characteristics`, ou `item.effects[].characteristic`) désigne une caractéristique Krosmoz. Permet de résoudre « id 15 » → intel_object sans liste séparée. | id 15 (intelligence) → intel_object ; id 1 (PA) → pa_object |
 | **M3** | **Item typeId / superTypeId → catégorie Krosmoz** | Un **type** ou **super_type** DofusDB détermine si l’item est importé comme resource, consumable ou equipment (ou exclu). | superTypeId 9 → resource ; 6 ou 70 → consumable ; reste → equipment |
 | **M4** | **effectId (sorts) → sous-effet Krosmoz** | Un **effectId** DofusDB (spell-level.effects[].effectId) correspond à un **SubEffect** Krosmoz (slug, et éventuellement caractéristique pour l’élément). | effectId 98 → sous-effet « frapper » + élément air ; 42 → « autre » |

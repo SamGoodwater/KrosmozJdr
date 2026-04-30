@@ -13,14 +13,14 @@
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 72,
         "group": "spell",
         "linked_to_key": null
     },
     "entities": {
         "*": {
-            "dofusdb_characteristic_id": null,
+            "dofusdb_characteristic_id": 49,
             "db_column": "heal_bonus",
             "min": "0",
             "max": "7",
@@ -43,7 +43,44 @@
                 "16": 4,
                 "20": 6
             },
-            "conversion_sample_rows": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": 0
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": 2
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": 3
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": 4
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": 4
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": 6
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     0,

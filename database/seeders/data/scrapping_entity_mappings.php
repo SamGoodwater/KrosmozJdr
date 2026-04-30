@@ -1976,7 +1976,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'pa',
+          'characteristicId' => 'action_points_spell',
         ),
       ),
     ),
@@ -2059,7 +2059,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'spell_po_min',
+          'characteristicId' => 'spell_range_min_spell',
         ),
       ),
     ),
@@ -2097,7 +2097,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'spell_po_max',
+          'characteristicId' => 'spell_range_max_spell',
         ),
       ),
     ),
@@ -2172,7 +2172,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'level',
+          'characteristicId' => 'level_spell',
         ),
       ),
       2 => 
@@ -2217,7 +2217,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'cast_per_turn',
+          'characteristicId' => 'cast_per_turn_spell',
         ),
       ),
       2 => 
@@ -2262,7 +2262,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'cast_per_target',
+          'characteristicId' => 'cast_per_target_spell',
         ),
       ),
       2 => 
@@ -2307,7 +2307,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'sight_line',
+          'characteristicId' => 'sight_line_spell',
         ),
       ),
     ),
@@ -2345,7 +2345,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'number_between_two_cast',
+          'characteristicId' => 'number_between_two_cast_spell',
         ),
       ),
       2 => 
@@ -2390,7 +2390,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'po_editable',
+          'characteristicId' => 'range_editable_spell',
         ),
       ),
     ),
@@ -2466,7 +2466,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'category',
+          'characteristicId' => 'category_spell',
         ),
       ),
     ),
@@ -2504,7 +2504,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'is_magic',
+          'characteristicId' => 'is_magic_spell',
         ),
       ),
     ),
@@ -2542,7 +2542,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'powerful',
+          'characteristicId' => 'power_spell',
         ),
       ),
     ),

@@ -354,7 +354,7 @@ class IntegrationServiceTest extends TestCase
                                 'order' => 0,
                                 'sub_effect_slug' => 'booster',
                                 'params' => [
-                                    'characteristic' => 'pa_spell',
+                                    'characteristic' => 'action_points_variation_spell',
                                     'value_formula' => '-2',
                                 ],
                                 'crit_only' => false,

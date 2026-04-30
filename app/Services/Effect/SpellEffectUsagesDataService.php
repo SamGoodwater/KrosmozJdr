@@ -12,13 +12,22 @@ use App\Support\AreaNotation;
  */
 final class SpellEffectUsagesDataService
 {
-    /** Slugs élément → id (0=Neutre, 1=Terre, 2=Feu, 3=Air, 4=Eau). */
+    /** Slugs élément → id primaire (0=Neutre, 1=Terre, 2=Feu, 3=Air, 4=Eau, 5=Sagesse, 6=Vitalité). */
     private const ELEMENT_SLUG_TO_ID = [
         'neutral' => 0,
         'earth' => 1,
         'fire' => 2,
         'air' => 3,
         'water' => 4,
+        'element_wisdom' => 5,
+        'element_vitality' => 6,
+        'fixed_damage_neutral_spell' => 0,
+        'fixed_damage_earth_spell' => 1,
+        'fixed_damage_fire_spell' => 2,
+        'fixed_damage_air_spell' => 3,
+        'fixed_damage_water_spell' => 4,
+        'fixed_damage_sagesse_spell' => 5,
+        'fixed_damage_vitalite_spell' => 6,
     ];
 
     /** Labels pour target_type. */
@@ -144,6 +153,7 @@ final class SpellEffectUsagesDataService
                         'life_steal_formula' => is_string($sub['life_steal_formula'] ?? null) ? trim((string) $sub['life_steal_formula']) : null,
                         'state_name' => is_string($sub['state_name'] ?? null) && trim((string) $sub['state_name']) !== '' ? trim((string) $sub['state_name']) : null,
                         'cells_display' => is_string($sub['cells_display'] ?? null) && trim((string) $sub['cells_display']) !== '' ? trim((string) $sub['cells_display']) : null,
+                        'movement_kind' => is_string($sub['movement_kind'] ?? null) && trim((string) $sub['movement_kind']) !== '' ? trim((string) $sub['movement_kind']) : null,
                         'teleport' => (bool) ($sub['teleport'] ?? false),
                     ];
                 }
@@ -217,10 +227,13 @@ final class SpellEffectUsagesDataService
     private function elementIdToLabel(int $id): string
     {
         return match ($id) {
+            0 => 'Neutre',
             1 => 'Terre',
             2 => 'Feu',
             3 => 'Air',
             4 => 'Eau',
+            5 => 'Sagesse',
+            6 => 'Vitalité',
             default => 'Neutre',
         };
     }
@@ -234,6 +247,8 @@ final class SpellEffectUsagesDataService
             'fire' => 'Feu',
             'air' => 'Air',
             'neutral' => 'Neutre',
+            'element_wisdom' => 'Sagesse',
+            'element_vitality' => 'Vitalité',
         ];
         foreach ($elementLabels as $slug => $label) {
             $text = preg_replace('/\b'.preg_quote($slug, '/').'\b/i', $label, $text);

@@ -13,14 +13,14 @@
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 72,
         "group": "spell",
         "linked_to_key": null
     },
     "entities": {
         "*": {
-            "dofusdb_characteristic_id": null,
+            "dofusdb_characteristic_id": 18,
             "db_column": "critical",
             "min": "0",
             "max": "2",

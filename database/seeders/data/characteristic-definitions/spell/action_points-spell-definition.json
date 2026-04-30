@@ -4,8 +4,8 @@
         "key": "action_points_spell",
         "name": "Coût en PA",
         "short_name": "PA",
-        "helper": "Coût en points d'action pour lancer ce sort.",
-        "descriptions": "Coût en PA pour lancer le sort (3.3.2.1). Base créature 6, max 12. Sorts standards 3–4 PA, puissants/zone 5 PA, réactions 2–3 PA.",
+        "helper": "Coût en PA pour lancer ce sort (colonne `spells.pa`). Ce n'est pas le retrait de PA infligé à une cible par un effet Dofus.",
+        "descriptions": "Coût en PA pour lancer le sort (3.3.2.1). Base créature 6, max 12. Sorts standards 3–4 PA, puissants/zone 5 PA, réactions 2–3 PA. **Important** : l’identifiant DofusDB `1` (« actionPoints ») dans les **effets** désigne une variation de PA sur une cible ; il est résolu via les alias de conversion d’effets, distinct du coût PA affiché sur la fiche sort (`pa`).",
         "icon": "actionPoints.webp",
         "icon_false": null,
         "color": "blue",
@@ -13,7 +13,7 @@
         "hide_when_empty": false,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 70,
         "group": "spell",
         "linked_to_key": null
@@ -35,8 +35,38 @@
                 "5": 5,
                 "8": 8
             },
-            "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": null,
+            "conversion_krosmoz_sample": {
+                "1": 1,
+                "3": 3,
+                "5": 5,
+                "8": 8
+            },
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": 1,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": 1
+                },
+                {
+                    "dofus_level": 3,
+                    "dofus_value": 3,
+                    "krosmoz_level": 3,
+                    "krosmoz_value": 3
+                },
+                {
+                    "dofus_level": 5,
+                    "dofus_value": 5,
+                    "krosmoz_level": 5,
+                    "krosmoz_value": 5
+                },
+                {
+                    "dofus_level": 8,
+                    "dofus_value": 8,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": 8
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     2,

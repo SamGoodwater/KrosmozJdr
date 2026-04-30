@@ -57,7 +57,7 @@ Pour **frapper**, **soigner**, **voler-vie**, **protéger** : la valeur converti
 
 | Action | Raison |
 |--------|--------|
-| **déplacer** | Portée du déplacement = **portée du sort** ; déjà convertie (po, spell_po_min/max). Aucune conversion de valeur d’effet à faire. |
+| **déplacer** | Distance de déplacement en **cases** : conversion par `movement_kind` (`movement_distance_spell`, `jump_distance_spell`, `teleport_distance_spell`, `push_distance_spell`, `pull_distance_spell`). |
 | **invoquer** | Invocation : pas de valeur numérique à convertir (lien monstre, nombre éventuel). **Aucune conversion** prévue. |
 
 ### 2.3 Conversion dépendante de la caractéristique (boost / retrait / vol)
@@ -66,7 +66,7 @@ Pour ces actions, **chaque caractéristique** peut avoir sa **propre formule** d
 
 | Action | Type de caractéristiques | Conversion |
 |--------|--------------------------|------------|
-| **booster** | Stats, ressources, éléments | **Par caractéristique** : une formule (ou borne) par characteristic_key (pa_spell, pm_spell, strong_creature, res_terre, etc.). |
+| **booster** | Stats, ressources, éléments | **Par caractéristique** : une formule (ou borne) par characteristic_key (`action_points_variation_spell`, `movement_points_spell`, `strong_spell`, `res_terre_spell`, etc.). |
 | **retirer** | Stats, ressources (PA, PM, etc.) | **Par caractéristique** : idem (retrait PA, retrait PM, etc.). |
 | **voler-caracteristiques** | Stats, ressources (PA, PM, vie, etc.) | **Par caractéristique** : idem. |
 
@@ -80,22 +80,24 @@ Le service de caractéristiques (groupe « sort » / creature selon le contexte)
 | soigner | 1 règle (soin) | |
 | voler-vie | 1 règle (vol PV) | |
 | protéger | 1 règle (bouclier / PV temp) | |
-| déplacer | Aucune | Utiliser la portée du sort. |
+| déplacer | Par type de mouvement | `movement_kind` choisit la norme : déplacement, saut, téléportation, repousse ou attirance. |
 | invoquer | Aucune | |
 | booster | Par caractéristique | Réutiliser les formules du service caractéristiques (spell/creature). |
-| retirer | Par caractéristique | Idem. |
-| voler-caracteristiques | Par caractéristique | Idem. |
+| retirer | Par caractéristique | Conversion réduite par rapport au bonus pour éviter les contrôles abusifs. |
+| voler-caracteristiques | Par caractéristique | Conversion réduite : double effet malus + gain. |
 | autre | — | Valeur / description uniquement. |
 
 ### 2.5 Implémentation Phase 3 (SpellEffectConversionFormulaResolver)
 
 Le service `SpellEffectConversionFormulaResolver` résout la **characteristic_key** (groupe spell) utilisée pour la conversion :
 
-- **Une règle** (frapper, soigner, voler-vie, protéger) → `power_spell` (existe en `characteristic_spell`).
+- **Une règle** (frapper, soigner, voler-vie, protéger) → caractéristique d’action (`dommages_spell`, `soin_spell`, `vol_vie_spell`, `bouclier_spell`).
 - **Par caractéristique** (booster, retirer, voler-caracteristiques) → `params.characteristic` normalisé :
-  - Alias : `pa` → `action_points_spell`, `po` → `range_spell`.
-  - Sinon : suffixe `_spell` (ex. `strong_spell`, `pm_spell`). Si la clé n’existe pas en BDD, la conversion utilise le fallback (moyenne dés / valeur fixe).
-- **Aucune conversion** : déplacer, invoquer, autre → `null`.
+  - Alias : `pa` → `action_points_variation_spell`, `po` → `range_spell`.
+  - Sinon : suffixe `_spell` (ex. `strong_spell`, `movement_points_spell`). Si la clé n’existe pas en BDD, la conversion utilise le fallback (moyenne dés / valeur fixe).
+- `SpellEffectsConversionService` ajoute `params.effect_direction` (`bonus`, `malus`, `steal`, `action`) ; les malus et vols sont convertis avec une puissance effective réduite.
+- **Déplacement** : `déplacer` convertit `cells_formula` via `movement_kind` (`movement`, `jump`, `teleport`, `push`, `pull`).
+- **Aucune conversion** : invoquer, autre → `null`.
 
 ---
 

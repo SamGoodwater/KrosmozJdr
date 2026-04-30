@@ -1,0 +1,93 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "attack_characteristic_key_spell",
+        "name": "Caractéristique d’attaque",
+        "short_name": "Carac. att.",
+        "helper": "Caractéristique utilisée pour le jet d’attaque lorsque le mode est « jet d’attaque ».",
+        "descriptions": "Clé de caractéristique d’attaque (`spells.attack_characteristic_key`), ex. chance, strong. Nullable si non applicable.",
+        "icon": "touch.webp",
+        "icon_false": null,
+        "color": "red",
+        "value_overrides": [
+            {
+                "value": "strong",
+                "element_id": 2,
+                "icon": "earth.webp",
+                "color": "brown",
+                "subtitle": "Force / Terre — sauvegarde ou attaque physique brute."
+            },
+            {
+                "value": "intel",
+                "element_id": 4,
+                "icon": "fire.webp",
+                "color": "red",
+                "subtitle": "Intelligence / Feu — sauvegarde ou attaque magique intellectuelle."
+            },
+            {
+                "value": "chance",
+                "element_id": 16,
+                "icon": "water.webp",
+                "color": "blue",
+                "subtitle": "Chance / Eau — sauvegarde ou attaque liée au hasard et à la réaction."
+            },
+            {
+                "value": "agi",
+                "element_id": 8,
+                "icon": "air.webp",
+                "color": "green",
+                "subtitle": "Agilité / Air — sauvegarde ou attaque d’esquive, vitesse et précision."
+            },
+            {
+                "value": "sagesse",
+                "element_id": 32,
+                "icon": "wisdom.webp",
+                "color": "purple",
+                "subtitle": "Sagesse — sauvegarde mentale, volonté ou perception."
+            },
+            {
+                "value": "vitality",
+                "element_id": 64,
+                "icon": "vitality.webp",
+                "color": "lime",
+                "subtitle": "Vitalité — sauvegarde de constitution, endurance ou résistance corporelle."
+            }
+        ],
+        "hide_when_empty": true,
+        "unit": null,
+        "type": "string",
+        "status": "validee",
+        "sort_order": 62,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "attack_characteristic_key",
+            "min": null,
+            "max": null,
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": "Grille 5×20 non utilisée : clé de sauvegarde / carac. (texte).",
+            "norms_help_section_id": null,
+            "value_available": {
+                "strong": "Force / Terre",
+                "intel": "Intelligence / Feu",
+                "chance": "Chance / Eau",
+                "agi": "Agilité / Air",
+                "sagesse": "Sagesse",
+                "vitality": "Vitalité"
+            }
+        }
+    },
+    "relations": null
+}

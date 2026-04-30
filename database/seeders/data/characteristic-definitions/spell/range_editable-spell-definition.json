@@ -12,20 +12,21 @@
         "value_overrides": [
             {
                 "value": true,
-                "icon": "rangeEditable.webp",
-                "subtitle": "La portée peut être augmentée par le bonus PO du lanceur."
+                "color": "green",
+                "subtitle": "La portée peut être modifiée par les bonus/malus de PO.",
+                "icon": "rangeEditable.webp"
             },
             {
                 "value": false,
-                "icon": "noPoEditable.webp",
                 "color": "slate",
-                "subtitle": "La portée est fixe et ne peut pas être modifiée."
+                "subtitle": "Portée fixe, non modifiable.",
+                "icon": "rangeFixed.webp"
             }
         ],
         "hide_when_empty": false,
         "unit": null,
         "type": "bool",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 70,
         "group": "spell",
         "linked_to_key": null
@@ -43,10 +44,47 @@
             "conversion_function": null,
             "conversion_dofus_sample": null,
             "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
             "norms_grid": null,
             "norms_conditions": null,
-            "norms_description": null,
+            "norms_description": "Grille 5×20 non utilisée : booléen (portée modifiable).",
             "norms_help_section_id": null,
             "value_available": null
         }

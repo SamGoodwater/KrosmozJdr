@@ -1,0 +1,55 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "auto_success_if_willing_target_spell",
+        "name": "Réussite auto si cible consentante",
+        "short_name": "Auto si volontaire",
+        "helper": "Si vrai, la cible consentante réussit automatiquement le jet concerné (sauvegarde ou effet).",
+        "descriptions": "Booléen (`spells.auto_success_if_willing_target`). Hors périmètre conversion Dofus standard.",
+        "icon": "icons/caracteristics/is_reaction.webp",
+        "icon_false": null,
+        "color": "emerald",
+        "value_overrides": [
+            {
+                "value": true,
+                "color": "emerald",
+                "subtitle": "Réussite automatique si la cible est consentante.",
+                "icon": "success.webp"
+            },
+            {
+                "value": false,
+                "color": "neutral",
+                "subtitle": "Aucune réussite automatique liée au consentement."
+            }
+        ],
+        "hide_when_empty": false,
+        "unit": null,
+        "type": "bool",
+        "status": "validee",
+        "sort_order": 66,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "auto_success_if_willing_target",
+            "min": "0",
+            "max": "1",
+            "formula": null,
+            "formula_display": null,
+            "default_value": "0",
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": "Grille 5×20 non utilisée : booléen.",
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

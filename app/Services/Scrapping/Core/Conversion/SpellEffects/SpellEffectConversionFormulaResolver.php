@@ -19,6 +19,15 @@ final class SpellEffectConversionFormulaResolver
         'protéger' => 'bouclier_spell',
     ];
 
+    /** Mapping type de déplacement → characteristic_key pour convertir les cases. */
+    private const MOVEMENT_KIND_TO_CHARACTERISTIC = [
+        'movement' => 'movement_distance_spell',
+        'jump' => 'jump_distance_spell',
+        'teleport' => 'teleport_distance_spell',
+        'push' => 'push_distance_spell',
+        'pull' => 'pull_distance_spell',
+    ];
+
     /** Vol de vie : sous-effet unique « frapper » + params.life_steal_formula (conversion Dofus sur la même base « d »). */
     public const LIFE_STEAL_CHARACTERISTIC_KEY = 'vol_vie_spell';
 
@@ -43,12 +52,24 @@ final class SpellEffectConversionFormulaResolver
      *
      * @param  string  $subEffectSlug  Slug du sous-effet (frapper, soigner, booster, …)
      * @param  array<string, mixed>  $params  Params du sous-effet (characteristic, value_formula, …)
-     * @return string|null Clé pour DofusConversionService (ex. power_spell, pa_spell) ou null
+     * @return string|null Clé pour DofusConversionService (ex. power_spell, action_points_variation_spell) ou null
      */
     public function resolveCharacteristicKeyForConversion(string $subEffectSlug, array $params): ?string
     {
         if (isset(self::ACTION_TO_CHARACTERISTIC[$subEffectSlug])) {
             return self::ACTION_TO_CHARACTERISTIC[$subEffectSlug];
+        }
+
+        if ($subEffectSlug === 'déplacer') {
+            $kind = $params['movement_kind'] ?? null;
+            if (is_string($kind) && isset(self::MOVEMENT_KIND_TO_CHARACTERISTIC[$kind])) {
+                return self::MOVEMENT_KIND_TO_CHARACTERISTIC[$kind];
+            }
+            if (($params['teleport'] ?? false) === true) {
+                return self::MOVEMENT_KIND_TO_CHARACTERISTIC['teleport'];
+            }
+
+            return self::MOVEMENT_KIND_TO_CHARACTERISTIC['movement'];
         }
 
         if (in_array($subEffectSlug, self::PER_CHARACTERISTIC_SLUGS, true)) {
@@ -89,7 +110,7 @@ final class SpellEffectConversionFormulaResolver
 
     /** Mapping clés courtes (mapping DofusDB) → characteristic_key du groupe spell en BDD. */
     private const SPELL_KEY_ALIASES = [
-        'pa' => 'action_points_spell',
+        'pa' => 'action_points_variation_spell',
         'po' => 'range_spell',
         'pm' => 'movement_points_spell',
         'range' => 'range_spell',
