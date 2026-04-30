@@ -8,12 +8,12 @@
         "descriptions": "Bonus de Vitalité donné par l’équipement (chapeaux, capes). S’ajoute au score sur la fiche et donc aux points de vie, dans la limite des règles (2.2.1).",
         "icon": "vitality.webp",
         "icon_false": null,
-        "color": "emerald",
+        "color": "amber",
         "value_overrides": null,
         "hide_when_empty": true,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 23,
         "group": "object",
         "linked_to_key": null
@@ -24,8 +24,8 @@
             "db_column": null,
             "min": "0",
             "max": "6",
-            "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"9\":\"4\",\"11\":\"5\",\"13\":\"6\",\"15\":\"6\",\"17\":\"6\",\"20\":\"6\",\"characteristic\":\"level\"}",
-            "formula_display": "level_object",
+            "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"9\":\"3\",\"11\":\"4\",\"13\":\"4\",\"15\":\"5\",\"17\":\"5\",\"20\":\"6\",\"characteristic\":\"level\"}",
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "floor(0.0408 * pow([d], 0.9412))",
             "conversion_function": null,
@@ -202,7 +202,9 @@
             "base_price_per_unit": 600,
             "rune_price_per_unit": 1200,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": [
+                12
+            ]
         }
     },
     "relations": null

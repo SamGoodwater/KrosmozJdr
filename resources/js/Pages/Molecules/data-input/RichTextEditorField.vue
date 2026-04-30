@@ -25,7 +25,7 @@
  *   :validation="{ state: 'error', message: 'Contenu requis' }"
  * />
  */
-import { computed, onBeforeUnmount, onMounted, watch, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, watch, ref, nextTick } from 'vue'
 import { searchRichReferenceItems } from '@/Composables/richText/useRichReferenceSearch'
 import { parseAtQuery } from '@/Composables/richText/parseAtQuery'
 import { KREF_ENTITY_CONFIGS } from '@/Composables/richText/krefEntityRegistry'
@@ -131,6 +131,11 @@ const atItems = ref([])
 const atLoading = ref(false)
 let atSearchTimer = null
 let atAbortController = null
+const atMenuTop = ref(0)
+const atMenuLeft = ref(0)
+const atMenuWidth = ref(320)
+/** Élément du popover @ (téléporté) pour mesurer la hauteur (flip vertical). */
+const atMenuElRef = ref(null)
 
 const showRefPickerModal = ref(false)
 const refPickerQuery = ref('')
@@ -413,6 +418,8 @@ onBeforeUnmount(() => {
     editor.value.destroy()
   }
   window.removeEventListener('keydown', handleEscapeForFullscreen)
+  window.removeEventListener('resize', handleAtMenuViewportUpdate)
+  window.removeEventListener('scroll', handleAtMenuViewportUpdate, true)
   if (atAbortController) {
     atAbortController.abort()
     atAbortController = null
@@ -441,7 +448,23 @@ const handleEscapeForFullscreen = (event) => {
 
 onMounted(() => {
   window.addEventListener('keydown', handleEscapeForFullscreen)
+  window.addEventListener('resize', handleAtMenuViewportUpdate)
+  window.addEventListener('scroll', handleAtMenuViewportUpdate, true)
   tocItems.value = buildAnchoredHtmlAndToc(String(props.modelValue || '')).toc
+})
+
+watch(showAtMenu, (opened) => {
+  if (!opened) return
+  nextTick(() => {
+    updateAtMenuPosition()
+  })
+})
+
+watch([atItems, atLoading], () => {
+  if (!showAtMenu.value) return
+  nextTick(() => {
+    requestAnimationFrame(() => updateAtMenuPosition(true))
+  })
 })
 
 // Classes du container (reprend la logique des autres fields)
@@ -627,6 +650,7 @@ const syncAtMenu = () => {
     from: selection.from - parsed.trigger.length,
     to: selection.from,
   }
+  updateAtMenuPosition()
 }
 
 const closeAtMenu = () => {
@@ -636,6 +660,70 @@ const closeAtMenu = () => {
   atCommandRange.value = null
   atActiveIndex.value = 0
   atItems.value = []
+}
+
+const AT_MENU_VIEWPORT_GAP = 8
+const AT_MENU_MAX_VH = 0.52
+
+/**
+ * @param {boolean} [isRecalc] — second passage après layout (mesure réelle de hauteur)
+ */
+const updateAtMenuPosition = (isRecalc = false) => {
+  if (!editor.value || !showAtMenu.value) return
+  const selection = editor.value.state?.selection
+  if (!selection?.empty) return
+  try {
+    const coords = editor.value.view.coordsAtPos(selection.from)
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+    const preferredWidth = Math.min(420, Math.max(300, Math.round(viewportWidth * 0.35)))
+    const left = Math.max(8, Math.min(coords.left, viewportWidth - preferredWidth - 8))
+    atMenuLeft.value = Math.round(left)
+    atMenuWidth.value = preferredWidth
+
+    const el = atMenuElRef.value
+    const measured = el?.isConnected ? el.offsetHeight : 0
+    const fallbackMax = Math.round(Math.min(viewportHeight * AT_MENU_MAX_VH, 400))
+    const menuHeight = measured > 24 ? measured : fallbackMax
+
+    const spaceBelow = viewportHeight - coords.bottom - AT_MENU_VIEWPORT_GAP
+    const spaceAbove = coords.top - AT_MENU_VIEWPORT_GAP
+
+    let placeAbove = false
+    if (menuHeight <= spaceBelow) {
+      placeAbove = false
+    } else if (menuHeight <= spaceAbove) {
+      placeAbove = true
+    } else {
+      placeAbove = spaceAbove > spaceBelow
+    }
+
+    let top = placeAbove
+      ? Math.round(coords.top - menuHeight - AT_MENU_VIEWPORT_GAP)
+      : Math.round(coords.bottom + AT_MENU_VIEWPORT_GAP)
+
+    const minTop = AT_MENU_VIEWPORT_GAP
+    const maxTop = viewportHeight - menuHeight - AT_MENU_VIEWPORT_GAP
+    if (maxTop >= minTop) {
+      top = Math.max(minTop, Math.min(top, maxTop))
+    } else {
+      top = minTop
+    }
+    atMenuTop.value = top
+
+    if (!isRecalc && (!measured || measured <= 24)) {
+      nextTick(() => {
+        requestAnimationFrame(() => updateAtMenuPosition(true))
+      })
+    }
+  } catch {
+    // no-op
+  }
+}
+
+const handleAtMenuViewportUpdate = () => {
+  if (!showAtMenu.value) return
+  updateAtMenuPosition()
 }
 
 const insertReferenceTrigger = (triggerText) => {
@@ -1428,44 +1516,53 @@ const sanitizedPreviewHtml = computed(() => {
           </div>
         </details>
 
-        <div
-          v-if="enableRichReferences && showAtMenu"
-          class="mb-2 rounded-box border border-base-300 bg-base-100 p-2 shadow"
-        >
-          <div class="mb-1 text-[11px] text-base-content/60">
-            Références @ — {{ atScopeLabel }} (`↑`/`↓`, `Tab`, `Entrée`, `Esc`)
-          </div>
-          <div v-if="atLoading" class="text-xs text-base-content/60 py-1">Recherche…</div>
-          <div v-else-if="atQuery.trim().length < 2" class="text-xs text-base-content/60 py-1">
-            {{ atHintText }}
-          </div>
-          <div v-else-if="!atItems.length" class="text-xs text-base-content/60 py-1">Aucun résultat</div>
-          <div v-else class="flex flex-col gap-0.5 max-h-48 overflow-auto">
-            <button
-              v-for="(item, idx) in atItems"
-              :key="item.key"
-              type="button"
-              class="btn btn-xs btn-ghost justify-start h-auto min-h-8 py-1 text-left normal-case"
-              :class="idx === atActiveIndex ? 'btn-primary text-primary-content' : ''"
-              @click="runAtItem(item)"
-            >
-              <span class="inline-flex w-full items-start gap-2">
-                <img
-                  v-if="item.iconUrl"
-                  :src="item.iconUrl"
-                  :alt="item.subtitle || item.label || 'Référence'"
-                  class="mt-0.5 h-4 w-4 shrink-0 object-contain opacity-90"
-                  loading="lazy"
-                />
-                <i v-else-if="item.icon" :class="item.icon" class="mt-0.5 shrink-0 opacity-80" />
-                <span class="min-w-0">
-                  <span class="font-medium block truncate">{{ item.label }}</span>
-                  <span v-if="item.subtitle" class="text-[10px] opacity-80 block truncate">{{ item.subtitle }}</span>
+        <Teleport to="body">
+          <div
+            v-if="enableRichReferences && showAtMenu"
+            ref="atMenuElRef"
+            class="fixed z-[1200] rounded-box border border-base-300 bg-base-100 p-2 shadow-2xl"
+            :style="{
+              top: `${atMenuTop}px`,
+              left: `${atMenuLeft}px`,
+              width: `${atMenuWidth}px`,
+              maxHeight: '52vh',
+            }"
+          >
+            <div class="mb-1 text-[11px] text-base-content/60">
+              Références @ — {{ atScopeLabel }} (`↑`/`↓`, `Tab`, `Entrée`, `Esc`)
+            </div>
+            <div v-if="atLoading" class="text-xs text-base-content/60 py-1">Recherche…</div>
+            <div v-else-if="atQuery.trim().length < 2" class="text-xs text-base-content/60 py-1">
+              {{ atHintText }}
+            </div>
+            <div v-else-if="!atItems.length" class="text-xs text-base-content/60 py-1">Aucun résultat</div>
+            <div v-else class="flex flex-col gap-0.5 max-h-56 overflow-auto">
+              <button
+                v-for="(item, idx) in atItems"
+                :key="item.key"
+                type="button"
+                class="btn btn-xs btn-ghost justify-start h-auto min-h-8 py-1 text-left normal-case"
+                :class="idx === atActiveIndex ? 'btn-primary text-primary-content' : ''"
+                @click="runAtItem(item)"
+              >
+                <span class="inline-flex w-full items-start gap-2">
+                  <img
+                    v-if="item.iconUrl"
+                    :src="item.iconUrl"
+                    :alt="item.subtitle || item.label || 'Référence'"
+                    class="mt-0.5 h-4 w-4 shrink-0 object-contain opacity-90"
+                    loading="lazy"
+                  />
+                  <i v-else-if="item.icon" :class="item.icon" class="mt-0.5 shrink-0 opacity-80" />
+                  <span class="min-w-0">
+                    <span class="font-medium block truncate">{{ item.label }}</span>
+                    <span v-if="item.subtitle" class="text-[10px] opacity-80 block truncate">{{ item.subtitle }}</span>
+                  </span>
                 </span>
-              </span>
-            </button>
+              </button>
+            </div>
           </div>
-        </div>
+        </Teleport>
 
         <div
           v-if="showTocPanel && tocItems.length"

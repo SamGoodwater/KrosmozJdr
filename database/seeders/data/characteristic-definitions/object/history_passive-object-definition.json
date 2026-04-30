@@ -8,12 +8,31 @@
         "descriptions": "Bonus passif à Histoire conféré par l'équipement (chapeaux) : améliore le score passif lorsqu’aucun jet n’est demandé pour cette compétence (2.2.2.4). Les limites viennent de l’équipement et de la forgemagie (2.2.2).",
         "icon": "skillIntelligence.webp",
         "icon_false": null,
-        "color": "orange",
-        "value_overrides": null,
+        "color": "red",
+        "value_overrides": [
+            {
+                "value": 0,
+                "icon": "skillIntelligence.webp",
+                "color": "red",
+                "subtitle": "non maitrisé"
+            },
+            {
+                "value": 1,
+                "icon": "skillIntelligence.webp",
+                "color": "red",
+                "subtitle": "maitrise"
+            },
+            {
+                "value": 2,
+                "icon": "skillIntelligence.webp",
+                "color": "red",
+                "subtitle": "Expertise"
+            }
+        ],
         "hide_when_empty": true,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 25,
         "group": "object",
         "linked_to_key": null
@@ -23,9 +42,9 @@
             "dofusdb_characteristic_id": null,
             "db_column": null,
             "min": "0",
-            "max": "3",
-            "formula": "{\"1\":\"0\",\"5\":\"1\",\"7\":\"2\",\"11\":\"3\",\"characteristic\":\"level\"}",
-            "formula_display": "level_object",
+            "max": "2",
+            "formula": null,
+            "formula_display": null,
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,
@@ -147,9 +166,9 @@
             "norms_conditions": null,
             "norms_description": "Bonus de compétence passive sur chapeau (2.2.2.4).",
             "norms_help_section_id": null,
-            "forgemagie_max": 2,
-            "base_price_per_unit": 500,
-            "rune_price_per_unit": 1000,
+            "forgemagie_max": 0,
+            "base_price_per_unit": 5000,
+            "rune_price_per_unit": null,
             "value_available": null,
             "item_type_ids": null
         }

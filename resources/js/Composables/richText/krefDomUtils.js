@@ -3,6 +3,13 @@ import { resolveEntityRouteHref } from "@/Composables/entity/entityRouteRegistry
 
 const NAVIGABLE_TYPES = new Set(["page", "pageSection", "entity"]);
 
+function readPayloadValue(payload, camelKey, snakeKey) {
+    if (!payload || typeof payload !== "object") return null;
+    if (payload[camelKey] != null && String(payload[camelKey]).trim() !== "") return payload[camelKey];
+    if (payload[snakeKey] != null && String(payload[snakeKey]).trim() !== "") return payload[snakeKey];
+    return null;
+}
+
 /**
  * @param {string} krefType
  * @returns {boolean}
@@ -37,18 +44,19 @@ export function buildHrefFromKref(info) {
     const p = info?.payload && typeof info.payload === "object" ? info.payload : {};
     try {
         if (t === "page") {
-            const slug = p.pageSlug;
+            const slug = readPayloadValue(p, "pageSlug", "page_slug");
             if (!slug) return null;
             return route("pages.show", slug);
         }
         if (t === "pageSection") {
-            const slug = p.pageSlug;
+            const slug = readPayloadValue(p, "pageSlug", "page_slug");
             if (!slug) return null;
-            const secSlug = p.sectionSlug != null && String(p.sectionSlug).trim() !== "" ? String(p.sectionSlug).trim() : null;
+            const secSlugRaw = readPayloadValue(p, "sectionSlug", "section_slug");
+            const secSlug = secSlugRaw != null ? String(secSlugRaw).trim() : null;
             if (secSlug) {
                 return `${route("pages.show", slug)}#ssec-${secSlug}`;
             }
-            const sid = p.sectionId;
+            const sid = readPayloadValue(p, "sectionId", "section_id");
             if (sid == null || sid === "") return null;
             return `${route("pages.show", slug)}#section-${sid}`;
         }
@@ -72,7 +80,7 @@ export function buildHrefFromKref(info) {
  */
 export function getSectionIdForPreview(info) {
     if (normalizeKrefType(info?.krefType) !== "pageSection") return null;
-    const sid = info?.payload?.sectionId;
+    const sid = readPayloadValue(info?.payload, "sectionId", "section_id");
     if (sid == null || sid === "") return null;
     const n = Number(sid);
     return Number.isFinite(n) ? n : sid;
@@ -87,15 +95,19 @@ export function getSectionIdForPreview(info) {
 export function buildSectionPreviewSnippetUrl(info) {
     if (normalizeKrefType(info?.krefType) !== "pageSection") return null;
     const p = info?.payload && typeof info.payload === "object" ? info.payload : {};
-    const pageSlug = p.pageSlug != null && String(p.pageSlug).trim() !== "" ? String(p.pageSlug).trim() : null;
-    const sectionSlug = p.sectionSlug != null && String(p.sectionSlug).trim() !== "" ? String(p.sectionSlug).trim() : null;
-    if (pageSlug && sectionSlug) {
-        return route("api.cms.sections.preview-snippet-query", {
-            page_slug: pageSlug,
-            section_slug: sectionSlug,
-        });
+    const sid = readPayloadValue(p, "sectionId", "section_id");
+    if (sid != null && String(sid).trim() !== "") {
+        return route("api.cms.sections.preview-snippet", { section: sid });
     }
-    const sid = p.sectionId;
-    if (sid == null || sid === "") return null;
-    return route("api.cms.sections.preview-snippet", { section: sid });
+
+    const pageSlugRaw = readPayloadValue(p, "pageSlug", "page_slug");
+    const sectionSlugRaw = readPayloadValue(p, "sectionSlug", "section_slug");
+    const pageSlug = pageSlugRaw != null ? String(pageSlugRaw).trim() : null;
+    const sectionSlug = sectionSlugRaw != null ? String(sectionSlugRaw).trim() : null;
+    if (!pageSlug || !sectionSlug) return null;
+
+    return route("api.cms.sections.preview-snippet-query", {
+        page_slug: pageSlug,
+        section_slug: sectionSlug,
+    });
 }

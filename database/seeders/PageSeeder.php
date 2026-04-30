@@ -71,7 +71,7 @@ class PageSeeder extends Seeder
      * @var array<string, array{
      *   title: string,
      *   slug: string,
-     *   icon: string,
+     *   icon: string|null,
      *   menu_order: int,
      *   intro_title: string,
      *   intro_html: string,
@@ -83,7 +83,7 @@ class PageSeeder extends Seeder
         'bien-demarrer' => [
             'title' => 'Bien démarrer',
             'slug' => 'essentiels-bien-demarrer',
-            'icon' => 'fa-solid fa-compass',
+            'icon' => null,
             'menu_order' => 10,
             'intro_title' => 'Vue d’ensemble',
             'intro_html' => '<p>Guide express pour lancer une partie rapidement.</p>'
@@ -100,7 +100,7 @@ class PageSeeder extends Seeder
         'creation' => [
             'title' => 'Créer son personnage (rapide)',
             'slug' => 'essentiels-creation-personnage',
-            'icon' => 'fa-solid fa-user-plus',
+            'icon' => null,
             'menu_order' => 20,
             'intro_title' => 'Checklist de création',
             'intro_html' => '<p>Créez un personnage jouable avec un parcours court et fiable.</p>'
@@ -117,7 +117,7 @@ class PageSeeder extends Seeder
         'actions-hors-combat' => [
             'title' => 'Actions en jeu (hors combat)',
             'slug' => 'essentiels-actions-hors-combat',
-            'icon' => 'fa-solid fa-map',
+            'icon' => null,
             'menu_order' => 30,
             'intro_title' => 'Exploration et interactions',
             'intro_html' => '<p>Résumé des décisions les plus fréquentes hors affrontement direct.</p>'
@@ -134,7 +134,7 @@ class PageSeeder extends Seeder
         'combat' => [
             'title' => 'Combat (résumé pratique)',
             'slug' => 'essentiels-combat',
-            'icon' => 'fa-solid fa-shield',
+            'icon' => null,
             'menu_order' => 40,
             'intro_title' => 'Combat en une page',
             'intro_html' => '<p>Règles minimales pour mener un combat lisible et rapide.</p>'
@@ -151,7 +151,7 @@ class PageSeeder extends Seeder
         'sorts-aptitudes' => [
             'title' => 'Sorts, aptitudes, capacités',
             'slug' => 'essentiels-sorts-aptitudes',
-            'icon' => 'fa-solid fa-wand-sparkles',
+            'icon' => null,
             'menu_order' => 50,
             'intro_title' => 'Pouvoirs de personnage',
             'intro_html' => '<p>Résumé des mécaniques qui gouvernent vos pouvoirs actifs.</p>'
@@ -168,7 +168,7 @@ class PageSeeder extends Seeder
         'economie-progression' => [
             'title' => 'Économie, équipement, progression',
             'slug' => 'essentiels-economie-progression',
-            'icon' => 'fa-solid fa-coins',
+            'icon' => null,
             'menu_order' => 60,
             'intro_title' => 'Progression utile',
             'intro_html' => '<p>L’essentiel pour progresser efficacement sans entrer dans l’optimisation lourde.</p>'
@@ -185,7 +185,7 @@ class PageSeeder extends Seeder
         'caracteristiques' => [
             'title' => 'Caractéristiques',
             'slug' => 'caracteristiques',
-            'icon' => 'fa-solid fa-table-columns',
+            'icon' => null,
             'menu_order' => 70,
             'intro_title' => 'Accès rapide',
             'intro_html' => '<p>Point d’entrée vers les bornes de conception : formules, min/max, valeurs par défaut, équipement et forgemagie.</p>'
@@ -213,7 +213,7 @@ class PageSeeder extends Seeder
             'menu_order' => 900,
             'menu_group' => 'Informations',
             'parent_id' => null,
-            'icon' => 'fa-solid fa-handshake-angle',
+            'icon' => null,
             'created_by' => $creatorId,
         ]);
 
@@ -239,7 +239,7 @@ class PageSeeder extends Seeder
             'menu_order' => 0,
             'menu_group' => null,
             'parent_id' => $contributionPage->id,
-            'icon' => 'fa-solid fa-users',
+            'icon' => null,
             'created_by' => $creatorId,
         ]);
 
@@ -646,7 +646,7 @@ HTML;
             return (int) $superAdmin->id;
         }
 
-        $firstUser = User::query()->orderBy('id')->first();
+        $firstUser = User::query()->orderBy('id', 'asc')->first();
 
         return $firstUser ? (int) $firstUser->id : null;
     }

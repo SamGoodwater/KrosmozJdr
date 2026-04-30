@@ -24,7 +24,7 @@
             "db_column": null,
             "min": "0",
             "max": "3",
-            "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"11\":\"3\",\"15\":\"3\",\"characteristic\":\"level\"}",
+            "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"11\":\"3\",\"15\":\"3\",\"characteristic\":\"level_object\"}",
             "formula_display": "level_object",
             "default_value": "0",
             "conversion_formula": "floor(0.1202 * [d] + 0.5109)",
@@ -202,7 +202,9 @@
             "base_price_per_unit": 300,
             "rune_price_per_unit": 600,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": [
+                11
+            ]
         }
     },
     "relations": null

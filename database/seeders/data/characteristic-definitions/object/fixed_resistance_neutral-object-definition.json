@@ -13,7 +13,7 @@
         "hide_when_empty": true,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 26,
         "group": "object",
         "linked_to_key": null
@@ -165,7 +165,9 @@
             "base_price_per_unit": 600,
             "rune_price_per_unit": 1200,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": [
+                20
+            ]
         }
     },
     "relations": null

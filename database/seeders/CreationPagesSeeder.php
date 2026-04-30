@@ -110,7 +110,7 @@ class CreationPagesSeeder extends Seeder
             'menu_order' => 850,
             'menu_group' => 'Aide',
             'parent_id' => null,
-            'icon' => 'fa-solid fa-compass-drafting',
+            'icon' => null,
             'created_by' => $creatorId,
         ]);
 
@@ -180,12 +180,13 @@ class CreationPagesSeeder extends Seeder
     private function removeDeprecatedCreationChildren(Page $parent): void
     {
         foreach (self::DEPRECATED_CHILD_SLUGS as $slug) {
+            /** @var Page|null $page */
             $page = Page::withTrashed()->where('parent_id', $parent->id)->where('slug', $slug)->first();
-            if ($page === null) {
+            if (! $page instanceof Page) {
                 continue;
             }
             if (! $page->trashed()) {
-                $page->delete();
+                Page::destroy($page->id);
                 $this->command?->info("🗑️ Ancienne page « {$slug} » archivée (remplacée par la structure par groupe).");
             }
         }
@@ -306,7 +307,7 @@ class CreationPagesSeeder extends Seeder
             return (int) $superAdmin->id;
         }
 
-        $firstUser = User::query()->orderBy('id')->first();
+        $firstUser = User::query()->orderBy('id', 'asc')->first();
 
         return $firstUser ? (int) $firstUser->id : null;
     }

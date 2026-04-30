@@ -763,8 +763,10 @@ watch(
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    --section-content-width: clamp(48rem, 84vw, 76rem);
 
     > * {
+        width: min(100%, var(--section-content-width));
         // Espacement entre les sections
         margin-bottom: 2rem;
         

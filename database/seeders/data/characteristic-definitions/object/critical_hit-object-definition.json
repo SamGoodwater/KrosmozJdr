@@ -20,25 +20,25 @@
                 "value": 1,
                 "icon": "critical.webp",
                 "color": "red",
-                "subtitle": "La zone de coup critique s’élargit d’un cran."
+                "subtitle": "La zone de coup critique s’élargit d’un cran (19)."
             },
             {
                 "value": 2,
                 "icon": "critical.webp",
                 "color": "red",
-                "subtitle": "La zone de coup critique s’élargit encore."
+                "subtitle": "La zone de coup critique s’élargit encore (18)."
             },
             {
                 "value": 3,
                 "icon": "critical.webp",
                 "color": "red",
-                "subtitle": "La zone de coup critique est la plus large pour cet objet."
+                "subtitle": "La zone de coup critique est la plus large pour cet objet (17)."
             }
         ],
         "hide_when_empty": true,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 27,
         "group": "object",
         "linked_to_key": null
@@ -52,11 +52,54 @@
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "floor(0.1202 * [d] + 0.5109)",
+            "conversion_formula": "floor(0.0802 * [d] + 0.0445)",
             "conversion_function": null,
-            "conversion_dofus_sample": null,
-            "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": null,
+            "conversion_dofus_sample": {
+                "1": 2,
+                "40": 5,
+                "80": 10,
+                "120": 15,
+                "200": 40
+            },
+            "conversion_krosmoz_sample": {
+                "1": 0,
+                "4": 0,
+                "8": 1,
+                "11": 2,
+                "18": 3
+            },
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": 2,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": 0
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": 5,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": 0
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": 10,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": 1
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": 15,
+                    "krosmoz_level": 11,
+                    "krosmoz_value": 2
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": 40,
+                    "krosmoz_level": 18,
+                    "krosmoz_value": 3
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -176,7 +219,9 @@
             "base_price_per_unit": 1200,
             "rune_price_per_unit": 2400,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": [
+                1
+            ]
         }
     },
     "relations": null

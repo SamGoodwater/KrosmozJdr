@@ -12,25 +12,25 @@
         "value_overrides": [
             {
                 "value": 0,
-                "subtitle": "Aucune résistance % Air."
+                "subtitle": "aucune résistance"
             },
             {
                 "value": 1,
                 "icon": "resAirResistance.webp",
-                "color": "cyan",
-                "subtitle": "Résistance"
+                "color": "sky",
+                "subtitle": "Résistance (50%)"
             },
             {
                 "value": 2,
                 "icon": "resAirInvulnerability.webp",
-                "color": "cyan",
-                "subtitle": "Invulnérabilité"
+                "color": "sky",
+                "subtitle": "Invulnérabilité (100%)"
             }
         ],
         "hide_when_empty": true,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 26,
         "group": "object",
         "linked_to_key": null
@@ -175,7 +175,9 @@
             "base_price_per_unit": 2500,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_ids": null
+            "item_type_ids": [
+                20
+            ]
         }
     },
     "relations": null

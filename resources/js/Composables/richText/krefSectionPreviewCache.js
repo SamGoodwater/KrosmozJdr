@@ -1,14 +1,27 @@
 const cache = new Map();
 const inflight = new Map();
 
+function readPayloadValue(info, camelKey, snakeKey) {
+    const payload = info?.payload && typeof info.payload === "object" ? info.payload : null;
+    const fromPayload = payload?.[camelKey] ?? payload?.[snakeKey];
+    if (fromPayload != null && String(fromPayload).trim() !== "") return fromPayload;
+    const fromRoot = info?.[camelKey] ?? info?.[snakeKey];
+    if (fromRoot != null && String(fromRoot).trim() !== "") return fromRoot;
+    return null;
+}
+
 function toKey(info) {
-    const pageSlug = String(info?.payload?.pageSlug || info?.pageSlug || "").trim();
-    const sectionSlug = String(info?.payload?.sectionSlug || info?.sectionSlug || "").trim();
-    const sectionId = info?.payload?.sectionId ?? info?.sectionId ?? "";
-    if (!pageSlug || (!sectionSlug && (sectionId === null || sectionId === undefined || String(sectionId).trim() === ""))) {
+    const sectionId = readPayloadValue(info, "sectionId", "section_id");
+    if (sectionId != null && String(sectionId).trim() !== "") {
+        return `id:${String(sectionId).trim()}`;
+    }
+
+    const pageSlug = readPayloadValue(info, "pageSlug", "page_slug");
+    const sectionSlug = readPayloadValue(info, "sectionSlug", "section_slug");
+    if (!pageSlug || !sectionSlug) {
         return "";
     }
-    return `${pageSlug}:${sectionSlug}:${String(sectionId)}`;
+    return `slug:${String(pageSlug).trim()}:${String(sectionSlug).trim()}`;
 }
 
 export function getCachedKrefSectionPreview(info) {
