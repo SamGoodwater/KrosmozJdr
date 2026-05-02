@@ -8,9 +8,9 @@ use App\Models\Entity\Breed;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
+use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
-use App\Models\Entity\Panoply;
 
 /**
  * Pile d'import pour toutes les relations : on empile ce qui reste à récupérer (sorts, monstres,
@@ -46,7 +46,7 @@ final class RelationImportStack
     /**
      * Cache local des entités déjà résolues par dofusdb_id pour limiter les requêtes répétées.
      *
-     * @var array<string, Resource|null>
+     * @var array<string, resource|null>
      */
     private array $resourceByDofusdbId = [];
 
@@ -61,12 +61,12 @@ final class RelationImportStack
 
     public function __construct()
     {
-        $this->pending = new \SplQueue();
+        $this->pending = new \SplQueue;
     }
 
     private function key(string $entity, string $dofusdbId): string
     {
-        return $entity . ':' . $dofusdbId;
+        return $entity.':'.$dofusdbId;
     }
 
     /**
@@ -97,7 +97,7 @@ final class RelationImportStack
      * Enregistre un dépendant : quand (entity, dofusdb_id) sera importé, on appliquera
      * la résolution selon type avec payload.
      *
-     * @param array<string, mixed> $payload Données selon le type (ex. resource_id, breed_id, creature_id, spell_id, quantity)
+     * @param  array<string, mixed>  $payload  Données selon le type (ex. resource_id, breed_id, creature_id, spell_id, quantity)
      */
     public function registerDependent(string $entity, string $dofusdbId, string $type, array $payload): void
     {
@@ -109,7 +109,7 @@ final class RelationImportStack
     /**
      * Enregistre les dépendances de recette d'une ressource et ajoute à la pile les ingrédients à importer.
      *
-     * @param list<array{ingredient_dofusdb_id?: string, quantity?: int}> $recipeIngredients
+     * @param  list<array{ingredient_dofusdb_id?: string, quantity?: int}>  $recipeIngredients
      * @return list<string> dofusdb_id ajoutés à la pile
      */
     public function registerRecipeDependents(int $resourceId, array $recipeIngredients, bool $dryRun = false): array
@@ -133,6 +133,7 @@ final class RelationImportStack
             $existing = $this->findResourceByDofusdbId($dofusdbId);
             if ($existing !== null) {
                 $sync[$existing->id] = ['quantity' => (string) $qty];
+
                 continue;
             }
 
@@ -142,7 +143,7 @@ final class RelationImportStack
             }
         }
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             $resource->recipeIngredients()->sync($sync);
         }
 
@@ -152,7 +153,7 @@ final class RelationImportStack
     /**
      * Enregistre les dépendances sorts d'une classe (breed) : quand chaque sort sera importé, on l'attache au breed.
      *
-     * @param list<int> $spellDofusdbIds IDs DofusDB des sorts
+     * @param  list<int>  $spellDofusdbIds  IDs DofusDB des sorts
      * @return list<string> spell dofusdb_id ajoutés à la pile
      */
     public function registerBreedSpellDependents(int $breedId, array $spellDofusdbIds, bool $dryRun = false): array
@@ -173,6 +174,7 @@ final class RelationImportStack
             $existing = $this->findSpellByDofusdbId($dofusdbId);
             if ($existing !== null) {
                 $sync[$existing->id] = [];
+
                 continue;
             }
 
@@ -182,11 +184,20 @@ final class RelationImportStack
             }
         }
 
-        if (!$dryRun && $sync !== []) {
-            $spellIds = array_map('intval', array_keys($sync));
-            $breed->spells()->sync($spellIds);
+        if (! $dryRun && $sync !== []) {
+            $slot = 1;
+            $syncWithPivot = [];
+            foreach (array_keys($sync) as $spellId) {
+                $syncWithPivot[(int) $spellId] = [
+                    'character_level' => 1,
+                    'slot_index' => $slot,
+                    'choice_order' => 0,
+                ];
+                $slot++;
+            }
+            $breed->spells()->sync($syncWithPivot);
             Spell::query()
-                ->whereIn('id', $spellIds)
+                ->whereIn('id', array_keys($syncWithPivot))
                 ->update(['category' => Spell::CATEGORY_CLASS]);
         }
 
@@ -196,7 +207,7 @@ final class RelationImportStack
     /**
      * Enregistre les dépendances items d'une panoplie : quand chaque item sera importé, on l'attache à la panoplie.
      *
-     * @param list<int> $itemDofusdbIds IDs DofusDB des items de la panoplie
+     * @param  list<int>  $itemDofusdbIds  IDs DofusDB des items de la panoplie
      * @return list<string> item dofusdb_id ajoutés à la pile
      */
     public function registerPanoplyItemDependents(int $panoplyId, array $itemDofusdbIds, bool $dryRun = false): array
@@ -217,6 +228,7 @@ final class RelationImportStack
             $existing = $this->findItemByDofusdbId($dofusdbId);
             if ($existing !== null) {
                 $sync[$existing->id] = [];
+
                 continue;
             }
 
@@ -226,7 +238,7 @@ final class RelationImportStack
             }
         }
 
-        if (!$dryRun && $sync !== []) {
+        if (! $dryRun && $sync !== []) {
             $panoply->items()->sync(array_keys($sync));
         }
 
@@ -238,7 +250,7 @@ final class RelationImportStack
      * Les drops sont catégorisés selon la table existante (Resource, Item, Consumable) ou
      * enregistrés comme creature_drop et résolus à l'import selon la table cible (resources, items, consumables).
      *
-     * @param array{spells?: list<array{id?: int}>, drops?: list<array{id?: int, itemId?: int, quantity?: int}>} $rawData
+     * @param  array{spells?: list<array{id?: int}>, drops?: list<array{id?: int, itemId?: int, quantity?: int}>}  $rawData
      * @return list<array{entity: string, dofusdb_id: string}> éléments ajoutés à la pile
      */
     public function registerCreatureRelationDependents(int $creatureId, array $rawData, bool $dryRun = false): array
@@ -264,6 +276,7 @@ final class RelationImportStack
                 $existing = $this->findSpellByDofusdbId($dofusdbId);
                 if ($existing !== null) {
                     $spellIdsToSync[] = $existing->id;
+
                     continue;
                 }
                 $this->registerDependent('spell', $dofusdbId, 'creature_spell', ['creature_id' => $creatureId]);
@@ -286,18 +299,21 @@ final class RelationImportStack
                 if ($existingResource !== null) {
                     $prev = isset($resourceSync[$existingResource->id]) ? (int) $resourceSync[$existingResource->id]['quantity'] : 0;
                     $resourceSync[$existingResource->id] = ['quantity' => (string) ($prev + $qty)];
+
                     continue;
                 }
                 $existingItem = $this->findItemByDofusdbId($dofusdbId);
                 if ($existingItem !== null) {
                     $prev = isset($itemSync[$existingItem->id]) ? (int) $itemSync[$existingItem->id]['quantity'] : 0;
                     $itemSync[$existingItem->id] = ['quantity' => $prev + $qty];
+
                     continue;
                 }
                 $existingConsumable = $this->findConsumableByDofusdbId($dofusdbId);
                 if ($existingConsumable !== null) {
                     $prev = isset($consumableSync[$existingConsumable->id]) ? (int) $consumableSync[$existingConsumable->id]['quantity'] : 0;
                     $consumableSync[$existingConsumable->id] = ['quantity' => (string) ($prev + $qty)];
+
                     continue;
                 }
 
@@ -308,7 +324,7 @@ final class RelationImportStack
             }
         }
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             if ($spellIdsToSync !== []) {
                 $creature->spells()->sync(array_values(array_unique($spellIdsToSync)));
                 Spell::query()
@@ -383,14 +399,14 @@ final class RelationImportStack
 
     public function hasPending(): bool
     {
-        return !$this->pending->isEmpty();
+        return ! $this->pending->isEmpty();
     }
 
     /**
      * Appelé lorsqu'une entité a été importée : résout tous les dépendants (recettes, breed_spell,
      * creature_spell, creature_resource, spell_invocation). Ne fait rien si $dryRun.
      *
-     * @param string $table Table cible si entité item (resources, consumables, items) pour filtrer creature_resource / recipe
+     * @param  string  $table  Table cible si entité item (resources, consumables, items) pour filtrer creature_resource / recipe
      */
     public function onImported(string $entity, string $dofusdbId, ?int $krosmozPrimaryId, ?string $table = null, bool $dryRun = false): void
     {
@@ -458,8 +474,31 @@ final class RelationImportStack
         if ($breed === null) {
             return;
         }
-        $current = $breed->spells()->pluck('id')->all();
-        $breed->spells()->sync(array_values(array_unique(array_merge($current, [$spellId]))));
+        $breed->load('spells');
+        $sync = [];
+        foreach ($breed->spells as $s) {
+            $sync[$s->id] = [
+                'character_level' => (int) $s->pivot->character_level,
+                'slot_index' => (int) $s->pivot->slot_index,
+                'choice_order' => (int) $s->pivot->choice_order,
+            ];
+        }
+
+        if (! isset($sync[$spellId])) {
+            $maxSlot = 0;
+            foreach ($breed->spells as $s) {
+                if ((int) $s->pivot->character_level === 1) {
+                    $maxSlot = max($maxSlot, (int) $s->pivot->slot_index);
+                }
+            }
+            $sync[$spellId] = [
+                'character_level' => 1,
+                'slot_index' => $maxSlot + 1,
+                'choice_order' => 0,
+            ];
+        }
+
+        $breed->spells()->sync($sync);
         Spell::whereKey($spellId)->update(['category' => Spell::CATEGORY_CLASS]);
     }
 
@@ -578,7 +617,7 @@ final class RelationImportStack
 
     private function findResourceByDofusdbId(string $dofusdbId): ?Resource
     {
-        if (!array_key_exists($dofusdbId, $this->resourceByDofusdbId)) {
+        if (! array_key_exists($dofusdbId, $this->resourceByDofusdbId)) {
             $this->resourceByDofusdbId[$dofusdbId] = Resource::where('dofusdb_id', $dofusdbId)->first();
         }
 
@@ -587,7 +626,7 @@ final class RelationImportStack
 
     private function findItemByDofusdbId(string $dofusdbId): ?Item
     {
-        if (!array_key_exists($dofusdbId, $this->itemByDofusdbId)) {
+        if (! array_key_exists($dofusdbId, $this->itemByDofusdbId)) {
             $this->itemByDofusdbId[$dofusdbId] = Item::where('dofusdb_id', $dofusdbId)->first();
         }
 
@@ -596,7 +635,7 @@ final class RelationImportStack
 
     private function findConsumableByDofusdbId(string $dofusdbId): ?Consumable
     {
-        if (!array_key_exists($dofusdbId, $this->consumableByDofusdbId)) {
+        if (! array_key_exists($dofusdbId, $this->consumableByDofusdbId)) {
             $this->consumableByDofusdbId[$dofusdbId] = Consumable::where('dofusdb_id', $dofusdbId)->first();
         }
 
@@ -605,7 +644,7 @@ final class RelationImportStack
 
     private function findSpellByDofusdbId(string $dofusdbId): ?Spell
     {
-        if (!array_key_exists($dofusdbId, $this->spellByDofusdbId)) {
+        if (! array_key_exists($dofusdbId, $this->spellByDofusdbId)) {
             $this->spellByDofusdbId[$dofusdbId] = Spell::where('dofusdb_id', $dofusdbId)->first();
         }
 

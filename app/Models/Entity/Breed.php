@@ -3,8 +3,10 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Pivots\BreedSpellPivot;
 use App\Models\User;
 use Database\Factories\Entity\BreedFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -42,13 +44,16 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $npcs_count
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
+ *
  * @method static \Database\Factories\Entity\BreedFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed query()
+ *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereAutoUpdate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedBy($value)
@@ -71,6 +76,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Breed extends Model implements HasMedia
@@ -132,6 +138,41 @@ class Breed extends Model implements HasMedia
     ];
 
     /**
+     * Filtre les classes visibles pour l'utilisateur (index Inertia, API tableau).
+     *
+     * Brouillon/raw : createur ou role >= MJ. Playable : role >= read_level. Pas d'archive pour non-admin.
+     *
+     * @param  Builder<static>  $query
+     */
+    public function scopeVisibleToUser(Builder $query, ?User $user): void
+    {
+        if ($user?->isAdmin()) {
+            return;
+        }
+
+        $role = $user !== null ? (int) ($user->role ?? 0) : 0;
+
+        $query->where('state', '!=', self::STATE_ARCHIVED);
+
+        $query->where(function (Builder $outer) use ($user, $role) {
+            $outer->where(function (Builder $q) use ($role) {
+                $q->where('state', self::STATE_PLAYABLE)
+                    ->whereRaw('CAST(read_level AS SIGNED) <= ?', [$role]);
+            });
+
+            if ($user !== null) {
+                $outer->orWhere(function (Builder $q) use ($user) {
+                    $q->whereIn('state', [self::STATE_RAW, self::STATE_DRAFT])
+                        ->where(function (Builder $q2) use ($user) {
+                            $q2->where('created_by', $user->id)
+                                ->orWhereRaw('? >= ?', [(int) $user->role, User::ROLE_GAME_MASTER]);
+                        });
+                });
+            }
+        });
+    }
+
+    /**
      * Get the user that created the breed.
      */
     public function createdBy()
@@ -148,11 +189,70 @@ class Breed extends Model implements HasMedia
     }
 
     /**
-     * Les sorts associés à cette breed.
+     * Les sorts associés à cette breed (pivot : niveau PJ, emplacement, ordre des choix).
      */
     public function spells()
     {
-        return $this->belongsToMany(Spell::class, 'breed_spell', 'breed_id', 'spell_id');
+        return $this->belongsToMany(Spell::class, 'breed_spell', 'breed_id', 'spell_id')
+            ->using(BreedSpellPivot::class)
+            ->withPivot(['character_level', 'slot_index', 'choice_order']);
+    }
+
+    /**
+     * Regroupe les sorts chargés par (character_level, slot_index) pour l’API / la fiche.
+     *
+     * @return list<array{character_level: int, slot_index: int, spells: Collection<int, Spell>}>
+     */
+    public function getSpellSlotsGrouped(): array
+    {
+        if (! $this->relationLoaded('spells')) {
+            return [];
+        }
+
+        /** @var Collection<string, array{character_level: int, slot_index: int, spells: Collection<int, Spell>}> $groups */
+        $groups = collect();
+        foreach ($this->spells as $spell) {
+            $pivot = $spell->pivot;
+            $level = (int) $pivot->character_level;
+            $slot = (int) $pivot->slot_index;
+            $key = $level.'|'.$slot;
+            if (! $groups->has($key)) {
+                $groups[$key] = [
+                    'character_level' => $level,
+                    'slot_index' => $slot,
+                    'spells' => new Collection,
+                ];
+            }
+            $groups[$key]['spells']->push($spell);
+        }
+
+        return $groups
+            ->sort(function (array $a, array $b): int {
+                $c = $a['character_level'] <=> $b['character_level'];
+
+                return $c !== 0 ? $c : $a['slot_index'] <=> $b['slot_index'];
+            })
+            ->values()
+            ->map(function (array $group): array {
+                /** @var Collection<int, Spell> $spells */
+                $spells = $group['spells'];
+                $sorted = $spells->sort(function (Spell $a, Spell $b): int {
+                    $oa = (int) $a->pivot->choice_order;
+                    $ob = (int) $b->pivot->choice_order;
+                    if ($oa !== $ob) {
+                        return $oa <=> $ob;
+                    }
+
+                    return strcmp((string) ($a->name ?? ''), (string) ($b->name ?? ''));
+                })->values();
+
+                return [
+                    'character_level' => $group['character_level'],
+                    'slot_index' => $group['slot_index'],
+                    'spells' => $sorted,
+                ];
+            })
+            ->all();
     }
 
     public function registerMediaCollections(): void

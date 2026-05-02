@@ -590,6 +590,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \App\Models\Pivots\BreedSpellPivot|null $pivot
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed visibleToUser(?\App\Models\User $user)
  */
 	class Breed extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1636,6 +1638,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveDcFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveSuccessNote($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Pivots\BreedSpellPivot|null $pivot
  */
 	class Spell extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1815,6 +1818,29 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereSettings($value)
  */
 	class Page extends \Eloquent {}
+}
+
+namespace App\Models\Pivots{
+/**
+ * Pivot breed_spell : emplacement de sort (niveau PJ, slot, ordre des choix).
+ *
+ * @property int $breed_id
+ * @property int $spell_id
+ * @property int $character_level
+ * @property int $slot_index
+ * @property int $choice_order
+ * @property int $id
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot whereBreedId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot whereCharacterLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot whereChoiceOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot whereSlotIndex($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot whereSpellId($value)
+ */
+	class BreedSpellPivot extends \Eloquent {}
 }
 
 namespace App\Models{

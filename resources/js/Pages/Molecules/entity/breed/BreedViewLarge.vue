@@ -10,6 +10,7 @@
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
+import Route from "@/Pages/Atoms/action/Route.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
@@ -86,6 +87,51 @@ const mediaSrc = computed(() => {
     const u = b?.image ?? b?.icon ?? b?._data?.image ?? b?._data?.icon;
     return u && String(u).trim() ? String(u) : "";
 });
+
+/** Sorts chargés avec la classe (relation spells). */
+const linkedSpells = computed(() => {
+    const raw = props.breed?.spells ?? props.breed?._data?.spells;
+    return Array.isArray(raw) ? raw : [];
+});
+
+/**
+ * Emplacements de sorts (API spell_slots) ou regroupement depuis spells + pivot.
+ */
+const spellSlotGroups = computed(() => {
+    const direct = props.breed?.spell_slots ?? props.breed?._data?.spell_slots;
+    if (Array.isArray(direct) && direct.length > 0) {
+        return direct;
+    }
+    const spells = linkedSpells.value;
+    if (!spells.length) return [];
+    const map = new Map();
+    for (const s of spells) {
+        const p = s.pivot || {};
+        const level = Number(p.character_level ?? 1);
+        const slot = Number(p.slot_index ?? 1);
+        const key = `${level}|${slot}`;
+        if (!map.has(key)) {
+            map.set(key, { character_level: level, slot_index: slot, spells: [] });
+        }
+        map.get(key).spells.push(s);
+    }
+    const out = Array.from(map.values()).sort((a, b) =>
+        a.character_level !== b.character_level
+            ? a.character_level - b.character_level
+            : a.slot_index - b.slot_index
+    );
+    for (const g of out) {
+        g.spells.sort((a, b) => {
+            const oa = Number(a.pivot?.choice_order ?? 0) || 0;
+            const ob = Number(b.pivot?.choice_order ?? 0) || 0;
+            if (oa !== ob) return oa - ob;
+            return String(a.name || "").localeCompare(String(b.name || ""));
+        });
+    }
+    return out;
+});
+
+const hasSpellSlots = computed(() => spellSlotGroups.value.length > 0);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -308,6 +354,34 @@ const handleAction = async (actionKey) => {
                 </div>
             </template>
         </EntityViewHeader>
+
+        <div v-if="hasSpellSlots" class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-4">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Sorts par emplacement</h3>
+            <p class="text-xs text-primary-400/90">
+                À chaque niveau, un emplacement correspond à un choix de sort parmi les options listées.
+            </p>
+            <div
+                v-for="(group, gIdx) in spellSlotGroups"
+                :key="`slot-${group.character_level}-${group.slot_index}-${gIdx}`"
+                class="space-y-2 border-l-2 border-primary-500/40 pl-3"
+            >
+                <div class="text-xs font-semibold text-primary-200">
+                    Niveau {{ group.character_level }} · Emplacement {{ group.slot_index }}
+                </div>
+                <ul class="flex flex-wrap gap-2">
+                    <li v-for="s in group.spells" :key="s.id">
+                        <Route
+                            :href="route('entities.spells.show', { spell: s.id })"
+                            color="neutral"
+                            class="text-sm font-medium text-primary-200 hover:text-primary-100"
+                        >
+                            {{ s.name || `Sort #${s.id}` }}
+                            <span v-if="s.level != null" class="text-primary-400 font-normal"> (nv. {{ s.level }})</span>
+                        </Route>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
             <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">

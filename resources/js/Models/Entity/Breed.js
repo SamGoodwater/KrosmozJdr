@@ -79,6 +79,11 @@ export class Breed extends BaseModel {
         return this._data.spells || [];
     }
 
+    /** @returns {Array<{ character_level: number, slot_index: number, spells: object[] }>} */
+    get spellSlots() {
+        return this._data.spell_slots || [];
+    }
+
     get spellsCount() {
         return Number(this._data.spells_count ?? this.spells.length ?? 0);
     }
@@ -139,7 +144,11 @@ export class Breed extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || `/breeds/${this.id}`;
+        const href =
+            options.href ||
+            (this.id && typeof route === 'function'
+                ? route('entities.breeds.show', { breed: this.id })
+                : '');
         
         return {
             type: 'route',

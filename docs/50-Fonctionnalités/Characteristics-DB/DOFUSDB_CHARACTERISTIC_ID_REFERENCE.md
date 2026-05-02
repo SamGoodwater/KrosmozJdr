@@ -172,6 +172,32 @@ Quelques lignes marquées *(visible: false)* dans l’API sont tout de même lis
 
 ---
 
+## Seeds créature : `dofusdb_characteristic_id`
+
+Dans `database/seeders/data/characteristic-definitions/creature/*-creature-definition.json`, le champ **`dofusdb_characteristic_id`** (entité `*`) reprend le **même identifiant** que dans l’API DofusDB et que le mapping objet `dofusdb_characteristic_to_krosmoz.json` **lorsque** la grandeur importée depuis un effet item Dofus est la même que celle modélisée côté créature (PA, PM, stats, résistances % élémentaires, etc.).
+
+| id DofusDB | Clé créature (`*_creature`) |
+|------------|------------------------------|
+| 0 | `life_points_creature` |
+| 1 | `action_points_creature` |
+| 5 | `level_creature` |
+| 10–15 | `strength`, `vitality`, `wisdom`, `chance`, `agility`, `intelligence` |
+| 18 | `critical_hit_creature` |
+| 19 | `range_creature` |
+| 23 | `movement_points_creature` |
+| 26 | `summoning_creature` |
+| 27–28 | `dodge_action_points_creature`, `dodge_movement_points_creature` |
+| 33–37 | `resistance_earth` … `resistance_neutral` (résistance % par élément) |
+| 44 | `initiative_creature` |
+| 49 | `heal_bonus_creature` |
+| 54–58 | `fixed_resistance_*_creature` |
+| 78–79 | `dodge_creature`, `tackle_creature` |
+| 88–92, 103 | `fixed_damage_*_creature`, `fixed_damage_multiple_creature` |
+
+**Restent à `null`** (pas d’effet Dofus direct équivalent dans le mapping actuel) : compétences et maîtrises, sauvegardes, modificateurs dérivés, CA, dés de vie, hostilité, wakfu, `resistance_vitalite` / `resistance_sagesse`, dommages fixes hors éléments listés, etc.
+
+---
+
 ## Fichiers liés
 
 - **Mapping utilisé en extraction (objets)** : `resources/scrapping/config/sources/dofusdb/dofusdb_characteristic_to_krosmoz.json`

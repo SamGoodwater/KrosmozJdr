@@ -166,26 +166,53 @@ const getRelationTextProps = (viewEntity) => {
 // Valeurs de pivot pour chaque relation (item_id => { field: value })
 const pivotValues = ref({});
 
+const PIVOT_DEFAULTS = {
+    character_level: '1',
+    slot_index: '1',
+    choice_order: '0',
+};
+
+const getPivotDefault = (field) => PIVOT_DEFAULTS[field] ?? '';
+
+const getPivotLabel = (field) => {
+    const map = {
+        quantity: 'Quantité',
+        price: 'Prix',
+        comment: 'Commentaire',
+        character_level: 'Niveau PJ',
+        slot_index: 'Emplacement',
+        choice_order: 'Ordre',
+    };
+    return map[field] || field;
+};
+
+const pivotInputType = (field) => {
+    if (field === 'comment') return 'text';
+    if (
+        ['quantity', 'price', 'character_level', 'slot_index', 'choice_order'].includes(field)
+    ) {
+        return 'number';
+    }
+    return 'text';
+};
+
 // Initialiser les valeurs de pivot depuis les relations existantes
 const initializePivotValues = () => {
     if (!props.config.pivotFields || props.config.pivotFields.length === 0) {
         return;
     }
-    
+
     const pivots = {};
-    props.relations.forEach(item => {
-        if (item.pivot) {
-            pivots[item.id] = {};
-            props.config.pivotFields.forEach(field => {
-                pivots[item.id][field] = item.pivot[field] || '';
-            });
-        } else {
-            // Initialiser avec des valeurs vides
-            pivots[item.id] = {};
-            props.config.pivotFields.forEach(field => {
-                pivots[item.id][field] = '';
-            });
-        }
+    props.relations.forEach((item) => {
+        pivots[item.id] = {};
+        props.config.pivotFields.forEach((field) => {
+            const raw = item.pivot?.[field];
+            if (raw !== undefined && raw !== null && raw !== '') {
+                pivots[item.id][field] = String(raw);
+            } else {
+                pivots[item.id][field] = getPivotDefault(field);
+            }
+        });
     });
     pivotValues.value = pivots;
 };
@@ -253,8 +280,8 @@ const addItem = (item) => {
         if (props.config.pivotFields && props.config.pivotFields.length > 0) {
             if (!pivotValues.value[item.id]) {
                 pivotValues.value[item.id] = {};
-                props.config.pivotFields.forEach(field => {
-                    pivotValues.value[item.id][field] = '';
+                props.config.pivotFields.forEach((field) => {
+                    pivotValues.value[item.id][field] = getPivotDefault(field);
                 });
             }
         }
@@ -294,10 +321,40 @@ const removeItem = (itemId) => {
 };
 
 // Mettre à jour les relations locales quand les props changent
-watch(() => props.relations, (newRelations) => {
-    localRelations.value = [...newRelations];
-    initializePivotValues();
-}, { deep: true });
+watch(
+    () => props.relations,
+    (newRelations) => {
+        localRelations.value = [...newRelations];
+        initializePivotValues();
+    },
+    { deep: true }
+);
+
+const hasUnsavedRelationChanges = computed(() => {
+    const pivotFields = props.config.pivotFields;
+    if (!pivotFields?.length) {
+        const a = [...localRelations.value].map((i) => i.id).sort((x, y) => x - y);
+        const b = [...props.relations].map((i) => i.id).sort((x, y) => x - y);
+        return JSON.stringify(a) !== JSON.stringify(b);
+    }
+    const sortById = (arr) => [...arr].sort((x, y) => x.id - y.id);
+    const loc = sortById(localRelations.value);
+    const orig = sortById(props.relations);
+    if (loc.length !== orig.length) return true;
+    for (let i = 0; i < loc.length; i++) {
+        if (loc[i].id !== orig[i].id) return true;
+        for (const f of pivotFields) {
+            const current = String(pivotValues.value[loc[i].id]?.[f] ?? '');
+            const originalVal = orig[i].pivot?.[f];
+            const original =
+                originalVal !== undefined && originalVal !== null && originalVal !== ''
+                    ? String(originalVal)
+                    : getPivotDefault(f);
+            if (current !== original) return true;
+        }
+    }
+    return false;
+});
 
 // Formulaire pour la sauvegarde
 const relationsForm = useForm({
@@ -314,11 +371,16 @@ const saveRelations = () => {
         const dataWithPivots = {};
         itemIds.forEach(itemId => {
             dataWithPivots[itemId] = {};
-            props.config.pivotFields.forEach(field => {
-                const value = pivotValues.value[itemId]?.[field] || '';
-                // Convertir en nombre si c'est quantity ou price
+            props.config.pivotFields.forEach((field) => {
+                const value = pivotValues.value[itemId]?.[field] ?? '';
                 if ((field === 'quantity' || field === 'price') && value !== '') {
                     dataWithPivots[itemId][field] = Number(value) || 0;
+                } else if (field === 'character_level' || field === 'slot_index') {
+                    const n = Number(value);
+                    dataWithPivots[itemId][field] = Number.isFinite(n) && n >= 1 ? n : 1;
+                } else if (field === 'choice_order') {
+                    const n = Number(value);
+                    dataWithPivots[itemId][field] = Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
                 } else {
                     dataWithPivots[itemId][field] = value;
                 }
@@ -430,14 +492,24 @@ const displayField = (item, field) => {
                                 :key="pivotField"
                                 class="flex items-center gap-2"
                             >
-                                <label class="text-xs font-medium text-base-content/70 w-20">
-                                    {{ pivotField === 'quantity' ? 'Quantité' : pivotField === 'price' ? 'Prix' : pivotField === 'comment' ? 'Commentaire' : pivotField }}
+                                <label class="text-xs font-medium text-base-content/70 w-28 shrink-0">
+                                    {{ getPivotLabel(pivotField) }}
                                 </label>
                                 <InputField
                                     v-if="pivotField !== 'comment'"
                                     v-model="pivotValues[entry.item.id][pivotField]"
-                                    :type="pivotField === 'quantity' || pivotField === 'price' ? 'number' : 'text'"
-                                    :placeholder="pivotField === 'quantity' ? '1' : pivotField === 'price' ? '0' : ''"
+                                    :type="pivotInputType(pivotField)"
+                                    :placeholder="
+                                        pivotField === 'quantity'
+                                            ? '1'
+                                            : pivotField === 'price'
+                                              ? '0'
+                                              : pivotField === 'character_level' || pivotField === 'slot_index'
+                                                ? '1'
+                                                : pivotField === 'choice_order'
+                                                  ? '0'
+                                                  : ''
+                                    "
                                     size="sm"
                                     class="flex-1"
                                 />
@@ -530,7 +602,7 @@ const displayField = (item, field) => {
             <Btn
                 @click="saveRelations"
                 color="primary"
-                :disabled="relationsForm.processing || JSON.stringify(localRelations.map(i => i.id).sort()) === JSON.stringify(props.relations.map(i => i.id).sort())"
+                :disabled="relationsForm.processing || !hasUnsavedRelationChanges"
             >
                 <i class="fa-solid fa-save mr-2"></i>
                 {{ relationsForm.processing ? 'Sauvegarde...' : 'Sauvegarder les modifications' }}

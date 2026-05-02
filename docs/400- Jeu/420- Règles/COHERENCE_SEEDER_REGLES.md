@@ -15,9 +15,9 @@ Ce document compare les valeurs min/max, formules et limites des caractéristiqu
 | **PO (créature)** | Base 0, max 6, équip. +6, forgemagie +1 | `range_creature` min 0, max 6, formula_display idem | OK |
 | **Scores caractéristiques** | Score 6–31, mod = ⌊(score−10)/2⌋ | `*_creature` (vitality, strength, etc.) min 6, max 31 | OK |
 | **Modificateurs** | ⌊(Score − 10) / 2⌋ (2.2.1.2) | `modifier_*_creature` formula_display `floor((score−10)/2) (2.2.1.2)` | OK |
-| **PV (créature)** | Vitalité × 10 + dés de vie | `life_points_creature` formula `[vitality_creature]*10+[hit_dice_creature]` | OK |
-| **CA (créature)** | 10 + mod. Vitalité + bouclier, max 26 | `armor_class_creature` max 26 | OK |
-| **Initiative** | 1d20 + Intelligence + bonus équip. | `initiative_creature` formula_display idem | OK |
+| **PV (créature)** | Le livre donne aussi des ordres de grandeur (ex. §5.1.2 création PNJ) ; **formule officielle seed** | `life_points_creature` : `hit_dice_creature + modifier_vitality_creature×level + (level−1)×round(hit_dice/2) + life_points_max_object` | Recaler les textes de règles si une seule formule « canon » est publiée |
+| **CA (créature)** | 10 + mod. Vitalité + bouclier (selon règles) | `armor_class_creature` **max 22** en seed (`db_column` `ca`) | Vérifier plafond **22 vs 26** selon version des règles |
+| **Initiative** | Au jet : 1d20 + mod. Intelligence + … (règles combat) | Seed : formule calculée **`[modifier_intelligence_creature]`** sur la fiche (le d20 est côté jet, pas dans cette carac) | OK si la carac = bonus fixe avant dé |
 | **PA (sorts)** | 0–12 (3.3.2.1) | `characteristic_spell` action_points_spell min 0, max 12 | OK |
 | **Niveau créature** | 1–20 (personnages), 1–40 (monstres) | `level_creature` min 1, max 20 (entity *) ; max 40 (monster) | OK |
 

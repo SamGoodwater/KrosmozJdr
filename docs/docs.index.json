@@ -585,19 +585,24 @@
     "description": "Analyse de la cohérence entre la **fiche personnage** (fiche_perso 0.1.3.8.pdf/pptx) et les caractéristiques définies dans le projet (`characteristic_creature`, `characteristics`, etc.)."
   },
   {
+    "path": "400- Jeu/410- Ressources/CREATURE_FORMULES_STABLES.md",
+    "title": "Formules créature stables (base + objets)",
+    "description": "Les définitions **creature** dont la formule est stockée en BDD (`characteristic_creature.formula`) décrivent une valeur **stable** pour la fiche : **stats de base + bonus d’équipement agrégés**."
+  },
+  {
     "path": "400- Jeu/410- Ressources/INVENTAIRE_MODIFS_CARACTERISTIQUES_PRINCIPALES.md",
     "title": "Inventaire des modifications — Caractéristiques principales",
     "description": "Document de référence listant toutes les modifications à appliquer suite à la refonte des caractéristiques principales (fiches Caractéristiques, fiche personnage, Equipements et forgemagie)."
   },
   {
+    "path": "400- Jeu/410- Ressources/MATRICE_ROLES_CARACTERISTIQUES_SPELL.md",
+    "title": "Matrice des caractéristiques spell — rôles A / B / C",
+    "description": "**Date** : 2026-04-30"
+  },
+  {
     "path": "400- Jeu/410- Ressources/PROPOSITIONS_FORMULES_ET_PROPRIETES.md",
     "title": "Propositions de modifications — Formules et propriétés",
     "description": "Ce document propose des modifications pour aligner les seeders et les caractéristiques sur les règles du jeu (docs 400) et les références PDF : **Equipements et forgemagie.pdf** et **CaractéristiquesAvecLien avec Dofus.pdf**."
-  },
-  {
-    "path": "400- Jeu/410- Ressources/MATRICE_ROLES_CARACTERISTIQUES_SPELL.md",
-    "title": "Matrice des caractéristiques spell — rôles A/B/C",
-    "description": "Classification cadre du sort / modificateur sur la cible / effet d’action ; liens vers règles 420, PROPOSITIONS_FORMULES_ET_PROPRIETES et architecture spell."
   },
   {
     "path": "400- Jeu/420- Règles/1-Introduction/1.1-presentation-du-jeu/1.1.1-concept-general.md",

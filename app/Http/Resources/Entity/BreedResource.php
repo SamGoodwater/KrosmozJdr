@@ -2,8 +2,12 @@
 
 namespace App\Http\Resources\Entity;
 
+use App\Models\Entity\Breed;
+use App\Models\Entity\Spell;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection as BaseCollection;
 
 /**
  * Resource API/Frontend pour l'entité Breed (affichée « Classe »).
@@ -16,6 +20,7 @@ class BreedResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+
         return [
             'id' => $this->id,
             'official_id' => $this->official_id,
@@ -41,6 +46,10 @@ class BreedResource extends JsonResource
             'createdBy' => $this->whenLoaded('createdBy'),
             'npcs' => $this->whenLoaded('npcs'),
             'spells' => $this->whenLoaded('spells'),
+            'spell_slots' => $this->when(
+                $this->relationLoaded('spells'),
+                fn () => $this->formatSpellSlots($request)
+            ),
 
             'can' => [
                 'update' => $user ? $user->can('update', $this->resource) : false,
@@ -48,5 +57,31 @@ class BreedResource extends JsonResource
                 'view' => $user ? $user->can('view', $this->resource) : false,
             ],
         ];
+    }
+
+    /**
+     * Emplacements de sorts groupés (niveau PJ + slot + choix).
+     *
+     * @return list<array{character_level: int, slot_index: int, spells: list<array<string, mixed>>}>
+     */
+    protected function formatSpellSlots(Request $request): array
+    {
+        /** @var Breed $breed */
+        $breed = $this->resource;
+        $grouped = $breed->getSpellSlotsGrouped();
+
+        return BaseCollection::make($grouped)
+            ->map(function (array $slot) use ($request): array {
+                /** @var Collection<int, Spell> $spells */
+                $spells = $slot['spells'];
+
+                return [
+                    'character_level' => $slot['character_level'],
+                    'slot_index' => $slot['slot_index'],
+                    'spells' => SpellResource::collection($spells)->resolve($request),
+                ];
+            })
+            ->values()
+            ->all();
     }
 }

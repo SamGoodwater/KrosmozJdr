@@ -22,6 +22,10 @@ erDiagram
   BREED_SPELL {
     breed_id : bigint(20) unsigned
     spell_id : bigint(20) unsigned
+    id : bigint(20) unsigned
+    character_level : smallint(5) unsigned
+    slot_index : tinyint(3) unsigned
+    choice_order : tinyint(3) unsigned
   }
   BREEDS {
     id : bigint(20) unsigned
