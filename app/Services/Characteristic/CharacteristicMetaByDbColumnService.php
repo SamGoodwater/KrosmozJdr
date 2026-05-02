@@ -35,7 +35,11 @@ final class CharacteristicMetaByDbColumnService
         $out = [];
         try {
             $charRows = CharacteristicCreature::query()
-                ->whereIn('entity', [CharacteristicCreature::ENTITY_ALL, CharacteristicCreature::ENTITY_MONSTER])
+                ->whereIn('entity', [
+                    CharacteristicCreature::ENTITY_ALL,
+                    CharacteristicCreature::ENTITY_MONSTER,
+                    CharacteristicCreature::ENTITY_CLASS,
+                ])
                 ->whereNotNull('db_column')
                 ->with(['characteristic.masterCharacteristic'])
                 ->get();

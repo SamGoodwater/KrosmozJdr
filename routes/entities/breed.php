@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Entity\BreedController;
+use Illuminate\Support\Facades\Route;
 
 // Routes publiques (accessibles sans authentification)
 Route::prefix('entities/breeds')->name('entities.breeds.')->group(function () {
@@ -16,5 +16,7 @@ Route::prefix('entities/breeds')->name('entities.breeds.')->middleware('auth')->
     Route::get('/{breed}/edit', [BreedController::class, 'edit'])->name('edit');
     Route::get('/{breed}/pdf', [BreedController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{breed}', [BreedController::class, 'update'])->name('update');
+    Route::patch('/{breed}/spells', [BreedController::class, 'updateSpells'])->name('updateSpells');
+    Route::patch('/{breed}/capabilities', [BreedController::class, 'updateCapabilities'])->name('updateCapabilities');
     Route::delete('/{breed}', [BreedController::class, 'delete'])->name('delete');
 });

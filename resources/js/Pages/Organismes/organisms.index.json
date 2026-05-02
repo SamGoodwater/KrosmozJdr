@@ -844,6 +844,27 @@
     "file": "entity/CapabilityEditFormContent.vue"
   },
   {
+    "name": "BreedSpellSlotsEditor",
+    "description": "Édition des sorts par emplacement + bloc « hors emplacement » (pivot 0/1). Affichage des sorts via SpellViewText (aperçu minimal au survol).",
+    "props": [],
+    "slots": [],
+    "file": "entity/BreedSpellSlotsEditor.vue"
+  },
+  {
+    "name": "BreedElementOrientationsEditor",
+    "description": "Édition des orientations par voix élémentaire (PATCH partiel sur la classe).",
+    "props": [],
+    "slots": [],
+    "file": "entity/BreedElementOrientationsEditor.vue"
+  },
+  {
+    "name": "BreedCapabilitiesEditor",
+    "description": "Capacités liées à une classe (liste plate, pas d’emplacement).",
+    "props": [],
+    "slots": [],
+    "file": "entity/BreedCapabilitiesEditor.vue"
+  },
+  {
     "name": "SearchInput",
     "description": "SearchInput Molecule (Atomic Design, DaisyUI)",
     "props": [

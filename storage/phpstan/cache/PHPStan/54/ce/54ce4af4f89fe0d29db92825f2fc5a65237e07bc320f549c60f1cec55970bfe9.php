@@ -2,7 +2,7 @@
 
 // ftm-/var/www/KrosmozJdr/vendor/spatie/laravel-medialibrary/src/HasMedia.php
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v4-2.3.2',
+   'variableKey' => 'v5-2.3.2',
    'data' => 
   array (
     0 => 
@@ -12,6 +12,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -41,6 +42,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -59,6 +61,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -98,6 +101,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -116,6 +120,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -155,6 +160,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -173,6 +179,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -212,6 +219,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -230,6 +238,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -269,6 +278,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -287,6 +297,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -326,6 +337,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -344,6 +356,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -383,6 +396,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -401,6 +415,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -440,6 +455,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -458,6 +474,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -497,6 +514,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -515,6 +533,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -554,6 +573,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -572,6 +592,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -611,6 +632,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -629,6 +651,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -668,6 +691,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -686,6 +710,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -725,6 +750,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -743,6 +769,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -782,6 +809,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -800,6 +828,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -839,6 +868,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary',
          'uses' => 
         array (
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
           'collection' => 'Illuminate\\Support\\Collection',
           'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -857,6 +887,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Spatie\\MediaLibrary',
            'uses' => 
           array (
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'morphmany' => 'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
             'collection' => 'Illuminate\\Support\\Collection',
             'conversion' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
@@ -894,7 +925,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/vendor/spatie/laravel-medialibrary/src/HasMedia.php' => '219623962447043288e53a25e99479cf300390d17982d9191f4930865f108cec',
+      '/var/www/KrosmozJdr/vendor/spatie/laravel-medialibrary/src/HasMedia.php' => '3eba33b5c754ef7a3be534e1835d826d49ea8469c612d42ec64d82e54d709b3b',
     ),
   ),
 ));

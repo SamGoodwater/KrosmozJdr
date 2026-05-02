@@ -2,29 +2,27 @@
 
 namespace Tests\Feature\Scrapping;
 
-use App\Models\User;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
-use App\Models\Entity\Monster;
 use App\Models\Entity\Item;
+use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
+use App\Services\Scrapping\Core\Relation\RelationResolutionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Tests\CreatesSystemUser;
 use Tests\SeedsScrappingPipeline;
 use Tests\TestCase;
-use Tests\CreatesSystemUser;
 
 /**
  * Tests d'intégration pour l'orchestrateur de scrapping.
- *
- * @package Tests\Feature\Scrapping
  */
 class ScrappingOrchestratorTest extends TestCase
 {
-    use RefreshDatabase, CreatesSystemUser, SeedsScrappingPipeline;
+    use CreatesSystemUser, RefreshDatabase, SeedsScrappingPipeline;
 
     private Orchestrator $orchestrator;
 
@@ -59,7 +57,6 @@ class ScrappingOrchestratorTest extends TestCase
             'id' => 1,
             'name' => ['fr' => 'Iop'],
             'description' => ['fr' => 'Description de la classe Iop'],
-            'life' => 50,
             'life_dice' => '1d6',
             'specificity' => 'Force',
         ];
@@ -97,10 +94,10 @@ class ScrappingOrchestratorTest extends TestCase
                     'intelligence' => 5,
                     'agility' => 8,
                     'wisdom' => 3,
-                    'chance' => 2
-                ]
+                    'chance' => 2,
+                ],
             ],
-            'size' => 'medium'
+            'size' => 'medium',
         ];
 
         Http::fake([
@@ -115,7 +112,7 @@ class ScrappingOrchestratorTest extends TestCase
         // Vérifier que le monstre a été créé
         $creature = Creature::where('name', 'Bouftou')->first();
         $this->assertNotNull($creature);
-        
+
         $monster = Monster::where('creature_id', $creature->id)->first();
         $this->assertNotNull($monster);
     }
@@ -132,7 +129,7 @@ class ScrappingOrchestratorTest extends TestCase
             'typeId' => 15,
             'level' => 1,
             'rarity' => 'common',
-            'price' => 10
+            'price' => 10,
         ];
 
         Http::fake([
@@ -165,16 +162,16 @@ class ScrappingOrchestratorTest extends TestCase
                     'description' => ['fr' => 'Description du sort'],
                     'cost' => 3,
                     'range' => 1,
-                    'area' => 1
-                ]
+                    'area' => 1,
+                ],
             ],
             'total' => 1,
             'limit' => 100,
-            'skip' => 0
+            'skip' => 0,
         ];
 
         $levelsList = [
-            'data' => []
+            'data' => [],
         ];
 
         Http::fake([
@@ -207,9 +204,8 @@ class ScrappingOrchestratorTest extends TestCase
             'api.dofusdb.fr/breeds/1*' => Http::response([
                 'id' => 1,
                 'description' => ['fr' => 'Description classe'],
-                'life' => 50,
                 'life_dice' => '1d6',
-                'specificity' => 'Force'
+                'specificity' => 'Force',
             ], 200),
             'api.dofusdb.fr/items/15*' => Http::response([
                 'id' => 15,
@@ -218,7 +214,7 @@ class ScrappingOrchestratorTest extends TestCase
                 'typeId' => 15,
                 'level' => 1,
                 'rarity' => 'common',
-                'price' => 10
+                'price' => 10,
             ], 200),
         ]);
 
@@ -230,7 +226,7 @@ class ScrappingOrchestratorTest extends TestCase
             $entity = $type === 'class' ? 'breed' : $type;
             $r = $this->orchestrator->runOne('dofusdb', $entity, $id, $this->pipelineOpts());
             $results[] = ['success' => $r->isSuccess()];
-            if (!$r->isSuccess()) {
+            if (! $r->isSuccess()) {
                 $errors++;
             }
         }
@@ -256,9 +252,8 @@ class ScrappingOrchestratorTest extends TestCase
         $mockData = [
             'id' => 1,
             'description' => ['fr' => 'Description'],
-            'life' => 50,
             'life_dice' => '1d6',
-            'specificity' => 'Force'
+            'specificity' => 'Force',
         ];
 
         Http::fake([
@@ -296,9 +291,8 @@ class ScrappingOrchestratorTest extends TestCase
         $classData = [
             'id' => 1,
             'description' => ['fr' => 'Description'],
-            'life' => 50,
             'life_dice' => '1d6',
-            'specificity' => 'Force'
+            'specificity' => 'Force',
         ];
 
         $spellLevelsData = [
@@ -306,9 +300,9 @@ class ScrappingOrchestratorTest extends TestCase
                 [
                     'id' => 1,
                     'spellId' => 201,
-                    'spellBreed' => 1
-                ]
-            ]
+                    'spellBreed' => 1,
+                ],
+            ],
         ];
 
         $spellData = [
@@ -319,13 +313,13 @@ class ScrappingOrchestratorTest extends TestCase
                     'description' => ['fr' => 'Description'],
                     'cost' => 3,
                     'range' => 1,
-                    'area' => 1
-                ]
-            ]
+                    'area' => 1,
+                ],
+            ],
         ];
 
         $levelsList = [
-            'data' => []
+            'data' => [],
         ];
 
         $spellVariantsData = [
@@ -350,6 +344,7 @@ class ScrappingOrchestratorTest extends TestCase
             if (str_contains($url, '/spells')) {
                 return Http::response($spellData, 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -378,12 +373,12 @@ class ScrappingOrchestratorTest extends TestCase
                     'intelligence' => 5,
                     'agility' => 8,
                     'wisdom' => 3,
-                    'chance' => 2
-                ]
+                    'chance' => 2,
+                ],
             ],
             'size' => 'medium',
             'spells' => [['id' => 201]],
-            'drops' => [['id' => 15]]
+            'drops' => [['id' => 15]],
         ];
 
         $spellData = [
@@ -394,13 +389,13 @@ class ScrappingOrchestratorTest extends TestCase
                     'description' => ['fr' => 'Description'],
                     'cost' => 3,
                     'range' => 1,
-                    'area' => 1
-                ]
-            ]
+                    'area' => 1,
+                ],
+            ],
         ];
 
         $levelsList = [
-            'data' => []
+            'data' => [],
         ];
 
         $itemData = [
@@ -409,7 +404,7 @@ class ScrappingOrchestratorTest extends TestCase
             'typeId' => 15,
             'level' => 1,
             'rarity' => 'common',
-            'price' => 10
+            'price' => 10,
         ];
 
         Http::fake(function ($request) use ($monsterData, $spellData, $levelsList, $itemData) {
@@ -426,13 +421,14 @@ class ScrappingOrchestratorTest extends TestCase
             if (str_contains($url, '/items/15')) {
                 return Http::response($itemData, 200);
             }
+
             return Http::response([], 404);
         });
 
         $r = $this->orchestrator->runOneWithRaw('dofusdb', 'monster', $monsterData, array_merge($this->pipelineOpts(), ['convert' => true, 'validate' => true]));
         $this->assertTrue($r->isSuccess(), $r->getMessage());
         $creatureId = $r->getIntegrationResult()?->getCreatureId();
-        $relationOut = app(\App\Services\Scrapping\Core\Relation\RelationResolutionService::class)
+        $relationOut = app(RelationResolutionService::class)
             ->resolveAndSyncMonsterRelations($monsterData, $creatureId, ['integrate' => true, 'dry_run' => false]);
         $result = [
             'success' => true,
@@ -483,6 +479,7 @@ class ScrappingOrchestratorTest extends TestCase
             if (str_contains($url, 'monsters')) {
                 return Http::response($fetchManyResponse, 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -512,9 +509,8 @@ class ScrappingOrchestratorTest extends TestCase
         $mockData = [
             'id' => 1,
             'description' => ['fr' => 'Description'],
-            'life' => 50,
             'life_dice' => '1d6',
-            'specificity' => 'Force'
+            'specificity' => 'Force',
         ];
 
         Http::fake([
@@ -595,4 +591,3 @@ class ScrappingOrchestratorTest extends TestCase
         $this->assertArrayHasKey('3', $decodedBonus);
     }
 }
-

@@ -9,6 +9,7 @@
  * console.log(classe.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { normalizeElementOrientationMap } from '@/Utils/entity/breedOrientations';
 
 export class Breed extends BaseModel {
     // ============================================
@@ -35,12 +36,13 @@ export class Breed extends BaseModel {
         return this._data.description || '';
     }
 
-    get life() {
-        return this._data.life || null;
-    }
-
     get lifeDice() {
         return this._data.life_dice || null;
+    }
+
+    /** Métadonnées caractéristique « dé de vie » (icône, couleur, surcharges). */
+    get lifeDiceMeta() {
+        return this._data.life_dice_meta || null;
     }
 
     get specificity() {
@@ -79,6 +81,10 @@ export class Breed extends BaseModel {
         return this._data.spells || [];
     }
 
+    get capabilities() {
+        return this._data.capabilities || [];
+    }
+
     /** @returns {Array<{ character_level: number, slot_index: number, spells: object[] }>} */
     get spellSlots() {
         return this._data.spell_slots || [];
@@ -86,6 +92,15 @@ export class Breed extends BaseModel {
 
     get spellsCount() {
         return Number(this._data.spells_count ?? this.spells.length ?? 0);
+    }
+
+    /**
+     * Carte voix élémentaire → clé d’orientation (API `element_orientations`).
+     *
+     * @returns {Record<string, string|null>}
+     */
+    get elementOrientations() {
+        return normalizeElementOrientationMap(this._data.element_orientations);
     }
 
     // ============================================
@@ -116,9 +131,8 @@ export class Breed extends BaseModel {
             case 'description':
             case 'description_fast':
                 return this._toDescriptionCell(fieldKey, format, size, options);
-            case 'life':
             case 'life_dice':
-                return this._toNumericCell(fieldKey, format, size, options);
+                return this._toLifeDiceCell(format, size, options);
             case 'specificity':
                 return this._toSpecificityCell(format, size, options);
             case 'image':
@@ -167,7 +181,7 @@ export class Breed extends BaseModel {
      * Génère une cellule pour la description
      * @private
      */
-    _toDescriptionCell(fieldKey, format, size, options) {
+    _toDescriptionCell(fieldKey, format, size, _options) {
         const description = fieldKey === 'description_fast' 
             ? (this.descriptionFast || this.description || '-')
             : (this.description || '-');
@@ -184,19 +198,23 @@ export class Breed extends BaseModel {
     }
 
     /**
-     * Génère une cellule pour un champ numérique
+     * Cellule « dé de vie » : valeur + métadonnées caractéristique (affichage riche possible).
      * @private
      */
-    _toNumericCell(fieldKey, format, size, options) {
-        const value = this[fieldKey] ?? null;
-        const displayValue = value !== null && value !== '' ? String(value) : '-';
-        
+    _toLifeDiceCell(format, _size, _options) {
+        const raw = this.lifeDice;
+        const display =
+            raw != null && String(raw).trim() !== '' ? String(raw).trim() : '-';
+
         return {
             type: 'text',
-            value: displayValue,
+            value: display,
             params: {
-                sortValue: value !== null && value !== '' ? Number(value) || 0 : 0,
-                searchValue: displayValue === '-' ? '' : displayValue,
+                truncate: format.truncate || null,
+                sortValue: display === '-' ? '' : display,
+                searchValue: display === '-' ? '' : display,
+                lifeDiceMeta: this.lifeDiceMeta,
+                rawLifeDice: raw,
             },
         };
     }
@@ -205,7 +223,7 @@ export class Breed extends BaseModel {
      * Génère une cellule pour la spécificité
      * @private
      */
-    _toSpecificityCell(format, size, options) {
+    _toSpecificityCell(format, size, _options) {
         const specificity = this.specificity || '-';
         
         return {
@@ -223,7 +241,7 @@ export class Breed extends BaseModel {
      * Génère une cellule pour une image/icône
      * @private
      */
-    _toImageCell(fieldKey, format, size, options) {
+    _toImageCell(fieldKey, _format, size, _options) {
         const imageUrl = fieldKey === 'icon' ? this.icon : this.image;
         
         if (!imageUrl) {
@@ -262,7 +280,20 @@ export class Breed extends BaseModel {
      * Colonne résumée : relations gameplay de la classe.
      * @private
      */
-    _toBreedSummaryRelationsCell(_options) {
+    _toBreedSummaryRelationsCell(options) {
+        if (options?.context === 'minimal' || options?.hideSpellCount) {
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [],
+                    sortValue: 0,
+                    searchValue: '',
+                    filterValue: '',
+                },
+            };
+        }
+
         const items = [
             {
                 icon: 'fa-solid fa-wand-magic-sparkles',
@@ -318,7 +349,6 @@ export class Breed extends BaseModel {
             name: this.name,
             description_fast: this.descriptionFast,
             description: this.description,
-            life: this.life,
             life_dice: this.lifeDice,
             specificity: this.specificity,
             dofus_version: this.dofusVersion,
@@ -327,7 +357,7 @@ export class Breed extends BaseModel {
             write_level: this.writeLevel,
             image: this.image,
             icon: this.icon,
-            auto_update: this.autoUpdate
+            auto_update: this.autoUpdate,
         };
     }
 }

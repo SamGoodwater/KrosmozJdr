@@ -19,6 +19,21 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  BREED_CAPABILITY {
+    id : bigint(20) unsigned
+    breed_id : bigint(20) unsigned
+    capability_id : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  BREED_ELEMENT_ORIENTATIONS {
+    id : bigint(20) unsigned
+    breed_id : bigint(20) unsigned
+    element : varchar(16)
+    orientation_key : varchar(64)
+    created_at : timestamp
+    updated_at : timestamp
+  }
   BREED_SPELL {
     breed_id : bigint(20) unsigned
     spell_id : bigint(20) unsigned
@@ -1203,6 +1218,9 @@ erDiagram
   ATTRIBUTE_CREATURE }o--|| ATTRIBUTES : "FK attribute_id"
   ATTRIBUTE_CREATURE }o--|| CREATURES : "FK creature_id"
   ATTRIBUTES }o--|| USERS : "FK created_by"
+  BREED_CAPABILITY }o--|| BREEDS : "FK breed_id"
+  BREED_CAPABILITY }o--|| CAPABILITIES : "FK capability_id"
+  BREED_ELEMENT_ORIENTATIONS }o--|| BREEDS : "FK breed_id"
   BREED_SPELL }o--|| BREEDS : "FK breed_id"
   BREED_SPELL }o--|| SPELLS : "FK spell_id"
   BREEDS }o--|| USERS : "FK created_by"

@@ -131,6 +131,35 @@ class BreedControllerTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_update_element_orientations(): void
+    {
+        $admin = $this->adminUser();
+        $breed = Breed::factory()->create();
+
+        $this->actingAs($admin)
+            ->patch(route('entities.breeds.update', $breed), [
+                'element_orientations' => [
+                    'air' => 'tank',
+                    'earth' => 'soin',
+                    'fire' => null,
+                    'water' => '',
+                ],
+            ])
+            ->assertRedirect(route('entities.breeds.show', $breed));
+
+        $this->assertDatabaseHas('breed_element_orientations', [
+            'breed_id' => $breed->id,
+            'element' => 'air',
+            'orientation_key' => 'tank',
+        ]);
+        $this->assertDatabaseHas('breed_element_orientations', [
+            'breed_id' => $breed->id,
+            'element' => 'earth',
+            'orientation_key' => 'soin',
+        ]);
+        $this->assertEquals(2, $breed->fresh()->elementOrientations()->count());
+    }
+
     public function test_admin_can_soft_delete_breed(): void
     {
         $admin = $this->adminUser();

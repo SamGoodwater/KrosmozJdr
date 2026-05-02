@@ -32,7 +32,7 @@ class UpdateBreedSpellsRequest extends FormRequest
         return [
             'spells' => ['present', 'array'],
             'spells.*' => ['array'],
-            'spells.*.character_level' => ['required', 'integer', 'min:1', 'max:200'],
+            'spells.*.character_level' => ['required', 'integer', 'min:0', 'max:200'],
             'spells.*.slot_index' => ['required', 'integer', 'min:1', 'max:50'],
             'spells.*.choice_order' => ['required', 'integer', 'min:0', 'max:255'],
         ];

@@ -2404,11 +2404,42 @@
     "file": "entity/breed/BreedViewCompact.vue"
   },
   {
+    "name": "BreedSpellSlotsDisplay",
+    "description": "Affichage des sorts par emplacement (lecture seule).",
+    "props": [
+      {
+        "name": "breed",
+        "type": "Object",
+        "desc": "- Instance Breed ou payload brut (spells, spell_slots)"
+      },
+      {
+        "name": "density",
+        "type": "'comfortable'|'compact'|'minimal'",
+        "desc": "- confortable = fiche large, compact = modal/tableau, minimal = une ligne/slot"
+      }
+    ],
+    "slots": [],
+    "file": "entity/breed/BreedSpellSlotsDisplay.vue"
+  },
+  {
     "name": "BreedLineRow",
     "description": "BreedLineRow — Une ligne de la vue Line pour les classes (Breed)",
     "props": [],
     "slots": [],
     "file": "entity/breed/BreedLineRow.vue"
+  },
+  {
+    "name": "BreedElementOrientationsDisplay",
+    "description": "Bandeau compact : 4 voix élémentaires + icône d’orientation par voix.",
+    "props": [
+      {
+        "name": "orientationMap",
+        "type": "Record<string, string|null|undefined>",
+        "desc": "- air|earth|fire|water => orientation_key"
+      }
+    ],
+    "slots": [],
+    "file": "entity/breed/BreedElementOrientationsDisplay.vue"
   },
   {
     "name": "AttributeViewText",

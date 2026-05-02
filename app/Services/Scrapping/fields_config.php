@@ -150,10 +150,6 @@ return [
                     'field_name' => 'description',
                     'convert' => false,
                 ],
-                'life' => [
-                    'field_name' => null,
-                    'convert' => false,
-                ],
                 'life_dice' => [
                     'field_name' => null,
                     'convert' => false,

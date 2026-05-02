@@ -3,21 +3,31 @@
 namespace Tests\Feature\Scrapping;
 
 use App\Models\Entity\Breed;
+use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
+use Database\Seeders\CharacteristicSeeder;
+use Database\Seeders\CreatureCharacteristicSeeder;
+use Database\Seeders\DofusdbCharacteristicIdSeeder;
+use Database\Seeders\DofusdbEffectMappingSeeder;
+use Database\Seeders\ObjectCharacteristicSeeder;
+use Database\Seeders\ScrappingEntityMappingCharacteristicSeeder;
+use Database\Seeders\ScrappingEntityMappingSeeder;
+use Database\Seeders\SpellCharacteristicSeeder;
+use Database\Seeders\SpellEffectTypeSeeder;
+use Database\Seeders\Type\TypeSeeder;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Tests\TestCase;
 use Tests\CreatesSystemUser;
+use Tests\TestCase;
 
 /**
  * Tests de la commande scrapping:run : chaîne complète (collecte API, conversion, validation, intégration BDD)
  * pour toutes les entités et principaux paramètres.
- *
- * @package Tests\Feature\Scrapping
  */
 class ScrappingRunCommandTest extends TestCase
 {
@@ -27,16 +37,16 @@ class ScrappingRunCommandTest extends TestCase
     {
         parent::setUp();
         $this->seed([
-            \Database\Seeders\Type\TypeSeeder::class,
-            \Database\Seeders\CharacteristicSeeder::class,
-            \Database\Seeders\CreatureCharacteristicSeeder::class,
-            \Database\Seeders\ObjectCharacteristicSeeder::class,
-            \Database\Seeders\DofusdbCharacteristicIdSeeder::class,
-            \Database\Seeders\SpellCharacteristicSeeder::class,
-            \Database\Seeders\SpellEffectTypeSeeder::class,
-            \Database\Seeders\DofusdbEffectMappingSeeder::class,
-            \Database\Seeders\ScrappingEntityMappingSeeder::class,
-            \Database\Seeders\ScrappingEntityMappingCharacteristicSeeder::class,
+            TypeSeeder::class,
+            CharacteristicSeeder::class,
+            CreatureCharacteristicSeeder::class,
+            ObjectCharacteristicSeeder::class,
+            DofusdbCharacteristicIdSeeder::class,
+            SpellCharacteristicSeeder::class,
+            SpellEffectTypeSeeder::class,
+            DofusdbEffectMappingSeeder::class,
+            ScrappingEntityMappingSeeder::class,
+            ScrappingEntityMappingCharacteristicSeeder::class,
         ]);
         $this->createSystemUser();
     }
@@ -76,6 +86,7 @@ class ScrappingRunCommandTest extends TestCase
             if (str_contains($url, '/breeds')) {
                 return Http::response(['data' => [['id' => 1]], 'total' => 1, 'limit' => 50, 'skip' => 0], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -115,6 +126,7 @@ class ScrappingRunCommandTest extends TestCase
                     'skip' => 0,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -167,6 +179,7 @@ class ScrappingRunCommandTest extends TestCase
             if (str_contains($url, '/items/71')) {
                 return Http::response(array_merge($itemPayload, ['id' => 71, 'name' => ['fr' => 'Épée 71']]), 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -200,6 +213,7 @@ class ScrappingRunCommandTest extends TestCase
                     'skip' => 0,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -243,6 +257,7 @@ class ScrappingRunCommandTest extends TestCase
         Http::fake(function ($request) {
             $url = (string) $request->url();
             $this->assertTrue(str_contains($url, 'skip') || str_contains($url, '%24skip'));
+
             return Http::response([
                 'data' => [['id' => 11], ['id' => 12]],
                 'total' => 20,
@@ -283,6 +298,7 @@ class ScrappingRunCommandTest extends TestCase
                     'skip' => 2,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -311,6 +327,7 @@ class ScrappingRunCommandTest extends TestCase
                     'grades' => [['level' => 5, 'lifePoints' => 100]],
                 ], 200);
             }
+
             return Http::response([
                 'data' => [['id' => 31, 'name' => ['fr' => 'Bouftou']]],
                 'total' => 1,
@@ -348,6 +365,7 @@ class ScrappingRunCommandTest extends TestCase
                     'skip' => 0,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -376,6 +394,7 @@ class ScrappingRunCommandTest extends TestCase
                     'skip' => 0,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -407,6 +426,7 @@ class ScrappingRunCommandTest extends TestCase
                     'skip' => 0,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -455,6 +475,7 @@ class ScrappingRunCommandTest extends TestCase
                     'skip' => 0,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -477,7 +498,6 @@ class ScrappingRunCommandTest extends TestCase
                 'id' => 1,
                 'name' => ['fr' => 'Iop'],
                 'description' => ['fr' => 'Description Iop'],
-                'life' => 50,
                 'life_dice' => '1d6',
                 'specificity' => 'Force',
             ], 200),
@@ -604,7 +624,7 @@ class ScrappingRunCommandTest extends TestCase
         $this->assertSame(0, $code);
         $item = Item::where('dofusdb_id', '70')->first();
         $resource = Resource::where('dofusdb_id', '70')->first();
-        $consumable = \App\Models\Entity\Consumable::where('dofusdb_id', '70')->first();
+        $consumable = Consumable::where('dofusdb_id', '70')->first();
         $this->assertTrue(
             $item !== null || $resource !== null || $consumable !== null,
             'L\'objet dofusdb_id 70 doit être créé (items, resources ou consumables)'
@@ -634,6 +654,7 @@ class ScrappingRunCommandTest extends TestCase
                     'skip' => 0,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -642,7 +663,7 @@ class ScrappingRunCommandTest extends TestCase
         $this->assertNotNull($first);
 
         // Vider le cache DofusDB pour que le 2e import refasse bien la requête et reçoive le nom mis à jour du mock
-        \Illuminate\Support\Facades\Cache::flush();
+        Cache::flush();
 
         $code = Artisan::call('scrapping', [
             '--entity' => 'monster',
@@ -666,6 +687,7 @@ class ScrappingRunCommandTest extends TestCase
                     'grades' => [['level' => 5, 'lifePoints' => 100]],
                 ], 200);
             }
+
             return Http::response([
                 'data' => [['id' => 31]],
                 'total' => 1,

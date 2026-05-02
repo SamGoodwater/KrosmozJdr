@@ -11,7 +11,9 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { Breed } from "@/Models/Entity/Breed";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
-import EntityRelationsManager from "@/Pages/Organismes/entity/EntityRelationsManager.vue";
+import BreedSpellSlotsEditor from "@/Pages/Organismes/entity/BreedSpellSlotsEditor.vue";
+import BreedCapabilitiesEditor from "@/Pages/Organismes/entity/BreedCapabilitiesEditor.vue";
+import BreedElementOrientationsEditor from "@/Pages/Organismes/entity/BreedElementOrientationsEditor.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
@@ -32,12 +34,24 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    breedOrientationKeys: {
+        type: Array,
+        default: () => [],
+    },
+    availableCapabilities: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const breed = computed(() => {
     const raw = props.breed || page.props.breed || {};
     return raw instanceof Breed ? raw : new Breed(raw);
 });
+
+const orientationKeyOptions = computed(
+    () => props.breedOrientationKeys?.length ? props.breedOrientationKeys : page.props.breedOrientationKeys || []
+);
 
 const fieldsConfig = computed(() => {
     const ctx = {
@@ -63,7 +77,7 @@ const confirmDelete = () => {
 <template>
     <Head :title="`Modifier : ${breed?.name || 'Classe'}`" />
 
-    <Container class="space-y-6 pb-8">
+    <Container class="space-y-6 pb-28 md:pb-32">
         <Route route="entities.breeds.index">
             <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
@@ -76,24 +90,30 @@ const confirmDelete = () => {
             entity-type="breed"
             :fields-config="fieldsConfig"
             :is-updating="true"
+            :fixed-footer-actions="true"
+            :footer-secondary-actions="false"
+            :compact-access-levels="true"
         />
 
-        <EntityRelationsManager
+        <BreedElementOrientationsEditor
+            v-if="breed.id"
+            :breed-id="breed.id"
+            :initial-map="breed.elementOrientations"
+            :orientation-keys="orientationKeyOptions"
+        />
+
+        <BreedSpellSlotsEditor
             v-if="breed.id"
             :relations="breed.spells || []"
             :available-items="availableSpells"
             :entity-id="breed.id"
-            entity-type="breeds"
-            relation-type="spells"
-            relation-name="Sorts liés à cette classe"
-            :config="{
-                displayFields: ['name', 'level'],
-                searchFields: ['name', 'description'],
-                relatedEntityType: 'spells',
-                itemLabel: 'sort',
-                itemLabelPlural: 'sorts',
-                pivotFields: ['character_level', 'slot_index', 'choice_order'],
-            }"
+        />
+
+        <BreedCapabilitiesEditor
+            v-if="breed.id"
+            :relations="breed.capabilities || []"
+            :available-items="availableCapabilities"
+            :entity-id="breed.id"
         />
 
         <div v-if="breed?.can?.delete" class="flex justify-end pt-4 border-t border-base-300">

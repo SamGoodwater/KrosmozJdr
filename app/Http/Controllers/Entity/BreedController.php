@@ -4,13 +4,19 @@ namespace App\Http\Controllers\Entity;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreBreedRequest;
+use App\Http\Requests\Entity\UpdateBreedCapabilitiesRequest;
 use App\Http\Requests\Entity\UpdateBreedRequest;
 use App\Http\Requests\Entity\UpdateBreedSpellsRequest;
 use App\Http\Resources\Entity\BreedResource;
+use App\Http\Resources\Entity\CapabilityResource;
+use App\Http\Resources\Entity\SpellResource;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Capability;
 use App\Models\Entity\Spell;
+use App\Services\Entity\SyncBreedElementOrientations;
 use App\Services\PdfService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,6 +31,7 @@ class BreedController extends Controller
             ->with([
                 'createdBy',
                 'npcs',
+                'elementOrientations',
                 'spells' => fn ($q) => $q->orderBy('breed_spell.character_level')
                     ->orderBy('breed_spell.slot_index')
                     ->orderBy('breed_spell.choice_order')
@@ -39,14 +46,10 @@ class BreedController extends Controller
             });
         }
 
-        if (request()->has('life') && request()->life !== '') {
-            $query->where('life', request()->life);
-        }
-
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
 
-        if (in_array($sortColumn, ['id', 'name', 'life', 'life_dice', 'dofusdb_id', 'created_at'])) {
+        if (in_array($sortColumn, ['id', 'name', 'life_dice', 'dofusdb_id', 'created_at'])) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
@@ -56,7 +59,7 @@ class BreedController extends Controller
 
         return Inertia::render('Pages/entity/breed/Index', [
             'breeds' => BreedResource::collection($breeds),
-            'filters' => request()->only(['search', 'life']),
+            'filters' => request()->only(['search']),
         ]);
     }
 
@@ -74,10 +77,14 @@ class BreedController extends Controller
     {
         $this->authorize('create', Breed::class);
 
-        $data = $request->validated();
-        $data['created_by'] = $request->user()?->id;
+        $validated = $request->validated();
+        $orientations = $validated['element_orientations'] ?? null;
+        unset($validated['element_orientations']);
+        $validated['created_by'] = $request->user()?->id;
 
-        $breed = Breed::create($data);
+        $breed = Breed::create($validated);
+
+        app(SyncBreedElementOrientations::class)->sync($breed, $orientations);
 
         return redirect()->route('entities.breeds.edit', $breed)
             ->with('success', 'Classe créée avec succès.');
@@ -89,11 +96,13 @@ class BreedController extends Controller
 
         $breed->load([
             'createdBy',
+            'elementOrientations',
             'spells' => fn ($q) => $q->orderBy('breed_spell.character_level')
                 ->orderBy('breed_spell.slot_index')
                 ->orderBy('breed_spell.choice_order')
                 ->orderBy('spells.name'),
             'npcs' => fn ($q) => $q->limit(100),
+            'capabilities' => fn ($q) => $q->orderBy('name'),
         ]);
 
         return Inertia::render('Pages/entity/breed/Show', [
@@ -107,21 +116,37 @@ class BreedController extends Controller
 
         $breed->load([
             'createdBy',
+            'elementOrientations',
             'spells' => fn ($q) => $q->orderBy('breed_spell.character_level')
                 ->orderBy('breed_spell.slot_index')
                 ->orderBy('breed_spell.choice_order')
                 ->orderBy('spells.name'),
+            'capabilities' => fn ($q) => $q->orderBy('name'),
         ]);
 
-        $availableSpells = Spell::query()
-            ->select(['id', 'name', 'level', 'description'])
-            ->orderBy('name')
-            ->limit(8000)
-            ->get();
+        $spellTable = (new Spell)->getTable();
+        $levelOrder = Schema::getConnection()->getDriverName() === 'sqlite'
+            ? "CAST({$spellTable}.level AS INTEGER)"
+            : "CAST({$spellTable}.level AS UNSIGNED)";
+
+        $req = request();
+        $availableSpells = SpellResource::collection(
+            Spell::query()
+                ->orderByRaw("{$levelOrder} ASC")
+                ->orderBy("{$spellTable}.name")
+                ->limit(8000)
+                ->get()
+        )->toArray($req);
+
+        $availableCapabilities = CapabilityResource::collection(
+            Capability::query()->orderBy('name')->limit(5000)->get()
+        )->toArray($req);
 
         return Inertia::render('Pages/entity/breed/Edit', [
             'breed' => new BreedResource($breed),
             'availableSpells' => $availableSpells,
+            'availableCapabilities' => $availableCapabilities,
+            'breedOrientationKeys' => config('breed_element_orientations.allowed_orientation_keys', []),
         ]);
     }
 
@@ -129,7 +154,18 @@ class BreedController extends Controller
     {
         $this->authorize('update', $breed);
 
-        $breed->update($request->validated());
+        $validated = $request->validated();
+        $hasOrientationPayload = array_key_exists('element_orientations', $validated);
+        $orientations = $validated['element_orientations'] ?? null;
+        unset($validated['element_orientations']);
+
+        if (count($validated) > 0) {
+            $breed->update($validated);
+        }
+
+        if ($hasOrientationPayload) {
+            app(SyncBreedElementOrientations::class)->sync($breed, $orientations);
+        }
 
         return redirect()->route('entities.breeds.show', $breed)
             ->with('success', 'Classe mise à jour avec succès.');
@@ -144,6 +180,14 @@ class BreedController extends Controller
 
         return redirect()->back()
             ->with('success', 'Sorts de la classe mis à jour.');
+    }
+
+    public function updateCapabilities(UpdateBreedCapabilitiesRequest $request, Breed $breed): RedirectResponse
+    {
+        $breed->capabilities()->sync($request->validatedCapabilityIds());
+
+        return redirect()->back()
+            ->with('success', 'Capacités de la classe mises à jour.');
     }
 
     public function delete(Breed $breed): RedirectResponse

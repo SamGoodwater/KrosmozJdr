@@ -11,12 +11,13 @@
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
+import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
 
 const props = defineProps({
     breed: {
@@ -51,10 +52,12 @@ const imageUrl = computed(() => {
 
 const cellOpts = () => ({ size: "xs", context: "minimal" });
 
-const lifeCell = computed(() => entity.value?.toCell?.("life", cellOpts()) ?? null);
 const lifeDiceCell = computed(() => entity.value?.toCell?.("life_dice", cellOpts()) ?? null);
 const specificityCell = computed(() => entity.value?.toCell?.("specificity", cellOpts()) ?? null);
-const relationsCell = computed(() => entity.value?.toCell?.("breed_summary_relations", cellOpts()) ?? null);
+const orientationMap = computed(() => {
+    const raw = entity.value?._data ?? entity.value;
+    return normalizeElementOrientationMap(raw?.element_orientations);
+});
 
 const descriptionFull = computed(() => {
     const d = entity.value?.description ?? entity.value?._data?.description;
@@ -139,32 +142,19 @@ const handleAction = async (actionKey) => {
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
                             <Tooltip
-                                v-if="lifeCell?.value && lifeCell.value !== '-' && lifeCell.value !== '—'"
-                                :content="`Vie : ${lifeCell.value}`"
-                                placement="top"
-                            >
-                                <span class="text-base-content/80">
-                                    <span class="font-medium">Vie</span>
-                                    {{ lifeCell.value }}
-                                </span>
-                            </Tooltip>
-                            <Tooltip
                                 v-if="lifeDiceCell?.value && lifeDiceCell.value !== '-' && lifeDiceCell.value !== '—'"
                                 :content="`Dé de vie : ${lifeDiceCell.value}`"
                                 placement="top"
                             >
                                 <span class="text-base-content/80">
-                                    <span class="font-medium">Dé</span>
+                                    <span class="font-medium">Dé de vie</span>
                                     {{ lifeDiceCell.value }}
                                 </span>
                             </Tooltip>
-                            <CellRenderer
-                                v-if="
-                                    relationsCell?.type === 'chips' &&
-                                    (relationsCell?.params?.items?.length ?? 0) > 0
-                                "
-                                :cell="relationsCell"
-                                class="inline-flex items-center"
+                            <BreedElementOrientationsDisplay
+                                :orientation-map="orientationMap"
+                                size="xs"
+                                class="w-full"
                             />
                         </div>
                         <p
@@ -228,32 +218,19 @@ const handleAction = async (actionKey) => {
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
                             <Tooltip
-                                v-if="lifeCell?.value && lifeCell.value !== '-' && lifeCell.value !== '—'"
-                                :content="`Vie : ${lifeCell.value}`"
-                                placement="top"
-                            >
-                                <span class="text-base-content/80">
-                                    <span class="font-medium">Vie</span>
-                                    {{ lifeCell.value }}
-                                </span>
-                            </Tooltip>
-                            <Tooltip
                                 v-if="lifeDiceCell?.value && lifeDiceCell.value !== '-' && lifeDiceCell.value !== '—'"
                                 :content="`Dé de vie : ${lifeDiceCell.value}`"
                                 placement="top"
                             >
                                 <span class="text-base-content/80">
-                                    <span class="font-medium">Dé</span>
+                                    <span class="font-medium">Dé de vie</span>
                                     {{ lifeDiceCell.value }}
                                 </span>
                             </Tooltip>
-                            <CellRenderer
-                                v-if="
-                                    relationsCell?.type === 'chips' &&
-                                    (relationsCell?.params?.items?.length ?? 0) > 0
-                                "
-                                :cell="relationsCell"
-                                class="inline-flex items-center"
+                            <BreedElementOrientationsDisplay
+                                :orientation-map="orientationMap"
+                                size="xs"
+                                class="w-full"
                             />
                         </div>
                         <p

@@ -5,7 +5,7 @@
  * @props {Object} breeds - Collection paginée des breeds
  */
 import { Head, router } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
@@ -24,9 +24,9 @@ import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
-import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
+import { createFieldsConfigFromDescriptors } from "@/Utils/entity/descriptor-form";
 
-const props = defineProps({
+defineProps({
     breeds: {
         type: Object,
         required: true
@@ -52,7 +52,21 @@ const { refreshEntity } = useScrapping();
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
-const { tableQuickEditEnabled, onUpdateTableQuickEdit } = useEntityIndexQuickEditTable(Breed);
+const {
+    tableQuickEditEnabled,
+    quickEditModalOpen,
+    quickEditEntity,
+    onUpdateTableQuickEdit,
+} = useEntityIndexQuickEditTable(Breed);
+
+watch(
+    () => canModify.value,
+    (allowed) => {
+        if (allowed) return;
+        selectedIds.value = [];
+    },
+    { immediate: true }
+);
 
 const tableConfig = computed(() => {
     const ctx = {
@@ -70,11 +84,6 @@ const serverUrl = computed(() => `${route('api.tables.breeds')}?format=entities&
 const fieldsConfig = computed(() => {
   const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
   return createFieldsConfigFromDescriptors(getBreedFieldDescriptors(ctx));
-});
-
-const defaultEntity = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createDefaultEntityFromDescriptors(getBreedFieldDescriptors(ctx));
 });
 
 const selectedEntities = computed(() => {
@@ -104,23 +113,58 @@ const handleTableLoaded = ({ rows, meta }) => {
     tableMeta.value = meta || {};
 };
 
-const handleRowDoubleClick = (row) => {
-    const raw = row?.rowParams?.entity;
-    if (!raw) return;
-    const model = raw instanceof Breed ? raw : Breed.fromArray([raw])[0] || null;
+const openPreviewModal = (model) => {
     if (!model) return;
     selectedEntity.value = model;
     modalView.value = "large";
     modalOpen.value = true;
 };
 
+const handleRowDoubleClick = (row) => {
+    const raw = row?.rowParams?.entity;
+    if (!raw) return;
+    const model = raw instanceof Breed ? raw : Breed.fromArray([raw])[0] || null;
+    if (!model) return;
+    openPreviewModal(model);
+};
+
+/**
+ * Raccourcis clavier du tableau (Entrée, Ctrl+Entrée, Alt+Entrée) — aligné sur les autres listes d’entités.
+ *
+ * @param {{ type: string, row: object }} payload
+ */
+const handleKeyboardIntent = (payload) => {
+    const { type, row } = payload || {};
+    const raw = row?.rowParams?.entity;
+    if (!raw) return;
+    const model = raw instanceof Breed ? raw : Breed.fromArray([raw])?.[0];
+    if (!model?.id) return;
+    switch (type) {
+        case "open-show-page":
+            router.visit(route("entities.breeds.show", { breed: model.id }));
+            break;
+        case "open-edit":
+            quickEditEntity.value = model;
+            quickEditModalOpen.value = true;
+            break;
+        case "open-view":
+            openPreviewModal(model);
+            break;
+        default:
+            break;
+    }
+};
+
+const handleCreateRequest = () => {
+    if (canCreate.value) {
+        createModalOpen.value = true;
+    }
+};
+
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
-const quickEditModalOpen = ref(false);
-const quickEditEntity = ref(null);
-
 const handleCreate = () => {
     createModalOpen.value = true;
 };
@@ -213,7 +257,7 @@ const handleModalCopyLink = async (entity) => {
     }
 };
 
-const handleModalDownloadPdf = (entity) => {};
+const handleModalDownloadPdf = (_entity) => {};
 
 const handleModalRefresh = async (entity) => {
     const entityId = entity?.id;
@@ -223,7 +267,7 @@ const handleModalRefresh = async (entity) => {
     closeModal();
 };
 
-const handleModalDelete = (entity) => {};
+const handleModalDelete = (_entity) => {};
 
 const handleQuickEditSubmit = () => {
     refreshToken.value++;
@@ -263,6 +307,8 @@ const handleQuickEditSubmit = () => {
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
                     @update:quick-edit-enabled="onUpdateTableQuickEdit"
+                    @keyboard-intent="handleKeyboardIntent"
+                    @create-request="handleCreateRequest"
                     @action="handleTableAction"
                 />
             </div>

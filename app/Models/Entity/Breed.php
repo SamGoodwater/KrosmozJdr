@@ -27,7 +27,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $name
  * @property string|null $description_fast
  * @property string|null $description
- * @property string|null $life
  * @property string|null $life_dice
  * @property string|null $specificity
  * @property string $dofus_version
@@ -44,6 +43,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $npcs_count
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
+ * @property-read Collection<int, Capability> $capabilities
+ * @property-read int|null $capabilities_count
  *
  * @method static \Database\Factories\Entity\BreedFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newModelQuery()
@@ -113,7 +114,6 @@ class Breed extends Model implements HasMedia
         'name',
         'description_fast',
         'description',
-        'life',
         'life_dice',
         'specificity',
         'dofus_version',
@@ -196,6 +196,39 @@ class Breed extends Model implements HasMedia
         return $this->belongsToMany(Spell::class, 'breed_spell', 'breed_id', 'spell_id')
             ->using(BreedSpellPivot::class)
             ->withPivot(['character_level', 'slot_index', 'choice_order']);
+    }
+
+    /**
+     * Capacités associées à la classe (liste plate, sans emplacement).
+     */
+    public function capabilities()
+    {
+        return $this->belongsToMany(Capability::class, 'breed_capability', 'breed_id', 'capability_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Orientations par voix élémentaire (air, terre, feu, eau).
+     */
+    public function elementOrientations()
+    {
+        return $this->hasMany(BreedElementOrientation::class, 'breed_id');
+    }
+
+    /**
+     * @return array<string, string|null> air|earth|fire|water => orientation_key|null
+     */
+    public function elementOrientationsMap(): array
+    {
+        $map = array_fill_keys(BreedElementOrientation::ELEMENTS, null);
+        if (! $this->relationLoaded('elementOrientations')) {
+            return $map;
+        }
+        foreach ($this->elementOrientations as $row) {
+            $map[$row->element] = $row->orientation_key;
+        }
+
+        return $map;
     }
 
     /**

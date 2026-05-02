@@ -208,7 +208,6 @@ class PdfService
                 'creature' => $entity->creature?->name ?? null,
             ],
             'breed' => [
-                'life' => $entity->life,
                 'life_dice' => $entity->life_dice,
                 'dofusdb_id' => $entity->dofusdb_id,
                 'sorts_par_emplacements' => $entity instanceof Breed

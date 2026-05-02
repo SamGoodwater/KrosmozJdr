@@ -35,7 +35,7 @@ class BreedTableController extends Controller
         }
 
         $query = Breed::query()
-            ->with(['createdBy'])
+            ->with(['createdBy', 'elementOrientations'])
             ->withCount(['spells']);
 
         if ($search !== '') {
@@ -45,7 +45,7 @@ class BreedTableController extends Controller
             });
         }
 
-        $allowedSort = ['id', 'name', 'life', 'life_dice', 'dofusdb_id', 'created_at', 'updated_at'];
+        $allowedSort = ['id', 'name', 'life_dice', 'dofusdb_id', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $rows = $query->limit($limit)->get();
@@ -69,7 +69,6 @@ class BreedTableController extends Controller
                     'name' => $c->name,
                     'description_fast' => $c->description_fast,
                     'description' => $c->description,
-                    'life' => $c->life,
                     'life_dice' => $c->life_dice,
                     'specificity' => $c->specificity,
                     'dofus_version' => $c->dofus_version,
@@ -86,6 +85,7 @@ class BreedTableController extends Controller
                         'email' => $createdBy->email,
                     ] : null,
                     'spells_count' => (int) ($c->spells_count ?? 0),
+                    'element_orientations' => $c->elementOrientationsMap(),
                     'created_at' => $c->created_at?->toISOString(),
                     'updated_at' => $c->updated_at?->toISOString(),
                 ];
@@ -127,13 +127,6 @@ class BreedTableController extends Controller
                             'href' => $showHref,
                             'searchValue' => (string) $c->name,
                             'sortValue' => (string) $c->name,
-                        ],
-                    ],
-                    'life' => [
-                        'type' => 'text',
-                        'value' => $c->life ?: '-',
-                        'params' => [
-                            'sortValue' => is_numeric((string) $c->life) ? (int) $c->life : (string) ($c->life ?? ''),
                         ],
                     ],
                     'life_dice' => [
@@ -192,7 +185,6 @@ class BreedTableController extends Controller
                         'name' => $c->name,
                         'description_fast' => $c->description_fast,
                         'description' => $c->description,
-                        'life' => $c->life,
                         'life_dice' => $c->life_dice,
                         'specificity' => $c->specificity,
                         'dofus_version' => $c->dofus_version,

@@ -2,7 +2,7 @@
 
 // ftm-/var/www/KrosmozJdr/vendor/larastan/larastan/stubs/common/Model.stub
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v4-2.3.2',
+   'variableKey' => 'v5-2.3.2',
    'data' => 
   array (
     0 => 

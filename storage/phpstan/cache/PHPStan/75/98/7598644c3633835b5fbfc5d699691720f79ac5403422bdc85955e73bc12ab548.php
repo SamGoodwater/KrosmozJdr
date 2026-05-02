@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/Specialization.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Entity\Specialization
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-4820cce501c8a9c24f283d4ed4754460893b83d226b858a6b55fbe72d73c075a-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-ef06d7f8496948fe89f41a83ab1788416e3edc6fafefd4cbabce974204ac0ae0-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -39,7 +39,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property-read User|null $createdBy
  * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
- *
  * @method static \\Database\\Factories\\Entity\\SpecializationFactory factory($count = null, $state = [])
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Specialization newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Specialization newQuery()
@@ -58,17 +57,15 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Specialization whereWriteLevel($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Specialization withTrashed()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Specialization withoutTrashed()
- *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 59,
-    'endLine' => 126,
+    'startLine' => 56,
+    'endLine' => 123,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -96,20 +93,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'raw\'',
           'attributes' => 
           array (
-            'startLine' => 64,
-            'endLine' => 64,
+            'startLine' => 61,
+            'endLine' => 61,
             'startTokenPos' => 99,
-            'startFilePos' => 3194,
+            'startFilePos' => 3185,
             'endTokenPos' => 99,
-            'endFilePos' => 3198,
+            'endFilePos' => 3189,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 64,
-        'endLine' => 64,
+        'startLine' => 61,
+        'endLine' => 61,
         'startColumn' => 5,
         'endColumn' => 35,
       ),
@@ -125,20 +122,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'draft\'',
           'attributes' => 
           array (
-            'startLine' => 66,
-            'endLine' => 66,
+            'startLine' => 63,
+            'endLine' => 63,
             'startTokenPos' => 110,
-            'startFilePos' => 3233,
+            'startFilePos' => 3224,
             'endTokenPos' => 110,
-            'endFilePos' => 3239,
+            'endFilePos' => 3230,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 66,
-        'endLine' => 66,
+        'startLine' => 63,
+        'endLine' => 63,
         'startColumn' => 5,
         'endColumn' => 39,
       ),
@@ -154,20 +151,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'playable\'',
           'attributes' => 
           array (
-            'startLine' => 68,
-            'endLine' => 68,
+            'startLine' => 65,
+            'endLine' => 65,
             'startTokenPos' => 121,
-            'startFilePos' => 3277,
+            'startFilePos' => 3268,
             'endTokenPos' => 121,
-            'endFilePos' => 3286,
+            'endFilePos' => 3277,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 68,
-        'endLine' => 68,
+        'startLine' => 65,
+        'endLine' => 65,
         'startColumn' => 5,
         'endColumn' => 45,
       ),
@@ -183,20 +180,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'archived\'',
           'attributes' => 
           array (
-            'startLine' => 70,
-            'endLine' => 70,
+            'startLine' => 67,
+            'endLine' => 67,
             'startTokenPos' => 132,
-            'startFilePos' => 3324,
+            'startFilePos' => 3315,
             'endTokenPos' => 132,
-            'endFilePos' => 3333,
+            'endFilePos' => 3324,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 70,
-        'endLine' => 70,
+        'startLine' => 67,
+        'endLine' => 67,
         'startColumn' => 5,
         'endColumn' => 45,
       ),
@@ -212,20 +209,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'images/entity/specializations\'',
           'attributes' => 
           array (
-            'startLine' => 73,
-            'endLine' => 73,
+            'startLine' => 70,
+            'endLine' => 70,
             'startTokenPos' => 145,
-            'startFilePos' => 3421,
+            'startFilePos' => 3412,
             'endTokenPos' => 145,
-            'endFilePos' => 3451,
+            'endFilePos' => 3442,
           ),
         ),
         'docComment' => '/** Répertoire Media Library pour ce modèle. */',
         'attributes' => 
         array (
         ),
-        'startLine' => 73,
-        'endLine' => 73,
+        'startLine' => 70,
+        'endLine' => 70,
         'startColumn' => 5,
         'endColumn' => 62,
       ),
@@ -241,20 +238,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'image-[id]-[name]\'',
           'attributes' => 
           array (
-            'startLine' => 76,
-            'endLine' => 76,
+            'startLine' => 73,
+            'endLine' => 73,
             'startTokenPos' => 158,
-            'startFilePos' => 3592,
+            'startFilePos' => 3583,
             'endTokenPos' => 158,
-            'endFilePos' => 3610,
+            'endFilePos' => 3601,
           ),
         ),
         'docComment' => '/** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */',
         'attributes' => 
         array (
         ),
-        'startLine' => 76,
-        'endLine' => 76,
+        'startLine' => 73,
+        'endLine' => 73,
         'startColumn' => 5,
         'endColumn' => 65,
       ),
@@ -273,12 +270,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'name\', \'description\', \'state\', \'read_level\', \'write_level\', \'image\', \'created_by\']',
           'attributes' => 
           array (
-            'startLine' => 83,
-            'endLine' => 91,
+            'startLine' => 80,
+            'endLine' => 88,
             'startTokenPos' => 169,
-            'startFilePos' => 3736,
+            'startFilePos' => 3727,
             'endTokenPos' => 192,
-            'endFilePos' => 3882,
+            'endFilePos' => 3873,
           ),
         ),
         'docComment' => '/**
@@ -289,8 +286,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 83,
-        'endLine' => 91,
+        'startLine' => 80,
+        'endLine' => 88,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -312,12 +309,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'read_level\' => \'integer\', \'write_level\' => \'integer\']',
           'attributes' => 
           array (
-            'startLine' => 98,
-            'endLine' => 101,
+            'startLine' => 95,
+            'endLine' => 98,
             'startTokenPos' => 203,
-            'startFilePos' => 4009,
+            'startFilePos' => 4000,
             'endTokenPos' => 219,
-            'endFilePos' => 4086,
+            'endFilePos' => 4077,
           ),
         ),
         'docComment' => '/**
@@ -328,8 +325,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 98,
-        'endLine' => 101,
+        'startLine' => 95,
+        'endLine' => 98,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -356,8 +353,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the user that created the specialization.
  */',
-        'startLine' => 106,
-        'endLine' => 109,
+        'startLine' => 103,
+        'endLine' => 106,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -385,8 +382,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les capacités associées à cette spécialisation.
  */',
-        'startLine' => 114,
-        'endLine' => 117,
+        'startLine' => 111,
+        'endLine' => 114,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -414,8 +411,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les PNJ de cette spécialisation.
  */',
-        'startLine' => 122,
-        'endLine' => 125,
+        'startLine' => 119,
+        'endLine' => 122,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

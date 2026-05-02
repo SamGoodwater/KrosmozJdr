@@ -20,6 +20,8 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
+import BreedSpellSlotsDisplay from "@/Pages/Molecules/entity/breed/BreedSpellSlotsDisplay.vue";
+import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 
 const props = defineProps({
     breed: {
@@ -73,7 +75,6 @@ const canShowField = (fieldKey) => {
 // Champs à afficher dans la vue compacte
 const compactFields = computed(() => [
     'name',
-    'life',
     'life_dice',
     'specificity',
     'state',
@@ -95,6 +96,11 @@ const getCell = (fieldKey) => {
         context: 'compact',
     });
 };
+
+const hasSpellSlotGroups = computed(() => {
+    const raw = props.breed?._data ?? props.breed;
+    return buildSpellSlotGroups(raw).length > 0;
+});
 
 const handleAction = async (actionKey) => {
     const breedId = props.breed.id;
@@ -198,6 +204,13 @@ const handleAction = async (actionKey) => {
                 </div>
             </div>
         </div>
+
+        <BreedSpellSlotsDisplay
+            v-if="hasSpellSlotGroups"
+            class="mt-2"
+            :breed="breed?._data ?? breed"
+            density="minimal"
+        />
     </div>
 </template>
 

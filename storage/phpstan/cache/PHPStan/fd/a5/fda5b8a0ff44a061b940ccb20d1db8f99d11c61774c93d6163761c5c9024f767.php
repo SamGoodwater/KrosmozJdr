@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/Capability.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Entity\Capability
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-a457b9803a9e7a5fd64eed429b75f8d0610cac7c76733e6322b43586c0ac48a6-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-8d863bae534627c2436ee829818028eca501c0b5d8234eebe6720ca85bc9581e-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -92,7 +92,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 83,
-    'endLine' => 167,
+    'endLine' => 176,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -440,6 +440,35 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  */',
         'startLine' => 163,
         'endLine' => 166,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Capability',
+        'implementingClassName' => 'App\\Models\\Entity\\Capability',
+        'currentClassName' => 'App\\Models\\Entity\\Capability',
+        'aliasName' => NULL,
+      ),
+      'breeds' => 
+      array (
+        'name' => 'breeds',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Classes (breeds) qui référencent cette capacité.
+ */',
+        'startLine' => 171,
+        'endLine' => 175,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

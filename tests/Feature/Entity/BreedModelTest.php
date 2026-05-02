@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Spell;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,8 +12,6 @@ use Tests\TestCase;
  * Tests d'intégration pour le modèle Breed
  *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- *
- * @package Tests\Feature\Entity
  */
 class BreedModelTest extends TestCase
 {
@@ -73,7 +71,7 @@ class BreedModelTest extends TestCase
         // Rafraîchir la relation
         $breed->refresh();
 
-        $this->assertCount(2, $breed->spells);
+        $this->assertSame(2, $breed->spells->count());
         $this->assertTrue($breed->spells->contains($spell1));
         $this->assertTrue($breed->spells->contains($spell2));
     }
@@ -102,16 +100,49 @@ class BreedModelTest extends TestCase
         $breed->spells()->sync([$spell1->id, $spell2->id]);
 
         $breed->refresh();
-        $this->assertCount(2, $breed->spells);
+        $this->assertSame(2, $breed->spells->count());
 
         // Synchroniser avec d'autres sorts
         $breed->spells()->sync([$spell2->id, $spell3->id]);
 
         $breed->refresh();
-        $this->assertCount(2, $breed->spells);
+        $this->assertSame(2, $breed->spells->count());
         $this->assertFalse($breed->spells->contains($spell1));
         $this->assertTrue($breed->spells->contains($spell2));
         $this->assertTrue($breed->spells->contains($spell3));
+    }
+
+    /**
+     * Regroupement par (character_level, slot_index), tri par choice_order puis nom.
+     */
+    public function test_get_spell_slots_grouped_orders_spells(): void
+    {
+        $user = User::factory()->create();
+        $breed = Breed::factory()->create(['created_by' => $user->id]);
+        $sA = Spell::factory()->create(['created_by' => $user->id, 'name' => 'Alpha']);
+        $sB = Spell::factory()->create(['created_by' => $user->id, 'name' => 'Bravo']);
+
+        $breed->spells()->sync([
+            $sA->id => [
+                'character_level' => 1,
+                'slot_index' => 1,
+                'choice_order' => 1,
+            ],
+            $sB->id => [
+                'character_level' => 1,
+                'slot_index' => 1,
+                'choice_order' => 0,
+            ],
+        ]);
+
+        $breed->load('spells');
+        $grouped = $breed->getSpellSlotsGrouped();
+
+        $this->assertCount(1, $grouped);
+        $this->assertSame(1, $grouped[0]['character_level']);
+        $this->assertSame(1, $grouped[0]['slot_index']);
+        $names = $grouped[0]['spells']->pluck('name')->all();
+        $this->assertSame(['Bravo', 'Alpha'], $names);
     }
 
     /**
@@ -142,7 +173,7 @@ class BreedModelTest extends TestCase
 
         // Supprimer le breed (soft delete)
         $breedId = $breed->id;
-        $breed->delete();
+        Breed::destroy($breedId);
 
         // Vérifier que le breed est bien soft deleted
         $this->assertSoftDeleted('breeds', [

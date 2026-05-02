@@ -123,8 +123,28 @@ const props = defineProps({
         default: null,
         validator: (v) => v == null || v === '' || v === 'spell' || v === 'capability',
     },
-    /** Pied d’actions fixe (enregistrer / annuler / reset) visible au scroll. */
+    /**
+     * Pied d’actions collé en bas du viewport (sort / capacité : long formulaire).
+     * Si false : pied en flux normal sous les champs (évite les chevauchements et le « double footer »).
+     */
     fixedFooterActions: {
+        type: Boolean,
+        default: false,
+    },
+    /**
+     * Classes additionnelles sur le conteneur du pied fixe (ex. `lg:left-64` avec barre latérale).
+     */
+    fixedFooterInsetClass: {
+        type: String,
+        default: '',
+    },
+    /** Affiche Annuler et Reset dans le pied (désactiver si la navigation se fait via l’en-tête). */
+    footerSecondaryActions: {
+        type: Boolean,
+        default: true,
+    },
+    /** Lecture / écriture : ligne compacte, labels courts, sans texte d’aide sous le champ. */
+    compactAccessLevels: {
         type: Boolean,
         default: false,
     },
@@ -247,8 +267,58 @@ const rootFormClass = computed(() => {
 
 /** Espace sous le formulaire pour ne pas masquer le dernier champ derrière le pied fixe. */
 const formScrollPaddingClass = computed(() =>
-    props.fixedFooterActions ? 'pb-2 md:pb-3 lg:pb-4' : '',
+    props.fixedFooterActions ? 'pb-24 sm:pb-28 md:pb-32' : '',
 );
+
+const footerWrapperClass = computed(() => {
+    if (props.fixedFooterActions) {
+        const horizontal = props.fixedFooterInsetClass?.trim()
+            ? props.fixedFooterInsetClass.split(/\s+/).filter(Boolean)
+            : ['left-0', 'right-0'];
+        return ['fixed', 'bottom-0', 'z-40', 'w-full', ...horizontal];
+    }
+    return ['relative', 'w-full', 'mt-6'];
+});
+
+const footerBarClass = computed(() => {
+    const base = ['footer-tools-row', 'w-full'];
+    if (props.fixedFooterActions) {
+        base.push(
+            'bg-base-100/80',
+            'backdrop-blur-md',
+            'border-glass-t-md',
+            'px-4',
+            'py-2.5',
+            'sm:px-6',
+        );
+    } else {
+        base.push(
+            'footer-tools-row--static',
+            'rounded-xl',
+            'border',
+            'border-base-300/60',
+            'bg-base-100/35',
+            'px-3',
+            'py-3',
+            'sm:px-4',
+        );
+    }
+    return base.join(' ');
+});
+
+const footerActionsRowClass = computed(() => {
+    const parts = [
+        'footer-actions',
+        'flex',
+        'min-w-0',
+        'flex-wrap',
+        'items-center',
+        'gap-3',
+        props.footerSecondaryActions ? 'w-full' : 'footer-actions--save-only w-full md:w-auto md:shrink-0 md:ml-auto',
+        props.footerSecondaryActions ? 'justify-between' : 'justify-end',
+    ];
+    return parts;
+});
 
 const notificationStore = useNotificationStore();
 
@@ -762,6 +832,34 @@ const getFieldHelper = (fieldKey, fieldConfig) => {
     return undefined;
 };
 
+/**
+ * Libellé des niveaux d’accès (court en mode compact pour le pied de formulaire).
+ *
+ * @param {string} fieldKey
+ * @param {object} fieldConfig
+ * @returns {string}
+ */
+const getAccessLevelLabel = (fieldKey, fieldConfig) => {
+    if (!props.compactAccessLevels) {
+        return getFieldLabel(fieldKey, fieldConfig);
+    }
+    if (fieldKey === 'read_level') return 'Lecture';
+    if (fieldKey === 'write_level') return 'Écriture';
+    return getFieldLabel(fieldKey, fieldConfig);
+};
+
+/**
+ * Aide sous le sélecteur : masquée en mode compact (tooltips possibles sur les labels si besoin).
+ *
+ * @param {string} fieldKey
+ * @param {object} fieldConfig
+ * @returns {string|undefined}
+ */
+const getAccessLevelHelper = (fieldKey, fieldConfig) => {
+    if (props.compactAccessLevels) return undefined;
+    return getFieldHelper(fieldKey, fieldConfig);
+};
+
 const getFieldWrapperClass = (fieldKey) => ([
     'form-field',
     props.differentFields.includes(fieldKey) ? 'opacity-60' : '',
@@ -966,16 +1064,12 @@ const cancel = () => {
                 </template>
             </div>
 
-            <!-- Actions -->
-            <div
-                class="fixed bottom-0 z-40 left-0 right-0 w-full"
-            >
-                <div
-                    class="footer-tools-row bg-base-100/80 backdrop-blur-md border-glass-t-md w-full px-6 py-2"
-                >
+            <!-- Actions (fixe seulement si fixedFooterActions — ex. sort / capacité) -->
+            <div :class="footerWrapperClass">
+                <div :class="footerBarClass">
                     <div
                         v-if="accessLevelFields.length"
-                        class="access-levels"
+                        :class="['access-levels', compactAccessLevels && 'access-levels--compact']"
                     >
                         <div
                             v-for="field in accessLevelFields"
@@ -985,19 +1079,20 @@ const cancel = () => {
                             <SelectField
                                 v-model="form[field.key]"
                                 @update:model-value="() => markDirty(field.key)"
-                                :label="getFieldLabel(field.key, field.config)"
+                                :label="getAccessLevelLabel(field.key, field.config)"
                                 :options="field.config.options || []"
                                 :required="field.config.required"
-                                :helper="getFieldHelper(field.key, field.config)"
+                                :helper="getAccessLevelHelper(field.key, field.config)"
                                 :validation="getFieldValidation(field.key)"
                             />
                         </div>
                     </div>
 
-                    <div
-                        class="footer-actions flex w-full min-w-0 flex-wrap items-center justify-between gap-3"
-                    >
-                        <div class="footer-actions__start flex flex-wrap items-center gap-2 sm:gap-3">
+                    <div :class="footerActionsRowClass">
+                        <div
+                            v-if="footerSecondaryActions"
+                            class="footer-actions__start flex flex-wrap items-center gap-2 sm:gap-3"
+                        >
                             <Btn type="button" variant="outline" @click="cancel">
                                 Annuler
                             </Btn>
@@ -1018,7 +1113,7 @@ const cancel = () => {
                                 :disabled="form.processing"
                             >
                                 <i class="fa-solid fa-save mr-2"></i>
-                                {{ form.processing ? 'Enregistrement...' : (isUpdating ? 'Mettre à jour' : 'Créer') }}
+                                {{ form.processing ? 'Enregistrement...' : (isUpdating ? 'Enregistrer' : 'Créer') }}
                             </Btn>
                         </div>
                     </div>
@@ -1058,8 +1153,19 @@ const cancel = () => {
         gap: 0.75rem;
     }
 
+    .footer-tools-row--static {
+        box-shadow: 0 1px 0 0 rgb(0 0 0 / 0.04);
+    }
+
     .footer-actions {
         width: 100%;
+    }
+
+    .footer-actions--save-only {
+        @media (min-width: 768px) {
+            width: auto;
+            flex: 0 0 auto;
+        }
     }
 
     .footer-actions__start,
@@ -1076,6 +1182,32 @@ const cancel = () => {
 
     .access-levels__item {
         width: 100%;
+    }
+
+    .access-levels--compact {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.5rem 0.75rem;
+
+        .access-levels__item {
+            flex: 1 1 8rem;
+            min-width: 7.25rem;
+            max-width: 11rem;
+            padding: 0.35rem 0.5rem;
+        }
+
+        :deep(label) {
+            font-size: 0.7rem;
+            line-height: 1.2;
+        }
+
+        :deep(.select),
+        :deep(input),
+        :deep(button.select) {
+            min-height: 2.25rem;
+            height: 2.25rem;
+            font-size: 0.8rem;
+        }
     }
 
     @media (min-width: 768px) {
@@ -1118,10 +1250,22 @@ const cancel = () => {
             flex: 1 1 220px;
         }
 
+        .access-levels--compact .access-levels__item {
+            min-width: 7.25rem;
+            max-width: 11rem;
+            flex: 0 1 10rem;
+        }
+
         .footer-actions {
             flex: 1 1 auto;
             min-width: 0;
             justify-content: space-between;
+        }
+
+        .footer-actions--save-only {
+            flex: 0 0 auto;
+            min-width: 0;
+            justify-content: flex-end;
         }
     }
 

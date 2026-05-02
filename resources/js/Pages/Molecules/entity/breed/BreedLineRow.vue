@@ -3,15 +3,16 @@
  * BreedLineRow — Une ligne de la vue Line pour les classes (Breed)
  *
  * @description
- * Aligné sur MonsterLineRow / SpellLineRow : état • image • vie / dé • nom • spécificité • relations • description.
+ * Aligné sur MonsterLineRow / SpellLineRow : état • image • dé de vie • nom • spécificité • relations • description.
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
+import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
+import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -43,14 +44,16 @@ const imageUrl = computed(() => {
 });
 
 const nameCell = computed(() => getCell("name"));
-const lifeCell = computed(() => getCell("life"));
 const lifeDiceCell = computed(() => getCell("life_dice"));
 const specificityCell = computed(() => getCell("specificity"));
-const relationsCell = computed(() => getCell("breed_summary_relations"));
-
 const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
 );
+
+const orientationMap = computed(() => {
+    const raw = entity.value?._data ?? entity.value;
+    return normalizeElementOrientationMap(raw?.element_orientations);
+});
 
 const handleRowClick = (e) => emit("row-click", props.row, e);
 
@@ -141,26 +144,17 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                         />
                     </div>
                 </div>
-                <div class="flex flex-wrap items-center gap-2 text-sm">
-                    <span
-                        v-if="lifeCell?.value && lifeCell.value !== '-' && lifeCell.value !== '—'"
-                        class="text-xs text-base-content/80"
-                    >
-                        <span class="font-medium text-base-content">Vie</span>
-                        {{ lifeCell.value }}
-                    </span>
-                    <span
-                        v-if="lifeDiceCell?.value && lifeDiceCell.value !== '-' && lifeDiceCell.value !== '—'"
-                        class="text-xs text-base-content/80"
-                    >
-                        <span class="font-medium text-base-content">Dé</span>
+                <div
+                    v-if="lifeDiceCell?.value && lifeDiceCell.value !== '-' && lifeDiceCell.value !== '—'"
+                    class="flex flex-wrap items-center gap-2 text-sm"
+                >
+                    <span class="text-xs text-base-content/80">
+                        <span class="font-medium text-base-content">Dé de vie</span>
                         {{ lifeDiceCell.value }}
                     </span>
-                    <CellRenderer
-                        v-if="relationsCell?.type === 'chips' && (relationsCell?.params?.items?.length ?? 0) > 0"
-                        :cell="relationsCell"
-                        class="inline-flex"
-                    />
+                </div>
+                <div class="w-full mt-1">
+                    <BreedElementOrientationsDisplay :orientation-map="orientationMap" size="xs" />
                 </div>
                 <p
                     v-if="specificityCell?.value && specificityCell.value !== '-' && specificityCell.value !== '—'"

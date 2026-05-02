@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Entity\Breed>
+ * @extends Factory<Breed>
  */
 class BreedFactory extends Factory
 {
@@ -37,7 +37,6 @@ class BreedFactory extends Factory
             'name' => fake()->unique()->randomElement($names),
             'description_fast' => fake()->optional()->sentence(),
             'description' => fake()->optional()->text(200),
-            'life' => (string) fake()->numberBetween(30, 100),
             'life_dice' => fake()->randomElement(['1d6', '1d8', '1d10', '1d12']),
             'specificity' => fake()->randomElement(['Force', 'Intelligence', 'Agilité', 'Chance', 'Sagesse']),
             'dofus_version' => '3',

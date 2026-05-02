@@ -17,7 +17,7 @@ describe('breed-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
             const descriptors = getBreedFieldDescriptors();
-            const requiredFields = ['id', 'name', 'life', 'life_dice', 'state', 'read_level', 'write_level'];
+            const requiredFields = ['id', 'name', 'life_dice', 'state', 'read_level', 'write_level'];
 
             requiredFields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);

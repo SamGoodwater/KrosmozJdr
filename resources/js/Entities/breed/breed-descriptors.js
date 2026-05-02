@@ -184,43 +184,13 @@ export function getBreedFieldDescriptors(ctx = {}) {
         },
       },
     },
-    life: {
-      key: "life",
-      label: "Vie",
-      icon: "fa-solid fa-heart",
-      table: {
-        sortable: true,
-        filterable: { id: "life", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
-        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
-      },
-      display: {
-        sizes: {
-          xs: { mode: "text" },
-          sm: { mode: "text" },
-          md: { mode: "text" },
-          lg: { mode: "text" },
-          xl: { mode: "text" },
-        },
-      },
-      edit: {
-        form: {
-          type: "text",
-          group: "Caractéristiques",
-          placeholder: "Ex: 30",
-          required: false,
-          showInCompact: true,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
-        },
-      },
-    },
     life_dice: {
       key: "life_dice",
       label: "Dé de vie",
       icon: "fa-solid fa-dice",
       table: {
         sortable: true,
-        filterable: { id: "life_dice", type: "text", defaultVisible: false },
+        filterable: { id: "life_dice", type: "text", defaultVisible: true },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -237,9 +207,9 @@ export function getBreedFieldDescriptors(ctx = {}) {
         form: {
           type: "text",
           group: "Caractéristiques",
-          placeholder: "Ex: d8",
+          placeholder: "Ex: 1d8 (voir réf. caractéristique dé de vie)",
           required: false,
-          showInCompact: false,
+          showInCompact: true,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
@@ -583,7 +553,6 @@ export function getBreedFieldDescriptors(ctx = {}) {
     // Configuration globale du quickedit
     _quickeditConfig: {
       fields: [
-        "life",
         "life_dice",
         "state",
         "auto_update",

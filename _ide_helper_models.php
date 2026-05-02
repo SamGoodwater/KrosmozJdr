@@ -543,7 +543,6 @@ namespace App\Models\Entity{
  * @property string $name
  * @property string|null $description_fast
  * @property string|null $description
- * @property string|null $life
  * @property string|null $life_dice
  * @property string|null $specificity
  * @property string $dofus_version
@@ -560,6 +559,8 @@ namespace App\Models\Entity{
  * @property-read int|null $npcs_count
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
+ * @property-read Collection<int, Capability> $capabilities
+ * @property-read int|null $capabilities_count
  * @method static \Database\Factories\Entity\BreedFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newQuery()
@@ -590,10 +591,37 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
  * @mixin \Eloquent
+ * @property string|null $life
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\BreedElementOrientation> $elementOrientations
+ * @property-read int|null $element_orientations_count
  * @property-read \App\Models\Pivots\BreedSpellPivot|null $pivot
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed visibleToUser(?\App\Models\User $user)
  */
 	class Breed extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
+}
+
+namespace App\Models\Entity{
+/**
+ * Association voix élémentaire → orientation de classe (icône breed_orientations).
+ *
+ * @property int $id
+ * @property int $breed_id
+ * @property string $element air|earth|fire|water
+ * @property string $orientation_key clef fichier (sans extension)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Breed $breed
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereBreedId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereElement($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereOrientationKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereUpdatedAt($value)
+ */
+	class BreedElementOrientation extends \Eloquent {}
 }
 
 namespace App\Models\Entity{
@@ -728,6 +756,8 @@ namespace App\Models\Entity{
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
+ * @property-read int|null $breeds_count
  */
 	class Capability extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }

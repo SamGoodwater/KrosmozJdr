@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Scrapping;
 
-use App\Models\User;
+use App\Http\Middleware\RequirePasswordWithInactivity;
 use App\Models\Entity\Breed;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\SeedsScrappingPipeline;
@@ -11,8 +12,6 @@ use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le contrôleur de scrapping
- * 
- * @package Tests\Feature\Scrapping
  */
 class ScrappingControllerTest extends TestCase
 {
@@ -26,7 +25,7 @@ class ScrappingControllerTest extends TestCase
         $this->seedScrappingPipeline();
         $this->admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         // Routes scrapping protégées par password.confirm ; en tests on contourne pour éviter 423
-        $this->withoutMiddleware(\App\Http\Middleware\RequirePasswordWithInactivity::class);
+        $this->withoutMiddleware(RequirePasswordWithInactivity::class);
     }
 
     /**
@@ -38,7 +37,6 @@ class ScrappingControllerTest extends TestCase
             'id' => 1,
             'name' => ['fr' => 'Iop'],
             'description' => ['fr' => 'Description de la classe Iop'],
-            'life' => 50,
             'life_dice' => '1d6',
             'specificity' => 'Force',
         ];
@@ -87,7 +85,7 @@ class ScrappingControllerTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'message',
-                'error'
+                'error',
             ]);
     }
 
@@ -109,10 +107,10 @@ class ScrappingControllerTest extends TestCase
                     'intelligence' => 5,
                     'agility' => 8,
                     'wisdom' => 3,
-                    'chance' => 2
-                ]
+                    'chance' => 2,
+                ],
             ],
-            'size' => 'medium'
+            'size' => 'medium',
         ];
 
         Http::fake([
@@ -180,7 +178,7 @@ class ScrappingControllerTest extends TestCase
             'typeId' => 15,
             'level' => 1,
             'rarity' => 'common',
-            'price' => 10
+            'price' => 10,
         ];
 
         Http::fake([
@@ -243,9 +241,8 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/breeds/1*' => Http::response([
                 'id' => 1,
                 'description' => ['fr' => 'Description'],
-                'life' => 50,
                 'life_dice' => '1d6',
-                'specificity' => 'Force'
+                'specificity' => 'Force',
             ], 200),
             'api.dofusdb.fr/items/15*' => Http::response([
                 'id' => 15,
@@ -254,12 +251,12 @@ class ScrappingControllerTest extends TestCase
                 'typeId' => 15,
                 'level' => 1,
                 'rarity' => 'common',
-                'price' => 10
+                'price' => 10,
             ], 200),
         ]);
 
         $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/import/batch', [
-            'entities' => $entities
+            'entities' => $entities,
         ]);
 
         // Le contrôleur retourne 201 pour les batch imports réussis
@@ -273,8 +270,8 @@ class ScrappingControllerTest extends TestCase
                 'summary' => [
                     'total',
                     'success',
-                    'errors'
-                ]
+                    'errors',
+                ],
             ]);
     }
 
@@ -285,12 +282,11 @@ class ScrappingControllerTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/import/batch', [
             'entities' => [
-                ['type' => 'invalid', 'id' => 1]
-            ]
+                ['type' => 'invalid', 'id' => 1],
+            ],
         ]);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['entities.0.type']);
     }
 }
-

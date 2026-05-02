@@ -4,6 +4,7 @@ namespace App\Http\Resources\Entity;
 
 use App\Models\Entity\Breed;
 use App\Models\Entity\Spell;
+use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -28,8 +29,8 @@ class BreedResource extends JsonResource
             'name' => $this->name,
             'description_fast' => $this->description_fast,
             'description' => $this->description,
-            'life' => $this->life,
             'life_dice' => $this->life_dice,
+            'life_dice_meta' => $this->lifeDiceCharacteristicMeta(),
             'specificity' => $this->specificity,
             'dofus_version' => $this->dofus_version,
             'state' => $this->state,
@@ -46,9 +47,20 @@ class BreedResource extends JsonResource
             'createdBy' => $this->whenLoaded('createdBy'),
             'npcs' => $this->whenLoaded('npcs'),
             'spells' => $this->whenLoaded('spells'),
+            'capabilities' => $this->whenLoaded('capabilities', fn () => CapabilityResource::collection($this->capabilities)->resolve($request)),
             'spell_slots' => $this->when(
                 $this->relationLoaded('spells'),
                 fn () => $this->formatSpellSlots($request)
+            ),
+
+            'element_orientations' => $this->when(
+                $this->relationLoaded('elementOrientations'),
+                function () {
+                    /** @var Breed $breed */
+                    $breed = $this->resource;
+
+                    return $breed->elementOrientationsMap();
+                }
             ),
 
             'can' => [
@@ -57,6 +69,22 @@ class BreedResource extends JsonResource
                 'view' => $user ? $user->can('view', $this->resource) : false,
             ],
         ];
+    }
+
+    /**
+     * Métadonnées caractéristique « dé de vie » (icône, couleur, surcharges par valeur).
+     *
+     * @return array<string, mixed>|null
+     */
+    protected function lifeDiceCharacteristicMeta(): ?array
+    {
+        try {
+            $map = app(CharacteristicMetaByDbColumnService::class)->buildCreatureByDbColumn();
+
+            return $map['life_dice'] ?? null;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     /**

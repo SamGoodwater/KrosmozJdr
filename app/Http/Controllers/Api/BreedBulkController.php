@@ -23,7 +23,6 @@ class BreedBulkController extends Controller
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'min:1', 'exists:breeds,id'],
 
-            'life' => ['sometimes', 'nullable', 'string', 'max:255'],
             'life_dice' => ['sometimes', 'nullable', 'string', 'max:255'],
             'specificity' => ['sometimes', 'nullable', 'string'],
             'description' => ['sometimes', 'nullable', 'string'],
@@ -44,7 +43,6 @@ class BreedBulkController extends Controller
 
         $patch = [];
         foreach ([
-            'life',
             'life_dice',
             'specificity',
             'description',
@@ -75,8 +73,9 @@ class BreedBulkController extends Controller
 
             foreach ($ids as $id) {
                 $model = $models->firstWhere('id', $id);
-                if (!$model) {
+                if (! $model) {
                     $errors[] = ['id' => $id, 'error' => 'Not found'];
+
                     continue;
                 }
 

@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/vendor/composer/../spatie/laravel-medialibrary/src/HasMedia.php-PHPStan\BetterReflection\Reflection\ReflectionClass-Spatie\MediaLibrary\HasMedia
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-219623962447043288e53a25e99479cf300390d17982d9191f4930865f108cec-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-3eba33b5c754ef7a3be534e1835d826d49ea8469c612d42ec64d82e54d709b3b-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -23,18 +23,18 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'isBackedEnum' => false,
     'modifiers' => 0,
     'docComment' => '/**
- * @mixin \\Illuminate\\Database\\Eloquent\\Model
+ * @mixin Model
  *
  * @method void prepareToAttachMedia(Media $media, FileAdder $fileAdder)
  *
  * @property bool $registerMediaConversionsUsingModelInstance
- * @property ?\\Spatie\\MediaLibrary\\MediaCollections\\MediaCollection $mediaCollections
+ * @property ?MediaCollection $mediaCollections
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 21,
-    'endLine' => 52,
+    'startLine' => 22,
+    'endLine' => 53,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -72,8 +72,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 23,
-        'endLine' => 23,
+        'startLine' => 24,
+        'endLine' => 24,
         'startColumn' => 5,
         'endColumn' => 39,
         'couldThrow' => false,
@@ -130,8 +130,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 25,
-            'endLine' => 25,
+            'startLine' => 26,
+            'endLine' => 26,
             'startColumn' => 30,
             'endColumn' => 54,
             'parameterIndex' => 0,
@@ -152,8 +152,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 25,
-        'endLine' => 25,
+        'startLine' => 26,
+        'endLine' => 26,
         'startColumn' => 5,
         'endColumn' => 67,
         'couldThrow' => false,
@@ -210,8 +210,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 27,
-            'endLine' => 27,
+            'startLine' => 28,
+            'endLine' => 28,
             'startColumn' => 31,
             'endColumn' => 55,
             'parameterIndex' => 0,
@@ -232,8 +232,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 27,
-        'endLine' => 27,
+        'startLine' => 28,
+        'endLine' => 28,
         'startColumn' => 5,
         'endColumn' => 68,
         'couldThrow' => false,
@@ -260,12 +260,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => '\'\'',
               'attributes' => 
               array (
-                'startLine' => 29,
-                'endLine' => 29,
-                'startTokenPos' => 108,
-                'startFilePos' => 934,
-                'endTokenPos' => 108,
-                'endFilePos' => 935,
+                'startLine' => 30,
+                'endLine' => 30,
+                'startTokenPos' => 113,
+                'startFilePos' => 906,
+                'endTokenPos' => 113,
+                'endFilePos' => 907,
               ),
             ),
             'type' => 
@@ -283,8 +283,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 29,
-            'endLine' => 29,
+            'startLine' => 30,
+            'endLine' => 30,
             'startColumn' => 30,
             'endColumn' => 56,
             'parameterIndex' => 0,
@@ -305,8 +305,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 29,
-        'endLine' => 29,
+        'startLine' => 30,
+        'endLine' => 30,
         'startColumn' => 5,
         'endColumn' => 64,
         'couldThrow' => false,
@@ -333,12 +333,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => '\'default\'',
               'attributes' => 
               array (
-                'startLine' => 31,
-                'endLine' => 31,
-                'startTokenPos' => 127,
-                'startFilePos' => 1000,
-                'endTokenPos' => 127,
-                'endFilePos' => 1008,
+                'startLine' => 32,
+                'endLine' => 32,
+                'startTokenPos' => 132,
+                'startFilePos' => 972,
+                'endTokenPos' => 132,
+                'endFilePos' => 980,
               ),
             ),
             'type' => 
@@ -356,8 +356,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 31,
-            'endLine' => 31,
+            'startLine' => 32,
+            'endLine' => 32,
             'startColumn' => 30,
             'endColumn' => 63,
             'parameterIndex' => 0,
@@ -371,12 +371,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => '[]',
               'attributes' => 
               array (
-                'startLine' => 31,
-                'endLine' => 31,
-                'startTokenPos' => 138,
-                'startFilePos' => 1037,
-                'endTokenPos' => 139,
-                'endFilePos' => 1038,
+                'startLine' => 32,
+                'endLine' => 32,
+                'startTokenPos' => 143,
+                'startFilePos' => 1009,
+                'endTokenPos' => 144,
+                'endFilePos' => 1010,
               ),
             ),
             'type' => 
@@ -413,8 +413,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 31,
-            'endLine' => 31,
+            'startLine' => 32,
+            'endLine' => 32,
             'startColumn' => 66,
             'endColumn' => 93,
             'parameterIndex' => 1,
@@ -435,8 +435,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 31,
-        'endLine' => 31,
+        'startLine' => 32,
+        'endLine' => 32,
         'startColumn' => 5,
         'endColumn' => 107,
         'couldThrow' => false,
@@ -463,12 +463,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => '\'default\'',
               'attributes' => 
               array (
-                'startLine' => 33,
-                'endLine' => 33,
-                'startTokenPos' => 158,
-                'startFilePos' => 1121,
-                'endTokenPos' => 158,
-                'endFilePos' => 1129,
+                'startLine' => 34,
+                'endLine' => 34,
+                'startTokenPos' => 163,
+                'startFilePos' => 1093,
+                'endTokenPos' => 163,
+                'endFilePos' => 1101,
               ),
             ),
             'type' => 
@@ -486,8 +486,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 33,
-            'endLine' => 33,
+            'startLine' => 34,
+            'endLine' => 34,
             'startColumn' => 42,
             'endColumn' => 75,
             'parameterIndex' => 0,
@@ -508,8 +508,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 33,
-        'endLine' => 33,
+        'startLine' => 34,
+        'endLine' => 34,
         'startColumn' => 5,
         'endColumn' => 87,
         'couldThrow' => false,
@@ -536,12 +536,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => '\'default\'',
               'attributes' => 
               array (
-                'startLine' => 35,
-                'endLine' => 35,
-                'startTokenPos' => 177,
-                'startFilePos' => 1216,
-                'endTokenPos' => 177,
-                'endFilePos' => 1224,
+                'startLine' => 36,
+                'endLine' => 36,
+                'startTokenPos' => 182,
+                'startFilePos' => 1188,
+                'endTokenPos' => 182,
+                'endFilePos' => 1196,
               ),
             ),
             'type' => 
@@ -559,8 +559,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 35,
-            'endLine' => 35,
+            'startLine' => 36,
+            'endLine' => 36,
             'startColumn' => 48,
             'endColumn' => 81,
             'parameterIndex' => 0,
@@ -574,12 +574,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => '[]',
               'attributes' => 
               array (
-                'startLine' => 35,
-                'endLine' => 35,
-                'startTokenPos' => 188,
-                'startFilePos' => 1261,
-                'endTokenPos' => 189,
-                'endFilePos' => 1262,
+                'startLine' => 36,
+                'endLine' => 36,
+                'startTokenPos' => 193,
+                'startFilePos' => 1233,
+                'endTokenPos' => 194,
+                'endFilePos' => 1234,
               ),
             ),
             'type' => 
@@ -616,8 +616,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 35,
-            'endLine' => 35,
+            'startLine' => 36,
+            'endLine' => 36,
             'startColumn' => 84,
             'endColumn' => 119,
             'parameterIndex' => 1,
@@ -638,8 +638,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 35,
-        'endLine' => 35,
+        'startLine' => 36,
+        'endLine' => 36,
         'startColumn' => 5,
         'endColumn' => 131,
         'couldThrow' => false,
@@ -673,8 +673,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 37,
-        'endLine' => 37,
+        'startLine' => 38,
+        'endLine' => 38,
         'startColumn' => 5,
         'endColumn' => 56,
         'couldThrow' => false,
@@ -712,8 +712,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 39,
-            'endLine' => 39,
+            'startLine' => 40,
+            'endLine' => 40,
             'startColumn' => 31,
             'endColumn' => 52,
             'parameterIndex' => 0,
@@ -726,8 +726,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 39,
-        'endLine' => 39,
+        'startLine' => 40,
+        'endLine' => 40,
         'startColumn' => 5,
         'endColumn' => 54,
         'couldThrow' => false,
@@ -765,8 +765,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 41,
-            'endLine' => 41,
+            'startLine' => 42,
+            'endLine' => 42,
             'startColumn' => 40,
             'endColumn' => 51,
             'parameterIndex' => 0,
@@ -787,8 +787,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 41,
-        'endLine' => 41,
+        'startLine' => 42,
+        'endLine' => 42,
         'startColumn' => 5,
         'endColumn' => 65,
         'couldThrow' => false,
@@ -815,12 +815,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 43,
-                'endLine' => 43,
-                'startTokenPos' => 248,
-                'startFilePos' => 1519,
-                'endTokenPos' => 248,
-                'endFilePos' => 1522,
+                'startLine' => 44,
+                'endLine' => 44,
+                'startTokenPos' => 253,
+                'startFilePos' => 1491,
+                'endTokenPos' => 253,
+                'endFilePos' => 1494,
               ),
             ),
             'type' => 
@@ -857,8 +857,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 43,
-            'endLine' => 43,
+            'startLine' => 44,
+            'endLine' => 44,
             'startColumn' => 46,
             'endColumn' => 65,
             'parameterIndex' => 0,
@@ -879,8 +879,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 43,
-        'endLine' => 43,
+        'startLine' => 44,
+        'endLine' => 44,
         'startColumn' => 5,
         'endColumn' => 73,
         'couldThrow' => false,
@@ -914,8 +914,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 45,
-        'endLine' => 45,
+        'startLine' => 46,
+        'endLine' => 46,
         'startColumn' => 5,
         'endColumn' => 53,
         'couldThrow' => false,
@@ -949,8 +949,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 47,
-        'endLine' => 47,
+        'startLine' => 48,
+        'endLine' => 48,
         'startColumn' => 5,
         'endColumn' => 56,
         'couldThrow' => false,
@@ -977,12 +977,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => '\'default\'',
               'attributes' => 
               array (
-                'startLine' => 49,
-                'endLine' => 49,
-                'startTokenPos' => 291,
-                'startFilePos' => 1710,
-                'endTokenPos' => 291,
-                'endFilePos' => 1718,
+                'startLine' => 50,
+                'endLine' => 50,
+                'startTokenPos' => 296,
+                'startFilePos' => 1682,
+                'endTokenPos' => 296,
+                'endFilePos' => 1690,
               ),
             ),
             'type' => 
@@ -1000,8 +1000,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 49,
-            'endLine' => 49,
+            'startLine' => 50,
+            'endLine' => 50,
             'startColumn' => 40,
             'endColumn' => 73,
             'parameterIndex' => 0,
@@ -1041,8 +1041,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 49,
-        'endLine' => 49,
+        'startLine' => 50,
+        'endLine' => 50,
         'startColumn' => 5,
         'endColumn' => 93,
         'couldThrow' => false,
@@ -1076,8 +1076,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 51,
-        'endLine' => 51,
+        'startLine' => 52,
+        'endLine' => 52,
         'startColumn' => 5,
         'endColumn' => 44,
         'couldThrow' => false,

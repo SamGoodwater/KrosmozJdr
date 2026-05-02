@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Enums/SectionType.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Enums\SectionType
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-d3a5375b39a3ffa5799fb119e620222886e158773523f4c5fdf5e53012b2e0f3-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-c89c0d811dccb4b4e8eafa3339be9b4873a930a12a16bba34bd5e7993dd6664d-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -38,7 +38,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 17,
-    'endLine' => 140,
+    'endLine' => 153,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -140,8 +140,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Retourne le label traduit du type.
  */',
-        'startLine' => 32,
-        'endLine' => 44,
+        'startLine' => 34,
+        'endLine' => 47,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -177,8 +177,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Retourne l\'icône FontAwesome associée au type.
  */',
-        'startLine' => 49,
-        'endLine' => 61,
+        'startLine' => 52,
+        'endLine' => 65,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -216,8 +216,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *
  * @return array<string, mixed>
  */',
-        'startLine' => 68,
-        'endLine' => 114,
+        'startLine' => 72,
+        'endLine' => 127,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -255,8 +255,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *
  * @return array<string, string>
  */',
-        'startLine' => 121,
-        'endLine' => 124,
+        'startLine' => 134,
+        'endLine' => 137,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -294,8 +294,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *
  * @return array<string, string>
  */',
-        'startLine' => 131,
-        'endLine' => 139,
+        'startLine' => 144,
+        'endLine' => 152,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -745,6 +745,31 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'endLine' => 27,
         'startColumn' => 5,
         'endColumn' => 71,
+      ),
+      'CHARACTERISTIC_REFERENCE_TABLE' => 
+      array (
+        'name' => 'CHARACTERISTIC_REFERENCE_TABLE',
+        'value' => 
+        array (
+          'code' => '\'characteristic_reference_table\'',
+          'attributes' => 
+          array (
+            'startLine' => 29,
+            'endLine' => 29,
+            'startTokenPos' => 100,
+            'startFilePos' => 920,
+            'endTokenPos' => 100,
+            'endFilePos' => 951,
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/** Référentiel tabulaire des caractéristiques (formules, bornes, économie indicative). */',
+        'startLine' => 29,
+        'endLine' => 29,
+        'startColumn' => 5,
+        'endColumn' => 75,
       ),
     ),
   ),

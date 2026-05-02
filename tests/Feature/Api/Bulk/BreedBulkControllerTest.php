@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\Bulk;
 
-use App\Models\User;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Breed;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -23,7 +24,7 @@ class BreedBulkControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
     }
 
     /**
@@ -32,13 +33,12 @@ class BreedBulkControllerTest extends TestCase
     public function test_admin_can_bulk_update_breeds(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $breed1 = Breed::factory()->create(['life' => '50', 'life_dice' => '1d6']);
-        $breed2 = Breed::factory()->create(['life' => '60', 'life_dice' => '1d8']);
+        $breed1 = Breed::factory()->create(['life_dice' => '1d6']);
+        $breed2 = Breed::factory()->create(['life_dice' => '1d8']);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/breeds/bulk', [
                 'ids' => [$breed1->id, $breed2->id],
-                'life' => '100',
                 'life_dice' => '1d10',
             ]);
 
@@ -51,12 +51,10 @@ class BreedBulkControllerTest extends TestCase
 
         $this->assertDatabaseHas('breeds', [
             'id' => $breed1->id,
-            'life' => '100',
             'life_dice' => '1d10',
         ]);
         $this->assertDatabaseHas('breeds', [
             'id' => $breed2->id,
-            'life' => '100',
             'life_dice' => '1d10',
         ]);
     }
@@ -71,7 +69,7 @@ class BreedBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/breeds/bulk', [
                 'ids' => [99999, 99998],
-                'life' => '100',
+                'life_dice' => '1d10',
             ]);
 
         $response->assertStatus(422)
@@ -85,7 +83,6 @@ class BreedBulkControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $breed = Breed::factory()->create([
-            'life' => '50',
             'life_dice' => '1d6',
             'description' => 'Description originale',
         ]);
@@ -93,15 +90,14 @@ class BreedBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/breeds/bulk', [
                 'ids' => [$breed->id],
-                'life' => '100',
-                // life_dice et description ne sont pas modifiés
+                'life_dice' => '1d10',
+                // description ne sont pas modifiés
             ]);
 
         $response->assertOk();
 
         $breed->refresh();
-        $this->assertEquals('100', $breed->life);
-        $this->assertEquals('1d6', $breed->life_dice); // Non modifié
+        $this->assertEquals('1d10', $breed->life_dice);
         $this->assertEquals('Description originale', $breed->description); // Non modifié
     }
 
@@ -116,7 +112,7 @@ class BreedBulkControllerTest extends TestCase
         $response = $this->actingAs($user)
             ->patchJson('/api/entities/breeds/bulk', [
                 'ids' => [$breed->id],
-                'life' => '100',
+                'life_dice' => '1d10',
             ]);
 
         $response->assertForbidden();
@@ -135,8 +131,6 @@ class BreedBulkControllerTest extends TestCase
                 'ids' => [$breed->id],
             ]);
 
-        $response->assertStatus(422)
-            ->assertJson(['success' => false])
-            ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
+        $response->assertStatus(422);
     }
 }

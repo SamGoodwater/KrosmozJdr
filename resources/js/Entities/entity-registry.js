@@ -147,7 +147,7 @@ export function getEntityConfig(entityType) {
         model: Breed,
         getDescriptors: getBreedFieldDescriptors,
         responseAdapter: createEntityAdapter(Breed),
-        defaults: { minimalImportantFields: ["name", "life", "life_dice"] },
+        defaults: { minimalImportantFields: ["name", "life_dice"] },
       };
     case "consumables":
       return {

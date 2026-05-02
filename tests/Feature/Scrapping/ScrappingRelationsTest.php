@@ -104,7 +104,6 @@ class ScrappingRelationsTest extends TestCase
             'id' => 1,
             'name' => ['fr' => 'Iop'],
             'description' => ['fr' => 'Description courte Iop'],
-            'life' => 50,
             'life_dice' => '1d6',
             'specificity' => 'Force',
         ];
@@ -351,7 +350,6 @@ class ScrappingRelationsTest extends TestCase
             'id' => 1,
             'name' => ['fr' => 'Iop'],
             'description' => ['fr' => 'Description courte'],
-            'life' => 50,
             'life_dice' => '1d6',
             'specificity' => 'Force',
         ];

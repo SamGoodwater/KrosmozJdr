@@ -1312,7 +1312,6 @@ final class IntegrationService
             'name' => $this->localizedToString($data['name'] ?? null),
             'description' => $this->localizedToString($data['description'] ?? null),
             'description_fast' => $data['description_fast'] ?? null,
-            'life' => (string) ($data['life'] ?? ''),
             'life_dice' => (string) ($data['life_dice'] ?? ''),
             'specificity' => $data['specificity'] ?? null,
             'created_by' => $userId,

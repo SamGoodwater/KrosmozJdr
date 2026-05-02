@@ -10,7 +10,6 @@
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
-import Route from "@/Pages/Atoms/action/Route.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
@@ -27,6 +26,12 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entit
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import BreedSpellSlotsDisplay from "@/Pages/Molecules/entity/breed/BreedSpellSlotsDisplay.vue";
+import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
+import CapabilityViewText from "@/Pages/Molecules/entity/capability/CapabilityViewText.vue";
+import { Capability } from "@/Models/Entity/Capability";
+import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
+import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
 
 const props = defineProps({
     breed: {
@@ -88,50 +93,30 @@ const mediaSrc = computed(() => {
     return u && String(u).trim() ? String(u) : "";
 });
 
-/** Sorts chargés avec la classe (relation spells). */
-const linkedSpells = computed(() => {
-    const raw = props.breed?.spells ?? props.breed?._data?.spells;
-    return Array.isArray(raw) ? raw : [];
-});
-
-/**
- * Emplacements de sorts (API spell_slots) ou regroupement depuis spells + pivot.
- */
 const spellSlotGroups = computed(() => {
-    const direct = props.breed?.spell_slots ?? props.breed?._data?.spell_slots;
-    if (Array.isArray(direct) && direct.length > 0) {
-        return direct;
-    }
-    const spells = linkedSpells.value;
-    if (!spells.length) return [];
-    const map = new Map();
-    for (const s of spells) {
-        const p = s.pivot || {};
-        const level = Number(p.character_level ?? 1);
-        const slot = Number(p.slot_index ?? 1);
-        const key = `${level}|${slot}`;
-        if (!map.has(key)) {
-            map.set(key, { character_level: level, slot_index: slot, spells: [] });
-        }
-        map.get(key).spells.push(s);
-    }
-    const out = Array.from(map.values()).sort((a, b) =>
-        a.character_level !== b.character_level
-            ? a.character_level - b.character_level
-            : a.slot_index - b.slot_index
-    );
-    for (const g of out) {
-        g.spells.sort((a, b) => {
-            const oa = Number(a.pivot?.choice_order ?? 0) || 0;
-            const ob = Number(b.pivot?.choice_order ?? 0) || 0;
-            if (oa !== ob) return oa - ob;
-            return String(a.name || "").localeCompare(String(b.name || ""));
-        });
-    }
-    return out;
+    const raw = props.breed?._data ?? props.breed;
+    return buildSpellSlotGroups(raw);
 });
 
 const hasSpellSlots = computed(() => spellSlotGroups.value.length > 0);
+
+const linkedCapabilities = computed(() => {
+    const raw = props.breed?._data?.capabilities ?? props.breed?.capabilities;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCapabilities = computed(() => linkedCapabilities.value.length > 0);
+
+/**
+ * @param {object} raw
+ * @returns {Capability}
+ */
+const asCapabilityModel = (raw) => (raw instanceof Capability ? raw : new Capability(raw));
+
+const orientationMap = computed(() => {
+    const raw = props.breed?._data ?? props.breed;
+    return normalizeElementOrientationMap(raw?.element_orientations);
+});
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -148,10 +133,13 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-const headlineFields = computed(() => ["life", "life_dice"].filter(canShowField));
+const headlineFields = computed(() => ["life_dice"].filter(canShowField));
 
 const metaFields = computed(() =>
-    ["specificity", "state", "breed_summary_relations"].filter(canShowField).filter((k) => !headlineFields.value.includes(k))
+    ["specificity", "state", "breed_summary_relations"]
+        .filter((k) => !(k === "breed_summary_relations" && hasSpellSlots.value))
+        .filter(canShowField)
+        .filter((k) => !headlineFields.value.includes(k))
 );
 
 const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
@@ -190,7 +178,6 @@ const getCell = (fieldKey) => {
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
-        life: "warning",
         life_dice: "warning",
         auto_update: "warning",
         read_level: "primary",
@@ -355,32 +342,33 @@ const handleAction = async (actionKey) => {
             </template>
         </EntityViewHeader>
 
-        <div v-if="hasSpellSlots" class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-4">
+        <div class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Voix élémentaires</h3>
+            <p class="text-xs text-primary-400/90">
+                Chaque voix (air, terre, feu, eau) peut être associée à une orientation de jeu (icônes configurables).
+            </p>
+            <BreedElementOrientationsDisplay :orientation-map="orientationMap" size="md" />
+        </div>
+
+        <div v-if="hasSpellSlots" class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-3">
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Sorts par emplacement</h3>
             <p class="text-xs text-primary-400/90">
-                À chaque niveau, un emplacement correspond à un choix de sort parmi les options listées.
+                Au niveau 1 : trois emplacements. Aux niveaux impairs suivants : un sort de classe par niveau. Liste des
+                options par emplacement (le joueur en choisit une par emplacement en jeu).
             </p>
-            <div
-                v-for="(group, gIdx) in spellSlotGroups"
-                :key="`slot-${group.character_level}-${group.slot_index}-${gIdx}`"
-                class="space-y-2 border-l-2 border-primary-500/40 pl-3"
-            >
-                <div class="text-xs font-semibold text-primary-200">
-                    Niveau {{ group.character_level }} · Emplacement {{ group.slot_index }}
-                </div>
-                <ul class="flex flex-wrap gap-2">
-                    <li v-for="s in group.spells" :key="s.id">
-                        <Route
-                            :href="route('entities.spells.show', { spell: s.id })"
-                            color="neutral"
-                            class="text-sm font-medium text-primary-200 hover:text-primary-100"
-                        >
-                            {{ s.name || `Sort #${s.id}` }}
-                            <span v-if="s.level != null" class="text-primary-400 font-normal"> (nv. {{ s.level }})</span>
-                        </Route>
-                    </li>
-                </ul>
-            </div>
+            <BreedSpellSlotsDisplay :breed="breed?._data ?? breed" density="minimal" />
+        </div>
+
+        <div v-if="hasLinkedCapabilities" class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Capacités de classe</h3>
+            <p class="text-xs text-primary-400/90">
+                Capacités liées à la classe (sans emplacement), en complément des sorts.
+            </p>
+            <ul class="flex flex-wrap gap-x-4 gap-y-2">
+                <li v-for="c in linkedCapabilities" :key="c.id" class="min-w-0 max-w-full">
+                    <CapabilityViewText :capability="asCapabilityModel(c)" />
+                </li>
+            </ul>
         </div>
 
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">

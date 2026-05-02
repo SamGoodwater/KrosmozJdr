@@ -2,7 +2,7 @@
 
 // ftm-/var/www/KrosmozJdr/app/Enums/SectionType.php
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v4-2.3.2',
+   'variableKey' => 'v5-2.3.2',
    'data' => 
   array (
     0 => 
@@ -247,7 +247,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Enums/SectionType.php' => 'd3a5375b39a3ffa5799fb119e620222886e158773523f4c5fdf5e53012b2e0f3',
+      '/var/www/KrosmozJdr/app/Enums/SectionType.php' => 'c89c0d811dccb4b4e8eafa3339be9b4873a930a12a16bba34bd5e7993dd6664d',
     ),
   ),
 ));

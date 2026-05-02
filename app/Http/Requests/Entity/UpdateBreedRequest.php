@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Models\Entity\BreedElementOrientation;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * FormRequest pour la mise à jour d'une Breed (affichée « Classe »).
@@ -15,15 +18,14 @@ class UpdateBreedRequest extends FormRequest
     }
 
     /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        return [
+        return array_merge([
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description_fast' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'life' => ['nullable', 'string', 'max:255'],
             'life_dice' => ['nullable', 'string', 'max:255'],
             'specificity' => ['nullable', 'string'],
             'dofus_version' => ['nullable', 'string', 'max:255'],
@@ -35,6 +37,22 @@ class UpdateBreedRequest extends FormRequest
             'auto_update' => ['nullable', 'boolean'],
             'official_id' => ['nullable', 'string', 'max:255'],
             'dofusdb_id' => ['nullable', 'string', 'max:255'],
+        ], $this->elementOrientationRules());
+    }
+
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
+    private function elementOrientationRules(): array
+    {
+        $allowedKeys = config('breed_element_orientations.allowed_orientation_keys', []);
+        $rules = [
+            'element_orientations' => ['nullable', 'array'],
         ];
+        foreach (BreedElementOrientation::ELEMENTS as $el) {
+            $rules["element_orientations.{$el}"] = ['nullable', 'string', 'max:64', Rule::in($allowedKeys)];
+        }
+
+        return $rules;
     }
 }
