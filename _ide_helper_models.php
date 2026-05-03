@@ -28,6 +28,7 @@ namespace App\Models{
  * @property string|null $color
  * @property array|null $value_overrides
  * @property bool $hide_when_empty
+ * @property bool $hide_when_false
  * @property string|null $unit
  * @property string $type
  * @property string $status
@@ -70,6 +71,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHideWhenEmpty($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereStatus($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHideWhenFalse($value)
  */
 	class Characteristic extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -709,6 +711,7 @@ namespace App\Models\Entity{
  * @property string $element
  * @property bool $is_magic
  * @property bool $ritual_available
+ * @property bool $is_passive
  * @property string|null $powerful
  * @property string $state
  * @property int $read_level
@@ -758,6 +761,7 @@ namespace App\Models\Entity{
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
  * @property-read int|null $breeds_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsPassive($value)
  */
 	class Capability extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }

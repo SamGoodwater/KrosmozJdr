@@ -31,6 +31,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $color
  * @property array|null $value_overrides
  * @property bool $hide_when_empty
+ * @property bool $hide_when_false
  * @property string|null $unit
  * @property string $type
  * @property string $status
@@ -50,6 +51,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $object_rows_count
  * @property-read Collection<int, CharacteristicSpell> $spellRows
  * @property-read int|null $spell_rows_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic query()
@@ -72,6 +74,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereValueOverrides($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHideWhenEmpty($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereStatus($value)
+ *
  * @mixin \Eloquent
  */
 class Characteristic extends Model implements HasMedia
@@ -80,7 +83,9 @@ class Characteristic extends Model implements HasMedia
     use InteractsWithMedia;
 
     public const STATUS_A_VALIDER = 'a_valider';
+
     public const STATUS_EN_COURS_VALIDATION = 'en_cours_de_validation';
+
     public const STATUS_VALIDEE = 'validee';
 
     public const STATUSES = [
@@ -109,6 +114,7 @@ class Characteristic extends Model implements HasMedia
         'color',
         'value_overrides',
         'hide_when_empty',
+        'hide_when_false',
         'unit',
         'type',
         'status',
@@ -122,6 +128,7 @@ class Characteristic extends Model implements HasMedia
         'sort_order' => 'integer',
         'value_overrides' => 'array',
         'hide_when_empty' => 'boolean',
+        'hide_when_false' => 'boolean',
     ];
 
     /**

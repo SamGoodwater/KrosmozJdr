@@ -11,6 +11,7 @@ use App\Models\CharacteristicSpell;
 use App\Support\Characteristics\CharacteristicDefinitionJson;
 use App\Support\Characteristics\CharacteristicDefinitionNaming;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Écrit les fichiers `stem-groupe-definition.json` depuis l’état actuel des tables SQL
@@ -76,6 +77,9 @@ final class CharacteristicDefinitionsExportFromDatabaseService
             'color' => $c->color,
             'value_overrides' => $c->value_overrides,
             'hide_when_empty' => $c->hide_when_empty,
+            'hide_when_false' => Schema::hasColumn('characteristics', 'hide_when_false')
+                ? (bool) ($c->hide_when_false ?? false)
+                : false,
             'unit' => $c->unit,
             'type' => $c->type,
             'status' => $c->status ?? Characteristic::STATUS_A_VALIDER,

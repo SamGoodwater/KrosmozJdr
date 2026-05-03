@@ -14,6 +14,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import MonsterViewText from "@/Pages/Molecules/entity/monster/MonsterViewText.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
@@ -108,14 +109,17 @@ const headlineFields = computed(() => ["level"].filter(canShowField));
 
 const metaFields = computed(() =>
     [
+        "is_passive",
         "pa",
         "po",
         "po_editable",
         "element",
-        "capability_summary_cast",
-        "capability_summary_metier",
-        "capability_summary_relations",
-        "state",
+        "casting_time",
+        "duration",
+        "time_before_use_again",
+        "is_magic",
+        "ritual_available",
+        "powerful",
     ]
         .filter(canShowField)
         .filter((k) => !headlineFields.value.includes(k))
@@ -126,17 +130,6 @@ const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields
 const userCanEditFields = computed(() => ["read_level", "write_level"].filter(canShowField));
 
 const technicalFields = computed(() => ["created_by", "created_at", "updated_at"].filter(canShowField));
-
-const bodyFields = computed(() =>
-    [
-        "time_before_use_again",
-        "casting_time",
-        "duration",
-        "is_magic",
-        "ritual_available",
-        "powerful",
-    ].filter(canShowField)
-);
 
 const specializationLinks = computed(() => {
     const raw = props.capability?.specializations ?? props.capability?._data?.specializations ?? [];
@@ -159,6 +152,8 @@ const creatureLinks = computed(() => {
         }))
         .filter((x) => x.id != null);
 });
+
+const invocationMonsters = computed(() => creatureLinks.value);
 
 /** Effets : HTML riche (pas d’éditeur d’effets structurés comme pour les sorts). */
 const effectHtml = computed(() => {
@@ -338,6 +333,8 @@ const handleAction = async (actionKey) => {
                         display-mode="extended"
                         :descriptors="descriptors"
                         :table-meta="tableMeta"
+                        :variant="fieldKey === 'is_passive' ? 'icon' : 'inline'"
+                        :hide-characteristic-icon="fieldKey === 'po_editable'"
                         size="sm"
                         class="max-w-[18rem] whitespace-normal wrap-break-word"
                     />
@@ -360,8 +357,22 @@ const handleAction = async (actionKey) => {
             </template>
         </EntityViewHeader>
 
+        <div
+            v-if="invocationMonsters.length > 0"
+            class="flex flex-wrap items-center gap-2 rounded-xl border border-base-300/60 bg-base-100/20 p-3 text-sm"
+        >
+            <span class="text-primary-300 font-semibold">Invocation :</span>
+            <MonsterViewText
+                v-for="monster in invocationMonsters"
+                :key="monster.id ?? monster.name"
+                :monster="monster"
+                :table-meta="tableMeta"
+                :characteristic-runtime="characteristicRuntime"
+            />
+        </div>
+
         <section
-            v-if="specializationLinks.length > 0 || creatureLinks.length > 0"
+            v-if="specializationLinks.length > 0"
             class="space-y-2 rounded-xl border border-base-300/60 bg-base-100/20 p-4"
         >
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Relations</h3>
@@ -376,17 +387,6 @@ const handleAction = async (actionKey) => {
                     {{ s.name }}
                 </Link>
             </div>
-            <div v-if="creatureLinks.length > 0" class="flex flex-wrap gap-2 items-center">
-                <span class="text-xs text-primary-400 shrink-0">Créatures</span>
-                <Link
-                    v-for="c in creatureLinks"
-                    :key="`cr-${c.id}`"
-                    :href="route('entities.creatures.show', { creature: c.id })"
-                    class="badge badge-sm badge-outline border-primary/40 text-primary-200 hover:border-primary"
-                >
-                    {{ c.name }}
-                </Link>
-            </div>
         </section>
 
         <section v-if="canShowField('effect')" class="space-y-3">
@@ -395,30 +395,6 @@ const handleAction = async (actionKey) => {
             <article v-if="effectHtml" class="prose prose-sm prose-invert max-w-none text-primary-100 capability-effect-prose" v-html="effectHtml" />
             <p v-else class="text-sm text-primary-400 italic">Aucun effet décrit (texte riche).</p>
         </section>
-
-        <div v-if="bodyFields.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div v-for="fieldKey in bodyFields" :key="fieldKey" class="p-3 bg-base-200 entity-radius-box">
-                <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-2">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="flex items-center gap-2">
-                                <Icon
-                                    :source="getFieldIcon(fieldKey)"
-                                    :alt="getFieldLabel(fieldKey)"
-                                    size="xs"
-                                    class="text-primary-400"
-                                    :style="getFieldIconStyle(fieldKey)"
-                                />
-                                <span class="text-xs text-primary-400 uppercase font-semibold">{{ getFieldLabel(fieldKey) }}</span>
-                            </div>
-                        </Tooltip>
-                    </div>
-                    <div class="text-primary-100 wrap-break-word">
-                        <CellRenderer :cell="getCell(fieldKey)" ui-color="primary" />
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
             <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">

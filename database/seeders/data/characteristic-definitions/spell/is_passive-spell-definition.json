@@ -1,0 +1,56 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "is_passive_spell",
+        "name": "Passif",
+        "short_name": "Passif",
+        "helper": "Capacité passive : typiquement sans coût PA/PO ni lancer d’activation (distincte des capacités activables).",
+        "descriptions": "Les passifs de classe sont mis en avant sur les fiches Breed ; masqués lorsque la capacité est activable.",
+        "icon": null,
+        "icon_false": null,
+        "color": null,
+        "value_overrides": [
+            {
+                "value": true,
+                "icon": "passive.webp",
+                "color": "#d946ef",
+                "subtitle": "Capacité passive — sans activation ni coût PA/PO comme un sort."
+            }
+        ],
+        "hide_when_empty": false,
+        "hide_when_false": true,
+        "unit": null,
+        "type": "bool",
+        "status": "validee",
+        "sort_order": 8,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "is_passive",
+            "min": "0",
+            "max": "1",
+            "formula": null,
+            "formula_display": null,
+            "default_value": "0",
+            "conversion_formula": "min(1,max(0,round([d])))",
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": "Booléen : capacité passive de classe (affichage prioritaire sur les fiches).",
+            "norms_help_section_id": null,
+            "value_available": [
+                {
+                    "value": true,
+                    "label": "Passif"
+                }
+            ]
+        }
+    },
+    "relations": null
+}

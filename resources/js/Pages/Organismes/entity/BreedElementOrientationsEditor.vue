@@ -5,7 +5,7 @@
 import { computed, reactive, ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
-import Btn from "@/Pages/Atoms/action/Btn.vue";
+import EditActionDock from "@/Pages/Molecules/action/EditActionDock.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import {
     BREED_ELEMENT_KEYS,
@@ -91,7 +91,7 @@ const save = () => {
     processing.value = true;
     router.patch(
         route("entities.breeds.update", { breed: props.breedId }),
-        { element_orientations: toPayloadMap(localOrientations.value) },
+        { element_orientations: toPayloadMap(localOrientations) },
         {
             preserveScroll: true,
             onSuccess: () => {
@@ -148,16 +148,17 @@ const save = () => {
             </label>
         </div>
 
-        <div class="flex justify-end pt-2 border-t border-base-300">
-            <Btn
-                color="primary"
-                size="sm"
-                :disabled="processing || !hasChanges"
-                @click="save"
-            >
-                <i class="fa-solid fa-save mr-2" />
-                {{ processing ? "Enregistrement…" : "Enregistrer les orientations" }}
-            </Btn>
+        <div class="flex justify-end border-t border-base-300 pt-2">
+            <EditActionDock
+                primary-label="Enregistrer les orientations"
+                processing-label="Enregistrement…"
+                :processing="processing"
+                :disabled="!hasChanges"
+                :show-secondary="false"
+                :secondary-actions="[]"
+                :fixed-on-desktop="false"
+                @primary="save"
+            />
         </div>
     </Container>
 </template>

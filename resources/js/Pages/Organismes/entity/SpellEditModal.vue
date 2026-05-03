@@ -89,7 +89,7 @@ const handleClose = () => {
             </div>
         </template>
 
-        <div class="max-h-[min(85vh,920px)] overflow-y-auto pr-1 pb-28 md:pb-32">
+        <div class="max-h-[min(85vh,920px)] overflow-y-auto pr-1 pb-4 md:pb-6">
             <div v-if="loading" class="py-12 text-center text-sm text-base-content/70">
                 Chargement de l’éditeur…
             </div>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Entity\CapabilityResource;
+use App\Http\Resources\Entity\SpellResource;
 use App\Models\Entity\Breed;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,6 +40,16 @@ class BreedTableController extends Controller
             ->with(['createdBy', 'elementOrientations'])
             ->withCount(['spells']);
 
+        if ($format === 'entities') {
+            $query->with([
+                'capabilities' => fn ($q) => $q->orderBy('name'),
+                'spells' => fn ($q) => $q->orderBy('breed_spell.character_level')
+                    ->orderBy('breed_spell.slot_index')
+                    ->orderBy('breed_spell.choice_order')
+                    ->orderBy('spells.name'),
+            ]);
+        }
+
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -59,7 +71,7 @@ class BreedTableController extends Controller
         ];
 
         if ($format === 'entities') {
-            $entities = $rows->map(function (Breed $c) {
+            $entities = $rows->map(function (Breed $c) use ($request) {
                 $createdBy = $c->createdBy;
 
                 return [
@@ -85,6 +97,8 @@ class BreedTableController extends Controller
                         'email' => $createdBy->email,
                     ] : null,
                     'spells_count' => (int) ($c->spells_count ?? 0),
+                    'spells' => SpellResource::collection($c->spells)->resolve($request),
+                    'capabilities' => CapabilityResource::collection($c->capabilities)->resolve($request),
                     'element_orientations' => $c->elementOrientationsMap(),
                     'created_at' => $c->created_at?->toISOString(),
                     'updated_at' => $c->updated_at?->toISOString(),

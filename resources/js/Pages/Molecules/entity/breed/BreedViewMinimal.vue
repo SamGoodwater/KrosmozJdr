@@ -17,7 +17,10 @@ import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
+import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
+import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
+import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 
 const props = defineProps({
     breed: {
@@ -62,6 +65,18 @@ const orientationMap = computed(() => {
 const descriptionFull = computed(() => {
     const d = entity.value?.description ?? entity.value?._data?.description;
     return d && String(d).trim() ? String(d) : "";
+});
+
+const linkedCapabilities = computed(() => {
+    const raw = entity.value?._data?.capabilities ?? entity.value?.capabilities;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCapabilities = computed(() => linkedCapabilities.value.length > 0);
+
+const hasSpellSlots = computed(() => {
+    const raw = entity.value?._data ?? entity.value;
+    return buildSpellSlotGroups(raw).length > 0;
 });
 
 const showHref = computed(() =>
@@ -164,6 +179,17 @@ const handleAction = async (actionKey) => {
                         >
                             {{ specificityCell.value }}
                         </p>
+                        <BreedCapabilitiesDisplay
+                            v-if="hasLinkedCapabilities"
+                            :capabilities="linkedCapabilities"
+                            density="text"
+                        />
+                        <BreedVariantsDisplay
+                            v-if="hasSpellSlots"
+                            :breed="entity?._data ?? entity"
+                            density="text"
+                            :show-temple-note="false"
+                        />
                     </div>
                 </div>
             </div>
@@ -240,6 +266,17 @@ const handleAction = async (actionKey) => {
                         >
                             {{ specificityCell.value }}
                         </p>
+                        <BreedCapabilitiesDisplay
+                            v-if="hasLinkedCapabilities"
+                            :capabilities="linkedCapabilities"
+                            density="text"
+                        />
+                        <BreedVariantsDisplay
+                            v-if="hasSpellSlots"
+                            :breed="entity?._data ?? entity"
+                            density="text"
+                            :show-temple-note="false"
+                        />
                         <p
                             v-if="descriptionFull"
                             class="text-xs text-base-content/80 line-clamp-4"

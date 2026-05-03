@@ -88,6 +88,7 @@ class CharacteristicSeeder extends Seeder
         $hasIconFalse = Schema::hasColumn('characteristics', 'icon_false');
         $hasValueOverrides = Schema::hasColumn('characteristics', 'value_overrides');
         $hasHideWhenEmpty = Schema::hasColumn('characteristics', 'hide_when_empty');
+        $hasHideWhenFalse = Schema::hasColumn('characteristics', 'hide_when_false');
         $hasStatus = Schema::hasColumn('characteristics', 'status');
 
         // 1) Création / mise à jour des caractéristiques sans gérer les liens
@@ -120,6 +121,9 @@ class CharacteristicSeeder extends Seeder
             }
             if ($hasHideWhenEmpty) {
                 $payload['hide_when_empty'] = (bool) ($row['hide_when_empty'] ?? false);
+            }
+            if ($hasHideWhenFalse) {
+                $payload['hide_when_false'] = (bool) ($row['hide_when_false'] ?? false);
             }
             Characteristic::updateOrCreate(
                 ['key' => $key],

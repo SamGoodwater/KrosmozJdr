@@ -17,7 +17,7 @@ describe('capability-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
             const descriptors = getCapabilityFieldDescriptors();
-            const requiredFields = ['id', 'name', 'level', 'pa', 'po', 'state', 'read_level', 'write_level'];
+            const requiredFields = ['id', 'name', 'level', 'pa', 'po', 'is_passive', 'state', 'read_level', 'write_level'];
 
             requiredFields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
@@ -38,15 +38,21 @@ describe('capability-descriptors', () => {
     });
 
     describe('visibleIf / editableIf', () => {
-        it('visibleIf fonctionne avec canUpdateAny', () => {
-            const descriptors = getCapabilityFieldDescriptors({
-                capabilities: { updateAny: true },
+        it('visibleIf sur id suit createAny (colonne ID réservée création)', () => {
+            const descriptorsOn = getCapabilityFieldDescriptors({
+                capabilities: { createAny: true },
+            });
+            const descriptorsOff = getCapabilityFieldDescriptors({
+                capabilities: { createAny: false },
             });
 
-            const idDescriptor = descriptors.id;
-            if (idDescriptor.visibleIf) {
-                expect(idDescriptor.visibleIf({ capabilities: { updateAny: true } })).toBe(true);
-                expect(idDescriptor.visibleIf({ capabilities: { updateAny: false } })).toBe(false);
+            const idDescriptorOn = descriptorsOn.id;
+            const idDescriptorOff = descriptorsOff.id;
+            if (idDescriptorOn.visibleIf) {
+                expect(idDescriptorOn.visibleIf()).toBe(true);
+            }
+            if (idDescriptorOff.visibleIf) {
+                expect(idDescriptorOff.visibleIf()).toBe(false);
             }
         });
     });

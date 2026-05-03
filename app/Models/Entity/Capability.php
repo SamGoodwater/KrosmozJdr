@@ -29,6 +29,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $element
  * @property bool $is_magic
  * @property bool $ritual_available
+ * @property bool $is_passive
  * @property string|null $powerful
  * @property string $state
  * @property int $read_level
@@ -119,6 +120,7 @@ class Capability extends Model implements HasMedia
         'element',
         'is_magic',
         'ritual_available',
+        'is_passive',
         'powerful',
         'state',
         'read_level',
@@ -139,6 +141,7 @@ class Capability extends Model implements HasMedia
         'po_editable' => 'boolean',
         'is_magic' => 'boolean',
         'ritual_available' => 'boolean',
+        'is_passive' => 'boolean',
     ];
 
     /**

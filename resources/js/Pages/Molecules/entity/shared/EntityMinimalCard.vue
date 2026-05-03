@@ -50,7 +50,7 @@ function onLeave() {
     >
         <!-- Compact : définit la taille du slot, ne bouge pas -->
         <div
-            class="entity-minimal-card__compact border border-base-300 overflow-hidden"
+            class="entity-minimal-card__compact bg-glass-2xl border border-base-300 overflow-hidden"
             :class="{ 'opacity-0 pointer-events-none': showExpanded && canHover }"
         >
             <slot name="compact" />
@@ -60,7 +60,7 @@ function onLeave() {
         <Transition name="entity-minimal-expand">
             <div
                 v-if="showExpanded"
-                class="entity-minimal-card__expanded"
+                class="entity-minimal-card__expanded bg-glass-3xl"
                 role="region"
                 aria-label="Détails"
             >
@@ -72,11 +72,15 @@ function onLeave() {
 
 <style scoped>
 .entity-minimal-card__compact {
+    --bg-color: var(--color-base-100, #0f172a);
     min-height: 6rem;
     transition: opacity 0.15s ease-out;
-    background: oklch(var(--b1) / 0.5);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(34px) saturate(1.12);
+    -webkit-backdrop-filter: blur(34px) saturate(1.12);
+    box-shadow:
+        0 14px 34px rgb(0 0 0 / 0.34),
+        0 0 0 1px color-mix(in srgb, var(--color-base-content, #ffffff) 8%, transparent) inset,
+        0 1px 0 color-mix(in srgb, var(--color-base-content, #ffffff) 10%, transparent) inset;
 }
 
 /* Quand étendu au survol : la carte passe au-dessus des voisines */
@@ -85,6 +89,7 @@ function onLeave() {
 }
 
 .entity-minimal-card__expanded {
+    --bg-color: var(--color-base-100, #0f172a);
     position: absolute;
     top: 0;
     left: 0;
@@ -98,12 +103,14 @@ function onLeave() {
     z-index: 1;
     /* Sous les tooltips (typiquement 9999) */
     border-radius: var(--rounded-box, 0.1rem);
-    border: 1px solid var(--color-base-300, oklch(var(--b3)));
-    /* Fond plus opaque pour la lisibilité tout en conservant blur + léger voile */
-    background: color-mix(in oklch, oklch(var(--b1)) 94%, oklch(var(--bc)) 6%);
-    backdrop-filter: blur(28px) saturate(1.05);
-    -webkit-backdrop-filter: blur(28px) saturate(1.05);
-    box-shadow: 0 8px 24px oklch(0 0 0 / 0.15);
+    border: 1px solid var(--color-base-300, rgb(51 65 85));
+    backdrop-filter: blur(38px) saturate(1.15);
+    -webkit-backdrop-filter: blur(38px) saturate(1.15);
+    box-shadow:
+        0 28px 80px rgb(0 0 0 / 0.58),
+        0 10px 28px rgb(0 0 0 / 0.34),
+        0 0 0 1px color-mix(in srgb, var(--color-base-content, #ffffff) 12%, transparent) inset,
+        0 1px 0 color-mix(in srgb, var(--color-base-content, #ffffff) 16%, transparent) inset;
 }
 
 /* Actions masquées par défaut, visibles au survol / focus de la carte */

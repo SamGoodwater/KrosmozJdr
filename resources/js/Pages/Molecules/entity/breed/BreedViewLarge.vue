@@ -26,10 +26,9 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entit
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
-import BreedSpellSlotsDisplay from "@/Pages/Molecules/entity/breed/BreedSpellSlotsDisplay.vue";
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
-import CapabilityViewText from "@/Pages/Molecules/entity/capability/CapabilityViewText.vue";
-import { Capability } from "@/Models/Entity/Capability";
+import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
+import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
 
@@ -107,11 +106,15 @@ const linkedCapabilities = computed(() => {
 
 const hasLinkedCapabilities = computed(() => linkedCapabilities.value.length > 0);
 
-/**
- * @param {object} raw
- * @returns {Capability}
- */
-const asCapabilityModel = (raw) => (raw instanceof Capability ? raw : new Capability(raw));
+const subtitleText = computed(() => {
+    const b = props.breed?._data ?? props.breed;
+    const fast = b?.description_fast;
+    if (fast != null && String(fast).trim() !== "") {
+        return String(fast).trim();
+    }
+    const full = b?.description ?? props.breed?.description;
+    return full != null && String(full).trim() !== "" ? String(full).trim() : "";
+});
 
 const orientationMap = computed(() => {
     const raw = props.breed?._data ?? props.breed;
@@ -306,7 +309,7 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #subtitle>
-                <p v-if="breed.description" class="text-primary-300 mt-2 break-words">{{ breed.description }}</p>
+                <p v-if="subtitleText" class="text-primary-300 mt-2 break-words">{{ subtitleText }}</p>
             </template>
 
             <template #mainInfos>
@@ -350,26 +353,19 @@ const handleAction = async (actionKey) => {
             <BreedElementOrientationsDisplay :orientation-map="orientationMap" size="md" />
         </div>
 
-        <div v-if="hasSpellSlots" class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-3">
-            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Sorts par emplacement</h3>
-            <p class="text-xs text-primary-400/90">
-                Au niveau 1 : trois emplacements. Aux niveaux impairs suivants : un sort de classe par niveau. Liste des
-                options par emplacement (le joueur en choisit une par emplacement en jeu).
-            </p>
-            <BreedSpellSlotsDisplay :breed="breed?._data ?? breed" density="minimal" />
-        </div>
+        <BreedCapabilitiesDisplay
+            v-if="hasLinkedCapabilities"
+            :capabilities="linkedCapabilities"
+            density="large"
+            :characteristic-runtime="characteristicRuntime"
+        />
 
-        <div v-if="hasLinkedCapabilities" class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-3">
-            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Capacités de classe</h3>
-            <p class="text-xs text-primary-400/90">
-                Capacités liées à la classe (sans emplacement), en complément des sorts.
-            </p>
-            <ul class="flex flex-wrap gap-x-4 gap-y-2">
-                <li v-for="c in linkedCapabilities" :key="c.id" class="min-w-0 max-w-full">
-                    <CapabilityViewText :capability="asCapabilityModel(c)" />
-                </li>
-            </ul>
-        </div>
+        <BreedVariantsDisplay
+            v-if="hasSpellSlots"
+            :breed="breed?._data ?? breed"
+            density="large"
+            :characteristic-runtime="characteristicRuntime"
+        />
 
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
             <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">

@@ -78,6 +78,12 @@ export function useEntityPropertyDisplay(options = {}) {
     });
 
     const value = computed(() => {
+        const raw = rawValue.value;
+        const characteristicType = String(characteristic.value?.type ?? "").toLowerCase();
+        if (characteristicType === "bool" && (typeof raw === "boolean" || raw === 0 || raw === 1 || raw === "0" || raw === "1")) {
+            return raw === true || raw === 1 || raw === "1";
+        }
+
         const c = cell.value;
         if (c?.type === "chips" && Array.isArray(c.params?.items)) {
             for (const it of c.params.items) {
@@ -90,7 +96,7 @@ export function useEntityPropertyDisplay(options = {}) {
             return c.value;
         }
         if (c?.value === 0 || c?.value === false) return c.value;
-        return rawValue.value;
+        return raw;
     });
 
     const byDbColumn = computed(() =>

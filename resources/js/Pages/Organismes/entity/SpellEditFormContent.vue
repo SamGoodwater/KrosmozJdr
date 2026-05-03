@@ -56,9 +56,11 @@ const spellModel = computed(() =>
     props.spell instanceof Spell ? props.spell : new Spell(props.spell),
 );
 
-const fixedFooterInsetClass = computed(() =>
-    props.embeddedInModal ? "left-0 right-0" : "left-0 right-0 lg:left-64",
-);
+/**
+ * Le layout décale déjà `<main>` sous la sidebar ; pas de second décalage sur le pied.
+ * @see CapabilityEditFormContent — même raison (`sticky` dans la colonne scrollable).
+ */
+const fixedFooterInsetClass = "left-0 right-0";
 
 const spellEffectsSectionRef = ref(null);
 

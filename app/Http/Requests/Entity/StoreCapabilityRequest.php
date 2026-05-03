@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Entity\Concerns\NormalizesCapabilityStringDefaults;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -11,6 +13,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreCapabilityRequest extends FormRequest
 {
+    use NormalizesCapabilityStringDefaults;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -22,7 +26,7 @@ class StoreCapabilityRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -40,11 +44,17 @@ class StoreCapabilityRequest extends FormRequest
             'element' => ['nullable', 'integer', 'min:0', 'max:127'],
             'is_magic' => ['nullable', 'boolean'],
             'ritual_available' => ['nullable', 'boolean'],
+            'is_passive' => ['nullable', 'boolean'],
             'powerful' => ['nullable', 'string', 'max:255'],
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'image' => ['nullable', 'string', 'max:255'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->normalizeCapabilityNotNullDefaultsForDatabase();
     }
 }

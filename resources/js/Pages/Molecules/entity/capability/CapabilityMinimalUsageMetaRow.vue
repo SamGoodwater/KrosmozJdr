@@ -41,32 +41,6 @@ const props = defineProps({
 
 const USAGE_IMG_PX = "14";
 
-const poEditableRaw = computed(() => readSpellField(props.entity, "poEditable", "po_editable"));
-const poEditableOn = computed(() => Boolean(poEditableRaw.value));
-const poEditableDefined = computed(
-    () => poEditableRaw.value !== null && poEditableRaw.value !== undefined,
-);
-
-const poUsageVisual = computed(() =>
-    resolveSpellUsageCharacteristicVisual("po_editable", poEditableDefined.value ? poEditableOn.value : undefined),
-);
-
-const poEditableStatusLabel = computed(() =>
-    !poEditableDefined.value
-        ? ""
-        : poEditableOn.value
-          ? "La portée peut être modifiée en jeu selon le PO du lanceur ou de la lanceuse."
-          : "La portée n'est pas modifiable en jeu selon le PO du lanceur ou de la lanceuse.",
-);
-
-const poAffixMuted = computed(
-    () =>
-        poEditableDefined.value &&
-        !poEditableOn.value &&
-        poUsageVisual.value.hasIcon &&
-        !poUsageVisual.value.hasDistinctFalseIcon,
-);
-
 const castingRitual = computed(() => buildSpellCastingRitualPresentation(props.entity));
 
 const durationReuse = computed(() => buildCapabilityDurationReusePresentation(props.entity));
@@ -117,6 +91,19 @@ const magicAffixMuted = computed(
 <template>
     <div class="flex flex-wrap items-center" :class="rowClass">
         <EntityPropertyDisplay
+            v-if="canShowField('is_passive')"
+            field-key="is_passive"
+            :entity="entity"
+            entity-type="capability"
+            :display-mode="PROPERTY_DISPLAY_MODES.compact"
+            :descriptors="descriptors"
+            :table-meta="tableMeta"
+            :size="propertySize"
+            variant="icon"
+            hide-field-label
+            class="min-w-0 shrink-0"
+        />
+        <EntityPropertyDisplay
             v-if="canShowField('pa')"
             field-key="pa"
             :entity="entity"
@@ -131,40 +118,6 @@ const magicAffixMuted = computed(
             v-if="canShowField('po')"
             class="inline-flex min-w-0 max-w-full flex-wrap items-center gap-0.5"
         >
-            <Tooltip
-                v-if="poUsageVisual.hasIcon"
-                placement="top"
-                color="neutral"
-                :accent-style="tooltipAccentFromVisual(poUsageVisual)"
-            >
-                <template #content>
-                    <SpellUsageCharacteristicTooltipPanel
-                        :visual="poUsageVisual"
-                        :status-text="poEditableStatusLabel"
-                        :show-boolean-glyph="poEditableDefined"
-                        :boolean-on="poEditableOn"
-                    />
-                </template>
-                <span
-                    class="inline-flex shrink-0 cursor-default items-center justify-center p-px"
-                    :class="{ 'opacity-[0.42]': poAffixMuted }"
-                    :style="spellUsageIconBackdropStyle(poUsageVisual.color)"
-                    tabindex="0"
-                >
-                    <Image
-                        :source="poUsageVisual.source"
-                        :alt="
-                            poEditableOn
-                                ? 'Portée modulable en jeu selon le PO'
-                                : 'Portée fixe, non modulable en jeu selon le PO'
-                        "
-                        :width="USAGE_IMG_PX"
-                        :height="USAGE_IMG_PX"
-                        fit="contain"
-                        class="block shrink-0"
-                    />
-                </span>
-            </Tooltip>
             <EntityPropertyDisplay
                 field-key="po"
                 :entity="entity"
@@ -173,7 +126,7 @@ const magicAffixMuted = computed(
                 :descriptors="descriptors"
                 :table-meta="tableMeta"
                 :size="propertySize"
-                :hide-characteristic-icon="poUsageVisual.hasIcon || spellPoIsCac"
+                :hide-characteristic-icon="spellPoIsCac"
                 :characteristic-label-image-source="spellPoIsCac ? PO_CAC_ICON : ''"
                 :characteristic-label-image-alt="PO_CAC_LABEL"
                 :characteristic-value-text-class="spellPoIsCac ? 'text-red-600' : ''"

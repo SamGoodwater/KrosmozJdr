@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\Table;
 
-use App\Models\User;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Capability;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -23,7 +24,7 @@ class CapabilityTableControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
     }
 
     /**
@@ -35,6 +36,7 @@ class CapabilityTableControllerTest extends TestCase
         $capability = Capability::factory()->create([
             'name' => 'Test Capability',
             'level' => '5',
+            'is_passive' => true,
             'created_by' => $user->id,
         ]);
 
@@ -54,6 +56,7 @@ class CapabilityTableControllerTest extends TestCase
                         'id',
                         'name',
                         'level',
+                        'is_passive',
                     ],
                 ],
             ]);
@@ -64,6 +67,7 @@ class CapabilityTableControllerTest extends TestCase
         $this->assertArrayNotHasKey('rows', $data);
         $this->assertCount(1, $data['entities']);
         $this->assertEquals('Test Capability', $data['entities'][0]['name']);
+        $this->assertTrue($data['entities'][0]['is_passive']);
     }
 
     /**
@@ -74,6 +78,7 @@ class CapabilityTableControllerTest extends TestCase
         $user = User::factory()->create();
         $capability = Capability::factory()->create([
             'name' => 'Test Capability',
+            'is_passive' => true,
             'created_by' => $user->id,
         ]);
 
@@ -92,6 +97,7 @@ class CapabilityTableControllerTest extends TestCase
                         'id',
                         'cells' => [
                             'name',
+                            'is_passive',
                         ],
                     ],
                 ],
@@ -102,6 +108,8 @@ class CapabilityTableControllerTest extends TestCase
         $this->assertArrayNotHasKey('entities', $data);
         $this->assertArrayHasKey('cells', $data['rows'][0]);
         $this->assertEquals('route', $data['rows'][0]['cells']['name']['type']);
+        $this->assertEquals('chips', $data['rows'][0]['cells']['is_passive']['type']);
+        $this->assertEquals('Passif', $data['rows'][0]['cells']['is_passive']['params']['items'][0]['value']);
     }
 
     /**
@@ -163,4 +171,3 @@ class CapabilityTableControllerTest extends TestCase
         $this->assertEquals(5, $data['meta']['query']['limit']);
     }
 }
-

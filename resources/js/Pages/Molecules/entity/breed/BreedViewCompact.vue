@@ -10,7 +10,7 @@
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { computed } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
@@ -20,7 +20,8 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
-import BreedSpellSlotsDisplay from "@/Pages/Molecules/entity/breed/BreedSpellSlotsDisplay.vue";
+import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
+import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 
 const props = defineProps({
@@ -35,8 +36,15 @@ const props = defineProps({
     tableMeta: {
         type: Object,
         default: () => ({})
-    }
+    },
+    characteristicRuntime: { type: Object, default: null },
 });
+
+const page = usePage();
+
+const resolvedCharacteristicRuntime = computed(
+    () => props.characteristicRuntime ?? page.props.characteristicRuntime ?? null
+);
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
@@ -101,6 +109,13 @@ const hasSpellSlotGroups = computed(() => {
     const raw = props.breed?._data ?? props.breed;
     return buildSpellSlotGroups(raw).length > 0;
 });
+
+const linkedCapabilities = computed(() => {
+    const raw = props.breed?._data?.capabilities ?? props.breed?.capabilities;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCapabilities = computed(() => linkedCapabilities.value.length > 0);
 
 const handleAction = async (actionKey) => {
     const breedId = props.breed.id;
@@ -205,11 +220,21 @@ const handleAction = async (actionKey) => {
             </div>
         </div>
 
-        <BreedSpellSlotsDisplay
+        <BreedCapabilitiesDisplay
+            v-if="hasLinkedCapabilities"
+            class="mt-2"
+            :capabilities="linkedCapabilities"
+            density="compact"
+            :characteristic-runtime="resolvedCharacteristicRuntime"
+        />
+
+        <BreedVariantsDisplay
             v-if="hasSpellSlotGroups"
             class="mt-2"
             :breed="breed?._data ?? breed"
-            density="minimal"
+            density="compact"
+            :characteristic-runtime="resolvedCharacteristicRuntime"
+            :show-temple-note="false"
         />
     </div>
 </template>

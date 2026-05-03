@@ -360,6 +360,7 @@ defineExpose({ flushEffectGroupSave });
             submit-label="Enregistrer les effets"
             :hide-submit-button="hideEffectGroupSubmitButton"
             :save-without-inertia="embeddedInModal"
+            :embedded-in-modal="embeddedInModal"
         />
 
         <div v-if="selectedGroup && patchUrlForSelectedGroup" class="mt-3">

@@ -102,6 +102,7 @@ export function useCharacteristicViewModel(options) {
                   : [];
 
         const hideWhenEmpty = Boolean(def.hide_when_empty);
+        const hideWhenFalse = Boolean(def.hide_when_false);
         const characteristicType = def.type != null ? String(def.type) : "";
 
         return {
@@ -117,9 +118,14 @@ export function useCharacteristicViewModel(options) {
             displayValue: ep.displayValue.value,
             rawValue: val,
             hideWhenEmpty,
+            hideWhenFalse,
             characteristicType,
             hiddenWhenEmpty: shouldHideCharacteristicLine(
-                { hide_when_empty: hideWhenEmpty, type: characteristicType },
+                {
+                    hide_when_empty: hideWhenEmpty,
+                    hide_when_false: hideWhenFalse,
+                    type: characteristicType,
+                },
                 val,
             ),
             formulaBdd: String(formulaBdd || ""),

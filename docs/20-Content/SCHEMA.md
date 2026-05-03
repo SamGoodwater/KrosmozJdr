@@ -130,6 +130,7 @@ erDiagram
     element : tinyint(3) unsigned
     is_magic : tinyint(1)
     ritual_available : tinyint(1)
+    is_passive : tinyint(1)
     powerful : varchar(255)
     state : varchar(255)
     read_level : tinyint(4)
@@ -251,6 +252,7 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
     hide_when_empty : tinyint(1)
+    hide_when_false : tinyint(1)
   }
   CONSUMABLE_CAMPAIGN {
     consumable_id : bigint(20) unsigned

@@ -130,6 +130,7 @@ const hiddenWhenEmpty = computed(() => {
     return shouldHideCharacteristicLine(
         {
             hide_when_empty: m?.hideWhenEmpty,
+            hide_when_false: m?.hideWhenFalse,
             type: m?.characteristicType ?? "",
         },
         m?.rawValue,
@@ -327,7 +328,9 @@ const badgeVariant = computed(() =>
                     fit="contain"
                     class="inline-block shrink-0 opacity-95"
                 />
-                <span v-else-if="showLabel && model.shortName" class="truncate text-base-content/90">{{ model.shortName }}:</span>
+                <span v-else-if="showLabel && model.shortName" class="truncate text-base-content/90">
+                    {{ showValue ? `${model.shortName}:` : model.shortName }}
+                </span>
                 <span
                     v-if="showValue"
                     class="truncate font-medium"
@@ -353,7 +356,9 @@ const badgeVariant = computed(() =>
                     fit="contain"
                     class="inline-block shrink-0 opacity-95"
                 />
-                <span v-else-if="showLabel && model.name" class="truncate text-base-content/90">{{ model.name }}:</span>
+                <span v-else-if="showLabel && model.name" class="truncate text-base-content/90">
+                    {{ showValue ? `${model.name}:` : model.name }}
+                </span>
                 <span
                     v-if="showValue"
                     class="truncate font-medium"

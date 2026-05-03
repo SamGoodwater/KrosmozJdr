@@ -11,6 +11,7 @@ use App\Models\CharacteristicSpell;
 use App\Services\Characteristic\Formula\FormulaResolutionService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Getter généraliste : fournit les définitions d’une caractéristique par clé et entité.
@@ -474,6 +475,9 @@ final class CharacteristicGetterService
             'unit' => $characteristic->unit,
             'type' => $characteristic->type,
             'hide_when_empty' => (bool) ($characteristic->hide_when_empty ?? false),
+            'hide_when_false' => Schema::hasColumn('characteristics', 'hide_when_false')
+                ? (bool) ($characteristic->hide_when_false ?? false)
+                : false,
             'entity' => $entity,
             'db_column' => $this->pickGroupValue($base, $overlay, 'db_column') ?? $characteristic->key,
             'min' => $this->pickGroupValue($base, $overlay, 'min'),

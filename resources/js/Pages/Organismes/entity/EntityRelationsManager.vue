@@ -18,6 +18,7 @@ import { ref, computed, watch, shallowRef, defineAsyncComponent } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -598,15 +599,17 @@ const displayField = (item, field) => {
         </div>
 
         <!-- Bouton de sauvegarde -->
-        <div class="flex justify-end pt-4 border-t">
-            <Btn
-                @click="saveRelations"
-                color="primary"
-                :disabled="relationsForm.processing || !hasUnsavedRelationChanges"
-            >
-                <i class="fa-solid fa-save mr-2"></i>
-                {{ relationsForm.processing ? 'Sauvegarde...' : 'Sauvegarder les modifications' }}
-            </Btn>
+        <div class="flex justify-end border-t pt-4">
+            <EditActionDock
+                primary-label="Sauvegarder les modifications"
+                processing-label="Sauvegarde..."
+                :processing="relationsForm.processing"
+                :disabled="!hasUnsavedRelationChanges"
+                :show-secondary="false"
+                :secondary-actions="[]"
+                :fixed-on-desktop="false"
+                @primary="saveRelations"
+            />
         </div>
     </Container>
 

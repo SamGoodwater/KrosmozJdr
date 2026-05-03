@@ -1,3 +1,5 @@
+import { BREED_SPELL_EXTRA_LEVEL, BREED_SPELL_EXTRA_SLOT } from "@/Utils/entity/breedSpellExtra";
+
 /**
  * Regroupe les sorts d'une classe par emplacement (pivot breed_spell).
  *
@@ -41,6 +43,28 @@ export function buildSpellSlotGroups(breed) {
         });
     }
     return out;
+}
+
+/**
+ * Sépare les groupes « variantes » (progression) des sorts toujours disponibles (pivot 0/1).
+ *
+ * @param {object} breed - Données Breed
+ * @returns {{ variantGroups: Array<{ character_level: number, slot_index: number, spells: object[] }>, alwaysAvailableGroups: typeof variantGroups }}
+ */
+export function splitBreedSpellSlotGroups(breed) {
+    const groups = buildSpellSlotGroups(breed);
+    const variantGroups = [];
+    const alwaysAvailableGroups = [];
+    for (const g of groups) {
+        const cl = Number(g.character_level);
+        const si = Number(g.slot_index);
+        if (cl === BREED_SPELL_EXTRA_LEVEL && si === BREED_SPELL_EXTRA_SLOT) {
+            alwaysAvailableGroups.push(g);
+        } else {
+            variantGroups.push(g);
+        }
+    }
+    return { variantGroups, alwaysAvailableGroups };
 }
 
 /**

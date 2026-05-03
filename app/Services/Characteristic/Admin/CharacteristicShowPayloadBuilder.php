@@ -60,6 +60,7 @@ final class CharacteristicShowPayloadBuilder
         $hasIconFalse = Schema::hasColumn('characteristics', 'icon_false');
         $hasValueOverrides = Schema::hasColumn('characteristics', 'value_overrides');
         $hasHideWhenEmpty = Schema::hasColumn('characteristics', 'hide_when_empty');
+        $hasHideWhenFalse = Schema::hasColumn('characteristics', 'hide_when_false');
 
         $selected = [
             'id' => $characteristic->key,
@@ -72,6 +73,7 @@ final class CharacteristicShowPayloadBuilder
             'color' => $effective->color,
             'value_overrides' => $hasValueOverrides ? $effective->value_overrides : null,
             'hide_when_empty' => $hasHideWhenEmpty ? (bool) $effective->hide_when_empty : false,
+            'hide_when_false' => $hasHideWhenFalse ? (bool) ($effective->hide_when_false ?? false) : false,
             'type' => $effective->type,
             'status' => Schema::hasColumn('characteristics', 'status') ? ($effective->status ?? Characteristic::STATUS_A_VALIDER) : Characteristic::STATUS_A_VALIDER,
             'unit' => $effective->unit,

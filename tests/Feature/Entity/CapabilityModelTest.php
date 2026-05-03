@@ -2,19 +2,17 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
 use App\Models\Entity\Capability;
-use App\Models\Entity\Specialization;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Specialization;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Capability
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class CapabilityModelTest extends TestCase
 {
@@ -26,7 +24,7 @@ class CapabilityModelTest extends TestCase
     public function test_capability_factory_creates_valid_capability(): void
     {
         $user = User::factory()->create();
-        
+
         $capability = Capability::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -35,6 +33,23 @@ class CapabilityModelTest extends TestCase
         $this->assertNotNull($capability->id);
         $this->assertNotNull($capability->name);
         $this->assertEquals($user->id, $capability->created_by);
+        $this->assertFalse((bool) $capability->is_passive);
+    }
+
+    public function test_capability_is_passive_persists(): void
+    {
+        $user = User::factory()->create();
+
+        $capability = Capability::factory()->create([
+            'created_by' => $user->id,
+            'is_passive' => true,
+        ]);
+
+        $this->assertTrue($capability->is_passive);
+
+        $capability->refresh();
+
+        $this->assertTrue($capability->is_passive);
     }
 
     /**
@@ -101,4 +116,3 @@ class CapabilityModelTest extends TestCase
         $this->assertTrue($capability->creatures->contains($creature2));
     }
 }
-

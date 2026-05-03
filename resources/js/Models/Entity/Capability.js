@@ -11,7 +11,7 @@
 import { BaseModel } from '../BaseModel';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
-import { isPoCac, PO_CAC_ICON, PO_CAC_LABEL } from '@/Composables/entity/useCharacteristicDisplay';
+import { isPoCac, PO_CAC_ICON, PO_CAC_LABEL, resolveDef, shouldHideCharacteristicLine } from '@/Composables/entity/useCharacteristicDisplay';
 import { getFormatter } from '@/Utils/Formatters/FormatterRegistry.js';
 
 export class Capability extends BaseModel {
@@ -73,6 +73,11 @@ export class Capability extends BaseModel {
 
     get ritualAvailable() {
         return this._data.ritual_available || null;
+    }
+
+    /** Capacité passive (sans activation type sort). */
+    get isPassive() {
+        return Boolean(this._data.is_passive);
     }
 
     get powerful() {
@@ -187,6 +192,8 @@ export class Capability extends BaseModel {
                 return this._toIsMagicCell(format, size, options);
             case 'ritual_available':
                 return this._toRitualAvailableCell(format, size, options);
+            case 'is_passive':
+                return this._toIsPassiveCell(format, size, options);
             case 'powerful':
                 return this._toPowerfulCell(format, size, options);
             case 'image':
@@ -613,6 +620,53 @@ export class Capability extends BaseModel {
     }
 
     /**
+     * Génère une cellule pour is_passive
+     * @private
+     */
+    _toIsPassiveCell(_format, _size, _options) {
+        const raw = this.isPassive;
+        const def = resolveDef('is_passive', raw, { sourceGroups: ['capability', 'spell'] }) || {};
+        if (shouldHideCharacteristicLine(def, raw)) {
+            return {
+                type: 'text',
+                value: '',
+                params: { sortValue: 0, searchValue: '' },
+            };
+        }
+
+        const label = def._resolvedLabel || def.short_name || def.name || 'Passif';
+        const descriptions = Array.isArray(def.descriptions)
+            ? def.descriptions.join(' ')
+            : (def.descriptions || '');
+        const tooltip = def._resolvedSubtitle || def.helper || descriptions || label;
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items: [
+                    {
+                        key: def.key || 'is_passive',
+                        icon: def._resolvedIcon || def.icon || '',
+                        color: def._resolvedColor || def.color || '',
+                        name: def.name || label,
+                        shortLabel: def.short_name || label,
+                        value: label,
+                        tooltip,
+                        helper: def.helper || '',
+                        descriptions,
+                        subtitle: def._resolvedSubtitle || '',
+                        def,
+                    },
+                ],
+                sortValue: raw ? 1 : 0,
+                searchValue: raw ? label : '',
+                filterValue: raw ? '1' : '0',
+            },
+        };
+    }
+
+    /**
      * Génère une cellule pour powerful
      * @private
      */
@@ -698,6 +752,7 @@ export class Capability extends BaseModel {
             element: this.element,
             is_magic: this.isMagic,
             ritual_available: this.ritualAvailable,
+            is_passive: this.isPassive,
             powerful: this.powerful,
             state: this.state,
             read_level: this.readLevel,

@@ -4,10 +4,11 @@ namespace Database\Factories\Entity;
 
 use App\Models\Entity\Capability;
 use App\Models\User;
+use App\Support\ElementConstants;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Capability>
+ * @extends Factory<\App\Models\Capability>
  */
 class CapabilityFactory extends Factory
 {
@@ -40,9 +41,10 @@ class CapabilityFactory extends Factory
             'time_before_use_again' => (string) fake()->numberBetween(0, 10),
             'casting_time' => (string) fake()->numberBetween(0, 5),
             'duration' => (string) fake()->numberBetween(1, 10),
-            'element' => fake()->randomElement(\App\Support\ElementConstants::PRIMARIES),
+            'element' => fake()->randomElement(ElementConstants::PRIMARIES),
             'is_magic' => fake()->boolean(),
             'ritual_available' => fake()->boolean(),
+            'is_passive' => false,
             'powerful' => fake()->optional()->sentence(),
             'state' => fake()->randomElement([Capability::STATE_DRAFT, Capability::STATE_PLAYABLE]),
             'read_level' => $readLevel,

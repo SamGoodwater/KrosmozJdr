@@ -6,7 +6,7 @@
 import { ref, computed, watch } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
-import Btn from "@/Pages/Atoms/action/Btn.vue";
+import EditActionDock from "@/Pages/Molecules/action/EditActionDock.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
@@ -278,17 +278,18 @@ const save = () => {
     <Container class="space-y-4">
         <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
-                <h3 class="text-lg font-semibold">Sorts par emplacement</h3>
+                <h3 class="text-lg font-semibold">Variantes de sorts</h3>
                 <p class="text-sm text-base-content/70 max-w-3xl mt-1">
-                    Au niveau 1 : trois choix de sort. Aux niveaux impairs suivants (3, 5, 7…), un sort de classe
-                    supplémentaire. Ajoutez plusieurs sorts au même emplacement pour proposer des options au joueur.
-                    Les sorts « hors emplacement » sont en plus de la grille (pas liés à un niveau PJ).
+                    Au niveau 1 : trois variantes (un choix de sort par variante). Aux niveaux impairs suivants (3, 5,
+                    7…), une variante supplémentaire. Ajoutez plusieurs sorts dans une même variante pour proposer des
+                    options au joueur (un seul sort retenu en jeu par variante). Les sorts listés « hors variante » sont
+                    utilisables sans choix préalable (pivot 0/1, en plus de la grille).
                 </p>
             </div>
             <Badge :content="String(localRelations.length)" color="primary" />
         </div>
 
-        <!-- Présentation « texte » : même logique visuelle que BreedSpellSlotsDisplay (densité minimal) -->
+        <!-- Présentation « texte » : alignée sur l’affichage minimal des variantes en lecture -->
         <div class="breed-spell-slots-edit space-y-3 text-[13px] leading-snug text-base-content/90">
             <div
                 v-for="def in standardSlots"
@@ -503,11 +504,17 @@ const save = () => {
             </ul>
         </div>
 
-        <div class="flex justify-end pt-4 border-t border-base-300">
-            <Btn color="primary" :disabled="relationsForm.processing || !hasUnsavedChanges" @click="save">
-                <i class="fa-solid fa-save mr-2" />
-                {{ relationsForm.processing ? "Sauvegarde…" : "Enregistrer les sorts" }}
-            </Btn>
+        <div class="flex justify-end border-t border-base-300 pt-4">
+            <EditActionDock
+                primary-label="Enregistrer les sorts"
+                processing-label="Sauvegarde…"
+                :processing="relationsForm.processing"
+                :disabled="!hasUnsavedChanges"
+                :show-secondary="false"
+                :secondary-actions="[]"
+                :fixed-on-desktop="false"
+                @primary="save"
+            />
         </div>
     </Container>
 </template>

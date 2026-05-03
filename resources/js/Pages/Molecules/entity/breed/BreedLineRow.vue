@@ -12,7 +12,10 @@ import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
+import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
+import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
+import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -53,6 +56,18 @@ const descriptionFull = computed(
 const orientationMap = computed(() => {
     const raw = entity.value?._data ?? entity.value;
     return normalizeElementOrientationMap(raw?.element_orientations);
+});
+
+const linkedCapabilities = computed(() => {
+    const raw = entity.value?._data?.capabilities ?? entity.value?.capabilities;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCapabilities = computed(() => linkedCapabilities.value.length > 0);
+
+const hasSpellSlots = computed(() => {
+    const raw = entity.value?._data ?? entity.value;
+    return buildSpellSlotGroups(raw).length > 0;
 });
 
 const handleRowClick = (e) => emit("row-click", props.row, e);
@@ -163,6 +178,17 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                 >
                     {{ specificityCell.value }}
                 </p>
+                <BreedCapabilitiesDisplay
+                    v-if="hasLinkedCapabilities"
+                    :capabilities="linkedCapabilities"
+                    density="text"
+                />
+                <BreedVariantsDisplay
+                    v-if="hasSpellSlots"
+                    :breed="entity?._data ?? entity"
+                    density="text"
+                    :show-temple-note="false"
+                />
                 <p
                     v-if="descriptionFull"
                     class="text-xs text-base-content/80 whitespace-normal wrap-break-word"

@@ -12,14 +12,17 @@
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import MonsterViewText from "@/Pages/Molecules/entity/monster/MonsterViewText.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
+import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
+import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 const props = defineProps({
     capability: {
         type: Object,
@@ -72,6 +75,7 @@ const canShowField = (fieldKey) => {
 // Champs à afficher dans la vue compacte (aligné densité sort / fiche utile)
 const compactFields = computed(() =>
     [
+        "is_passive",
         "level",
         "pa",
         "po",
@@ -80,24 +84,11 @@ const compactFields = computed(() =>
         "casting_time",
         "duration",
         "time_before_use_again",
-        "capability_summary_metier",
         "is_magic",
         "ritual_available",
         "powerful",
-        "state",
-        "read_level",
-        "write_level",
-        "description",
     ].filter(canShowField),
 );
-
-const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.label || fieldKey;
-};
-
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.icon || 'fa-solid fa-info-circle';
-};
 
 const getCell = (fieldKey) => {
     return props.capability.toCell(fieldKey, {
@@ -105,6 +96,17 @@ const getCell = (fieldKey) => {
         context: 'compact',
     });
 };
+
+const effectHtmlSafe = computed(() => {
+    const raw = props.capability?.effect ?? props.capability?._data?.effect;
+    if (raw === null || raw === undefined || String(raw).trim() === '') return '';
+    return sanitizeHtml(String(raw));
+});
+
+const invocationMonsters = computed(() => {
+    const raw = props.capability?.creatures ?? props.capability?._data?.creatures ?? [];
+    return Array.isArray(raw) ? raw.filter((m) => m?.id != null || m?.name || m?.creature_name) : [];
+});
 
 const handleAction = async (actionKey) => {
     const capabilityId = props.capability.id;
@@ -155,7 +157,7 @@ const handleAction = async (actionKey) => {
                     v-if="capability.image"
                     :src="capability.image"
                     :alt="capability.name || 'Capability'"
-                    class="w-10 h-10 entity-radius-field object-cover flex-shrink-0"
+                    class="w-10 h-10 entity-radius-field object-cover shrink-0"
                 />
                 <h3 class="text-lg font-semibold text-primary-100 truncate">
                     <CellRenderer
@@ -165,7 +167,7 @@ const handleAction = async (actionKey) => {
                 </h3>
             </div>
             
-            <div v-if="showActions" class="flex-shrink-0">
+            <div v-if="showActions" class="shrink-0">
                 <EntityActions
                     entity-type="capabilities"
                     :entity="capability"
@@ -179,33 +181,48 @@ const handleAction = async (actionKey) => {
             </div>
         </div>
 
-        <!-- Informations en liste compacte -->
-        <div class="space-y-2 text-sm">
-            <div
+        <!-- Propriétés principales : toutes via CharacteristicProperty / EntityPropertyDisplay. -->
+        <div class="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+            <EntityPropertyDisplay
                 v-for="fieldKey in compactFields"
                 :key="fieldKey"
-                class="flex items-start gap-2 p-2 entity-radius-field hover:bg-base-200 transition-colors"
-            >
-                <Icon
-                    :source="getFieldIcon(fieldKey)"
-                    size="xs"
-                    class="text-primary-400 shrink-0 mt-0.5"
-                />
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-primary-400 text-xs font-semibold uppercase">
-                            {{ getFieldLabel(fieldKey) }}
-                        </span>
-                        <div class="flex-1 text-right min-w-0 text-primary-200">
-                            <CellRenderer
-                                :cell="getCell(fieldKey)"
-                                ui-color="primary"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+                :field-key="fieldKey"
+                :entity="capability"
+                entity-type="capability"
+                :display-mode="PROPERTY_DISPLAY_MODES.compact"
+                :descriptors="descriptors"
+                :table-meta="tableMeta"
+                :variant="fieldKey === 'is_passive' ? 'icon' : 'inline'"
+                :hide-characteristic-icon="fieldKey === 'po_editable'"
+                size="sm"
+                class="min-w-0 rounded-box border border-base-300/60 bg-base-200/40 px-2.5 py-1.5"
+            />
         </div>
+
+        <div
+            v-if="invocationMonsters.length > 0"
+            class="flex flex-wrap items-center gap-2 rounded-box border border-base-300/60 bg-base-200/30 px-2.5 py-1.5 text-sm"
+        >
+            <span class="text-primary-300 font-semibold">Invocation :</span>
+            <MonsterViewText
+                v-for="monster in invocationMonsters"
+                :key="monster.id ?? monster.name"
+                :monster="monster"
+                :table-meta="tableMeta"
+            />
+        </div>
+
+        <section class="space-y-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
+            <!-- eslint-disable vue/no-v-html -- contenu issu de l’éditeur riche, nettoyé avant rendu -->
+            <article
+                v-if="effectHtmlSafe"
+                class="prose prose-sm prose-invert max-w-none text-sm text-primary-200 capability-compact-effect-prose"
+                v-html="effectHtmlSafe"
+            />
+            <!-- eslint-enable vue/no-v-html -->
+            <p v-else class="text-sm text-primary-400 italic">Aucun effet décrit (texte riche).</p>
+        </section>
     </div>
 </template>
 

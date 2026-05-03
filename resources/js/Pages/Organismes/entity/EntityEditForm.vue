@@ -17,6 +17,7 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
 import FormulaHelpHint from '@/Pages/Molecules/entity/FormulaHelpHint.vue';
 import EntityEditFormFieldBody from '@/Pages/Molecules/entity/EntityEditFormFieldBody.vue';
 import { FORMULA_PLACEHOLDER } from '@/Utils/entity/formula-help';
@@ -137,6 +138,14 @@ const props = defineProps({
     fixedFooterInsetClass: {
         type: String,
         default: '',
+    },
+    /**
+     * Bouton d'enregistrement flottant, en bas à droite du viewport.
+     * Utilisé pour les longs formulaires où la barre de pied peut sortir du flux visuel.
+     */
+    floatingSaveButton: {
+        type: Boolean,
+        default: false,
     },
     /** Affiche Annuler et Reset dans le pied (désactiver si la navigation se fait via l’en-tête). */
     footerSecondaryActions: {
@@ -265,17 +274,42 @@ const rootFormClass = computed(() => {
     return parts.join(' ');
 });
 
-/** Espace sous le formulaire pour ne pas masquer le dernier champ derrière le pied fixe. */
-const formScrollPaddingClass = computed(() =>
-    props.fixedFooterActions ? 'pb-24 sm:pb-28 md:pb-32' : '',
+/**
+ * Dock commun bas-droite (desktop) / flux (mobile) pour Annuler / Reset / Enregistrer.
+ * Désactivé en modal embarquée : barre d’actions classique.
+ */
+const useEditActionDock = computed(
+    () =>
+        (props.fixedFooterActions || props.floatingSaveButton) &&
+        !props.embeddedInModal,
 );
+
+/** Espace sous le formulaire pour ne pas masquer le dernier champ derrière le pied fixe. */
+const formScrollPaddingClass = computed(() => {
+    if (!props.fixedFooterActions) {
+        return '';
+    }
+    // Modale : pied en sticky dans la zone scroll → peu de marge basse.
+    if (props.embeddedInModal && !useEditActionDock.value) {
+        return 'pb-3 sm:pb-4';
+    }
+    if (useEditActionDock.value) {
+        return 'pb-6 md:pb-24 md:pb-28 lg:pb-32';
+    }
+    return 'pb-24 sm:pb-28 md:pb-32';
+});
 
 const footerWrapperClass = computed(() => {
     if (props.fixedFooterActions) {
         const horizontal = props.fixedFooterInsetClass?.trim()
             ? props.fixedFooterInsetClass.split(/\s+/).filter(Boolean)
             : ['left-0', 'right-0'];
-        return ['fixed', 'bottom-0', 'z-40', 'w-full', ...horizontal];
+        /**
+         * `sticky` dans le `<main>` scrollable (`overflow-y-auto` dans Main.vue`) :
+         * le pied reste visible en bas de la zone de contenu. Évite les `fixed` orphelins
+         * et les doubles décalages `lg:left-64` (sidebar déjà appliquée sur `<main>`).
+         */
+        return ['sticky', 'bottom-0', 'z-50', 'w-full', ...horizontal];
     }
     return ['relative', 'w-full', 'mt-6'];
 });
@@ -287,10 +321,12 @@ const footerBarClass = computed(() => {
             'bg-base-100/80',
             'backdrop-blur-md',
             'border-glass-t-md',
-            'px-4',
-            'py-2.5',
-            'sm:px-6',
         );
+        if (props.embeddedInModal) {
+            base.push('px-3', 'py-2', 'sm:px-4');
+        } else {
+            base.push('px-4', 'py-2.5', 'sm:px-6');
+        }
     } else {
         base.push(
             'footer-tools-row--static',
@@ -298,10 +334,12 @@ const footerBarClass = computed(() => {
             'border',
             'border-base-300/60',
             'bg-base-100/35',
-            'px-3',
-            'py-3',
-            'sm:px-4',
         );
+        if (props.embeddedInModal) {
+            base.push('px-3', 'py-2', 'sm:px-3');
+        } else {
+            base.push('px-3', 'py-3', 'sm:px-4');
+        }
     }
     return base.join(' ');
 });
@@ -319,6 +357,41 @@ const footerActionsRowClass = computed(() => {
     ];
     return parts;
 });
+
+/** Libellé du bouton principal du dock (hors état processing). */
+const primarySaveLabel = computed(() => (props.isUpdating ? 'Enregistrer' : 'Créer'));
+
+/** Actions secondaires du dock (Annuler / Reset). */
+const editDockSecondaryActions = computed(() => {
+    if (!props.footerSecondaryActions) {
+        return [];
+    }
+    return [
+        { key: 'cancel', label: 'Annuler', variant: 'outline', color: '' },
+        {
+            key: 'reset',
+            label: 'Reset',
+            iconClass: 'fa-solid fa-arrow-rotate-left mr-2',
+            variant: 'outline',
+            color: '',
+            tooltip:
+                'Réinitialise le formulaire : revient aux valeurs chargées au moment de l’ouverture (ou dernière synchro). En multi‑édition, remet les champs ‘valeurs différentes’ en mode ‘ne pas modifier’.',
+        },
+    ];
+});
+
+/**
+ * @param {string} key
+ */
+function onEditDockAction(key) {
+    if (key === 'cancel') {
+        cancel();
+        return;
+    }
+    if (key === 'reset') {
+        resetForm();
+    }
+}
 
 const notificationStore = useNotificationStore();
 
@@ -1064,8 +1137,43 @@ const cancel = () => {
                 </template>
             </div>
 
-            <!-- Actions (fixe seulement si fixedFooterActions — ex. sort / capacité) -->
-            <div :class="footerWrapperClass">
+            <!-- Dock flottant (pas de barre pleine largeur) vs pied classique -->
+            <template v-if="useEditActionDock">
+                <div
+                    v-if="accessLevelFields.length"
+                    class="sticky bottom-0 z-40 mt-4 w-full border-t border-base-300/20 bg-transparent pt-3"
+                >
+                    <div :class="['access-levels', compactAccessLevels && 'access-levels--compact']">
+                        <div
+                            v-for="field in accessLevelFields"
+                            :key="field.key"
+                            class="access-levels__item rounded-(--radius-field) border border-base-300/70 bg-base-100/35 px-2.5 py-1.5"
+                        >
+                            <SelectField
+                                v-model="form[field.key]"
+                                @update:model-value="() => markDirty(field.key)"
+                                :label="getAccessLevelLabel(field.key, field.config)"
+                                :options="field.config.options || []"
+                                :required="field.config.required"
+                                :helper="getAccessLevelHelper(field.key, field.config)"
+                                :validation="getFieldValidation(field.key)"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <EditActionDock
+                    :primary-label="primarySaveLabel"
+                    processing-label="Enregistrement..."
+                    :processing="form.processing"
+                    :show-secondary="footerSecondaryActions"
+                    :secondary-actions="editDockSecondaryActions"
+                    :fixed-on-desktop="true"
+                    @primary="submit"
+                    @action="onEditDockAction"
+                />
+            </template>
+
+            <div v-else :class="footerWrapperClass">
                 <div :class="footerBarClass">
                     <div
                         v-if="accessLevelFields.length"
@@ -1091,25 +1199,40 @@ const cancel = () => {
                     <div :class="footerActionsRowClass">
                         <div
                             v-if="footerSecondaryActions"
-                            class="footer-actions__start flex flex-wrap items-center gap-2 sm:gap-3"
+                            class="footer-actions__start flex flex-wrap items-center"
+                            :class="embeddedInModal ? 'gap-2' : 'gap-2 sm:gap-3'"
                         >
-                            <Btn type="button" variant="outline" @click="cancel">
+                            <Btn
+                                type="button"
+                                variant="outline"
+                                :size="embeddedInModal ? 'sm' : ''"
+                                @click="cancel"
+                            >
                                 Annuler
                             </Btn>
                             <Tooltip
                                 content="Réinitialise le formulaire : revient aux valeurs chargées au moment de l’ouverture (ou dernière synchro). En multi‑édition, remet les champs ‘valeurs différentes’ en mode ‘ne pas modifier’."
                                 placement="top"
                             >
-                                <Btn type="button" variant="outline" @click="resetForm">
+                                <Btn
+                                    type="button"
+                                    variant="outline"
+                                    :size="embeddedInModal ? 'sm' : ''"
+                                    @click="resetForm"
+                                >
                                     <i class="fa-solid fa-arrow-rotate-left mr-2"></i>
                                     Reset
                                 </Btn>
                             </Tooltip>
                         </div>
-                        <div class="footer-actions__end flex flex-wrap items-center gap-2 sm:gap-3">
+                        <div
+                            class="footer-actions__end flex flex-wrap items-center"
+                            :class="embeddedInModal ? 'gap-2' : 'gap-2 sm:gap-3'"
+                        >
                             <Btn
                                 type="submit"
                                 color="primary"
+                                :size="embeddedInModal ? 'sm' : ''"
                                 :disabled="form.processing"
                             >
                                 <i class="fa-solid fa-save mr-2"></i>

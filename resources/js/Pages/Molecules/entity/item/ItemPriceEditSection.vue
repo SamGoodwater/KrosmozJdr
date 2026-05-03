@@ -9,7 +9,7 @@
 import { computed, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
+import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
 
 const props = defineProps({
     itemId: { type: Number, required: true },
@@ -91,9 +91,15 @@ function submit() {
                 </label>
             </div>
             <div class="card-actions justify-end">
-                <Btn type="button" color="primary" :disabled="form.processing" @click="submit">
-                    Enregistrer le prix
-                </Btn>
+                <EditActionDock
+                    primary-label="Enregistrer le prix"
+                    processing-label="Enregistrement..."
+                    :processing="form.processing"
+                    :show-secondary="false"
+                    :secondary-actions="[]"
+                    :fixed-on-desktop="false"
+                    @primary="submit"
+                />
             </div>
         </div>
     </div>

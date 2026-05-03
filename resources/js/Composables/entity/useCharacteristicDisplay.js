@@ -188,6 +188,14 @@ export function resolveValueOverride(overrides, value) {
  * @returns {boolean}
  */
 export function shouldHideCharacteristicLine(def, rawValue) {
+    if (def?.hide_when_false) {
+        const t = String(def.type ?? '').toLowerCase();
+        if (t === 'bool') {
+            if (rawValue === false || rawValue === 0 || rawValue === '0') {
+                return true;
+            }
+        }
+    }
     if (!def?.hide_when_empty) {
         return false;
     }

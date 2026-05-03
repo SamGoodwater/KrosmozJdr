@@ -18,6 +18,7 @@ class CapabilityResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -33,6 +34,7 @@ class CapabilityResource extends JsonResource
             'element' => $this->element,
             'is_magic' => $this->is_magic,
             'ritual_available' => $this->ritual_available,
+            'is_passive' => (bool) ($this->is_passive ?? false),
             'powerful' => $this->powerful,
             'state' => $this->state,
             'read_level' => (int) ($this->read_level ?? 0),
@@ -57,4 +59,3 @@ class CapabilityResource extends JsonResource
         ];
     }
 }
-

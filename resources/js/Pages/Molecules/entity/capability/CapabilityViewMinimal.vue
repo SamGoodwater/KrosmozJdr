@@ -227,34 +227,34 @@ const handleAction = async (actionKey) => {
                         >
                             {{ descriptionFull }}
                         </p>
-                        <div
-                            v-if="hasEffectText"
-                            class="group/effect w-full pt-1.5 mt-1 border-t border-primary/25 bg-primary/5 rounded-md px-1.5 py-1"
-                        >
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-primary-300/95 mb-0.5">
-                                Effets
-                            </p>
-                            <!-- eslint-disable vue/no-v-html -- éditeur riche, HTML sanitizé (sanitizeHtml) -->
-                            <article
-                                v-if="effectHtmlSafe"
-                                class="prose prose-sm prose-invert max-w-none text-[11px] leading-snug text-base-content capability-minimal-effect-prose line-clamp-3 group-hover/effect:line-clamp-none"
-                                v-html="effectHtmlSafe"
-                            />
-                            <!-- eslint-enable vue/no-v-html -->
-                            <p
-                                v-else
-                                class="text-[11px] leading-snug text-base-content line-clamp-3 group-hover/effect:line-clamp-none wrap-break-word"
-                            >
-                                {{ effectPlainText }}
-                            </p>
-                        </div>
-                        <div
-                            v-if="effectItems.length > 0"
-                            class="w-full pt-1.5 mt-1 border-t border-base-300"
-                        >
-                            <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
-                        </div>
                     </div>
+                </div>
+                <div
+                    v-if="hasEffectText"
+                    class="group/effect w-full pt-1.5 mt-1 border-glass-t-sm bg-primary/5 rounded-md px-1.5 py-1"
+                >
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-primary-300/95 mb-0.5">
+                        Effets
+                    </p>
+                    <!-- eslint-disable vue/no-v-html -- éditeur riche, HTML sanitizé (sanitizeHtml) -->
+                    <article
+                        v-if="effectHtmlSafe"
+                        class="prose prose-sm prose-invert max-w-none text-[11px] leading-snug text-base-content capability-minimal-effect-prose line-clamp-3 group-hover/effect:line-clamp-none"
+                        v-html="effectHtmlSafe"
+                    />
+                    <!-- eslint-enable vue/no-v-html -->
+                    <p
+                        v-else
+                        class="text-[11px] leading-snug text-base-content line-clamp-3 group-hover/effect:line-clamp-none wrap-break-word"
+                    >
+                        {{ effectPlainText }}
+                    </p>
+                </div>
+                <div
+                    v-if="effectItems.length > 0"
+                    class="w-full pt-1.5 mt-1 border-glass-t-sm"
+                >
+                    <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
                 </div>
             </div>
         </template>
@@ -326,34 +326,34 @@ const handleAction = async (actionKey) => {
                         >
                             {{ descriptionFull }}
                         </p>
-                        <div
-                            v-if="hasEffectText"
-                            class="group/effect w-full space-y-1 pt-1.5 mt-1 border-t border-primary/30 bg-primary/5 rounded-md px-1.5 py-1.5"
-                        >
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-primary-300/95">
-                                Effets
-                            </p>
-                            <!-- eslint-disable vue/no-v-html -- éditeur riche, HTML sanitizé (sanitizeHtml) -->
-                            <article
-                                v-if="effectHtmlSafe"
-                                class="prose prose-sm prose-invert max-w-none text-[11px] leading-snug text-base-content/95 capability-minimal-effect-prose line-clamp-3 group-hover/effect:line-clamp-none"
-                                v-html="effectHtmlSafe"
-                            />
-                            <!-- eslint-enable vue/no-v-html -->
-                            <p
-                                v-else
-                                class="text-[11px] leading-snug text-base-content line-clamp-3 group-hover/effect:line-clamp-none wrap-break-word"
-                            >
-                                {{ effectPlainText }}
-                            </p>
-                        </div>
-                        <div
-                            v-if="effectItems.length > 0"
-                            class="w-full pt-1.5 mt-1 border-t border-base-300"
-                        >
-                            <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
-                        </div>
                     </div>
+                </div>
+                <div
+                    v-if="hasEffectText"
+                    class="group/effect w-full space-y-1 pt-1.5 mt-1 border-glass-t-sm bg-primary/5 rounded-md px-1.5 py-1.5"
+                >
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-primary-300/95">
+                        Effets
+                    </p>
+                    <!-- eslint-disable vue/no-v-html -- éditeur riche, HTML sanitizé (sanitizeHtml) -->
+                    <article
+                        v-if="effectHtmlSafe"
+                        class="prose prose-sm prose-invert max-w-none text-[11px] leading-snug text-base-content/95 capability-minimal-effect-prose line-clamp-3 group-hover/effect:line-clamp-none"
+                        v-html="effectHtmlSafe"
+                    />
+                    <!-- eslint-enable vue/no-v-html -->
+                    <p
+                        v-else
+                        class="text-[11px] leading-snug text-base-content line-clamp-3 group-hover/effect:line-clamp-none wrap-break-word"
+                    >
+                        {{ effectPlainText }}
+                    </p>
+                </div>
+                <div
+                    v-if="effectItems.length > 0"
+                    class="w-full pt-1.5 mt-1 border-glass-t-sm"
+                >
+                    <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
                 </div>
             </div>
         </template>

@@ -41,9 +41,11 @@ const capabilityModel = computed(() =>
     props.capability instanceof Capability ? props.capability : new Capability(props.capability),
 );
 
-const fixedFooterInsetClass = computed(() =>
-    props.embeddedInModal ? "left-0 right-0" : "left-0 right-0 lg:left-64",
-);
+/**
+ * Le layout {@link Main} décale déjà la colonne principale (`lg:left-64` sur `<main>`).
+ * Ne pas redécaler le pied : avec `sticky` dans le flux, un second `lg:left-64` poussait la barre hors cadre.
+ */
+const fixedFooterInsetClass = "left-0 right-0";
 
 function goToShow() {
     const id = capabilityModel.value?.id;
@@ -129,6 +131,7 @@ function confirmDelete() {
             layout-profile="capability"
             :fixed-footer-actions="true"
             :fixed-footer-inset-class="fixedFooterInsetClass"
+            :floating-save-button="true"
             :embedded-in-modal="embeddedInModal"
             :redirect-after-update="redirectAfterUpdate || undefined"
             :shortcuts-active="!embeddedInModal"

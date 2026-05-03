@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Capability;
+use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
+use App\Support\ElementBitmask;
 use App\Support\ElementConstants;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,6 +21,61 @@ use Illuminate\Support\Facades\Gate;
 class CapabilityTableController extends Controller
 {
     use InterpretsEntityTableSort;
+
+    /**
+     * Cellule d'affichage du statut passif, pilotée par la caractéristique `is_passive`.
+     *
+     * @param  array<string, mixed>|null  $definition
+     * @return array<string, mixed>
+     */
+    private function buildPassiveCell(bool $isPassive, ?array $definition): array
+    {
+        if (! $isPassive && (bool) ($definition['hide_when_false'] ?? true)) {
+            return [
+                'type' => 'text',
+                'value' => '',
+                'params' => ['filterValue' => '0', 'sortValue' => 0, 'searchValue' => ''],
+            ];
+        }
+
+        $override = collect($definition['value_overrides'] ?? [])
+            ->first(fn ($row) => is_array($row) && ($row['value'] ?? null) === true);
+        $available = collect($definition['value_available'] ?? [])
+            ->first(fn ($row) => is_array($row) && ($row['value'] ?? null) === true);
+
+        $label = (string) (
+            ($available['label'] ?? null)
+            ?: ($definition['short_name'] ?? null)
+            ?: ($definition['name'] ?? null)
+            ?: 'Passif'
+        );
+        $descriptions = $definition['descriptions'] ?? '';
+        $descriptionText = is_array($descriptions) ? implode(' ', $descriptions) : (string) $descriptions;
+        $subtitle = is_array($override) ? (string) ($override['subtitle'] ?? '') : '';
+
+        return [
+            'type' => 'chips',
+            'value' => '',
+            'params' => [
+                'items' => [[
+                    'key' => $definition['key'] ?? 'is_passive',
+                    'icon' => is_array($override) ? ($override['icon'] ?? ($definition['icon'] ?? '')) : ($definition['icon'] ?? ''),
+                    'color' => is_array($override) ? ($override['color'] ?? ($definition['color'] ?? '')) : ($definition['color'] ?? ''),
+                    'name' => $definition['name'] ?? $label,
+                    'shortLabel' => $definition['short_name'] ?? $label,
+                    'value' => $label,
+                    'tooltip' => $subtitle ?: (($definition['helper'] ?? '') ?: $descriptionText),
+                    'helper' => $definition['helper'] ?? '',
+                    'descriptions' => $descriptionText,
+                    'subtitle' => $subtitle,
+                    'def' => $definition ?? [],
+                ]],
+                'filterValue' => '1',
+                'sortValue' => 1,
+                'searchValue' => $label,
+            ],
+        ];
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -84,10 +141,13 @@ class CapabilityTableController extends Controller
         if (array_key_exists('po_editable', $filters) && $filters['po_editable'] !== '' && $filters['po_editable'] !== null) {
             $query->where('po_editable', (int) $filters['po_editable']);
         }
+        if (array_key_exists('is_passive', $filters) && $filters['is_passive'] !== '' && $filters['is_passive'] !== null) {
+            $query->where('is_passive', (int) $filters['is_passive']);
+        }
 
         $allowedSort = [
             'id', 'name', 'description', 'effect', 'level', 'pa', 'po', 'element', 'is_magic', 'ritual_available',
-            'time_before_use_again', 'casting_time', 'duration', 'state', 'po_editable', 'powerful',
+            'time_before_use_again', 'casting_time', 'duration', 'state', 'po_editable', 'is_passive', 'powerful',
             'read_level', 'write_level',
             'created_at', 'updated_at',
         ];
@@ -135,7 +195,7 @@ class CapabilityTableController extends Controller
                 ['value' => 'playable', 'label' => 'Jouable'],
                 ['value' => 'archived', 'label' => 'Archivé'],
             ],
-            'element' => \App\Support\ElementBitmask::allFilterOptions(),
+            'element' => ElementBitmask::allFilterOptions(),
             'is_magic' => [
                 ['value' => '1', 'label' => 'Wakfu'],
                 ['value' => '0', 'label' => 'Physique'],
@@ -147,6 +207,10 @@ class CapabilityTableController extends Controller
             'po_editable' => [
                 ['value' => '1', 'label' => 'Oui'],
                 ['value' => '0', 'label' => 'Non'],
+            ],
+            'is_passive' => [
+                ['value' => '1', 'label' => 'Passif'],
+                ['value' => '0', 'label' => 'Actif'],
             ],
         ];
 
@@ -170,6 +234,7 @@ class CapabilityTableController extends Controller
                     'element' => $c->element,
                     'is_magic' => (bool) $c->is_magic,
                     'ritual_available' => (bool) $c->ritual_available,
+                    'is_passive' => (bool) ($c->is_passive ?? false),
                     'powerful' => $c->powerful,
                     'state' => (string) ($c->state ?? 'draft'),
                     'read_level' => (int) ($c->read_level ?? 0),
@@ -206,7 +271,9 @@ class CapabilityTableController extends Controller
             ]);
         }
 
-        $tableRows = $rows->map(function (Capability $c) {
+        $passiveDefinition = app(CharacteristicMetaByDbColumnService::class)->buildSpellByDbColumn()['is_passive'] ?? null;
+
+        $tableRows = $rows->map(function (Capability $c) use ($passiveDefinition) {
             $showHref = route('entities.capabilities.show', $c->id);
             $createdBy = $c->createdBy;
             $createdByLabel = $createdBy?->name ?: ($createdBy?->email ?: '-');
@@ -307,6 +374,7 @@ class CapabilityTableController extends Controller
                         'value' => $c->ritual_available ? 'Oui' : 'Non',
                         'params' => ['filterValue' => $c->ritual_available ? '1' : '0', 'sortValue' => $c->ritual_available ? 1 : 0],
                     ],
+                    'is_passive' => $this->buildPassiveCell((bool) ($c->is_passive ?? false), $passiveDefinition),
                     'time_before_use_again' => [
                         'type' => 'text',
                         'value' => $c->time_before_use_again ?: '-',
@@ -378,6 +446,7 @@ class CapabilityTableController extends Controller
                         'element' => $c->element,
                         'is_magic' => (bool) $c->is_magic,
                         'ritual_available' => (bool) $c->ritual_available,
+                        'is_passive' => (bool) ($c->is_passive ?? false),
                         'powerful' => $c->powerful,
                         'state' => (string) ($c->state ?? 'draft'),
                         'read_level' => (int) ($c->read_level ?? 0),

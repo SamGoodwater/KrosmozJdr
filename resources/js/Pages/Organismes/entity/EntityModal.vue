@@ -120,7 +120,7 @@ const ENTITY_COMPONENT_MAP = {
     'spells': 'Spell',
     'monsters': 'Monster',
     'npcs': 'Npc',
-    'breeds': 'Classe',
+    'breeds': 'Breed',
     'campaigns': 'Campaign',
     'scenarios': 'Scenario',
     'attributes': 'Attribute',

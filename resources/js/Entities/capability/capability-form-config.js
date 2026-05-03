@@ -110,6 +110,12 @@ export function buildCapabilityFormFieldsConfig(options = {}) {
             label: 'Rituel disponible',
             required: false,
         },
+        is_passive: {
+            type: 'checkbox',
+            label: 'Capacité passive',
+            required: false,
+            help: 'À cocher pour une capacité passive, typiquement sans coût PA/PO ni lancer actif.',
+        },
         powerful: {
             type: 'text',
             label: 'Puissance / notation',
@@ -167,13 +173,14 @@ export const CAPABILITY_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'gameplay',
         title: 'Déroulé & spécificités',
-        subtitle: 'Relance, incantation, durée, magie, rituel, puissance.',
+        subtitle: 'Relance, incantation, durée, magie, rituel, passif, puissance.',
         fieldKeys: [
             'time_before_use_again',
             'casting_time',
             'duration',
             'is_magic',
             'ritual_available',
+            'is_passive',
             'powerful',
         ],
     },
@@ -226,6 +233,7 @@ export function getCapabilityCreateDefaultEntity() {
         element: 0,
         is_magic: false,
         ritual_available: false,
+        is_passive: false,
         powerful: '',
         state: 'draft',
         read_level: 0,

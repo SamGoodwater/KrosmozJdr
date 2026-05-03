@@ -9,6 +9,7 @@ import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -306,6 +307,7 @@ function buildFormData(selected, entitiesByGroup = null) {
             unit: '',
             sort_order: 0,
             hide_when_empty: false,
+            hide_when_false: false,
             value_overrides: [],
             entities: [],
             conversion_formulas: defaultConversionFormulasForGroup(entitiesByGroup ?? {}, 'creature'),
@@ -335,6 +337,7 @@ function buildFormData(selected, entitiesByGroup = null) {
         unit: selected.unit ?? '',
         sort_order: selected.sort_order ?? 0,
         hide_when_empty: selected.hide_when_empty ?? false,
+        hide_when_false: selected.hide_when_false ?? false,
         value_overrides: Array.isArray(selected.value_overrides) ? selected.value_overrides.map((o) => ({ ...o })) : [],
         entities: entitiesForGroup.map((e) => ({
             entity: e.entity,
@@ -381,6 +384,7 @@ watch(
         form.unit = data.unit;
         form.sort_order = data.sort_order;
         form.hide_when_empty = data.hide_when_empty;
+        form.hide_when_false = data.hide_when_false;
         form.value_overrides = data.value_overrides;
         form.entities = data.entities;
         form.conversion_formulas = data.conversion_formulas;
@@ -449,6 +453,7 @@ async function removeEntityOverride(entityKey) {
         unit: form.unit,
         sort_order: form.sort_order,
         hide_when_empty: form.hide_when_empty,
+        hide_when_false: form.hide_when_false,
         entities: entitiesFiltered,
         entity_override_keys: selectedEntityOverrides.value,
     }, {
@@ -461,6 +466,20 @@ async function removeEntityOverride(entityKey) {
 function confirmDelete() {
     if (props.selected?.id && confirm('Supprimer cette caractéristique ? Les données associées seront perdues.')) {
         router.delete(route('admin.characteristics.destroy', props.selected.id));
+    }
+}
+
+/** Actions secondaires du dock d’édition (caractéristique non liée). */
+const editCharacteristicDockActions = [
+    { key: 'delete', label: 'Supprimer', variant: 'ghost', color: 'error' },
+];
+
+/**
+ * @param {string} key
+ */
+function onCharacteristicDockAction(key) {
+    if (key === 'delete') {
+        confirmDelete();
     }
 }
 
@@ -527,6 +546,7 @@ watch(
             form.unit = src.unit ?? '';
             form.sort_order = src.sort_order ?? 0;
             form.hide_when_empty = src.hide_when_empty ?? false;
+            form.hide_when_false = src.hide_when_false ?? false;
             form.value_overrides = Array.isArray(src.value_overrides) ? src.value_overrides.map((o) => ({ ...o })) : [];
             form.key = (src.key ?? '').replace(/_creature$|_object$|_spell$/, '') || '';
             if (Array.isArray(src.entities) && src.entities.length) {
@@ -867,6 +887,7 @@ function submit() {
         unit: form.unit,
         sort_order: form.sort_order,
         hide_when_empty: form.hide_when_empty,
+        hide_when_false: form.hide_when_false,
         value_overrides: (form.value_overrides ?? []).filter((o) => o.value !== '' && o.value !== undefined),
         entities: entitiesToSend.map((e) => ({
             ...e,
@@ -1466,6 +1487,20 @@ function submitConvertToLinked() {
                                         Masquer la ligne en jeu lorsque la valeur est vide
                                         <span class="block text-xs text-base-content/70">
                                             Selon le type : chaîne vide, tableau vide, entier à 0 ; les booléens « Non » restent affichés.
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="sm:col-span-2 flex flex-wrap items-center gap-3 rounded-box border border-base-300 bg-base-200/40 px-4 py-3">
+                                    <input
+                                        id="hide_when_false"
+                                        v-model="form.hide_when_false"
+                                        type="checkbox"
+                                        class="checkbox checkbox-sm"
+                                    />
+                                    <label for="hide_when_false" class="cursor-pointer text-sm">
+                                        Masquer la ligne lorsque le booléen est faux
+                                        <span class="block text-xs text-base-content/70">
+                                            Utile pour un indicateur « passif » affiché uniquement si la capacité est passive.
                                         </span>
                                     </label>
                                 </div>
@@ -2192,7 +2227,7 @@ function submitConvertToLinked() {
                     </fieldset>
                     <div
                         v-if="!selected.is_linked"
-                        class="mt-6 flex flex-wrap items-center justify-end gap-2 border-t border-base-300 bg-base-100/95 px-2 py-3"
+                        class="mt-6 flex flex-wrap items-center justify-start gap-2 border-t border-base-300 bg-base-100/95 px-2 py-3"
                     >
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="label-text">Spécifier pour une entité :</span>
@@ -2201,24 +2236,19 @@ function submitConvertToLinked() {
                                 <option v-for="ek in entitiesForSpecifyDropdown.filter(e => !selectedEntityOverrides.includes(e))" :key="ek" :value="ek">{{ entityLabels[ek] || ek }}</option>
                             </select>
                         </div>
-                        <button type="button" class="btn btn-ghost btn-error" @click="confirmDelete">Supprimer</button>
-                        <Btn type="submit" color="primary" :disabled="form.processing">Enregistrer</Btn>
                     </div>
+                    <EditActionDock
+                        v-if="!selected.is_linked"
+                        class="mt-3 w-full"
+                        primary-label="Enregistrer"
+                        processing-label="Enregistrement..."
+                        :processing="form.processing"
+                        :show-secondary="true"
+                        :secondary-actions="editCharacteristicDockActions"
+                        @primary="submit"
+                        @action="onCharacteristicDockAction"
+                    />
                 </form>
-                <div
-                    v-if="!selected.is_linked"
-                    class="fixed bottom-4 right-4 z-50"
-                >
-                    <Btn
-                        type="button"
-                        color="primary"
-                        class="shadow-lg"
-                        :disabled="form.processing"
-                        @click="submit"
-                    >
-                        Enregistrer
-                    </Btn>
-                </div>
                 </div>
             </template>
             <div v-else class="flex h-64 flex-col items-center justify-center gap-2 text-base-content/60">

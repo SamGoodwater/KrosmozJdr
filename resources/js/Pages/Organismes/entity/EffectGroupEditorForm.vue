@@ -13,6 +13,8 @@ import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vu
 import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
 import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
 import { METERS_PER_CASE, previewMetersFromCellsFormula } from '@/Utils/Entity/displacementFormat.js';
 
@@ -43,6 +45,8 @@ const props = defineProps({
     submitLabel: { type: String, default: 'Enregistrer le groupe' },
     /** Masque le bouton primaire (sauvegarde déclenchée par le parent, ex. fiche sort). */
     hideSubmitButton: { type: Boolean, default: false },
+    /** Formulaire affiché dans une modale : pas de {@link EditActionDock}, boutons compacts. */
+    embeddedInModal: { type: Boolean, default: false },
     /** Admin effets : affiche « Supprimer ce degré » (requiert adminEffectId). */
     showAdminDegreeDelete: { type: Boolean, default: false },
     /** ID de la définition d’effet (Effect), pour la route destroy-degree. */
@@ -1200,11 +1204,35 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                 </div>
             </div>
 
-            <div v-if="!hideSubmitButton" class="flex flex-wrap gap-2 items-center">
-                <button type="submit" class="btn btn-primary" :disabled="groupSaveForm.processing">
-                    {{ groupSaveForm.processing ? 'Enregistrement…' : submitLabel }}
-                </button>
-                <p v-if="groupSaveForm.recentlySuccessful" class="text-sm text-success">Enregistré.</p>
+            <div v-if="!hideSubmitButton" class="flex flex-wrap items-center gap-2">
+                <template v-if="embeddedInModal">
+                    <Btn
+                        type="button"
+                        color="primary"
+                        size="sm"
+                        :disabled="groupSaveForm.processing"
+                        @click="submitGroup"
+                    >
+                        <i class="fa-solid fa-save mr-1.5"></i>
+                        {{ groupSaveForm.processing ? 'Enregistrement…' : submitLabel }}
+                    </Btn>
+                </template>
+                <EditActionDock
+                    v-else
+                    :primary-label="submitLabel"
+                    processing-label="Enregistrement…"
+                    :processing="groupSaveForm.processing"
+                    :show-secondary="false"
+                    :secondary-actions="[]"
+                    :fixed-on-desktop="false"
+                    @primary="submitGroup"
+                />
+                <p
+                    v-if="groupSaveForm.recentlySuccessful"
+                    :class="embeddedInModal ? 'text-xs text-success' : 'text-sm text-success'"
+                >
+                    Enregistré.
+                </p>
             </div>
         </form>
     </div>

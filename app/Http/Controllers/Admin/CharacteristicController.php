@@ -57,6 +57,11 @@ class CharacteristicController extends Controller
         return Schema::hasColumn('characteristics', 'hide_when_empty');
     }
 
+    private function characteristicsTableHasHideWhenFalseColumn(): bool
+    {
+        return Schema::hasColumn('characteristics', 'hide_when_false');
+    }
+
     private function characteristicsTableHasStatusColumn(): bool
     {
         return Schema::hasColumn('characteristics', 'status');
@@ -301,6 +306,7 @@ class CharacteristicController extends Controller
             'value_overrides.*.color' => ['nullable', 'string', 'max:32', Rule::in(CharacteristicPaletteResolver::ALLOWED_PALETTES)],
             'value_overrides.*.subtitle' => 'nullable|string|max:500',
             'hide_when_empty' => 'nullable|boolean',
+            'hide_when_false' => 'nullable|boolean',
             'entities' => 'array',
             'entities.*.entity' => 'required|string|max:32',
             'entities.*.db_column' => 'nullable|string|max:64',
@@ -358,6 +364,9 @@ class CharacteristicController extends Controller
         }
         if ($this->characteristicsTableHasHideWhenEmptyColumn()) {
             $createPayload['hide_when_empty'] = (bool) ($data['hide_when_empty'] ?? false);
+        }
+        if ($this->characteristicsTableHasHideWhenFalseColumn()) {
+            $createPayload['hide_when_false'] = (bool) ($data['hide_when_false'] ?? false);
         }
 
         $characteristic = Characteristic::create($createPayload);
@@ -998,6 +1007,7 @@ class CharacteristicController extends Controller
             'value_overrides.*.color' => ['nullable', 'string', 'max:32', Rule::in(CharacteristicPaletteResolver::ALLOWED_PALETTES)],
             'value_overrides.*.subtitle' => 'nullable|string|max:500',
             'hide_when_empty' => 'nullable|boolean',
+            'hide_when_false' => 'nullable|boolean',
         ]);
 
         $updatePayload = [
@@ -1022,6 +1032,9 @@ class CharacteristicController extends Controller
         }
         if ($this->characteristicsTableHasHideWhenEmptyColumn()) {
             $updatePayload['hide_when_empty'] = (bool) ($data['hide_when_empty'] ?? false);
+        }
+        if ($this->characteristicsTableHasHideWhenFalseColumn()) {
+            $updatePayload['hide_when_false'] = (bool) ($data['hide_when_false'] ?? false);
         }
 
         $characteristic->update($updatePayload);

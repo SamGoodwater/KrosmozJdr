@@ -6,7 +6,7 @@ import { ref, computed, watch } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Capability } from "@/Models/Entity/Capability";
-import Btn from "@/Pages/Atoms/action/Btn.vue";
+import EditActionDock from "@/Pages/Molecules/action/EditActionDock.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import CapabilityViewText from "@/Pages/Molecules/entity/capability/CapabilityViewText.vue";
@@ -79,6 +79,8 @@ const filteredToAdd = computed(() => {
 
 const asCapabilityModel = (raw) => (raw instanceof Capability ? raw : new Capability(raw));
 
+const isPassiveCapability = (raw) => asCapabilityModel(raw).isPassive;
+
 const addId = (id) => {
     const n = Number(id);
     if (!Number.isFinite(n) || localIds.value.includes(n)) return;
@@ -138,8 +140,14 @@ const save = () => {
                 :key="c.id"
                 class="flex flex-wrap items-center justify-between gap-2 border-b border-base-300/40 pb-2 last:border-0 last:pb-0"
             >
-                <div class="min-w-0 flex-1 text-sm">
+                <div class="min-w-0 flex-1 text-sm flex flex-wrap items-center gap-2">
                     <CapabilityViewText :capability="asCapabilityModel(c)" />
+                    <span
+                        v-if="isPassiveCapability(c)"
+                        class="badge badge-sm badge-info shrink-0"
+                    >
+                        Passif
+                    </span>
                 </div>
                 <button
                     type="button"
@@ -171,11 +179,17 @@ const save = () => {
             </div>
         </div>
 
-        <div class="flex justify-end pt-2 border-t border-base-300">
-            <Btn color="primary" :disabled="form.processing || !hasUnsavedChanges" @click="save">
-                <i class="fa-solid fa-save mr-2" />
-                {{ form.processing ? "Sauvegarde…" : "Enregistrer les capacités" }}
-            </Btn>
+        <div class="flex justify-end border-t border-base-300 pt-2">
+            <EditActionDock
+                primary-label="Enregistrer les capacités"
+                processing-label="Sauvegarde…"
+                :processing="form.processing"
+                :disabled="!hasUnsavedChanges"
+                :show-secondary="false"
+                :secondary-actions="[]"
+                :fixed-on-desktop="false"
+                @primary="save"
+            />
         </div>
     </Container>
 </template>

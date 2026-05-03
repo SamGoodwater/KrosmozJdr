@@ -406,12 +406,13 @@ final class CharacteristicMetaByDbColumnService
             'unit' => $c->unit,
             'type' => $c->type,
             'hide_when_empty' => (bool) ($c->hide_when_empty ?? false),
+            'hide_when_false' => (bool) ($c->hide_when_false ?? false),
         ], array_filter($extra, fn ($v) => $v !== null));
     }
 
     /**
      * @param  array<string, mixed>  $extra  Champs additionnels (ex. value_available)
-     * @return array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null, hide_when_empty?: bool, value_available?: array|null}|null
+     * @return array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null, hide_when_empty?: bool, hide_when_false?: bool, value_available?: array|null}|null
      */
     private function rowToDefinition(mixed $dbColumn, ?Characteristic $characteristic, array $extra = []): ?array
     {
@@ -440,6 +441,7 @@ final class CharacteristicMetaByDbColumnService
             'unit' => $c->unit,
             'type' => $c->type,
             'hide_when_empty' => (bool) ($c->hide_when_empty ?? false),
+            'hide_when_false' => (bool) ($c->hide_when_false ?? false),
         ], array_filter($extra, fn ($v) => $v !== null));
     }
 

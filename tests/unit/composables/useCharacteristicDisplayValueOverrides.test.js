@@ -2,7 +2,10 @@
  * @vitest-environment node
  */
 import { describe, expect, it } from "vitest";
-import { resolveValueOverride } from "@/Composables/entity/useCharacteristicDisplay";
+import {
+    resolveValueOverride,
+    shouldHideCharacteristicLine,
+} from "@/Composables/entity/useCharacteristicDisplay";
 
 describe("resolveValueOverride", () => {
     const overrides = [
@@ -74,5 +77,21 @@ describe("resolveValueOverride", () => {
     it("retourne null si aucune entrée ne matche", () => {
         expect(resolveValueOverride(overrides, 42)).toBeNull();
         expect(resolveValueOverride(overrides, "unknown")).toBeNull();
+    });
+});
+
+describe("shouldHideCharacteristicLine", () => {
+    it("masque la ligne si hide_when_false et valeur booléenne fausse", () => {
+        const def = { hide_when_false: true, type: "bool" };
+        expect(shouldHideCharacteristicLine(def, false)).toBe(true);
+        expect(shouldHideCharacteristicLine(def, 0)).toBe(true);
+        expect(shouldHideCharacteristicLine(def, "0")).toBe(true);
+        expect(shouldHideCharacteristicLine(def, true)).toBe(false);
+    });
+
+    it("n’applique pas hide_when_false si type n’est pas bool", () => {
+        expect(
+            shouldHideCharacteristicLine({ hide_when_false: true, type: "int" }, false),
+        ).toBe(false);
     });
 });
