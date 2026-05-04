@@ -6,6 +6,7 @@
  */
 import { computed } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Image from '@/Pages/Atoms/data-display/Image.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { resolveSpellTypeVisual } from '@/Utils/Entity/spellTypeVisual.js';
 
@@ -74,25 +75,23 @@ const shellStyle = computed(() => {
             :aria-label="tooltipLabel"
             data-no-row-select
         >
-            <img
+            <Image
                 v-if="visual.iconUrl"
-                :src="visual.iconUrl"
+                :source="visual.iconUrl"
                 alt=""
-                class="shrink-0 object-contain"
-                :class="imgClass"
-                loading="lazy"
+                fit="contain"
+                :class="['shrink-0', imgClass]"
             />
             <Icon v-else source="fa-solid fa-tag" alt="" size="xs" class="shrink-0 opacity-70" />
         </span>
     </Tooltip>
     <span v-else :class="shellClass" :style="shellStyle">
-        <img
+        <Image
             v-if="visual.iconUrl"
-            :src="visual.iconUrl"
+            :source="visual.iconUrl"
             :alt="name"
-            class="shrink-0 object-contain"
-            :class="imgClass"
-            loading="lazy"
+            fit="contain"
+            :class="['shrink-0', imgClass]"
         />
         <Icon v-else source="fa-solid fa-tag" :alt="name" size="xs" class="shrink-0 opacity-70" />
         <span class="truncate leading-tight">{{ name }}</span>

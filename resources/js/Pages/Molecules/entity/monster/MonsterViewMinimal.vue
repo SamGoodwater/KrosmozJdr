@@ -14,6 +14,7 @@
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
@@ -27,6 +28,7 @@ import { provideCharacteristicRuntime } from "@/Composables/entity/characteristi
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
+import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
 import { cellHasRenderableContent, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
@@ -161,6 +163,13 @@ const showHref = computed(() =>
     entity.value?.id ? route("entities.monsters.show", { monster: entity.value.id }) : null
 );
 
+const linkedLanguages = computed(() => {
+    const raw = entity.value?._data?.languages ?? entity.value?.languages;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
+
 const showDescriptionInCompactSlot = computed(() => props.displayMode === "compact");
 
 const handleAction = async (actionKey) => {
@@ -199,12 +208,12 @@ const handleAction = async (actionKey) => {
                     <div
                         class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
                     >
-                        <img
+                        <Image
                             v-if="imageUrl"
-                            :src="imageUrl"
+                            :source="imageUrl"
                             :alt="creatureName"
-                            class="h-full w-full object-contain"
-                            loading="lazy"
+                            fit="contain"
+                            class="h-full w-full"
                         />
                         <Icon v-else source="fa-solid fa-dragon" alt="" size="xs" class="text-base-content/40" />
                     </div>
@@ -271,6 +280,19 @@ const handleAction = async (actionKey) => {
                         >
                             {{ descriptionFull }}
                         </p>
+                        <div
+                            v-if="hasLinkedLanguages"
+                            class="flex flex-wrap gap-1 max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover:max-h-40 group-hover:opacity-100 group-focus-within:max-h-40 group-focus-within:opacity-100"
+                            role="region"
+                            aria-label="Langues"
+                        >
+                            <LanguageViewMinimal
+                                v-for="lang in linkedLanguages"
+                                :key="lang.id"
+                                :language="lang"
+                                class="min-w-0 max-w-[11rem]"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -287,12 +309,12 @@ const handleAction = async (actionKey) => {
                     <div
                         class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
                     >
-                        <img
+                        <Image
                             v-if="imageUrl"
-                            :src="imageUrl"
+                            :source="imageUrl"
                             :alt="creatureName"
-                            class="h-full w-full object-contain"
-                            loading="lazy"
+                            fit="contain"
+                            class="h-full w-full"
                         />
                         <Icon v-else source="fa-solid fa-dragon" alt="" size="xs" class="text-base-content/40" />
                     </div>
@@ -378,6 +400,25 @@ const handleAction = async (actionKey) => {
                         ui-color="primary"
                         class="text-[11px] leading-tight [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
                     />
+                </div>
+
+                <div
+                    v-if="hasLinkedLanguages"
+                    class="w-full border-t border-base-300/80 pt-1.5"
+                    role="region"
+                    aria-label="Langues"
+                >
+                    <p class="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-300/90">
+                        Langues
+                    </p>
+                    <div class="flex flex-wrap gap-1">
+                        <LanguageViewMinimal
+                            v-for="lang in linkedLanguages"
+                            :key="lang.id"
+                            :language="lang"
+                            class="min-w-0 max-w-[11rem]"
+                        />
+                    </div>
                 </div>
 
                 <div

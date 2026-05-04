@@ -23,6 +23,7 @@
 
 import { computed, defineAsyncComponent } from "vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
 import AreaDisplay from "@/Pages/Molecules/entity/spell/AreaDisplay.vue";
@@ -269,12 +270,15 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
     </span>
 
     <span v-else-if="type === 'image'" class="inline-flex items-center justify-center">
-        <img
+        <Image
             v-if="value"
-            :src="String(value)"
+            :source="String(value)"
             :alt="params.alt || 'Image'"
-            class="h-8 w-8 rounded object-contain"
-            loading="lazy"
+            fit="contain"
+            rounded="md"
+            width="2rem"
+            height="2rem"
+            class="inline-flex max-h-8 max-w-8"
         />
         <span v-else class="text-base-content/40">—</span>
     </span>

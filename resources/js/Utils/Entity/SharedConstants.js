@@ -402,6 +402,40 @@ export function getEntityStateDotClass(state) {
   }
 }
 
+/** Couleurs DaisyUI des badges d'état (aligné {@link EntityUsableDot} / vues Item). */
+export const ENTITY_STATE_BADGE_COLORS = Object.freeze({
+  raw: "error",
+  draft: "warning",
+  playable: "success",
+  archived: "info",
+});
+
+/**
+ * Couleur badge DaisyUI pour un état d'entité.
+ *
+ * @param {string|null|undefined} state
+ * @returns {string}
+ */
+export function getEntityStateBadgeColor(state) {
+  const k = String(state ?? "");
+  return ENTITY_STATE_BADGE_COLORS[k] ?? "neutral";
+}
+
+/**
+ * Libellé français pour la valeur d'état (table des options entité).
+ *
+ * @param {string|null|undefined} state
+ * @returns {string}
+ */
+export function getEntityStateDisplayLabel(state) {
+  if (state == null || state === "") {
+    return "—";
+  }
+  const opts = getEntityStateOptions();
+  const hit = opts.find((o) => o.value === state);
+  return hit?.label ?? String(state);
+}
+
 /**
  * Options de rôles (0..5) pour selects (read_level / write_level).
  */

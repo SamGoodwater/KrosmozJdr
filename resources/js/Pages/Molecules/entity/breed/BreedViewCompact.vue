@@ -14,6 +14,7 @@ import { router, usePage } from '@inertiajs/vue3';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import EntityStateBadge from "@/Pages/Atoms/data-display/EntityStateBadge.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
@@ -22,7 +23,10 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
 import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
+import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
+import RichTextReadonlyView from "@/Pages/Molecules/data-display/RichTextReadonlyView.vue";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
+import { isRichHtmlVisuallyEmpty } from "@/Utils/richText/isRichHtmlVisuallyEmpty";
 
 const props = defineProps({
     breed: {
@@ -117,6 +121,36 @@ const linkedCapabilities = computed(() => {
 
 const hasLinkedCapabilities = computed(() => linkedCapabilities.value.length > 0);
 
+const linkedLanguages = computed(() => {
+    const raw = props.breed?._data?.languages ?? props.breed?.languages;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
+
+const breedState = computed(() => props.breed?.state ?? props.breed?._data?.state ?? null);
+
+const descriptionFast = computed(() => {
+    const b = props.breed?._data ?? props.breed;
+    const t = b?.description_fast;
+    return t != null && String(t).trim() !== "" ? String(t).trim() : "";
+});
+
+const descriptionFull = computed(() => {
+    const b = props.breed?._data ?? props.breed;
+    const t = b?.description ?? props.breed?.description;
+    return t != null && String(t).trim() !== "" ? String(t).trim() : "";
+});
+
+const evolutionHtml = computed(() => {
+    const b = props.breed?._data ?? props.breed;
+    const t = b?.evolution ?? props.breed?.evolution;
+    if (t == null || isRichHtmlVisuallyEmpty(String(t))) {
+        return "";
+    }
+    return String(t);
+});
+
 const handleAction = async (actionKey) => {
     const breedId = props.breed.id;
     if (!breedId) return;
@@ -210,7 +244,15 @@ const handleAction = async (actionKey) => {
                             {{ getFieldLabel(fieldKey) }}
                         </span>
                         <div class="flex-1 text-right min-w-0 text-primary-200">
+                            <EntityStateBadge
+                                v-if="fieldKey === 'state'"
+                                :state="breedState"
+                                size="xs"
+                                variant="soft"
+                                :tooltip="false"
+                            />
                             <CellRenderer
+                                v-else
                                 :cell="getCell(fieldKey)"
                                 ui-color="primary"
                             />
@@ -220,6 +262,24 @@ const handleAction = async (actionKey) => {
             </div>
         </div>
 
+        <div
+            v-if="descriptionFast || descriptionFull"
+            class="mt-2 space-y-1.5 border-t border-base-300/50 pt-3 text-sm"
+        >
+            <p
+                v-if="descriptionFast"
+                class="text-xs leading-snug text-primary-300 break-words"
+            >
+                {{ descriptionFast }}
+            </p>
+            <p
+                v-if="descriptionFull && descriptionFull !== descriptionFast"
+                class="text-xs leading-snug whitespace-pre-wrap text-primary-200/90 break-words"
+            >
+                {{ descriptionFull }}
+            </p>
+        </div>
+
         <BreedCapabilitiesDisplay
             v-if="hasLinkedCapabilities"
             class="mt-2"
@@ -227,6 +287,29 @@ const handleAction = async (actionKey) => {
             density="compact"
             :characteristic-runtime="resolvedCharacteristicRuntime"
         />
+
+        <div
+            v-if="hasLinkedLanguages"
+            class="mt-2 border-t border-base-300/50 pt-3"
+            role="region"
+            aria-label="Langues"
+        >
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-primary-400 mb-1.5">Langues</p>
+            <EntityLanguagesInline :languages="linkedLanguages" :show-label="false" />
+        </div>
+
+        <div
+            v-if="canShowField('evolution') && evolutionHtml"
+            class="mt-2 border-t border-base-300/50 pt-3"
+            role="region"
+            aria-label="Évolution"
+        >
+            <RichTextReadonlyView
+                :html="evolutionHtml"
+                :enable-rich-references="true"
+                class="text-xs text-primary-200/90"
+            />
+        </div>
 
         <BreedVariantsDisplay
             v-if="hasSpellSlotGroups"

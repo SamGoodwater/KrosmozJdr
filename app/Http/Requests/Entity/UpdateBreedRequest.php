@@ -26,6 +26,7 @@ class UpdateBreedRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description_fast' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'evolution' => ['nullable', 'string'],
             'life_dice' => ['nullable', 'string', 'max:255'],
             'specificity' => ['nullable', 'string'],
             'dofus_version' => ['nullable', 'string', 'max:255'],

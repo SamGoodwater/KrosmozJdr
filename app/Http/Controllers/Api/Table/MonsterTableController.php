@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Entity\LanguageResource;
 use App\Http\Resources\Entity\SpellResource;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
@@ -78,6 +79,7 @@ class MonsterTableController extends Controller
 
         $query = Monster::query()
             ->with([
+                'languages',
                 'creature' => fn ($q) => $q
                     ->with([
                         'spells' => fn ($sq) => $sq
@@ -321,6 +323,7 @@ class MonsterTableController extends Controller
                     'consumables_count' => (int) ($m->creature?->consumables_count ?? 0),
                     'campaigns_count' => (int) ($m->campaigns_count ?? 0),
                     'scenarios_count' => (int) ($m->scenarios_count ?? 0),
+                    'languages' => LanguageResource::collection($m->languages)->resolve($request),
                     'created_at' => $m->created_at?->toISOString(),
                     'updated_at' => $m->updated_at?->toISOString(),
                 ];
@@ -344,7 +347,7 @@ class MonsterTableController extends Controller
             ]);
         }
 
-        $tableRows = $rows->map(function (Monster $m) {
+        $tableRows = $rows->map(function (Monster $m) use ($request) {
             $showHref = route('entities.monsters.show', $m->id);
             $creatureName = $m->creature?->name ?? '-';
             $raceName = $m->monsterRace?->name ?? '-';
@@ -445,6 +448,7 @@ class MonsterTableController extends Controller
                         'consumables_count' => (int) ($m->creature?->consumables_count ?? 0),
                         'campaigns_count' => (int) ($m->campaigns_count ?? 0),
                         'scenarios_count' => (int) ($m->scenarios_count ?? 0),
+                        'languages' => LanguageResource::collection($m->languages)->resolve($request),
                     ],
                 ],
             ];

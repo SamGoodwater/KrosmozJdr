@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -58,6 +57,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $spells_count
  * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Database\Factories\Entity\ScenarioFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario newQuery()
@@ -80,12 +80,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Scenario extends Model implements HasMedia
 {
     /** @use HasFactory<\\Database\\Factories\\ScenarioFactory> */
-    use HasEntityImageMedia, HasFactory, InteractsWithMedia, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
 

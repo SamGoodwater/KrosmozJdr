@@ -6,6 +6,7 @@
  */
 import { computed } from "vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 import {
     BREED_ELEMENT_KEYS,
     BREED_ELEMENT_LABELS,
@@ -61,20 +62,19 @@ const orientationSlots = computed(() => {
             <span
                 class="inline-flex items-center gap-0.5 rounded-md border border-base-300/60 bg-base-200/40 px-1 py-0.5"
             >
-                <img
-                    :src="s.voiceIcon"
+                <Image
+                    :source="s.voiceIcon"
                     :alt="s.label"
-                    :class="slotClass"
-                    class="object-contain shrink-0"
-                    loading="lazy"
+                    fit="contain"
+                    :class="[slotClass, 'shrink-0']"
                 />
-                <img
+                <Image
                     v-if="s.orientationUrl"
-                    :src="s.orientationUrl"
+                    :source="s.orientationUrl"
                     :alt="s.orientationKey || ''"
-                    :class="slotClass"
-                    class="object-contain shrink-0 rounded-sm"
-                    loading="lazy"
+                    fit="contain"
+                    rounded="sm"
+                    :class="[slotClass, 'shrink-0']"
                 />
                 <span
                     v-else

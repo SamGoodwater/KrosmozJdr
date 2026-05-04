@@ -5,13 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
+use App\Models\OAuthAccount;
 use App\Models\User;
+use App\Services\Media\EntityImageMediaService;
 use App\Services\NotificationService;
 use App\Support\OAuthConfig;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
+use Inertia\Response;
 
 /**
  * Contrôleur de gestion des utilisateurs.
@@ -24,10 +31,14 @@ use Inertia\Inertia;
  */
 class UserController extends Controller
 {
+    public function __construct(
+        private EntityImageMediaService $entityImageMediaService,
+    ) {}
+
     /**
      * Affiche la liste paginée des utilisateurs.
      *
-     * @return \Inertia\Response
+     * @return Response
      */
     public function index(Request $request)
     {
@@ -76,7 +87,7 @@ class UserController extends Controller
      * Affiche le détail d'un utilisateur.
      * Si aucun utilisateur n'est spécifié, affiche le profil de l'utilisateur connecté.
      *
-     * @return \Inertia\Response
+     * @return Response
      */
     public function show(?User $user = null)
     {
@@ -93,7 +104,7 @@ class UserController extends Controller
      * Confirme le mot de passe de l'utilisateur (mode modal/API).
      * Utilisé par ConfirmPasswordModal pour protéger les actions sensibles.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function confirmPassword(Request $request)
     {
@@ -117,7 +128,7 @@ class UserController extends Controller
     /**
      * Affiche le formulaire de création d'utilisateur.
      *
-     * @return \Inertia\Response
+     * @return Response
      */
     public function create()
     {
@@ -132,7 +143,7 @@ class UserController extends Controller
     /**
      * Crée un nouvel utilisateur (profil complet, avatar inclus si fourni).
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function store(StoreUserRequest $request)
     {
@@ -156,14 +167,7 @@ class UserController extends Controller
         $data['notification_channels'] = $data['notification_channels'] ?? ['database'];
         $user = User::create($data);
         if ($request->hasFile('avatar')) {
-            $ext = $request->file('avatar')->getClientOriginalExtension() ?: 'png';
-            $customName = $user->getMediaFileNameForCollection('avatars', $ext);
-            $adder = $user->addMediaFromRequest('avatar');
-            if ($customName !== null && $customName !== '') {
-                $adder->usingFileName($customName);
-            }
-            $media = $adder->toMediaCollection('avatars');
-            $user->update(['avatar' => $media->getUrl()]);
+            $this->entityImageMediaService->attachFromRequest($user, $request, 'avatar', 'avatars', 'avatar');
         }
 
         return redirect()->route('user.admin.edit', $user)->with('success', 'Utilisateur créé avec succès.');
@@ -173,7 +177,7 @@ class UserController extends Controller
      * Affiche le formulaire d'édition d'utilisateur.
      * Si aucun utilisateur n'est spécifié, affiche le formulaire pour l'utilisateur connecté.
      *
-     * @return \Inertia\Response
+     * @return Response
      */
     public function edit(?User $user = null)
     {
@@ -195,7 +199,7 @@ class UserController extends Controller
      * Affiche la page des paramètres du compte (onglets : notifications, etc.).
      * Profil courant uniquement.
      *
-     * @return \Inertia\Response
+     * @return Response
      */
     public function settings()
     {
@@ -215,7 +219,7 @@ class UserController extends Controller
     /**
      * Met à jour un utilisateur (profil courant ou admin).
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function update(UpdateUserRequest $request, ?User $user = null)
     {
@@ -226,14 +230,8 @@ class UserController extends Controller
         // Gestion de l'avatar (Media Library)
         if ($request->hasFile('avatar')) {
             $user->clearMediaCollection('avatars');
-            $ext = $request->file('avatar')->getClientOriginalExtension() ?: 'png';
-            $customName = $user->getMediaFileNameForCollection('avatars', $ext);
-            $adder = $user->addMediaFromRequest('avatar');
-            if ($customName !== null && $customName !== '') {
-                $adder->usingFileName($customName);
-            }
-            $media = $adder->toMediaCollection('avatars');
-            $data['avatar'] = $media->getUrl();
+            $this->entityImageMediaService->attachFromRequest($user, $request, 'avatar', 'avatars', 'avatar');
+            unset($data['avatar']);
         }
         // Normalisation des préférences de notifications : forme { channels: [], frequency: 'instant'|... }
         // Utiliser input() car validated() peut exclure des clés imbriquées avec règles sometimes
@@ -275,7 +273,7 @@ class UserController extends Controller
     /**
      * Supprime (soft delete) un utilisateur.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function delete(User $user)
     {
@@ -294,7 +292,7 @@ class UserController extends Controller
      * Supprime définitivement un utilisateur (admin only).
      * Supprime aussi l'avatar physique si présent.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function forceDelete(User $user)
     {
@@ -309,7 +307,7 @@ class UserController extends Controller
      * Restaure un utilisateur supprimé.
      *
      * @param  User  $user
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function restore(int $user)
     {
@@ -324,7 +322,7 @@ class UserController extends Controller
      * Met à jour uniquement l'avatar de l'utilisateur (endpoint dédié, UX moderne).
      * Si aucun utilisateur n'est spécifié, utilise l'utilisateur connecté.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function updateAvatar(Request $request, ?User $user = null)
     {
@@ -336,19 +334,8 @@ class UserController extends Controller
             return redirect()->back()->withErrors(['avatar' => 'Aucun fichier n\'a été téléchargé.']);
         }
 
-        $request->validate([
-            'avatar' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp,svg', 'max:5120'], // 5MB max
-        ]);
-
         $user->clearMediaCollection('avatars');
-        $ext = $request->file('avatar')->getClientOriginalExtension() ?: 'png';
-        $customName = $user->getMediaFileNameForCollection('avatars', $ext);
-        $adder = $user->addMediaFromRequest('avatar');
-        if ($customName !== null && $customName !== '') {
-            $adder->usingFileName($customName);
-        }
-        $media = $adder->toMediaCollection('avatars');
-        $user->update(['avatar' => $media->getUrl()]);
+        $this->entityImageMediaService->attachFromRequest($user, $request, 'avatar', 'avatars', 'avatar');
 
         // Recharger l'utilisateur avec les relations pour retourner les données complètes
         $user->refresh();
@@ -360,7 +347,7 @@ class UserController extends Controller
      * Supprime uniquement l'avatar de l'utilisateur (endpoint dédié, UX moderne).
      * Si aucun utilisateur n'est spécifié, utilise l'utilisateur connecté.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function deleteAvatar(?User $user = null)
     {
@@ -375,14 +362,14 @@ class UserController extends Controller
     /**
      * Met à jour le rôle d'un utilisateur (seul le super_admin peut promouvoir en admin, personne ne peut promouvoir en super_admin).
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function updateRole(\Illuminate\Http\Request $request, \App\Models\User $user)
+    public function updateRole(Request $request, User $user)
     {
         $this->authorize('updateRole', $user);
 
         $request->validate([
-            'role' => ['required', \Illuminate\Validation\Rule::in(array_keys(\App\Models\User::ROLES))],
+            'role' => ['required', Rule::in(array_keys(User::ROLES))],
         ]);
 
         // Convertir le rôle en entier si c'est une string (pour compatibilité)
@@ -416,9 +403,9 @@ class UserController extends Controller
      * - Si un admin modifie le mot de passe d'un autre utilisateur : current_password non requis
      *
      * @param  User|null  $user  Utilisateur dont on modifie le mot de passe (null = utilisateur connecté)
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function updatePassword(\Illuminate\Http\Request $request, ?User $user = null)
+    public function updatePassword(Request $request, ?User $user = null)
     {
         $user = $user ?? Auth::user();
         $isSelfUpdate = $user->id === Auth::id();
@@ -430,7 +417,7 @@ class UserController extends Controller
         }
 
         $rules = [
-            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Password::defaults()],
         ];
 
         // En mise à jour de son propre mot de passe : current_password requis sauf si compte OAuth-only (pas de mdp).
@@ -450,9 +437,9 @@ class UserController extends Controller
     /**
      * Convertit un compte OAuth-only en compte classique (ajout d'un mot de passe).
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function convertToClassicAccount(\Illuminate\Http\Request $request)
+    public function convertToClassicAccount(Request $request)
     {
         $user = Auth::user();
         $this->authorize('update', $user);
@@ -462,7 +449,7 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
         $user->update([
@@ -475,14 +462,14 @@ class UserController extends Controller
     /**
      * Délie un provider OAuth du compte (si au moins une autre méthode de connexion reste).
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function unlinkOAuthProvider(string $provider)
     {
         $user = Auth::user();
         $this->authorize('update', $user);
 
-        if (! OAuthConfig::isProviderEnabled($provider) || ! in_array($provider, \App\Models\OAuthAccount::PROVIDERS, true)) {
+        if (! OAuthConfig::isProviderEnabled($provider) || ! in_array($provider, OAuthAccount::PROVIDERS, true)) {
             return back()->withErrors(['provider' => 'Provider invalide ou non configuré.']);
         }
 

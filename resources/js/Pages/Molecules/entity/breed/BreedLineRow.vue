@@ -7,6 +7,7 @@
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
@@ -16,6 +17,9 @@ import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabi
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
+import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
+import { isRichHtmlVisuallyEmpty } from "@/Utils/richText/isRichHtmlVisuallyEmpty";
+import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -53,6 +57,18 @@ const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
 );
 
+const evolutionRaw = computed(
+    () => entity.value?.evolution ?? entity.value?._data?.evolution ?? ""
+);
+
+const evolutionHtmlSafe = computed(() => {
+    const raw = evolutionRaw.value;
+    if (raw == null || isRichHtmlVisuallyEmpty(String(raw))) {
+        return "";
+    }
+    return sanitizeHtml(String(raw));
+});
+
 const orientationMap = computed(() => {
     const raw = entity.value?._data ?? entity.value;
     return normalizeElementOrientationMap(raw?.element_orientations);
@@ -69,6 +85,13 @@ const hasSpellSlots = computed(() => {
     const raw = entity.value?._data ?? entity.value;
     return buildSpellSlotGroups(raw).length > 0;
 });
+
+const linkedLanguages = computed(() => {
+    const raw = entity.value?._data?.languages ?? entity.value?.languages;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
 
 const handleRowClick = (e) => emit("row-click", props.row, e);
 
@@ -110,12 +133,12 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
             <div
                 class="w-20 shrink-0 self-stretch min-h-20 rounded overflow-hidden bg-base-200 flex items-center justify-center"
             >
-                <img
+                <Image
                     v-if="imageUrl"
-                    :src="imageUrl"
+                    :source="imageUrl"
                     :alt="entity?.name ?? row?.name ?? 'Classe'"
-                    class="h-full w-full object-contain"
-                    loading="lazy"
+                    fit="contain"
+                    class="h-full w-full"
                 />
                 <Icon v-else source="fa-solid fa-graduation-cap" alt="" size="sm" class="text-base-content/40" />
             </div>
@@ -183,15 +206,45 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                     :capabilities="linkedCapabilities"
                     density="text"
                 />
+                <div
+                    v-if="evolutionHtmlSafe"
+                    class="transition-[max-height,opacity] duration-200 ease-out max-h-0 opacity-0 overflow-hidden group-hover:max-h-[min(55vh,26rem)] group-hover:opacity-100 group-focus-within:max-h-[min(55vh,26rem)] group-focus-within:opacity-100"
+                    role="region"
+                    aria-label="Évolution"
+                >
+                    <div
+                        class="mt-1 max-h-[min(50vh,24rem)] overflow-y-auto overscroll-contain rounded-box border border-base-300/60 bg-base-200/25 px-2 py-1.5"
+                    >
+                        <!-- eslint-disable vue/no-v-html -- sanitizeHtml côté script -->
+                        <div
+                            class="rich-text-readonly prose prose-sm max-w-none text-xs text-base-content/85 [&_*]:!my-1"
+                            v-html="evolutionHtmlSafe"
+                        />
+                        <!-- eslint-enable vue/no-v-html -->
+                    </div>
+                </div>
                 <BreedVariantsDisplay
                     v-if="hasSpellSlots"
                     :breed="entity?._data ?? entity"
                     density="text"
                     :show-temple-note="false"
                 />
+                <div
+                    v-if="hasLinkedLanguages"
+                    class="flex flex-wrap gap-1 max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover:max-h-40 group-hover:opacity-100 group-focus-within:max-h-40 group-focus-within:opacity-100"
+                    role="region"
+                    aria-label="Langues"
+                >
+                    <LanguageViewMinimal
+                        v-for="lang in linkedLanguages"
+                        :key="lang.id"
+                        :language="lang"
+                        class="min-w-0 max-w-[11rem]"
+                    />
+                </div>
                 <p
                     v-if="descriptionFull"
-                    class="text-xs text-base-content/80 whitespace-normal wrap-break-word"
+                    class="wrap-break-word text-xs whitespace-normal text-base-content/80 italic line-clamp-3 transition-[line-clamp] duration-150 group-hover:line-clamp-none"
                     :title="descriptionFull"
                 >
                     {{ descriptionFull }}

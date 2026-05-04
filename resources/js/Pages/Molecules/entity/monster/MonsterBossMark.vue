@@ -44,6 +44,8 @@ const imgError = ref(false);
                 alt=""
                 :class="[sizeClass, 'object-contain select-none']"
                 draggable="false"
+                loading="lazy"
+                decoding="async"
                 @error="imgError = true"
             />
             <Icon

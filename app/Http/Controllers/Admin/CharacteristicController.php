@@ -20,6 +20,7 @@ use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Services\Characteristic\Formula\FormulaConfigDecoder;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Media\EntityImageMediaService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 use Database\Seeders\Data\CharacteristicPaletteResolver;
@@ -1114,10 +1115,9 @@ class CharacteristicController extends Controller
      * Upload d'icône pour une caractéristique (Spatie Media Library).
      * Requiert characteristic_id ; attache le média à la caractéristique et met à jour la colonne icon.
      */
-    public function uploadIcon(Request $request): JsonResponse
+    public function uploadIcon(Request $request, EntityImageMediaService $entityImageMediaService): JsonResponse
     {
         $validated = $request->validate([
-            'file' => ['required', 'file', 'image', 'max:2048'], // 2MB
             'characteristic_id' => ['required', 'integer', 'exists:characteristics,id'],
         ]);
 
@@ -1125,19 +1125,23 @@ class CharacteristicController extends Controller
         $this->authorize('update', $characteristic);
 
         $characteristic->clearMediaCollection('icons');
-        $ext = $request->file('file')->getClientOriginalExtension() ?: 'png';
-        $customName = $characteristic->getMediaFileNameForCollection('icons', $ext);
-        $adder = $characteristic->addMediaFromRequest('file');
-        if ($customName !== null && $customName !== '') {
-            $adder->usingFileName($customName);
-        }
-        $media = $adder->toMediaCollection('icons');
-        $characteristic->update(['icon' => $media->getUrl()]);
+        $media = $entityImageMediaService->attachFromRequest(
+            $characteristic,
+            $request,
+            'file',
+            'icons',
+            'icon',
+            2048,
+        );
+        $payload = $entityImageMediaService->mediaPayload($media);
 
-        return response()->json([
-            'success' => true,
-            'icon' => $media->getUrl(),
-        ]);
+        return response()->json(array_merge(
+            [
+                'success' => true,
+                'icon' => $media->getUrl(),
+            ],
+            $payload,
+        ));
     }
 
     /**

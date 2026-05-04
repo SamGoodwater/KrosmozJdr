@@ -89,6 +89,13 @@ const adminNavItems = computed(() => {
                 show: true,
             },
             {
+                title: 'Langues',
+                href: 'admin.languages.index',
+                path: '/admin/languages',
+                icon: 'fa-language',
+                show: true,
+            },
+            {
                 title: 'Mappings scrapping',
                 href: 'admin.scrapping-mappings.index',
                 path: '/admin/scrapping-mappings',

@@ -210,6 +210,7 @@ class PdfService
             'breed' => [
                 'life_dice' => $entity->life_dice,
                 'dofusdb_id' => $entity->dofusdb_id,
+                'evolution' => self::breedEvolutionForPdf($entity->evolution ?? null),
                 'sorts_par_emplacements' => $entity instanceof Breed
                     ? self::breedSpellSlotsSummaryForPdf($entity)
                     : null,
@@ -257,6 +258,21 @@ class PdfService
             ],
             default => [],
         };
+    }
+
+    /**
+     * HTML « évolution » : null si aucun texte visible (équivalent contenu vide côté fiche).
+     */
+    protected static function breedEvolutionForPdf(?string $html): ?string
+    {
+        if ($html === null || $html === '') {
+            return null;
+        }
+        $text = trim(html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        $text = preg_replace('/\s+| +/u', ' ', $text) ?? '';
+        $text = trim(str_replace("\xc2\xa0", ' ', $text));
+
+        return $text === '' ? null : $html;
     }
 
     /**

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
@@ -97,7 +98,7 @@ class Characteristic extends Model implements HasMedia
     /** Répertoire Media Library pour ce modèle. */
     public const MEDIA_PATH = 'images/entity/characteristics';
 
-    /** Motif de nommage pour la collection icons (placeholders: [name], [date], [id]). */
+    /** Motif de nommage pour la collection icons (placeholders: [key], [id], [name], …). */
     public const MEDIA_FILE_PATTERN_ICONS = '[key]';
 
     protected $table = 'characteristics';
@@ -193,6 +194,11 @@ class Characteristic extends Model implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('icons')
+            ->fit(Fit::Contain, 128, 128)
+            ->format('webp')
+            ->nonQueued();
         $this->addMediaConversion('webp')
             ->performOnCollections('icons')
             ->format('webp')

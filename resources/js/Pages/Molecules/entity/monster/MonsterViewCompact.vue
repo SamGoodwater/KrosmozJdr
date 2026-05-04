@@ -29,6 +29,7 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
+import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
 
 const props = defineProps({
     monster: {
@@ -114,6 +115,13 @@ const hasRelationsChips = computed(() => {
     const items = cell?.params?.items;
     return Array.isArray(items) && items.length > 0;
 });
+
+const linkedLanguages = computed(() => {
+    const raw = props.monster?._data?.languages ?? props.monster?.languages;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
 
 const technicalFields = computed(() => ([
     'dofusdb_id',
@@ -342,6 +350,16 @@ const handleAction = async (actionKey) => {
                 </div>
             </template>
         </EntityViewHeader>
+
+        <div
+            v-if="hasLinkedLanguages"
+            class="mt-2 rounded-lg border border-base-300/50 bg-base-100/20 p-2.5"
+            role="region"
+            aria-label="Langues"
+        >
+            <p class="text-[10px] font-semibold uppercase tracking-wide text-primary-400 mb-1.5">Langues</p>
+            <EntityLanguagesInline :languages="linkedLanguages" :show-label="false" />
+        </div>
 
         <!-- Carte caractéristiques (mode compact) -->
         <section v-if="hasCreatureCharacteristics" class="pt-3 border-t border-base-300">

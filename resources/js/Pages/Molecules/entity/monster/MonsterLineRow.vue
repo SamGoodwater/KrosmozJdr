@@ -11,6 +11,7 @@
  */
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
@@ -21,6 +22,7 @@ import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
+import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { cellHasRenderableContent, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
@@ -138,6 +140,13 @@ const descriptionFull = computed(
         ""
 );
 
+const linkedLanguages = computed(() => {
+    const raw = entity.value?._data?.languages ?? entity.value?.languages;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
+
 const handleRowClick = (e) => emit("row-click", props.row, e);
 
 const contextMenuVisible = ref(false);
@@ -214,12 +223,12 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                 <div
                     class="flex h-20 w-20 shrink-0 items-center justify-center self-stretch overflow-hidden rounded bg-base-200"
                 >
-                    <img
+                    <Image
                         v-if="imageCell?.value"
-                        :src="imageCell.value"
+                        :source="imageCell.value"
                         :alt="entity?.creature?.name ?? row?.name ?? 'Créature'"
-                        class="h-full w-full object-contain"
-                        loading="lazy"
+                        fit="contain"
+                        class="h-full w-full"
                     />
                     <Icon v-else source="fa-solid fa-image" alt="" size="sm" class="text-base-content/40" />
                 </div>
@@ -260,6 +269,19 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                     >
                         {{ descriptionFull }}
                     </p>
+                    <div
+                        v-if="hasLinkedLanguages"
+                        class="flex flex-wrap gap-1 max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover:max-h-40 group-hover:opacity-100 group-focus-within:max-h-40 group-focus-within:opacity-100"
+                        role="region"
+                        aria-label="Langues"
+                    >
+                        <LanguageViewMinimal
+                            v-for="lang in linkedLanguages"
+                            :key="lang.id"
+                            :language="lang"
+                            class="min-w-0 max-w-[11rem]"
+                        />
+                    </div>
                 </div>
             </div>
 

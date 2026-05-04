@@ -25,10 +25,14 @@
 import { computed, inject, unref } from "vue";
 import { CHARACTERISTIC_RUNTIME_INJECT_KEY } from "@/Composables/entity/characteristicRuntimeContext";
 import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
+import EntityStateBadge from "@/Pages/Atoms/data-display/EntityStateBadge.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CharacteristicProperty from "@/Pages/Atoms/data-display/CharacteristicProperty.vue";
 import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { useCharacteristicViewModel } from "@/Composables/entity/useCharacteristicViewModel";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 import {
     CHARACTERISTIC_PROPERTY_BADGE,
     CHARACTERISTIC_PROPERTY_DENSITY,
@@ -171,10 +175,89 @@ const elementValue = computed(() => {
     const data = props.entity?._data ?? props.entity;
     return data?.element ?? 0;
 });
+
+const isStateField = computed(() => props.fieldKey === "state");
+
+const entityStateValue = computed(() => {
+    const data = props.entity?._data ?? props.entity;
+    return data?.state ?? null;
+});
+
+const stateFieldUi = computed(() =>
+    resolveEntityFieldUi({
+        fieldKey: "state",
+        descriptors: props.descriptors,
+        tableMeta: props.tableMeta,
+        entityType: props.entityType,
+    }),
+);
+
+const statePropertyTextSizeClass = computed(() => {
+    const map = { xs: "text-xs", sm: "text-sm", md: "text-base" };
+    return map[props.size] ?? "text-sm";
+});
 </script>
 
 <template>
     <ElementDisplay v-if="isElementField" :element="elementValue" :size="size" />
+
+    <template v-else-if="isStateField">
+        <Tooltip
+            class="inline-flex max-w-full min-w-0"
+            :content="stateFieldUi.tooltip"
+            :disabled="!stateFieldUi.tooltip"
+            placement="top"
+        >
+            <span
+                class="characteristic-property text-base-content inline-flex max-w-full min-w-0 flex-wrap items-center gap-1"
+                :class="statePropertyTextSizeClass"
+            >
+                <template v-if="displayMode === PROPERTY_DISPLAY_MODES.minimal">
+                    <EntityStateBadge :state="entityStateValue" :size="size" variant="soft" :tooltip="false" />
+                </template>
+                <template v-else-if="displayMode === PROPERTY_DISPLAY_MODES.compact">
+                    <Icon
+                        v-if="!hideCharacteristicIcon && stateFieldUi.icon"
+                        :source="stateFieldUi.icon"
+                        :alt="stateFieldUi.label || ''"
+                        size="xs"
+                        class="shrink-0 opacity-90"
+                    />
+                    <span v-if="!hideFieldLabel && stateFieldUi.shortLabel" class="truncate text-base-content/90">
+                        <template v-if="variant !== 'icon'">{{ stateFieldUi.shortLabel }}:</template>
+                        <template v-else>{{ stateFieldUi.shortLabel }}</template>
+                    </span>
+                    <EntityStateBadge
+                        v-if="variant !== 'icon'"
+                        :state="entityStateValue"
+                        :size="size"
+                        variant="soft"
+                        :tooltip="false"
+                    />
+                </template>
+                <template v-else>
+                    <Icon
+                        v-if="!hideCharacteristicIcon && stateFieldUi.icon"
+                        :source="stateFieldUi.icon"
+                        :alt="stateFieldUi.label || ''"
+                        size="xs"
+                        class="shrink-0 opacity-90"
+                    />
+                    <span v-if="!hideFieldLabel && stateFieldUi.label" class="truncate text-base-content/90">
+                        <template v-if="variant !== 'icon'">{{ stateFieldUi.label }}:</template>
+                        <template v-else>{{ stateFieldUi.label }}</template>
+                    </span>
+                    <EntityStateBadge
+                        v-if="variant !== 'icon'"
+                        :state="entityStateValue"
+                        :size="size"
+                        variant="soft"
+                        :tooltip="false"
+                    />
+                </template>
+            </span>
+        </Tooltip>
+    </template>
 
     <template v-else-if="fieldKey === 'spell_types' && presentation === 'spell-types-icons-only'">
         <span

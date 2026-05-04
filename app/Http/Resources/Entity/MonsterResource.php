@@ -18,6 +18,7 @@ class MonsterResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+
         return [
             'id' => $this->id,
             'creature_id' => $this->creature_id,
@@ -41,6 +42,7 @@ class MonsterResource extends JsonResource
             'scenarios' => $this->whenLoaded('scenarios'),
             'campaigns' => $this->whenLoaded('campaigns'),
             'spellInvocations' => $this->whenLoaded('spellInvocations'),
+            'languages' => $this->whenLoaded('languages', fn () => LanguageResource::collection($this->languages)->resolve($request)),
 
             // Droits d'accès
             'can' => [
@@ -51,4 +53,3 @@ class MonsterResource extends JsonResource
         ];
     }
 }
-

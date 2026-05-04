@@ -6,6 +6,7 @@
  * Template de section pour afficher une galerie en mode lecture.
  */
 import { computed } from 'vue';
+import Image from '@/Pages/Atoms/data-display/Image.vue';
 import { SectionStyleService } from '@/Utils/Services';
 
 const props = defineProps({
@@ -26,7 +27,13 @@ const galleryClasses = computed(() => {
   <div class="section-gallery-content">
     <div v-if="images.length > 0" :class="galleryClasses">
       <div v-for="(image, index) in images" :key="index" class="aspect-square">
-        <img :src="image.src" :alt="image.alt || 'Image'" class="w-full h-full object-cover rounded-lg" />
+        <Image
+          :source="image.src"
+          :alt="image.alt || 'Image'"
+          fit="cover"
+          rounded="lg"
+          class="h-full w-full"
+        />
       </div>
     </div>
     <p v-else class="text-center text-base-content/50 italic py-8">

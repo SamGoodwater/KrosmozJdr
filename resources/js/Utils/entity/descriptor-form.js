@@ -117,6 +117,9 @@ export function createFieldsConfigFromDescriptors(descriptors, ctx = {}) {
         rows: form.rows,
         cols: form.cols,
       } : {}),
+      ...(form.type === 'richtext' ? {
+        richEditorHeight: form.richEditorHeight,
+      } : {}),
       ...(form.type === 'file' ? {
         accept: form.accept,
         multiple: Boolean(form.multiple),

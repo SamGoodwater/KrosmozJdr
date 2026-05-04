@@ -216,12 +216,12 @@ export function resolveEntityFieldUi(options = {}) {
   );
   const tooltip = characteristicTooltip || descriptorTooltip;
 
-  const icon = String(
-    characteristic?.icon ||
-      desc?.general?.icon ||
-      desc?.icon ||
-      "fa-solid fa-info-circle"
-  );
+  const iconResolved =
+    characteristic?.icon ?? desc?.general?.icon ?? desc?.icon;
+  const icon =
+    iconResolved === undefined || iconResolved === null
+      ? "fa-solid fa-info-circle"
+      : String(iconResolved);
   const color = String(characteristic?.color || "");
 
   return {

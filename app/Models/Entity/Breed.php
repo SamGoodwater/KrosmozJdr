@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -27,6 +28,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $name
  * @property string|null $description_fast
  * @property string|null $description
+ * @property string|null $evolution
  * @property string|null $life_dice
  * @property string|null $specificity
  * @property string $dofus_version
@@ -78,6 +80,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
  *
+ * @property string|null $life
+ * @property-read Collection<int, BreedElementOrientation> $elementOrientations
+ * @property-read int|null $element_orientations_count
+ * @property-read BreedSpellPivot|null $pivot
+ *
+ * @method static Builder<static>|Breed visibleToUser(?\App\Models\User $user)
+ *
  * @mixin \Eloquent
  */
 class Breed extends Model implements HasMedia
@@ -114,6 +123,7 @@ class Breed extends Model implements HasMedia
         'name',
         'description_fast',
         'description',
+        'evolution',
         'life_dice',
         'specificity',
         'dofus_version',
@@ -207,6 +217,14 @@ class Breed extends Model implements HasMedia
             ->withTimestamps();
     }
 
+    public function languages()
+    {
+        return $this->belongsToMany(Language::class, 'breed_language')
+            ->withPivot('sort_order')
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
+    }
+
     /**
      * Orientations par voix élémentaire (air, terre, feu, eau).
      */
@@ -297,6 +315,11 @@ class Breed extends Model implements HasMedia
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->registerEntityImageMediaConversions($media);
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('icons')
+            ->fit(Fit::Contain, 128, 128)
+            ->format('webp')
+            ->nonQueued();
         $this->addMediaConversion('webp')
             ->performOnCollections('icons')
             ->format('webp')

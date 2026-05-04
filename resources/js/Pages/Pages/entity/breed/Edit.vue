@@ -13,6 +13,7 @@ import { Breed } from "@/Models/Entity/Breed";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import BreedSpellSlotsEditor from "@/Pages/Organismes/entity/BreedSpellSlotsEditor.vue";
 import BreedCapabilitiesEditor from "@/Pages/Organismes/entity/BreedCapabilitiesEditor.vue";
+import EntityLanguagesEditor from "@/Pages/Organismes/entity/EntityLanguagesEditor.vue";
 import BreedElementOrientationsEditor from "@/Pages/Organismes/entity/BreedElementOrientationsEditor.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
@@ -39,6 +40,10 @@ const props = defineProps({
         default: () => [],
     },
     availableCapabilities: {
+        type: Array,
+        default: () => [],
+    },
+    availableLanguages: {
         type: Array,
         default: () => [],
     },
@@ -113,6 +118,14 @@ const confirmDelete = () => {
             v-if="breed.id"
             :relations="breed.capabilities || []"
             :available-items="availableCapabilities"
+            :entity-id="breed.id"
+        />
+
+        <EntityLanguagesEditor
+            v-if="breed.id"
+            entity-type="breed"
+            :relations="breed.languages || []"
+            :available-items="availableLanguages"
             :entity-id="breed.id"
         />
 

@@ -42,7 +42,7 @@ Toutes les entités avec image/icône utilisent Media Library (une seule méthod
 | **Campaign**                | `files`     | Fichiers liés à la campagne (getMedia)   | `thumb`, `webp`  |
 | **Resource**                | `images`    | Image principale (singleFile)             | `thumb`, `webp`  |
 | **EntityImageUpload**       | `images`    | Upload orphelin (bulk, sans resource_id) | `thumb`, `webp`  |
-| **Characteristic**    | `icons`       | Icône (singleFile)                  | `webp`           |
+| **Characteristic**    | `icons`       | Icône (singleFile)                  | `webp`, `thumb`  |
 
 Les modèles **Scenario** et **Campaign** n’ont plus de relation `files()` vers l’ancien modèle `File` : utiliser `$model->getMedia('files')`.  
 L’upload d’icône de caractéristique requiert `characteristic_id` et attache le média à la caractéristique (Media Library).
@@ -52,7 +52,7 @@ L’upload d’icône de caractéristique requiert `characteristic_id` et attach
 Les modèles peuvent définir **où** et **comment** sont stockés/nommés les médias :
 
 - **MEDIA_PATH** (string) : répertoire de stockage, lu par `ModelAwarePathGenerator`. Ex. : `images/entity/breeds` → les médias d’un Breed sont sous `images/entity/breeds/{id_media}/`. Si absent, Spatie utilise l’id du média seul.
-- **MEDIA_FILE_PATTERN_{COLLECTION}** (string) : motif de nom de fichier pour une collection. Placeholders : `[name]` (slug du nom ou id), `[date]` (Y-m-d), `[id]` (id du modèle). Ex. : `MEDIA_FILE_PATTERN_ICONS = 'breed-icon-[name]-[date]'` → `breed-icon-eniripsa-2025-02-07.png`.
+- **MEDIA_FILE_PATTERN_{COLLECTION}** (string) : motif de nom de fichier pour une collection. Placeholders : `[name]` (slug du nom ou id), `[date]` (Y-m-d), `[id]` (id du modèle), `[slug]` (attribut `slug` du modèle ou dérivé du nom), `[key]` (ex. caractéristiques), `[uniqid]`. Ex. : `MEDIA_FILE_PATTERN_ICONS = 'breed-icon-[name]-[date]'` → `breed-icon-eniripsa-2025-02-07.png`.
 - **MEDIA_FILE_PATTERN** : motif par défaut pour toutes les collections si aucune constante par collection n’est définie.
 
 Le trait `HasMediaCustomNaming` fournit `getMediaFileNameForCollection($collection, $extension)` ; il est utilisé par `HasEntityImageMedia` et par `Characteristic`. L’intégration scrapping et l’upload d’icône appellent ce nommage quand le modèle le définit.

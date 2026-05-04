@@ -5,13 +5,16 @@ namespace App\Http\Controllers\Entity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreBreedRequest;
 use App\Http\Requests\Entity\UpdateBreedCapabilitiesRequest;
+use App\Http\Requests\Entity\UpdateBreedLanguagesRequest;
 use App\Http\Requests\Entity\UpdateBreedRequest;
 use App\Http\Requests\Entity\UpdateBreedSpellsRequest;
 use App\Http\Resources\Entity\BreedResource;
 use App\Http\Resources\Entity\CapabilityResource;
+use App\Http\Resources\Entity\LanguageResource;
 use App\Http\Resources\Entity\SpellResource;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Capability;
+use App\Models\Entity\Language;
 use App\Models\Entity\Spell;
 use App\Services\Entity\SyncBreedElementOrientations;
 use App\Services\PdfService;
@@ -103,6 +106,7 @@ class BreedController extends Controller
                 ->orderBy('spells.name'),
             'npcs' => fn ($q) => $q->limit(100),
             'capabilities' => fn ($q) => $q->orderBy('name'),
+            'languages',
         ]);
 
         return Inertia::render('Pages/entity/breed/Show', [
@@ -122,6 +126,7 @@ class BreedController extends Controller
                 ->orderBy('breed_spell.choice_order')
                 ->orderBy('spells.name'),
             'capabilities' => fn ($q) => $q->orderBy('name'),
+            'languages',
         ]);
 
         $spellTable = (new Spell)->getTable();
@@ -142,10 +147,15 @@ class BreedController extends Controller
             Capability::query()->orderBy('name')->limit(5000)->get()
         )->toArray($req);
 
+        $availableLanguages = LanguageResource::collection(
+            Language::query()->orderBy('name')->limit(5000)->get()
+        )->toArray($req);
+
         return Inertia::render('Pages/entity/breed/Edit', [
             'breed' => new BreedResource($breed),
             'availableSpells' => $availableSpells,
             'availableCapabilities' => $availableCapabilities,
+            'availableLanguages' => $availableLanguages,
             'breedOrientationKeys' => config('breed_element_orientations.allowed_orientation_keys', []),
         ]);
     }
@@ -188,6 +198,18 @@ class BreedController extends Controller
 
         return redirect()->back()
             ->with('success', 'Capacités de la classe mises à jour.');
+    }
+
+    public function updateLanguages(UpdateBreedLanguagesRequest $request, Breed $breed): RedirectResponse
+    {
+        $sync = [];
+        foreach ($request->validatedLanguageIdsOrdered() as $index => $id) {
+            $sync[$id] = ['sort_order' => $index];
+        }
+        $breed->languages()->sync($sync);
+
+        return redirect()->back()
+            ->with('success', 'Langues de la classe mises à jour.');
     }
 
     public function delete(Breed $breed): RedirectResponse

@@ -36,6 +36,11 @@ export class Breed extends BaseModel {
         return this._data.description || '';
     }
 
+    /** HTML TipTap — évolution / progression de classe */
+    get evolution() {
+        return this._data.evolution ?? '';
+    }
+
     get lifeDice() {
         return this._data.life_dice || null;
     }
@@ -83,6 +88,10 @@ export class Breed extends BaseModel {
 
     get capabilities() {
         return this._data.capabilities || [];
+    }
+
+    get languages() {
+        return this._data.languages || [];
     }
 
     /** @returns {Array<{ character_level: number, slot_index: number, spells: object[] }>} */
@@ -349,6 +358,7 @@ export class Breed extends BaseModel {
             name: this.name,
             description_fast: this.descriptionFast,
             description: this.description,
+            evolution: this.evolution,
             life_dice: this.lifeDice,
             specificity: this.specificity,
             dofus_version: this.dofusVersion,

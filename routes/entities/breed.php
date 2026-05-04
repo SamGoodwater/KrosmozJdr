@@ -18,5 +18,6 @@ Route::prefix('entities/breeds')->name('entities.breeds.')->middleware('auth')->
     Route::patch('/{breed}', [BreedController::class, 'update'])->name('update');
     Route::patch('/{breed}/spells', [BreedController::class, 'updateSpells'])->name('updateSpells');
     Route::patch('/{breed}/capabilities', [BreedController::class, 'updateCapabilities'])->name('updateCapabilities');
+    Route::patch('/{breed}/languages', [BreedController::class, 'updateLanguages'])->name('updateLanguages');
     Route::delete('/{breed}', [BreedController::class, 'delete'])->name('delete');
 });

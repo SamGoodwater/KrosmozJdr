@@ -29,6 +29,7 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
+import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
 
 const props = defineProps({
     monster: {
@@ -178,6 +179,13 @@ const creatureCharacteristicsGroups = computed(() =>
     buildCreatureCharacteristicGroups(creatureData.value)
 );
 const hasCreatureCharacteristics = computed(() => !!creatureData.value);
+
+const linkedLanguages = computed(() => {
+    const raw = props.monster?._data?.languages ?? props.monster?.languages;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
@@ -373,6 +381,16 @@ const handleAction = async (actionKey) => {
                 </div>
             </template>
         </EntityViewHeader>
+
+        <div
+            v-if="hasLinkedLanguages"
+            class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2"
+            role="region"
+            aria-label="Langues"
+        >
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Langues</h3>
+            <EntityLanguagesInline :languages="linkedLanguages" :show-label="false" />
+        </div>
 
         <!-- Carte caractéristiques complète (mode étendu) -->
         <section v-if="hasCreatureCharacteristics" class="pt-4 border-t border-base-300">

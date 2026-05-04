@@ -2,6 +2,13 @@
 
 ## Architecture
 
+### Refonte (2026-05)
+
+- **Spatie Media Library** : source de vérité pour les médias des entités (`HasEntityImageMedia`, conversions `webp` / `thumb`, URLs via `getUrl()`).
+- **Upload applicatif** : `App\Services\Media\EntityImageMediaService` centralise validation, pièce jointe Spatie et payload JSON (`url`, `thumb_url`, `webp_url`, …).
+- **Miniatures dynamiques** : routes `GET /media/thumbnails/{path}` + `App\Services\ImageService` (Intervention v3, conversions `cover` / `contain`, écriture sous `thumbnails/` avec création des répertoires).
+- **Frontend** : atome `Image.vue` (skeleton non bloquant jusqu’au `@load`), `ImageService.getThumbnailUrl()` aligné sur les query params `w`, `h`, `fit`, `q`, `fm`.
+
 Le système de gestion d'images est composé de trois composants principaux :
 
 1. **ImageService** (`app/Services/ImageService.php`)
@@ -25,15 +32,29 @@ Le système de gestion d'images est composé de trois composants principaux :
 ## Routes
 
 ```php
-// Afficher une image
+// Afficher une image (fichier sur le disque `public`, chemin relatif)
 GET /media/images/{path}
 
-// Générer un thumbnail
-GET /media/thumbnails/{path}
+// Générer un thumbnail dynamique (Intervention Image v3 + Imagick)
+GET /media/thumbnails/{path}?w=&h=&fit=&q=&fm=
 
 // Nettoyer les thumbnails
 POST /media/clean-thumbnails
 ```
+
+### Paramètres `GET /media/thumbnails/{path}`
+
+| Paramètre | Description | Défaut |
+|-----------|-------------|--------|
+| `w` | Largeur | 300 |
+| `h` | Hauteur | 300 |
+| `fit` | `cover` ou `contain` | `cover` |
+| `q` | Qualité 1–100 | 80 |
+| `fm` | Format de sortie : `jpg`, `jpeg`, `png`, `gif`, `webp` | `webp` |
+
+Le frontend construit ces URLs via `ImageService.getThumbnailUrl()` (`resources/js/Utils/file/ImageService.js`), aligné sur ce contrat — **plus** d’URL du type `/storage/thumbnails/...` pour ce flux.
+
+Les miniatures générées sont mises en cache disque sous `thumbnails/…` sur le disque `public` ; le cache applicatif utilise les tags seulement si le store le permet (ex. Redis), sinon `Cache::remember` sans tags (compatible tests / driver `array`).
 
 ## Utilisation
 
@@ -69,7 +90,7 @@ $imageService->cleanThumbnails(86400);
 
 ## Composant Vue
 
-Le composant `Image.vue` permet d'afficher des images avec des options avancées :
+Le composant `Image.vue` permet d'afficher des images avec des options avancées. Un **skeleton** peut rester visible en overlay jusqu’au chargement réseau réel (`@load`), sans bloquer le rendu du reste de la page (`loading="lazy"`, `decoding="async"`, transition d’opacité).
 
 ```vue
 <Image

@@ -2,14 +2,11 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Storage;
+use Closure;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Intervention\Image\ImageManager;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Imagick\Driver;
-use Intervention\Image\Encoders\AutoEncoder;
-use Illuminate\Support\Str;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
 
 /**
  * Service de gestion des images
@@ -37,20 +34,28 @@ use Intervention\Image\Facades\Image;
 class ImageService
 {
     private const DISK = 'public';
+
     private const CACHE_TTL = 3600; // 1 heure
+
     private const CACHE_PREFIX = 'image_';
+
     private const THUMBNAIL_PREFIX = 'thumbnails/';
+
     private const ORIGINAL_PREFIX = 'originals/';
+
     private const DEFAULT_QUALITY = 80;
+
     private const MAX_DIMENSION = 2000;
+
     private const SUPPORTED_FORMATS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
     private const CACHE_TAGS = ['images', 'thumbnails'];
 
     private ImageManager $imageManager;
 
     public function __construct()
     {
-        $this->imageManager = new ImageManager(new Driver());
+        $this->imageManager = new ImageManager(new Driver);
     }
 
     /**
@@ -72,7 +77,7 @@ class ImageService
         }
 
         // Pour les autres cas, ajouter originals/
-        return self::ORIGINAL_PREFIX . $path;
+        return self::ORIGINAL_PREFIX.$path;
     }
 
     /**
@@ -108,8 +113,9 @@ class ImageService
             $disk = Storage::disk(FileService::DISK_DEFAULT);
 
             // Vérifier si l'image source existe
-            if (!$disk->exists($path)) {
+            if (! $disk->exists($path)) {
                 \Log::warning('ImageService - Image source non trouvée:', ['path' => $path]);
+
                 return null;
             }
 
@@ -119,8 +125,12 @@ class ImageService
                 'height' => 300,
                 'fit' => 'cover',
                 'quality' => self::DEFAULT_QUALITY,
-                'format' => 'webp'
+                'format' => 'webp',
             ], $options);
+
+            $options['width'] = (int) $options['width'];
+            $options['height'] = (int) $options['height'];
+            $options['quality'] = (int) $options['quality'];
 
             // Limiter les dimensions
             $options['width'] = min($options['width'], self::MAX_DIMENSION);
@@ -128,41 +138,64 @@ class ImageService
 
             // Générer le nom du fichier de cache
             $cachePath = $this->getCachePath($path, $options);
-            $cacheKey = self::CACHE_PREFIX . md5($cachePath);
+            $cacheKey = self::CACHE_PREFIX.md5($cachePath);
 
-            // Vérifier le cache
-            return Cache::tags(self::CACHE_TAGS)->remember($cacheKey, self::CACHE_TTL, function () use ($disk, $path, $options, $cachePath) {
+            // Vérifier le cache (tags = Redis/Memcached ; store « array » des tests → sans tags)
+            return $this->rememberWithOptionalTags($cacheKey, function () use ($disk, $path, $options, $cachePath) {
                 // Vérifier si le thumbnail existe déjà sur le disque
-            if ($disk->exists($cachePath)) {
+                if ($disk->exists($cachePath)) {
+                    return $cachePath;
+                }
+
+                // Créer l'image avec Intervention/Imagick
+                $image = $this->imageManager->read($disk->path($path));
+
+                // Appliquer les transformations
+                if ($options['fit'] === 'cover') {
+                    $image->cover($options['width'], $options['height']);
+                } else {
+                    $image->contain($options['width'], $options['height']);
+                }
+
+                $targetPath = $disk->path($cachePath);
+                $dir = dirname($cachePath);
+                if ($dir !== '' && $dir !== '.') {
+                    $disk->makeDirectory($dir);
+                }
+                $format = strtolower((string) ($options['format'] ?? 'webp'));
+                $q = max(1, min(100, $options['quality']));
+
+                match ($format) {
+                    'jpg', 'jpeg' => $image->toJpeg($q)->save($targetPath),
+                    'png' => $image->toPng()->save($targetPath),
+                    'gif' => $image->toGif()->save($targetPath),
+                    'webp' => $image->toWebp($q)->save($targetPath),
+                    default => $image->toWebp($q)->save($targetPath),
+                };
+
                 return $cachePath;
-            }
-
-            // Créer l'image avec Intervention/Imagick
-            $image = $this->imageManager->read($disk->path($path));
-
-            // Appliquer les transformations
-            if ($options['fit'] === 'cover') {
-                $image->cover($options['width'], $options['height']);
-            } else {
-                $image->resize($options['width'], $options['height'], function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-            }
-
-            // Sauvegarder le thumbnail
-            $image->toWebp($options['quality'])->save($disk->path($cachePath));
-
-            return $cachePath;
             });
         } catch (\Exception $e) {
             \Log::error('ImageService - Erreur lors de la génération du thumbnail:', [
                 'path' => $path,
                 'options' => $options,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return null;
         }
+    }
+
+    /**
+     * @param  Closure():mixed  $callback
+     */
+    protected function rememberWithOptionalTags(string $cacheKey, Closure $callback): mixed
+    {
+        if (Cache::supportsTags()) {
+            return Cache::tags(self::CACHE_TAGS)->remember($cacheKey, self::CACHE_TTL, $callback);
+        }
+
+        return Cache::remember($cacheKey, self::CACHE_TTL, $callback);
     }
 
     /**
@@ -197,13 +230,14 @@ class ImageService
     public function getThumbnailUrl(string $path, array $options = []): ?string
     {
         $thumbnailPath = $this->generateThumbnail($path, $options);
+
         return $thumbnailPath ? Storage::disk(self::DISK)->url($thumbnailPath) : null;
     }
 
     /**
      * Nettoie les thumbnails obsolètes
      *
-     * @param int $olderThan Age en secondes des thumbnails à supprimer (par défaut 24h)
+     * @param  int  $olderThan  Age en secondes des thumbnails à supprimer (par défaut 24h)
      */
     public function cleanThumbnails(int $olderThan = 86400): void
     {
@@ -211,7 +245,7 @@ class ImageService
             $disk = Storage::disk(FileService::DISK_DEFAULT);
             $thumbnailsPath = 'thumbnails';
 
-            if (!$disk->exists($thumbnailsPath)) {
+            if (! $disk->exists($thumbnailsPath)) {
                 return;
             }
 
@@ -227,11 +261,11 @@ class ImageService
 
             \Log::info('ImageService - Nettoyage des thumbnails terminé', [
                 'olderThan' => $olderThan,
-                'filesDeleted' => count($files)
+                'filesDeleted' => count($files),
             ]);
         } catch (\Exception $e) {
             \Log::error('ImageService - Erreur lors du nettoyage des thumbnails:', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -239,7 +273,7 @@ class ImageService
     /**
      * Convertit une image en format WebP
      *
-     * @param string $path Chemin de l'image source
+     * @param  string  $path  Chemin de l'image source
      * @return string Nouveau chemin de l'image WebP
      *
      * @example
@@ -254,8 +288,8 @@ class ImageService
         $image = $this->imageManager->read($fullPath);
 
         // Générer le nouveau chemin
-        $newPath = pathinfo($path, PATHINFO_DIRNAME) . '/' .
-            pathinfo($path, PATHINFO_FILENAME) . '.webp';
+        $newPath = pathinfo($path, PATHINFO_DIRNAME).'/'.
+            pathinfo($path, PATHINFO_FILENAME).'.webp';
 
         // Sauvegarder en WebP avec une qualité de 80%
         $image->toWebp(self::DEFAULT_QUALITY)->save($disk->path($newPath));

@@ -10,6 +10,7 @@ import {
     getCachedKrefEntityPreview,
     loadKrefEntityPreview,
 } from "@/Composables/richText/krefEntityPreviewCache";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 
 const props = defineProps({
     entityType: {
@@ -80,12 +81,12 @@ watch(
             <div
                 class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-base-300/60 bg-base-200"
             >
-                <img
+                <Image
                     v-if="payload.image"
-                    :src="payload.image"
+                    :source="payload.image"
                     :alt="payload.name || 'Entité'"
-                    class="h-full w-full object-contain"
-                    loading="lazy"
+                    fit="contain"
+                    class="h-full w-full"
                 />
                 <i v-else class="fa-solid fa-cube text-base-content/35 text-sm" aria-hidden="true" />
             </div>

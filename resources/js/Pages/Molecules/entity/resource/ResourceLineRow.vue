@@ -10,6 +10,7 @@
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import { Link } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
@@ -168,12 +169,12 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
         <div
             class="w-20 shrink-0 self-stretch min-h-20 rounded overflow-hidden bg-base-200 flex items-center justify-center"
         >
-            <img
+            <Image
                 v-if="imageCell?.value"
-                :src="imageCell.value"
+                :source="imageCell.value"
                 :alt="entity?.name ?? row?.name ?? 'Image'"
-                class="h-full w-full object-contain"
-                loading="lazy"
+                fit="contain"
+                class="h-full w-full"
             />
             <Icon v-else source="fa-solid fa-image" alt="" size="sm" class="text-base-content/40" />
         </div>

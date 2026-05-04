@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasMediaCustomNaming;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
@@ -20,17 +21,31 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property Carbon $updated_at
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class EntityImageUpload extends Model implements HasMedia
 {
+    use HasMediaCustomNaming;
     use InteractsWithMedia;
+
+    /** Stockage des uploads orphelins (bulk sans entité cible). */
+    public const MEDIA_PATH = 'images/uploads/entity-placeholders';
+
+    /** Placeholders: [id], [uniqid]. */
+    public const MEDIA_FILE_PATTERN_IMAGES = 'upload-[id]-[uniqid]';
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')->singleFile();
+    }
 
     public function registerMediaConversions(?Media $media = null): void
     {

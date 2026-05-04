@@ -58,7 +58,27 @@ export class ImageService {
     static async getImageUrl(path) {
         if (!path) return "";
 
-        path = this.normalizeIconsSubpath(path);
+        const raw = String(path).trim();
+        if (raw.startsWith("http://") || raw.startsWith("https://")) {
+            const absKey = `image_${raw}`;
+            const hit = this.#cache.get(absKey);
+            if (hit && Date.now() - hit.timestamp < this.#CACHE_TTL) {
+                return hit.url;
+            }
+            this.#cache.set(absKey, { url: raw, timestamp: Date.now() });
+            return raw;
+        }
+        if (raw.startsWith("/")) {
+            const absKey = `image_${raw}`;
+            const hit = this.#cache.get(absKey);
+            if (hit && Date.now() - hit.timestamp < this.#CACHE_TTL) {
+                return hit.url;
+            }
+            this.#cache.set(absKey, { url: raw, timestamp: Date.now() });
+            return raw;
+        }
+
+        path = this.normalizeIconsSubpath(raw);
 
         // Vérifier le cache
         const cacheKey = `image_${path}`;
@@ -74,116 +94,93 @@ export class ImageService {
 
         const url = `/storage/images/${path}`;
 
-        // Chemins statiques (icônes caractéristiques, etc.) : pas de HEAD pour éviter latence,
-        // saturation des connexions et 403 qui masquent l'icône. Le navigateur fera le GET et
-        // le composant Image gère @error (fallback) si le fichier est absent.
-        if (path.startsWith(this.#STATIC_PATH_PREFIX)) {
-            this.#cache.set(cacheKey, { url, timestamp: Date.now() });
-            return url;
-        }
-
-        // Sinon, vérifier si l'image existe avec retry (pour chemins dynamiques)
-        let retries = 0;
-        while (retries < this.#MAX_RETRIES) {
-            try {
-                const response = await fetch(url, { method: 'HEAD' });
-                if (response.ok) {
-                    this.#cache.set(cacheKey, { url, timestamp: Date.now() });
-                    return url;
-                }
-                if (response.status === 404 || response.status === 403) {
-                    return "";
-                }
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            } catch (error) {
-                retries++;
-                if (retries < this.#MAX_RETRIES) {
-                    await new Promise(resolve => setTimeout(resolve, this.#RETRY_DELAY * retries));
-                    continue;
-                }
-                if (error.message && !error.message.includes('Image not found')) {
-                    console.error('ImageService - Erreur de chargement:', error);
-                }
-                return "";
-            }
-        }
-        return "";
+        // Pas de HEAD : les colonnes `image` exposent souvent une URL absolue Spatie ; sinon un
+        // chemin relatif valide sous `public/storage/images/`. Un HEAD peut répondre 403 alors
+        // que le GET fonctionne — ce qui vidait l’URL dans ImageViewer (`source`). Le navigateur
+        // charge l’URL ; l’Atom Image gère @error (fallback).
+        this.#cache.set(cacheKey, { url, timestamp: Date.now() });
+        return url;
     }
 
     /**
-     * Génère l'URL d'un thumbnail avec cache
+     * @param {string} raw
+     * @returns {string}
+     */
+    static #diskRelativeImagePath(raw) {
+        let p = String(raw).trim().replace(/\\/g, "/");
+        if (p.startsWith("/storage/images/")) {
+            p = p.slice("/storage/images/".length);
+        } else if (p.startsWith("storage/images/")) {
+            p = p.slice("storage/images/".length);
+        }
+        return p.replace(/^\/+/, "");
+    }
+
+    /**
+     * Génère l'URL de la route `GET /media/thumbnails/{path}` (miniatures dynamiques) avec cache.
+     * Paramètres alignés sur `ImageController::thumbnail` : `w`, `h`, `fit`, `q`, `fm`.
      *
-     * @param {string} path - Chemin de l'image source
+     * @param {string} path - Chemin relatif au disque `public` ou URL absolue ; préfixe `/storage/images/` retiré si présent.
      * @param {Object} options - Options de transformation
-     * @param {number} options.width - Largeur du thumbnail
-     * @param {number} options.height - Hauteur du thumbnail
-     * @param {string} options.fit - Mode de redimensionnement (cover, contain, fill, none, scale-down)
-     * @param {number} options.quality - Qualité de l'image (1-100)
+     * @param {number} [options.width] - Largeur (`w`, défaut 300)
+     * @param {number} [options.height] - Hauteur (`h`, défaut 300)
+     * @param {string} [options.fit] - `cover` ou `contain`
+     * @param {number} [options.quality] - Qualité (`q`)
+     * @param {string} [options.fm] - Format de sortie (`fm`, défaut `webp`), alias `format`
      * @returns {Promise<string>} URL du thumbnail
      */
     static async getThumbnailUrl(path, options = {}) {
         if (!path) return "";
 
-        path = this.normalizeIconsSubpath(path);
+        const raw = String(path).trim();
+        if (raw.startsWith("http://") || raw.startsWith("https://")) {
+            return raw;
+        }
+
+        let rel = this.#diskRelativeImagePath(raw);
+        rel = this.normalizeIconsSubpath(rel);
 
         // Vérifier le cache
-        const cacheKey = `thumbnail_${path}_${JSON.stringify(options)}`;
+        const cacheKey = `thumbnail_${rel}_${JSON.stringify(options)}`;
         const cached = this.#cache.get(cacheKey);
         if (cached && Date.now() - cached.timestamp < this.#CACHE_TTL) {
             return cached.url;
         }
 
         // Si c'est une icône FontAwesome, retourner le chemin tel quel
-        if (path.startsWith("fa-")) {
-            return path;
+        if (rel.startsWith("fa-")) {
+            return rel;
         }
 
-        // Construire l'URL du thumbnail avec les options
+        // Route Laravel `media.thumbnail` : paramètres alignés sur ImageController
         const queryParams = new URLSearchParams();
+        const w = options.width ?? 300;
+        const h = options.height ?? 300;
+        queryParams.set("w", String(w));
+        queryParams.set("h", String(h));
+        if (options.fit) {
+            queryParams.set("fit", options.fit);
+        }
+        if (options.quality != null && options.quality !== "") {
+            queryParams.set("q", String(options.quality));
+        }
+        const fm = options.fm ?? options.format ?? "webp";
+        queryParams.set("fm", fm);
 
-        if (options.width) queryParams.append("width", options.width);
-        if (options.height) queryParams.append("height", options.height);
-        if (options.fit) queryParams.append("fit", options.fit);
-        if (options.quality) queryParams.append("quality", options.quality);
+        const encodedPath = rel
+            .split("/")
+            .filter((segment) => segment.length > 0)
+            .map((segment) => encodeURIComponent(segment))
+            .join("/");
 
         const queryString = queryParams.toString();
-        const url = `/storage/thumbnails/${path}${queryString ? `?${queryString}` : ""}`;
+        const url = `/media/thumbnails/${encodedPath}${queryString ? `?${queryString}` : ""}`;
 
-        // Vérifier si le thumbnail existe avec retry
-        let retries = 0;
-        while (retries < this.#MAX_RETRIES) {
-            try {
-                const response = await fetch(url, { method: 'HEAD' });
-                if (response.ok) {
-                    // Mettre en cache
-                    this.#cache.set(cacheKey, {
-                        url,
-                        timestamp: Date.now()
-                    });
-                    return url;
-                }
-                // Thumbnail non trouvé ou accès refusé : retourner une chaîne vide sans lancer d'erreur
-                if (response.status === 404 || response.status === 403) {
-                    return "";
-                }
-                // Pour les autres erreurs HTTP, retry
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            } catch (error) {
-                retries++;
-                // Si c'est une erreur réseau ou autre erreur que 404/403, retry
-                if (retries < this.#MAX_RETRIES) {
-                    await new Promise(resolve => setTimeout(resolve, this.#RETRY_DELAY * retries));
-                    continue;
-                }
-                // Après tous les retries, si c'est toujours une erreur réseau, logger
-                // (mais pas pour 404/403 qui sont des cas normaux)
-                if (error.message && !error.message.includes('404') && !error.message.includes('403')) {
-                    console.error('ImageService - Erreur de chargement du thumbnail:', error);
-                }
-                return "";
-            }
-        }
-        return "";
+        this.#cache.set(cacheKey, {
+            url,
+            timestamp: Date.now(),
+        });
+        return url;
     }
 
     /**

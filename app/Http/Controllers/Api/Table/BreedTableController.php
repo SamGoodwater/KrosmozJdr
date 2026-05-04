@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Entity\CapabilityResource;
+use App\Http\Resources\Entity\LanguageResource;
 use App\Http\Resources\Entity\SpellResource;
 use App\Models\Entity\Breed;
 use Illuminate\Http\JsonResponse;
@@ -37,7 +38,7 @@ class BreedTableController extends Controller
         }
 
         $query = Breed::query()
-            ->with(['createdBy', 'elementOrientations'])
+            ->with(['createdBy', 'elementOrientations', 'languages'])
             ->withCount(['spells']);
 
         if ($format === 'entities') {
@@ -81,6 +82,7 @@ class BreedTableController extends Controller
                     'name' => $c->name,
                     'description_fast' => $c->description_fast,
                     'description' => $c->description,
+                    'evolution' => $c->evolution,
                     'life_dice' => $c->life_dice,
                     'specificity' => $c->specificity,
                     'dofus_version' => $c->dofus_version,
@@ -99,6 +101,7 @@ class BreedTableController extends Controller
                     'spells_count' => (int) ($c->spells_count ?? 0),
                     'spells' => SpellResource::collection($c->spells)->resolve($request),
                     'capabilities' => CapabilityResource::collection($c->capabilities)->resolve($request),
+                    'languages' => LanguageResource::collection($c->languages)->resolve($request),
                     'element_orientations' => $c->elementOrientationsMap(),
                     'created_at' => $c->created_at?->toISOString(),
                     'updated_at' => $c->updated_at?->toISOString(),
@@ -122,7 +125,7 @@ class BreedTableController extends Controller
             ]);
         }
 
-        $tableRows = $rows->map(function (Breed $c) {
+        $tableRows = $rows->map(function (Breed $c) use ($request) {
             $showHref = route('entities.breeds.show', $c->id);
             $createdBy = $c->createdBy;
             $createdByLabel = $createdBy?->name ?: ($createdBy?->email ?: '-');
@@ -199,6 +202,7 @@ class BreedTableController extends Controller
                         'name' => $c->name,
                         'description_fast' => $c->description_fast,
                         'description' => $c->description,
+                        'evolution' => $c->evolution,
                         'life_dice' => $c->life_dice,
                         'specificity' => $c->specificity,
                         'dofus_version' => $c->dofus_version,
@@ -215,6 +219,7 @@ class BreedTableController extends Controller
                             'email' => $createdBy->email,
                         ] : null,
                         'spells_count' => (int) ($c->spells_count ?? 0),
+                        'languages' => LanguageResource::collection($c->languages)->resolve($request),
                     ],
                 ],
             ];

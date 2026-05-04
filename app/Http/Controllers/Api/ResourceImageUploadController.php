@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Resource;
 use App\Models\EntityImageUpload;
+use App\Services\Media\EntityImageMediaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -18,12 +19,15 @@ use Illuminate\Http\Request;
  */
 class ResourceImageUploadController extends Controller
 {
+    public function __construct(
+        private EntityImageMediaService $entityImageMediaService,
+    ) {}
+
     public function upload(Request $request): JsonResponse
     {
         $this->authorize('updateAny', Resource::class);
 
         $validated = $request->validate([
-            'file' => ['required', 'file', 'image', 'max:5120'], // 5MB
             'resource_id' => ['sometimes', 'integer', 'exists:resources,id'],
         ]);
 
@@ -33,20 +37,15 @@ class ResourceImageUploadController extends Controller
             $resource = Resource::findOrFail($resourceId);
             $this->authorize('update', $resource);
             $resource->clearMediaCollection('images');
-            $media = $resource->addMediaFromRequest('file')->toMediaCollection('images');
-            $resource->update(['image' => $media->getUrl()]);
-            $url = $media->getUrl();
+            $media = $this->entityImageMediaService->attachFromRequest($resource, $request, 'file', 'images', 'image');
         } else {
             $placeholder = EntityImageUpload::create();
-            $media = $placeholder->addMediaFromRequest('file')->toMediaCollection('images');
-            $url = $media->getUrl();
+            $media = $this->entityImageMediaService->attachFromRequest($placeholder, $request, 'file', 'images');
         }
 
-        return response()->json([
-            'success' => true,
-            'path' => $media->getPath(),
-            'url' => $url,
-        ]);
+        return response()->json(array_merge(
+            ['success' => true],
+            $this->entityImageMediaService->mediaPayload($media),
+        ));
     }
 }
-

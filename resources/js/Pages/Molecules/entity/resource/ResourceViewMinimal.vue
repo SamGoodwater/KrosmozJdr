@@ -10,6 +10,7 @@
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
@@ -154,12 +155,12 @@ const handleAction = async (actionKey) => {
                     <div
                         class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
                     >
-                        <img
+                        <Image
                             v-if="imageUrl"
-                            :src="imageUrl"
+                            :source="imageUrl"
                             :alt="entity?.name ?? 'Image'"
-                            class="h-full w-full object-contain"
-                            loading="lazy"
+                            fit="contain"
+                            class="h-full w-full"
                         />
                         <Icon v-else source="fa-solid fa-image" alt="" size="xs" class="text-base-content/40" />
                     </div>
@@ -248,12 +249,12 @@ const handleAction = async (actionKey) => {
                     <div
                         class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
                     >
-                        <img
+                        <Image
                             v-if="imageUrl"
-                            :src="imageUrl"
+                            :source="imageUrl"
                             :alt="entity?.name ?? 'Image'"
-                            class="h-full w-full object-contain"
-                            loading="lazy"
+                            fit="contain"
+                            class="h-full w-full"
                         />
                         <Icon v-else source="fa-solid fa-image" alt="" size="xs" class="text-base-content/40" />
                     </div>

@@ -29,6 +29,7 @@ class BreedResource extends JsonResource
             'name' => $this->name,
             'description_fast' => $this->description_fast,
             'description' => $this->description,
+            'evolution' => $this->evolution,
             'life_dice' => $this->life_dice,
             'life_dice_meta' => $this->lifeDiceCharacteristicMeta(),
             'specificity' => $this->specificity,
@@ -48,6 +49,7 @@ class BreedResource extends JsonResource
             'npcs' => $this->whenLoaded('npcs'),
             'spells' => $this->whenLoaded('spells'),
             'capabilities' => $this->whenLoaded('capabilities', fn () => CapabilityResource::collection($this->capabilities)->resolve($request)),
+            'languages' => $this->whenLoaded('languages', fn () => LanguageResource::collection($this->languages)->resolve($request)),
             'spell_slots' => $this->when(
                 $this->relationLoaded('spells'),
                 fn () => $this->formatSpellSlots($request)

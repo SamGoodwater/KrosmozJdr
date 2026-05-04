@@ -12,6 +12,7 @@
  */
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityMinimalTooltip from "@/Pages/Molecules/entity/shared/EntityMinimalTooltip.vue";
 
@@ -52,12 +53,12 @@ const showHref = (id) => (id ? route("entities.resources.show", { resource: id }
                 <div
                     class="w-4 h-4 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
                 >
-                    <img
+                    <Image
                         v-if="ing.image"
-                        :src="ing.image"
+                        :source="ing.image"
                         :alt="ing.name"
-                        class="h-full w-full object-contain"
-                        loading="lazy"
+                        fit="contain"
+                        class="h-full w-full"
                     />
                     <Icon v-else source="fa-solid fa-box" alt="" size="xs" class="text-base-content/50" />
                 </div>
@@ -72,12 +73,12 @@ const showHref = (id) => (id ? route("entities.resources.show", { resource: id }
                 <div
                     class="w-4 h-4 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
                 >
-                    <img
+                    <Image
                         v-if="ing.image"
-                        :src="ing.image"
+                        :source="ing.image"
                         :alt="ing.name"
-                        class="h-full w-full object-contain"
-                        loading="lazy"
+                        fit="contain"
+                        class="h-full w-full"
                     />
                     <Icon v-else source="fa-solid fa-box" alt="" size="xs" class="text-base-content/50" />
                 </div>

@@ -29,8 +29,11 @@ import { provideCharacteristicRuntime } from "@/Composables/entity/characteristi
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
 import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
+import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
+import RichTextReadonlyView from "@/Pages/Molecules/data-display/RichTextReadonlyView.vue";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
+import { isRichHtmlVisuallyEmpty } from "@/Utils/richText/isRichHtmlVisuallyEmpty";
 
 const props = defineProps({
     breed: {
@@ -106,14 +109,35 @@ const linkedCapabilities = computed(() => {
 
 const hasLinkedCapabilities = computed(() => linkedCapabilities.value.length > 0);
 
-const subtitleText = computed(() => {
+const linkedLanguages = computed(() => {
+    const raw = props.breed?._data?.languages ?? props.breed?.languages;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
+
+/** Pitch court (sous-titre / accroche). */
+const descriptionFast = computed(() => {
     const b = props.breed?._data ?? props.breed;
-    const fast = b?.description_fast;
-    if (fast != null && String(fast).trim() !== "") {
-        return String(fast).trim();
+    const t = b?.description_fast;
+    return t != null && String(t).trim() !== "" ? String(t).trim() : "";
+});
+
+/** Description complète (peut être distincte de description_fast). */
+const descriptionFull = computed(() => {
+    const b = props.breed?._data ?? props.breed;
+    const t = b?.description ?? props.breed?.description;
+    return t != null && String(t).trim() !== "" ? String(t).trim() : "";
+});
+
+/** HTML TipTap — évolution de classe (rien si vide ou HTML sans texte) */
+const evolutionHtml = computed(() => {
+    const b = props.breed?._data ?? props.breed;
+    const t = b?.evolution ?? props.breed?.evolution;
+    if (t == null || isRichHtmlVisuallyEmpty(String(t))) {
+        return "";
     }
-    const full = b?.description ?? props.breed?.description;
-    return full != null && String(full).trim() !== "" ? String(full).trim() : "";
+    return String(t);
 });
 
 const orientationMap = computed(() => {
@@ -309,7 +333,23 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #subtitle>
-                <p v-if="subtitleText" class="text-primary-300 mt-2 break-words">{{ subtitleText }}</p>
+                <div
+                    v-if="descriptionFast || descriptionFull"
+                    class="mt-3 max-w-3xl space-y-2 border-t border-base-300/60 pt-3"
+                >
+                    <p
+                        v-if="descriptionFast"
+                        class="text-sm leading-relaxed text-primary-300 break-words"
+                    >
+                        {{ descriptionFast }}
+                    </p>
+                    <p
+                        v-if="descriptionFull && descriptionFull !== descriptionFast"
+                        class="text-sm leading-relaxed whitespace-pre-wrap text-primary-200/90 break-words"
+                    >
+                        {{ descriptionFull }}
+                    </p>
+                </div>
             </template>
 
             <template #mainInfos>
@@ -359,6 +399,29 @@ const handleAction = async (actionKey) => {
             density="large"
             :characteristic-runtime="characteristicRuntime"
         />
+
+        <div
+            v-if="hasLinkedLanguages"
+            class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2"
+            role="region"
+            aria-label="Langues"
+        >
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Langues</h3>
+            <EntityLanguagesInline :languages="linkedLanguages" :show-label="false" />
+        </div>
+
+        <div
+            v-if="canShowField('evolution') && evolutionHtml"
+            class="rounded-box border border-base-300 bg-base-100/40 p-4"
+            role="region"
+            aria-label="Évolution"
+        >
+            <RichTextReadonlyView
+                :html="evolutionHtml"
+                :enable-rich-references="true"
+                class="text-primary-200/90"
+            />
+        </div>
 
         <BreedVariantsDisplay
             v-if="hasSpellSlots"

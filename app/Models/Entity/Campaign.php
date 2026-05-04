@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -56,6 +55,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $spells_count
  * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Database\Factories\Entity\CampaignFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign newQuery()
@@ -78,12 +78,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Campaign extends Model implements HasMedia
 {
     /** @use HasFactory<CampaignFactory> */
-    use HasEntityImageMedia, HasFactory, InteractsWithMedia, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
 

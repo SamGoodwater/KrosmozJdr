@@ -156,6 +156,39 @@ export function getBreedFieldDescriptors(ctx = {}) {
         },
       },
     },
+    evolution: {
+      key: "evolution",
+      label: "Évolution",
+      icon: "",
+      table: {
+        searchable: true,
+        filterable: { id: "evolution", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text", truncate: 20 },
+          sm: { mode: "text", truncate: 30 },
+          md: { mode: "text", truncate: 50 },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "richtext",
+          group: "Classe",
+          label: "Évolution de la classe",
+          help: "Texte riche : jalons de progression, choix de sorts, notes de design.",
+          required: false,
+          showInCompact: false,
+          richEditorHeight: "min-h-[260px]",
+          placeholder: "Décrivez l'évolution du personnage pour cette classe…",
+          bulk: { enabled: false },
+        },
+      },
+    },
     description_fast: {
       key: "description_fast",
       label: "Description rapide",

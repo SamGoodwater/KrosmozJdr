@@ -73,6 +73,10 @@ export class Monster extends BaseModel {
         return this._data.scenarios || [];
     }
 
+    get languages() {
+        return this._data.languages || [];
+    }
+
     get campaigns() {
         return this._data.campaigns || [];
     }

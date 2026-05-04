@@ -83,6 +83,12 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
   - Pour une page : `storage/pages/`
   - Pour les autres fichiers : `storage/files/`
 
+## Référentiel des langues (M2M)
+
+- Table `languages` : nom, description optionnelle, **`color` en hex CSS `#RRGGBB`** (validation admin et affichage pastilles / cartes).
+- Liaisons `breed_language` et `monster_language` avec `sort_order` sur le pivot (ordre d’édition = ordre d’affichage).
+- Administration : routes `admin/languages` (Inertia), pas dans le hub bibliothèques ; accès `auth` + rôle admin, **sans** confirmation mot de passe (référentiel volontairement allégé).
+
 ## Liens et ressources
 
 - [Atomic Design](https://atomicdesign.bradfrost.com/)

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Entity\MonsterController;
+use Illuminate\Support\Facades\Route;
 
 // Routes publiques (accessibles sans authentification)
 Route::prefix('entities/monsters')->name('entities.monsters.')->group(function () {
@@ -18,6 +18,7 @@ Route::prefix('entities/monsters')->name('entities.monsters.')->middleware('auth
     Route::patch('/{monster}/scenarios', [MonsterController::class, 'updateScenarios'])->name('updateScenarios');
     Route::patch('/{monster}/campaigns', [MonsterController::class, 'updateCampaigns'])->name('updateCampaigns');
     Route::patch('/{monster}/spell-invocations', [MonsterController::class, 'updateSpellInvocations'])->name('updateSpellInvocations');
+    Route::patch('/{monster}/languages', [MonsterController::class, 'updateLanguages'])->name('updateLanguages');
     Route::get('/{monster}/pdf', [MonsterController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{monster}', [MonsterController::class, 'update'])->name('update');
     Route::delete('/{monster}', [MonsterController::class, 'delete'])->name('delete');

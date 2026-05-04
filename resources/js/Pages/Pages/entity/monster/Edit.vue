@@ -13,6 +13,7 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Monster } from '@/Models/Entity/Monster';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
+import EntityLanguagesEditor from '@/Pages/Organismes/entity/EntityLanguagesEditor.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
@@ -34,6 +35,10 @@ const props = defineProps({
         default: () => []
     },
     availableSpells: {
+        type: Array,
+        default: () => []
+    },
+    availableLanguages: {
         type: Array,
         default: () => []
     }
@@ -152,6 +157,14 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
                 itemLabel: 'sort',
                 itemLabelPlural: 'sorts'
             }"
+        />
+
+        <EntityLanguagesEditor
+            v-if="monster.id"
+            entity-type="monster"
+            :relations="monster.languages || []"
+            :available-items="availableLanguages"
+            :entity-id="monster.id"
         />
     </Container>
 </template>

@@ -4,36 +4,11 @@
  *
  * @description
  * Composant atomique pour afficher une image avec gestion de la taille, du ratio, des filtres, du fit, de la position, du mask DaisyUI.
- * - Utilise MediaManager pour la résolution des sources d'images
- * - Support des tailles prédéfinies via size ou personnalisées via width/height
- * - Support du ratio d'aspect
- * - Support des filtres (simple ou multiple)
- * - Support des masks DaisyUI
- * - Gestion du chargement et des erreurs : si le fichier est introuvable (404/403) ou ne charge pas,
- *   affichage de l'image par défaut (storage/app/public/images/no_found.svg, voir FALLBACK_IMAGE_URL).
+ * - Skeleton pendant le chargement réseau (non bloquant pour le reste du site : le DOM reste rendu, img en opacity 0 jusqu’au load).
+ * - Utilise ImageService pour les chemins relatifs sous storage public.
  *
- * @example
- * <Image source="logos/logo" alt="Logo" size="lg" />
- * <Image src="/img/avatar.jpg" alt="Avatar" width="64" height="64" ratio="1/1" />
- * <Image source="photos/landscape" alt="Paysage" size="xl" fit="cover" position="center" />
- * <Image source="avatars/user" alt="Avatar" size="md" rounded="full" filter="grayscale" />
- *
- * @props {String} src - URL directe de l'image
- * @props {String} source - Chemin source pour MediaManager
- * @props {String} alt - Texte alternatif (obligatoire)
- * @props {String} size - Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl)
- * @props {String} width - Largeur personnalisée
- * @props {String} height - Hauteur personnalisée
- * @props {String} ratio - Ratio d'aspect (square, video, 16/9, 4/3, 3/2, 2/1, etc.)
- * @props {String} fit - object-fit (cover, contain, fill, none, scale-down)
- * @props {String} position - object-position (center, top, right, bottom, left, top-left, top-right, bottom-left, bottom-right)
- * @props {String|Array} filter - Filtre(s) CSS (grayscale, sepia, blur, brightness, contrast, hue-rotate, invert, saturate)
- * @props {String} rounded - Arrondi (none, sm, md, lg, xl, 2xl, 3xl, full, circle)
- * @props {String} mask - Classe DaisyUI mask-* (mask, mask-squircle, mask-heart, etc.)
- * @props {Object} transform - Options de transformation pour MediaManager (width, height, fit, quality, format)
- *
- * @slot loader - Loader personnalisé pendant le chargement
- * @slot fallback - Contenu alternatif en cas d'erreur
+ * @slot loader - Skeleton personnalisé (overlay) pendant le chargement réseau
+ * @slot fallback - Contenu alternatif en cas d’erreur définitive
  */
 
 import { computed, ref, watch, onMounted, useSlots } from "vue";
@@ -96,9 +71,8 @@ const props = defineProps({
     },
 });
 
-// État
 const imageUrl = ref("");
-const isLoading = ref(false);
+const imageLoaded = ref(false);
 const hasError = ref(false);
 let triedFallback = false;
 const maxRetries = 3;
@@ -106,7 +80,13 @@ let retryCount = 0;
 
 const slots = useSlots();
 
-// Résolution de l'URL de l'image avec système de retry
+const showNetworkSkeleton = computed(
+    () =>
+        Boolean(imageUrl.value) &&
+        !imageLoaded.value &&
+        !hasError.value,
+);
+
 async function resolveImage() {
     if (props.src && props.source) {
         console.warn(
@@ -116,26 +96,27 @@ async function resolveImage() {
 
     if (!props.src && !props.source) {
         imageUrl.value = "";
+        imageLoaded.value = false;
         return;
     }
 
-    isLoading.value = true;
+    imageLoaded.value = false;
     hasError.value = false;
     triedFallback = false;
 
     try {
         if (props.src) {
-            // URL directe - si c'est déjà une URL complète (http:// ou https://), l'utiliser telle quelle
-            if (props.src.startsWith('http://') || props.src.startsWith('https://')) {
-                imageUrl.value = props.src
+            if (
+                props.src.startsWith("http://") ||
+                props.src.startsWith("https://")
+            ) {
+                imageUrl.value = props.src;
             } else {
-                // Sinon, traiter comme un chemin relatif
                 imageUrl.value = props.src.startsWith("/")
                     ? props.src
                     : `/${props.src}`;
             }
         } else {
-            // Source via ImageService avec transformations
             if (Object.keys(props.transform).length > 0) {
                 imageUrl.value = await ImageService.getThumbnailUrl(
                     props.source,
@@ -149,14 +130,19 @@ async function resolveImage() {
         console.error("Image - Erreur de chargement:", error);
         if (retryCount < maxRetries) {
             retryCount++;
-            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+            await new Promise((resolve) =>
+                setTimeout(resolve, 1000 * retryCount),
+            );
             return resolveImage();
         }
         hasError.value = true;
         imageUrl.value = "";
-    } finally {
-        isLoading.value = false;
+        imageLoaded.value = true;
     }
+}
+
+function onImgLoad() {
+    imageLoaded.value = true;
 }
 
 function onError() {
@@ -164,12 +150,13 @@ function onError() {
         imageUrl.value = FALLBACK_IMAGE_URL;
         triedFallback = true;
         hasError.value = false;
+        imageLoaded.value = false;
     } else {
         hasError.value = true;
+        imageLoaded.value = true;
     }
 }
 
-// Classes du wrapper (ratio, size)
 const wrapperClasses = computed(() =>
     mergeClasses([
         "relative",
@@ -182,15 +169,15 @@ const wrapperClasses = computed(() =>
     ]),
 );
 
-// Classes de l'image (fit, position, rounded, mask, filter)
 const imageClasses = computed(() =>
     mergeClasses([
         !props.width && !props.height ? "h-full w-full" : "",
+        "transition-opacity duration-200",
+        imageLoaded.value ? "opacity-100" : "opacity-0",
         props.fit && fitMap[props.fit],
         props.position && positionMap[props.position],
         props.rounded && roundedMap[props.rounded],
         props.mask,
-        // Gestion des filtres (simple ou multiple)
         ...(Array.isArray(props.filter)
             ? props.filter.map((f) => filterClassMap[f]).filter(Boolean)
             : props.filter && filterClassMap[props.filter]
@@ -199,7 +186,6 @@ const imageClasses = computed(() =>
     ]),
 );
 
-// Style de l'image (dimensions personnalisées)
 const imageStyle = computed(() => {
     if (props.width && props.height) {
         return { width: props.width, height: props.height };
@@ -213,10 +199,8 @@ const imageStyle = computed(() => {
     return {};
 });
 
-// Attrs communs
 const attrs = computed(() => getCommonAttrs(props));
 
-// Attrs spécifiques à l'image (width/height HTML)
 const imgAttrs = computed(() => {
     const attrsObj = { ...attrs.value };
     if (props.width) attrsObj.width = props.width;
@@ -224,10 +208,10 @@ const imgAttrs = computed(() => {
     return attrsObj;
 });
 
-// Watch pour recharger l'image si src, source ou transform change
 watch(
     [() => props.src, () => props.source, () => props.transform],
     () => {
+        retryCount = 0;
         resolveImage();
     },
     { deep: true },
@@ -240,22 +224,59 @@ onMounted(() => {
 
 <template>
     <div :class="wrapperClasses">
-        <template v-if="isLoading">
+        <template v-if="!imageUrl && !hasError">
             <slot name="loader">
-                <Skeleton element="image" :size="props.size" :width="props.width" :height="props.height"
-                    :class="imageClasses" />
+                <Skeleton
+                    element="image"
+                    :size="props.size"
+                    :width="props.width"
+                    :height="props.height"
+                />
             </slot>
         </template>
 
-        <img v-else-if="imageUrl && !hasError" :src="imageUrl" :alt="alt" :class="imageClasses" :style="imageStyle"
-            v-bind="imgAttrs" v-on="$attrs" @error="onError" loading="lazy" decoding="async" />
+        <template v-else-if="imageUrl && !hasError">
+            <div class="relative inline-flex max-h-full max-w-full">
+                <slot v-if="showNetworkSkeleton" name="loader">
+                    <Skeleton
+                        element="image"
+                        :size="props.size"
+                        :width="props.width"
+                        :height="props.height"
+                        class="pointer-events-none absolute inset-0 z-10"
+                        aria-hidden="true"
+                    />
+                </slot>
+                <img
+                    :src="imageUrl"
+                    :alt="alt"
+                    :class="imageClasses"
+                    :style="imageStyle"
+                    v-bind="imgAttrs"
+                    v-on="$attrs"
+                    loading="lazy"
+                    decoding="async"
+                    @load="onImgLoad"
+                    @error="onError"
+                />
+            </div>
+        </template>
 
         <template v-else-if="slots.fallback">
             <slot name="fallback" />
         </template>
 
-        <img v-else :src="FALLBACK_IMAGE_URL" alt="Image non disponible" :class="imageClasses" :style="imageStyle"
-            v-bind="imgAttrs" v-on="$attrs" loading="lazy" decoding="async" />
+        <img
+            v-else
+            :src="FALLBACK_IMAGE_URL"
+            alt="Image non disponible"
+            :class="mergeClasses([imageClasses, '!opacity-100'])"
+            :style="imageStyle"
+            v-bind="imgAttrs"
+            v-on="$attrs"
+            loading="lazy"
+            decoding="async"
+        />
     </div>
 </template>
 
