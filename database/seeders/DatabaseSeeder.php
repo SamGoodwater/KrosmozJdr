@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Seeders\Entity\LanguageSeeder;
+use Database\Seeders\Type\TypeSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,7 +20,8 @@ class DatabaseSeeder extends Seeder
             NavMenuSeeder::class,
             PageSeeder::class,
             SectionSeeder::class,
-            \Database\Seeders\Type\TypeSeeder::class,
+            TypeSeeder::class,
+            LanguageSeeder::class,
             CharacteristicSeeder::class,
             CreatureCharacteristicSeeder::class,
             ObjectCharacteristicSeeder::class,
