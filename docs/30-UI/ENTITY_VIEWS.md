@@ -111,7 +111,7 @@ La vue **Minimal** est la seule pouvant être **limitée en hauteur**.
 
 #### API UI recommandée : `displayMode` (compact / hover / extended)
 
-Pour éviter les ambiguïtés (et les “double hover” quand une Minimal est affichée dans une Vue Texte), on distingue le **format** (Minimal) de son **mode d’affichage** :
+Pour éviter les ambiguïtés (et les anciennes situations de “double interaction” quand une Minimal est affichée dans une Vue Texte), on distingue le **format** (Minimal) de son **mode d’affichage** :
 
 - **`displayMode: "hover"`** *(défaut)* : comportement actuel “compacted → extended au hover”.
 - **`displayMode: "compact"`** : toujours compact, **jamais** d’extended (utile pour des listes très denses).
@@ -124,11 +124,11 @@ La **Vue Texte** est un format très compact, destiné aux listes d’entités l
 - **Structure** :
   - **Image (miniature)** à gauche (carrée, fond transparent).
   - **Nom** à droite (texte, tronqué si besoin).
-- **Hover** :
-  - Au survol, on affiche une **Vue Minimal** (comportement “hover card”).
-  - Par défaut, on affiche **directement la Minimal en `displayMode: "extended"`** (pour éviter de devoir re-hover la card).
+- **Interaction** :
+  - Au clic, on affiche une **Vue Minimal** via le service overlay unifié (**click-first**).
+  - Par défaut, on affiche **directement la Minimal en `displayMode: "extended"`** pour une lecture immédiate du détail.
 
-> En pratique, la Vue Texte sert souvent de “représentation compacte” et délègue l’information au hover.
+> En pratique, la Vue Texte sert souvent de “représentation compacte” et délègue l’information au panneau overlay au clic.
 
 ### Vue Line (5ᵉ format officiel)
 
@@ -136,7 +136,7 @@ La **Vue Line** est un affichage **liste dense verticale** : une ligne par entit
 
 - **Usage** : mode « Ligne » des tableaux (TanStackTable `displayMode: "line"`).
 - **Comportement** : ressemble à Minimal mais sans partie masquée — description, effets, ingrédients affichés par défaut.
-- **Relation avec Texte** : même contenu que Minimal/Line ; la Vue Texte affiche une Minimal au hover.
+- **Relation avec Texte** : même contenu que Minimal/Line ; la Vue Texte affiche une Minimal en click-first.
 
 #### Implémentation par type d'entité
 
@@ -152,8 +152,8 @@ La **Vue Line** est un affichage **liste dense verticale** : une ligne par entit
 
 | Vue | Usage principal | Densité | Interactions | Lien avec les autres vues |
 |---|---|---:|---|---|
-| **Texte** | Représentation “inline” (ex: entités liées, listes compactes) | Très faible | Hover | **Hover → Minimal** |
-| **Minimal** | Aperçu rapide / cartes petites / hover card | Faible | Hover (si compacted) | Peut servir de détail pour **Texte** |
+| **Texte** | Représentation “inline” (ex: entités liées, listes compactes) | Très faible | Click-first | **Click → Minimal** |
+| **Minimal** | Aperçu rapide / cartes petites / overlay card | Faible | Hover (si compacted) | Peut servir de détail pour **Texte** |
 | **Line** | Liste dense verticale (tableau) | Moyenne–haute | Tri dropdown + clic | Avec **Minimal** (grille) et **Colonne** |
 | **Compact** | Card standard quand on a un peu de place | Moyenne | Actions + lecture rapide | Souvent “par défaut” en modal |
 | **Large** | Lecture détaillée / contexte confortable (modal/page) | Élevée | Actions + détails | Référence la plus explicite (labels) |
@@ -228,7 +228,7 @@ Quand une vue **Large** ou **Compact** est affichée sur une **page entière** (
 
 ### Liens entre vues (navigation UI)
 
-- **Texte → Minimal (hover)** : la Vue Texte n’essaie pas d’être exhaustive ; elle “délègue” les détails à la Vue Minimal au survol.
+- **Texte → Minimal (click-first)** : la Vue Texte n’essaie pas d’être exhaustive ; elle “délègue” les détails à la Vue Minimal au clic.
 - **Minimal → Compact/Large** : la Vue Minimal doit rester cohérente avec les champs mis en avant en Compact/Large (mêmes “Main infos”, simplement plus condensés).
 - **Large comme référence** : quand un doute existe sur un champ (label/helper), on se cale sur la Large qui est la plus explicite.
 
@@ -245,8 +245,8 @@ Dans **Body/Entités liées** :
 ### FAQ (référence pour créer les vues)
 
 - **Quelle vue choisir (Texte / Minimal / Compact / Large) ?**
-  - **Texte** : inline (entités liées, listes compactes), détail via **hover → Minimal**
-  - **Minimal** : aperçu rapide / hover card (faible densité)
+  - **Texte** : inline (entités liées, listes compactes), détail via **click → Minimal**
+  - **Minimal** : aperçu rapide / overlay card (faible densité)
   - **Compact** : vue “standard” quand on a un peu de place (bonne densité)
   - **Large** : lecture détaillée (labels explicites, helpers)
 
@@ -283,7 +283,7 @@ Dans **Body/Entités liées** :
 
 - **Comment afficher les entités liées ?**
   - Si place suffisante : afficher en **Minimal** (ou Compact si très pertinent).  
-  - Si place faible : afficher en **Vue Texte** (hover → Minimal).
+  - Si place faible : afficher en **Vue Texte** (click → Minimal).
 
 - **Si une propriété peut aller dans plusieurs sections, je fais quoi ?**
   - Priorité à `Header/Main infos` si c’est **essentiel** ou si la place est limitée.
@@ -381,7 +381,7 @@ Ces composants sont à privilégier pour éviter la duplication et aider la gén
 
 - **Molecule — Vue Texte générique**
   - `resources/js/Pages/Molecules/entity/shared/EntityViewTextLink.vue`
-  - Rôle : implémente la **Vue Texte officielle** (inline), avec **hover → Vue Minimal**.
+  - Rôle : implémente la **Vue Texte officielle** (inline), avec **click-first → Vue Minimal**.
   - Usage : toutes les `*ViewText.vue` doivent déléguer à ce composant.
 
 - **Molecule — Header commun**
@@ -440,7 +440,8 @@ Ces composants sont à privilégier pour éviter la duplication et aider la gén
     - `table.header.tooltip`
     - `general.tooltip`
     - fallback: `edition.form.help`
-  - Par défaut: affichage au **survol**. Inline uniquement si vraiment pertinent (exception).
+  - Terminologie UI: un helper court/non interactif reste un **tooltip** ; un panneau riche/interactif releve de l'**overlay** unifie.
+  - Par défaut: affichage au **survol** pour les tooltips simples. Inline uniquement si vraiment pertinent (exception).
 
 ### Descriptors-driven
 
@@ -511,7 +512,7 @@ Cet exemple sert de **modèle** pour implémenter les autres entités.
   - Header : image + titre, metas **en icônes** à droite (slot `mainInfosRight`), actions en menu.
   - Body : visible uniquement au hover (extended).
 - **Texte**
-  - Délègue à `EntityViewTextLink` : inline, hover → `ResourceViewMinimal`.
+  - Délègue à `EntityViewTextLink` : inline, click-first → `ResourceViewMinimal`.
 
 ### Spell & Monster (alignement récent)
 

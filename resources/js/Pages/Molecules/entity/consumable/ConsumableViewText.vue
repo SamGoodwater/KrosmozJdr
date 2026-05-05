@@ -3,7 +3,7 @@
  * ConsumableViewText — Vue Texte pour Consumable
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → ConsumableViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → ConsumableViewMinimal).
  *
  * @props {Consumable} consumable - Instance du modèle Consumable
  */

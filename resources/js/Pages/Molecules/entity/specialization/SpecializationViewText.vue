@@ -3,7 +3,7 @@
  * SpecializationViewText — Vue Texte pour Specialization
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → SpecializationViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → SpecializationViewMinimal).
  *
  * @props {Specialization} specialization - Instance du modèle Specialization
  */

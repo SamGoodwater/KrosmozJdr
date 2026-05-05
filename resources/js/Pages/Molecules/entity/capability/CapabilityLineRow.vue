@@ -146,8 +146,9 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
 
 <template>
     <div
-        class="group relative rounded-box border border-base-300 bg-base-100/50 p-3 flex flex-col gap-2 transition-colors hover:bg-glass-sm"
+        class="group relative rounded-box border border-base-300 bg-glass-2xl p-3 flex flex-col gap-2 transition-colors hover:bg-glass-3xl"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
+        style="--bg-color: var(--color-base-100)"
         data-row-contextmenu-target
         @click="handleRowClick"
         @contextmenu="handleContextMenu"

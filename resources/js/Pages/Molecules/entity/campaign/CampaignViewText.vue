@@ -3,7 +3,7 @@
  * CampaignViewText — Vue Texte pour Campaign
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → CampaignViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → CampaignViewMinimal).
  *
  * @props {Campaign} campaign - Instance du modèle Campaign
  */

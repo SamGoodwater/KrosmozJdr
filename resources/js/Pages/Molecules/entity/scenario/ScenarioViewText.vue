@@ -3,7 +3,7 @@
  * ScenarioViewText — Vue Texte pour Scenario
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → ScenarioViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → ScenarioViewMinimal).
  *
  * @props {Scenario} scenario - Instance du modèle Scenario
  */

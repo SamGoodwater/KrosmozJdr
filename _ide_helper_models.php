@@ -545,6 +545,7 @@ namespace App\Models\Entity{
  * @property string $name
  * @property string|null $description_fast
  * @property string|null $description
+ * @property string|null $evolution
  * @property string|null $life_dice
  * @property string|null $specificity
  * @property string $dofus_version
@@ -592,12 +593,15 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
- * @mixin \Eloquent
  * @property string|null $life
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\BreedElementOrientation> $elementOrientations
+ * @property-read Collection<int, BreedElementOrientation> $elementOrientations
  * @property-read int|null $element_orientations_count
- * @property-read \App\Models\Pivots\BreedSpellPivot|null $pivot
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed visibleToUser(?\App\Models\User $user)
+ * @property-read BreedSpellPivot|null $pivot
+ * @method static Builder<static>|Breed visibleToUser(?\App\Models\User $user)
+ * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Language> $languages
+ * @property-read int|null $languages_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereEvolution($value)
  */
 	class Breed extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1169,6 +1173,34 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
+ * Langue (référentiel) — associable aux classes, monstres, spécialisations, etc.
+ *
+ * @property int $id
+ * @property string $name
+ * @property string|null $description
+ * @property string $color Hex #RRGGBB
+ * @method static LanguageFactory factory($count = null, $state = [])
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
+ * @property-read int|null $breeds_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Monster> $monsters
+ * @property-read int|null $monsters_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereColor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereUpdatedAt($value)
+ */
+	class Language extends \Eloquent {}
+}
+
+namespace App\Models\Entity{
+/**
  * @property int $id
  * @property int|null $creature_id
  * @property string|null $official_id
@@ -1212,6 +1244,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereWriteLevel($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Language> $languages
+ * @property-read int|null $languages_count
  */
 	class Monster extends \Eloquent {}
 }

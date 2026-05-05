@@ -14,7 +14,8 @@ import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
-import EntityMinimalTooltip from "@/Pages/Molecules/entity/shared/EntityMinimalTooltip.vue";
+import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
+import ResourceViewMinimal from "@/Pages/Molecules/entity/resource/ResourceViewMinimal.vue";
 
 const props = defineProps({
     ingredients: {
@@ -34,15 +35,46 @@ const normalizedIngredients = computed(() => {
 });
 
 const showHref = (id) => (id ? route("entities.resources.show", { resource: id }) : null);
+
+const buildOverlayContent = (ing) => ({
+    key: `resource-ingredient:${ing.id}`,
+    loader: async ({ signal }) => {
+        const url = `${route("api.tables.resources")}?format=entities&filters[id]=${ing.id}&limit=1`;
+        const response = await fetch(url, {
+            credentials: "include",
+            headers: { Accept: "application/json" },
+            signal,
+        });
+        const json = await response.json();
+        const entity = Array.isArray(json?.entities) ? json.entities[0] || null : null;
+        if (!entity) {
+            return `Ressource #${ing.id}`;
+        }
+        return {
+            component: ResourceViewMinimal,
+            props: {
+                resource: entity,
+                displayMode: "extended",
+                showActions: false,
+            },
+        };
+    },
+});
 </script>
 
 <template>
     <div v-if="normalizedIngredients.length > 0" class="flex flex-wrap items-center gap-2">
-        <EntityMinimalTooltip
+        <OverlayTrigger
             v-for="ing in normalizedIngredients"
             :key="ing.id"
-            entity-type="resources"
-            :entity-id="ing.id"
+            :content="buildOverlayContent(ing)"
+            trigger="hover"
+            placement="top"
+            max-width="md"
+            :interactive="true"
+            :lazy="true"
+            :cache="{ key: `resource-ingredient:${ing.id}`, ttlMs: 600000, maxEntries: 300 }"
+            panel-class="p-1"
         >
             <Route
                 v-if="showHref(ing.id)"
@@ -86,6 +118,6 @@ const showHref = (id) => (id ? route("entities.resources.show", { resource: id }
                     {{ ing.name }}<template v-if="ing.quantity > 1">×{{ ing.quantity }}</template>
                 </span>
             </span>
-        </EntityMinimalTooltip>
+        </OverlayTrigger>
     </div>
 </template>

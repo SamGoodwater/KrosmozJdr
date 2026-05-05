@@ -3,7 +3,7 @@
  * PanoplyViewText — Vue Texte pour Panoply
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → PanoplyViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → PanoplyViewMinimal).
  *
  * @props {Panoply} panoply - Instance du modèle Panoply
  */

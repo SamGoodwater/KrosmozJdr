@@ -359,7 +359,8 @@ const handleAction = async (actionKey) => {
 
         <div
             v-if="invocationMonsters.length > 0"
-            class="flex flex-wrap items-center gap-2 rounded-xl border border-base-300/60 bg-base-100/20 p-3 text-sm"
+            class="flex flex-wrap items-center gap-2 rounded-xl border border-base-300/60 bg-glass-2xl p-3 text-sm"
+            style="--bg-color: var(--color-base-100)"
         >
             <span class="text-primary-300 font-semibold">Invocation :</span>
             <MonsterViewText
@@ -373,7 +374,8 @@ const handleAction = async (actionKey) => {
 
         <section
             v-if="specializationLinks.length > 0"
-            class="space-y-2 rounded-xl border border-base-300/60 bg-base-100/20 p-4"
+            class="space-y-2 rounded-xl border border-base-300/60 bg-glass-2xl p-4"
+            style="--bg-color: var(--color-base-100)"
         >
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Relations</h3>
             <div v-if="specializationLinks.length > 0" class="flex flex-wrap gap-2 items-center">

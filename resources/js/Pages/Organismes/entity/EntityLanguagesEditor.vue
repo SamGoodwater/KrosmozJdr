@@ -141,7 +141,11 @@ const save = () => {
             </p>
         </div>
 
-        <ul v-if="linkedLanguages.length" class="space-y-2 rounded-lg border border-base-300/60 bg-base-100/30 p-3">
+        <ul
+            v-if="linkedLanguages.length"
+            class="space-y-2 rounded-lg border border-base-300/60 bg-glass-2xl p-3"
+            style="--bg-color: var(--color-base-100)"
+        >
             <li
                 v-for="lang in linkedLanguages"
                 :key="lang.id"
@@ -159,7 +163,8 @@ const save = () => {
             <InputField v-model="query" label="Ajouter une langue" placeholder="Filtrer par nom…" size="sm" />
             <div
                 v-if="query.trim() && filteredToAdd.length > 0"
-                class="max-h-40 overflow-y-auto rounded border border-base-300/80 bg-base-100/80 text-[13px]"
+                class="max-h-40 overflow-y-auto rounded border border-base-300/80 bg-glass-3xl text-[13px]"
+                style="--bg-color: var(--color-base-100)"
             >
                 <button
                     v-for="opt in filteredToAdd.slice(0, 20)"

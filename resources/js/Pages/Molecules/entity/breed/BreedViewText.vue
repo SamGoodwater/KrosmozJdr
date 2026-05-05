@@ -3,7 +3,7 @@
  * BreedViewText — Vue Texte pour Breed
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → BreedViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → BreedViewMinimal).
  *
  * @props {Breed} breed - Instance du modèle Breed
  */

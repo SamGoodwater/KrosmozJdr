@@ -351,7 +351,8 @@ const save = () => {
                     />
                     <div
                         v-if="(slotQueries[slotKey(def)] || '').trim() && filteredForSlot(def).length > 0"
-                        class="max-h-32 overflow-y-auto rounded border border-base-300/80 bg-base-100/80 text-[13px]"
+                        class="max-h-32 overflow-y-auto rounded border border-base-300/80 bg-glass-3xl text-[13px]"
+                        style="--bg-color: var(--color-base-100)"
                     >
                         <button
                             v-for="item in filteredForSlot(def).slice(0, 12)"
@@ -432,7 +433,8 @@ const save = () => {
                         (slotQueries[slotKey(extraSlotDef)] || '').trim() &&
                         filteredForSlot(extraSlotDef).length > 0
                     "
-                    class="max-h-32 overflow-y-auto rounded border border-base-300/80 bg-base-100/80 text-[13px]"
+                    class="max-h-32 overflow-y-auto rounded border border-base-300/80 bg-glass-3xl text-[13px]"
+                    style="--bg-color: var(--color-base-100)"
                 >
                     <button
                         v-for="item in filteredForSlot(extraSlotDef).slice(0, 12)"

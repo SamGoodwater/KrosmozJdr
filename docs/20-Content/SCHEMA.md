@@ -34,6 +34,14 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  BREED_LANGUAGE {
+    id : bigint(20) unsigned
+    breed_id : bigint(20) unsigned
+    language_id : bigint(20) unsigned
+    sort_order : tinyint(3) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   BREED_SPELL {
     breed_id : bigint(20) unsigned
     spell_id : bigint(20) unsigned
@@ -51,6 +59,7 @@ erDiagram
     name : varchar(255)
     description_fast : varchar(255)
     description : varchar(255)
+    evolution : longtext
     life : varchar(255)
     life_dice : varchar(255)
     specificity : varchar(255)
@@ -619,6 +628,14 @@ erDiagram
     available_at : int(10) unsigned
     created_at : int(10) unsigned
   }
+  LANGUAGES {
+    id : bigint(20) unsigned
+    name : varchar(255)
+    description : text
+    color : varchar(32)
+    created_at : timestamp
+    updated_at : timestamp
+  }
   MEDIA {
     id : bigint(20) unsigned
     model_type : varchar(255)
@@ -647,6 +664,14 @@ erDiagram
   MONSTER_CAMPAIGN {
     monster_id : bigint(20) unsigned
     campaign_id : bigint(20) unsigned
+  }
+  MONSTER_LANGUAGE {
+    id : bigint(20) unsigned
+    monster_id : bigint(20) unsigned
+    language_id : bigint(20) unsigned
+    sort_order : tinyint(3) unsigned
+    created_at : timestamp
+    updated_at : timestamp
   }
   MONSTER_RACES {
     id : bigint(20) unsigned
@@ -1223,6 +1248,8 @@ erDiagram
   BREED_CAPABILITY }o--|| BREEDS : "FK breed_id"
   BREED_CAPABILITY }o--|| CAPABILITIES : "FK capability_id"
   BREED_ELEMENT_ORIENTATIONS }o--|| BREEDS : "FK breed_id"
+  BREED_LANGUAGE }o--|| BREEDS : "FK breed_id"
+  BREED_LANGUAGE }o--|| LANGUAGES : "FK language_id"
   BREED_SPELL }o--|| BREEDS : "FK breed_id"
   BREED_SPELL }o--|| SPELLS : "FK spell_id"
   BREEDS }o--|| USERS : "FK created_by"
@@ -1295,6 +1322,8 @@ erDiagram
   ITEMS }o--|| ITEM_TYPES : "FK item_type_id"
   MONSTER_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   MONSTER_CAMPAIGN }o--|| MONSTERS : "FK monster_id"
+  MONSTER_LANGUAGE }o--|| LANGUAGES : "FK language_id"
+  MONSTER_LANGUAGE }o--|| MONSTERS : "FK monster_id"
   MONSTER_RACES }o--|| USERS : "FK created_by"
   MONSTER_RACES }o--|| MONSTER_RACES : "FK id_super_race"
   MONSTER_SCENARIO }o--|| MONSTERS : "FK monster_id"

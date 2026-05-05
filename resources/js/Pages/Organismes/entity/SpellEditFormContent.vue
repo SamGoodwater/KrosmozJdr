@@ -99,7 +99,8 @@ function confirmDelete() {
 <template>
     <div class="spell-edit-form-content space-y-6">
         <div
-            class="sticky top-0 z-20 px-3 py-1 bg-base-100/80 backdrop-blur-md border-glass-b-md sm:px-4"
+            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
+            style="--bg-color: var(--color-base-100)"
         >
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="min-w-0 flex-1">

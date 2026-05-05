@@ -3,7 +3,7 @@
  * NpcViewText — Vue Texte pour NPC
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → NpcViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → NpcViewMinimal).
  *
  * @props {Npc} npc - Instance du modèle NPC
  */

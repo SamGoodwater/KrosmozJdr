@@ -3,7 +3,7 @@
  * CapabilityViewText — Vue Texte pour Capability
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → CapabilityViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → CapabilityViewMinimal).
  *
  * @props {Capability} capability - Instance du modèle Capability
  */

@@ -1178,64 +1178,8 @@
   },
   {
     "name": "EntityViewTextLink",
-    "description": "EntityViewTextLink — Vue Texte générique (inline) avec hover vers une Vue Minimal",
-    "props": [
-      {
-        "name": "entity",
-        "type": "Object",
-        "desc": "- Instance de modèle (ou objet) exposant idéalement `toCell()`"
-      },
-      {
-        "name": "entityProp",
-        "type": "string",
-        "desc": "- Nom de la prop attendue par la vue minimal (ex: 'resource', 'item')"
-      },
-      {
-        "name": "minimalComponent",
-        "type": "any",
-        "desc": "- Composant Vue de la Vue Minimal à afficher au hover"
-      },
-      {
-        "name": "fallbackIcon",
-        "type": "string",
-        "desc": "- Icône FontAwesome si pas d'image"
-      },
-      {
-        "name": "nameField",
-        "type": "string",
-        "desc": "- Champ pour le nom (default: 'name')"
-      },
-      {
-        "name": "imageField",
-        "type": "string",
-        "desc": "- Champ pour l'image (default: 'image')"
-      },
-      {
-        "name": "uiColor",
-        "type": "string",
-        "desc": "- Couleur UI pour le rendu du nom"
-      },
-      {
-        "name": "hoverWidthClass",
-        "type": "string",
-        "desc": "- Largeur max du panneau (ex. `max-w-[min(92vw,22rem)]`)"
-      },
-      {
-        "name": "hoverCardClass",
-        "type": "string",
-        "desc": "- Classes appliquées à la vue minimal"
-      },
-      {
-        "name": "placement",
-        "type": "string",
-        "desc": "- Placement Floating UI (défaut: `bottom-start`)"
-      },
-      {
-        "name": "showActionsOnHover",
-        "type": "boolean",
-        "desc": "- Si la vue minimal doit afficher les actions"
-      }
-    ],
+    "description": "Placement du « tooltip » (Floating UI).",
+    "props": [],
     "slots": [],
     "file": "entity/shared/EntityViewTextLink.vue"
   },
@@ -1439,44 +1383,6 @@
     ],
     "slots": [],
     "file": "entity/shared/EntityPropertyDisplay.vue"
-  },
-  {
-    "name": "EntityMinimalTooltip",
-    "description": "EntityMinimalTooltip — Hover card affichant la vue Minimal (style Wikipédia).",
-    "props": [
-      {
-        "name": "entityType",
-        "type": "string",
-        "desc": "- Type d'entité (resources, items, consumables)"
-      },
-      {
-        "name": "entityId",
-        "type": "number|string",
-        "desc": "- ID de l'entité à afficher"
-      },
-      {
-        "name": "entity",
-        "type": "Object",
-        "desc": "- Entité complète (évite le fetch si fournie)"
-      },
-      {
-        "name": "tableMeta",
-        "type": "Object",
-        "desc": "- Meta du tableau (characteristics) pour les effets"
-      },
-      {
-        "name": "placement",
-        "type": "string",
-        "desc": "- Placement du popover (top, bottom, left, right)"
-      }
-    ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "- Élément déclencheur (lien, span, etc.)"
-      }
-    ],
-    "file": "entity/shared/EntityMinimalTooltip.vue"
   },
   {
     "name": "EntityMinimalCard",
@@ -2023,6 +1929,27 @@
     ],
     "slots": [],
     "file": "entity/monster/MonsterBossMark.vue"
+  },
+  {
+    "name": "LanguageViewMinimal",
+    "description": "Carte compacte pour une langue (nom + description), teinte selon la couleur référentielle.",
+    "props": [],
+    "slots": [],
+    "file": "entity/language/LanguageViewMinimal.vue"
+  },
+  {
+    "name": "LanguageChip",
+    "description": "Pastille de langue (couleur + tooltip sur la description).",
+    "props": [],
+    "slots": [],
+    "file": "entity/language/LanguageChip.vue"
+  },
+  {
+    "name": "EntityLanguagesInline",
+    "description": "Ligne « Langues : » + chips, ou variante compacte (chips seuls).",
+    "props": [],
+    "slots": [],
+    "file": "entity/language/EntityLanguagesInline.vue"
   },
   {
     "name": "ItemViewText",

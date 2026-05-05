@@ -3,7 +3,7 @@
  * ItemViewText — Vue Texte pour Item
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → ItemViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → ItemViewMinimal).
  *
  * @props {Item} item - Instance du modèle Item
  */

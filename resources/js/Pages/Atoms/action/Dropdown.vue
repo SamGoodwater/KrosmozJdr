@@ -526,16 +526,20 @@ defineExpose({ open, close, toggle, isOpen });
     }
   
     &.dropdown-content-glass {
-        backdrop-filter: blur(24px);
+        --dropdown-bg-color: var(--color-base-100, #0f172a);
+        backdrop-filter: blur(28px) saturate(1.12);
+        -webkit-backdrop-filter: blur(28px) saturate(1.12);
         background: linear-gradient(
-                        45deg,
-                        color-mix(in srgb, var(--color) 25%, transparent) 20%,
-                        color-mix(in srgb, var(--color) 30%, transparent) 30%,
-                        color-mix(in srgb, var(--color) 45%, transparent) 55%,
-                        color-mix(in srgb, var(--color) 30%, transparent) 65%
-                    );
-        background-color: color-mix(in srgb, --color 30%, transparent);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            90deg,
+            color-mix(in srgb, var(--dropdown-bg-color) 72%, var(--color) 8%) 20%,
+            color-mix(in srgb, var(--dropdown-bg-color) 82%, var(--color) 8%) 30%,
+            color-mix(in srgb, var(--dropdown-bg-color) 94%, var(--color) 10%) 55%,
+            color-mix(in srgb, var(--dropdown-bg-color) 74%, var(--color) 8%) 65%
+        );
+        box-shadow:
+            0 18px 45px rgb(0 0 0 / 0.42),
+            0 0 0 1px color-mix(in srgb, var(--color-base-content, #ffffff) 10%, transparent) inset,
+            0 1px 0 color-mix(in srgb, var(--color-base-content, #ffffff) 14%, transparent) inset;
     }
     &.dropdown-content-ghost {
         background-color: transparent;

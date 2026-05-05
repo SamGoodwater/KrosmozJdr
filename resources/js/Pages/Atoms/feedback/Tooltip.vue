@@ -1,44 +1,9 @@
 <script setup>
-// Tooltip transparent - ne capture pas les événements natifs
 defineOptions({ inheritAttrs: false });
-
-/**
- * Tooltip Atom (DaisyUI + Floating UI)
- *
- * @description
- * Info-bulle : trigger en slot par défaut, contenu string (`content`) ou slot `#content`.
- * Le positionnement utilise **Floating UI** (`strategy: fixed`) et **Teleport** : vers le `<dialog>`
- * parent ouvert si le trigger est dans un modal (`showModal` / top layer), sinon vers `body`
- * (voir {@link resolveTooltipTeleportTarget}) — ainsi le tooltip reste au-dessus du contenu du modal.
- * Plusieurs tooltips : **z-index incrémental** (`allocateTooltipZIndex`) — le dernier ouvert passe au-dessus.
- * Style : surface `tooltip-floating-surface` + `color-*` pour `var(--color)` (bordure / box-shadow).
- * **`accentClass`** (ex. `color-life_points_creature`) ou **`accentStyle`** (`--color` hex) priment sur `color` pour les cas métier (caractéristiques).
- *
- * @see https://daisyui.com/components/tooltip/
- * @see https://floating-ui.com/docs/vue
- *
- * @props {String} content - Texte simple (si pas de slot #content)
- * @props {String} placement - top | right | bottom | left | end | start
- * @props {String} color - neutral | primary | … (atomMap)
- * @props {String} [accentClass] - classe `color-*` additionnelle (prioritaire sur `color` pour l’accent)
- * @props {Object} [accentStyle] - styles inline sur le panneau (ex. `--color` en hex)
- * @props {Boolean} open - Force l’ouverture
- * @props {String} responsive - sm | md | lg | xl | 2xl : tooltip actif seulement à partir du breakpoint (matchMedia)
- * @slot default - Trigger
- * @slot content - Contenu riche
- */
-import { computed, nextTick, onUnmounted, ref, useSlots, watch } from "vue";
-import { useFloating, offset, flip, shift, autoUpdate } from "@floating-ui/vue";
-import {
-    getCommonProps,
-    getCommonAttrs,
-    getCustomUtilityProps,
-    getCustomUtilityClasses,
-    mergeClasses,
-} from "@/Utils/atomic-design/uiHelper";
+import { computed, useSlots } from "vue";
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from "@/Utils/atomic-design/uiHelper";
 import { colorList } from "@/Pages/Atoms/atomMap";
-import { allocateTooltipZIndex } from "@/Composables/ui/allocateTooltipZIndex";
-import { resolveTooltipTeleportTarget } from "@/Composables/ui/resolveTooltipTeleportTarget";
+import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
 
 const props = defineProps({
     ...getCommonProps({ exclude: ["tooltip", "tooltip_placement"] }),
@@ -90,122 +55,6 @@ const hasTooltip = computed(() => {
     return Array.isArray(nodes) && nodes.length > 0;
 });
 
-const triggerRef = ref(null);
-const floatingRef = ref(null);
-const internalOpen = ref(false);
-
-/** Breakpoint Daisy → min-width (px) pour `responsive` */
-const RESPONSIVE_MIN_PX = Object.freeze({
-    sm: 640,
-    md: 768,
-    lg: 1024,
-    xl: 1280,
-    "2xl": 1536,
-});
-
-const responsiveAllow = ref(true);
-let removeMediaListener = null;
-
-function teardownMediaQuery() {
-    if (typeof removeMediaListener === "function") {
-        removeMediaListener();
-        removeMediaListener = null;
-    }
-}
-
-watch(
-    () => props.responsive,
-    (r) => {
-        teardownMediaQuery();
-        if (!r || typeof window === "undefined") {
-            responsiveAllow.value = true;
-            return;
-        }
-        const minW = RESPONSIVE_MIN_PX[r];
-        if (minW == null) {
-            responsiveAllow.value = true;
-            return;
-        }
-        const mq = window.matchMedia(`(min-width: ${minW}px)`);
-        const sync = () => {
-            responsiveAllow.value = mq.matches;
-        };
-        sync();
-        mq.addEventListener("change", sync);
-        removeMediaListener = () => mq.removeEventListener("change", sync);
-    },
-    { immediate: true },
-);
-
-onUnmounted(() => {
-    teardownMediaQuery();
-    clearTimers();
-});
-
-const isOpen = computed(() => {
-    if (props.disabled) {
-        return false;
-    }
-    if (props.responsive && !responsiveAllow.value) {
-        return false;
-    }
-    if (props.open) {
-        return true;
-    }
-    return internalOpen.value;
-});
-
-const floatingPlacement = computed(() => {
-    const p = props.placement;
-    if (p === "end") {
-        return "right";
-    }
-    if (p === "start") {
-        return "left";
-    }
-    return p;
-});
-
-const { floatingStyles } = useFloating(triggerRef, floatingRef, {
-    open: isOpen,
-    placement: floatingPlacement,
-    strategy: "fixed",
-    middleware: [offset(8), flip(), shift({ padding: 8 })],
-    whileElementsMounted: autoUpdate,
-});
-
-/** `body` hors modal ; `dialog` ouvert si le trigger est dans un modal (top layer navigateur). */
-const teleportTarget = computed(() => {
-    if (!isOpen.value) {
-        return typeof document !== "undefined" ? document.body : "body";
-    }
-    return resolveTooltipTeleportTarget(triggerRef.value);
-});
-
-/** Dernier tooltip ouvert au-dessus des autres (pile globale). */
-const stackZIndex = ref(1100);
-watch(
-    () => isOpen.value,
-    (open, wasOpen) => {
-        if (open && wasOpen !== true) {
-            stackZIndex.value = allocateTooltipZIndex();
-        }
-    },
-    { immediate: true },
-);
-
-const floatingStylesWithZ = computed(() => {
-    const extra =
-        props.accentStyle && typeof props.accentStyle === "object" && !Array.isArray(props.accentStyle)
-            ? props.accentStyle
-            : {};
-    return {
-        ...floatingStyles.value,
-        zIndex: stackZIndex.value,
-        ...extra,
-    };
-});
-
 /** Accent sémantique (variable `--color` pour bordure / ombre, voir `_tooltip.scss`). */
 const surfaceColorClass = computed(() => {
     switch (props.color) {
@@ -250,106 +99,28 @@ const triggerClasses = computed(() =>
 );
 
 const attrs = computed(() => getCommonAttrs(props));
-
-let closeTimer = null;
-
-function clearTimers() {
-    if (closeTimer != null) {
-        clearTimeout(closeTimer);
-        closeTimer = null;
-    }
-}
-
-function onTriggerEnter() {
-    if (props.disabled || props.open) {
-        return;
-    }
-    if (props.responsive && !responsiveAllow.value) {
-        return;
-    }
-    clearTimers();
-    internalOpen.value = true;
-}
-
-function onTriggerLeave() {
-    if (props.open) {
-        return;
-    }
-    clearTimers();
-    closeTimer = window.setTimeout(() => {
-        closeTimer = null;
-        internalOpen.value = false;
-    }, 100);
-}
-
-function onFloatingEnter() {
-    clearTimers();
-}
-
-function onFloatingLeave() {
-    if (props.open) {
-        return;
-    }
-    clearTimers();
-    closeTimer = window.setTimeout(() => {
-        closeTimer = null;
-        internalOpen.value = false;
-    }, 100);
-}
-
-function onTriggerFocusIn() {
-    if (props.disabled || props.open) {
-        return;
-    }
-    if (props.responsive && !responsiveAllow.value) {
-        return;
-    }
-    clearTimers();
-    internalOpen.value = true;
-}
-
-function onTriggerFocusOut(ev) {
-    if (props.open) {
-        return;
-    }
-    nextTick(() => {
-        const panel = floatingRef.value;
-        const next = ev.relatedTarget;
-        if (panel && next instanceof Node && panel.contains(next)) {
-            return;
-        }
-        internalOpen.value = false;
-    });
-}
+const overlayContent = computed(() =>
+    slots.content
+        ? { component: { render: () => slots.content() } }
+        : String(props.content || "")
+);
 </script>
 
 <template>
-    <div
+    <OverlayTrigger
         v-if="hasTooltip"
-        ref="triggerRef"
-        :class="triggerClasses"
-        v-bind="attrs"
-        @mouseenter="onTriggerEnter"
-        @mouseleave="onTriggerLeave"
-        @focusin="onTriggerFocusIn"
-        @focusout="onTriggerFocusOut"
+        :content="overlayContent"
+        trigger="hover"
+        :placement="placement"
+        :interactive="false"
+        :close-on-outside="false"
+        :close-on-escape="true"
+        :panel-class="floatingPanelClasses"
     >
-        <slot />
-        <Teleport :to="teleportTarget">
-            <div
-                v-if="isOpen"
-                ref="floatingRef"
-                :class="floatingPanelClasses"
-                role="tooltip"
-                :style="floatingStylesWithZ"
-                @mouseenter="onFloatingEnter"
-                @mouseleave="onFloatingLeave"
-            >
-                <slot v-if="$slots.content" name="content" />
-                <template v-else>{{ content }}</template>
-            </div>
-        </Teleport>
-    </div>
+        <span :class="triggerClasses" v-bind="attrs">
+            <slot />
+        </span>
+    </OverlayTrigger>
     <div v-else :class="triggerClasses" v-bind="attrs">
         <slot />
     </div>

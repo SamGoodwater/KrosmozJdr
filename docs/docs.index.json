@@ -426,8 +426,8 @@
   },
   {
     "path": "30-UI/ENTITY_HOVER_CARD.md",
-    "title": "Entity Hover Card — Aperçu d'entité au survol (style Wikipédia)",
-    "description": "Le système **Entity Hover Card** affiche un aperçu minimal d'une entité au survol d'une référence (lien, nom) — un peu comme les tooltips de Wikipédia lorsqu'une page référence une autre. Conçu pour être réutilisable partout où une entité est citée dans du texte ou une liste."
+    "title": "Entity Overlay Card — Aperçu d'entité (service overlay unifié)",
+    "description": "Le système **Entity Overlay Card** affiche un aperçu minimal d'une entité depuis une référence (lien, nom) en s'appuyant sur le service overlay unifié. Le déclenchement est **uniformisé en click-first** pour les vues texte d'entités, avec conservation du focus/souris tant que l'overlay reste interactif."
   },
   {
     "path": "30-UI/ENTITY_VIEWS.md",
@@ -547,7 +547,7 @@
   {
     "path": "40-DevGuides/IMAGE-GENERATE.md",
     "title": "Système de Gestion d'Images",
-    "description": "Le système de gestion d'images est composé de trois composants principaux :"
+    "description": "- **Spatie Media Library** : source de vérité pour les médias des entités (`HasEntityImageMedia`, conversions `webp` / `thumb`, URLs via `getUrl()`)."
   },
   {
     "path": "40-DevGuides/INDEX_VUE_UPDATE_TEMPLATE.md",

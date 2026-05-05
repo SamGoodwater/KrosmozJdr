@@ -451,54 +451,9 @@
   },
   {
     "name": "Tooltip",
-    "description": "Tooltip Atom (DaisyUI + Floating UI)",
-    "props": [
-      {
-        "name": "content",
-        "type": "String",
-        "desc": "- Texte simple (si pas de slot #content)"
-      },
-      {
-        "name": "placement",
-        "type": "String",
-        "desc": "- top | right | bottom | left | end | start"
-      },
-      {
-        "name": "color",
-        "type": "String",
-        "desc": "- neutral | primary | … (atomMap)"
-      },
-      {
-        "name": "accentClass",
-        "type": "String",
-        "desc": "- classe `color-*` additionnelle (prioritaire sur `color` pour l’accent)"
-      },
-      {
-        "name": "accentStyle",
-        "type": "Object",
-        "desc": "- styles inline sur le panneau (ex. `--color` en hex)"
-      },
-      {
-        "name": "open",
-        "type": "Boolean",
-        "desc": "- Force l’ouverture"
-      },
-      {
-        "name": "responsive",
-        "type": "String",
-        "desc": "- sm | md | lg | xl | 2xl : tooltip actif seulement à partir du breakpoint (matchMedia)"
-      }
-    ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "- Trigger"
-      },
-      {
-        "name": "content",
-        "desc": "- Contenu riche"
-      }
-    ],
+    "description": "Accent sémantique (variable `--color` pour bordure / ombre, voir `_tooltip.scss`).",
+    "props": [],
+    "slots": [],
     "file": "feedback/Tooltip.vue"
   },
   {
@@ -1968,81 +1923,15 @@
   {
     "name": "Image",
     "description": "Image Atom (Atomic Design, Tailwind, DaisyUI)",
-    "props": [
-      {
-        "name": "src",
-        "type": "String",
-        "desc": "- URL directe de l'image"
-      },
-      {
-        "name": "source",
-        "type": "String",
-        "desc": "- Chemin source pour MediaManager"
-      },
-      {
-        "name": "alt",
-        "type": "String",
-        "desc": "- Texte alternatif (obligatoire)"
-      },
-      {
-        "name": "size",
-        "type": "String",
-        "desc": "- Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl)"
-      },
-      {
-        "name": "width",
-        "type": "String",
-        "desc": "- Largeur personnalisée"
-      },
-      {
-        "name": "height",
-        "type": "String",
-        "desc": "- Hauteur personnalisée"
-      },
-      {
-        "name": "ratio",
-        "type": "String",
-        "desc": "- Ratio d'aspect (square, video, 16/9, 4/3, 3/2, 2/1, etc.)"
-      },
-      {
-        "name": "fit",
-        "type": "String",
-        "desc": "- object-fit (cover, contain, fill, none, scale-down)"
-      },
-      {
-        "name": "position",
-        "type": "String",
-        "desc": "- object-position (center, top, right, bottom, left, top-left, top-right, bottom-left, bottom-right)"
-      },
-      {
-        "name": "filter",
-        "type": "String|Array",
-        "desc": "- Filtre(s) CSS (grayscale, sepia, blur, brightness, contrast, hue-rotate, invert, saturate)"
-      },
-      {
-        "name": "rounded",
-        "type": "String",
-        "desc": "- Arrondi (none, sm, md, lg, xl, 2xl, 3xl, full, circle)"
-      },
-      {
-        "name": "mask",
-        "type": "String",
-        "desc": "- Classe DaisyUI mask-* (mask, mask-squircle, mask-heart, etc.)"
-      },
-      {
-        "name": "transform",
-        "type": "Object",
-        "desc": "- Options de transformation pour MediaManager (width, height, fit, quality, format)"
-      }
-    ],
+    "props": [],
     "slots": [
       {
         "name": "loader",
-        "desc": "- Loader personnalisé pendant le chargement"
+        "desc": "- Skeleton personnalisé (overlay) pendant le chargement réseau"
       },
       {
         "name": "fallback",
-        "desc": "- Contenu alternatif en cas d'erreur"
+        "desc": "- Contenu alternatif en cas d’erreur définitive"
       }
     ],
     "file": "data-display/Image.vue"
@@ -2124,6 +2013,39 @@
     ],
     "slots": [],
     "file": "data-display/EntityUsableDot.vue"
+  },
+  {
+    "name": "EntityStateBadge",
+    "description": "EntityStateBadge — pastille d'état entité (raw / draft / playable / archived).",
+    "props": [
+      {
+        "name": "state",
+        "type": "string|null",
+        "desc": ""
+      },
+      {
+        "name": "size",
+        "type": "string",
+        "desc": "- xs | sm | md (Badge)"
+      },
+      {
+        "name": "variant",
+        "type": "string",
+        "desc": "- Badge (ex. soft)"
+      },
+      {
+        "name": "showLabel",
+        "type": "boolean",
+        "desc": "- Afficher le libellé dans le badge (défaut true)"
+      },
+      {
+        "name": "tooltip",
+        "type": "boolean|string",
+        "desc": "- false : pas de tooltip ; true : libellé état ; string : texte libre"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/EntityStateBadge.vue"
   },
   {
     "name": "EntityLabel",

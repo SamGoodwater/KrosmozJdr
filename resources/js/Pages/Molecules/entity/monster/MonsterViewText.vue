@@ -3,7 +3,7 @@
  * MonsterViewText — Vue Texte pour Monster
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → MonsterViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → MonsterViewMinimal).
  *
  * @props {Monster} monster - Instance du modèle Monster
  */

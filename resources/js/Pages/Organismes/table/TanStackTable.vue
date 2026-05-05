@@ -214,6 +214,8 @@ const bgSize = computed(() => {
     if (s === "sm") return "sm";
     if (s === "lg") return "lg";
     if (s === "xl") return "xl";
+    if (s === "2xl") return "2xl";
+    if (s === "3xl") return "3xl";
     return "md";
 });
 
@@ -243,6 +245,8 @@ const bgVariantSizeClass = computed(() => {
         if (s === "sm") return "bg-glass-sm";
         if (s === "lg") return "bg-glass-lg";
         if (s === "xl") return "bg-glass-xl";
+        if (s === "2xl") return "bg-glass-2xl";
+        if (s === "3xl") return "bg-glass-3xl";
         return "bg-glass-md";
     }
     if (v === "ghost") {
@@ -279,6 +283,8 @@ const bgVariantSizeClass = computed(() => {
     if (s === "sm") return "bg-glass-sm";
     if (s === "lg") return "bg-glass-lg";
     if (s === "xl") return "bg-glass-xl";
+    if (s === "2xl") return "bg-glass-2xl";
+    if (s === "3xl") return "bg-glass-3xl";
     return "bg-glass-md";
 });
 

@@ -3,7 +3,7 @@
  * ResourceViewText — Vue Texte pour Resource
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → ResourceViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → ResourceViewMinimal).
  *
  * @props {Resource} resource - Instance du modèle Resource
  */

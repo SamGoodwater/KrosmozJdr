@@ -195,13 +195,15 @@ const handleAction = async (actionKey) => {
                 :variant="fieldKey === 'is_passive' ? 'icon' : 'inline'"
                 :hide-characteristic-icon="fieldKey === 'po_editable'"
                 size="sm"
-                class="min-w-0 rounded-box border border-base-300/60 bg-base-200/40 px-2.5 py-1.5"
+                class="min-w-0 rounded-box border border-base-300/60 bg-glass-2xl px-2.5 py-1.5"
+                style="--bg-color: var(--color-base-200)"
             />
         </div>
 
         <div
             v-if="invocationMonsters.length > 0"
-            class="flex flex-wrap items-center gap-2 rounded-box border border-base-300/60 bg-base-200/30 px-2.5 py-1.5 text-sm"
+            class="flex flex-wrap items-center gap-2 rounded-box border border-base-300/60 bg-glass-2xl px-2.5 py-1.5 text-sm"
+            style="--bg-color: var(--color-base-200)"
         >
             <span class="text-primary-300 font-semibold">Invocation :</span>
             <MonsterViewText

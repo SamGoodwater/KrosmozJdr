@@ -3,7 +3,7 @@
  * SpellViewText — Vue Texte pour Spell
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → SpellViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → SpellViewMinimal).
  *
  * @props {Spell} spell - Instance du modèle Spell
  */

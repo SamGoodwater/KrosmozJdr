@@ -34,6 +34,7 @@ import CookieConsentBanner from "@/Pages/Molecules/privacy/CookieConsentBanner.v
 import PendingErasureBanner from "@/Pages/Molecules/privacy/PendingErasureBanner.vue";
 import FeedbackFab from "@/Pages/Organismes/feedback/FeedbackFab.vue";
 import { LAYOUT_APP_SIDEBAR_OFFSET_LEFT_CLASS } from "@/Composables/layout/viewport-breakpoints";
+import OverlayHostContainer from "@/Pages/Organismes/overlay/OverlayHostContainer.vue";
 
 // Centralisation des classes Tailwind pour le layout
 const HEADER_HEIGHT_CLASS = 'h-18'    // 
@@ -198,6 +199,7 @@ onUnmounted(() => {
 
         <!-- Notifications -->
         <NotificationContainer />
+        <OverlayHostContainer />
         <FeedbackFab />
         <CookieConsentBanner />
     </div>

@@ -3,7 +3,7 @@
  * ShopViewText — Vue Texte pour Shop
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → ShopViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → ShopViewMinimal).
  *
  * @props {Shop} shop - Instance du modèle Shop
  */

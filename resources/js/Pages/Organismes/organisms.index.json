@@ -715,6 +715,13 @@
     "file": "entity/EntityModal.vue"
   },
   {
+    "name": "EntityLanguagesEditor",
+    "description": "Synchronise les langues d’une classe ou d’un monstre (ordre = ordre de la liste).",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityLanguagesEditor.vue"
+  },
+  {
     "name": "EntityEditForm",
     "description": "EntityEditForm Organism",
     "props": [

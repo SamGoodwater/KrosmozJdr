@@ -3,7 +3,7 @@
  * AttributeViewText — Vue Texte pour Attribute
  *
  * @description
- * Délègue l’implémentation à `EntityViewTextLink` (hover → AttributeViewMinimal).
+* Délègue l’implémentation à `EntityViewTextLink` (click-first → AttributeViewMinimal).
  *
  * @props {Attribute} attribute - Instance du modèle Attribute
  */
