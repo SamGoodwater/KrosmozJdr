@@ -18,13 +18,13 @@
 * @props {String} size - Taille de l'icône (xs, sm, md, lg, xl, 2xl)
 * @props {String} shortcut - Raccourci clavier (ex: alt+g)
 */
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { useHeader } from "@/Composables/layout/useHeader";
 import { useDevice } from "@/Composables/layout/useDevice";
 import Kbd from "@/Pages/Atoms/data-display/Kbd.vue";
 
-const { toggleHeader, isHeaderOpen, isDesktop } = useHeader();
+const { toggleHeader, isHeaderOpen } = useHeader();
 const { isMobile, isTablet } = useDevice();
 
 const props = defineProps({
@@ -94,7 +94,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <Tooltip placement="left">
+    <Tooltip placement="left" :allow-flip="false">
         <template #content>
             <span>{{ tooltipContent }}</span>
             <Kbd size="xs" class="ml-2">{{ shortcut }}</Kbd>

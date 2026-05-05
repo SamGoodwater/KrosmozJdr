@@ -15,6 +15,7 @@ export function useOverlay(options) {
         openRef: service.isOpen,
         placement: options.placement || "top",
         offsetPx: options.offsetPx ?? 8,
+        allowFlip: options.allowFlip,
     });
     const a11y = useOverlayA11y({
         openRef: service.isOpen,

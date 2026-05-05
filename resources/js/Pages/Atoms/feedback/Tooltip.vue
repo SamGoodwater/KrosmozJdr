@@ -14,8 +14,32 @@ const props = defineProps({
     },
     placement: {
         type: String,
-        default: "top",
-        validator: (v) => ["top", "right", "bottom", "left", "end", "start"].includes(v),
+        default: "auto",
+        validator: (v) =>
+            [
+                "top",
+                "top-start",
+                "top-end",
+                "right",
+                "right-start",
+                "right-end",
+                "bottom",
+                "bottom-start",
+                "bottom-end",
+                "left",
+                "left-start",
+                "left-end",
+                "auto",
+                "auto-start",
+                "auto-end",
+                // alias historiques projet (normalisés ensuite)
+                "start",
+                "end",
+            ].includes(String(v || "").toLowerCase()),
+    },
+    allowFlip: {
+        type: Boolean,
+        default: true,
     },
     color: {
         type: String,
@@ -112,6 +136,7 @@ const overlayContent = computed(() =>
         :content="overlayContent"
         trigger="hover"
         :placement="placement"
+        :allow-flip="allowFlip"
         :interactive="false"
         :close-on-outside="false"
         :close-on-escape="true"

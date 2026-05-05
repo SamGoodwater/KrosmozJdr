@@ -21,17 +21,18 @@ export const OVERLAY_CONTENT_KIND = Object.freeze({
     ASYNC: "async",
 });
 
+export const OVERLAY_Z_INDEX = Object.freeze({
+    hostContainer: 1099,
+    stackBase: 1100,
+    floatingPanel: 1200,
+});
+
 export const DEFAULT_OVERLAY_OPTIONS = Object.freeze({
     maxOpen: 6,
-    baseZIndex: 1100,
+    baseZIndex: OVERLAY_Z_INDEX.stackBase,
     hoverOpenDelayMs: 80,
     hoverCloseDelayMs: 140,
     clickCloseOnOutside: true,
     cacheTtlMs: 60_000,
     cacheMaxEntries: 200,
-});
-
-export const OVERLAY_Z_INDEX = Object.freeze({
-    hostContainer: 1099,
-    floatingPanel: 1200,
 });

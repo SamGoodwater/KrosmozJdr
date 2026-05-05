@@ -18,6 +18,7 @@ const props = defineProps({
     panelClass: { type: String, default: "" },
     renderer: { type: [Object, Function], default: null },
     offsetPx: { type: Number, default: 8 },
+    allowFlip: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["open", "close", "error"]);
@@ -35,6 +36,7 @@ const { service, position, trigger, a11y } = useOverlay({
     closeOnEscape: props.closeOnEscape,
     renderer: props.renderer,
     offsetPx: props.offsetPx,
+    allowFlip: props.allowFlip,
 });
 const { triggerRef, overlayRef, floatingStyles, teleportTarget } = position;
 const { isOpen, loading, error, resolved, resolvedKind } = service;
