@@ -12,7 +12,11 @@
  *
  * @props displayMode - 'hover' : expansion au survol | 'extended' : toujours étendu | 'compact' : jamais étendu
  */
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import {
+    isEntityPinned,
+    usePinnedEntityVersion,
+} from "@/Composables/entity/usePinnedEntityIds";
 
 const props = defineProps({
     displayMode: {
@@ -20,14 +24,34 @@ const props = defineProps({
         default: "hover",
         validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
+    pinnedEntityType: {
+        type: String,
+        default: "",
+    },
+    pinnedEntityId: {
+        type: [String, Number],
+        default: "",
+    },
 });
 
 const isHovered = ref(props.displayMode === "extended");
+const isFocusWithin = ref(false);
+const isExpandedLocked = ref(false);
+const cardRef = ref(null);
+const pinVersion = usePinnedEntityVersion();
+
+const isPinnedExpanded = computed(() => {
+    pinVersion.value;
+    const entityType = String(props.pinnedEntityType || "").trim();
+    const entityId = String(props.pinnedEntityId || "").trim();
+    if (!entityType || !entityId) return false;
+    return isEntityPinned(entityType, entityId);
+});
 
 const showExpanded = computed(() => {
     if (props.displayMode === "compact") return false;
     if (props.displayMode === "extended") return true;
-    return isHovered.value;
+    return isPinnedExpanded.value || isExpandedLocked.value || isHovered.value || isFocusWithin.value;
 });
 
 const canHover = computed(() => props.displayMode === "hover");
@@ -39,14 +63,63 @@ function onEnter() {
 function onLeave() {
     if (canHover.value) isHovered.value = false;
 }
+
+function onFocusIn() {
+    if (canHover.value) isFocusWithin.value = true;
+}
+
+function onFocusOut(event) {
+    if (!canHover.value) return;
+    const nextTarget = event.relatedTarget;
+    if (event.currentTarget?.contains?.(nextTarget)) return;
+    isFocusWithin.value = false;
+}
+
+function onCardClick() {
+    if (!canHover.value) return;
+    isExpandedLocked.value = true;
+    isHovered.value = true;
+}
+
+function unlockExpanded() {
+    isExpandedLocked.value = false;
+}
+
+function onDocumentPointerDown(event) {
+    if (!canHover.value || !isExpandedLocked.value) return;
+    const root = cardRef.value;
+    if (!root) return;
+    if (root.contains(event.target)) return;
+    unlockExpanded();
+}
+
+function onDocumentKeydown(event) {
+    if (!canHover.value || !isExpandedLocked.value) return;
+    if (event.key !== "Escape") return;
+    unlockExpanded();
+}
+
+onMounted(() => {
+    document.addEventListener("pointerdown", onDocumentPointerDown, true);
+    document.addEventListener("keydown", onDocumentKeydown);
+});
+
+onUnmounted(() => {
+    document.removeEventListener("pointerdown", onDocumentPointerDown, true);
+    document.removeEventListener("keydown", onDocumentKeydown);
+});
 </script>
 
 <template>
     <div
+        ref="cardRef"
         class="entity-minimal-card group relative w-full"
         :class="{ 'entity-minimal-card--expanded': showExpanded && canHover }"
         @mouseenter="onEnter"
         @mouseleave="onLeave"
+        @focusin="onFocusIn"
+        @focusout="onFocusOut"
+        @click="onCardClick"
     >
         <!-- Compact : définit la taille du slot, ne bouge pas -->
         <div

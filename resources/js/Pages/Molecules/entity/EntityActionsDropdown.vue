@@ -110,7 +110,7 @@ const props = defineProps({
      */
     inlineActionKeys: {
         type: Array,
-        default: () => ["pin", "copy-link", "view", "quick-edit"],
+        default: () => ["pin", "copy-link", "view", "edit", "quick-view", "quick-edit"],
     },
     showInlineShortcuts: {
         type: Boolean,
@@ -124,7 +124,6 @@ const pinVersion = usePinnedEntityVersion();
 const { notifySuccess } = useUxFeedback();
 
 const showIcon = computed(() => props.display === "icon-only" || props.display === "icon-text");
-const showText = computed(() => props.display === "icon-text");
 
 const entityIdStr = computed(() => {
     const e = props.entity;
@@ -256,11 +255,19 @@ const showEntityName = computed(() => Boolean(entityName.value));
                 variant="ghost"
                 :color="color"
                 class="btn-square shrink-0"
-                :class="action.key === 'pin' && pinned ? '!text-primary' : ''"
+                :class="{
+                    'pin-active text-primary!': action.key === 'pin' && pinned,
+                }"
                 :title="action.tooltip || action.label"
                 @click.stop="handleShortcutClick(action.key)"
             >
-                <Icon :source="action.icon" :size="size" />
+                <Icon
+                    :source="action.icon"
+                    :size="size"
+                    :class="{
+                        'pin-active-icon': action.key === 'pin' && pinned,
+                    }"
+                />
             </Btn>
         </div>
         <Dropdown :placement="placement" :close-on-content-click="true">
@@ -277,7 +284,7 @@ const showEntityName = computed(() => Boolean(entityName.value));
                 </Btn>
             </template>
             <template #content>
-                <ul class="menu bg-base-100 rounded-box z-[1] w-56 p-2 shadow-lg border border-base-300">
+                <ul class="menu bg-base-100 rounded-box z-1 w-56 p-2 shadow-lg border border-base-300">
                     <li v-if="showEntityName" class="px-3 py-2 mb-1 border-b border-base-300">
                         <div class="text-xs text-base-content/60 font-medium truncate" :title="entityName">
                             {{ entityName }}
@@ -302,8 +309,7 @@ const showEntityName = computed(() => Boolean(entityName.value));
                                 @click="handleMenuAction(action.key)"
                             >
                                 <Icon v-if="showIcon" :source="action.icon" :alt="action.label" :size="size" />
-                                <span v-if="showText">{{ action.label }}</span>
-                                <span v-else-if="!showIcon">{{ action.label }}</span>
+                                <span class="truncate">{{ action.label }}</span>
                                 <span v-if="action.badge" class="badge badge-sm badge-primary ml-auto">{{
                                     action.badge
                                 }}</span>
@@ -324,3 +330,15 @@ const showEntityName = computed(() => Boolean(entityName.value));
         </Dropdown>
     </div>
 </template>
+
+<style scoped>
+.pin-active {
+    text-shadow: 0 0 8px color-mix(in srgb, var(--color-primary, #60a5fa) 70%, transparent);
+}
+
+.pin-active-icon {
+    transform: rotate(-38deg);
+    transition: transform 180ms ease, filter 180ms ease;
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary, #60a5fa) 78%, transparent));
+}
+</style>

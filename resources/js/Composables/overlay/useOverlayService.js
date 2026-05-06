@@ -67,19 +67,15 @@ export function useOverlayService(options) {
         if (isOpen.value) return;
         isOpen.value = true;
         upsert("opening");
-        if (options.lazy !== false) {
-            await hydrateContent();
-        } else {
-            await hydrateContent();
-        }
-        upsert("ready");
+        await hydrateContent();
+        upsert(resolver.error.value ? "error" : "ready");
     }
 
     function close(reason = "manual") {
-        if (!isOpen.value) return;
         isOpen.value = false;
         if (entryId.value) {
             stack.removeOverlay(entryId.value);
+            entryId.value = "";
         }
         if (reason === "error") {
             resolver.clearCache();

@@ -21,6 +21,26 @@ export const OVERLAY_CONTENT_KIND = Object.freeze({
     ASYNC: "async",
 });
 
+/**
+ * Ordre des placements pour `placement="auto"` (middleware {@link https://floating-ui.com/docs/autoPlacement | autoPlacement}).
+ * Les côtés centrés (`top`, `bottom`, `left`, `right`) sont évalués en premier ;
+ * les variantes `-start` / `-end` servent de repli quand le bord manque de place (coins).
+ */
+export const OVERLAY_AUTO_ALLOWED_PLACEMENTS = Object.freeze([
+    "top",
+    "bottom",
+    "left",
+    "right",
+    "top-start",
+    "top-end",
+    "bottom-start",
+    "bottom-end",
+    "left-start",
+    "left-end",
+    "right-start",
+    "right-end",
+]);
+
 export const OVERLAY_Z_INDEX = Object.freeze({
     hostContainer: 1099,
     stackBase: 1100,

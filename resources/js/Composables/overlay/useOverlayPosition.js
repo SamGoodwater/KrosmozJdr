@@ -1,13 +1,19 @@
 import { computed, ref } from "vue";
 import { autoPlacement, autoUpdate, flip, offset, shift, useFloating } from "@floating-ui/vue";
+import { OVERLAY_AUTO_ALLOWED_PLACEMENTS } from "@/Composables/overlay/overlayConstants";
 import { resolveTooltipTeleportTarget } from "@/Composables/ui/resolveTooltipTeleportTarget";
 
 /**
  * @param {{
  * openRef: import('vue').Ref<boolean>,
  * placement?: import('vue').Ref<string>|string,
- * offsetPx?: number
+ * offsetPx?: number,
+ * allowFlip?: boolean,
  * }} options
+ * @description
+ * Placements Floating UI : `top`, `top-start`, `right-end`, etc.
+ * Modes auto : `auto` (côtés centrés puis coins), `auto-start`, `auto-end`.
+ * Voir {@link https://floating-ui.com/docs/autoPlacement | autoPlacement}.
  */
 export function useOverlayPosition(options) {
     const triggerRef = ref(null);
@@ -32,12 +38,21 @@ export function useOverlayPosition(options) {
         const spacing = 8;
         if (isAutoPlacementRef.value) {
             const alignment = placementRef.value === "auto-start" ? "start" : placementRef.value === "auto-end" ? "end" : undefined;
+            const isPlainAuto = placementRef.value === "auto";
             return [
                 offset(options.offsetPx ?? 8),
                 autoPlacement({
                     padding: spacing,
                     alignment,
                     autoAlignment: true,
+                    // `auto` seul : d’abord top/bottom/left/right (centré sur l’axe croisé), puis *-start/*-end si manque de place.
+                    // `auto-start` / `auto-end` : laisser Floating UI filtrer via `alignment` (liste interne complète).
+                    ...(isPlainAuto
+                        ? {
+                              allowedPlacements: [...OVERLAY_AUTO_ALLOWED_PLACEMENTS],
+                              crossAxis: true,
+                          }
+                        : {}),
                 }),
                 shift({ padding: spacing, mainAxis: true, crossAxis: true }),
             ];

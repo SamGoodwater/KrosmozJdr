@@ -33,7 +33,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     key: "view",
     label: "Ouvrir",
     tooltip: "Ouvrir dans une page complète",
-    icon: "fa-solid fa-eye",
+    icon: "fa-solid fa-up-right-from-square",
     permission: "canView",
     requiresEntity: true,
     group: "navigation",
@@ -47,10 +47,10 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
       return "Ouvrir dans une page complète";
     },
     visibleIf: (context) => {
-      // En modal, on n'affiche pas "view" (on utilise expand à la place)
-      if (context?.inModal) return false;
       // Sur la page de l'entité, on n'affiche pas "view" (on est déjà sur la page)
       if (context?.inPage) return false;
+      // En minimal, l'ouverture page se fait via actions dédiées seulement (pas d'ouverture implicite).
+      if (context?.inMinimal) return false;
       return true;
     },
   },
@@ -83,7 +83,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     key: "edit",
     label: "Modifier",
     tooltip: "Modifier dans une page complète",
-    icon: "fa-solid fa-pen",
+    icon: "fa-solid fa-pen-to-square",
     permission: "canUpdate",
     requiresEntity: true,
     group: "edition",
@@ -97,16 +97,19 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
       return "Modifier dans une page complète";
     },
     visibleIf: (context) => {
-      // En modal, on n'affiche pas "edit" (on utilise quick-edit à la place)
-      if (context?.inModal) return false;
-      return true;
+      // En vue minimal, on garde l'édition en modal rapide.
+      if (context?.inMinimal) return false;
+      // Visible en modal et en page (ouverture/édition mode page depuis ces contextes).
+      if (context?.inModal || context?.inPage) return true;
+      // Hors modal/page, on privilégie l'édition rapide.
+      return false;
     },
   },
   "quick-edit": {
     key: "quick-edit",
     label: "Modifier",
     tooltip: "Modifier dans une modal rapide",
-    icon: "fa-solid fa-bolt",
+    icon: "fa-solid fa-pen-to-square",
     permission: "canUpdate",
     requiresEntity: true,
     group: "edition",
@@ -120,8 +123,8 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
       return "Modifier dans une modal rapide";
     },
     visibleIf: (context) => {
-      // En modal, on affiche "quick-edit" (modifier dans le modal)
-      // En page, on affiche aussi "quick-edit" (modifier dans un modal)
+      // En modal/page, on privilégie l'édition en mode page.
+      if (context?.inModal || context?.inPage) return false;
       return true;
     },
   },
@@ -143,9 +146,9 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
       if (context?.modalMode === "edit") return "Modifier dans une page complète";
       return "Ouvrir dans une page complète";
     },
-    visibleIf: (context) => {
-      // Visible uniquement si on est dans un modal
-      return Boolean(context?.inModal);
+    visibleIf: (_context) => {
+      // Action historique remplacée par `view`.
+      return false;
     },
   },
   "copy-link": {
@@ -174,15 +177,17 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     permission: null, // Toujours disponible
     requiresEntity: true,
     group: "tools",
+    visibleIf: () => false,
   },
   refresh: {
     key: "refresh",
     label: "Rafraîchir",
     tooltip: "Rafraîchir les données depuis le serveur (via scrapping)",
     icon: "fa-solid fa-arrow-rotate-right",
-    permission: "canManage", // Admin/maintenance
+    permission: "canManage",
     requiresEntity: true,
     group: "tools",
+    visibleIf: (context) => Boolean(context?.inModal || context?.inPage),
   },
   minimize: {
     key: "minimize",
@@ -203,6 +208,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     requiresEntity: true,
     variant: "error", // Style spécial pour action destructive
     group: "destructive",
+    visibleIf: (context) => Boolean(context?.inModal || context?.inPage),
   },
 });
 
@@ -228,7 +234,6 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
-      badge: "V2",
     },
   },
 
@@ -242,7 +247,6 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
-      badge: "V2",
     },
   },
 
@@ -256,7 +260,6 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
-      badge: "V2",
     },
   },
 
@@ -270,7 +273,6 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
-      badge: "V2",
     },
   },
 
@@ -284,7 +286,6 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
-      badge: "V2",
     },
   },
 
@@ -298,7 +299,6 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
-      badge: "V2",
     },
   },
 });

@@ -28,7 +28,7 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
  * @returns {{ availableActions: ComputedRef<EntityActionConfig[]>, groupedActions: ComputedRef<Object> }}
  */
 export function useEntityActions(entityType, entity = null, options = {}) {
-  const { can, canViewAny, canUpdateAny, canDeleteAny, isAdmin } = usePermissions();
+  const { can, canViewAny, canUpdateAny, canDeleteAny, isAdmin, authUser } = usePermissions();
   
   const {
     whitelist = null,
@@ -47,6 +47,23 @@ export function useEntityActions(entityType, entity = null, options = {}) {
    * @param {string|null} permission - Nom de la permission (ex: 'canView', 'canUpdate')
    * @returns {boolean}
    */
+  const getEntityOwnerId = (target) => {
+    if (!target) return null;
+    const raw = target?._data ?? target;
+    const fromCreatedByObj = raw?.createdBy?.id ?? raw?.created_by?.id ?? null;
+    const fromCreatedByScalar = raw?.created_by ?? null;
+    const candidate = fromCreatedByObj ?? fromCreatedByScalar;
+    const id = Number(candidate);
+    return Number.isFinite(id) ? id : null;
+  };
+
+  const isEntityOwner = computed(() => {
+    const currentUserId = Number(authUser.value?.id ?? 0);
+    const ownerId = getEntityOwnerId(entity);
+    if (!currentUserId || !ownerId) return false;
+    return currentUserId === ownerId;
+  });
+
   const checkPermission = (permission) => {
     if (!permission) return true; // Pas de permission requise
     
@@ -58,16 +75,14 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         return canViewAny(entityType);
       },
       canUpdate: () => {
-        // TODO: Implémenter canUpdate(entity) si nécessaire
-        return canUpdateAny(entityType);
+        return canUpdateAny(entityType) || isEntityOwner.value;
       },
       canDelete: () => {
-        // TODO: Implémenter canDelete(entity) si nécessaire
-        return canDeleteAny(entityType);
+        return canDeleteAny(entityType) || isEntityOwner.value;
       },
       canManage: () => {
-        // canManage = admin pour l'instant (via manageAny)
-        return can(entityType, "manageAny") || isAdmin.value;
+        // `refresh` suit la même logique métier demandée que l'édition/suppression.
+        return can(entityType, "manageAny") || canUpdateAny(entityType) || isEntityOwner.value || isAdmin.value;
       },
     };
     

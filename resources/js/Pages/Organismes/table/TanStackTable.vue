@@ -2535,7 +2535,7 @@ const handleExport = () => {
                     display="icon-text"
                     size="sm"
                     color="primary"
-                    :context="{ inPanel: false }"
+                    :context="{ inPanel: false, inMinimal: true }"
                     :context-position="minimalContextMenuPosition"
                     :context-visible="minimalContextMenuVisible"
                     @close="closeMinimalContextMenu"

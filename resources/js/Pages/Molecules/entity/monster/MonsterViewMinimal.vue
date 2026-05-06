@@ -195,7 +195,7 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <EntityMinimalCard :display-mode="displayMode">
+    <EntityMinimalCard :display-mode="displayMode" pinned-entity-type="monsters" :pinned-entity-id="entity?.id">
         <template #compact>
             <div
                 data-cy="entity-minimal-card-compact"
@@ -246,7 +246,7 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['pin', 'quick-view', 'view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    :whitelist="['pin', 'copy-link', 'quick-view', 'quick-edit']"
                                     @action="(k) => handleAction(k)"
                                 />
                             </div>
@@ -347,7 +347,7 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['pin', 'quick-view', 'view', 'edit', 'quick-edit', 'delete', 'copy-link']"
+                                    :whitelist="['pin', 'copy-link', 'quick-view', 'quick-edit']"
                                     @action="(k) => handleAction(k)"
                                 />
                             </div>

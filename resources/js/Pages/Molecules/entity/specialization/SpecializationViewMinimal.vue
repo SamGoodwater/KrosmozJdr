@@ -187,7 +187,7 @@ const handleAction = async (actionKey) => {
                         display="icon-only"
                         size="xs"
                         color="primary"
-                        :context="{ inPanel: false }"
+                        :context="{ inPanel: false, inMinimal: true }"
                         @action="handleAction"
                     />
                 </div>

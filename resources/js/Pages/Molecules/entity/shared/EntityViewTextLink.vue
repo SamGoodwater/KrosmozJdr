@@ -57,8 +57,25 @@ const nameCell = computed(() => {
   delete params.tooltip;
   delete params.truncate;
   delete params.truncateClass;
+  // En mode overlay click-first, le trigger texte ne doit plus naviguer.
+  delete params.href;
+  delete params.target;
   return { ...cell, params };
 });
+
+const altClickHref = computed(() => {
+  if (!props.entity || typeof props.entity.toCell !== "function") return "";
+  const rawCell = props.entity.toCell(props.nameField, { size: "sm", context: "text" });
+  const href = rawCell?.params?.href;
+  return href ? String(href) : "";
+});
+
+function handleAltNavigation(event) {
+  if (!event.altKey || !altClickHref.value) return;
+  event.preventDefault();
+  event.stopPropagation();
+  window.location.assign(altClickHref.value);
+}
 
 const overlayContent = computed(() => ({
   component: props.minimalComponent,
@@ -102,7 +119,12 @@ const overlayContent = computed(() => ({
       :panel-class="hoverWidthClass"
       :focus-trap="false"
     >
-      <span class="relative z-0 inline-block min-w-0 cursor-pointer rounded-sm transition-colors">
+      <span
+        class="relative z-0 inline-block min-w-0 cursor-pointer rounded-sm transition-colors"
+        tabindex="0"
+        @mousedown.capture="handleAltNavigation"
+        @click.capture="handleAltNavigation"
+      >
         <CellRenderer :cell="nameCell" :ui-color="uiColor" />
       </span>
     </OverlayTrigger>
