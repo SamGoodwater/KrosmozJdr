@@ -36,7 +36,7 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | resources        | Métier         | Ressources de base (minerais, plantes, peaux, etc.)          |
 | spells           | Métier         | Sorts et magies                                              |
 | capabilities     | Métier         | Compétences spéciales, pouvoirs                              |
-| attributes       | Métier         | Attributs/caractéristiques (force, intelligence, etc.)       |
+| conditions       | Métier         | Conditions temporaires applicables aux créatures             |
 | consumables      | Métier         | Objets consommables (potions, nourritures, parchemins, etc.) |
 | shops            | Métier         | hotels de vente et vendeurs                                        |
 | specializations  | Métier         | Spécialisations de classes (tank, soigneur, dps, etc.)       |
@@ -241,7 +241,7 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | created_at            | datetime | Date de création                       |
 | updated_at            | datetime | Date de modification                   |
 
-### 3.9. Attributs (`attributes`)
+### 3.9. Conditions (`conditions`)
 
 | Champ       | Type     | Description                       |
 | ----------- | -------- | --------------------------------- |
@@ -463,11 +463,11 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | ------------------------- | ----------------------------------------------------- |
 | capability_class          | capability_id, class_id                               |
 | breed_spell               | breed_id, spell_id                                    |
-| attribute_class           | attribute_id, class_id                                |
+| condition_spell           | condition_id, spell_id                                |
 | capability_specialization | capability_id, specialization_id                      |
 | spell_invocation          | spell_id, monster_id                                  |
 | spell_type                | spell_id, spell_type_id                               |
-| attribute_creature        | attribute_id, creature_id                             |
+| condition_creature        | condition_id, creature_id                             |
 | capability_creature       | capability_id, creature_id                            |
 | consumable_creature       | consumable_id, creature_id, quantity (default: 1)     |
 | creature_item             | creature_id, item_id, quantity (default: 1)           |

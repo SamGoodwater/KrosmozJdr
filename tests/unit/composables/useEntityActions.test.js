@@ -26,6 +26,15 @@ const mockPermissions = {
   canDeleteAny: vi.fn(() => true),
   canManageAny: vi.fn(() => false),
   isAdmin: { value: false },
+  authUser: { value: null },
+};
+
+const readAvailableActions = (wrapper) => {
+  return wrapper.vm.availableActions?.value ?? wrapper.vm.availableActions ?? [];
+};
+
+const readGroupedActions = (wrapper) => {
+  return wrapper.vm.groupedActions?.value ?? wrapper.vm.groupedActions ?? {};
 };
 
 vi.mock('@/Composables/permissions/usePermissions', () => ({
@@ -110,7 +119,7 @@ const mockActionsConfig = {
 };
 
 vi.mock('@/Entities/entity-actions-config', () => ({
-  getActionsForEntityType: vi.fn((entityType) => mockActionsConfig),
+  getActionsForEntityType: vi.fn(() => mockActionsConfig),
   ACTION_GROUPS_ORDER: ['navigation', 'edition', 'tools', 'destructive'],
 }));
 
@@ -142,9 +151,10 @@ describe('useEntityActions', () => {
       const wrapper = mount(TestComponent);
 
       // Toutes les actions devraient être disponibles (permissions par défaut)
-      expect(wrapper.vm.availableActions.value.length).toBeGreaterThan(0);
-      expect(wrapper.vm.availableActions.value.some((a) => a.key === 'view')).toBe(true);
-      expect(wrapper.vm.availableActions.value.some((a) => a.key === 'edit')).toBe(true);
+      const actions = readAvailableActions(wrapper);
+      expect(actions.length).toBeGreaterThan(0);
+      expect(actions.some((a) => a.key === 'view')).toBe(true);
+      expect(actions.some((a) => a.key === 'edit')).toBe(true);
     });
 
     it('exclut les actions sans permission canView', () => {
@@ -160,7 +170,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const actionKeys = wrapper.vm.availableActions.value.map((a) => a.key);
+      const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
       expect(actionKeys).not.toContain('view');
       expect(actionKeys).not.toContain('quick-view');
     });
@@ -178,7 +188,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const actionKeys = wrapper.vm.availableActions.value.map((a) => a.key);
+      const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
       expect(actionKeys).not.toContain('edit');
       expect(actionKeys).not.toContain('quick-edit');
     });
@@ -196,12 +206,13 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const actionKeys = wrapper.vm.availableActions.value.map((a) => a.key);
+      const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
       expect(actionKeys).not.toContain('delete');
     });
 
     it('exclut les actions sans permission canManage', () => {
       mockPermissions.canManageAny.mockReturnValue(false);
+      mockPermissions.canUpdateAny.mockReturnValue(false);
       mockPermissions.can.mockImplementation((entityType, ability) => {
         if (ability === 'manageAny') return false;
         return true;
@@ -218,7 +229,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const actionKeys = wrapper.vm.availableActions.value.map((a) => a.key);
+      const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
       expect(actionKeys).not.toContain('refresh');
     });
   });
@@ -237,7 +248,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const actionKeys = wrapper.vm.availableActions.value.map((a) => a.key);
+      const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
       expect(actionKeys).toContain('view');
       expect(actionKeys).toContain('edit');
       expect(actionKeys).not.toContain('delete');
@@ -257,7 +268,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const actionKeys = wrapper.vm.availableActions.value.map((a) => a.key);
+      const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
       expect(actionKeys).not.toContain('delete');
       expect(actionKeys).not.toContain('refresh');
       expect(actionKeys).toContain('view');
@@ -279,7 +290,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const actionKeys = wrapper.vm.availableActions.value.map((a) => a.key);
+      const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
       expect(actionKeys).not.toContain('minimize');
     });
 
@@ -296,7 +307,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const actionKeys = wrapper.vm.availableActions.value.map((a) => a.key);
+      const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
       expect(actionKeys).toContain('minimize');
     });
   });
@@ -313,7 +324,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const groups = wrapper.vm.groupedActions.value;
+      const groups = readGroupedActions(wrapper);
       expect(groups).toHaveProperty('navigation');
       expect(groups).toHaveProperty('edition');
       expect(groups).toHaveProperty('tools');
@@ -331,7 +342,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const groupKeys = Object.keys(wrapper.vm.groupedActions.value);
+      const groupKeys = Object.keys(readGroupedActions(wrapper));
       expect(groupKeys[0]).toBe('navigation');
       expect(groupKeys[1]).toBe('edition');
       expect(groupKeys[2]).toBe('tools');
@@ -343,7 +354,9 @@ describe('useEntityActions', () => {
     it('exclut les actions nécessitant une entité si entity est null', () => {
       const TestComponent = defineComponent({
         setup() {
-          const { availableActions } = useEntityActions('spells', null);
+          const { availableActions } = useEntityActions('spells', null, {
+            context: { inPanel: true },
+          });
           return { availableActions };
         },
         template: '<div></div>',
@@ -351,7 +364,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
 
-      const actionKeys = wrapper.vm.availableActions.value.map((a) => a.key);
+      const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
       // Les actions nécessitant une entité ne devraient pas être présentes
       expect(actionKeys).not.toContain('view');
       expect(actionKeys).not.toContain('edit');

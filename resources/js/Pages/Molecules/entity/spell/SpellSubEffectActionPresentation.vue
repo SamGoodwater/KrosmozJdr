@@ -10,7 +10,7 @@ import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import AreaDisplay from "@/Pages/Molecules/entity/spell/AreaDisplay.vue";
 import SpellSummonMonsterInline from "@/Pages/Molecules/entity/spell/SpellSummonMonsterInline.vue";
-import SpellStateInline from "@/Pages/Molecules/entity/spell/SpellStateInline.vue";
+import ConditionInline from "@/Pages/Molecules/entity/condition/ConditionInline.vue";
 import {
     resolveDef,
     getCharacteristicColorStyle,
@@ -131,9 +131,9 @@ const critBadge = computed(() => {
 
 const showCritInline = computed(() => critBadge.value !== "");
 
-const stateInlineProps = computed(() => ({
-    spellState: m.value.spellState,
-    nameFallback: m.value.stateName ?? "",
+const conditionInlineProps = computed(() => ({
+    condition: m.value.condition,
+    nameFallback: m.value.conditionName ?? "",
 }));
 
 const isFrapperWithLifeSteal = computed(
@@ -198,11 +198,11 @@ const isKnownAction = computed(() => KNOWN_ACTIONS.has(action.value));
 
         <!-- appliquer-etat -->
         <template v-if="action === 'appliquer-etat'">
-            <span class="font-bold">Appliquer l'état</span>
+            <span class="font-bold">Appliquer la condition</span>
             <span aria-hidden="true">:</span>
-            <SpellStateInline
-                :spell-state="stateInlineProps.spellState"
-                :name-fallback="stateInlineProps.nameFallback"
+            <ConditionInline
+                :condition="conditionInlineProps.condition"
+                :name-fallback="conditionInlineProps.nameFallback"
                 class="min-w-0"
             />
             <template v-if="hasDuration">
@@ -217,11 +217,11 @@ const isKnownAction = computed(() => KNOWN_ACTIONS.has(action.value));
 
         <!-- s-appliquer-etat -->
         <template v-if="action === 's-appliquer-etat'">
-            <span class="font-bold">Appliquer l'état</span>
+            <span class="font-bold">Appliquer la condition</span>
             <span aria-hidden="true">:</span>
-            <SpellStateInline
-                :spell-state="stateInlineProps.spellState"
-                :name-fallback="stateInlineProps.nameFallback"
+            <ConditionInline
+                :condition="conditionInlineProps.condition"
+                :name-fallback="conditionInlineProps.nameFallback"
                 class="min-w-0"
             />
             <span class="text-base-content/80">à soit-même</span>

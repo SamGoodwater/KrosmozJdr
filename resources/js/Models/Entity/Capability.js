@@ -104,6 +104,10 @@ export class Capability extends BaseModel {
         return this._data.creatures || [];
     }
 
+    get conditions() {
+        return this._data.conditions || [];
+    }
+
     get specializationsCount() {
         return Number(this._data.specializations_count ?? this.specializations.length ?? 0);
     }

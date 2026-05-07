@@ -64,10 +64,16 @@ return [
             'order' => 8,
         ],
         [
-            'label' => 'États',
-            'url' => '/pages/etats',
+            'label' => 'Conditions',
+            'route' => 'entities.conditions.index',
             'entity_key' => 'condition',
             'order' => 9,
+        ],
+        [
+            'label' => 'Traits',
+            'route' => 'entities.creature-traits.index',
+            'entity_key' => 'creature-trait',
+            'order' => 10,
         ],
     ],
 ];

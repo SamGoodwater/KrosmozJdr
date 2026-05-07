@@ -16,6 +16,16 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Breed $breed
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereBreedId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereElement($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereOrientationKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class BreedElementOrientation extends Model
 {

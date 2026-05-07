@@ -16,5 +16,6 @@ Route::prefix('entities/specializations')->name('entities.specializations.')->mi
     Route::get('/{specialization}/edit', [SpecializationController::class, 'edit'])->name('edit');
     Route::get('/{specialization}/pdf', [SpecializationController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{specialization}', [SpecializationController::class, 'update'])->name('update');
+    Route::patch('/{specialization}/creature-traits', [SpecializationController::class, 'updateCreatureTraits'])->name('updateCreatureTraits');
     Route::delete('/{specialization}', [SpecializationController::class, 'delete'])->name('delete');
 });

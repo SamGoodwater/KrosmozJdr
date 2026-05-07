@@ -20,11 +20,11 @@ import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { getFieldLabel, getSectionFromFlatKey } from "@/Pages/Pages/scrapping/components/previewDiffLabels";
 import {
-    formatSpellStateDispellable,
-    formatSpellStateDuration,
-    formatSpellStateMode,
-    getSpellStateDispellableIcon,
-} from "@/Composables/spell/spellStateDisplay";
+    formatConditionDispellable,
+    formatConditionDuration,
+    formatConditionMode,
+    getConditionDispellableIcon,
+} from "@/Composables/condition/conditionDisplay";
 
 const props = defineProps({
     entityType: { type: String, default: "" },
@@ -91,9 +91,9 @@ const convertedFlat = computed(() => flattenShallow(convertedData.value));
 /**
  * Extrait les états détectés depuis les sous-effets convertis d'un sort.
  * @param {any} converted
- * @returns {{ stateId: number|null, stateName: string, mode: 'self'|'target', duration: number|null, dispellable: boolean|null, targetMask: string|null }[]}
+ * @returns {{ conditionId: number|null, conditionName: string, mode: 'self'|'target', duration: number|null, dispellable: boolean|null, targetMask: string|null }[]}
  */
-function extractSpellStatesFromConverted(converted) {
+function extractConditionsFromConverted(converted) {
     const effects = converted?.spell_effects?.effects;
     if (!Array.isArray(effects) || effects.length === 0) return [];
 
@@ -105,8 +105,8 @@ function extractSpellStatesFromConverted(converted) {
             if (slug !== "appliquer-etat" && slug !== "s-appliquer-etat") continue;
             const params = sub?.params ?? {};
             rows.push({
-                stateId: Number.isFinite(Number(params?.state_dofusdb_id)) ? Number(params.state_dofusdb_id) : null,
-                stateName: String(params?.state_name || "État inconnu"),
+                conditionId: Number.isFinite(Number(params?.condition_dofusdb_id)) ? Number(params.condition_dofusdb_id) : null,
+                conditionName: String(params?.condition_name || "Condition inconnue"),
                 mode: slug === "s-appliquer-etat" ? "self" : "target",
                 duration: Number.isFinite(Number(params?.duration)) ? Number(params.duration) : null,
                 dispellable: typeof params?.dispellable === "boolean" ? params.dispellable : null,
@@ -117,13 +117,13 @@ function extractSpellStatesFromConverted(converted) {
 
     const dedup = new Map();
     for (const row of rows) {
-        const key = `${row.mode}|${row.stateId ?? "x"}|${row.stateName}|${row.duration ?? "x"}|${row.dispellable ?? "x"}|${row.targetMask ?? "x"}`;
+        const key = `${row.mode}|${row.conditionId ?? "x"}|${row.conditionName}|${row.duration ?? "x"}|${row.dispellable ?? "x"}|${row.targetMask ?? "x"}`;
         if (!dedup.has(key)) dedup.set(key, row);
     }
     return [...dedup.values()];
 }
 
-const previewSpellStates = computed(() => extractSpellStatesFromConverted(convertedData.value));
+const previewConditions = computed(() => extractConditionsFromConverted(convertedData.value));
 
 /** Clés à afficher : union Brut, Converti, Krosmoz. */
 const allKeys = computed(() => {
@@ -143,14 +143,14 @@ const rows = computed(() => {
         const rawVal = findInFlat(rawFlat.value, key) ?? findInFlat(rawFlat.value, key.split(".").pop());
         let convertedVal = findInFlat(convertedFlat.value, key) ?? findInFlat(convertedFlat.value, key.split(".").pop());
         const krosmozVal = existingFlat.value[key];
-        if (key === "spell_effects.summary" && previewSpellStates.value.length > 0) {
-            convertedVal = previewSpellStates.value
+        if (key === "spell_effects.summary" && previewConditions.value.length > 0) {
+            convertedVal = previewConditions.value
                 .map((s) => {
                     const bits = [
-                        `${s.stateName}${s.stateId != null ? ` (#${s.stateId})` : ""}`,
-                        formatSpellStateMode(s.mode),
-                        formatSpellStateDuration(s.duration),
-                        formatSpellStateDispellable(s.dispellable),
+                        `${s.conditionName}${s.conditionId != null ? ` (#${s.conditionId})` : ""}`,
+                        formatConditionMode(s.mode),
+                        formatConditionDuration(s.duration),
+                        formatConditionDispellable(s.dispellable),
                     ].filter(Boolean);
                     return bits.join(" · ");
                 })
@@ -317,7 +317,7 @@ watch(
                 </div>
 
                 <div
-                    v-if="entityType === 'spell' && previewSpellStates.length > 0"
+                    v-if="entityType === 'spell' && previewConditions.length > 0"
                     class="rounded-box border border-secondary/30 bg-base-200/40 p-3"
                 >
                     <div class="flex items-center gap-2 mb-2">
@@ -336,22 +336,22 @@ watch(
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(st, idx) in previewSpellStates" :key="`${st.mode}-${st.stateId}-${idx}`">
+                                <tr v-for="(st, idx) in previewConditions" :key="`${st.mode}-${st.conditionId}-${idx}`">
                                     <td class="text-primary-100">
-                                        {{ st.stateName }}
-                                        <span v-if="st.stateId != null" class="text-primary-400">(#{{ st.stateId }})</span>
+                                        {{ st.conditionName }}
+                                        <span v-if="st.conditionId != null" class="text-primary-400">(#{{ st.conditionId }})</span>
                                     </td>
-                                    <td class="text-primary-300">{{ formatSpellStateMode(st.mode, { variant: "table" }) }}</td>
-                                    <td class="text-primary-300">{{ formatSpellStateDuration(st.duration) ?? "—" }}</td>
+                                    <td class="text-primary-300">{{ formatConditionMode(st.mode, { variant: "table" }) }}</td>
+                                    <td class="text-primary-300">{{ formatConditionDuration(st.duration) ?? "—" }}</td>
                                     <td class="text-primary-300">
-                                        <span v-if="formatSpellStateDispellable(st.dispellable)" class="inline-flex items-center gap-1">
+                                        <span v-if="formatConditionDispellable(st.dispellable)" class="inline-flex items-center gap-1">
                                             <Icon
-                                                v-if="getSpellStateDispellableIcon(st.dispellable)"
-                                                :source="getSpellStateDispellableIcon(st.dispellable)"
-                                                :alt="formatSpellStateDispellable(st.dispellable) || ''"
+                                                v-if="getConditionDispellableIcon(st.dispellable)"
+                                                :source="getConditionDispellableIcon(st.dispellable)"
+                                                :alt="formatConditionDispellable(st.dispellable) || ''"
                                                 size="xs"
                                             />
-                                            {{ formatSpellStateDispellable(st.dispellable) }}
+                                            {{ formatConditionDispellable(st.dispellable) }}
                                         </span>
                                         <span v-else>—</span>
                                     </td>

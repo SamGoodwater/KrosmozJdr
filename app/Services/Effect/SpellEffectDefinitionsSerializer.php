@@ -6,7 +6,7 @@ namespace App\Services\Effect;
 
 use App\Models\Effect;
 use App\Models\Entity\Monster;
-use App\Models\SpellState;
+use App\Models\Entity\Condition;
 use Illuminate\Support\Collection;
 
 /**
@@ -28,22 +28,24 @@ final class SpellEffectDefinitionsSerializer
 
         $monsterIds = $this->collectMonsterIdsFromPivots($effects);
         $monstersById = $this->loadMonstersById($monsterIds);
-        $spellStateIds = $this->collectSpellStateIdsFromPivots($effects);
-        $spellStatesById = $this->loadSpellStatesById($spellStateIds);
+        $conditionIds = $this->collectConditionIdsFromPivots($effects);
+        $conditionDofusdbIds = $this->collectConditionDofusdbIdsFromPivots($effects);
+        $conditionsById = $this->loadConditionsById($conditionIds);
+        $conditionsByDofusdbId = $this->loadConditionsByDofusdbId($conditionDofusdbIds);
 
-        return $effects->map(function (Effect $effect) use ($monstersById, $spellStatesById) {
+        return $effects->map(function (Effect $effect) use ($monstersById, $conditionsById, $conditionsByDofusdbId) {
             return [
                 'id' => $effect->id,
                 'name' => $effect->name,
                 'description' => $effect->description,
                 'target_type' => $effect->target_type ?? Effect::TARGET_DIRECT,
-                'degrees' => $effect->degrees->sortBy('degree')->values()->map(function ($degree) use ($monstersById, $spellStatesById) {
+                'degrees' => $effect->degrees->sortBy('degree')->values()->map(function ($degree) use ($monstersById, $conditionsById, $conditionsByDofusdbId) {
                     return [
                         'id' => $degree->id,
                         'degree' => $degree->degree,
                         'required_creature_level' => $degree->required_creature_level,
                         'area' => $degree->area,
-                        'rows' => $degree->effectSubEffects->sortBy('order')->values()->map(function ($pivot) use ($monstersById, $spellStatesById) {
+                        'rows' => $degree->effectSubEffects->sortBy('order')->values()->map(function ($pivot) use ($monstersById, $conditionsById, $conditionsByDofusdbId) {
                             $sub = $pivot->subEffect;
                             $params = is_array($pivot->params) ? $pivot->params : [];
 
@@ -61,7 +63,7 @@ final class SpellEffectDefinitionsSerializer
                                 'crit_only' => (bool) ($pivot->crit_only ?? false),
                                 'params' => $params,
                                 'summon_monster' => $this->summonMonsterBrief($params, $monstersById),
-                                'spell_state' => $this->spellStateBrief($params, $spellStatesById),
+                                'condition' => $this->conditionBrief($params, $conditionsById, $conditionsByDofusdbId),
                                 'sub_effect' => $sub ? [
                                     'id' => $sub->id,
                                     'slug' => $sub->slug,
@@ -106,7 +108,7 @@ final class SpellEffectDefinitionsSerializer
      * @param  Collection<int, Effect>  $effects
      * @return list<int>
      */
-    private function collectSpellStateIdsFromPivots(Collection $effects): array
+    private function collectConditionIdsFromPivots(Collection $effects): array
     {
         $ids = [];
         foreach ($effects as $effect) {
@@ -116,7 +118,33 @@ final class SpellEffectDefinitionsSerializer
                     if (! is_array($params)) {
                         continue;
                     }
-                    $sid = $params['spell_state_id'] ?? null;
+                    $sid = $params['condition_id'] ?? null;
+                    if ($sid === null || $sid === '' || ! is_numeric($sid)) {
+                        continue;
+                    }
+                    $ids[(int) $sid] = true;
+                }
+            }
+        }
+
+        return array_keys($ids);
+    }
+
+    /**
+     * @param  Collection<int, Effect>  $effects
+     * @return list<int>
+     */
+    private function collectConditionDofusdbIdsFromPivots(Collection $effects): array
+    {
+        $ids = [];
+        foreach ($effects as $effect) {
+            foreach ($effect->degrees as $degree) {
+                foreach ($degree->effectSubEffects as $pivot) {
+                    $params = $pivot->params;
+                    if (! is_array($params)) {
+                        continue;
+                    }
+                    $sid = $params['condition_dofusdb_id'] ?? null;
                     if ($sid === null || $sid === '' || ! is_numeric($sid)) {
                         continue;
                     }
@@ -130,45 +158,83 @@ final class SpellEffectDefinitionsSerializer
 
     /**
      * @param  list<int>  $ids
-     * @return Collection<int, SpellState>
+     * @return Collection<int, Condition>
      */
-    private function loadSpellStatesById(array $ids): Collection
+    private function loadConditionsById(array $ids): Collection
     {
         if ($ids === []) {
             return collect();
         }
 
-        return SpellState::query()
-            ->whereIn('id', $ids)
+        return Condition::query()
+            ->where(static function ($query) use ($ids): void {
+                foreach ($ids as $id) {
+                    $query->orWhereKey($id);
+                }
+            })
             ->get()
             ->keyBy('id');
     }
 
     /**
      * @param  array<string, mixed>  $params
-     * @param  Collection<int, SpellState>  $byId
-     * @return array{id: int, name: string, icon: string|null}|null
+     * @param  Collection<int, Condition>  $byId
+     * @param  Collection<int, Condition>  $byDofusdbId
+     * @return array{id: int|null, dofusdb_id: int|null, name: string, icon: string|null}|null
      */
-    private function spellStateBrief(array $params, Collection $byId): ?array
+    private function conditionBrief(array $params, Collection $byId, Collection $byDofusdbId): ?array
     {
-        $sid = $params['spell_state_id'] ?? null;
-        if ($sid === null || $sid === '' || ! is_numeric($sid)) {
-            return null;
-        }
-        $id = (int) $sid;
-        $st = $byId->get($id);
-        if ($st === null) {
+        $sid = $params['condition_id'] ?? null;
+        if ($sid !== null && $sid !== '' && is_numeric($sid)) {
+            $id = (int) $sid;
+            $st = $byId->get($id);
+            if ($st !== null) {
+                return $this->conditionBriefFromModel($st);
+            }
+
             return [
                 'id' => $id,
-                'name' => 'État #'.$id,
+                'dofusdb_id' => is_numeric($params['condition_dofusdb_id'] ?? null) ? (int) $params['condition_dofusdb_id'] : null,
+                'name' => isset($params['condition_name']) && trim((string) $params['condition_name']) !== ''
+                    ? trim((string) $params['condition_name'])
+                    : 'Condition #'.$id,
                 'icon' => null,
             ];
         }
 
+        $dofusdbId = $params['condition_dofusdb_id'] ?? null;
+        if ($dofusdbId === null || $dofusdbId === '' || ! is_numeric($dofusdbId)) {
+            return null;
+        }
+
+        $dofusdbId = (int) $dofusdbId;
+        $st = $byDofusdbId->get($dofusdbId);
+        if ($st !== null) {
+            return $this->conditionBriefFromModel($st);
+        }
+
         return [
-            'id' => $st->id,
-            'name' => $st->name !== '' ? $st->name : ('État #'.$st->id),
-            'icon' => $st->icon,
+            'id' => null,
+            'dofusdb_id' => $dofusdbId,
+            'name' => isset($params['condition_name']) && trim((string) $params['condition_name']) !== ''
+                ? trim((string) $params['condition_name'])
+                : 'Condition DofusDB #'.$dofusdbId,
+            'icon' => null,
+        ];
+    }
+
+    /**
+     * @return array{id: int, dofusdb_id: int, name: string, icon: string|null}
+     */
+    private function conditionBriefFromModel(Condition $state): array
+    {
+        $name = is_string($state->name) ? trim($state->name) : '';
+
+        return [
+            'id' => $state->id,
+            'dofusdb_id' => $state->dofusdb_id,
+            'name' => $name !== '' ? $name : ('Condition #'.$state->id),
+            'icon' => $state->icon,
         ];
     }
 
@@ -187,6 +253,26 @@ final class SpellEffectDefinitionsSerializer
             ->whereIn('id', $monsterIds)
             ->get()
             ->keyBy('id');
+    }
+
+    /**
+     * @param  list<int>  $ids
+     * @return Collection<int, Condition>
+     */
+    private function loadConditionsByDofusdbId(array $ids): Collection
+    {
+        if ($ids === []) {
+            return collect();
+        }
+
+        return Condition::query()
+            ->where(static function ($query) use ($ids): void {
+                foreach ($ids as $id) {
+                    $query->orWhere('dofusdb_id', $id);
+                }
+            })
+            ->get()
+            ->keyBy('dofusdb_id');
     }
 
     /**

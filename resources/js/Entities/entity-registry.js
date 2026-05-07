@@ -23,7 +23,8 @@ import { Breed } from "@/Models/Entity/Breed";
 import { Consumable } from "@/Models/Entity/Consumable";
 import { Campaign } from "@/Models/Entity/Campaign";
 import { Scenario } from "@/Models/Entity/Scenario";
-import { Attribute } from "@/Models/Entity/Attribute";
+import { Condition } from "@/Models/Entity/Condition";
+import { CreatureTrait } from "@/Models/Entity/CreatureTrait";
 import { Panoply } from "@/Models/Entity/Panoply";
 import { Capability } from "@/Models/Entity/Capability";
 import { Specialization } from "@/Models/Entity/Specialization";
@@ -44,14 +45,15 @@ import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
 import { getCampaignFieldDescriptors } from "@/Entities/campaign/campaign-descriptors";
 import { getScenarioFieldDescriptors } from "@/Entities/scenario/scenario-descriptors";
-import { getAttributeFieldDescriptors } from "@/Entities/attribute/attribute-descriptors";
+import { getConditionFieldDescriptors } from "@/Entities/condition/condition-descriptors";
+import { getCreatureTraitFieldDescriptors } from "@/Entities/creature-trait/creature-trait-descriptors";
 import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
 import { getShopFieldDescriptors } from "@/Entities/shop/shop-descriptors";
 
 /**
- * @typedef {'resources'|'resource-types'|'items'|'spells'|'monsters'|'creatures'|'npcs'|'breeds'|'consumables'|'campaigns'|'scenarios'|'attributes'|'panoplies'|'capabilities'|'specializations'|'shops'} EntityTypeKey
+ * @typedef {'resources'|'resource-types'|'items'|'spells'|'monsters'|'creatures'|'npcs'|'breeds'|'consumables'|'campaigns'|'scenarios'|'conditions'|'panoplies'|'capabilities'|'specializations'|'creature-traits'|'shops'} EntityTypeKey
  */
 
 /**
@@ -74,7 +76,8 @@ export function normalizeEntityType(raw) {
   if (s === "consumable" || s === "consumables") return "consumables";
   if (s === "campaign" || s === "campaigns") return "campaigns";
   if (s === "scenario" || s === "scenarios") return "scenarios";
-  if (s === "attribute" || s === "attributes") return "attributes";
+  if (s === "condition" || s === "conditions") return "conditions";
+  if (s === "creature-trait" || s === "creatureTrait" || s === "creature-traits" || s === "creatureTraits") return "creature-traits";
   if (s === "panoply" || s === "panoplies") return "panoplies";
   if (s === "capability" || s === "capabilities") return "capabilities";
   if (s === "specialization" || s === "specializations") return "specializations";
@@ -173,12 +176,20 @@ export function getEntityConfig(entityType) {
         responseAdapter: createEntityAdapter(Scenario),
         defaults: { minimalImportantFields: ["name", "state", "is_public"] },
       };
-    case "attributes":
+    case "conditions":
       return {
         key,
-        model: Attribute,
-        getDescriptors: getAttributeFieldDescriptors,
-        responseAdapter: createEntityAdapter(Attribute),
+        model: Condition,
+        getDescriptors: getConditionFieldDescriptors,
+        responseAdapter: createEntityAdapter(Condition),
+        defaults: { minimalImportantFields: ["name", "state", "read_level"] },
+      };
+    case "creature-traits":
+      return {
+        key,
+        model: CreatureTrait,
+        getDescriptors: getCreatureTraitFieldDescriptors,
+        responseAdapter: createEntityAdapter(CreatureTrait),
         defaults: { minimalImportantFields: ["name", "state", "read_level"] },
       };
     case "panoplies":

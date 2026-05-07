@@ -6,7 +6,7 @@
  */
 import { computed } from 'vue';
 import { getFieldLabel, getSectionFromFlatKey } from './previewDiffLabels';
-import { formatSpellStateDispellable, formatSpellStateDuration, formatSpellStateMode } from '@/Composables/spell/spellStateDisplay';
+import { formatConditionDispellable, formatConditionDuration, formatConditionMode } from '@/Composables/condition/conditionDisplay';
 
 const props = defineProps({
     /** Données brutes DofusDB (optionnel). */
@@ -91,17 +91,17 @@ function summarizeSpellEffects(effects, maxEffects = 4, maxSubs = 4) {
             .map((s) => {
                 const slug = s?.sub_effect_slug ?? '?';
                 const params = s?.params ?? {};
-                const stateId = params?.state_dofusdb_id ?? null;
-                const stateName = params?.state_name ?? null;
+                const conditionId = params?.condition_dofusdb_id ?? null;
+                const conditionName = params?.condition_name ?? null;
                 const duration = params?.duration ?? null;
                 const mode = slug === 's-appliquer-etat' ? 'self' : (slug === 'appliquer-etat' ? 'target' : null);
 
-                if (stateId != null || stateName != null) {
-                    const identity = [stateName, stateId != null ? `#${stateId}` : null].filter(Boolean).join(' ');
+                if (conditionId != null || conditionName != null) {
+                    const identity = [conditionName, conditionId != null ? `#${conditionId}` : null].filter(Boolean).join(' ');
                     const details = [
-                        mode != null ? formatSpellStateMode(mode) : null,
-                        formatSpellStateDuration(duration),
-                        formatSpellStateDispellable(params?.dispellable),
+                        mode != null ? formatConditionMode(mode) : null,
+                        formatConditionDuration(duration),
+                        formatConditionDispellable(params?.dispellable),
                     ].filter(Boolean).join(' ');
                     return `${slug} ${identity}${details ? ` (${details})` : ''}`;
                 }

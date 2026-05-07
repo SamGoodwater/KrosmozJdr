@@ -37,8 +37,8 @@ Route::middleware(['web'])->prefix('tables')->group(function () {
         ->name('api.tables.campaigns');
     Route::get('/scenarios', [App\Http\Controllers\Api\Table\ScenarioTableController::class, 'index'])
         ->name('api.tables.scenarios');
-    Route::get('/attributes', [App\Http\Controllers\Api\Table\AttributeTableController::class, 'index'])
-        ->name('api.tables.attributes');
+    Route::get('/conditions', [App\Http\Controllers\Api\Table\ConditionTableController::class, 'index'])
+        ->name('api.tables.conditions');
     Route::get('/capabilities', [App\Http\Controllers\Api\Table\CapabilityTableController::class, 'index'])
         ->name('api.tables.capabilities');
     Route::get('/breeds', [App\Http\Controllers\Api\Table\BreedTableController::class, 'index'])
@@ -51,6 +51,8 @@ Route::middleware(['web'])->prefix('tables')->group(function () {
         ->name('api.tables.consumables');
     Route::get('/panoplies', [App\Http\Controllers\Api\Table\PanoplyTableController::class, 'index'])
         ->name('api.tables.panoplies');
+    Route::get('/creature-traits', [App\Http\Controllers\Api\Table\CreatureTraitTableController::class, 'index'])
+        ->name('api.tables.creature-traits');
     Route::get('/shops', [App\Http\Controllers\Api\Table\ShopTableController::class, 'index'])
         ->name('api.tables.shops');
 });

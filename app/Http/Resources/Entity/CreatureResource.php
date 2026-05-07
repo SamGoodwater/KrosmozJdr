@@ -33,7 +33,8 @@ class CreatureResource extends JsonResource
 
             // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
-            'attributes' => $this->whenLoaded('attributes'),
+            'conditions' => $this->whenLoaded('conditions'),
+            'creatureTraits' => $this->whenLoaded('creatureTraits', fn () => CreatureTraitResource::collection($this->creatureTraits)->resolve($request)),
             'capabilities' => $this->whenLoaded('capabilities'),
             'items' => ($this->relationLoaded('items') || isset($this->items)) ? $this->items->map(function ($item) {
                 return [

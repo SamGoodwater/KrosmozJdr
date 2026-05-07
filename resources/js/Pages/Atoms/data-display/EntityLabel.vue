@@ -46,12 +46,12 @@ const ENTITY_BG_VAR = {
   specialization: 'var(--color-specialization-800)',
   spell: 'var(--color-spell-800)',
   user: 'var(--color-user-800)',
-  attribute: 'var(--color-attribute-800)',
+  condition: 'var(--color-condition-800)',
   capitalize: 'var(--color-capitalize-800)',
   breed: 'var(--color-breed-800)',
   consumable: 'var(--color-consumable-800)',
   scenario: 'var(--color-scenario-800)',
-  condition: 'var(--color-condition-800)',
+  'creature-trait': 'var(--color-creature-trait-800)',
 };
 
 /**
@@ -71,12 +71,12 @@ const ENTITY_TEXT_VAR = {
   specialization: 'var(--color-specialization-400)',
   spell: 'var(--color-spell-400)',
   user: 'var(--color-user-400)',
-  attribute: 'var(--color-attribute-400)',
+  condition: 'var(--color-condition-400)',
   capitalize: 'var(--color-capitalize-400)',
   breed: 'var(--color-breed-400)',
   consumable: 'var(--color-consumable-400)',
   scenario: 'var(--color-scenario-400)',
-  condition: 'var(--color-condition-400)',
+  'creature-trait': 'var(--color-creature-trait-400)',
 };
 
 const props = defineProps({

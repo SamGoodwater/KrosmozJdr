@@ -14,6 +14,7 @@ import { Monster } from '@/Models/Entity/Monster';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import EntityLanguagesEditor from '@/Pages/Organismes/entity/EntityLanguagesEditor.vue';
+import CreatureTraitsEditor from '@/Pages/Organismes/entity/CreatureTraitsEditor.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
@@ -39,6 +40,10 @@ const props = defineProps({
         default: () => []
     },
     availableLanguages: {
+        type: Array,
+        default: () => []
+    },
+    availableCreatureTraits: {
         type: Array,
         default: () => []
     }
@@ -165,6 +170,17 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
             :relations="monster.languages || []"
             :available-items="availableLanguages"
             :entity-id="monster.id"
+        />
+
+        <CreatureTraitsEditor
+            v-if="monster.id"
+            :relations="monster.creatureTraits || []"
+            :available-items="availableCreatureTraits"
+            :entity-id="monster.id"
+            route-name="entities.monsters.updateCreatureTraits"
+            route-param-name="monster"
+            title="Traits du monstre"
+            help="Traits innés du monstre. Ces traits sont attachés directement à sa créature et n'ont pas de niveau d'activation."
         />
     </Container>
 </template>

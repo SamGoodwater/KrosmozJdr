@@ -65,6 +65,10 @@ export class Monster extends BaseModel {
         return this._data.creature || null;
     }
 
+    get creatureTraits() {
+        return this.creature?.creatureTraits || [];
+    }
+
     get monsterRace() {
         return this._data.monsterRace || null;
     }

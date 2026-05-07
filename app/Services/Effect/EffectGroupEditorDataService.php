@@ -10,7 +10,7 @@ use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
-use App\Models\SpellState;
+use App\Models\Entity\Condition;
 use App\Models\SubEffect;
 use Illuminate\Support\Collection;
 
@@ -73,7 +73,7 @@ final class EffectGroupEditorDataService
             'label' => $m->creature?->name ?? (string) $m->id,
         ])->values()->all();
 
-        $spellStates = SpellState::query()
+        $conditions = Condition::query()
             ->orderBy('name')
             ->get(['id', 'dofusdb_id', 'name', 'icon'])
             ->map(fn ($st) => [
@@ -98,7 +98,7 @@ final class EffectGroupEditorDataService
             'characteristics' => config('effect_sub_effects.characteristics', []),
             'characteristics_object' => $this->characteristicsObjectForEffectEditor(),
             'monsters' => $monsters,
-            'spell_states' => $spellStates,
+            'conditions' => $conditions,
             'scopes' => [
                 ['value' => 'general', 'label' => 'Général'],
                 ['value' => 'combat', 'label' => 'Combat'],

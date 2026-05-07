@@ -20,6 +20,7 @@ import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
 import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
+import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
@@ -76,6 +77,13 @@ const linkedCapabilities = computed(() => {
 
 const hasLinkedCapabilities = computed(() => linkedCapabilities.value.length > 0);
 
+const linkedCreatureTraits = computed(() => {
+    const raw = entity.value?._data?.creatureTraits ?? entity.value?.creatureTraits;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
+
 const hasSpellSlots = computed(() => {
     const raw = entity.value?._data ?? entity.value;
     return buildSpellSlotGroups(raw).length > 0;
@@ -111,6 +119,11 @@ const handleAction = async (actionKey) => {
         default:
             emit("action", actionKey, props.breed);
     }
+};
+
+const handleLinkedQuickView = (linkedEntity) => {
+    if (!linkedEntity) return;
+    emit("action", "quick-view", linkedEntity);
 };
 </script>
 
@@ -160,7 +173,7 @@ const handleAction = async (actionKey) => {
                                     display="icon-only"
                                     size="xs"
                                     :whitelist="['pin', 'copy-link', 'quick-view', 'quick-edit']"
-                                    @action="(k) => handleAction(k)"
+                                    @action="handleAction"
                                 />
                             </div>
                         </div>
@@ -192,12 +205,16 @@ const handleAction = async (actionKey) => {
                             v-if="hasLinkedCapabilities"
                             :capabilities="linkedCapabilities"
                             density="text"
+                            lightweight
+                            @open-capability="handleLinkedQuickView"
                         />
                         <BreedVariantsDisplay
                             v-if="hasSpellSlots"
                             :breed="entity?._data ?? entity"
                             density="text"
+                            lightweight
                             :show-temple-note="false"
+                            @open-spell="handleLinkedQuickView"
                         />
                         <div
                             v-if="hasLinkedLanguages"
@@ -260,7 +277,7 @@ const handleAction = async (actionKey) => {
                                     display="icon-only"
                                     size="xs"
                                     :whitelist="['pin', 'copy-link', 'quick-view', 'quick-edit']"
-                                    @action="(k) => handleAction(k)"
+                                    @action="handleAction"
                                 />
                             </div>
                         </div>
@@ -292,12 +309,22 @@ const handleAction = async (actionKey) => {
                             v-if="hasLinkedCapabilities"
                             :capabilities="linkedCapabilities"
                             density="text"
+                            lightweight
+                            @open-capability="handleLinkedQuickView"
+                        />
+                        <CreatureTraitBadges
+                            v-if="hasLinkedCreatureTraits"
+                            :traits="linkedCreatureTraits"
+                            show-level
+                            size="xs"
                         />
                         <BreedVariantsDisplay
                             v-if="hasSpellSlots"
                             :breed="entity?._data ?? entity"
                             density="text"
+                            lightweight
                             :show-temple-note="false"
+                            @open-spell="handleLinkedQuickView"
                         />
                         <div
                             v-if="hasLinkedLanguages"

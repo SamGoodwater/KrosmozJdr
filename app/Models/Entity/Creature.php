@@ -121,8 +121,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property int $created_by
- * @property-read Collection<int, Attribute> $attributes
- * @property-read int|null $attributes_count
+ * @property-read Collection<int, Condition> $conditions
+ * @property-read int|null $conditions_count
  * @property-read Collection<int, Capability> $capabilities
  * @property-read int|null $capabilities_count
  * @property-read Collection<int, Consumable> $consumables
@@ -277,7 +277,7 @@ class Creature extends Model implements HasMedia
     public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[name]';
 
     /**
-     * The attributes that are mass assignable.
+     * The conditions that are mass assignable.
      *
      * @var list<string>
      */
@@ -389,7 +389,7 @@ class Creature extends Model implements HasMedia
     ];
 
     /**
-     * The attributes that should be cast.
+     * The conditions that should be cast.
      *
      * @var array<string, string>
      */
@@ -410,9 +410,15 @@ class Creature extends Model implements HasMedia
     /**
      * Les attributs de la créature.
      */
-    public function attributes()
+    public function conditions()
     {
-        return $this->belongsToMany(Attribute::class, 'attribute_creature');
+        return $this->belongsToMany(Condition::class, 'condition_creature');
+    }
+
+    public function creatureTraits()
+    {
+        return $this->belongsToMany(CreatureTrait::class, 'creature_creature_trait')
+            ->withTimestamps();
     }
 
     /**

@@ -123,9 +123,10 @@ const ENTITY_COMPONENT_MAP = {
     'breeds': 'Breed',
     'campaigns': 'Campaign',
     'scenarios': 'Scenario',
-    'attributes': 'Attribute',
+    'conditions': 'Condition',
     'panoplies': 'Panoply',
     'capabilities': 'Capability',
+    'creature-traits': 'CreatureTrait',
     'specializations': 'Specialization',
     'shops': 'Shop',
 };

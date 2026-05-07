@@ -113,6 +113,13 @@ class Specialization extends Model implements HasMedia
         return $this->belongsToMany(Capability::class, 'capability_specialization');
     }
 
+    public function creatureTraits()
+    {
+        return $this->belongsToMany(CreatureTrait::class, 'creature_trait_specialization')
+            ->withPivot('level')
+            ->withTimestamps();
+    }
+
     /**
      * Les PNJ de cette spécialisation.
      */

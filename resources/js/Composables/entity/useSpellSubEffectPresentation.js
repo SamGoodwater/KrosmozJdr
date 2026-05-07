@@ -185,13 +185,13 @@ export function buildUnifiedSubEffectModel(input) {
                 row.summon_monster.id != null
                     ? row.summon_monster
                     : null,
-            spellState:
-                row.spell_state && typeof row.spell_state === "object" && row.spell_state.id != null
-                    ? row.spell_state
+            condition:
+                row.condition && typeof row.condition === "object" && row.condition.id != null
+                    ? row.condition
                     : null,
-            stateName:
-                typeof params.state_name === "string" && params.state_name.trim() !== ""
-                    ? params.state_name.trim()
+            conditionName:
+                typeof params.condition_name === "string" && params.condition_name.trim() !== ""
+                    ? params.condition_name.trim()
                     : null,
             cellsFormula: cellsF !== "" ? cellsF : null,
             cellsDisplay: null,
@@ -266,10 +266,27 @@ export function buildUnifiedSubEffectModel(input) {
             chip.summon_monster.id != null
                 ? chip.summon_monster
                 : null,
-        spellState: null,
-        stateName:
-            typeof chip.state_name === "string" && chip.state_name.trim() !== ""
-                ? chip.state_name.trim()
+        condition:
+            chip.condition_context &&
+            typeof chip.condition_context === "object" &&
+            (chip.condition_context.condition_id != null || chip.condition_context.condition_dofusdb_id != null)
+                ? {
+                      id: chip.condition_context.condition_id ?? chip.condition_context.condition_dofusdb_id,
+                      dofusdb_id: chip.condition_context.condition_dofusdb_id ?? null,
+                      name:
+                          typeof chip.condition_context.condition_name === "string" &&
+                          chip.condition_context.condition_name.trim() !== ""
+                              ? chip.condition_context.condition_name.trim()
+                              : null,
+                      icon: null,
+                  }
+                : null,
+        conditionName:
+            typeof chip.condition_name === "string" && chip.condition_name.trim() !== ""
+                ? chip.condition_name.trim()
+                : typeof chip.condition_context?.condition_name === "string" &&
+                    chip.condition_context.condition_name.trim() !== ""
+                  ? chip.condition_context.condition_name.trim()
                 : null,
         cellsFormula: null,
         cellsDisplay: cd !== "" ? cd : null,

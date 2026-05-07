@@ -39,6 +39,10 @@ export class Specialization extends BaseModel {
         return this._data.capabilities || [];
     }
 
+    get creatureTraits() {
+        return this._data.creatureTraits || [];
+    }
+
     get npcs() {
         return this._data.npcs || [];
     }

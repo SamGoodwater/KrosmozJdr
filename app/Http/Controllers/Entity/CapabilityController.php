@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Entity;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreCapabilityRequest;
+use App\Http\Requests\Entity\UpdateCapabilityConditionsRequest;
 use App\Http\Requests\Entity\UpdateCapabilityRequest;
 use App\Http\Resources\Entity\CapabilityResource;
+use App\Http\Resources\Entity\ConditionResource;
 use App\Models\Entity\Capability;
+use App\Models\Entity\Condition;
 use App\Services\PdfService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +24,7 @@ class CapabilityController extends Controller
     {
         $this->authorize('viewAny', Capability::class);
 
-        $query = Capability::with(['createdBy', 'specializations', 'creatures']);
+        $query = Capability::with(['createdBy', 'specializations', 'creatures', 'conditions']);
 
         if (request()->has('search') && request()->search) {
             $search = request()->search;
@@ -90,7 +93,7 @@ class CapabilityController extends Controller
     {
         $this->authorize('view', $capability);
 
-        $capability->load(['createdBy', 'specializations', 'creatures']);
+        $capability->load(['createdBy', 'specializations', 'creatures', 'conditions']);
 
         return Inertia::render('Pages/entity/capability/Show', [
             'capability' => new CapabilityResource($capability),
@@ -104,10 +107,13 @@ class CapabilityController extends Controller
      */
     protected function buildCapabilityEditPayload(Capability $capability): array
     {
-        $capability->load(['createdBy', 'specializations', 'creatures']);
+        $capability->load(['createdBy', 'specializations', 'creatures', 'conditions']);
 
         return [
             'capability' => $capability,
+            'availableConditions' => ConditionResource::collection(
+                Condition::query()->orderBy('name')->limit(5000)->get()
+            )->toArray(request()),
         ];
     }
 
@@ -122,6 +128,7 @@ class CapabilityController extends Controller
 
         return Inertia::render('Pages/entity/capability/Edit', [
             'capability' => new CapabilityResource($payload['capability']),
+            'availableConditions' => $payload['availableConditions'],
         ]);
     }
 
@@ -136,6 +143,7 @@ class CapabilityController extends Controller
 
         return response()->json([
             'capability' => (new CapabilityResource($payload['capability']))->toArray(request()),
+            'availableConditions' => $payload['availableConditions'],
         ]);
     }
 
@@ -152,7 +160,7 @@ class CapabilityController extends Controller
 
         $capability->update($data);
 
-        $capability->load(['createdBy', 'specializations', 'creatures']);
+        $capability->load(['createdBy', 'specializations', 'creatures', 'conditions']);
 
         $successMessage = 'Capacité mise à jour avec succès.';
 
@@ -172,6 +180,14 @@ class CapabilityController extends Controller
 
         return redirect()->route('entities.capabilities.show', $capability)
             ->with('success', $successMessage);
+    }
+
+    public function updateConditions(UpdateCapabilityConditionsRequest $request, Capability $capability): RedirectResponse
+    {
+        $capability->conditions()->sync($request->validatedConditionIds());
+
+        return redirect()->back()
+            ->with('success', 'Conditions de la capacité mises à jour.');
     }
 
     /**

@@ -135,12 +135,12 @@ class SubEffectSeeder extends Seeder
             [
                 'slug' => 'appliquer-etat',
                 'type_slug' => 'appliquer-etat',
-                'template_text' => 'Applique l\'état [state_name].',
-                'variables_allowed' => ['state_name'],
+                'template_text' => 'Applique l\'état [condition_name].',
+                'variables_allowed' => ['condition_name'],
                 'param_schema' => [
                     'action' => 'appliquer-etat',
                     'params' => [
-                        ['key' => 'spell_state_id', 'type' => 'spell_state', 'label' => 'État'],
+                        ['key' => 'condition_id', 'type' => 'condition', 'label' => 'État'],
                         ['key' => 'dispellable', 'type' => 'bool', 'label' => 'Dissipable', 'optional' => true],
                     ],
                 ],
@@ -148,12 +148,12 @@ class SubEffectSeeder extends Seeder
             [
                 'slug' => 's-appliquer-etat',
                 'type_slug' => 's-appliquer-etat',
-                'template_text' => 'S\'applique l\'état [state_name].',
-                'variables_allowed' => ['state_name'],
+                'template_text' => 'S\'applique l\'état [condition_name].',
+                'variables_allowed' => ['condition_name'],
                 'param_schema' => [
                     'action' => 's-appliquer-etat',
                     'params' => [
-                        ['key' => 'spell_state_id', 'type' => 'spell_state', 'label' => 'État'],
+                        ['key' => 'condition_id', 'type' => 'condition', 'label' => 'État'],
                         ['key' => 'dispellable', 'type' => 'bool', 'label' => 'Dissipable', 'optional' => true],
                     ],
                 ],

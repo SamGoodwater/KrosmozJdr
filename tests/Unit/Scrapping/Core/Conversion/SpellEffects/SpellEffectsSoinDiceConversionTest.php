@@ -9,7 +9,7 @@ use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Jdr\DiceNotationService;
 use App\Services\Scrapping\Config\DofusDbEffectCatalog;
-use App\Services\Scrapping\Config\DofusDbSpellStateCatalog;
+use App\Services\Scrapping\Config\DofusDbConditionCatalog;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectConversionFormulaResolver;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
@@ -54,7 +54,7 @@ class SpellEffectsSoinDiceConversionTest extends TestCase
 
         $catalog = $this->createMock(DofusDbEffectCatalog::class);
         $catalog->method('get')->willReturn(['elementId' => 2]);
-        $stateCatalog = $this->createMock(DofusDbSpellStateCatalog::class);
+        $stateCatalog = $this->createMock(DofusDbConditionCatalog::class);
         $stateCatalog->method('get')->willReturn([]);
 
         $this->service = new SpellEffectsConversionService(

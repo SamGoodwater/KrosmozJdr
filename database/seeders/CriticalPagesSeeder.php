@@ -18,6 +18,7 @@ class CriticalPagesSeeder extends Seeder
     {
         $defaultCreatorId = $this->resolveDefaultCreatorId();
         $this->ensureLegalMarkdownFiles();
+        $this->ensureEntityMenuIcons();
 
         $homePage = $this->createOrRestoreBySlug([
             'title' => 'Accueil',
@@ -41,9 +42,9 @@ class CriticalPagesSeeder extends Seeder
             $defaultCreatorId
         );
 
-        $etatsPage = $this->createOrRestoreBySlug([
-            'title' => 'États',
-            'slug' => 'etats',
+        $conditionsPage = $this->createOrRestoreBySlug([
+            'title' => 'Conditions',
+            'slug' => 'conditions',
             'in_menu' => false,
             'state' => Page::STATE_PLAYABLE,
             'read_level' => User::ROLE_GUEST,
@@ -53,14 +54,55 @@ class CriticalPagesSeeder extends Seeder
             'parent_id' => null,
             'created_by' => $defaultCreatorId,
             'page_css_classes' => 'color-condition-500',
-        ], 'Page États');
+        ], 'Page Conditions');
 
         $this->ensureTextSection(
-            $etatsPage,
-            'etats-intro',
-            'Les états',
-            '<p>Les états sont des effets temporaires applicables aux créatures. Consulte la section <strong>3.2.5. Traits et états</strong> des règles pour plus de détails.</p>',
+            $conditionsPage,
+            'conditions-intro',
+            'Les conditions',
+            '<p>Les conditions sont des états temporaires applicables aux créatures. Elles modélisent les états temporaires, séparément des caractéristiques et des traits permanents.</p>',
             1,
+            $defaultCreatorId
+        );
+
+        $this->ensureEntityTableSection(
+            $conditionsPage,
+            'conditions-table',
+            'Liste des conditions',
+            'conditions',
+            2,
+            $defaultCreatorId
+        );
+
+        $traitsPage = $this->createOrRestoreBySlug([
+            'title' => 'Traits',
+            'slug' => 'creature-traits',
+            'in_menu' => false,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'menu_order' => 0,
+            'menu_group' => null,
+            'parent_id' => null,
+            'created_by' => $defaultCreatorId,
+            'page_css_classes' => 'color-creature-trait-500',
+        ], 'Page Traits');
+
+        $this->ensureTextSection(
+            $traitsPage,
+            'creature-traits-intro',
+            'Les traits',
+            '<p>Les traits sont des propriétés permanentes et non dissipables attachées aux créatures, classes ou spécialisations.</p>',
+            1,
+            $defaultCreatorId
+        );
+
+        $this->ensureEntityTableSection(
+            $traitsPage,
+            'creature-traits-table',
+            'Liste des traits',
+            'creature-traits',
+            2,
             $defaultCreatorId
         );
 
@@ -228,6 +270,59 @@ class CriticalPagesSeeder extends Seeder
             'params' => [
                 'content' => $contentHtml,
             ],
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $creatorId,
+        ];
+
+        if ($section) {
+            if ($section->trashed()) {
+                $section->restore();
+            }
+            $section->fill($attributes);
+            $section->save();
+            $this->command?->info("♻️ Section {$slug} restaurée/mise à jour");
+            return $section;
+        }
+
+        $section = Section::create($attributes);
+        $this->command?->info("✅ Section {$slug} créée");
+
+        return $section;
+    }
+
+
+    private function ensureEntityTableSection(
+        Page $page,
+        string $slug,
+        string $title,
+        string $entity,
+        int $order,
+        ?int $creatorId
+    ): Section {
+        $section = Section::withTrashed()
+            ->where('page_id', $page->id)
+            ->where('slug', $slug)
+            ->first();
+
+        $payload = [
+            'entity' => $entity,
+            'filters' => [],
+            'limit' => 50,
+            'columns' => [],
+        ];
+
+        $attributes = [
+            'page_id' => $page->id,
+            'title' => $title,
+            'slug' => $slug,
+            'order' => $order,
+            'template' => SectionType::ENTITY_TABLE->value,
+            'type' => SectionType::ENTITY_TABLE->value,
+            'settings' => $payload,
+            'data' => $payload,
+            'params' => $payload,
             'state' => Section::STATE_PLAYABLE,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_ADMIN,
@@ -421,6 +516,34 @@ Derniere mise a jour : 2026-03-19
 - Conditions generales d'utilisation (CGU)
 - Politique de confidentialite et cookies
 MD;
+    }
+
+    /**
+     * Assure les fichiers WebP attendus par le menu (clés {@see \resources\js\config\entities.js}) :
+     * `condition.webp`, `creature-trait.webp`.
+     *
+     * Copie idempotente depuis des icônes existantes si le cible manque.
+     */
+    private function ensureEntityMenuIcons(): void
+    {
+        $dir = storage_path('app/public/images/icons/entities');
+        if (! is_dir($dir)) {
+            return;
+        }
+
+        $creatureTrait = $dir.DIRECTORY_SEPARATOR.'creature-trait.webp';
+        $trait = $dir.DIRECTORY_SEPARATOR.'trait.webp';
+        if (! is_file($creatureTrait) && is_file($trait)) {
+            copy($trait, $creatureTrait);
+            $this->command?->info('CriticalPagesSeeder : creature-trait.webp créé à partir de trait.webp.');
+        }
+
+        $condition = $dir.DIRECTORY_SEPARATOR.'condition.webp';
+        $fallback = $dir.DIRECTORY_SEPARATOR.'spell.webp';
+        if (! is_file($condition) && is_file($fallback)) {
+            copy($fallback, $condition);
+            $this->command?->info('CriticalPagesSeeder : condition.webp créé à partir de spell.webp (placeholder).');
+        }
     }
 }
 

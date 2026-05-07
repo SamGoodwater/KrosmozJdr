@@ -10,7 +10,7 @@ use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Jdr\DiceNotationService;
 use App\Services\Scrapping\Config\DofusDbEffectCatalog;
-use App\Services\Scrapping\Config\DofusDbSpellStateCatalog;
+use App\Services\Scrapping\Config\DofusDbConditionCatalog;
 use Illuminate\Support\Str;
 
 /**
@@ -34,7 +34,7 @@ final class SpellEffectsConversionService
 
     public function __construct(
         private DofusDbEffectCatalog $effectCatalog,
-        private DofusDbSpellStateCatalog $spellStateCatalog,
+        private DofusDbConditionCatalog $conditionCatalog,
         private DofusdbEffectMappingService $mappingService,
         private SpellEffectConversionFormulaResolver $formulaResolver,
         private DofusConversionService $dofusConversion,
@@ -111,7 +111,7 @@ final class SpellEffectsConversionService
             }
 
             $definition = $this->effectCatalog->get($effectId, $lang);
-            $stateData = $this->resolveSpellStateData($instance, $definition, $lang);
+            $stateData = $this->resolveConditionData($instance, $definition, $lang);
 
             if ($stateData !== null) {
                 $subEffects[] = [
@@ -189,20 +189,29 @@ final class SpellEffectsConversionService
     private function buildParamsForState(array $instance, array $stateData, int $effectId): array
     {
         $params = [
-            'state_dofusdb_id' => (int) ($stateData['id'] ?? 0),
-            'state_name' => $this->extractLocalizedValue($stateData['name'] ?? null, 'fr'),
-            'state_icon' => isset($stateData['icon']) ? (string) $stateData['icon'] : null,
-            'state_image' => isset($stateData['img']) ? (string) $stateData['img'] : null,
+            'condition_dofusdb_id' => (int) ($stateData['id'] ?? 0),
+            'condition_name' => $this->extractLocalizedValue($stateData['name'] ?? null, 'fr'),
+            'condition_icon' => isset($stateData['icon']) ? (string) $stateData['icon'] : null,
+            'condition_image' => isset($stateData['img']) ? (string) $stateData['img'] : null,
             'dispellable' => isset($instance['dispellable']) ? (bool) $instance['dispellable'] : null,
             'target_mask' => isset($instance['targetMask']) ? (string) $instance['targetMask'] : null,
             'target_id' => isset($instance['targetId']) && is_numeric($instance['targetId']) ? (int) $instance['targetId'] : null,
             'dofus_effect_id' => $effectId,
-            'state_flags' => [
+            'condition_flags' => [
+                'prevents_spell_cast' => (bool) ($stateData['preventsSpellCast'] ?? false),
+                'prevents_fight' => (bool) ($stateData['preventsFight'] ?? false),
                 'cant_be_moved' => (bool) ($stateData['cantBeMoved'] ?? false),
                 'cant_be_pushed' => (bool) ($stateData['cantBePushed'] ?? false),
-                'prevents_spell_cast' => (bool) ($stateData['preventsSpellCast'] ?? false),
+                'cant_deal_damage' => (bool) ($stateData['cantDealDamage'] ?? false),
                 'invulnerable' => (bool) ($stateData['invulnerable'] ?? false),
+                'cant_switch_position' => (bool) ($stateData['cantSwitchPosition'] ?? false),
                 'incurable' => (bool) ($stateData['incurable'] ?? false),
+                'invulnerable_melee' => (bool) ($stateData['invulnerableMelee'] ?? false),
+                'invulnerable_range' => (bool) ($stateData['invulnerableRange'] ?? false),
+                'cant_tackle' => (bool) ($stateData['cantTackle'] ?? false),
+                'cant_be_tackled' => (bool) ($stateData['cantBeTackled'] ?? false),
+                'display_turn_remaining' => (bool) ($stateData['displayTurnRemaining'] ?? false),
+                'is_main_state' => (bool) ($stateData['isMainState'] ?? false),
             ],
         ];
         $this->addDurationToParams($instance, $params);
@@ -374,7 +383,7 @@ final class SpellEffectsConversionService
      * @param  array<string, mixed>  $definition
      * @return array<string, mixed>|null
      */
-    private function resolveSpellStateData(array $instance, array $definition, string $lang): ?array
+    private function resolveConditionData(array $instance, array $definition, string $lang): ?array
     {
         if (! $this->isStateEffectDefinition($definition)) {
             return null;
@@ -385,7 +394,7 @@ final class SpellEffectsConversionService
             return null;
         }
 
-        $state = $this->spellStateCatalog->get($stateId, $lang);
+        $state = $this->conditionCatalog->get($stateId, $lang);
         if ($state === []) {
             return ['id' => $stateId, 'name' => null];
         }

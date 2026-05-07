@@ -5,15 +5,18 @@ namespace App\Http\Controllers\Entity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreBreedRequest;
 use App\Http\Requests\Entity\UpdateBreedCapabilitiesRequest;
+use App\Http\Requests\Entity\UpdateBreedCreatureTraitsRequest;
 use App\Http\Requests\Entity\UpdateBreedLanguagesRequest;
 use App\Http\Requests\Entity\UpdateBreedRequest;
 use App\Http\Requests\Entity\UpdateBreedSpellsRequest;
 use App\Http\Resources\Entity\BreedResource;
 use App\Http\Resources\Entity\CapabilityResource;
+use App\Http\Resources\Entity\CreatureTraitResource;
 use App\Http\Resources\Entity\LanguageResource;
 use App\Http\Resources\Entity\SpellResource;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Capability;
+use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Language;
 use App\Models\Entity\Spell;
 use App\Services\Entity\SyncBreedElementOrientations;
@@ -106,6 +109,7 @@ class BreedController extends Controller
                 ->orderBy('spells.name'),
             'npcs' => fn ($q) => $q->limit(100),
             'capabilities' => fn ($q) => $q->orderBy('name'),
+            'creatureTraits' => fn ($q) => $q->orderBy('name'),
             'languages',
         ]);
 
@@ -126,6 +130,7 @@ class BreedController extends Controller
                 ->orderBy('breed_spell.choice_order')
                 ->orderBy('spells.name'),
             'capabilities' => fn ($q) => $q->orderBy('name'),
+            'creatureTraits' => fn ($q) => $q->orderBy('name'),
             'languages',
         ]);
 
@@ -147,6 +152,10 @@ class BreedController extends Controller
             Capability::query()->orderBy('name')->limit(5000)->get()
         )->toArray($req);
 
+        $availableCreatureTraits = CreatureTraitResource::collection(
+            CreatureTrait::query()->orderBy('name')->limit(5000)->get()
+        )->toArray($req);
+
         $availableLanguages = LanguageResource::collection(
             Language::query()->orderBy('name')->limit(5000)->get()
         )->toArray($req);
@@ -155,6 +164,7 @@ class BreedController extends Controller
             'breed' => new BreedResource($breed),
             'availableSpells' => $availableSpells,
             'availableCapabilities' => $availableCapabilities,
+            'availableCreatureTraits' => $availableCreatureTraits,
             'availableLanguages' => $availableLanguages,
             'breedOrientationKeys' => config('breed_element_orientations.allowed_orientation_keys', []),
         ]);
@@ -198,6 +208,14 @@ class BreedController extends Controller
 
         return redirect()->back()
             ->with('success', 'Capacités de la classe mises à jour.');
+    }
+
+    public function updateCreatureTraits(UpdateBreedCreatureTraitsRequest $request, Breed $breed): RedirectResponse
+    {
+        $breed->creatureTraits()->sync($request->validatedCreatureTraitSyncPayload());
+
+        return redirect()->back()
+            ->with('success', 'Traits de la classe mis à jour.');
     }
 
     public function updateLanguages(UpdateBreedLanguagesRequest $request, Breed $breed): RedirectResponse

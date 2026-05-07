@@ -88,6 +88,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Page whereReadLevel($value)
  * @method static Builder<static>|Page whereTitleCssClasses($value)
  * @method static Builder<static>|Page whereWriteLevel($value)
+ * @method static Builder<static>|Page whereSettings($value)
  * @mixin \Eloquent
  */
 class Page extends Model

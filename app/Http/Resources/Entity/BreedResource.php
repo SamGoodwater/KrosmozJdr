@@ -49,6 +49,7 @@ class BreedResource extends JsonResource
             'npcs' => $this->whenLoaded('npcs'),
             'spells' => $this->whenLoaded('spells'),
             'capabilities' => $this->whenLoaded('capabilities', fn () => CapabilityResource::collection($this->capabilities)->resolve($request)),
+            'creatureTraits' => $this->whenLoaded('creatureTraits', fn () => CreatureTraitResource::collection($this->creatureTraits)->resolve($request)),
             'languages' => $this->whenLoaded('languages', fn () => LanguageResource::collection($this->languages)->resolve($request)),
             'spell_slots' => $this->when(
                 $this->relationLoaded('spells'),

@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Entity;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreSpecializationRequest;
+use App\Http\Requests\Entity\UpdateSpecializationCreatureTraitsRequest;
 use App\Http\Requests\Entity\UpdateSpecializationRequest;
-use App\Models\Entity\Specialization;
+use App\Http\Resources\Entity\CreatureTraitResource;
 use App\Http\Resources\Entity\SpecializationResource;
+use App\Models\Entity\CreatureTrait;
+use App\Models\Entity\Specialization;
 use App\Services\PdfService;
 use Inertia\Inertia;
 
@@ -77,7 +80,18 @@ class SpecializationController extends Controller
      */
     public function edit(Specialization $specialization)
     {
-        //
+        $this->authorize('update', $specialization);
+
+        $specialization->load(['createdBy', 'capabilities', 'creatureTraits']);
+
+        $availableCreatureTraits = CreatureTraitResource::collection(
+            CreatureTrait::query()->orderBy('name')->limit(5000)->get()
+        )->toArray(request());
+
+        return Inertia::render('Pages/entity/specialization/Edit', [
+            'specialization' => new SpecializationResource($specialization),
+            'availableCreatureTraits' => $availableCreatureTraits,
+        ]);
     }
 
     /**
@@ -86,6 +100,14 @@ class SpecializationController extends Controller
     public function update(UpdateSpecializationRequest $request, Specialization $specialization)
     {
         //
+    }
+
+    public function updateCreatureTraits(UpdateSpecializationCreatureTraitsRequest $request, Specialization $specialization)
+    {
+        $specialization->creatureTraits()->sync($request->validatedCreatureTraitSyncPayload());
+
+        return redirect()->back()
+            ->with('success', 'Traits de la spécialisation mis à jour.');
     }
 
     /**

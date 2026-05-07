@@ -4,10 +4,10 @@
  * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
  */
 import {
-    formatSpellStateDispellable,
-    formatSpellStateDuration,
-    formatSpellStateMode,
-} from "@/Composables/spell/spellStateDisplay";
+    formatConditionDispellable,
+    formatConditionDuration,
+    formatConditionMode,
+} from "@/Composables/condition/conditionDisplay";
 
 /**
  * @param {{
@@ -208,8 +208,8 @@ export function useScrappingCompare(options) {
                 .map((s) => {
                     const slug = s?.sub_effect_slug ?? "?";
                     const order = s?.order != null ? `o${s.order}` : null;
-                    const stateId = s?.params?.state_dofusdb_id ?? null;
-                    const stateName = s?.params?.state_name ?? null;
+                    const conditionId = s?.params?.condition_dofusdb_id ?? null;
+                    const conditionName = s?.params?.condition_name ?? null;
                     const formula = s?.params?.value_formula ?? null;
                     const formulaCrit = s?.params?.value_formula_crit ?? null;
                     const converted = s?.params?.value_converted ?? null;
@@ -217,14 +217,14 @@ export function useScrappingCompare(options) {
                     const duration = s?.params?.duration ?? null;
                     const diceFormula = s?.params?.dice_formula ?? null;
                     const critOnly = s?.crit_only === true ? "crit-only" : null;
-                    if (stateId != null || stateName != null) {
-                        const mode = formatSpellStateMode(slug);
-                        const identity = [stateName, stateId != null ? `#${stateId}` : null].filter(Boolean).join(" ");
+                    if (conditionId != null || conditionName != null) {
+                        const mode = formatConditionMode(slug);
+                        const identity = [conditionName, conditionId != null ? `#${conditionId}` : null].filter(Boolean).join(" ");
                         const details = [
                             order,
                             mode,
-                            formatSpellStateDuration(duration),
-                            formatSpellStateDispellable(s?.params?.dispellable),
+                            formatConditionDuration(duration),
+                            formatConditionDispellable(s?.params?.dispellable),
                             critOnly,
                         ].filter(Boolean).join(" ");
                         return details ? `${slug} ${identity} ${details}` : `${slug} ${identity}`;

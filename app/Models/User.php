@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasMediaCustomNaming;
-use App\Models\Entity\Attribute;
+use App\Models\Entity\Condition;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Capability;
@@ -102,8 +102,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
  * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read Collection<int, Attribute> $createdAttributes
- * @property-read int|null $created_attributes_count
+ * @property-read Collection<int, Condition> $createdConditions
+ * @property-read int|null $created_conditions_count
  * @property-read Collection<int, Capability> $createdCapabilities
  * @property-read int|null $created_capabilities_count
  * @property-read Collection<int, Breed> $createdBreeds
@@ -196,7 +196,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     const SYSTEM_USER_EMAIL = 'system@krosmozjdr.local'; // Email unique pour identifier l'utilisateur système
 
     /**
-     * The attributes that are mass assignable.
+     * The conditions that are mass assignable.
      *
      * @var list<string>
      */
@@ -215,7 +215,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * The conditions that should be hidden for serialization.
      *
      * @var list<string>
      */
@@ -225,7 +225,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     ];
 
     /**
-     * The attributes that should be cast.
+     * The conditions that should be cast.
      *
      * @var array<string, string>
      */
@@ -539,9 +539,9 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
      *
      * @return HasMany
      */
-    public function createdAttributes()
+    public function createdConditions()
     {
-        return $this->hasMany(Attribute::class, 'created_by');
+        return $this->hasMany(Condition::class, 'created_by');
     }
 
     public function createdItems()

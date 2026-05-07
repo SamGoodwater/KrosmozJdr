@@ -58,11 +58,19 @@ export const ENTITY_ROUTE_CONFIG = {
     show: { name: "entities.capabilities.show", paramsMode: "scalar" },
     edit: { name: "entities.capabilities.edit", paramsMode: "object", paramKey: "capability" },
   },
-  attribute: {
-    show: { name: "entities.attributes.show", paramsMode: "scalar" },
+  condition: {
+    show: { name: "entities.conditions.show", paramsMode: "scalar" },
   },
   scenario: {
     show: { name: "entities.scenarios.show", paramsMode: "scalar" },
+  },
+  creatureTrait: {
+    show: { name: "entities.creature-traits.show", paramsMode: "scalar" },
+    edit: { name: "entities.creature-traits.edit", paramsMode: "scalar" },
+  },
+  "creature-traits": {
+    show: { name: "entities.creature-traits.show", paramsMode: "object", paramKey: "creatureTrait" },
+    edit: { name: "entities.creature-traits.edit", paramsMode: "object", paramKey: "creatureTrait" },
   },
   panoply: {
     show: { name: "entities.panoplies.show", paramsMode: "scalar" },

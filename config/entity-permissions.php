@@ -11,7 +11,8 @@
  * NB: Les permissions "par instance" restent exposées via les API Resources (champ `can`).
  */
 
-use App\Models\Entity\Attribute;
+use App\Models\Entity\Condition;
+use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Capability;
 use App\Models\Entity\Breed;
@@ -34,12 +35,13 @@ return [
     /**
      * Entités "core" (EntityTable entity-type)
      */
-    'attributes' => Attribute::class,
+    'conditions' => Condition::class,
     'campaigns' => Campaign::class,
     'capabilities' => Capability::class,
     'breeds' => Breed::class,
     'consumables' => Consumable::class,
     'creatures' => Creature::class,
+    'creature-traits' => CreatureTrait::class,
     'items' => Item::class,
     'monsters' => Monster::class,
     'npcs' => Npc::class,

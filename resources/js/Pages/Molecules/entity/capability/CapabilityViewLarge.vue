@@ -28,6 +28,7 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
+import ConditionBadges from "@/Pages/Molecules/entity/condition/ConditionBadges.vue";
 
 const props = defineProps({
     capability: {
@@ -154,6 +155,13 @@ const creatureLinks = computed(() => {
 });
 
 const invocationMonsters = computed(() => creatureLinks.value);
+
+const linkedConditions = computed(() => {
+    const raw = props.capability?.conditions ?? props.capability?._data?.conditions ?? [];
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedConditions = computed(() => linkedConditions.value.length > 0);
 
 /** Effets : HTML riche (pas d’éditeur d’effets structurés comme pour les sorts). */
 const effectHtml = computed(() => {
@@ -396,6 +404,11 @@ const handleAction = async (actionKey) => {
             <!-- eslint-disable-next-line vue/no-v-html -- contenu éditeur riche, sanitizé côté client -->
             <article v-if="effectHtml" class="prose prose-sm prose-invert max-w-none text-primary-100 capability-effect-prose" v-html="effectHtml" />
             <p v-else class="text-sm text-primary-400 italic">Aucun effet décrit (texte riche).</p>
+        </section>
+
+        <section v-if="hasLinkedConditions" class="space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Conditions</h3>
+            <ConditionBadges :conditions="linkedConditions" size="sm" />
         </section>
 
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">

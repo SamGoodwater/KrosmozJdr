@@ -32,7 +32,7 @@ const ENTITY_CONFIG = {
   specialization: { color: 'lime', label: 'Spécialisation' },
   spell: { color: 'violet', label: 'Sort' },
   user: { color: 'blue', label: 'Utilisateur' },
-  attribute: { color: 'yellow', label: 'Attribut' },
+  'creature-trait': { color: 'emerald', label: 'Trait' },
   capitalize: { color: 'slate', label: 'Capital' },
   breed: { color: 'teal', label: 'Classe' },
   capability: { color: 'fuchsia', label: 'Capacité' },

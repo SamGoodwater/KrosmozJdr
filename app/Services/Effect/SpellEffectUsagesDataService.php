@@ -151,7 +151,10 @@ final class SpellEffectUsagesDataService
                         'value_formula' => is_string($sub['value_formula'] ?? null) ? trim((string) $sub['value_formula']) : null,
                         'value_formula_crit' => is_string($sub['value_formula_crit'] ?? null) ? trim((string) $sub['value_formula_crit']) : null,
                         'life_steal_formula' => is_string($sub['life_steal_formula'] ?? null) ? trim((string) $sub['life_steal_formula']) : null,
-                        'state_name' => is_string($sub['state_name'] ?? null) && trim((string) $sub['state_name']) !== '' ? trim((string) $sub['state_name']) : null,
+                        'condition_id' => isset($sub['context']['condition_id']) && is_numeric($sub['context']['condition_id']) ? (int) $sub['context']['condition_id'] : null,
+                        'condition_dofusdb_id' => isset($sub['context']['condition_dofusdb_id']) && is_numeric($sub['context']['condition_dofusdb_id']) ? (int) $sub['context']['condition_dofusdb_id'] : null,
+                        'condition_name' => is_string($sub['condition_name'] ?? null) && trim((string) $sub['condition_name']) !== '' ? trim((string) $sub['condition_name']) : null,
+                        'condition_context' => $this->conditionContextForChip($sub),
                         'cells_display' => is_string($sub['cells_display'] ?? null) && trim((string) $sub['cells_display']) !== '' ? trim((string) $sub['cells_display']) : null,
                         'movement_kind' => is_string($sub['movement_kind'] ?? null) && trim((string) $sub['movement_kind']) !== '' ? trim((string) $sub['movement_kind']) : null,
                         'teleport' => (bool) ($sub['teleport'] ?? false),
@@ -197,6 +200,35 @@ final class SpellEffectUsagesDataService
         }
 
         return strtolower(trim((string) $el));
+    }
+
+    /**
+     * @param  array<string, mixed>  $sub
+     * @return array<string, mixed>|null
+     */
+    private function conditionContextForChip(array $sub): ?array
+    {
+        $ctx = $sub['context'] ?? null;
+        if (! is_array($ctx)) {
+            return null;
+        }
+
+        $hasCondition = in_array((string) ($sub['action_slug'] ?? ''), ['appliquer-etat', 's-appliquer-etat'], true)
+            || isset($ctx['condition_id'])
+            || isset($ctx['condition_dofusdb_id'])
+            || isset($ctx['condition_name']);
+        if (! $hasCondition) {
+            return null;
+        }
+
+        return [
+            'condition_id' => isset($ctx['condition_id']) && is_numeric($ctx['condition_id']) ? (int) $ctx['condition_id'] : null,
+            'condition_dofusdb_id' => isset($ctx['condition_dofusdb_id']) && is_numeric($ctx['condition_dofusdb_id']) ? (int) $ctx['condition_dofusdb_id'] : null,
+            'condition_name' => is_string($ctx['condition_name'] ?? null) && trim((string) $ctx['condition_name']) !== '' ? trim((string) $ctx['condition_name']) : null,
+            'duration' => isset($ctx['duration']) && is_numeric($ctx['duration']) ? (int) $ctx['duration'] : null,
+            'dispellable' => is_bool($ctx['dispellable'] ?? null) ? $ctx['dispellable'] : null,
+            'target_mask' => is_string($ctx['target_mask'] ?? null) && trim((string) $ctx['target_mask']) !== '' ? trim((string) $ctx['target_mask']) : null,
+        ];
     }
 
     /**

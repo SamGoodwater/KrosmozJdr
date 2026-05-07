@@ -902,11 +902,11 @@
     "file": "entity/spell/SpellSubEffectActionPresentation.vue"
   },
   {
-    "name": "SpellStateInline",
+    "name": "ConditionInline",
     "description": "État de sort — libellé + icône optionnelle (définitions d’effets).",
     "props": [
       {
-        "name": "spellState",
+        "name": "condition",
         "type": "{ id: number, name: string, icon?: string|null }",
         "desc": ""
       },
@@ -917,7 +917,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/spell/SpellStateInline.vue"
+    "file": "entity/spell/ConditionInline.vue"
   },
   {
     "name": "SpellMinimalUsageMetaRow",
@@ -2405,26 +2405,26 @@
     "file": "entity/breed/BreedCapabilitiesDisplay.vue"
   },
   {
-    "name": "AttributeViewText",
-    "description": "AttributeViewText — Vue Texte pour Attribute",
+    "name": "ConditionViewText",
+    "description": "ConditionViewText — Vue Texte pour Condition",
     "props": [
       {
-        "name": "attribute",
-        "type": "Attribute",
-        "desc": "- Instance du modèle Attribute"
+        "name": "condition",
+        "type": "Condition",
+        "desc": "- Instance du modèle Condition"
       }
     ],
     "slots": [],
-    "file": "entity/attribute/AttributeViewText.vue"
+    "file": "entity/condition/ConditionViewText.vue"
   },
   {
-    "name": "AttributeViewMinimal",
-    "description": "AttributeViewMinimal — Vue Minimal pour Attribute",
+    "name": "ConditionViewMinimal",
+    "description": "ConditionViewMinimal — Vue Minimal pour Condition",
     "props": [
       {
-        "name": "attribute",
-        "type": "Attribute",
-        "desc": "- Instance du modèle Attribute"
+        "name": "condition",
+        "type": "Condition",
+        "desc": "- Instance du modèle Condition"
       },
       {
         "name": "showActions",
@@ -2433,16 +2433,16 @@
       }
     ],
     "slots": [],
-    "file": "entity/attribute/AttributeViewMinimal.vue"
+    "file": "entity/condition/ConditionViewMinimal.vue"
   },
   {
-    "name": "AttributeViewLarge",
-    "description": "AttributeViewLarge — Vue Large pour Attribute",
+    "name": "ConditionViewLarge",
+    "description": "ConditionViewLarge — Vue Large pour Condition",
     "props": [
       {
-        "name": "attribute",
-        "type": "Attribute",
-        "desc": "- Instance du modèle Attribute"
+        "name": "condition",
+        "type": "Condition",
+        "desc": "- Instance du modèle Condition"
       },
       {
         "name": "showActions",
@@ -2451,16 +2451,16 @@
       }
     ],
     "slots": [],
-    "file": "entity/attribute/AttributeViewLarge.vue"
+    "file": "entity/condition/ConditionViewLarge.vue"
   },
   {
-    "name": "AttributeViewCompact",
-    "description": "AttributeViewCompact — Vue Compact pour Attribute",
+    "name": "ConditionViewCompact",
+    "description": "ConditionViewCompact — Vue Compact pour Condition",
     "props": [
       {
-        "name": "attribute",
-        "type": "Attribute",
-        "desc": "- Instance du modèle Attribute"
+        "name": "condition",
+        "type": "Condition",
+        "desc": "- Instance du modèle Condition"
       },
       {
         "name": "showActions",
@@ -2469,7 +2469,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/attribute/AttributeViewCompact.vue"
+    "file": "entity/condition/ConditionViewCompact.vue"
   },
   {
     "name": "ToggleField",

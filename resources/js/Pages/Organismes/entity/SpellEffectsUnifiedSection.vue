@@ -12,13 +12,13 @@ import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import EffectGroupEditorForm from '@/Pages/Organismes/entity/EffectGroupEditorForm.vue';
 import {
-    formatSpellStateDispellable,
-    formatSpellStateDuration,
-    formatSpellStateIdentity,
-    formatSpellStateMask,
-    formatSpellStateMode,
-    getSpellStateDispellableIcon,
-} from '@/Composables/spell/spellStateDisplay';
+    formatConditionDispellable,
+    formatConditionDuration,
+    formatConditionIdentity,
+    formatConditionMask,
+    formatConditionMode,
+    getConditionDispellableIcon,
+} from '@/Composables/condition/conditionDisplay';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 
 const props = defineProps({
@@ -207,23 +207,23 @@ function isStateSubEffect(sub) {
     return slug === 'appliquer-etat' || slug === "s-appliquer-etat";
 }
 
-function stateModeLabel(sub) {
-    return formatSpellStateMode(sub?.action_slug, { variant: 'table' });
+function conditionModeLabel(sub) {
+    return formatConditionMode(sub?.action_slug, { variant: 'table' });
 }
 
-function stateName(sub) {
+function conditionName(sub) {
     const ctx = sub?.context ?? {};
-    return formatSpellStateIdentity(ctx?.state_name, ctx?.state_dofusdb_id);
+    return formatConditionIdentity(ctx?.condition_name, ctx?.condition_dofusdb_id);
 }
 
-function stateMeta(sub) {
+function conditionMeta(sub) {
     const ctx = sub?.context ?? {};
-    const bits = [formatSpellStateDuration(ctx?.duration), formatSpellStateMask(ctx?.target_mask)].filter(Boolean);
+    const bits = [formatConditionDuration(ctx?.duration), formatConditionMask(ctx?.target_mask)].filter(Boolean);
     return bits.join(' · ');
 }
 
 function stateDispellableText(sub) {
-    return formatSpellStateDispellable(sub?.context?.dispellable);
+    return formatConditionDispellable(sub?.context?.dispellable);
 }
 
 function targetTypeLabel(type) {
@@ -436,14 +436,14 @@ defineExpose({ flushEffectGroupSave });
                                     <template v-if="isStateSubEffect(sub)">
                                         <span class="flex flex-wrap items-center gap-1">
                                             <Icon
-                                                v-if="getSpellStateDispellableIcon(sub?.context?.dispellable)"
-                                                :source="getSpellStateDispellableIcon(sub?.context?.dispellable)"
+                                                v-if="getConditionDispellableIcon(sub?.context?.dispellable)"
+                                                :source="getConditionDispellableIcon(sub?.context?.dispellable)"
                                                 size="xs"
                                                 class="opacity-80"
                                             />
-                                            <span class="font-medium">{{ stateModeLabel(sub) }}</span>
-                                            <span>{{ stateName(sub) }}</span>
-                                            <span v-if="stateMeta(sub)" class="text-base-content/60">{{ stateMeta(sub) }}</span>
+                                            <span class="font-medium">{{ conditionModeLabel(sub) }}</span>
+                                            <span>{{ conditionName(sub) }}</span>
+                                            <span v-if="conditionMeta(sub)" class="text-base-content/60">{{ conditionMeta(sub) }}</span>
                                             <span v-if="stateDispellableText(sub)" class="text-base-content/50">{{
                                                 stateDispellableText(sub)
                                             }}</span>

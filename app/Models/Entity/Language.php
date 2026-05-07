@@ -14,8 +14,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $name
  * @property string|null $description
  * @property string $color Hex #RRGGBB
- *
  * @method static LanguageFactory factory($count = null, $state = [])
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
+ * @property-read int|null $breeds_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Monster> $monsters
+ * @property-read int|null $monsters_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereColor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Language extends Model
 {

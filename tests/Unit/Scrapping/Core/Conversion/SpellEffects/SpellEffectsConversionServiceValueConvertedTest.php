@@ -9,7 +9,7 @@ use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Jdr\DiceNotationService;
 use App\Services\Scrapping\Config\DofusDbEffectCatalog;
-use App\Services\Scrapping\Config\DofusDbSpellStateCatalog;
+use App\Services\Scrapping\Config\DofusDbConditionCatalog;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectConversionFormulaResolver;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
@@ -37,7 +37,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
 
         $catalog = $this->createMock(DofusDbEffectCatalog::class);
         $catalog->method('get')->willReturn(['elementId' => 4]);
-        $stateCatalog = $this->createMock(DofusDbSpellStateCatalog::class);
+        $stateCatalog = $this->createMock(DofusDbConditionCatalog::class);
         $stateCatalog->method('get')->willReturn([]);
 
         $mappingService = $this->app->make(DofusdbEffectMappingService::class);
@@ -125,7 +125,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
     {
         $catalog = $this->createMock(DofusDbEffectCatalog::class);
         $catalog->method('get')->willReturn(['characteristic' => 19]);
-        $stateCatalog = $this->createMock(DofusDbSpellStateCatalog::class);
+        $stateCatalog = $this->createMock(DofusDbConditionCatalog::class);
         $stateCatalog->method('get')->willReturn([]);
 
         DofusdbEffectMapping::query()->updateOrCreate(
@@ -170,7 +170,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
     {
         $catalog = $this->createMock(DofusDbEffectCatalog::class);
         $catalog->method('get')->willReturn(['characteristic' => 19]);
-        $stateCatalog = $this->createMock(DofusDbSpellStateCatalog::class);
+        $stateCatalog = $this->createMock(DofusDbConditionCatalog::class);
         $stateCatalog->method('get')->willReturn([]);
 
         DofusdbEffectMapping::query()->updateOrCreate(
@@ -218,7 +218,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
             'description' => ['fr' => 'Etat #3'],
         ]);
 
-        $stateCatalog = $this->createMock(DofusDbSpellStateCatalog::class);
+        $stateCatalog = $this->createMock(DofusDbConditionCatalog::class);
         $stateCatalog->method('get')->with(97, 'fr')->willReturn([
             'id' => 97,
             'name' => ['fr' => 'Indéplaçable'],
@@ -258,8 +258,8 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
         $params = is_array($subEffect['params'] ?? null) ? $subEffect['params'] : [];
 
         $this->assertSame('s-appliquer-etat', $subEffect['sub_effect_slug'] ?? null);
-        $this->assertSame(97, $params['state_dofusdb_id'] ?? null);
-        $this->assertSame('Indéplaçable', $params['state_name'] ?? null);
+        $this->assertSame(97, $params['condition_dofusdb_id'] ?? null);
+        $this->assertSame('Indéplaçable', $params['condition_name'] ?? null);
         $this->assertSame(2, $params['duration'] ?? null);
         $this->assertTrue((bool) ($params['dispellable'] ?? false));
     }

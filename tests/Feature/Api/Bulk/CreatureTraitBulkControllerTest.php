@@ -1,0 +1,145 @@
+<?php
+
+namespace Tests\Feature\Api\Bulk;
+
+use App\Models\User;
+use App\Models\Entity\CreatureTrait;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+/**
+ * Tests Feature pour CreatureTraitBulkController
+ *
+ * @description
+ * Vérifie que :
+ * - Un admin peut mettre à jour plusieurs traits en masse
+ * - La validation fonctionne correctement
+ * - Seuls les champs fournis sont modifiés
+ */
+class CreatureTraitBulkControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+    }
+
+    /**
+     * Test : Un admin peut mettre à jour plusieurs traits en masse
+     */
+    public function test_admin_can_bulk_update_creature_traits(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $creatureTrait1 = CreatureTrait::factory()->create([
+            'name' => 'CreatureTrait 1',
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $creatureTrait2 = CreatureTrait::factory()->create([
+            'name' => 'CreatureTrait 2',
+            'read_level' => User::ROLE_USER,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/creature-traits/bulk', [
+                'ids' => [$creatureTrait1->id, $creatureTrait2->id],
+                'read_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertOk()
+            ->assertJson(['success' => true])
+            ->assertJsonStructure([
+                'success',
+                'summary' => ['requested', 'updated', 'errors'],
+            ]);
+
+        $this->assertDatabaseHas('creature_traits', [
+            'id' => $creatureTrait1->id,
+            'read_level' => User::ROLE_ADMIN,
+        ]);
+        $this->assertDatabaseHas('creature_traits', [
+            'id' => $creatureTrait2->id,
+            'read_level' => User::ROLE_ADMIN,
+        ]);
+    }
+
+    /**
+     * Test : La validation échoue avec des IDs invalides
+     */
+    public function test_validation_fails_with_invalid_ids(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/creature-traits/bulk', [
+                'ids' => [99999, 99998],
+                'read_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('ids.0');
+    }
+
+    /**
+     * Test : Seuls les champs fournis sont modifiés
+     */
+    public function test_only_provided_fields_are_updated(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $creatureTrait = CreatureTrait::factory()->create([
+            'name' => 'Original Name',
+            'description' => 'Original Description',
+            'read_level' => User::ROLE_GUEST,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/creature-traits/bulk', [
+                'ids' => [$creatureTrait->id],
+                'read_level' => User::ROLE_ADMIN,
+                // name et description ne sont pas modifiés
+            ]);
+
+        $response->assertOk();
+
+        $creatureTrait->refresh();
+        $this->assertEquals(User::ROLE_ADMIN, $creatureTrait->read_level);
+        $this->assertEquals('Original Name', $creatureTrait->name); // Non modifié
+        $this->assertEquals('Original Description', $creatureTrait->description); // Non modifié
+    }
+
+    /**
+     * Test : Un utilisateur non-admin ne peut pas faire de bulk update
+     */
+    public function test_user_cannot_bulk_update_creatureTraits(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+        $creatureTrait = CreatureTrait::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->patchJson('/api/entities/creature-traits/bulk', [
+                'ids' => [$creatureTrait->id],
+                'read_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertForbidden();
+    }
+
+    /**
+     * Test : La validation échoue si aucun champ n'est fourni
+     */
+    public function test_validation_fails_if_no_fields_provided(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $creatureTrait = CreatureTrait::factory()->create();
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/creature-traits/bulk', [
+                'ids' => [$creatureTrait->id],
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJson(['success' => false])
+            ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
+    }
+}

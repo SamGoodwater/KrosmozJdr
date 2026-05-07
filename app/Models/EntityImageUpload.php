@@ -21,14 +21,12 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property Carbon $updated_at
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class EntityImageUpload extends Model implements HasMedia

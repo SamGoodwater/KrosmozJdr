@@ -47,16 +47,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $spells_count
  * @property-read Collection<int, Capability> $capabilities
  * @property-read int|null $capabilities_count
- *
  * @method static \Database\Factories\Entity\BreedFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed query()
- *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereAutoUpdate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedBy($value)
@@ -79,14 +76,14 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
- *
  * @property string|null $life
  * @property-read Collection<int, BreedElementOrientation> $elementOrientations
  * @property-read int|null $element_orientations_count
  * @property-read BreedSpellPivot|null $pivot
- *
  * @method static Builder<static>|Breed visibleToUser(?\App\Models\User $user)
- *
+ * @property-read Collection<int, \App\Models\Entity\Language> $languages
+ * @property-read int|null $languages_count
+ * @method static Builder<static>|Breed whereEvolution($value)
  * @mixin \Eloquent
  */
 class Breed extends Model implements HasMedia
@@ -214,6 +211,13 @@ class Breed extends Model implements HasMedia
     public function capabilities()
     {
         return $this->belongsToMany(Capability::class, 'breed_capability', 'breed_id', 'capability_id')
+            ->withTimestamps();
+    }
+
+    public function creatureTraits()
+    {
+        return $this->belongsToMany(CreatureTrait::class, 'breed_creature_trait')
+            ->withPivot('level')
             ->withTimestamps();
     }
 

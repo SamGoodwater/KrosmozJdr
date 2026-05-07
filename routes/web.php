@@ -27,7 +27,8 @@ require __DIR__.'/admin/dofusdb-effect-mappings.php';
 require __DIR__.'/admin/effects.php';
 require __DIR__.'/admin/project-maintenance.php';
 
-require __DIR__.'/entities/attribute.php';
+require __DIR__.'/entities/condition.php';
+require __DIR__.'/entities/creature-trait.php';
 require __DIR__.'/entities/campaign.php';
 require __DIR__.'/entities/capability.php';
 require __DIR__.'/entities/breed.php';

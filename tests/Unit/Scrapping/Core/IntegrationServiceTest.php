@@ -10,6 +10,9 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
+use App\Models\Effect;
+use App\Models\EffectSubEffect;
+use App\Models\Entity\Condition;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
@@ -194,6 +197,86 @@ class IntegrationServiceTest extends TestCase
         $this->assertNotNull($spell);
         $this->assertSame('Sort Integration Test', $spell->name);
         $this->assertSame('54321', $spell->dofusdb_id);
+    }
+
+    public function test_integrate_condition_persists_local_reference_in_sub_effect_params(): void
+    {
+        $this->createSystemUser();
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '54322',
+                'name' => 'Sort État Integration Test',
+                'description' => 'Description',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Sort État Integration Test', 'slug' => 'sort-etat-integration-test'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Sort État Integration Test',
+                        'slug' => 'sort-etat-integration-test-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'appliquer-etat',
+                                'params' => [
+                                    'condition_dofusdb_id' => 987654,
+                                    'condition_name' => 'Pesanteur Test',
+                                    'condition_icon' => 'icons/states/pesanteur.webp',
+                                    'duration' => 2,
+                                    'dispellable' => true,
+                                    'target_mask' => 'A',
+                                    'dofus_effect_id' => 950,
+                                    'condition_flags' => [
+                                        'cant_be_moved' => true,
+                                        'cant_deal_damage' => true,
+                                        'cant_be_tackled' => true,
+                                    ],
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+
+        $condition = Condition::where('dofusdb_id', 987654)->first();
+        $this->assertNotNull($condition);
+        $this->assertSame('Pesanteur Test', $condition->name);
+        $this->assertTrue($condition->cant_be_moved);
+        $this->assertTrue($condition->cant_deal_damage);
+        $this->assertTrue($condition->cant_be_tackled);
+
+        $pivotParams = EffectSubEffect::query()->firstOrFail()->params;
+        $this->assertSame($condition->id, $pivotParams['condition_id'] ?? null);
+        $this->assertSame(987654, $pivotParams['condition_dofusdb_id'] ?? null);
+        $this->assertSame('Pesanteur Test', $pivotParams['condition_name'] ?? null);
+
+        $attachedState = $spell->conditions()->first();
+        $this->assertNotNull($attachedState);
+        $this->assertSame($condition->id, $attachedState->id);
+        $this->assertSame('target', $attachedState->pivot->application_mode);
+        $this->assertSame(2, $attachedState->pivot->duration);
+        $this->assertTrue((bool) $attachedState->pivot->dispellable);
+        $this->assertSame('A', $attachedState->pivot->target_mask);
+
+        $secondResult = $this->service->integrate('spell', $convertedData, ['force_update' => true]);
+        $this->assertTrue($secondResult->isSuccess());
+        $this->assertSame(1, Effect::query()->count());
+        $this->assertSame(1, EffectSubEffect::query()->count());
     }
 
     public function test_integrate_spell_infere_element_et_types_depuis_sous_effets(): void

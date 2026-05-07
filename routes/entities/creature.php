@@ -20,6 +20,7 @@ Route::prefix('entities/creatures')->name('entities.creatures.')->middleware('au
     Route::patch('/{creature}/items', [CreatureController::class, 'updateItems'])->name('updateItems');
     Route::patch('/{creature}/resources', [CreatureController::class, 'updateResources'])->name('updateResources');
     Route::patch('/{creature}/consumables', [CreatureController::class, 'updateConsumables'])->name('updateConsumables');
+    Route::patch('/{creature}/creature-traits', [CreatureController::class, 'updateCreatureTraits'])->name('updateCreatureTraits');
     Route::patch('/{creature}/spells', [CreatureController::class, 'updateSpells'])->name('updateSpells');
     Route::get('/{creature}/pdf', [CreatureController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{creature}', [CreatureController::class, 'update'])->name('update');

@@ -648,7 +648,7 @@
       {
         "name": "entityType",
         "type": "String",
-        "desc": "- Type d'entité (ex: 'attributes', 'resources', 'items')"
+        "desc": "- Type d'entité (ex: 'conditions', 'resources', 'items')"
       },
       {
         "name": "open",

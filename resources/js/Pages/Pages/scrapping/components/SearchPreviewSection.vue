@@ -14,12 +14,12 @@ import EntityDiffTable from './EntityDiffTable.vue';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import { getSectionLabel, getFieldLabel } from './previewDiffLabels';
 import {
-    formatSpellStateDispellable,
-    formatSpellStateDuration,
-    formatSpellStateMask,
-    formatSpellStateMode,
-    getSpellStateDispellableIcon,
-} from '@/Composables/spell/spellStateDisplay';
+    formatConditionDispellable,
+    formatConditionDuration,
+    formatConditionMask,
+    formatConditionMode,
+    getConditionDispellableIcon,
+} from '@/Composables/condition/conditionDisplay';
 
 const props = defineProps({
     entityType: {
@@ -118,9 +118,9 @@ const rangeCount = computed(() => {
 /**
  * Extrait les états détectés depuis les sous-effets convertis (appliquer-etat / s-appliquer-etat).
  * @param {any} converted
- * @returns {{ stateId: number|null, stateName: string, mode: 'self'|'target', duration: number|null, dispellable: boolean|null }[]}
+ * @returns {{ conditionId: number|null, conditionName: string, mode: 'self'|'target', duration: number|null, dispellable: boolean|null }[]}
  */
-function extractSpellStatesFromConverted(converted) {
+function extractConditionsFromConverted(converted) {
     const effects = converted?.spell_effects?.effects;
     if (!Array.isArray(effects) || effects.length === 0) return [];
 
@@ -132,8 +132,8 @@ function extractSpellStatesFromConverted(converted) {
             if (slug !== 'appliquer-etat' && slug !== 's-appliquer-etat') continue;
             const params = sub?.params ?? {};
             rows.push({
-                stateId: Number.isFinite(Number(params?.state_dofusdb_id)) ? Number(params.state_dofusdb_id) : null,
-                stateName: String(params?.state_name || 'État inconnu'),
+                conditionId: Number.isFinite(Number(params?.condition_dofusdb_id)) ? Number(params.condition_dofusdb_id) : null,
+                conditionName: String(params?.condition_name || 'État inconnu'),
                 mode: slug === 's-appliquer-etat' ? 'self' : 'target',
                 duration: Number.isFinite(Number(params?.duration)) ? Number(params.duration) : null,
                 dispellable: typeof params?.dispellable === 'boolean' ? params.dispellable : null,
@@ -143,13 +143,13 @@ function extractSpellStatesFromConverted(converted) {
 
     const dedup = new Map();
     for (const row of rows) {
-        const key = `${row.mode}|${row.stateId ?? 'x'}|${row.stateName}|${row.duration ?? 'x'}|${row.dispellable ?? 'x'}`;
+        const key = `${row.mode}|${row.conditionId ?? 'x'}|${row.conditionName}|${row.duration ?? 'x'}|${row.dispellable ?? 'x'}`;
         if (!dedup.has(key)) dedup.set(key, row);
     }
     return [...dedup.values()];
 }
 
-const previewSpellStates = computed(() => extractSpellStatesFromConverted(previewData.value?.converted));
+const previewConditions = computed(() => extractConditionsFromConverted(previewData.value?.converted));
 
 /** Retourne l'effet à l'index donné (pour la simulation des sorts). */
 function getEffectByIndex(index) {
@@ -580,7 +580,7 @@ const handleImport = () => {
             </Alert>
 
             <Alert
-                v-if="entityType === 'spell' && previewSpellStates.length > 0"
+                v-if="entityType === 'spell' && previewConditions.length > 0"
                 color="secondary"
                 variant="soft"
                 class="text-sm"
@@ -588,16 +588,16 @@ const handleImport = () => {
                 <p class="font-semibold text-secondary mb-2 flex items-center gap-2">
                     <Icon source="fa-solid fa-wand-magic-sparkles" alt="" pack="solid" class="shrink-0" />
                     États détectés dans le sort
-                    <Badge :content="String(previewSpellStates.length)" color="secondary" size="xs" />
+                    <Badge :content="String(previewConditions.length)" color="secondary" size="xs" />
                 </p>
                 <div class="flex flex-wrap gap-2">
                     <Badge
-                        v-for="(st, sidx) in previewSpellStates"
-                        :key="`${st.mode}-${st.stateId}-${sidx}`"
+                        v-for="(st, sidx) in previewConditions"
+                        :key="`${st.mode}-${st.conditionId}-${sidx}`"
                         color="secondary"
                         size="sm"
                         variant="outline"
-                        :content="`${st.stateName}${st.stateId != null ? ` (#${st.stateId})` : ''} · ${formatSpellStateMode(st.mode)}${formatSpellStateDuration(st.duration) ? ` · ${formatSpellStateDuration(st.duration)}` : ''}${formatSpellStateDispellable(st.dispellable) ? ` · ${formatSpellStateDispellable(st.dispellable)}` : ''}`"
+                        :content="`${st.conditionName}${st.conditionId != null ? ` (#${st.conditionId})` : ''} · ${formatConditionMode(st.mode)}${formatConditionDuration(st.duration) ? ` · ${formatConditionDuration(st.duration)}` : ''}${formatConditionDispellable(st.dispellable) ? ` · ${formatConditionDispellable(st.dispellable)}` : ''}`"
                     />
                 </div>
             </Alert>
@@ -736,23 +736,23 @@ const handleImport = () => {
                                     <span v-if="sub.params?.value_converted != null" class="text-secondary-400" title="Valeur convertie (Phase 3)">→ {{ sub.params.value_converted }}</span>
                                     <span v-if="sub.params?.dice_formula" class="text-accent-400 font-mono" title="Notation dés (convertToDice)">→ {{ sub.params.dice_formula }}</span>
                                     <span v-if="sub.params?.characteristic" class="text-primary-400">({{ sub.params.characteristic }})</span>
-                                    <span v-if="sub.params?.state_name || sub.params?.state_dofusdb_id" class="text-secondary-300">
+                                    <span v-if="sub.params?.condition_name || sub.params?.condition_dofusdb_id" class="text-secondary-300">
                                         → état:
-                                        {{ sub.params?.state_name || '—' }}
-                                        <span v-if="sub.params?.state_dofusdb_id != null">(#{{ sub.params.state_dofusdb_id }})</span>
+                                        {{ sub.params?.condition_name || '—' }}
+                                        <span v-if="sub.params?.condition_dofusdb_id != null">(#{{ sub.params.condition_dofusdb_id }})</span>
                                     </span>
-                                    <span v-if="sub.params?.duration != null" class="text-primary-400">{{ formatSpellStateDuration(sub.params.duration) }}</span>
+                                    <span v-if="sub.params?.duration != null" class="text-primary-400">{{ formatConditionDuration(sub.params.duration) }}</span>
                                     <span v-if="sub.params?.dispellable != null" class="text-primary-400">
                                         <Icon
-                                            v-if="getSpellStateDispellableIcon(sub.params.dispellable)"
-                                            :source="getSpellStateDispellableIcon(sub.params.dispellable)"
-                                            :alt="formatSpellStateDispellable(sub.params.dispellable) || ''"
+                                            v-if="getConditionDispellableIcon(sub.params.dispellable)"
+                                            :source="getConditionDispellableIcon(sub.params.dispellable)"
+                                            :alt="formatConditionDispellable(sub.params.dispellable) || ''"
                                             size="xs"
                                             class="mr-1"
                                         />
-                                        {{ formatSpellStateDispellable(sub.params.dispellable) }}
+                                        {{ formatConditionDispellable(sub.params.dispellable) }}
                                     </span>
-                                    <span v-if="sub.params?.target_mask" class="text-primary-400">{{ formatSpellStateMask(sub.params.target_mask) }}</span>
+                                    <span v-if="sub.params?.target_mask" class="text-primary-400">{{ formatConditionMask(sub.params.target_mask) }}</span>
                                 </li>
                             </ul>
                         </div>

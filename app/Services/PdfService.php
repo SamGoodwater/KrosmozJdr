@@ -160,7 +160,7 @@ class PdfService
             'creature' => ['createdBy', 'npc', 'monster'],
             'resource' => ['createdBy', 'resourceType', 'consumables'],
             'consumable' => ['createdBy', 'consumableType', 'resources'],
-            'attribute' => ['createdBy', 'creatures'],
+            'condition' => ['createdBy', 'creatures'],
             'capability' => ['createdBy', 'specializations', 'creatures'],
             'specialization' => ['createdBy', 'capabilities', 'npcs'],
             'shop' => ['createdBy', 'npc', 'items', 'consumables', 'resources'],
@@ -241,7 +241,7 @@ class PdfService
                 'consumable_type' => $entity->consumableType?->name ?? null,
                 'dofusdb_id' => $entity->dofusdb_id,
             ],
-            'attribute' => [
+            'condition' => [
                 'state' => $entity->state ?? null,
                 'read_level' => $entity->read_level ?? null,
                 'write_level' => $entity->write_level ?? null,

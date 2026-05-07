@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Entity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreMonsterRequest;
 use App\Http\Requests\Entity\UpdateMonsterLanguagesRequest;
+use App\Http\Requests\Entity\UpdateMonsterCreatureTraitsRequest;
 use App\Http\Requests\Entity\UpdateMonsterRequest;
+use App\Http\Resources\Entity\CreatureTraitResource;
 use App\Http\Resources\Entity\LanguageResource;
 use App\Http\Resources\Entity\MonsterResource;
 use App\Models\Entity\Campaign;
+use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Language;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Scenario;
@@ -93,7 +96,7 @@ class MonsterController extends Controller
         $this->authorize('view', $monster);
 
         $monster->load([
-            'creature',
+            'creature.creatureTraits',
             'monsterRace',
             'scenarios',
             'campaigns',
@@ -113,7 +116,7 @@ class MonsterController extends Controller
     {
         $this->authorize('update', $monster);
 
-        $monster->load(['creature', 'monsterRace', 'scenarios', 'campaigns', 'spellInvocations', 'languages']);
+        $monster->load(['creature.creatureTraits', 'monsterRace', 'scenarios', 'campaigns', 'spellInvocations', 'languages']);
 
         // Charger toutes les entités disponibles pour la recherche
         $availableScenarios = Scenario::select('id', 'name', 'description')
@@ -132,12 +135,17 @@ class MonsterController extends Controller
             Language::query()->orderBy('name')->limit(5000)->get()
         )->toArray(request());
 
+        $availableCreatureTraits = CreatureTraitResource::collection(
+            CreatureTrait::query()->orderBy('name')->limit(5000)->get()
+        )->toArray(request());
+
         return Inertia::render('Pages/entity/monster/Edit', [
             'monster' => new MonsterResource($monster),
             'availableScenarios' => $availableScenarios,
             'availableCampaigns' => $availableCampaigns,
             'availableSpells' => $availableSpells,
             'availableLanguages' => $availableLanguages,
+            'availableCreatureTraits' => $availableCreatureTraits,
         ]);
     }
 
@@ -166,6 +174,21 @@ class MonsterController extends Controller
 
         return redirect()->route('entities.monsters.show', $monster)
             ->with('success', 'Monstre mis à jour avec succès.');
+    }
+
+    public function updateCreatureTraits(UpdateMonsterCreatureTraitsRequest $request, Monster $monster): RedirectResponse
+    {
+        $this->authorize('update', $monster);
+        $creature = $monster->creature;
+        if (! $creature) {
+            return redirect()->back()
+                ->withErrors(['creature_traits' => 'Ce monstre n’a pas de créature associée.']);
+        }
+
+        $creature->creatureTraits()->sync($request->validatedCreatureTraitIds());
+
+        return redirect()->back()
+            ->with('success', 'Traits du monstre mis à jour.');
     }
 
     /**

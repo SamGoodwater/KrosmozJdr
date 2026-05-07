@@ -13,6 +13,7 @@ import { Breed } from "@/Models/Entity/Breed";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import BreedSpellSlotsEditor from "@/Pages/Organismes/entity/BreedSpellSlotsEditor.vue";
 import BreedCapabilitiesEditor from "@/Pages/Organismes/entity/BreedCapabilitiesEditor.vue";
+import CreatureTraitsEditor from "@/Pages/Organismes/entity/CreatureTraitsEditor.vue";
 import EntityLanguagesEditor from "@/Pages/Organismes/entity/EntityLanguagesEditor.vue";
 import BreedElementOrientationsEditor from "@/Pages/Organismes/entity/BreedElementOrientationsEditor.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
@@ -40,6 +41,10 @@ const props = defineProps({
         default: () => [],
     },
     availableCapabilities: {
+        type: Array,
+        default: () => [],
+    },
+    availableCreatureTraits: {
         type: Array,
         default: () => [],
     },
@@ -119,6 +124,18 @@ const confirmDelete = () => {
             :relations="breed.capabilities || []"
             :available-items="availableCapabilities"
             :entity-id="breed.id"
+        />
+
+        <CreatureTraitsEditor
+            v-if="breed.id"
+            :relations="breed.creatureTraits || []"
+            :available-items="availableCreatureTraits"
+            :entity-id="breed.id"
+            route-name="entities.breeds.updateCreatureTraits"
+            route-param-name="breed"
+            title="Traits de classe"
+            help="Traits permanents gagnés par les personnages de cette classe. Le niveau indique quand le trait devient actif."
+            with-level
         />
 
         <EntityLanguagesEditor

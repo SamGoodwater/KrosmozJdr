@@ -25,6 +25,7 @@ import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import ConditionBadges from "@/Pages/Molecules/entity/condition/ConditionBadges.vue";
 
 const props = defineProps({
     capability: {
@@ -109,6 +110,13 @@ const descriptionFull = computed(() => {
     const d = entity.value?.description ?? entity.value?._data?.description;
     return d && String(d).trim() ? String(d) : "";
 });
+
+const linkedConditions = computed(() => {
+    const raw = entity.value?.conditions ?? entity.value?._data?.conditions ?? [];
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedConditions = computed(() => linkedConditions.value.length > 0);
 
 /** Texte d’effets (champ `effect`) : extrait pour tooltips / fallback. */
 const effectPlainText = computed(() => {
@@ -230,6 +238,11 @@ const handleAction = async (actionKey) => {
                         </p>
                     </div>
                 </div>
+                <ConditionBadges
+                    v-if="hasLinkedConditions"
+                    :conditions="linkedConditions"
+                    size="xs"
+                />
                 <div
                     v-if="hasEffectText"
                     class="group/effect w-full pt-1.5 mt-1 border-glass-t-sm bg-primary/5 rounded-md px-1.5 py-1"

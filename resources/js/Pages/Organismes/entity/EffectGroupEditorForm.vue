@@ -30,7 +30,7 @@ const props = defineProps({
             scopes: [],
             characteristics: [],
             monsters: [],
-            spell_states: [],
+            conditions: [],
             characteristics_object: [],
         }),
     },
@@ -59,6 +59,15 @@ const props = defineProps({
 });
 
 const notificationStore = useNotificationStore();
+const localConditions = ref([]);
+
+watch(
+    () => props.options.conditions,
+    (conditions) => {
+        localConditions.value = [...(conditions ?? [])];
+    },
+    { immediate: true, deep: true },
+);
 
 const common = reactive({
     name: '',
@@ -89,9 +98,9 @@ function defaultParamsForSubEffect() {
         value_formula_crit: '',
         life_steal_formula: '',
         monster_id: '',
-        spell_state_id: '',
-        state_dofusdb_id: '',
-        state_name: '',
+        condition_id: '',
+        condition_dofusdb_id: '',
+        condition_name: '',
         dispellable: false,
         cells_formula: '',
         movement_kind: 'movement',
@@ -187,13 +196,13 @@ function subEffectSlugForRow(row) {
 }
 
 /** @param {object} row */
-function rowHasSpellStateParam(row) {
+function rowHasConditionParam(row) {
     const slug = subEffectSlugForRow(row);
     if (slug === 'appliquer-etat' || slug === 's-appliquer-etat') {
         return true;
     }
     const schema = getParamSchemaForRow(row);
-    return schema?.params?.some((p) => p.key === 'spell_state_id' || p.type === 'spell_state') ?? false;
+    return schema?.params?.some((p) => p.key === 'condition_id' || p.type === 'condition') ?? false;
 }
 
 /** @param {object} row */
@@ -271,10 +280,10 @@ function deplacementMetersPreview(row) {
 }
 
 /**
- * @param {object} st - entrée spell_states
+ * @param {object} st - entrée conditions
  * @returns {string|null}
  */
-function spellStateIconSource(st) {
+function conditionIconSource(st) {
     if (!st?.icon || typeof st.icon !== 'string' || st.icon.trim() === '') {
         return null;
     }
@@ -289,9 +298,9 @@ function spellStateIconSource(st) {
  * @param {object} row
  * @returns {Array<object>}
  */
-function filteredSpellStatesForRow(row) {
-    const list = props.options.spell_states ?? [];
-    const q = String(row._editor_spell_state_q ?? '')
+function filteredConditionsForRow(row) {
+    const list = localConditions.value ?? [];
+    const q = String(row._editor_condition_q ?? '')
         .trim()
         .toLowerCase();
     let out = list;
@@ -310,29 +319,53 @@ function filteredSpellStatesForRow(row) {
  * @param {object} row
  * @param {object} st
  */
-function selectSpellState(row, st) {
-    row.params.spell_state_id = st.id;
-    row.params.state_dofusdb_id = st.dofusdb_id;
-    row.params.state_name = st.name ?? '';
+function selectCondition(row, st) {
+    row.params.condition_id = st.id;
+    row.params.condition_dofusdb_id = st.dofusdb_id;
+    row.params.condition_name = st.name ?? '';
+}
+
+async function createConditionForRow(row) {
+    const name = String(row._editor_condition_q ?? '').trim();
+    if (!name) {
+        return;
+    }
+
+    try {
+        const { data } = await axios.post(route('entities.conditions.store'), {
+            name,
+            description: null,
+            state: 'playable',
+            read_level: 0,
+            write_level: 4,
+        });
+        localConditions.value = [...localConditions.value, data];
+        selectCondition(row, data);
+        row._editor_condition_q = '';
+        notificationStore.success('Condition créée et sélectionnée.', { duration: 2500, placement: 'top-right' });
+    } catch (error) {
+        notificationStore.error('Impossible de créer la condition.', { duration: 5000, placement: 'top-center' });
+        console.warn('[EffectGroupEditorForm] création condition échouée', error);
+    }
 }
 
 /**
  * @param {object} params
  */
-function resolveSpellStateIdFromLegacy(params) {
+function resolveConditionIdFromLegacy(params) {
     if (params == null || typeof params !== 'object') {
         return;
     }
-    if (params.spell_state_id != null && params.spell_state_id !== '') {
+    if (params.condition_id != null && params.condition_id !== '') {
         return;
     }
-    const dof = params.state_dofusdb_id;
+    const dof = params.condition_dofusdb_id;
     if (dof == null || dof === '') {
         return;
     }
-    const match = (props.options.spell_states ?? []).find((st) => Number(st.dofusdb_id) === Number(dof));
+    const match = (localConditions.value ?? []).find((st) => Number(st.dofusdb_id) === Number(dof));
     if (match) {
-        params.spell_state_id = match.id;
+        params.condition_id = match.id;
     }
 }
 
@@ -431,13 +464,13 @@ function mapSubEffectsFromApi(subEffects) {
             logic_operator,
             logic_condition: s.logic_condition ?? '',
             crit_only: s.crit_only ?? false,
-            _editor_spell_state_q: '',
+            _editor_condition_q: '',
             params: (() => {
                 const merged = {
                     ...defaultParamsForSubEffect(),
                     ...(s.params && typeof s.params === 'object' ? s.params : {}),
                 };
-                resolveSpellStateIdFromLegacy(merged);
+                resolveConditionIdFromLegacy(merged);
                 if (merged.dispellable == null) {
                     merged.dispellable = false;
                 }
@@ -506,14 +539,14 @@ function addSubEffect() {
         logic_operator: isLinked ? 'AND' : '',
         logic_condition: '',
         crit_only: false,
-        _editor_spell_state_q: '',
+        _editor_condition_q: '',
         params: defaultParamsForSubEffect(),
     });
 }
 
 function onSubEffectChange(row) {
     row.params = { ...defaultParamsForSubEffect() };
-    row._editor_spell_state_q = '';
+    row._editor_condition_q = '';
 }
 
 function removeSubEffect(index) {
@@ -1002,10 +1035,10 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
 
                                     <div v-if="row.sub_effect_id" class="p-3 space-y-4">
                                         <!-- État (référentiel local) -->
-                                        <div v-if="rowHasSpellStateParam(row)" class="space-y-2 max-w-xl">
+                                        <div v-if="rowHasConditionParam(row)" class="space-y-2 max-w-xl">
                                             <label class="text-xs font-medium text-base-content/80">État</label>
                                             <input
-                                                v-model="row._editor_spell_state_q"
+                                                v-model="row._editor_condition_q"
                                                 type="search"
                                                 class="input input-bordered input-sm w-full"
                                                 placeholder="Rechercher par nom ou n°…"
@@ -1015,29 +1048,41 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                                                 class="menu menu-xs bg-base-200 rounded-box max-h-48 overflow-y-auto border border-base-300 p-1"
                                                 role="listbox"
                                             >
-                                                <li v-for="st in filteredSpellStatesForRow(row)" :key="st.id">
+                                                <li v-for="st in filteredConditionsForRow(row)" :key="st.id">
                                                     <button
                                                         type="button"
                                                         class="flex items-center gap-2 text-left rounded-btn"
                                                         :class="
-                                                            Number(row.params.spell_state_id) === Number(st.id)
+                                                            Number(row.params.condition_id) === Number(st.id)
                                                                 ? 'bg-primary text-primary-content'
                                                                 : ''
                                                         "
-                                                        @click="selectSpellState(row, st)"
+                                                        @click="selectCondition(row, st)"
                                                     >
                                                         <Icon
-                                                            v-if="spellStateIconSource(st)"
-                                                            :source="spellStateIconSource(st)"
+                                                            v-if="conditionIconSource(st)"
+                                                            :source="conditionIconSource(st)"
                                                             :alt="st.name || ''"
                                                             size="xs"
                                                         />
                                                         <span class="truncate">{{ st.name }} ({{ st.dofusdb_id }})</span>
                                                     </button>
                                                 </li>
+                                                <li v-if="String(row._editor_condition_q ?? '').trim()">
+                                                    <button
+                                                        type="button"
+                                                        class="flex items-center gap-2 text-left rounded-btn text-primary font-medium"
+                                                        @click="createConditionForRow(row)"
+                                                    >
+                                                        <Icon source="fa-solid fa-plus" size="xs" />
+                                                        <span class="truncate">
+                                                            Créer « {{ String(row._editor_condition_q ?? '').trim() }} »
+                                                        </span>
+                                                    </button>
+                                                </li>
                                             </ul>
                                             <label
-                                                v-if="rowHasSpellStateParam(row)"
+                                                v-if="rowHasConditionParam(row)"
                                                 class="flex items-center gap-2 cursor-pointer"
                                             >
                                                 <input

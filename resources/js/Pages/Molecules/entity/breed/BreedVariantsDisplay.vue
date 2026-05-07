@@ -8,6 +8,9 @@
 import { computed } from "vue";
 import SpellViewText from "@/Pages/Molecules/entity/spell/SpellViewText.vue";
 import SpellViewMinimal from "@/Pages/Molecules/entity/spell/SpellViewMinimal.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { Spell } from "@/Models/Entity/Spell";
 import { splitBreedSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 
@@ -30,7 +33,13 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    lightweight: {
+        type: Boolean,
+        default: false,
+    },
 });
+
+const emit = defineEmits(["open-spell"]);
 
 const rawBreed = computed(() => props.breed?._data ?? props.breed);
 
@@ -42,12 +51,25 @@ const alwaysList = computed(() => split.value.alwaysAvailableGroups);
 const hasVariants = computed(() => variantGroupsList.value.some((g) => (g.spells || []).length > 0));
 const hasAlways = computed(() => alwaysList.value.some((g) => (g.spells || []).length > 0));
 const hasAny = computed(() => hasVariants.value || hasAlways.value);
+const ICON_LIMIT = 12;
 
 /**
  * @param {object} raw
  * @returns {Spell}
  */
 const asSpellModel = (raw) => (raw instanceof Spell ? raw : new Spell(raw));
+
+const allVariantSpells = computed(() => variantGroupsList.value.flatMap((g) => g.spells || []));
+const allAlwaysSpells = computed(() => alwaysList.value.flatMap((g) => g.spells || []));
+
+const variantPreview = computed(() => allVariantSpells.value.slice(0, ICON_LIMIT).map((s) => asSpellModel(s)));
+const alwaysPreview = computed(() => allAlwaysSpells.value.slice(0, ICON_LIMIT).map((s) => asSpellModel(s)));
+const hiddenVariantCount = computed(() => Math.max(0, allVariantSpells.value.length - variantPreview.value.length));
+const hiddenAlwaysCount = computed(() => Math.max(0, allAlwaysSpells.value.length - alwaysPreview.value.length));
+
+const spellName = (spell) => spell?.name || spell?._data?.name || "Sort";
+const spellImage = (spell) => spell?.image || spell?._data?.image || "";
+const openSpell = (spell) => emit("open-spell", spell);
 
 /**
  * @param {{ character_level: number, slot_index: number }} g
@@ -174,7 +196,28 @@ const variantTitle = (g) => {
             <!-- density === text : Minimal / Line -->
             <div v-if="hasVariants" class="space-y-1 text-[11px] leading-snug text-base-content/85">
                 <div class="text-[10px] font-semibold uppercase tracking-wide text-base-content/50">Variantes</div>
+                <div v-if="lightweight" class="flex flex-wrap items-center gap-1.5">
+                    <Tooltip v-for="s in variantPreview" :key="`vt-i-${s.id}`" :content="spellName(s)" placement="top">
+                        <button
+                            type="button"
+                            class="btn btn-ghost btn-xs btn-square"
+                            :aria-label="`Ouvrir ${spellName(s)}`"
+                            @click.stop="openSpell(s)"
+                        >
+                            <Image
+                                v-if="spellImage(s)"
+                                :source="spellImage(s)"
+                                :alt="spellName(s)"
+                                fit="contain"
+                                class="h-4 w-4"
+                            />
+                            <Icon v-else source="fa-solid fa-wand-magic-sparkles" size="xs" />
+                        </button>
+                    </Tooltip>
+                    <span v-if="hiddenVariantCount > 0" class="text-[10px] text-base-content/60">+{{ hiddenVariantCount }}</span>
+                </div>
                 <div
+                    v-else
                     v-for="(group, gIdx) in variantGroupsList"
                     :key="`vt-${group.character_level}-${group.slot_index}-${gIdx}`"
                     class="flex flex-wrap gap-x-1 gap-y-0.5"
@@ -197,7 +240,27 @@ const variantTitle = (g) => {
                 <div class="text-[10px] font-semibold uppercase tracking-wide text-base-content/50">
                     Sorts toujours dispo.
                 </div>
-                <div class="flex flex-wrap gap-x-1 gap-y-0.5">
+                <div v-if="lightweight" class="flex flex-wrap items-center gap-1.5">
+                    <Tooltip v-for="s in alwaysPreview" :key="`ta-i-${s.id}`" :content="spellName(s)" placement="top">
+                        <button
+                            type="button"
+                            class="btn btn-ghost btn-xs btn-square"
+                            :aria-label="`Ouvrir ${spellName(s)}`"
+                            @click.stop="openSpell(s)"
+                        >
+                            <Image
+                                v-if="spellImage(s)"
+                                :source="spellImage(s)"
+                                :alt="spellName(s)"
+                                fit="contain"
+                                class="h-4 w-4"
+                            />
+                            <Icon v-else source="fa-solid fa-wand-magic-sparkles" size="xs" />
+                        </button>
+                    </Tooltip>
+                    <span v-if="hiddenAlwaysCount > 0" class="text-[10px] text-base-content/60">+{{ hiddenAlwaysCount }}</span>
+                </div>
+                <div v-else class="flex flex-wrap gap-x-1 gap-y-0.5">
                     <template v-for="group in alwaysList" :key="`ta-${group.character_level}-${group.slot_index}`">
                         <template v-for="s in group.spells || []" :key="`ta-sp-${s.id}`">
                             <span class="spell-text-embed inline-flex min-w-0 max-w-full">

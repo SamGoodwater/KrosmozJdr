@@ -9,7 +9,7 @@ use App\Models\Effect;
 use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
 use App\Models\Entity\Monster;
-use App\Models\SpellState;
+use App\Models\Entity\Condition;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 
 /**
@@ -37,11 +37,11 @@ final class EffectResolutionService
     /** @var array<string, string> */
     private array $characteristicLabelByKeyCache = [];
 
-    /** @var array<int, string> id spell_states */
-    private array $spellStateNameByIdCache = [];
+    /** @var array<int, string> id conditions */
+    private array $conditionNameByIdCache = [];
 
     /** @var array<int, string> dofusdb_id */
-    private array $spellStateNameByDofusdbIdCache = [];
+    private array $conditionNameByDofusdbIdCache = [];
 
     /** Aligné sur l’UI sorts (id élément → slug config). */
     private const ELEMENT_ID_TO_SLUG = [
@@ -102,8 +102,8 @@ final class EffectResolutionService
         $this->monsterNameCache = [];
         $this->monsterBriefCache = [];
         $this->characteristicLabelByKeyCache = [];
-        $this->spellStateNameByIdCache = [];
-        $this->spellStateNameByDofusdbIdCache = [];
+        $this->conditionNameByIdCache = [];
+        $this->conditionNameByDofusdbIdCache = [];
 
         foreach ($rows as $row) {
             // Nouveau groupe logique → on réinitialise l'état précédent
@@ -130,12 +130,12 @@ final class EffectResolutionService
                 $text = $this->textResolver->formatDiceInText($text, $formatDiceHuman);
             }
 
-            $stateNameResolved = null;
+            $conditionNameResolved = null;
             $cellsDisplay = null;
             if (is_array($templateCtx)) {
-                if (isset($templateCtx['state_name']) && is_string($templateCtx['state_name'])) {
-                    $sn = trim($templateCtx['state_name']);
-                    $stateNameResolved = $sn !== '' ? $sn : null;
+                if (isset($templateCtx['condition_name']) && is_string($templateCtx['condition_name'])) {
+                    $sn = trim($templateCtx['condition_name']);
+                    $conditionNameResolved = $sn !== '' ? $sn : null;
                 }
                 if (isset($templateCtx['cells']) && is_scalar($templateCtx['cells'])) {
                     $cd = trim((string) $templateCtx['cells']);
@@ -167,7 +167,7 @@ final class EffectResolutionService
                 'text' => $text,
                 'context' => $ctx,
                 'summon_monster' => $this->summonMonsterBriefFromParams($params),
-                'state_name' => $stateNameResolved,
+                'condition_name' => $conditionNameResolved,
                 'cells_display' => $cellsDisplay,
                 'movement_kind' => is_string($params['movement_kind'] ?? null) ? (string) $params['movement_kind'] : null,
                 'teleport' => (bool) ($params['teleport'] ?? false),
@@ -276,9 +276,9 @@ final class EffectResolutionService
             $out['monster'] = $monster;
         }
 
-        $stateName = $this->resolveStateNameForTemplate($params, $out);
-        if ($stateName !== null && $stateName !== '') {
-            $out['state_name'] = $stateName;
+        $conditionName = $this->resolveConditionNameForTemplate($params, $out);
+        if ($conditionName !== null && $conditionName !== '') {
+            $out['condition_name'] = $conditionName;
         }
 
         return $out;
@@ -358,41 +358,41 @@ final class EffectResolutionService
     }
 
     /**
-     * Nom d’état pour [state_name] : params explicites ou résolution spell_states.
+     * Nom de condition pour [condition_name] : params explicites ou résolution conditions.
      *
      * @param  array<string, mixed>  $params
      * @param  array<string, int|float|string>  $displayCtx
      */
-    private function resolveStateNameForTemplate(array $params, array $displayCtx): ?string
+    private function resolveConditionNameForTemplate(array $params, array $displayCtx): ?string
     {
-        $existing = isset($displayCtx['state_name']) ? trim((string) $displayCtx['state_name']) : '';
+        $existing = isset($displayCtx['condition_name']) ? trim((string) $displayCtx['condition_name']) : '';
         if ($existing !== '') {
             return $existing;
         }
 
-        $sid = $params['spell_state_id'] ?? null;
+        $sid = $params['condition_id'] ?? null;
         if ($sid !== null && $sid !== '' && is_numeric($sid)) {
             $id = (int) $sid;
             if ($id > 0) {
-                if (! array_key_exists($id, $this->spellStateNameByIdCache)) {
-                    $n = SpellState::query()->whereKey($id)->value('name');
-                    $this->spellStateNameByIdCache[$id] = ($n !== null && $n !== '') ? (string) $n : '';
+                if (! array_key_exists($id, $this->conditionNameByIdCache)) {
+                    $n = Condition::query()->whereKey($id)->value('name');
+                    $this->conditionNameByIdCache[$id] = ($n !== null && $n !== '') ? (string) $n : '';
                 }
-                $resolved = $this->spellStateNameByIdCache[$id];
+                $resolved = $this->conditionNameByIdCache[$id];
 
                 return $resolved !== '' ? $resolved : null;
             }
         }
 
-        $dofusId = $params['state_dofusdb_id'] ?? null;
+        $dofusId = $params['condition_dofusdb_id'] ?? null;
         if ($dofusId !== null && $dofusId !== '' && is_numeric($dofusId)) {
             $dId = (int) $dofusId;
             if ($dId > 0) {
-                if (! array_key_exists($dId, $this->spellStateNameByDofusdbIdCache)) {
-                    $n = SpellState::query()->where('dofusdb_id', $dId)->value('name');
-                    $this->spellStateNameByDofusdbIdCache[$dId] = ($n !== null && $n !== '') ? (string) $n : '';
+                if (! array_key_exists($dId, $this->conditionNameByDofusdbIdCache)) {
+                    $n = Condition::query()->where('dofusdb_id', $dId)->value('name');
+                    $this->conditionNameByDofusdbIdCache[$dId] = ($n !== null && $n !== '') ? (string) $n : '';
                 }
-                $resolved = $this->spellStateNameByDofusdbIdCache[$dId];
+                $resolved = $this->conditionNameByDofusdbIdCache[$dId];
 
                 return $resolved !== '' ? $resolved : null;
             }

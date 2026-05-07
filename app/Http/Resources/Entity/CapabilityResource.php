@@ -49,6 +49,7 @@ class CapabilityResource extends JsonResource
             'createdBy' => $this->whenLoaded('createdBy'),
             'specializations' => $this->whenLoaded('specializations'),
             'creatures' => $this->whenLoaded('creatures'),
+            'conditions' => $this->whenLoaded('conditions', fn () => ConditionResource::collection($this->conditions)->resolve($request)),
 
             // Droits d'accès
             'can' => [

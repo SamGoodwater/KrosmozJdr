@@ -180,9 +180,9 @@
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."
   },
   {
-    "path": "20-Content/21-Entities/ENTITY_ATTRIBUTES.md",
-    "title": "Attributs (`attributes`)",
-    "description": "Les attributs représentent les caractéristiques fondamentales des créatures et classes (force, intelligence, agilité, chance, etc.). Ils influencent les statistiques, les jets de dés, les compétences et la progression des personnages."
+    "path": "20-Content/21-Entities/ENTITY_CONDITIONS.md",
+    "title": "Conditions (`conditions`)",
+    "description": "Les conditions représentent les états temporaires applicables aux créatures par les sorts, capacités ou effets environnementaux."
   },
   {
     "path": "20-Content/21-Entities/ENTITY_CAMPAIGNS.md",

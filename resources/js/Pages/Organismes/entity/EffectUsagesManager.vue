@@ -9,13 +9,13 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import {
-    formatSpellStateDispellable,
-    formatSpellStateDuration,
-    formatSpellStateIdentity,
-    formatSpellStateMask,
-    formatSpellStateMode,
-    getSpellStateDispellableIcon,
-} from '@/Composables/spell/spellStateDisplay';
+    formatConditionDispellable,
+    formatConditionDuration,
+    formatConditionIdentity,
+    formatConditionMask,
+    formatConditionMode,
+    getConditionDispellableIcon,
+} from '@/Composables/condition/conditionDisplay';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 
 const props = defineProps({
@@ -185,26 +185,26 @@ function isStateSubEffect(sub) {
     return slug === "appliquer-etat" || slug === "s-appliquer-etat";
 }
 
-function stateModeLabel(sub) {
-    return formatSpellStateMode(sub?.action_slug, { variant: "table" });
+function conditionModeLabel(sub) {
+    return formatConditionMode(sub?.action_slug, { variant: "table" });
 }
 
-function stateName(sub) {
+function conditionName(sub) {
     const ctx = sub?.context ?? {};
-    return formatSpellStateIdentity(ctx?.state_name, ctx?.state_dofusdb_id);
+    return formatConditionIdentity(ctx?.condition_name, ctx?.condition_dofusdb_id);
 }
 
-function stateMeta(sub) {
+function conditionMeta(sub) {
     const ctx = sub?.context ?? {};
     const bits = [
-        formatSpellStateDuration(ctx?.duration),
-        formatSpellStateMask(ctx?.target_mask),
+        formatConditionDuration(ctx?.duration),
+        formatConditionMask(ctx?.target_mask),
     ].filter(Boolean);
     return bits.join(" · ");
 }
 
 function stateDispellableText(sub) {
-    return formatSpellStateDispellable(sub?.context?.dispellable);
+    return formatConditionDispellable(sub?.context?.dispellable);
 }
 
 /** Label pour target_type (direct, trap, glyph). */
@@ -372,21 +372,21 @@ function selectedEffectTargetType(effectDegreeId) {
                             <li v-for="(sub, si) in item.resolved.sub_effects" :key="`n-${i}-${si}`">
                                 <template v-if="isStateSubEffect(sub)">
                                     <span class="font-mono">{{ sub.action_slug }}</span>
-                                    <span class="text-base-content/80"> → {{ stateName(sub) }}</span>
-                                    <span class="text-base-content/60"> ({{ stateModeLabel(sub) }})</span>
+                                    <span class="text-base-content/80"> → {{ conditionName(sub) }}</span>
+                                    <span class="text-base-content/60"> ({{ conditionModeLabel(sub) }})</span>
                                     <span
                                         v-if="stateDispellableText(sub)"
                                         class="inline-flex items-center gap-1 text-base-content/60"
                                     >
                                         <Icon
-                                            v-if="getSpellStateDispellableIcon(sub?.context?.dispellable)"
-                                            :source="getSpellStateDispellableIcon(sub?.context?.dispellable)"
+                                            v-if="getConditionDispellableIcon(sub?.context?.dispellable)"
+                                            :source="getConditionDispellableIcon(sub?.context?.dispellable)"
                                             :alt="stateDispellableText(sub) || ''"
                                             size="xs"
                                         />
                                         {{ stateDispellableText(sub) }}
                                     </span>
-                                    <span v-if="stateMeta(sub)" class="text-base-content/60"> · {{ stateMeta(sub) }}</span>
+                                    <span v-if="conditionMeta(sub)" class="text-base-content/60"> · {{ conditionMeta(sub) }}</span>
                                 </template>
                                 <template v-else>
                                     <span class="font-mono">{{ sub.action_slug || "—" }}</span>
@@ -407,21 +407,21 @@ function selectedEffectTargetType(effectDegreeId) {
                             <li v-for="(sub, si) in item.resolved_crit.sub_effects" :key="`c-${i}-${si}`">
                                 <template v-if="isStateSubEffect(sub)">
                                     <span class="font-mono">{{ sub.action_slug }}</span>
-                                    <span class="text-base-content/80"> → {{ stateName(sub) }}</span>
-                                    <span class="text-base-content/60"> ({{ stateModeLabel(sub) }})</span>
+                                    <span class="text-base-content/80"> → {{ conditionName(sub) }}</span>
+                                    <span class="text-base-content/60"> ({{ conditionModeLabel(sub) }})</span>
                                     <span
                                         v-if="stateDispellableText(sub)"
                                         class="inline-flex items-center gap-1 text-base-content/60"
                                     >
                                         <Icon
-                                            v-if="getSpellStateDispellableIcon(sub?.context?.dispellable)"
-                                            :source="getSpellStateDispellableIcon(sub?.context?.dispellable)"
+                                            v-if="getConditionDispellableIcon(sub?.context?.dispellable)"
+                                            :source="getConditionDispellableIcon(sub?.context?.dispellable)"
                                             :alt="stateDispellableText(sub) || ''"
                                             size="xs"
                                         />
                                         {{ stateDispellableText(sub) }}
                                     </span>
-                                    <span v-if="stateMeta(sub)" class="text-base-content/60"> · {{ stateMeta(sub) }}</span>
+                                    <span v-if="conditionMeta(sub)" class="text-base-content/60"> · {{ conditionMeta(sub) }}</span>
                                 </template>
                                 <template v-else>
                                     <span class="font-mono">{{ sub.action_slug || "—" }}</span>

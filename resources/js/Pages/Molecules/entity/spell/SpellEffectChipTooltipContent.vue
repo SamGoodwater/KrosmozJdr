@@ -184,8 +184,8 @@ const durationBesideValue = computed(() =>
     subEffectDurationSegment(m.value.durationFormula, m.value.durationLabel),
 );
 
-const stateLine = computed(() => {
-    const n = m.value.stateName;
+const conditionLine = computed(() => {
+    const n = m.value.conditionName;
     if (typeof n === "string" && n.trim() !== "") {
         return n.trim();
     }
@@ -250,8 +250,8 @@ const hasAreaSchema = computed(() => areaNotation.value !== "");
                 <div class="text-base font-bold leading-tight tracking-tight">
                     {{ actionTitle }}
                 </div>
-                <p v-if="stateLine" class="text-sm font-medium leading-snug text-white/85">
-                    {{ stateLine }}
+                <p v-if="conditionLine" class="text-sm font-medium leading-snug text-white/85">
+                    {{ conditionLine }}
                 </p>
                 <div
                     v-if="mainBadgeText || durationBesideValue || critBadgeText"

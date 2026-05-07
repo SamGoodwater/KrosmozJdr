@@ -7,7 +7,7 @@
  * Utilise EntityQuickEdit.vue pour l'édition générique basée sur les descriptors.
  * 
  * @props {Object} entity - Données de l'entité à éditer
- * @props {String} entityType - Type d'entité (ex: 'attributes', 'resources', 'items')
+ * @props {String} entityType - Type d'entité (ex: 'conditions', 'resources', 'items')
  * @props {Boolean} open - Contrôle l'ouverture du modal
  * @props {Boolean} isAdmin - L'utilisateur a les droits d'édition
  * @props {Object} extraCtx - Contexte additionnel pour les descriptors

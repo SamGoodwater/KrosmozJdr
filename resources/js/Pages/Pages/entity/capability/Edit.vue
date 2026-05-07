@@ -9,6 +9,7 @@ import { Head, usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { Capability } from "@/Models/Entity/Capability";
 import CapabilityEditFormContent from "@/Pages/Organismes/entity/CapabilityEditFormContent.vue";
+import ConditionsEditor from "@/Pages/Organismes/entity/ConditionsEditor.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 
 const page = usePage();
@@ -18,6 +19,10 @@ const props = defineProps({
     capability: {
         type: Object,
         required: true,
+    },
+    availableConditions: {
+        type: Array,
+        default: () => [],
     },
 });
 
@@ -34,5 +39,16 @@ setPageTitle(`Modifier la capacité : ${capability.value.name || "Sans nom"}`);
 
     <Container class="space-y-6 pb-32 md:pb-36">
         <CapabilityEditFormContent :capability="capability" redirect-after-update="edit" />
+
+        <ConditionsEditor
+            v-if="capability.id"
+            :relations="capability.conditions || []"
+            :available-items="availableConditions"
+            :entity-id="capability.id"
+            route-name="entities.capabilities.updateConditions"
+            route-param-name="capability"
+            title="Conditions appliquées"
+            help="Conditions que cette capacité peut appliquer. La description de la capacité précise leur interaction avec les créatures."
+        />
     </Container>
 </template>

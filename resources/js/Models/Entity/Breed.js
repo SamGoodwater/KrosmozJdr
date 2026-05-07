@@ -90,6 +90,10 @@ export class Breed extends BaseModel {
         return this._data.capabilities || [];
     }
 
+    get creatureTraits() {
+        return this._data.creatureTraits || [];
+    }
+
     get languages() {
         return this._data.languages || [];
     }

@@ -126,8 +126,12 @@ export class Creature extends BaseModel {
         return this._data.createdBy || null;
     }
 
-    get attributes() {
-        return this._data.attributes || [];
+    get conditions() {
+        return this._data.conditions || [];
+    }
+
+    get creatureTraits() {
+        return this._data.creatureTraits || [];
     }
 
     get capabilities() {

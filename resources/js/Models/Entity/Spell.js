@@ -564,9 +564,9 @@ export class Spell extends BaseModel {
                     chip.life_steal_formula != null && String(chip.life_steal_formula).trim() !== ''
                         ? String(chip.life_steal_formula).trim()
                         : null,
-                state_name:
-                    chip.state_name != null && String(chip.state_name).trim() !== ''
-                        ? String(chip.state_name).trim()
+                condition_name:
+                    chip.condition_name != null && String(chip.condition_name).trim() !== ''
+                        ? String(chip.condition_name).trim()
                         : null,
                 cells_display:
                     chip.cells_display != null && String(chip.cells_display).trim() !== ''

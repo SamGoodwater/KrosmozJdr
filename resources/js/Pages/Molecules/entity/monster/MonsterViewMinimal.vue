@@ -29,6 +29,7 @@ import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCrea
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
+import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 import { cellHasRenderableContent, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
@@ -169,6 +170,13 @@ const linkedLanguages = computed(() => {
 });
 
 const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
+
+const linkedCreatureTraits = computed(() => {
+    const raw = creatureData.value?.creatureTraits ?? [];
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
 
 const showDescriptionInCompactSlot = computed(() => props.displayMode === "compact");
 
@@ -386,6 +394,15 @@ const handleAction = async (actionKey) => {
                             {{ descriptionFull }}
                         </p>
                     </div>
+                </div>
+
+                <div
+                    v-if="hasLinkedCreatureTraits"
+                    class="w-full border-t border-base-300/80 pt-1.5"
+                    role="region"
+                    aria-label="Traits"
+                >
+                    <CreatureTraitBadges :traits="linkedCreatureTraits" size="xs" />
                 </div>
 
                 <div

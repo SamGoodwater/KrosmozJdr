@@ -19,6 +19,7 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
+import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 
 const props = defineProps({
     specialization: {
@@ -60,6 +61,13 @@ const ctx = computed(() => {
 const descriptors = computed(() => getSpecializationFieldDescriptors(ctx.value));
 
 const stateValue = computed(() => props.specialization?.state ?? props.specialization?._data?.state ?? null);
+
+const linkedCreatureTraits = computed(() => {
+    const raw = props.specialization?._data?.creatureTraits ?? props.specialization?.creatureTraits;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -221,6 +229,12 @@ const handleAction = async (actionKey) => {
             <div 
                 v-if="isHovered" 
                 class="mt-2 pt-2 border-t border-base-300 space-y-1 text-xs text-primary-300 animate-fade-in">
+                <CreatureTraitBadges
+                    v-if="hasLinkedCreatureTraits"
+                    :traits="linkedCreatureTraits"
+                    show-level
+                    size="xs"
+                />
                 <div
                     v-for="key in expandedFields"
                     :key="key"

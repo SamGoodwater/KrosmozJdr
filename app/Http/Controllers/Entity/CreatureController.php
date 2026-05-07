@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Entity;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreCreatureRequest;
+use App\Http\Requests\Entity\UpdateCreatureCreatureTraitsRequest;
 use App\Http\Requests\Entity\UpdateCreatureRequest;
 use App\Http\Resources\Entity\CreatureResource;
+use App\Http\Resources\Entity\CreatureTraitResource;
 use App\Models\Entity\Creature;
+use App\Models\Entity\CreatureTrait;
 use App\Services\Creature\Runtime\CreatureRuntimeStatsService;
 use App\Services\PdfService;
 use Illuminate\Http\JsonResponse;
@@ -101,6 +104,7 @@ class CreatureController extends Controller
             'resources',
             'consumables',
             'spells',
+            'creatureTraits',
         ]);
 
         // Charger toutes les entités disponibles pour la recherche
@@ -120,12 +124,17 @@ class CreatureController extends Controller
             ->orderBy('name')
             ->get();
 
+        $availableCreatureTraits = CreatureTraitResource::collection(
+            CreatureTrait::query()->orderBy('name')->limit(5000)->get()
+        )->toArray(request());
+
         return Inertia::render('Pages/entity/creature/Edit', [
             'creature' => new CreatureResource($creature),
             'availableItems' => $availableItems,
             'availableResources' => $availableResources,
             'availableConsumables' => $availableConsumables,
             'availableSpells' => $availableSpells,
+            'availableCreatureTraits' => $availableCreatureTraits,
         ]);
     }
 
@@ -143,6 +152,14 @@ class CreatureController extends Controller
     public function delete(Creature $creature)
     {
         //
+    }
+
+    public function updateCreatureTraits(UpdateCreatureCreatureTraitsRequest $request, Creature $creature)
+    {
+        $creature->creatureTraits()->sync($request->validatedCreatureTraitIds());
+
+        return redirect()->back()
+            ->with('success', 'Traits de la créature mis à jour.');
     }
 
     /**

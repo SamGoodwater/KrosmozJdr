@@ -34,6 +34,7 @@ class SpecializationResource extends JsonResource
             // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
             'capabilities' => $this->whenLoaded('capabilities'),
+            'creatureTraits' => $this->whenLoaded('creatureTraits', fn () => CreatureTraitResource::collection($this->creatureTraits)->resolve($request)),
             'npcs' => $this->whenLoaded('npcs'),
 
             // Droits d'accès

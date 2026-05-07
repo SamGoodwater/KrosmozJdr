@@ -30,6 +30,7 @@ import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descripto
 import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
+import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 
 const props = defineProps({
     monster: {
@@ -186,6 +187,13 @@ const linkedLanguages = computed(() => {
 });
 
 const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
+
+const linkedCreatureTraits = computed(() => {
+    const raw = props.monster?._data?.creature?.creatureTraits ?? props.monster?.creature?.creatureTraits ?? [];
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
@@ -381,6 +389,16 @@ const handleAction = async (actionKey) => {
                 </div>
             </template>
         </EntityViewHeader>
+
+        <div
+            v-if="hasLinkedCreatureTraits"
+            class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2"
+            role="region"
+            aria-label="Traits du monstre"
+        >
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Traits</h3>
+            <CreatureTraitBadges :traits="linkedCreatureTraits" size="sm" />
+        </div>
 
         <div
             v-if="hasLinkedLanguages"

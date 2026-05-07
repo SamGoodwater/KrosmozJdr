@@ -29,6 +29,7 @@ import { provideCharacteristicRuntime } from "@/Composables/entity/characteristi
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
 import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
+import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
 import RichTextReadonlyView from "@/Pages/Molecules/data-display/RichTextReadonlyView.vue";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
@@ -108,6 +109,13 @@ const linkedCapabilities = computed(() => {
 });
 
 const hasLinkedCapabilities = computed(() => linkedCapabilities.value.length > 0);
+
+const linkedCreatureTraits = computed(() => {
+    const raw = props.breed?._data?.creatureTraits ?? props.breed?.creatureTraits;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
 
 const linkedLanguages = computed(() => {
     const raw = props.breed?._data?.languages ?? props.breed?.languages;
@@ -399,6 +407,16 @@ const handleAction = async (actionKey) => {
             density="large"
             :characteristic-runtime="characteristicRuntime"
         />
+
+        <div
+            v-if="hasLinkedCreatureTraits"
+            class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2"
+            role="region"
+            aria-label="Traits de classe"
+        >
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Traits</h3>
+            <CreatureTraitBadges :traits="linkedCreatureTraits" show-level size="sm" />
+        </div>
 
         <div
             v-if="hasLinkedLanguages"

@@ -2,11 +2,11 @@
 
 ```mermaid
 erDiagram
-  ATTRIBUTE_CREATURE {
-    attribute_id : bigint(20) unsigned
+  CONDITION_CREATURE {
+    condition_id : bigint(20) unsigned
     creature_id : bigint(20) unsigned
   }
-  ATTRIBUTES {
+  CONDITIONS {
     id : bigint(20) unsigned
     name : varchar(255)
     description : varchar(255)
@@ -1108,7 +1108,7 @@ erDiagram
   SPELL_SPELL_STATE {
     id : bigint(20) unsigned
     spell_id : bigint(20) unsigned
-    spell_state_id : bigint(20) unsigned
+    condition_id : bigint(20) unsigned
     application_mode : varchar(16)
     dofus_effect_id : int(10) unsigned
     duration : int(11)
@@ -1242,9 +1242,9 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
-  ATTRIBUTE_CREATURE }o--|| ATTRIBUTES : "FK attribute_id"
-  ATTRIBUTE_CREATURE }o--|| CREATURES : "FK creature_id"
-  ATTRIBUTES }o--|| USERS : "FK created_by"
+  CONDITION_CREATURE }o--|| CONDITIONS : "FK condition_id"
+  CONDITION_CREATURE }o--|| CREATURES : "FK creature_id"
+  CONDITIONS }o--|| USERS : "FK created_by"
   BREED_CAPABILITY }o--|| BREEDS : "FK breed_id"
   BREED_CAPABILITY }o--|| CAPABILITIES : "FK capability_id"
   BREED_ELEMENT_ORIENTATIONS }o--|| BREEDS : "FK breed_id"
@@ -1396,7 +1396,7 @@ erDiagram
   SPELL_INVOCATION }o--|| MONSTERS : "FK monster_id"
   SPELL_INVOCATION }o--|| SPELLS : "FK spell_id"
   SPELL_SPELL_STATE }o--|| SPELLS : "FK spell_id"
-  SPELL_SPELL_STATE }o--|| SPELL_STATES : "FK spell_state_id"
+  SPELL_SPELL_STATE }o--|| SPELL_STATES : "FK condition_id"
   SPELL_TYPE }o--|| SPELLS : "FK spell_id"
   SPELL_TYPE }o--|| SPELL_TYPES : "FK spell_type_id"
   SPELL_TYPES }o--|| USERS : "FK created_by"

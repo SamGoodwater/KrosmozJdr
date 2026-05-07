@@ -14,7 +14,7 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
-use App\Models\SpellState;
+use App\Models\Entity\Condition;
 use App\Models\SubEffect;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
@@ -706,7 +706,14 @@ final class IntegrationService
                 $critOnly = (bool) ($row['crit_only'] ?? false);
                 $order = isset($row['order']) && is_numeric($row['order']) ? (int) $row['order'] : 0;
 
-                $this->integrateSpellStateFromParams($spell, $slug, $params);
+                $condition = $this->integrateConditionFromParams($spell, $slug, $params);
+                if ($condition !== null) {
+                    $params['condition_id'] = $condition->id;
+                    $params['condition_dofusdb_id'] = $condition->dofusdb_id;
+                    if (! isset($params['condition_name']) || trim((string) $params['condition_name']) === '') {
+                        $params['condition_name'] = $condition->name;
+                    }
+                }
 
                 $alreadyExists = $degreeModel->effectSubEffects()
                     ->where($this->effectSubEffectDedupWhere($subId, $critOnly, $params))
@@ -872,7 +879,7 @@ final class IntegrationService
      *
      * @param  list<array{order?: int, sub_effect_slug?: string, params?: array, crit_only?: bool}>  $rows
      * @param  array<string, int>  $slugToId
-     * @return list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value: mixed, state_dofusdb_id: mixed}>
+     * @return list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value: mixed, condition_dofusdb_id: mixed}>
      */
     private function normalizeSubEffectsRowsForSignature(array $rows, array $slugToId): array
     {
@@ -893,7 +900,7 @@ final class IntegrationService
             $valueFormula = $params['value_formula'] ?? null;
             $valueFormulaCrit = $params['value_formula_crit'] ?? null;
             $value = $params['value'] ?? null;
-            $stateDofusdbId = $params['state_dofusdb_id'] ?? null;
+            $stateDofusdbId = $params['condition_dofusdb_id'] ?? null;
 
             $dedupKey = $this->effectSubEffectDedupKey($slugToId[$slug], $critOnly, $params);
             if (isset($seen[$dedupKey])) {
@@ -908,7 +915,7 @@ final class IntegrationService
                 'value_formula' => $valueFormula,
                 'value_formula_crit' => $valueFormulaCrit,
                 'value' => $value,
-                'state_dofusdb_id' => $stateDofusdbId,
+                'condition_dofusdb_id' => $stateDofusdbId,
             ];
         }
         usort($out, static fn (array $a, array $b) => $a['order'] <=> $b['order']);
@@ -920,7 +927,7 @@ final class IntegrationService
      * Calcule une signature (hash) pour réutiliser un Effect existant.
      * Inclut target_type et area pour éviter de fusionner des effets directs/piège/glyphe.
      *
-     * @param  list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value?: mixed, state_dofusdb_id?: mixed}>  $normalizedRows
+     * @param  list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value?: mixed, condition_dofusdb_id?: mixed}>  $normalizedRows
      */
     private function computeEffectConfigSignature(array $normalizedRows, string $targetType = Effect::TARGET_DIRECT, ?string $area = null): string
     {
@@ -934,7 +941,7 @@ final class IntegrationService
                 'v' => $r['value_formula'] ?? null,
                 'vcrit' => $r['value_formula_crit'] ?? null,
                 'val' => $r['value'] ?? null,
-                'state' => $r['state_dofusdb_id'] ?? null,
+                'condition_dofusdb_id' => $r['condition_dofusdb_id'] ?? null,
             ], JSON_UNESCAPED_UNICODE);
         }
         $parts[] = 't:'.$targetType;
@@ -960,7 +967,7 @@ final class IntegrationService
                 'value_formula' => $params['value_formula'] ?? null,
                 'value_formula_crit' => $params['value_formula_crit'] ?? null,
                 'value' => $params['value'] ?? null,
-                'state_dofusdb_id' => $params['state_dofusdb_id'] ?? null,
+                'condition_dofusdb_id' => $params['condition_dofusdb_id'] ?? null,
             ];
         }
         usort($rows, static fn (array $a, array $b) => $a['order'] <=> $b['order']);
@@ -985,7 +992,7 @@ final class IntegrationService
         return $subEffectId.'|'.($critOnly ? '1' : '0').'|'
             .($params['characteristic'] ?? '').'|'.($params['value_formula'] ?? '').'|'
             .($params['value_formula_crit'] ?? '').'|'.($params['value'] ?? '').'|'
-            .($params['state_dofusdb_id'] ?? '');
+            .($params['condition_id'] ?? '').'|'.($params['condition_dofusdb_id'] ?? '');
     }
 
     /**
@@ -1005,8 +1012,11 @@ final class IntegrationService
         if (array_key_exists('value', $params)) {
             $where['params->value'] = $params['value'];
         }
-        if (array_key_exists('state_dofusdb_id', $params)) {
-            $where['params->state_dofusdb_id'] = $params['state_dofusdb_id'];
+        if (array_key_exists('condition_dofusdb_id', $params)) {
+            $where['params->condition_dofusdb_id'] = $params['condition_dofusdb_id'];
+        }
+        if (array_key_exists('condition_id', $params)) {
+            $where['params->condition_id'] = $params['condition_id'];
         }
 
         return $where;
@@ -1017,48 +1027,71 @@ final class IntegrationService
      *
      * @param  array<string, mixed>  $params
      */
-    private function integrateSpellStateFromParams(Spell $spell, string $subEffectSlug, array $params): void
+    private function integrateConditionFromParams(Spell $spell, string $subEffectSlug, array $params): ?Condition
     {
         if (! in_array($subEffectSlug, ['appliquer-etat', 's-appliquer-etat'], true)) {
-            return;
+            return null;
         }
-        if (! isset($params['state_dofusdb_id']) || ! is_numeric($params['state_dofusdb_id'])) {
-            return;
+        if (! isset($params['condition_dofusdb_id']) || ! is_numeric($params['condition_dofusdb_id'])) {
+            return null;
         }
 
-        $stateDofusdbId = (int) $params['state_dofusdb_id'];
+        $stateDofusdbId = (int) $params['condition_dofusdb_id'];
         if ($stateDofusdbId <= 0) {
-            return;
+            return null;
         }
 
-        $spellState = SpellState::query()->updateOrCreate(
+        $flags = is_array($params['condition_flags'] ?? null) ? $params['condition_flags'] : [];
+        $conditionName = isset($params['condition_name']) && is_string($params['condition_name']) && trim($params['condition_name']) !== ''
+            ? trim($params['condition_name'])
+            : 'Condition DofusDB #'.$stateDofusdbId;
+
+        $condition = Condition::query()->updateOrCreate(
             ['dofusdb_id' => $stateDofusdbId],
             [
-                'name' => isset($params['state_name']) && is_string($params['state_name']) ? $params['state_name'] : null,
-                'icon' => isset($params['state_icon']) && is_string($params['state_icon']) ? $params['state_icon'] : null,
-                'image' => isset($params['state_image']) && is_string($params['state_image']) ? $params['state_image'] : null,
-                'cant_be_moved' => (bool) data_get($params, 'state_flags.cant_be_moved', false),
-                'cant_be_pushed' => (bool) data_get($params, 'state_flags.cant_be_pushed', false),
-                'prevents_spell_cast' => (bool) data_get($params, 'state_flags.prevents_spell_cast', false),
-                'invulnerable' => (bool) data_get($params, 'state_flags.invulnerable', false),
-                'incurable' => (bool) data_get($params, 'state_flags.incurable', false),
-                'display_turn_remaining' => false,
-                'is_main_state' => false,
-                'raw' => is_array($params['state_flags'] ?? null) ? $params['state_flags'] : null,
+                'name' => $conditionName,
+                'icon' => isset($params['condition_icon']) && is_string($params['condition_icon']) ? $params['condition_icon'] : null,
+                'image' => isset($params['condition_image']) && is_string($params['condition_image']) ? $params['condition_image'] : null,
+                'prevents_spell_cast' => (bool) data_get($flags, 'prevents_spell_cast', false),
+                'prevents_fight' => (bool) data_get($flags, 'prevents_fight', false),
+                'cant_be_moved' => (bool) data_get($flags, 'cant_be_moved', false),
+                'cant_be_pushed' => (bool) data_get($flags, 'cant_be_pushed', false),
+                'cant_deal_damage' => (bool) data_get($flags, 'cant_deal_damage', false),
+                'invulnerable' => (bool) data_get($flags, 'invulnerable', false),
+                'cant_switch_position' => (bool) data_get($flags, 'cant_switch_position', false),
+                'incurable' => (bool) data_get($flags, 'incurable', false),
+                'invulnerable_melee' => (bool) data_get($flags, 'invulnerable_melee', false),
+                'invulnerable_range' => (bool) data_get($flags, 'invulnerable_range', false),
+                'cant_tackle' => (bool) data_get($flags, 'cant_tackle', false),
+                'cant_be_tackled' => (bool) data_get($flags, 'cant_be_tackled', false),
+                'display_turn_remaining' => (bool) data_get($flags, 'display_turn_remaining', false),
+                'is_main_state' => (bool) data_get($flags, 'is_main_state', false),
+                'raw' => $flags !== [] ? $flags : null,
             ]
         );
 
-        $spell->spellStates()->syncWithoutDetaching([
-            $spellState->id => [
-                'application_mode' => $subEffectSlug === 's-appliquer-etat' ? 'self' : 'target',
-                'dofus_effect_id' => isset($params['dofus_effect_id']) && is_numeric($params['dofus_effect_id'])
-                    ? (int) $params['dofus_effect_id']
-                    : null,
+        $applicationMode = $subEffectSlug === 's-appliquer-etat' ? 'self' : 'target';
+        $dofusEffectId = isset($params['dofus_effect_id']) && is_numeric($params['dofus_effect_id'])
+            ? (int) $params['dofus_effect_id']
+            : null;
+
+        DB::table('condition_spell')->updateOrInsert(
+            [
+                'spell_id' => $spell->id,
+                'condition_id' => $condition->id,
+                'application_mode' => $applicationMode,
+                'dofus_effect_id' => $dofusEffectId,
+            ],
+            [
                 'duration' => isset($params['duration']) && is_numeric($params['duration']) ? (int) $params['duration'] : null,
                 'dispellable' => array_key_exists('dispellable', $params) ? (bool) $params['dispellable'] : null,
                 'target_mask' => isset($params['target_mask']) && is_string($params['target_mask']) ? $params['target_mask'] : null,
-            ],
-        ]);
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+
+        return $condition;
     }
 
     /**

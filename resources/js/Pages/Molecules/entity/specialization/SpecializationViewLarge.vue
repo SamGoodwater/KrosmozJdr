@@ -20,6 +20,7 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
+import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 
 const props = defineProps({
     specialization: {
@@ -54,6 +55,13 @@ const ctx = computed(() => {
 });
 
 const descriptors = computed(() => getSpecializationFieldDescriptors(ctx.value));
+
+const linkedCreatureTraits = computed(() => {
+    const raw = props.specialization?._data?.creatureTraits ?? props.specialization?.creatureTraits;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -176,6 +184,16 @@ const handleAction = async (actionKey) => {
                     @action="handleAction"
                 />
             </div>
+        </div>
+
+        <div
+            v-if="hasLinkedCreatureTraits"
+            class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2"
+            role="region"
+            aria-label="Traits de spécialisation"
+        >
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Traits</h3>
+            <CreatureTraitBadges :traits="linkedCreatureTraits" show-level size="sm" />
         </div>
 
         <!-- Informations principales -->
