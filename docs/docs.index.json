@@ -180,11 +180,6 @@
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."
   },
   {
-    "path": "20-Content/21-Entities/ENTITY_CONDITIONS.md",
-    "title": "Conditions (`conditions`)",
-    "description": "Les conditions représentent les états temporaires applicables aux créatures par les sorts, capacités ou effets environnementaux."
-  },
-  {
     "path": "20-Content/21-Entities/ENTITY_CAMPAIGNS.md",
     "title": "Campagnes (`campaigns`)",
     "description": "Les campagnes regroupent un ensemble de scénarios, pages, entités et joueurs autour d’une même aventure ou d’un même arc narratif. Elles permettent de structurer la progression sur le long terme, la gestion des groupes et la personnalisation de l’expérience."
@@ -200,6 +195,11 @@
     "description": "Les classes (entité technique `breed` / `breeds`) représentent les archétypes jouables du jeu (ex : Féca, Iop, Eniripsa…). Elles définissent les capacités de base, la progression, les spécialisations et les spécificités de chaque personnage joueur ou PNJ associé à une classe."
   },
   {
+    "path": "20-Content/21-Entities/ENTITY_CONDITIONS.md",
+    "title": "Conditions (`conditions`)",
+    "description": "Les conditions représentent les états temporaires appliqués à une créature par un sort, une capacité ou un effet environnemental. Elles peuvent être dissipables et portent les flags utiles importés depuis DofusDB quand elles viennent du scrapping de sorts."
+  },
+  {
     "path": "20-Content/21-Entities/ENTITY_CONSUMABLES.md",
     "title": "Consommables (`consumables`)",
     "description": "Les consommables regroupent tous les objets à usage unique ou limité : potions, nourritures, parchemins, etc. Ils permettent de restaurer des points de vie, d’obtenir des bonus temporaires, ou de déclencher des effets spéciaux."
@@ -208,6 +208,11 @@
     "path": "20-Content/21-Entities/ENTITY_CREATURES.md",
     "title": "Créatures (`creatures`)",
     "description": "Les créatures représentent tous les êtres vivants ou animés du jeu : personnages jouables, monstres, PNJ, invocations, animaux, etc. Elles constituent la base commune pour les entités vivantes, avec des caractéristiques, compétences, attributs et relations variées."
+  },
+  {
+    "path": "20-Content/21-Entities/ENTITY_CREATURE_TRAITS.md",
+    "title": "CreatureTraits (`creature_traits`)",
+    "description": "Les `CreatureTrait` représentent les traits permanents d’une créature. Contrairement aux conditions, ils font partie de l’identité de la créature, d’une classe ou d’une spécialisation et ne sont pas dissipables."
   },
   {
     "path": "20-Content/21-Entities/ENTITY_FILES.md",

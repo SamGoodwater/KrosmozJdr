@@ -902,24 +902,6 @@
     "file": "entity/spell/SpellSubEffectActionPresentation.vue"
   },
   {
-    "name": "ConditionInline",
-    "description": "État de sort — libellé + icône optionnelle (définitions d’effets).",
-    "props": [
-      {
-        "name": "condition",
-        "type": "{ id: number, name: string, icon?: string|null }",
-        "desc": ""
-      },
-      {
-        "name": "nameFallback",
-        "type": "string",
-        "desc": "- Si pas d’objet état complet (ex. chip API)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/spell/ConditionInline.vue"
-  },
-  {
     "name": "SpellMinimalUsageMetaRow",
     "description": "Ligne méta PA / PO / lancers / élément (survol) / types & catégorie (survol).",
     "props": [],
@@ -2048,6 +2030,80 @@
     "file": "entity/item/ItemLineRow.vue"
   },
   {
+    "name": "CreatureTraitViewText",
+    "description": "CreatureTraitViewText — Vue Texte pour CreatureTrait",
+    "props": [
+      {
+        "name": "creatureTrait",
+        "type": "CreatureTrait",
+        "desc": "- Instance du modèle CreatureTrait"
+      }
+    ],
+    "slots": [],
+    "file": "entity/creature-trait/CreatureTraitViewText.vue"
+  },
+  {
+    "name": "CreatureTraitViewMinimal",
+    "description": "CreatureTraitViewMinimal — Vue Minimal pour CreatureTrait",
+    "props": [
+      {
+        "name": "creatureTrait",
+        "type": "CreatureTrait",
+        "desc": "- Instance du modèle CreatureTrait"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/creature-trait/CreatureTraitViewMinimal.vue"
+  },
+  {
+    "name": "CreatureTraitViewLarge",
+    "description": "CreatureTraitViewLarge — Vue Large pour CreatureTrait",
+    "props": [
+      {
+        "name": "creatureTrait",
+        "type": "CreatureTrait",
+        "desc": "- Instance du modèle CreatureTrait"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/creature-trait/CreatureTraitViewLarge.vue"
+  },
+  {
+    "name": "CreatureTraitViewCompact",
+    "description": "CreatureTraitViewCompact — Vue Compact pour CreatureTrait",
+    "props": [
+      {
+        "name": "creatureTrait",
+        "type": "CreatureTrait",
+        "desc": "- Instance du modèle CreatureTrait"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/creature-trait/CreatureTraitViewCompact.vue"
+  },
+  {
+    "name": "CreatureTraitLineRow",
+    "description": "CreatureTraitLineRow — ligne dense pour les tables d’entité.",
+    "props": [],
+    "slots": [],
+    "file": "entity/creature-trait/CreatureTraitLineRow.vue"
+  },
+  {
     "name": "ConsumableViewText",
     "description": "ConsumableViewText — Vue Texte pour Consumable",
     "props": [
@@ -2119,6 +2175,98 @@
     "props": [],
     "slots": [],
     "file": "entity/consumable/ConsumableLineRow.vue"
+  },
+  {
+    "name": "ConditionViewText",
+    "description": "ConditionViewText — Vue Texte pour Condition",
+    "props": [
+      {
+        "name": "condition",
+        "type": "Condition",
+        "desc": "- Instance du modèle Condition"
+      }
+    ],
+    "slots": [],
+    "file": "entity/condition/ConditionViewText.vue"
+  },
+  {
+    "name": "ConditionViewMinimal",
+    "description": "ConditionViewMinimal — Vue Minimal pour Condition",
+    "props": [
+      {
+        "name": "condition",
+        "type": "Condition",
+        "desc": "- Instance du modèle Condition"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/condition/ConditionViewMinimal.vue"
+  },
+  {
+    "name": "ConditionViewLarge",
+    "description": "ConditionViewLarge — Vue Large pour Condition",
+    "props": [
+      {
+        "name": "condition",
+        "type": "Condition",
+        "desc": "- Instance du modèle Condition"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/condition/ConditionViewLarge.vue"
+  },
+  {
+    "name": "ConditionViewCompact",
+    "description": "ConditionViewCompact — Vue Compact pour Condition",
+    "props": [
+      {
+        "name": "condition",
+        "type": "Condition",
+        "desc": "- Instance du modèle Condition"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/condition/ConditionViewCompact.vue"
+  },
+  {
+    "name": "ConditionLineRow",
+    "description": "ConditionLineRow — ligne dense pour les tables d’entité.",
+    "props": [],
+    "slots": [],
+    "file": "entity/condition/ConditionLineRow.vue"
+  },
+  {
+    "name": "ConditionInline",
+    "description": "Condition — libellé + icône optionnelle (définitions d’effets).",
+    "props": [
+      {
+        "name": "condition",
+        "type": "{ id: number, name: string, icon?: string|null }",
+        "desc": ""
+      },
+      {
+        "name": "nameFallback",
+        "type": "string",
+        "desc": "- Si pas d’objet condition complète (ex. chip API)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/condition/ConditionInline.vue"
   },
   {
     "name": "CapabilityViewText",
@@ -2403,73 +2551,6 @@
     ],
     "slots": [],
     "file": "entity/breed/BreedCapabilitiesDisplay.vue"
-  },
-  {
-    "name": "ConditionViewText",
-    "description": "ConditionViewText — Vue Texte pour Condition",
-    "props": [
-      {
-        "name": "condition",
-        "type": "Condition",
-        "desc": "- Instance du modèle Condition"
-      }
-    ],
-    "slots": [],
-    "file": "entity/condition/ConditionViewText.vue"
-  },
-  {
-    "name": "ConditionViewMinimal",
-    "description": "ConditionViewMinimal — Vue Minimal pour Condition",
-    "props": [
-      {
-        "name": "condition",
-        "type": "Condition",
-        "desc": "- Instance du modèle Condition"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/condition/ConditionViewMinimal.vue"
-  },
-  {
-    "name": "ConditionViewLarge",
-    "description": "ConditionViewLarge — Vue Large pour Condition",
-    "props": [
-      {
-        "name": "condition",
-        "type": "Condition",
-        "desc": "- Instance du modèle Condition"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/condition/ConditionViewLarge.vue"
-  },
-  {
-    "name": "ConditionViewCompact",
-    "description": "ConditionViewCompact — Vue Compact pour Condition",
-    "props": [
-      {
-        "name": "condition",
-        "type": "Condition",
-        "desc": "- Instance du modèle Condition"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/condition/ConditionViewCompact.vue"
   },
   {
     "name": "ToggleField",

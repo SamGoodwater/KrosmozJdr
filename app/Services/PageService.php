@@ -98,7 +98,7 @@ class PageService
             'id' => $page->id,
             'title' => $page->title,
             'slug' => $page->slug,
-            'url' => route('pages.show', $page->slug),
+            'url' => route('pages.show', $page->slug, false),
             'order' => $page->menu_order,
             'menu_group' => $page->menu_group,
             'entity_key' => $page->entity_key,

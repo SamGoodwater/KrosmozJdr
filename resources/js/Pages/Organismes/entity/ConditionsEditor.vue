@@ -7,6 +7,7 @@ import Container from "@/Pages/Atoms/data-display/Container.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import EditActionDock from "@/Pages/Molecules/action/EditActionDock.vue";
 import ConditionBadges from "@/Pages/Molecules/entity/condition/ConditionBadges.vue";
+import { mergeEntityOptionsById } from "@/Utils/entity/mergeEntityOptionsById";
 import { warnDev } from "@/Utils/dev-logger";
 
 const props = defineProps({
@@ -36,16 +37,7 @@ function normalizeIds(list) {
         .filter((id) => Number.isFinite(id) && id > 0);
 }
 
-const byId = computed(() => {
-    const map = new Map();
-    for (const item of props.relations) {
-        if (item?.id) map.set(Number(item.id), item);
-    }
-    for (const item of localAvailable.value) {
-        if (item?.id && !map.has(Number(item.id))) map.set(Number(item.id), item);
-    }
-    return map;
-});
+const byId = computed(() => mergeEntityOptionsById(props.relations, localAvailable.value));
 
 const selectedConditions = computed(() => localIds.value.map((id) => byId.value.get(id)).filter(Boolean));
 const selectedSet = computed(() => new Set(localIds.value));

@@ -1,181 +1,125 @@
 <script setup>
 /**
- * CreatureTraitViewMinimal — Vue Minimal pour CreatureTrait
- * 
+ * CreatureTraitViewMinimal — Vue minimal (CreatureTrait)
+ *
  * @description
- * Petite carte qui s'étend au survol.
- * Utilisée dans des grilles, petites modals ou hovers.
- * 
- * @props {CreatureTrait} creatureTrait - Instance du modèle CreatureTrait
+ * Carte compacte : pastille d’état, image si présente, nom, description.
+ * Pas de métadonnées (niveaux, dates, auteur).
+ *
+ * @props {Object} creatureTrait - Instance CreatureTrait (facade toCell)
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
-import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
-import Image from '@/Pages/Atoms/data-display/Image.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { ref, computed } from "vue";
+import { router } from "@inertiajs/vue3";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getCreatureTraitFieldDescriptors } from "@/Entities/creature-trait/creature-trait-descriptors";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 
 const props = defineProps({
-    creatureTrait: {
-        type: Object,
-        required: true
-    },
-    showActions: {
-        type: Boolean,
-        default: true
-    },
+    creatureTrait: { type: Object, required: true },
+    showActions: { type: Boolean, default: true },
     displayMode: {
         type: String,
-        default: 'hover',
-        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+        default: "hover",
+        validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
-    tableMeta: {
-        type: Object,
-        default: () => ({})
-    }
+    tableMeta: { type: Object, default: () => ({}) },
 });
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits(["edit", "copy-link", "download-pdf", "refresh", "view", "quick-view", "quick-edit", "delete", "action"]);
 
-const isHovered = ref(props.displayMode === 'extended');
-const canHoverExpand = computed(() => props.displayMode === 'hover');
-const permissions = usePermissions();
+const isHovered = ref(props.displayMode === "extended");
+const canHoverExpand = computed(() => props.displayMode === "hover");
 
-const ctx = computed(() => {
-    const capabilities = {
-        viewAny: permissions.can('creature-traits', 'viewAny'),
-        createAny: permissions.can('creature-traits', 'createAny'),
-        updateAny: permissions.can('creature-traits', 'updateAny'),
-        deleteAny: permissions.can('creature-traits', 'deleteAny'),
-        manageAny: permissions.can('creature-traits', 'manageAny'),
-    };
-    return { capabilities, meta: { capabilities } };
+const stateValue = computed(
+    () => props.creatureTrait?.state ?? props.creatureTrait?._data?.state ?? null
+);
+
+const imageUrl = computed(() => {
+    const u = props.creatureTrait?.image ?? props.creatureTrait?._data?.image;
+    return u && String(u).trim() ? String(u) : null;
 });
 
-const descriptors = computed(() => getCreatureTraitFieldDescriptors(ctx.value));
-
-const canShowField = (fieldKey) => {
-    const desc = descriptors.value?.[fieldKey];
-    if (!desc) return false;
-    const visibleIf = desc?.permissions?.visibleIf;
-    if (typeof visibleIf === 'function') {
-        try {
-            return Boolean(visibleIf(ctx.value));
-        } catch (e) {
-            console.warn('[CreatureTraitViewMinimal] visibleIf failed for', fieldKey, e);
-            return false;
-        }
-    }
-    return true;
-};
-
-// Champs importants à afficher
-const importantFields = computed(() => ['name', 'state', 'read_level'].filter(canShowField));
-
-const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
-const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
-const sortExtendedFields = (fields) => {
-    return [...fields].sort((a, b) => {
-        const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
-        const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
-
-        if (rankA === -1 && rankB === -1) return 0;
-        if (rankA === -1) return -1;
-        if (rankB === -1) return 1;
-        return rankA - rankB;
+const getCell = (fieldKey) =>
+    props.creatureTrait.toCell(fieldKey, {
+        size: "sm",
+        context: "minimal",
     });
-};
 
-// En mode étendu, afficher toutes les propriétés visibles non principales.
-const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image']);
-    const fields = Object.keys(descriptors.value || {}).filter((key) => {
-        return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
-    });
-    return sortExtendedFields(fields);
+const descriptionCell = computed(() => getCell("description"));
+const hasDescription = computed(() => {
+    const c = descriptionCell.value;
+    const v = c?.value;
+    if (v == null) return false;
+    const s = String(v).replace(/<[^>]*>/g, "").trim();
+    return s.length > 0;
 });
-
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
-};
-
-const getCell = (fieldKey) => {
-    return props.creatureTrait.toCell(fieldKey, {
-        size: 'sm',
-        context: 'minimal',
-    });
-};
-
-const tooltipForField = (fieldKey, cell) => {
-    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
-    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
-    return `${label} : ${value}`;
-};
 
 const handleAction = async (actionKey) => {
     const creatureTraitId = props.creatureTrait.id;
     if (!creatureTraitId) return;
 
     switch (actionKey) {
-        case 'view':
-            router.visit(route('entities.creature-traits.show', { creatureTrait: creatureTraitId }));
-            emit('view', props.creatureTrait);
+        case "view":
+            router.visit(route("entities.creature-traits.show", { creatureTrait: creatureTraitId }));
+            emit("view", props.creatureTrait);
             break;
-        case 'edit':
-            router.visit(route('entities.creature-traits.edit', { creatureTrait: creatureTraitId }));
-            emit('edit', props.creatureTrait);
+        case "edit":
+            router.visit(route("entities.creature-traits.edit", { creatureTrait: creatureTraitId }));
+            emit("edit", props.creatureTrait);
             break;
-        case 'delete':
-            emit('delete', props.creatureTrait);
+        case "delete":
+            emit("delete", props.creatureTrait);
             break;
     }
 };
 </script>
 
 <template>
-    <div 
-        class="relative rounded-box border border-base-300 transition-all duration-300 overflow-hidden"
-        :class="{ 
+    <div
+        class="relative flex h-full min-h-18 w-full min-w-0 flex-col rounded-box border border-base-300 transition-all duration-300 overflow-hidden"
+        :class="{
             'bg-base-200 shadow-lg': isHovered,
-            'bg-base-100': !isHovered
-        }"
-        :style="{ 
-            width: isHovered ? 'auto' : '150px',
-            minWidth: '150px',
-            maxWidth: isHovered ? '300px' : '200px',
-            height: isHovered ? 'auto' : '100px',
-            minHeight: '80px'
+            'bg-base-100': !isHovered,
         }"
         @mouseenter="canHoverExpand && (isHovered = true)"
-        @mouseleave="canHoverExpand && (isHovered = false)">
-        
-        <div class="p-3">
-            <!-- En-tête avec image/icône, nom et actions -->
-            <div class="flex items-start justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <div v-if="creatureTrait.image" class="flex-shrink-0">
+        @mouseleave="canHoverExpand && (isHovered = false)"
+    >
+        <div class="absolute top-1 left-1 z-20">
+            <EntityUsableDot :state="stateValue" />
+        </div>
+
+        <div class="flex flex-1 flex-col gap-2 p-3 pt-6">
+            <div class="flex items-start justify-between gap-2">
+                <div class="flex min-w-0 flex-1 items-start gap-2">
+                    <div
+                        v-if="imageUrl"
+                        class="w-10 h-10 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
+                    >
                         <Image
-                            :src="creatureTrait.image"
-                            :alt="creatureTrait.name || 'CreatureTrait'"
-                            size="xs"
-                            class="rounded"
+                            :src="imageUrl"
+                            :alt="creatureTrait.name || 'Trait'"
+                            fit="contain"
+                            class="h-full w-full object-contain"
                         />
                     </div>
-                    <Tooltip :content="creatureTrait.name || 'CreatureTrait'" placement="top">
-                        <span class="font-semibold text-primary-100 text-sm truncate block">
-                            <CellRenderer
-                                :cell="getCell('name')"
-                                ui-color="primary"
-                            />
+                    <div
+                        v-else
+                        class="w-10 h-10 shrink-0 rounded bg-base-200 flex items-center justify-center"
+                    >
+                        <Icon source="fa-solid fa-star" alt="" size="sm" class="text-base-content/40" />
+                    </div>
+                    <Tooltip :content="creatureTrait.name || 'Trait'" placement="top">
+                        <span class="block min-w-0 wrap-break-word text-sm font-semibold text-primary-100">
+                            <CellRenderer :cell="getCell('name')" ui-color="primary" />
                         </span>
                     </Tooltip>
                 </div>
-                
-                <div v-if="showActions && isHovered" class="flex-shrink-0">
+
+                <div v-if="showActions && isHovered" class="shrink-0">
                     <EntityActions
                         entity-type="creature-traits"
                         :entity="creatureTrait"
@@ -189,63 +133,11 @@ const handleAction = async (actionKey) => {
                 </div>
             </div>
 
-            <!-- Infos importantes en icônes avec tooltips -->
-            <div class="flex gap-2 flex-wrap">
-                <template v-for="field in importantFields" :key="field">
-                    <Tooltip
-                        :content="tooltipForField(field, getCell(field))"
-                        placement="top"
-                    >
-                        <div class="flex items-center gap-1 px-2 py-1 bg-base-200 rounded">
-                            <Icon
-                                :source="getFieldIcon(field)"
-                                size="xs"
-                                class="text-primary-400"
-                            />
-                            <span class="text-xs text-primary-300 font-medium">
-                                <CellRenderer
-                                    :cell="getCell(field)"
-                                    ui-color="primary"
-                                />
-                            </span>
-                        </div>
-                    </Tooltip>
-                </template>
-            </div>
-
-            <!-- Contenu supplémentaire au hover -->
-            <div 
-                v-if="isHovered" 
-                class="mt-2 pt-2 border-t border-base-300 space-y-1 text-xs text-primary-300 animate-fade-in">
-                <div
-                    v-for="key in expandedFields"
-                    :key="key"
-                    class="flex items-start gap-2"
-                >
-                    <Tooltip
-                        :content="tooltipForField(key, getCell(key))"
-                        placement="left"
-                    >
-                        <div class="flex items-start gap-2 w-full">
-                            <Icon
-                                :source="getFieldIcon(key)"
-                                size="xs"
-                                class="text-primary-400 flex-shrink-0 mt-0.5"
-                            />
-                            <div class="flex-1 min-w-0">
-                                <div class="font-semibold text-primary-400">
-                                    {{ key }}:
-                                </div>
-                                <div class="text-primary-200 truncate">
-                                    <CellRenderer
-                                        :cell="getCell(key)"
-                                        ui-color="primary"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </Tooltip>
-                </div>
+            <div
+                v-if="hasDescription"
+                class="prose prose-sm prose-invert max-w-none min-w-0 wrap-break-word text-xs leading-snug text-primary-300/90"
+            >
+                <CellRenderer :cell="descriptionCell" ui-color="primary" />
             </div>
         </div>
     </div>

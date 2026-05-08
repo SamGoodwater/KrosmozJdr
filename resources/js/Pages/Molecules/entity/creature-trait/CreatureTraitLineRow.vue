@@ -20,8 +20,8 @@ const value = (key) => entity()?.[key] ?? entity()?._data?.[key] ?? null;
         @click="emit('row-click', row)"
     >
         <span class="min-w-0">
-            <span class="block truncate text-sm font-semibold text-base-content">{ value('name') || '—' }</span>
-            <span v-if="value('description')" class="block truncate text-xs text-base-content/60">{ value('description') }</span>
+            <span class="block truncate text-sm font-semibold text-base-content">{{ value('name') || '—' }}</span>
+            <span v-if="value('description')" class="block truncate text-xs text-base-content/60">{{ value('description') }}</span>
         </span>
         <span v-if="showActions" @click.stop>
             <EntityActions :entity-type="entityType" :entity="entity()" format="dropdown" @action="(action) => emit('action', { action, entity: entity() })" />

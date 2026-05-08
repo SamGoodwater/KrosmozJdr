@@ -809,6 +809,13 @@
     "file": "entity/EffectGroupEditorForm.vue"
   },
   {
+    "name": "CreatureTraitsEditor",
+    "description": "Éditeur générique des traits de créature. `withLevel` est réservé aux classes et spécialisations : le niveau indique à partir de quand le trait devient actif.",
+    "props": [],
+    "slots": [],
+    "file": "entity/CreatureTraitsEditor.vue"
+  },
+  {
     "name": "CreateEntityModal",
     "description": "CreateEntityModal Organism",
     "props": [

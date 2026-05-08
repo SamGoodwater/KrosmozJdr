@@ -2,11 +2,11 @@
 
 ```mermaid
 erDiagram
-  CONDITION_CREATURE {
-    condition_id : bigint(20) unsigned
+  ATTRIBUTE_CREATURE {
+    attribute_id : bigint(20) unsigned
     creature_id : bigint(20) unsigned
   }
-  CONDITIONS {
+  ATTRIBUTES {
     id : bigint(20) unsigned
     name : varchar(255)
     description : varchar(255)
@@ -23,6 +23,12 @@ erDiagram
     id : bigint(20) unsigned
     breed_id : bigint(20) unsigned
     capability_id : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  BREED_CREATURE_TRAIT {
+    breed_id : bigint(20) unsigned
+    creature_trait_id : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp
   }
@@ -263,6 +269,52 @@ erDiagram
     hide_when_empty : tinyint(1)
     hide_when_false : tinyint(1)
   }
+  CONDITION_CREATURE {
+    condition_id : bigint(20) unsigned
+    creature_id : bigint(20) unsigned
+  }
+  CONDITION_SPELL {
+    id : bigint(20) unsigned
+    spell_id : bigint(20) unsigned
+    condition_id : bigint(20) unsigned
+    application_mode : varchar(16)
+    dofus_effect_id : int(10) unsigned
+    duration : int(11)
+    dispellable : tinyint(1)
+    target_mask : varchar(64)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  CONDITIONS {
+    id : bigint(20) unsigned
+    dofusdb_id : int(10) unsigned
+    name : varchar(255)
+    description : text
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
+    icon : varchar(255)
+    image : varchar(255)
+    prevents_spell_cast : tinyint(1)
+    prevents_fight : tinyint(1)
+    cant_be_moved : tinyint(1)
+    cant_be_pushed : tinyint(1)
+    cant_deal_damage : tinyint(1)
+    invulnerable : tinyint(1)
+    cant_switch_position : tinyint(1)
+    incurable : tinyint(1)
+    invulnerable_melee : tinyint(1)
+    invulnerable_range : tinyint(1)
+    cant_tackle : tinyint(1)
+    cant_be_tackled : tinyint(1)
+    display_turn_remaining : tinyint(1)
+    is_main_state : tinyint(1)
+    raw : longtext
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    created_by : bigint(20) unsigned
+  }
   CONSUMABLE_CAMPAIGN {
     consumable_id : bigint(20) unsigned
     campaign_id : bigint(20) unsigned
@@ -326,6 +378,12 @@ erDiagram
     consumable_type_id : bigint(20) unsigned
     created_by : bigint(20) unsigned
   }
+  CREATURE_CREATURE_TRAIT {
+    creature_id : bigint(20) unsigned
+    creature_trait_id : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   CREATURE_ITEM {
     creature_id : bigint(20) unsigned
     item_id : bigint(20) unsigned
@@ -339,6 +397,25 @@ erDiagram
   CREATURE_SPELL {
     creature_id : bigint(20) unsigned
     spell_id : bigint(20) unsigned
+  }
+  CREATURE_TRAIT_SPECIALIZATION {
+    specialization_id : bigint(20) unsigned
+    creature_trait_id : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  CREATURE_TRAITS {
+    id : bigint(20) unsigned
+    name : varchar(255)
+    description : text
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
+    image : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    created_by : bigint(20) unsigned
   }
   CREATURES {
     id : bigint(20) unsigned
@@ -1108,7 +1185,7 @@ erDiagram
   SPELL_SPELL_STATE {
     id : bigint(20) unsigned
     spell_id : bigint(20) unsigned
-    condition_id : bigint(20) unsigned
+    spell_state_id : bigint(20) unsigned
     application_mode : varchar(16)
     dofus_effect_id : int(10) unsigned
     duration : int(11)
@@ -1242,11 +1319,13 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
-  CONDITION_CREATURE }o--|| CONDITIONS : "FK condition_id"
-  CONDITION_CREATURE }o--|| CREATURES : "FK creature_id"
-  CONDITIONS }o--|| USERS : "FK created_by"
+  ATTRIBUTE_CREATURE }o--|| ATTRIBUTES : "FK attribute_id"
+  ATTRIBUTE_CREATURE }o--|| CREATURES : "FK creature_id"
+  ATTRIBUTES }o--|| USERS : "FK created_by"
   BREED_CAPABILITY }o--|| BREEDS : "FK breed_id"
   BREED_CAPABILITY }o--|| CAPABILITIES : "FK capability_id"
+  BREED_CREATURE_TRAIT }o--|| BREEDS : "FK breed_id"
+  BREED_CREATURE_TRAIT }o--|| CREATURE_TRAITS : "FK creature_trait_id"
   BREED_ELEMENT_ORIENTATIONS }o--|| BREEDS : "FK breed_id"
   BREED_LANGUAGE }o--|| BREEDS : "FK breed_id"
   BREED_LANGUAGE }o--|| LANGUAGES : "FK language_id"
@@ -1280,6 +1359,11 @@ erDiagram
   CHARACTERISTIC_SPELL }o--|| CHARACTERISTICS : "FK characteristic_id"
   CHARACTERISTIC_SPELL }o--|| SECTIONS : "FK norms_help_section_id"
   CHARACTERISTICS }o--|| CHARACTERISTICS : "FK linked_to_characteristic_id"
+  CONDITION_CREATURE }o--|| CONDITIONS : "FK condition_id"
+  CONDITION_CREATURE }o--|| CREATURES : "FK creature_id"
+  CONDITION_SPELL }o--|| CONDITIONS : "FK condition_id"
+  CONDITION_SPELL }o--|| SPELLS : "FK spell_id"
+  CONDITIONS }o--|| USERS : "FK created_by"
   CONSUMABLE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   CONSUMABLE_CAMPAIGN }o--|| CONSUMABLES : "FK consumable_id"
   CONSUMABLE_CREATURE }o--|| CONSUMABLES : "FK consumable_id"
@@ -1293,12 +1377,17 @@ erDiagram
   CONSUMABLE_TYPES }o--|| USERS : "FK created_by"
   CONSUMABLES }o--|| CONSUMABLE_TYPES : "FK consumable_type_id"
   CONSUMABLES }o--|| USERS : "FK created_by"
+  CREATURE_CREATURE_TRAIT }o--|| CREATURES : "FK creature_id"
+  CREATURE_CREATURE_TRAIT }o--|| CREATURE_TRAITS : "FK creature_trait_id"
   CREATURE_ITEM }o--|| CREATURES : "FK creature_id"
   CREATURE_ITEM }o--|| ITEMS : "FK item_id"
   CREATURE_RESOURCE }o--|| CREATURES : "FK creature_id"
   CREATURE_RESOURCE }o--|| RESOURCES : "FK resource_id"
   CREATURE_SPELL }o--|| CREATURES : "FK creature_id"
   CREATURE_SPELL }o--|| SPELLS : "FK spell_id"
+  CREATURE_TRAIT_SPECIALIZATION }o--|| CREATURE_TRAITS : "FK creature_trait_id"
+  CREATURE_TRAIT_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
+  CREATURE_TRAITS }o--|| USERS : "FK created_by"
   CREATURES }o--|| USERS : "FK created_by"
   DATA_SUBJECT_REQUESTS }o--|| USERS : "FK user_id"
   EFFECT_DEGREES }o--|| EFFECTS : "FK effect_id"
@@ -1396,7 +1485,7 @@ erDiagram
   SPELL_INVOCATION }o--|| MONSTERS : "FK monster_id"
   SPELL_INVOCATION }o--|| SPELLS : "FK spell_id"
   SPELL_SPELL_STATE }o--|| SPELLS : "FK spell_id"
-  SPELL_SPELL_STATE }o--|| SPELL_STATES : "FK condition_id"
+  SPELL_SPELL_STATE }o--|| SPELL_STATES : "FK spell_state_id"
   SPELL_TYPE }o--|| SPELLS : "FK spell_id"
   SPELL_TYPE }o--|| SPELL_TYPES : "FK spell_type_id"
   SPELL_TYPES }o--|| USERS : "FK created_by"

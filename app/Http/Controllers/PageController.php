@@ -312,11 +312,11 @@ class PageController extends Controller
         $bibliothequesItems = collect(config('nav_menu.bibliotheques', []))
             ->sortBy('order')
             ->map(fn (array $item) => [
-                'id' => 'bibliotheque-' . ($item['label'] ?? ''),
+                'id' => 'bibliotheque-' . ($item['route'] ?? ($item['label'] ?? 'item')),
                 'title' => $item['label'],
                 'url' => isset($item['url'])
                     ? $item['url']
-                    : route($item['route'], $item['route_params'] ?? []),
+                    : route($item['route'], $item['route_params'] ?? [], false),
                 'entity_key' => $item['entity_key'] ?? null,
                 'order' => $item['order'] ?? 0,
                 'menu_item_css_classes' => $item['menu_item_css_classes']

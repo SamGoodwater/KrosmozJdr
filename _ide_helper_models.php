@@ -70,8 +70,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereValueOverrides($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHideWhenEmpty($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereStatus($value)
- * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHideWhenFalse($value)
+ * @mixin \Eloquent
  */
 	class Characteristic extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -494,47 +494,6 @@ namespace App\Models{
 
 namespace App\Models\Entity{
 /**
- * @property int $id
- * @property string $name
- * @property string|null $description
- * @property string $state
- * @property int $read_level
- * @property int $write_level
- * @property string|null $image
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property Carbon|null $deleted_at
- * @property int|null $created_by
- * @property-read User|null $createdBy
- * @property-read Collection<int, Creature> $creatures
- * @property-read int|null $creatures_count
- * @method static \Database\Factories\Entity\AttributeFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereReadLevel($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereState($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereWriteLevel($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withoutTrashed()
- * @property-read MediaCollection<int, Media> $media
- * @property-read int|null $media_count
- * @mixin \Eloquent
- */
-	class Attribute extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
-}
-
-namespace App\Models\Entity{
-/**
  * Entité Breed (affichée « Classe » côté utilisateur).
  *
  * @property int $id
@@ -598,10 +557,12 @@ namespace App\Models\Entity{
  * @property-read int|null $element_orientations_count
  * @property-read BreedSpellPivot|null $pivot
  * @method static Builder<static>|Breed visibleToUser(?\App\Models\User $user)
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Language> $languages
+ * @property-read Collection<int, \App\Models\Entity\Language> $languages
  * @property-read int|null $languages_count
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereEvolution($value)
+ * @method static Builder<static>|Breed whereEvolution($value)
+ * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\CreatureTrait> $creatureTraits
+ * @property-read int|null $creature_traits_count
  */
 	class Breed extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -626,6 +587,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereOrientationKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedElementOrientation whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class BreedElementOrientation extends \Eloquent {}
 }
@@ -762,12 +724,93 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
+ * @property-read Collection<int, \App\Models\Entity\Breed> $breeds
  * @property-read int|null $breeds_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsPassive($value)
+ * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Condition> $conditions
+ * @property-read int|null $conditions_count
  */
 	class Capability extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
+}
+
+namespace App\Models\Entity{
+/**
+ * Référentiel canonique des états/conditions de jeu.
+ *
+ * @property int $id
+ * @property int|null $dofusdb_id
+ * @property string $name
+ * @property string|null $description
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
+ * @property string|null $icon
+ * @property string|null $image
+ * @property array<array-key, mixed>|null $raw
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property int|null $created_by
+ * @property-read User|null $createdBy
+ * @property-read Collection<int, Creature> $creatures
+ * @property-read Collection<int, Spell> $spells
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @mixin \Eloquent
+ * @property bool $prevents_spell_cast
+ * @property bool $prevents_fight
+ * @property bool $cant_be_moved
+ * @property bool $cant_be_pushed
+ * @property bool $cant_deal_damage
+ * @property bool $invulnerable
+ * @property bool $cant_switch_position
+ * @property bool $incurable
+ * @property bool $invulnerable_melee
+ * @property bool $invulnerable_range
+ * @property bool $cant_tackle
+ * @property bool $cant_be_tackled
+ * @property bool $display_turn_remaining
+ * @property bool $is_main_state
+ * @property-read int|null $creatures_count
+ * @property-read int|null $spells_count
+ * @method static \Database\Factories\Entity\ConditionFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereCantBeMoved($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereCantBePushed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereCantBeTackled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereCantDealDamage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereCantSwitchPosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereCantTackle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereDisplayTurnRemaining($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereDofusdbId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereIncurable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereInvulnerable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereInvulnerableMelee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereInvulnerableRange($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereIsMainState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition wherePreventsFight($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition wherePreventsSpellCast($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereRaw($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereWriteLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withoutTrashed()
+ */
+	class Condition extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -952,8 +995,8 @@ namespace App\Models\Entity{
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property int $created_by
- * @property-read Collection<int, Attribute> $attributes
- * @property-read int|null $attributes_count
+ * @property-read Collection<int, Condition> $conditions
+ * @property-read int|null $conditions_count
  * @property-read Collection<int, Capability> $capabilities
  * @property-read int|null $capabilities_count
  * @property-read Collection<int, Consumable> $consumables
@@ -1087,8 +1130,56 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomBonus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomMastery($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\CreatureTrait> $creatureTraits
+ * @property-read int|null $creature_traits_count
  */
 	class Creature extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
+}
+
+namespace App\Models\Entity{
+/**
+ * Référentiel des traits permanents de créature.
+ *
+ * @property int $id
+ * @property string $name
+ * @property string|null $description
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
+ * @property string|null $image
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int|null $created_by
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
+ * @property-read int|null $breeds_count
+ * @property-read \App\Models\User|null $createdBy
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Creature> $creatures
+ * @property-read int|null $creatures_count
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Specialization> $specializations
+ * @property-read int|null $specializations_count
+ * @method static \Database\Factories\Entity\CreatureTraitFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereWriteLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait withoutTrashed()
+ */
+	class CreatureTrait extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -1195,6 +1286,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class Language extends \Eloquent {}
 }
@@ -1243,9 +1335,9 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereWriteLevel($value)
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Language> $languages
+ * @property-read Collection<int, \App\Models\Entity\Language> $languages
  * @property-read int|null $languages_count
+ * @mixin \Eloquent
  */
 	class Monster extends \Eloquent {}
 }
@@ -1592,6 +1684,8 @@ namespace App\Models\Entity{
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\CreatureTrait> $creatureTraits
+ * @property-read int|null $creature_traits_count
  */
 	class Specialization extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1693,8 +1787,8 @@ namespace App\Models\Entity{
  * @property-read int|null $media_count
  * @property-read Collection<int, SpellEffect> $spellEffects
  * @property-read int|null $spell_effects_count
- * @property-read Collection<int, SpellState> $spellStates
- * @property-read int|null $spell_states_count
+ * @property-read Collection<int, Condition> $conditions
+ * @property-read int|null $conditions_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAllowsReaction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAttackCharacteristicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAutoSuccessIfWillingTarget($value)
@@ -1705,8 +1799,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveCharacteristicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveDcFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveSuccessNote($value)
+ * @property-read BreedSpellPivot|null $pivot
  * @mixin \Eloquent
- * @property-read \App\Models\Pivots\BreedSpellPivot|null $pivot
  */
 	class Spell extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1882,8 +1976,8 @@ namespace App\Models{
  * @method static Builder<static>|Page whereReadLevel($value)
  * @method static Builder<static>|Page whereTitleCssClasses($value)
  * @method static Builder<static>|Page whereWriteLevel($value)
+ * @method static Builder<static>|Page whereSettings($value)
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereSettings($value)
  */
 	class Page extends \Eloquent {}
 }
@@ -1907,6 +2001,7 @@ namespace App\Models\Pivots{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot whereSlotIndex($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BreedSpellPivot whereSpellId($value)
+ * @mixin \Eloquent
  */
 	class BreedSpellPivot extends \Eloquent {}
 }
@@ -2278,64 +2373,6 @@ namespace App\Models{
  * @mixin \Eloquent
  */
 	class SpellEffectType extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * Référentiel local des états DofusDB appliqués par les sorts.
- *
- * @property int $id
- * @property int $dofusdb_id
- * @property string|null $name
- * @property string|null $icon
- * @property string|null $image
- * @property bool $prevents_spell_cast
- * @property bool $prevents_fight
- * @property bool $cant_be_moved
- * @property bool $cant_be_pushed
- * @property bool $cant_deal_damage
- * @property bool $invulnerable
- * @property bool $cant_switch_position
- * @property bool $incurable
- * @property bool $invulnerable_melee
- * @property bool $invulnerable_range
- * @property bool $cant_tackle
- * @property bool $cant_be_tackled
- * @property bool $display_turn_remaining
- * @property bool $is_main_state
- * @property array<array-key, mixed>|null $raw
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection<int, Spell> $spells
- * @property-read int|null $spells_count
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantBeMoved($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantBePushed($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantBeTackled($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantDealDamage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantSwitchPosition($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantTackle($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereDisplayTurnRemaining($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereDofusdbId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereIcon($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereIncurable($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereInvulnerable($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereInvulnerableMelee($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereInvulnerableRange($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereIsMainState($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState wherePreventsFight($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState wherePreventsSpellCast($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereRaw($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereUpdatedAt($value)
- * @mixin \Eloquent
- */
-	class SpellState extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -2718,8 +2755,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
  * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read Collection<int, Attribute> $createdAttributes
- * @property-read int|null $created_attributes_count
+ * @property-read Collection<int, Condition> $createdConditions
+ * @property-read int|null $created_conditions_count
  * @property-read Collection<int, Capability> $createdCapabilities
  * @property-read int|null $created_capabilities_count
  * @property-read Collection<int, Breed> $createdBreeds

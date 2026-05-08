@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({
+defineProps({
     traits: { type: Array, default: () => [] },
     showLevel: { type: Boolean, default: false },
     size: {

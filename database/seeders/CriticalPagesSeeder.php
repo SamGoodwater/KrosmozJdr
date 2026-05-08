@@ -199,7 +199,7 @@ class CriticalPagesSeeder extends Seeder
     }
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
      */
     private function createOrRestoreBySlug(array $attributes, string $label): Page
     {
@@ -231,12 +231,13 @@ class CriticalPagesSeeder extends Seeder
             return (int) $systemUser->id;
         }
 
-        $superAdmin = User::query()->where('role', User::ROLE_SUPER_ADMIN)->orderBy('id')->first();
+        $superAdmin = User::query()->where('role', User::ROLE_SUPER_ADMIN)->orderBy('id', 'asc')->first();
         if ($superAdmin) {
             return (int) $superAdmin->id;
         }
 
-        $firstUser = User::query()->orderBy('id')->first();
+        $firstUser = User::query()->orderBy('id', 'asc')->first();
+
         return $firstUser ? (int) $firstUser->id : null;
     }
 
@@ -283,6 +284,7 @@ class CriticalPagesSeeder extends Seeder
             $section->fill($attributes);
             $section->save();
             $this->command?->info("♻️ Section {$slug} restaurée/mise à jour");
+
             return $section;
         }
 
@@ -291,7 +293,6 @@ class CriticalPagesSeeder extends Seeder
 
         return $section;
     }
-
 
     private function ensureEntityTableSection(
         Page $page,
@@ -336,6 +337,7 @@ class CriticalPagesSeeder extends Seeder
             $section->fill($attributes);
             $section->save();
             $this->command?->info("♻️ Section {$slug} restaurée/mise à jour");
+
             return $section;
         }
 
@@ -387,6 +389,7 @@ class CriticalPagesSeeder extends Seeder
             $section->fill($attributes);
             $section->save();
             $this->command?->info("♻️ Section {$slug} restaurée/mise à jour");
+
             return $section;
         }
 
@@ -416,7 +419,7 @@ class CriticalPagesSeeder extends Seeder
 
     private function defaultCguMarkdown(): string
     {
-        return <<<MD
+        return <<<'MD'
 # Conditions Generales d'Utilisation (CGU)
 
 Derniere mise a jour : 2026-03-06
@@ -450,7 +453,7 @@ MD;
 
     private function defaultPrivacyMarkdown(): string
     {
-        return <<<MD
+        return <<<'MD'
 # Politique de confidentialite et cookies
 
 Derniere mise a jour : 2026-03-06
@@ -498,7 +501,7 @@ MD;
 
     private function defaultChangelogMarkdown(): string
     {
-        return <<<MD
+        return <<<'MD'
 # Changelog du site KrosmozJDR
 
 Derniere mise a jour : 2026-03-19
@@ -546,4 +549,3 @@ MD;
         }
     }
 }
-

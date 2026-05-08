@@ -63,13 +63,32 @@ const refresh = async () => {
 };
 
 /**
+ * Extrait le chemin (/path) d'une URL menu ou Inertia (chemin seul ou absolue).
+ *
+ * @param {string} url
+ * @returns {string}
+ */
+const menuItemPath = (url) => {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.split('?')[0];
+    if (trimmed.startsWith('/')) return trimmed;
+    try {
+        return new URL(trimmed, window.location.origin).pathname || '';
+    } catch {
+        return trimmed;
+    }
+};
+
+/**
  * Vérifie si un item de menu est actif (page ou lien bibliothèque)
  */
 const isPageActive = (page, currentRoute) => {
     if (!currentRoute) return false;
 
-    if (page.url && currentRoute.startsWith(page.url)) return true;
-    if (page.slug && currentRoute.includes(`/pages/${page.slug}`)) return true;
+    const cur = menuItemPath(currentRoute);
+    const itemPath = menuItemPath(page.url);
+    if (itemPath && (cur === itemPath || cur.startsWith(`${itemPath}/`))) return true;
+    if (page.slug && cur.includes(`/pages/${page.slug}`)) return true;
 
     if (page.children && page.children.length > 0) {
         return page.children.some(child => isPageActive(child, currentRoute));

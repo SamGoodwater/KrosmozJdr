@@ -13,6 +13,7 @@ import Container from "@/Pages/Atoms/data-display/Container.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import EditActionDock from "@/Pages/Molecules/action/EditActionDock.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
+import { mergeEntityOptionsById } from "@/Utils/entity/mergeEntityOptionsById";
 import { warnDev } from "@/Utils/dev-logger";
 
 const props = defineProps({
@@ -60,18 +61,7 @@ function normalizeRelations(list) {
         .filter((row) => Number.isFinite(row.id) && row.id > 0);
 }
 
-const byId = computed(() => {
-    const map = new Map();
-    for (const item of props.relations) {
-        if (item?.id) map.set(Number(item.id), item);
-    }
-    for (const item of localAvailable.value) {
-        if (item?.id && !map.has(Number(item.id))) {
-            map.set(Number(item.id), item);
-        }
-    }
-    return map;
-});
+const byId = computed(() => mergeEntityOptionsById(props.relations, localAvailable.value));
 
 const selectedTraits = computed(() =>
     localRows.value
@@ -96,13 +86,11 @@ const filteredToAdd = computed(() => {
         .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "fr"));
 });
 
-const originalSignature = computed(() => JSON.stringify(normalizeRelations(props.relations).sort(sortRows)));
-const localSignature = computed(() => JSON.stringify([...localRows.value].sort(sortRows)));
+const originalSignature = computed(() =>
+    JSON.stringify([...normalizeRelations(props.relations)].sort((a, b) => a.id - b.id)),
+);
+const localSignature = computed(() => JSON.stringify([...localRows.value].sort((a, b) => a.id - b.id)));
 const hasUnsavedChanges = computed(() => originalSignature.value !== localSignature.value);
-
-function sortRows(a, b) {
-    return a.id - b.id;
-}
 
 function addTrait(id) {
     const n = Number(id);
