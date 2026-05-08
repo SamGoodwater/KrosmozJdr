@@ -64,7 +64,7 @@ return [
             'order' => 8,
         ],
         [
-            'label' => 'Conditions',
+            'label' => 'États',
             'route' => 'entities.conditions.index',
             'entity_key' => 'condition',
             'order' => 9,

@@ -1,9 +1,19 @@
 /**
- * Helpers d'affichage unifiés pour les conditions.
+ * Helpers d'affichage unifiés pour les états (entité Condition) et paramètres d’effets.
  */
 
 export const CONDITION_DISPELLABLE_ICON = "icons/caracteristics/unenchantable.webp";
 export const CONDITION_NOT_DISPELLABLE_ICON = "icons/caracteristics/notUnenchantable.webp";
+
+/**
+ * Dissipabilité d’un état référencé en base : par défaut oui si absent / null.
+ * @param {boolean|null|undefined} value
+ * @returns {boolean}
+ */
+export function resolveEntityDissipable(value) {
+    if (value === null || value === undefined) return true;
+    return Boolean(value);
+}
 
 /**
  * Normalise un mode d'application d'condition.
@@ -41,13 +51,13 @@ export function formatConditionDuration(value) {
 }
 
 /**
- * Formate la dissipabilité d'un condition.
+ * Formate la dissipabilité (effet ou état).
  * @param {boolean|null|undefined} value
  * @returns {string|null}
  */
 export function formatConditionDispellable(value) {
     if (typeof value !== "boolean") return null;
-    return value ? "dissipable" : "non dissipable";
+    return value ? "Dissipable" : "Non dissipable";
 }
 
 /**
@@ -83,20 +93,26 @@ export function formatConditionIdentity(name, id) {
     const hasId = Number.isFinite(num);
     if (stateName && hasId) return `${stateName} (#${num})`;
     if (stateName) return stateName;
-    if (hasId) return `Condition #${num}`;
-    return "Condition inconnu";
+    if (hasId) return `État #${num}`;
+    return "État inconnu";
 }
 
 /**
  * Construit un méta-texte unifié (durée, dissipable, masque).
- * @param {{duration?: number|string|null, dispellable?: boolean|null, targetMask?: string|null}} data
+ * @param {{duration?: number|string|null, dispellable?: boolean|null, dissipable?: boolean|null, targetMask?: string|null}} data
  * @param {string} [separator]
  * @returns {string}
  */
 export function formatConditionMeta(data, separator = " · ") {
+    const disp =
+        typeof data?.dispellable === "boolean"
+            ? data.dispellable
+            : typeof data?.dissipable === "boolean"
+              ? data.dissipable
+              : null;
     const parts = [
         formatConditionDuration(data?.duration),
-        formatConditionDispellable(data?.dispellable),
+        formatConditionDispellable(disp),
         formatConditionMask(data?.targetMask),
     ].filter(Boolean);
     return parts.join(separator);

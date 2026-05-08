@@ -27,6 +27,7 @@ class StoreConditionRequest extends FormRequest
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
+            'dissipable' => ['nullable', 'boolean'],
             'image' => ['nullable', 'string', 'max:255'],
         ];
     }

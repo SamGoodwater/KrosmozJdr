@@ -83,6 +83,22 @@ const mockActionsConfig = {
     requiresEntity: true,
     group: 'tools',
   },
+  favorite: {
+    key: 'favorite',
+    label: 'Ajouter aux favoris',
+    icon: 'fa-regular fa-star',
+    permission: null,
+    requiresEntity: true,
+    group: 'tools',
+  },
+  pin: {
+    key: 'pin',
+    label: 'Épingler',
+    icon: 'fa-solid fa-thumbtack',
+    permission: null,
+    requiresEntity: true,
+    group: 'tools',
+  },
   'download-pdf': {
     key: 'download-pdf',
     label: 'Télécharger PDF',
@@ -98,6 +114,7 @@ const mockActionsConfig = {
     permission: 'canManage',
     requiresEntity: true,
     group: 'tools',
+    visibleIf: (ctx) => Boolean(ctx?.inModal || ctx?.inPage),
   },
   minimize: {
     key: 'minimize',
@@ -121,6 +138,14 @@ const mockActionsConfig = {
 vi.mock('@/Entities/entity-actions-config', () => ({
   getActionsForEntityType: vi.fn(() => mockActionsConfig),
   ACTION_GROUPS_ORDER: ['navigation', 'edition', 'tools', 'destructive'],
+  ENTITY_ACTION_CONTEXT_PRESETS: {
+    minimalLine: ['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit'],
+    modalDetail: ['favorite', 'copy-link', 'view', 'quick-edit', 'refresh', 'delete'],
+    pageDetail: ['favorite', 'copy-link', 'edit', 'refresh', 'delete'],
+    tableDropdown: ['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit'],
+  },
+  normalizeActionEntityType: (entityType) => entityType,
+  isScrappableEntityType: (entityType) => ['spells', 'items'].includes(entityType),
 }));
 
 describe('useEntityActions', () => {
@@ -142,7 +167,9 @@ describe('useEntityActions', () => {
     it('filtre les actions selon les permissions', () => {
       const TestComponent = defineComponent({
         setup() {
-          const { availableActions } = useEntityActions('spells', { id: 1 });
+          const { availableActions } = useEntityActions('spells', { id: 1 }, {
+            context: { inModal: true },
+          });
           return { availableActions };
         },
         template: '<div></div>',
@@ -154,7 +181,7 @@ describe('useEntityActions', () => {
       const actions = readAvailableActions(wrapper);
       expect(actions.length).toBeGreaterThan(0);
       expect(actions.some((a) => a.key === 'view')).toBe(true);
-      expect(actions.some((a) => a.key === 'edit')).toBe(true);
+      expect(actions.some((a) => a.key === 'quick-edit')).toBe(true);
     });
 
     it('exclut les actions sans permission canView', () => {
@@ -162,7 +189,9 @@ describe('useEntityActions', () => {
 
       const TestComponent = defineComponent({
         setup() {
-          const { availableActions } = useEntityActions('spells', { id: 1 });
+          const { availableActions } = useEntityActions('spells', { id: 1 }, {
+            context: { inModal: true },
+          });
           return { availableActions };
         },
         template: '<div></div>',
@@ -180,7 +209,9 @@ describe('useEntityActions', () => {
 
       const TestComponent = defineComponent({
         setup() {
-          const { availableActions } = useEntityActions('spells', { id: 1 });
+          const { availableActions } = useEntityActions('spells', { id: 1 }, {
+            context: { inModal: true },
+          });
           return { availableActions };
         },
         template: '<div></div>',
@@ -198,7 +229,9 @@ describe('useEntityActions', () => {
 
       const TestComponent = defineComponent({
         setup() {
-          const { availableActions } = useEntityActions('spells', { id: 1 });
+          const { availableActions } = useEntityActions('spells', { id: 1 }, {
+            context: { inModal: true },
+          });
           return { availableActions };
         },
         template: '<div></div>',
@@ -221,7 +254,9 @@ describe('useEntityActions', () => {
 
       const TestComponent = defineComponent({
         setup() {
-          const { availableActions } = useEntityActions('spells', { id: 1 });
+          const { availableActions } = useEntityActions('spells', { id: 1 }, {
+            context: { inModal: true },
+          });
           return { availableActions };
         },
         template: '<div></div>',
@@ -260,6 +295,7 @@ describe('useEntityActions', () => {
         setup() {
           const { availableActions } = useEntityActions('spells', { id: 1 }, {
             blacklist: ['delete', 'refresh'],
+            context: { inModal: true },
           });
           return { availableActions };
         },
@@ -272,7 +308,7 @@ describe('useEntityActions', () => {
       expect(actionKeys).not.toContain('delete');
       expect(actionKeys).not.toContain('refresh');
       expect(actionKeys).toContain('view');
-      expect(actionKeys).toContain('edit');
+      expect(actionKeys).toContain('quick-edit');
     });
   });
 
@@ -298,6 +334,7 @@ describe('useEntityActions', () => {
       const TestComponent = defineComponent({
         setup() {
           const { availableActions } = useEntityActions('spells', { id: 1 }, {
+            whitelist: ['minimize'],
             context: { inPanel: true },
           });
           return { availableActions };
@@ -312,11 +349,68 @@ describe('useEntityActions', () => {
     });
   });
 
+  describe('Matrice de contexte', () => {
+    it('utilise le preset minimal/line pour les vues compactes', () => {
+      const TestComponent = defineComponent({
+        setup() {
+          const { availableActions } = useEntityActions('spells', { id: 1 }, {
+            context: { viewMode: 'line' },
+          });
+          return { availableActions };
+        },
+        template: '<div></div>',
+      });
+
+      const wrapper = mount(TestComponent);
+      const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
+      expect(actionKeys).toEqual(['quick-view', 'quick-edit', 'copy-link', 'favorite', 'pin']);
+    });
+
+    it('expose les intentions modales et page', () => {
+      const TestComponent = defineComponent({
+        setup() {
+          const { availableActions } = useEntityActions('spells', { id: 1 }, {
+            context: { inModal: true },
+          });
+          return { availableActions };
+        },
+        template: '<div></div>',
+      });
+
+      const wrapper = mount(TestComponent);
+      const byKey = Object.fromEntries(readAvailableActions(wrapper).map((a) => [a.key, a.intent]));
+      expect(byKey.view).toBe('open-page');
+      expect(byKey['quick-edit']).toBe('edit-modal');
+      expect(byKey.favorite).toBe('favorite');
+    });
+  });
+
+  describe('Rafraîchissement scrapping', () => {
+    it('n\'affiche refresh que pour une entité scrappable avec droit manage/admin', () => {
+      mockPermissions.can.mockImplementation((entityType, ability) => ability === 'manageAny');
+
+      const TestComponent = defineComponent({
+        setup() {
+          const spells = useEntityActions('spells', { id: 1 }, { context: { inModal: true } }).availableActions;
+          const conditions = useEntityActions('conditions', { id: 1 }, { context: { inModal: true } }).availableActions;
+          return { spells, conditions };
+        },
+        template: '<div></div>',
+      });
+
+      const wrapper = mount(TestComponent);
+      expect((wrapper.vm.spells?.value ?? wrapper.vm.spells).map((a) => a.key)).toContain('refresh');
+      expect((wrapper.vm.conditions?.value ?? wrapper.vm.conditions).map((a) => a.key)).not.toContain('refresh');
+    });
+  });
+
   describe('Groupement des actions', () => {
     it('groupe les actions correctement', () => {
       const TestComponent = defineComponent({
         setup() {
-          const { groupedActions } = useEntityActions('spells', { id: 1 });
+          const { groupedActions } = useEntityActions('spells', { id: 1 }, {
+            context: { inModal: true },
+          });
           return { groupedActions };
         },
         template: '<div></div>',
@@ -334,7 +428,9 @@ describe('useEntityActions', () => {
     it('respecte l\'ordre des groupes', () => {
       const TestComponent = defineComponent({
         setup() {
-          const { groupedActions } = useEntityActions('spells', { id: 1 });
+          const { groupedActions } = useEntityActions('spells', { id: 1 }, {
+            context: { inModal: true },
+          });
           return { groupedActions };
         },
         template: '<div></div>',
@@ -355,6 +451,7 @@ describe('useEntityActions', () => {
       const TestComponent = defineComponent({
         setup() {
           const { availableActions } = useEntityActions('spells', null, {
+            whitelist: ['minimize'],
             context: { inPanel: true },
           });
           return { availableActions };

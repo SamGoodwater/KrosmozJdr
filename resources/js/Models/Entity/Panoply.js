@@ -10,6 +10,7 @@
  */
 import { BaseModel } from '../BaseModel';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class Panoply extends BaseModel {
     // ============================================
@@ -134,7 +135,7 @@ export class Panoply extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || `/panoplies/${this.id}`;
+        const href = options.href || resolveEntityRouteHref('panoplies', 'show', this.id) || `/entities/panoplies/${this.id}`;
         
         return {
             type: 'route',

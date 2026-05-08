@@ -187,7 +187,7 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['pin', 'copy-link', 'quick-view', 'quick-edit']"
+                                    :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                                     @action="(k, e) => handleAction(k)"
                                 />
                             </div>
@@ -281,7 +281,7 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['pin', 'copy-link', 'quick-view', 'quick-edit']"
+                                    :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                                     @action="(k, e) => handleAction(k)"
                                 />
                             </div>

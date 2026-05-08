@@ -15,8 +15,18 @@
  * />
  */
 import EntityActionButton from "@/Pages/Atoms/action/EntityActionButton.vue";
+import { computed } from "vue";
+import { useResolvedEntityActionState } from "@/Composables/entity/useResolvedEntityActionState";
 
 const props = defineProps({
+  entityType: {
+    type: String,
+    default: "",
+  },
+  entity: {
+    type: Object,
+    default: null,
+  },
   /**
    * Liste des actions disponibles.
    * @type {Array<Object>}
@@ -58,8 +68,18 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["action"]);
+const sourceActions = computed(() => props.actions);
+const { resolvedActions, runLocalAction } = useResolvedEntityActionState(
+  computed(() => props.entityType),
+  computed(() => props.entity),
+  sourceActions,
+);
 
 const handleAction = (actionKey, event) => {
+  if (runLocalAction(actionKey)) {
+    emit("action", actionKey);
+    return;
+  }
   // EntityActionButton émet (actionKey, event), on ne garde que actionKey
   emit("action", actionKey);
 };
@@ -68,7 +88,7 @@ const handleAction = (actionKey, event) => {
 <template>
   <div class="flex items-center gap-2">
     <EntityActionButton
-      v-for="action in actions"
+      v-for="action in resolvedActions"
       :key="action.key"
       :action="action"
       :display="display"

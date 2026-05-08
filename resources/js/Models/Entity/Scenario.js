@@ -9,6 +9,7 @@
  * console.log(scenario.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class Scenario extends BaseModel {
     // ============================================
@@ -186,7 +187,7 @@ export class Scenario extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || this.url || `/scenarios/${this.slug || this.id}`;
+        const href = options.href || this.url || resolveEntityRouteHref('scenarios', 'show', this.id) || `/entities/scenarios/${this.slug || this.id}`;
         
         return {
             type: 'route',

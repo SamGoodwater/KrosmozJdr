@@ -38,7 +38,7 @@ const ENTITY_CONFIG = {
   capability: { color: 'fuchsia', label: 'Capacité' },
   consumable: { color: 'orange', label: 'Consommable' },
   scenario: { color: 'neutral', label: 'Scénario' },
-  condition: { color: 'red', label: 'Condition' },
+  condition: { color: 'red', label: 'État' },
 };
 
 /** Clés d'entité reconnues (alignées sur $theme-entities). */

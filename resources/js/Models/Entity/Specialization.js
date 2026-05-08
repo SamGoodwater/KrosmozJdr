@@ -9,6 +9,7 @@
  * console.log(specialization.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class Specialization extends BaseModel {
     // ============================================
@@ -96,7 +97,7 @@ export class Specialization extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || `/specializations/${this.id}`;
+        const href = options.href || resolveEntityRouteHref('specializations', 'show', this.id) || `/entities/specializations/${this.id}`;
         
         return {
             type: 'route',

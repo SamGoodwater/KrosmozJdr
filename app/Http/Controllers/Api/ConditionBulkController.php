@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
- * API Bulk update pour les attributs.
+ * API Bulk update pour les états (référentiel Condition).
  *
  * @description
  * Applique un patch sur une liste d'IDs (sélection multiple). Seuls les champs fournis sont modifiés.
@@ -32,6 +32,7 @@ class ConditionBulkController extends Controller
             'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
+            'dissipable' => ['sometimes', 'boolean'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'description' => ['sometimes', 'nullable', 'string'],
@@ -51,6 +52,7 @@ class ConditionBulkController extends Controller
             'state',
             'read_level',
             'write_level',
+            'dissipable',
             'description',
             'image',
         ] as $k) {

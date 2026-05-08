@@ -38,6 +38,7 @@ class ConditionFactory extends Factory
             'state' => $this->faker->randomElement([Condition::STATE_DRAFT, Condition::STATE_PLAYABLE]),
             'read_level' => $readLevel,
             'write_level' => $writeLevel,
+            'dissipable' => $this->faker->boolean(80),
             'image' => $this->faker->optional()->imageUrl(128, 128, 'abstract', true, $name),
             'created_by' => null,
         ];

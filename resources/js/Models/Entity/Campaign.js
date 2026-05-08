@@ -9,6 +9,7 @@
  * console.log(campaign.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class Campaign extends BaseModel {
     // ============================================
@@ -182,7 +183,7 @@ export class Campaign extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || this.url || `/campaigns/${this.slug || this.id}`;
+        const href = options.href || this.url || resolveEntityRouteHref('campaigns', 'show', this.id) || `/entities/campaigns/${this.slug || this.id}`;
         
         return {
             type: 'route',

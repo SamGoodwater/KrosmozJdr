@@ -160,6 +160,7 @@ const handleCloseCreateModal = () => {
 
 const handleEntityCreated = () => {
     createModalOpen.value = false;
+    refreshToken.value++;
 };
 
 const closeModal = () => {

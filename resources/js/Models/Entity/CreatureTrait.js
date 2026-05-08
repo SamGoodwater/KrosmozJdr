@@ -9,6 +9,7 @@
  * console.log(creatureTrait.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class CreatureTrait extends BaseModel {
     // ============================================
@@ -86,7 +87,7 @@ export class CreatureTrait extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || `/creature-traits/${this.id}`;
+        const href = options.href || resolveEntityRouteHref('creature-traits', 'show', this.id) || `/entities/creature-traits/${this.id}`;
         
         return {
             type: 'route',

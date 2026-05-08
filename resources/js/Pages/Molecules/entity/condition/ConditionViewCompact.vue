@@ -3,7 +3,7 @@
  * ConditionViewCompact — Vue Compact pour Condition
  * 
  * @description
- * Vue réduite d'un attribut avec informations essentielles.
+ * Vue réduite d'un état avec informations essentielles.
  * Utilisée dans les modals compacts.
  * 
  * @props {Condition} condition - Instance du modèle Condition
@@ -14,6 +14,7 @@ import { router } from '@inertiajs/vue3';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
@@ -70,7 +71,7 @@ const canShowField = (fieldKey) => {
 
 // Champs à afficher dans la vue compacte
 const compactFields = computed(() => [
-    'name',
+    'dissipable',
     'description',
     'state',
     'read_level',
@@ -78,11 +79,11 @@ const compactFields = computed(() => [
 ].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    return descriptors.value?.[fieldKey]?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -129,10 +130,10 @@ const handleAction = async (actionKey) => {
         <!-- En-tête compact -->
         <div class="flex items-center justify-between gap-2">
             <div class="flex gap-2 items-center flex-1 min-w-0">
-                <div v-if="condition.image" class="flex-shrink-0">
+                <div v-if="condition.image" class="shrink-0">
                     <Image
                         :src="condition.image"
-                        :alt="condition.name || 'Condition'"
+                        :alt="condition.name || 'État'"
                         size="sm"
                         class="rounded"
                     />
@@ -145,9 +146,9 @@ const handleAction = async (actionKey) => {
                 </h3>
             </div>
             
-            <div v-if="showActions" class="flex-shrink-0">
+            <div v-if="showActions" class="shrink-0">
                 <EntityActions
-                    entity-type="condition"
+                    entity-type="conditions"
                     :entity="condition"
                     format="buttons"
                     display="icon-only"
@@ -169,7 +170,7 @@ const handleAction = async (actionKey) => {
                 <Icon
                     :source="getFieldIcon(fieldKey)"
                     size="xs"
-                    class="text-primary-400 flex-shrink-0 mt-0.5"
+                    class="text-primary-400 shrink-0 mt-0.5"
                 />
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between gap-2">
@@ -177,7 +178,19 @@ const handleAction = async (actionKey) => {
                             {{ getFieldLabel(fieldKey) }}
                         </span>
                         <div class="flex-1 text-right min-w-0 text-primary-200">
+                            <EntityPropertyDisplay
+                                v-if="fieldKey === 'dissipable'"
+                                :field-key="fieldKey"
+                                :entity="condition"
+                                entity-type="condition"
+                                display-mode="compact"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                                size="xs"
+                                :hide-field-label="true"
+                            />
                             <CellRenderer
+                                v-else
                                 :cell="getCell(fieldKey)"
                                 ui-color="primary"
                             />

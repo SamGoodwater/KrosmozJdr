@@ -26,6 +26,57 @@
  */
 
 /**
+ * Matrice centrale des actions selon le contexte d'affichage.
+ */
+export const SCRAPPABLE_ENTITY_TYPES = Object.freeze([
+  "monsters",
+  "breeds",
+  "resources",
+  "items",
+  "consumables",
+  "panoplies",
+  "spells",
+]);
+
+export const ENTITY_ACTION_CONTEXT_PRESETS = Object.freeze({
+  minimalLine: ["pin", "favorite", "copy-link", "quick-view", "quick-edit"],
+  modalDetail: ["favorite", "copy-link", "view", "quick-edit", "refresh", "delete"],
+  pageDetail: ["favorite", "copy-link", "edit", "refresh", "delete"],
+  tableDropdown: ["pin", "favorite", "copy-link", "quick-view", "quick-edit"],
+});
+
+export function normalizeActionEntityType(entityType = "") {
+  const raw = String(entityType || "").trim();
+  const map = {
+    resource: "resources",
+    item: "items",
+    consumable: "consumables",
+    spell: "spells",
+    monster: "monsters",
+    breed: "breeds",
+    classe: "breeds",
+    class: "breeds",
+    panoply: "panoplies",
+    condition: "conditions",
+    capability: "capabilities",
+    specialization: "specializations",
+    "creature-trait": "creature-traits",
+    creatureTrait: "creature-traits",
+    shop: "shops",
+    npc: "npcs",
+    campaign: "campaigns",
+    scenario: "scenarios",
+    "resource-type": "resource-types",
+    resourceType: "resource-types",
+  };
+  return map[raw] || raw;
+}
+
+export function isScrappableEntityType(entityType) {
+  return SCRAPPABLE_ENTITY_TYPES.includes(normalizeActionEntityType(entityType));
+}
+
+/**
  * Actions communes à toutes les entités.
  */
 export const ENTITY_ACTIONS_COMMON = Object.freeze({
@@ -51,12 +102,13 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
       if (context?.inPage) return false;
       // En minimal, l'ouverture page se fait via actions dédiées seulement (pas d'ouverture implicite).
       if (context?.inMinimal) return false;
+      if (context?.inLine || context?.viewMode === "line" || context?.viewMode === "minimal") return false;
       return true;
     },
   },
   "quick-view": {
     key: "quick-view",
-    label: "Afficher",
+    label: "Ouvrir",
     tooltip: "Afficher dans une modal rapide",
     icon: "fa-solid fa-window-maximize",
     permission: "canView",
@@ -72,7 +124,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
       return "Afficher dans une modal rapide";
     },
     visibleIf: (context) => {
-      // En modal, on n'affiche pas "quick-view" (pas de sens)
+      // En modal, `view` devient Agrandir vers la page.
       if (context?.inModal) return false;
       // Sur la page de l'entité, on n'affiche pas "quick-view" (on est déjà sur la page)
       if (context?.inPage) return false;
@@ -81,7 +133,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   },
   edit: {
     key: "edit",
-    label: "Modifier",
+    label: "Éditer",
     tooltip: "Modifier dans une page complète",
     icon: "fa-solid fa-pen-to-square",
     permission: "canUpdate",
@@ -90,7 +142,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     getLabel: (context) => {
       // Si on est dans un modal de modification, le label change
       if (context?.inModal && context?.modalMode === "edit") return "Agrandir";
-      return "Modifier";
+      return "Éditer";
     },
     getTooltip: (context) => {
       if (context?.inModal && context?.modalMode === "edit") return "Modifier dans une page complète";
@@ -99,6 +151,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     visibleIf: (context) => {
       // En vue minimal, on garde l'édition en modal rapide.
       if (context?.inMinimal) return false;
+      if (context?.inLine || context?.viewMode === "line" || context?.viewMode === "minimal") return false;
       // Visible en modal et en page (ouverture/édition mode page depuis ces contextes).
       if (context?.inModal || context?.inPage) return true;
       // Hors modal/page, on privilégie l'édition rapide.
@@ -107,7 +160,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   },
   "quick-edit": {
     key: "quick-edit",
-    label: "Modifier",
+    label: "Éditer",
     tooltip: "Modifier dans une modal rapide",
     icon: "fa-solid fa-pen-to-square",
     permission: "canUpdate",
@@ -115,16 +168,16 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     group: "edition",
     getLabel: (context) => {
       // Si on est dans une page, on peut vouloir "Modifier" en modal
-      if (context?.inPage) return "Modifier";
-      return "Modifier";
+      if (context?.inPage) return "Éditer";
+      return "Éditer";
     },
     getTooltip: (context) => {
       if (context?.inPage) return "Modifier dans une modal rapide";
       return "Modifier dans une modal rapide";
     },
     visibleIf: (context) => {
-      // En modal/page, on privilégie l'édition en mode page.
-      if (context?.inModal || context?.inPage) return false;
+      // En page complète, on privilégie l'édition page. En modal, on garde l'édition modale.
+      if (context?.inPage) return false;
       return true;
     },
   },
@@ -153,10 +206,19 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   },
   "copy-link": {
     key: "copy-link",
-    label: "Copier le lien",
+    label: "Copier",
     tooltip: "Copier l'URL de l'entité dans le presse-papiers",
     icon: "fa-solid fa-link",
     permission: null, // Toujours disponible
+    requiresEntity: true,
+    group: "tools",
+  },
+  favorite: {
+    key: "favorite",
+    label: "Ajouter aux favoris",
+    tooltip: "Ajouter cette fiche aux favoris (local)",
+    icon: "fa-regular fa-star",
+    permission: null,
     requiresEntity: true,
     group: "tools",
   },
@@ -187,7 +249,10 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     permission: "canManage",
     requiresEntity: true,
     group: "tools",
-    visibleIf: (context) => Boolean(context?.inModal || context?.inPage),
+    visibleIf: (context) => {
+      if (!isScrappableEntityType(context?.entityType)) return false;
+      return Boolean(context?.inModal || context?.inPage);
+    },
   },
   minimize: {
     key: "minimize",
@@ -218,6 +283,8 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
  */
 export const ENTITY_ACTIONS_CONFIG = Object.freeze({
   common: ENTITY_ACTIONS_COMMON,
+
+  conditions: {},
   
   // Actions spécifiques par entité (exemple pour resource)
   resource: {
@@ -234,6 +301,7 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
+      visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
     },
   },
 
@@ -247,6 +315,7 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
+      visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
     },
   },
 
@@ -260,6 +329,7 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
+      visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
     },
   },
 
@@ -273,19 +343,7 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
-    },
-  },
-
-  /** Capacités : Rafraîchir utilise le pipeline V2. */
-  capabilities: {
-    refresh: {
-      key: "refresh",
-      label: "Rafraîchir",
-      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
-      icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canManage",
-      requiresEntity: true,
-      group: "tools",
+      visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
     },
   },
 
@@ -299,6 +357,23 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       permission: "canManage",
       requiresEntity: true,
       group: "tools",
+      visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
+    },
+  },
+
+  /** Ressources : Rafraîchir utilise le pipeline V2. */
+  resources: {
+    refresh: {
+      ...ENTITY_ACTIONS_COMMON.refresh,
+      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
+    },
+  },
+
+  /** Consommables : Rafraîchir utilise le pipeline V2. */
+  consumables: {
+    refresh: {
+      ...ENTITY_ACTIONS_COMMON.refresh,
+      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
     },
   },
 });

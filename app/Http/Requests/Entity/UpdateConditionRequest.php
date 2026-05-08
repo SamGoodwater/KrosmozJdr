@@ -27,6 +27,7 @@ class UpdateConditionRequest extends FormRequest
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
+            'dissipable' => ['sometimes', 'boolean'],
             'image' => ['nullable', 'string', 'max:255'],
         ];
     }

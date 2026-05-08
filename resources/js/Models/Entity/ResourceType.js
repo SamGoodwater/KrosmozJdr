@@ -10,6 +10,7 @@
  */
 import { BaseModel } from '../BaseModel';
 import { getFormatter } from '../../Utils/Formatters/FormatterRegistry.js';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class ResourceType extends BaseModel {
     // ============================================
@@ -104,7 +105,7 @@ export class ResourceType extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || (this.id ? `/resource-types/${this.id}` : undefined);
+        const href = options.href || resolveEntityRouteHref('resource-types', 'show', this.id) || (this.id ? `/entities/resource-types/${this.id}` : undefined);
         
         return {
             type: 'route',

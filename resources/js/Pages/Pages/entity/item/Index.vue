@@ -269,7 +269,7 @@ const handleCloseCreateModal = () => {
 
 const handleEntityCreated = () => {
     createModalOpen.value = false;
-    // Le rechargement est géré par CreateEntityModal
+    refreshToken.value++;
 };
 
 const closeModal = () => {

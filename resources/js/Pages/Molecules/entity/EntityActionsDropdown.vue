@@ -22,12 +22,8 @@ import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import { computed } from "vue";
-import {
-    isEntityPinned,
-    toggleEntityPin,
-    usePinnedEntityVersion,
-} from "@/Composables/entity/usePinnedEntityIds";
-import { useUxFeedback } from "@/Composables/utils/useUxFeedback";
+import EntityActionMenuList from "@/Pages/Molecules/entity/EntityActionMenuList.vue";
+import { useResolvedEntityActionState } from "@/Composables/entity/useResolvedEntityActionState";
 
 const props = defineProps({
     /**
@@ -110,7 +106,7 @@ const props = defineProps({
      */
     inlineActionKeys: {
         type: Array,
-        default: () => ["pin", "copy-link", "view", "edit", "quick-view", "quick-edit"],
+        default: () => ["pin", "favorite", "copy-link", "view", "edit", "quick-view", "quick-edit"],
     },
     showInlineShortcuts: {
         type: Boolean,
@@ -120,42 +116,12 @@ const props = defineProps({
 
 const emit = defineEmits(["action"]);
 
-const pinVersion = usePinnedEntityVersion();
-const { notifySuccess } = useUxFeedback();
-
-const showIcon = computed(() => props.display === "icon-only" || props.display === "icon-text");
-
-const entityIdStr = computed(() => {
-    const e = props.entity;
-    const id = e?.id ?? e?._data?.id;
-    if (id == null || id === "") return "";
-    return String(id);
-});
-
-const pinned = computed(() => {
-    pinVersion.value;
-    const et = String(props.entityType || "").trim();
-    if (!et || !entityIdStr.value) return false;
-    return isEntityPinned(et, entityIdStr.value);
-});
-
-/**
- * Actions avec libellé/icône dynamiques pour `pin`.
- */
-const resolvedActions = computed(() => {
-    const list = Array.isArray(props.actions) ? props.actions : [];
-    return list.map((a) => {
-        if (a?.key !== "pin") return a;
-        return {
-            ...a,
-            label: pinned.value ? "Désépingler" : "Épingler",
-            tooltip: pinned.value
-                ? "Retirer des fiches épinglées (local)"
-                : a.tooltip || "Épingler cette fiche (local)",
-            icon: "fa-solid fa-thumbtack",
-        };
-    });
-});
+const sourceActions = computed(() => props.actions);
+const { resolvedActions, runLocalAction } = useResolvedEntityActionState(
+    computed(() => props.entityType),
+    computed(() => props.entity),
+    sourceActions,
+);
 
 const promotedActions = computed(() => {
     if (!props.showInlineShortcuts) return [];
@@ -169,20 +135,12 @@ const promotedActions = computed(() => {
     return out;
 });
 
-function runPinToggle() {
-    const et = String(props.entityType || "").trim();
-    if (!et || !entityIdStr.value) return;
-    const now = toggleEntityPin(et, entityIdStr.value);
-    notifySuccess(now ? "Fiche épinglée (local)" : "Épinglage retiré");
-    emit("action", "pin");
-}
-
 /**
  * @param {string} actionKey
  */
 function handleShortcutClick(actionKey) {
-    if (actionKey === "pin") {
-        runPinToggle();
+    if (runLocalAction(actionKey)) {
+        emit("action", actionKey);
         return;
     }
     emit("action", actionKey);
@@ -192,38 +150,8 @@ function handleShortcutClick(actionKey) {
  * @param {string} actionKey
  */
 function handleMenuAction(actionKey) {
-    if (actionKey === "pin") {
-        runPinToggle();
-        return;
-    }
     emit("action", actionKey);
 }
-
-/**
- * Retourne les groupes d'actions dans l'ordre, avec les actions non groupées à la fin.
- */
-const orderedGroups = computed(() => {
-    const groups = props.groupedActions;
-    const groupKeys = Object.keys(groups);
-
-    if (groupKeys.length > 0) {
-        return groupKeys;
-    }
-
-    return ["all"];
-});
-
-/**
- * Retourne les actions d'un groupe (menu complet, y compris les raccourcis déjà visibles).
- */
-const getGroupActions = (groupKey) => {
-    if (groupKey === "all") {
-        return resolvedActions.value;
-    }
-    return (props.groupedActions[groupKey] || []).map(
-        (a) => resolvedActions.value.find((r) => r?.key === a?.key) || a,
-    );
-};
 
 /**
  * Récupère le nom de l'entité en gérant les modèles et objets bruts.
@@ -238,7 +166,6 @@ const getEntityName = () => {
 };
 
 const entityName = computed(() => getEntityName());
-const showEntityName = computed(() => Boolean(entityName.value));
 </script>
 
 <template>
@@ -256,7 +183,7 @@ const showEntityName = computed(() => Boolean(entityName.value));
                 :color="color"
                 class="btn-square shrink-0"
                 :class="{
-                    'pin-active text-primary!': action.key === 'pin' && pinned,
+                    'pin-active text-primary!': action.active,
                 }"
                 :title="action.tooltip || action.label"
                 @click.stop="handleShortcutClick(action.key)"
@@ -265,7 +192,7 @@ const showEntityName = computed(() => Boolean(entityName.value));
                     :source="action.icon"
                     :size="size"
                     :class="{
-                        'pin-active-icon': action.key === 'pin' && pinned,
+                        'pin-active-icon': action.active,
                     }"
                 />
             </Btn>
@@ -284,48 +211,17 @@ const showEntityName = computed(() => Boolean(entityName.value));
                 </Btn>
             </template>
             <template #content>
-                <ul class="menu bg-base-100 rounded-box z-1 w-56 p-2 shadow-lg border border-base-300">
-                    <li v-if="showEntityName" class="px-3 py-2 mb-1 border-b border-base-300">
-                        <div class="text-xs text-base-content/60 font-medium truncate" :title="entityName">
-                            {{ entityName }}
-                        </div>
-                    </li>
-
-                    <template v-for="groupKey in orderedGroups" :key="groupKey">
-                        <li
-                            v-for="action in getGroupActions(groupKey)"
-                            :key="action.key"
-                            :class="{
-                                'text-error': action.variant === 'error',
-                            }"
-                        >
-                            <button
-                                type="button"
-                                class="flex items-center gap-2 w-full"
-                                :class="{
-                                    'text-error': action.variant === 'error',
-                                }"
-                                :title="action.tooltip || action.label"
-                                @click="handleMenuAction(action.key)"
-                            >
-                                <Icon v-if="showIcon" :source="action.icon" :alt="action.label" :size="size" />
-                                <span class="truncate">{{ action.label }}</span>
-                                <span v-if="action.badge" class="badge badge-sm badge-primary ml-auto">{{
-                                    action.badge
-                                }}</span>
-                            </button>
-                        </li>
-
-                        <li
-                            v-if="
-                                groupKey !== orderedGroups[orderedGroups.length - 1] &&
-                                getGroupActions(orderedGroups[orderedGroups.indexOf(groupKey) + 1]).length > 0
-                            "
-                        >
-                            <hr class="my-1" />
-                        </li>
-                    </template>
-                </ul>
+                <EntityActionMenuList
+                    :entity-type="entityType"
+                    :entity="entity"
+                    :actions="actions"
+                    :grouped-actions="groupedActions"
+                    :display="display"
+                    :size="size"
+                    :entity-name="entityName || ''"
+                    menu-class="menu bg-base-100 rounded-box z-1 w-56 p-2 shadow-lg border border-base-300"
+                    @action="handleMenuAction"
+                />
             </template>
         </Dropdown>
     </div>

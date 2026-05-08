@@ -45,7 +45,7 @@ class ConditionController extends Controller
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
         
-        if (in_array($sortColumn, ['id', 'name', 'state', 'read_level', 'write_level', 'created_at'], true)) {
+        if (in_array($sortColumn, ['id', 'name', 'state', 'read_level', 'write_level', 'dissipable', 'created_at'], true)) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
@@ -75,6 +75,13 @@ class ConditionController extends Controller
         $data = $request->validated();
         $data['created_by'] = $request->user()->id;
         $condition = Condition::create($data);
+
+        if ($request->header('X-Inertia')) {
+            return redirect()
+                ->route('entities.conditions.index')
+                ->with('success', 'État créé avec succès.');
+        }
+
         return response()->json($condition, 201);
     }
 
@@ -84,7 +91,12 @@ class ConditionController extends Controller
     public function show(Condition $condition)
     {
         $this->authorize('view', $condition);
-        return response()->json($condition);
+
+        $condition->load(['createdBy', 'creatures']);
+
+        return Inertia::render('Pages/entity/condition/Show', [
+            'condition' => new ConditionResource($condition),
+        ]);
     }
 
     /**
@@ -92,7 +104,13 @@ class ConditionController extends Controller
      */
     public function edit(Condition $condition)
     {
-        //
+        $this->authorize('update', $condition);
+
+        $condition->load(['createdBy', 'creatures']);
+
+        return Inertia::render('Pages/entity/condition/Edit', [
+            'condition' => new ConditionResource($condition),
+        ]);
     }
 
     /**
@@ -100,8 +118,28 @@ class ConditionController extends Controller
      */
     public function update(UpdateConditionRequest $request, Condition $condition)
     {
+        $redirectAfter = (string) $request->input('redirect_after_update', '');
         $data = $request->validated();
         $condition->update($data);
+
+        if ($request->header('X-Inertia')) {
+            if ($redirectAfter === 'edit') {
+                return redirect()
+                    ->route('entities.conditions.edit', $condition)
+                    ->with('success', 'État mis à jour avec succès.');
+            }
+
+            if ($redirectAfter === 'index') {
+                return redirect()
+                    ->route('entities.conditions.index')
+                    ->with('success', 'État mis à jour avec succès.');
+            }
+
+            return redirect()
+                ->route('entities.conditions.show', $condition)
+                ->with('success', 'État mis à jour avec succès.');
+        }
+
         return response()->json($condition);
     }
 

@@ -27,6 +27,7 @@ class ConditionResource extends JsonResource
             'state' => $this->state,
             'read_level' => (int) ($this->read_level ?? 0),
             'write_level' => (int) ($this->write_level ?? 0),
+            'dissipable' => (bool) ($this->dissipable ?? true),
             'image' => $this->image,
             'created_by' => $this->created_by,
             'created_at' => $this->created_at?->toISOString(),

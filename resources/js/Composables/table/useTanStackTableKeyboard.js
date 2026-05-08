@@ -54,7 +54,7 @@ export const TANSTACK_TABLE_KEYBOARD_SHORTCUTS = [
 export const TANSTACK_TABLE_POINTER_SHORTCUTS = [
     { keys: "Clic", action: "Sélectionner la ligne (si sélection activée) ; quick edit si option activée" },
     { keys: "Double-clic", action: "Selon la page (souvent aperçu / modal)" },
-    { keys: "Ctrl+clic", action: "Ouvrir la page fiche entité" },
+    { keys: "Ctrl+clic", action: "Ouvrir l’aperçu (modal)" },
     { keys: "Alt+clic", action: "Édition rapide (modal)" },
 ];
 

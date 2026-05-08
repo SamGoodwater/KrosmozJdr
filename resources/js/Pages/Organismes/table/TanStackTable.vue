@@ -1728,9 +1728,9 @@ const handleRowClick = (row) => {
 const handleRowPointer = (row, event) => {
     if (event && isPointerOnInteractiveEl(event)) return;
     const mod = classifyRowPointerModifiers(event);
-    if (mod === "show-page") {
+    if (mod === "view") {
         event?.preventDefault?.();
-        emit("keyboard-intent", { type: "open-show-page", row });
+        emit("keyboard-intent", { type: "open-view", row });
         return;
     }
     if (mod === "edit") {

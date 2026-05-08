@@ -80,6 +80,20 @@ class ResourceTypeController extends Controller
     }
 
     /**
+     * Affiche la page d'édition d'un type de ressource.
+     */
+    public function edit(ResourceType $resourceType)
+    {
+        $this->authorize('update', $resourceType);
+
+        $resourceType->loadCount('resources');
+
+        return Inertia::render('Pages/entity/resource-type/Edit', [
+            'resourceType' => new ResourceTypeResource($resourceType),
+        ]);
+    }
+
+    /**
      * Store a newly created resource type.
      */
     public function store(StoreResourceTypeRequest $request)
@@ -103,7 +117,21 @@ class ResourceTypeController extends Controller
     {
         $this->authorize('update', $resourceType);
 
+        $redirectAfter = (string) $request->input('redirect_after_update', '');
+
         $resourceType->update($request->validated());
+
+        if ($redirectAfter === 'edit') {
+            return redirect()
+                ->route('entities.resource-types.edit', $resourceType)
+                ->with('success', 'Type de ressource mis à jour avec succès.');
+        }
+
+        if ($redirectAfter === 'show') {
+            return redirect()
+                ->route('entities.resource-types.show', $resourceType)
+                ->with('success', 'Type de ressource mis à jour avec succès.');
+        }
 
         return redirect()
             ->route('entities.resource-types.index')

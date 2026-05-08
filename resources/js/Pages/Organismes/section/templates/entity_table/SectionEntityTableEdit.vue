@@ -35,7 +35,7 @@ const entityOptions = [
   { value: 'shops', label: 'Boutiques' },
   { value: 'breeds', label: 'Classes' },
   { value: 'specializations', label: 'Spécialisations' },
-  { value: 'conditions', label: 'Conditions' },
+  { value: 'conditions', label: 'États' },
   { value: 'creature-traits', label: 'Traits' },
   { value: 'capabilities', label: 'Capacités' },
   { value: 'consumables', label: 'Consommables' },

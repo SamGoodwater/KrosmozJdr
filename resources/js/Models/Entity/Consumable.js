@@ -10,6 +10,7 @@
  */
 import { BaseModel } from '../BaseModel';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class Consumable extends BaseModel {
     // ============================================
@@ -178,7 +179,7 @@ export class Consumable extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || `/consumables/${this.id}`;
+        const href = options.href || resolveEntityRouteHref('consumables', 'show', this.id) || `/entities/consumables/${this.id}`;
         
         return {
             type: 'route',

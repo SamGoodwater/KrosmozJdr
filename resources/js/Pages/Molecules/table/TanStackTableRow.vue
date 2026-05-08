@@ -265,6 +265,12 @@ const handleAction = (actionKey, entity) => {
     closeContextMenu();
     emit("action", actionKey, entity || rowEntity.value, props.row);
 };
+
+const handleNameRouteClick = (event) => {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    emit("action", "quick-view", rowEntity.value, props.row);
+};
 </script>
 
 <template>
@@ -325,6 +331,7 @@ const handleAction = (actionKey, entity) => {
                 size="sm"
                 color="primary"
                 :context="{ inPanel: false }"
+                :show-inline-shortcuts="false"
                 @action="handleAction"
             />
         </td>
@@ -335,7 +342,7 @@ const handleAction = (actionKey, entity) => {
               'max-w-md': RICH_CONTENT_COLUMNS.has(col.id),
             }"
         >
-            <div class="relative min-w-0 max-w-full break-words">
+            <div class="relative min-w-0 max-w-full wrap-break-word">
                 <Tooltip v-if="!showSelection && !showActionsColumn && idx === 0 && hasState && dotTooltip" :content="dotTooltip" placement="right" :color="dotColor" responsive="md">
                     <span
                         data-no-row-select
@@ -347,7 +354,7 @@ const handleAction = (actionKey, entity) => {
                     :cell="getCell(col)"
                     :ui-color="uiColor"
                     :entity="rowEntity"
-                    :on-route-click="isNameColumn(col) && entityType && getCell(col)?.type === 'route' ? (e) => e?.preventDefault?.() : undefined"
+                    :on-route-click="isNameColumn(col) && entityType && getCell(col)?.type === 'route' ? handleNameRouteClick : undefined"
                 />
             </div>
         </td>

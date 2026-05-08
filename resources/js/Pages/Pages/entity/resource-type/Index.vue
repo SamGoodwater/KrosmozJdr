@@ -74,6 +74,11 @@ const handleRefreshAll = () => {
     refreshToken.value++;
 };
 
+const handleEntityCreated = () => {
+    createOpen.value = false;
+    refreshToken.value++;
+};
+
 const handleEdit = (entity) => {
     selectedEntity.value = entity;
     editOpen.value = true;
@@ -249,7 +254,7 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
             route-name-base="entities.resource-types"
             route-param-key="resourceType"
             @close="createOpen = false"
-            @created="createOpen = false"
+            @created="handleEntityCreated"
         />
 
         <Modal :open="editOpen" size="xl" placement="middle-center" close-on-esc @close="closeEdit">

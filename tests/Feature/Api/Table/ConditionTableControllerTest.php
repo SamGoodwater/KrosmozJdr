@@ -35,6 +35,7 @@ class ConditionTableControllerTest extends TestCase
         $condition = Condition::factory()->create([
             'name' => 'Test Condition',
             'created_by' => $user->id,
+            'dissipable' => true,
         ]);
 
         $response = $this->actingAs($user)
@@ -61,7 +62,8 @@ class ConditionTableControllerTest extends TestCase
         $this->assertArrayHasKey('entities', $data);
         $this->assertArrayNotHasKey('rows', $data);
         $this->assertCount(1, $data['entities']);
-        $this->assertEquals('Test Condition', $data['entities'][0]['name']);
+        $this->assertArrayHasKey('dissipable', $data['entities'][0]);
+        $this->assertTrue($data['entities'][0]['dissipable']);
     }
 
     /**
@@ -100,6 +102,8 @@ class ConditionTableControllerTest extends TestCase
         $this->assertArrayNotHasKey('entities', $data);
         $this->assertArrayHasKey('cells', $data['rows'][0]);
         $this->assertEquals('route', $data['rows'][0]['cells']['name']['type']);
+        $this->assertArrayHasKey('dissipable', $data['rows'][0]['cells']);
+        $this->assertSame('image', $data['rows'][0]['cells']['dissipable']['type']);
     }
 
     /**

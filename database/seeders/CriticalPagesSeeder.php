@@ -43,7 +43,7 @@ class CriticalPagesSeeder extends Seeder
         );
 
         $conditionsPage = $this->createOrRestoreBySlug([
-            'title' => 'Conditions',
+            'title' => 'États',
             'slug' => 'conditions',
             'in_menu' => false,
             'state' => Page::STATE_PLAYABLE,
@@ -54,13 +54,13 @@ class CriticalPagesSeeder extends Seeder
             'parent_id' => null,
             'created_by' => $defaultCreatorId,
             'page_css_classes' => 'color-condition-500',
-        ], 'Page Conditions');
+        ], 'Page États');
 
         $this->ensureTextSection(
             $conditionsPage,
             'conditions-intro',
-            'Les conditions',
-            '<p>Les conditions sont des états temporaires applicables aux créatures. Elles modélisent les états temporaires, séparément des caractéristiques et des traits permanents.</p>',
+            'Les états',
+            '<p>Les états sont des affixes temporaires applicables aux créatures. Ils modélisent les effets de durée, séparément des caractéristiques et des traits permanents.</p>',
             1,
             $defaultCreatorId
         );
@@ -68,7 +68,7 @@ class CriticalPagesSeeder extends Seeder
         $this->ensureEntityTableSection(
             $conditionsPage,
             'conditions-table',
-            'Liste des conditions',
+            'Liste des états',
             'conditions',
             2,
             $defaultCreatorId

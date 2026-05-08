@@ -13,6 +13,7 @@ import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacter
 import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
 import { isPoCac, PO_CAC_ICON, PO_CAC_LABEL, resolveDef, shouldHideCharacteristicLine } from '@/Composables/entity/useCharacteristicDisplay';
 import { getFormatter } from '@/Utils/Formatters/FormatterRegistry.js';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class Capability extends BaseModel {
     // ============================================
@@ -220,7 +221,7 @@ export class Capability extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || `/capabilities/${this.id}`;
+        const href = options.href || resolveEntityRouteHref('capabilities', 'show', this.id) || `/entities/capabilities/${this.id}`;
         
         return {
             type: 'route',

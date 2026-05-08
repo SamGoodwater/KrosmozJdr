@@ -42,7 +42,7 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 
-setPageTitle('Liste des CreatureTraits');
+setPageTitle('Traits');
 
 // Permissions
 const { canCreate: canCreatePermission, canUpdateAny } = usePermissions();
@@ -144,6 +144,7 @@ const handleCloseCreateModal = () => {
 
 const handleEntityCreated = () => {
     createModalOpen.value = false;
+    refreshToken.value++;
 };
 
 const closeModal = () => {
@@ -258,18 +259,18 @@ const handleQuickEditSubmit = async (payload) => {
 </script>
 
 <template>
-    <Head title="Liste des CreatureTraits" />
+    <Head title="Traits" />
     
     <div class="space-y-6 pb-8 w-full">
         <!-- En-tête -->
         <div class="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
             <div>
-                <h1 class="text-3xl font-bold text-primary-100">Liste des CreatureTraits</h1>
-                <p class="text-primary-200 mt-2">Gère les attributs de ton système</p>
+                <h1 class="text-3xl font-bold text-primary-100">Traits</h1>
+                <p class="text-primary-200 mt-2">Gère les traits permanents de ton système</p>
             </div>
             <Btn v-if="canCreate" @click="handleCreate" color="primary">
                 <i class="fa-solid fa-plus mr-2"></i>
-                Créer un attribut
+                Créer un trait
             </Btn>
         </div>
 

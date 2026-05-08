@@ -1,11 +1,8 @@
 <script setup>
 /**
- * Condition Index Page
- * 
- * @description
- * Page de liste des attributs avec tableau et modal
- * 
- * @props {Object} conditions - Collection paginée des attributs
+ * Page liste des états (entité Condition) — tableau et modals.
+ *
+ * @props {Object} conditions - Données Inertia / collection d’états
  */
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
@@ -42,7 +39,7 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 
-setPageTitle('Liste des Conditions');
+setPageTitle('Liste des états');
 
 // Permissions
 const { canCreate: canCreatePermission, canUpdateAny } = usePermissions();
@@ -144,6 +141,8 @@ const handleCloseCreateModal = () => {
 
 const handleEntityCreated = () => {
     createModalOpen.value = false;
+    // Données via API tables : forcer le refetch (reload Inertia ne met pas à jour TanStack).
+    refreshToken.value++;
 };
 
 const closeModal = () => {
@@ -187,7 +186,7 @@ const handleTableAction = async (actionKey, entity, row) => {
             const cfg = getEntityRouteConfig('condition');
             const url = resolveEntityRouteUrl('condition', 'show', entityId, cfg);
             if (url) {
-                await copyToClipboard(url, "Lien de l'entité copié !");
+                await copyToClipboard(url, "Lien de l'état copié !");
             }
             break;
         }
@@ -227,7 +226,7 @@ const handleModalCopyLink = async (entity) => {
     const cfg = getEntityRouteConfig('condition');
     const url = resolveEntityRouteUrl('condition', 'show', entityId, cfg);
     if (url) {
-        await copyToClipboard(url, "Lien de l'entité copié !");
+        await copyToClipboard(url, "Lien de l'état copié !");
     }
 };
 
@@ -258,18 +257,18 @@ const handleQuickEditSubmit = async (payload) => {
 </script>
 
 <template>
-    <Head title="Liste des Conditions" />
+    <Head title="Liste des états" />
     
     <div class="space-y-6 pb-8 w-full">
         <!-- En-tête -->
         <div class="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
             <div>
-                <h1 class="text-3xl font-bold text-primary-100">Liste des Conditions</h1>
-                <p class="text-primary-200 mt-2">Gère les attributs de ton système</p>
+                <h1 class="text-3xl font-bold text-primary-100">Liste des états</h1>
+                <p class="text-primary-200 mt-2">Gère les états de ton système</p>
             </div>
             <Btn v-if="canCreate" @click="handleCreate" color="primary">
                 <i class="fa-solid fa-plus mr-2"></i>
-                Créer un attribut
+                Créer un état
             </Btn>
         </div>
 

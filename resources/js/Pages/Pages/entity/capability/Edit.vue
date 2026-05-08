@@ -47,8 +47,8 @@ setPageTitle(`Modifier la capacité : ${capability.value.name || "Sans nom"}`);
             :entity-id="capability.id"
             route-name="entities.capabilities.updateConditions"
             route-param-name="capability"
-            title="Conditions appliquées"
-            help="Conditions que cette capacité peut appliquer. La description de la capacité précise leur interaction avec les créatures."
+            title="États appliqués"
+            help="États que cette capacité peut appliquer. La description de la capacité précise leur interaction avec les créatures."
         />
     </Container>
 </template>

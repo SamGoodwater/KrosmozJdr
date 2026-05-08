@@ -185,6 +185,7 @@ const entitiesPluralSegment = computed(() => {
     const et = props.entityType;
     if (et === 'panoply') return 'panoplies';
     if (et === 'capability' || et === 'capabilities') return 'capabilities';
+    if (et === 'creature-trait' || et === 'creature-traits') return 'creature-traits';
     return `${et}s`;
 });
 
@@ -196,6 +197,7 @@ const entitiesPluralSegment = computed(() => {
 const resolvedRouteParamKey = computed(() => {
     if (props.routeParamKey) return props.routeParamKey;
     if (props.entityType === 'capabilities') return 'capability';
+    if (props.entityType === 'creature-trait' || props.entityType === 'creature-traits') return 'creatureTrait';
     return props.entityType;
 });
 

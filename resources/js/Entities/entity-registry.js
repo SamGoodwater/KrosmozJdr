@@ -182,7 +182,7 @@ export function getEntityConfig(entityType) {
         model: Condition,
         getDescriptors: getConditionFieldDescriptors,
         responseAdapter: createEntityAdapter(Condition),
-        defaults: { minimalImportantFields: ["name", "state", "read_level"] },
+        defaults: { minimalImportantFields: ["name", "dissipable", "state", "read_level"] },
       };
     case "creature-traits":
       return {

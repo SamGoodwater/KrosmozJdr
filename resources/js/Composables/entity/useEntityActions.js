@@ -15,7 +15,13 @@
  */
 
 import { computed } from "vue";
-import { getActionsForEntityType, ACTION_GROUPS_ORDER } from "@/Entities/entity-actions-config";
+import {
+  ACTION_GROUPS_ORDER,
+  ENTITY_ACTION_CONTEXT_PRESETS,
+  getActionsForEntityType,
+  isScrappableEntityType,
+  normalizeActionEntityType,
+} from "@/Entities/entity-actions-config";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 /**
@@ -35,10 +41,30 @@ export function useEntityActions(entityType, entity = null, options = {}) {
     blacklist = null,
     context = {},
   } = options;
+
+  const normalizedEntityType = computed(() => normalizeActionEntityType(entityType));
+
+  const resolvedContext = computed(() => {
+    const ctx = {
+      ...context,
+      entityType: normalizeActionEntityType(context?.entityType || entityType),
+    };
+
+    if (ctx.viewMode === "minimal" || ctx.viewMode === "line" || ctx.inMinimal || ctx.inLine) {
+      return { ...ctx, preset: ctx.preset || "minimalLine", inMinimal: true };
+    }
+    if (ctx.surface === "modal" || ctx.inModal) {
+      return { ...ctx, preset: ctx.preset || "modalDetail", inModal: true };
+    }
+    if (ctx.surface === "page" || ctx.inPage) {
+      return { ...ctx, preset: ctx.preset || "pageDetail", inPage: true };
+    }
+    return { ...ctx, preset: ctx.preset || "tableDropdown" };
+  });
   
   // Récupère la config des actions pour ce type d'entité
   const actionsConfig = computed(() => {
-    return getActionsForEntityType(entityType);
+    return getActionsForEntityType(normalizedEntityType.value);
   });
   
   /**
@@ -72,17 +98,16 @@ export function useEntityActions(entityType, entity = null, options = {}) {
       canView: () => {
         // Si on a une entité, on devrait vérifier canView(entity), mais pour l'instant on utilise canViewAny
         // TODO: Implémenter canView(entity) si nécessaire
-        return canViewAny(entityType);
+        return canViewAny(normalizedEntityType.value);
       },
       canUpdate: () => {
-        return canUpdateAny(entityType) || isEntityOwner.value;
+        return canUpdateAny(normalizedEntityType.value) || isEntityOwner.value;
       },
       canDelete: () => {
-        return canDeleteAny(entityType) || isEntityOwner.value;
+        return canDeleteAny(normalizedEntityType.value) || isEntityOwner.value;
       },
       canManage: () => {
-        // `refresh` suit la même logique métier demandée que l'édition/suppression.
-        return can(entityType, "manageAny") || canUpdateAny(entityType) || isEntityOwner.value || isAdmin.value;
+        return can(normalizedEntityType.value, "manageAny") || isAdmin.value;
       },
     };
     
@@ -94,6 +119,10 @@ export function useEntityActions(entityType, entity = null, options = {}) {
   const availableActions = computed(() => {
     const config = actionsConfig.value;
     const actions = Object.values(config);
+    const ctx = resolvedContext.value;
+    const presetKeys = Array.isArray(ENTITY_ACTION_CONTEXT_PRESETS[ctx.preset])
+      ? ENTITY_ACTION_CONTEXT_PRESETS[ctx.preset]
+      : null;
     
     return actions
       .filter((action) => {
@@ -106,6 +135,10 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         if (blacklist && blacklist.includes(action.key)) {
           return false;
         }
+
+        if (!whitelist && presetKeys && !presetKeys.includes(action.key)) {
+          return false;
+        }
         
         // Vérifier si l'entité est requise
         if (action.requiresEntity && !entity) {
@@ -113,7 +146,11 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         }
         
         // Minimize : seulement disponible dans un panel (context.inPanel)
-        if (action.key === "minimize" && !context.inPanel) {
+        if (action.key === "minimize" && !ctx.inPanel) {
+          return false;
+        }
+
+        if (action.key === "refresh" && !isScrappableEntityType(normalizedEntityType.value)) {
           return false;
         }
         
@@ -123,7 +160,7 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         }
         
         // Vérifier visibleIf si défini
-        if (typeof action.visibleIf === "function" && !action.visibleIf(context)) {
+        if (typeof action.visibleIf === "function" && !action.visibleIf(ctx)) {
           return false;
         }
         
@@ -135,15 +172,17 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         
         // Label dynamique
         if (typeof action.getLabel === "function") {
-          enrichedAction.label = action.getLabel(context) || action.label;
+          enrichedAction.label = action.getLabel(ctx) || action.label;
         }
         
         // Tooltip dynamique
         if (typeof action.getTooltip === "function") {
-          enrichedAction.tooltip = action.getTooltip(context) || action.tooltip || action.label;
+          enrichedAction.tooltip = action.getTooltip(ctx) || action.tooltip || action.label;
         } else {
           enrichedAction.tooltip = action.tooltip || action.label;
         }
+
+        enrichedAction.intent = resolveActionIntent(action.key, ctx);
         
         return enrichedAction;
       });
@@ -186,6 +225,24 @@ export function useEntityActions(entityType, entity = null, options = {}) {
     availableActions,
     groupedActions,
     actionsConfig,
+    context: resolvedContext,
   };
+}
+
+function resolveActionIntent(actionKey, context) {
+  const modal = Boolean(context?.inModal);
+  const page = Boolean(context?.inPage);
+  const minimalLine = Boolean(context?.inMinimal || context?.inLine || context?.viewMode === "minimal" || context?.viewMode === "line");
+
+  if (actionKey === "view") return modal ? "open-page" : "open-page";
+  if (actionKey === "quick-view") return page ? "open-modal" : "open-modal";
+  if (actionKey === "edit") return modal || page ? "edit-page" : "edit-page";
+  if (actionKey === "quick-edit") return minimalLine || !page ? "edit-modal" : "edit-modal";
+  if (actionKey === "copy-link") return "copy-link";
+  if (actionKey === "refresh") return "refresh";
+  if (actionKey === "delete") return "delete";
+  if (actionKey === "pin") return "pin";
+  if (actionKey === "favorite") return "favorite";
+  return actionKey;
 }
 

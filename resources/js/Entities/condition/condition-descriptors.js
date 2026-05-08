@@ -108,6 +108,45 @@ export function getConditionFieldDescriptors(ctx = {}) {
         },
       },
     },
+    dissipable: {
+      key: "dissipable",
+      label: "Dissipable",
+      icon: "fa-solid fa-wand-magic-sparkles",
+      table: {
+        sortable: true,
+        filterable: { id: "dissipable", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
+        cell: {
+          sizes: {
+            xs: { mode: "image" },
+            sm: { mode: "image" },
+            md: { mode: "image" },
+            lg: { mode: "image" },
+            xl: { mode: "image" },
+          },
+        },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "image" },
+          sm: { mode: "image" },
+          md: { mode: "image" },
+          lg: { mode: "image" },
+          xl: { mode: "image" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Règles",
+          help: "Si désactivé, l’état ne peut pas être retiré par dissipation (désenvoûtement, etc.).",
+          required: false,
+          showInCompact: true,
+          defaultValue: true,
+          bulk: { enabled: true, nullable: false },
+        },
+      },
+    },
     description: {
       key: "description",
       label: "Description",
@@ -326,7 +365,7 @@ export function getConditionFieldDescriptors(ctx = {}) {
       actions: {
         enabled: true,
         permission: "view",
-        available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
+        available: ["copy-link", "quick-view", "quick-edit"],
         defaultVisible: {
           xs: false,
           sm: true,
@@ -338,7 +377,7 @@ export function getConditionFieldDescriptors(ctx = {}) {
       features: {
         search: {
           enabled: true,
-          placeholder: "Rechercher un attribut…",
+          placeholder: "Rechercher un état…",
           debounceMs: 200,
         },
         filters: { enabled: true },
@@ -357,7 +396,7 @@ export function getConditionFieldDescriptors(ctx = {}) {
         },
         export: {
           csv: true,
-          filename: "conditions.csv",
+          filename: "etats.csv",
         },
       },
       ui: {
@@ -368,6 +407,7 @@ export function getConditionFieldDescriptors(ctx = {}) {
     // Configuration globale du quickedit
     _quickeditConfig: {
       fields: [
+        "dissipable",
         "state",
         "read_level",
         "write_level",

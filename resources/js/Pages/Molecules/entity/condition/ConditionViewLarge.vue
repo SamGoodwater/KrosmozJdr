@@ -3,7 +3,7 @@
  * ConditionViewLarge — Vue Large pour Condition
  * 
  * @description
- * Vue complète d'un attribut avec toutes les informations affichées.
+ * Vue complète d'un état avec toutes les informations affichées.
  * Utilisée dans les grandes modals ou directement dans le main.
  * 
  * @props {Condition} condition - Instance du modèle Condition
@@ -20,7 +20,6 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getConditionFieldDescriptors } from "@/Entities/condition/condition-descriptors";
-import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
 
 const props = defineProps({
     condition: {
@@ -76,6 +75,7 @@ const canShowField = (fieldKey) => {
 const extendedFields = computed(() => {
     const fields = [
         'name',
+        'dissipable',
         'description',
         'state',
         'read_level',
@@ -112,7 +112,7 @@ const handleAction = async (actionKey) => {
             const cfg = getEntityRouteConfig('condition');
             const url = resolveEntityRouteUrl('condition', 'show', conditionId, cfg);
             if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien de l'attribut copié !");
+                await copyToClipboard(`${window.location.origin}${url}`, "Lien de l'état copié !");
             }
             emit('copy-link', props.condition);
             break;
@@ -137,10 +137,10 @@ const handleAction = async (actionKey) => {
         <!-- En-tête avec image, nom et actions -->
         <div class="flex flex-col md:flex-row gap-4 items-start">
             <!-- Image -->
-            <div v-if="condition.image" class="flex-shrink-0">
+            <div v-if="condition.image" class="shrink-0">
                 <Image
                     :src="condition.image"
-                    :alt="condition.name || 'Condition'"
+                    :alt="condition.name || 'État'"
                     size="lg"
                     class="entity-radius-box"
                 />
@@ -150,27 +150,27 @@ const handleAction = async (actionKey) => {
             <div class="flex-1 w-full">
                 <div class="flex items-start justify-between gap-4">
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-2xl font-bold text-primary-100 break-words">
+                        <h2 class="text-2xl font-bold text-primary-100 wrap-break-word">
                             <CellRenderer
                                 :cell="getCell('name')"
                                 ui-color="primary"
                             />
                         </h2>
-                        <p v-if="condition.description" class="text-primary-300 mt-2 break-words">
+                        <p v-if="condition.description" class="text-primary-300 mt-2 wrap-break-word">
                             {{ condition.description }}
                         </p>
                     </div>
                     
                     <!-- Actions en haut à droite -->
-                    <div v-if="showActions" class="flex-shrink-0">
+                    <div v-if="showActions" class="shrink-0">
                         <EntityActions
-                            entity-type="condition"
+                            entity-type="conditions"
                             :entity="condition"
                             format="buttons"
                             display="icon-only"
                             size="sm"
                             color="primary"
-                            :context="{ inPanel: false, inPage: true }"
+                            :context="{ inPanel: false, inPage: true, viewMode: 'large' }"
                             @action="handleAction"
                         />
                     </div>
@@ -186,7 +186,7 @@ const handleAction = async (actionKey) => {
                 class="p-3 bg-base-200 entity-radius-box"
             >
                 <div class="flex flex-col gap-1">
-                    <div class="text-primary-100 break-words">
+                    <div class="text-primary-100 wrap-break-word">
                         <EntityPropertyDisplay
                             :field-key="fieldKey"
                             :entity="condition"

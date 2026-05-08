@@ -12,6 +12,7 @@ import { BaseModel } from '../BaseModel';
 import CharacteristicsCard from '@/Pages/Organismes/data-display/CharacteristicsCard.vue';
 import { buildCreatureCharacteristicGroups } from '@/Utils/Entity/buildCreatureCharacteristicGroups';
 import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class Creature extends BaseModel {
     // ============================================
@@ -382,7 +383,7 @@ export class Creature extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || `/creatures/${this.id}`;
+        const href = options.href || resolveEntityRouteHref('creatures', 'show', this.id) || `/entities/creatures/${this.id}`;
         
         return {
             type: 'route',

@@ -16,7 +16,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
+import ConditionDissipableHighlight from "@/Pages/Molecules/entity/condition/ConditionDissipableHighlight.vue";
 
 const props = defineProps({
     condition: { type: Object, required: true },
@@ -34,8 +34,8 @@ const emit = defineEmits(["edit", "copy-link", "download-pdf", "refresh", "view"
 const isHovered = ref(props.displayMode === "extended");
 const canHoverExpand = computed(() => props.displayMode === "hover");
 
-const stateValue = computed(
-    () => props.condition?.state ?? props.condition?._data?.state ?? null
+const dissipableValue = computed(
+    () => props.condition?.dissipable ?? props.condition?._data?.dissipable
 );
 
 const imageUrl = computed(() => {
@@ -101,7 +101,7 @@ const handleAction = async (actionKey) => {
                     >
                         <Image
                             :src="imageUrl"
-                            :alt="condition.name || 'Condition'"
+                            :alt="condition.name || 'État'"
                             fit="contain"
                             class="h-full w-full object-contain"
                         />
@@ -112,7 +112,7 @@ const handleAction = async (actionKey) => {
                     >
                         <Icon source="fa-solid fa-list-check" alt="" size="sm" class="text-base-content/40" />
                     </div>
-                    <Tooltip :content="condition.name || 'Condition'" placement="top">
+                    <Tooltip :content="condition.name || 'État'" placement="top">
                         <span class="block min-w-0 wrap-break-word text-sm font-semibold text-primary-100">
                             <CellRenderer :cell="getCell('name')" ui-color="primary" />
                         </span>
@@ -121,7 +121,7 @@ const handleAction = async (actionKey) => {
 
                 <div v-if="showActions && isHovered" class="shrink-0">
                     <EntityActions
-                        entity-type="condition"
+                        entity-type="conditions"
                         :entity="condition"
                         format="buttons"
                         display="icon-only"
@@ -131,6 +131,10 @@ const handleAction = async (actionKey) => {
                         @action="handleAction"
                     />
                 </div>
+            </div>
+
+            <div class="flex items-center px-0.5 pt-0.5">
+                <ConditionDissipableHighlight :dissipable="dissipableValue" variant="block" />
             </div>
 
             <div

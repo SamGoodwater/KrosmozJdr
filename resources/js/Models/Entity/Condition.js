@@ -9,6 +9,8 @@
  * console.log(condition.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { formatConditionDispellable, getConditionDispellableIcon } from '@/Composables/condition/conditionDisplay';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class Condition extends BaseModel {
     // ============================================
@@ -25,6 +27,16 @@ export class Condition extends BaseModel {
 
     get image() {
         return this._data.image || '';
+    }
+
+    /**
+     * Peut être dissipé ; défaut `true` si la clé est absente des données.
+     * @returns {boolean}
+     */
+    get dissipable() {
+        const v = this._data.dissipable;
+        if (v === null || v === undefined) return true;
+        return Boolean(v);
     }
 
     // ============================================
@@ -50,6 +62,10 @@ export class Condition extends BaseModel {
      * @returns {Object|null} Cell object ou null si valeur invalide
      */
     toCell(fieldKey, options = {}) {
+        if (fieldKey === 'dissipable') {
+            return this._toDissipableCell(options);
+        }
+
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
         
@@ -86,7 +102,7 @@ export class Condition extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || `/conditions/${this.id}`;
+        const href = options.href || resolveEntityRouteHref('conditions', 'show', this.id) || `/entities/conditions/${this.id}`;
         
         return {
             type: 'route',
@@ -105,7 +121,7 @@ export class Condition extends BaseModel {
      * Génère une cellule pour la description
      * @private
      */
-    _toDescriptionCell(format, size, options) {
+    _toDescriptionCell(format, size, _options) {
         const description = this.description || '-';
         
         return {
@@ -123,7 +139,7 @@ export class Condition extends BaseModel {
      * Génère une cellule pour une image
      * @private
      */
-    _toImageCell(format, size, options) {
+    _toImageCell(format, size, _options) {
         const imageUrl = this.image;
         
         if (!imageUrl) {
@@ -141,10 +157,32 @@ export class Condition extends BaseModel {
             type: 'image',
             value: imageUrl,
             params: {
-                alt: this.name || 'Condition',
+                alt: this.name || 'État',
                 size: size === 'xs' ? 'xs' : (size === 'sm' ? 'sm' : 'md'),
                 sortValue: imageUrl,
                 searchValue: imageUrl,
+            },
+        };
+    }
+
+    /**
+     * Cellule dissipabilité (icône caractéristique).
+     * @private
+     */
+    _toDissipableCell(_options) {
+        const d = this.dissipable;
+        const icon = getConditionDispellableIcon(d);
+        const label = formatConditionDispellable(d) || '';
+
+        return {
+            type: 'image',
+            value: icon || '',
+            params: {
+                alt: label,
+                tooltip: label,
+                searchValue: label,
+                sortValue: d ? 1 : 0,
+                filterValue: d ? '1' : '0',
             },
         };
     }
@@ -191,6 +229,7 @@ export class Condition extends BaseModel {
             state: this.state,
             read_level: this.readLevel,
             write_level: this.writeLevel,
+            dissipable: this.dissipable,
             image: this.image
         };
     }

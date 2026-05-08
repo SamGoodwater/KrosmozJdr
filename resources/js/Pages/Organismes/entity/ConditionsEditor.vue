@@ -16,10 +16,11 @@ const props = defineProps({
     entityId: { type: Number, required: true },
     routeName: { type: String, required: true },
     routeParamName: { type: String, required: true },
-    title: { type: String, default: "Conditions" },
+    title: { type: String, default: "États" },
     help: {
         type: String,
-        default: "Associe les conditions que cette entité peut appliquer. Le détail d’interaction reste décrit dans le texte.",
+        default:
+            "Associe les états que cette entité peut appliquer. Le détail d’interaction reste décrit dans le texte.",
     },
 });
 
@@ -79,12 +80,13 @@ async function createFromQuery() {
             state: "playable",
             read_level: 0,
             write_level: 4,
+            dissipable: true,
         });
         localAvailable.value = [...localAvailable.value, data];
         addCondition(data.id);
-        notificationStore.success("Condition créée et ajoutée.", { duration: 2500, placement: "top-right" });
+        notificationStore.success("État créé et ajouté.", { duration: 2500, placement: "top-right" });
     } catch (error) {
-        notificationStore.error("Impossible de créer la condition.", { duration: 5000, placement: "top-center" });
+        notificationStore.error("Impossible de créer l’état.", { duration: 5000, placement: "top-center" });
         warnDev("[ConditionsEditor] création échouée", error);
     }
 }
@@ -95,9 +97,9 @@ function save() {
     form.conditions = [...localIds.value];
     form.patch(route(props.routeName, { [props.routeParamName]: props.entityId }), {
         preserveScroll: true,
-        onSuccess: () => notificationStore.success("Conditions mises à jour.", { duration: 3000, placement: "top-right" }),
+        onSuccess: () => notificationStore.success("États mis à jour.", { duration: 3000, placement: "top-right" }),
         onError: (errors) => {
-            notificationStore.error("Erreur lors de la mise à jour des conditions.", { duration: 5000, placement: "top-center" });
+            notificationStore.error("Erreur lors de la mise à jour des états.", { duration: 5000, placement: "top-center" });
             warnDev("[ConditionsEditor] erreurs", errors);
         },
     });
@@ -131,10 +133,10 @@ function save() {
                 </li>
             </ul>
         </div>
-        <p v-else class="text-sm text-base-content/50 italic">Aucune condition liée.</p>
+        <p v-else class="text-sm text-base-content/50 italic">Aucun état lié.</p>
 
         <div class="space-y-2">
-            <InputField v-model="query" label="Ajouter une condition" placeholder="Rechercher ou créer une condition…" size="sm" />
+            <InputField v-model="query" label="Ajouter un état" placeholder="Rechercher ou créer un état…" size="sm" />
             <div
                 v-if="query.trim()"
                 class="max-h-56 overflow-y-auto rounded border border-base-300/80 bg-glass-3xl text-[13px]"
@@ -162,7 +164,7 @@ function save() {
 
         <div class="flex justify-end border-t border-base-300 pt-2">
             <EditActionDock
-                primary-label="Enregistrer les conditions"
+                primary-label="Enregistrer les états"
                 processing-label="Sauvegarde…"
                 :processing="form.processing"
                 :disabled="!hasUnsavedChanges"

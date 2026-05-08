@@ -12,7 +12,7 @@ use Tests\TestCase;
  *
  * @description
  * Vérifie que :
- * - Un admin peut mettre à jour plusieurs attributs en masse
+ * - Un admin peut mettre à jour plusieurs états en masse
  * - La validation fonctionne correctement
  * - Seuls les champs fournis sont modifiés
  */
@@ -27,7 +27,7 @@ class ConditionBulkControllerTest extends TestCase
     }
 
     /**
-     * Test : Un admin peut mettre à jour plusieurs attributs en masse
+     * Test : Un admin peut mettre à jour plusieurs états en masse
      */
     public function test_admin_can_bulk_update_conditions(): void
     {
@@ -61,6 +61,29 @@ class ConditionBulkControllerTest extends TestCase
         $this->assertDatabaseHas('conditions', [
             'id' => $condition2->id,
             'read_level' => User::ROLE_ADMIN,
+        ]);
+    }
+
+    /**
+     * Test : bulk — champ dissipable
+     */
+    public function test_admin_can_bulk_update_dissipable(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $condition = Condition::factory()->create([
+            'dissipable' => true,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/conditions/bulk', [
+                'ids' => [$condition->id],
+                'dissipable' => false,
+            ]);
+
+        $response->assertOk()->assertJson(['success' => true]);
+        $this->assertDatabaseHas('conditions', [
+            'id' => $condition->id,
+            'dissipable' => false,
         ]);
     }
 

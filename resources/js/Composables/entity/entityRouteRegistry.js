@@ -60,6 +60,7 @@ export const ENTITY_ROUTE_CONFIG = {
   },
   condition: {
     show: { name: "entities.conditions.show", paramsMode: "scalar" },
+    edit: { name: "entities.conditions.edit", paramsMode: "object", paramKey: "condition" },
   },
   scenario: {
     show: { name: "entities.scenarios.show", paramsMode: "scalar" },
@@ -89,6 +90,7 @@ export const ENTITY_ROUTE_CONFIG = {
   },
   "resource-type": {
     show: { name: "entities.resource-types.show", paramsMode: "scalar" },
+    edit: { name: "entities.resource-types.edit", paramsMode: "object", paramKey: "resourceType" },
   },
   // Exemples explicités (les autres tombent sur le fallback)
   resources: {
@@ -121,6 +123,7 @@ export const ENTITY_ROUTE_CONFIG = {
 export function getEntitySingularRouteKey(normalizedPlural) {
   const n = String(normalizedPlural || "");
   if (n === "resource-types") return "resourceType";
+  if (n === "creature-traits") return "creatureTrait";
   if (n === "panoplies") return "panoply";
   if (n.endsWith("s") && n.length > 1) return n.slice(0, -1);
   return n;

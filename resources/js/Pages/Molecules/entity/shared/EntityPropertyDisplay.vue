@@ -38,6 +38,11 @@ import {
     CHARACTERISTIC_PROPERTY_DENSITY,
     CHARACTERISTIC_PROPERTY_LAYOUT,
 } from "@/Utils/Entity/Constants";
+import {
+    formatConditionDispellable,
+    getConditionDispellableIcon,
+    resolveEntityDissipable,
+} from "@/Composables/condition/conditionDisplay";
 
 const props = defineProps({
     fieldKey: { type: String, required: true },
@@ -178,6 +183,47 @@ const elementValue = computed(() => {
 
 const isStateField = computed(() => props.fieldKey === "state");
 
+const isConditionDissipableField = computed(
+    () =>
+        props.fieldKey === "dissipable" &&
+        ["condition", "conditions"].includes(String(props.entityType || "")),
+);
+
+const dissipableValue = computed(() => {
+    const data = props.entity?._data ?? props.entity;
+    return resolveEntityDissipable(data?.dissipable);
+});
+
+const dissipableLabel = computed(() => formatConditionDispellable(dissipableValue.value) || "");
+
+const dissipablePropertyViewModel = computed(() => ({
+    key: "dissipable",
+    name: dissipableLabel.value,
+    shortName: dissipableLabel.value,
+    icon: getConditionDispellableIcon(dissipableValue.value) || "",
+    color: "",
+    helper: dissipableValue.value ? "Retirable par dissipation." : "Impossible à dissiper.",
+    descriptions: "",
+    subtitle: "",
+    unit: "",
+    displayValue: dissipableLabel.value,
+    rawValue: dissipableValue.value,
+    hideWhenEmpty: false,
+    hideWhenFalse: false,
+    characteristicType: "boolean",
+    hiddenWhenEmpty: false,
+    formulaBdd: "",
+    formulaDisplay: "",
+    formulaMetaResolved: "",
+    formulaMetaRaw: "",
+    runtimeFormula: "",
+    substituted: "",
+    placeholders: [],
+    levelTable: [],
+    tooltipLine: dissipableValue.value ? "Retirable par dissipation." : "Impossible à dissiper.",
+    hideDisplayValueInTooltip: true,
+}));
+
 const entityStateValue = computed(() => {
     const data = props.entity?._data ?? props.entity;
     return data?.state ?? null;
@@ -200,6 +246,18 @@ const statePropertyTextSizeClass = computed(() => {
 
 <template>
     <ElementDisplay v-if="isElementField" :element="elementValue" :size="size" />
+
+    <CharacteristicProperty
+        v-else-if="isConditionDissipableField"
+        :view-model="dissipablePropertyViewModel"
+        :density="densityForMode"
+        :layout="CHARACTERISTIC_PROPERTY_LAYOUT.inline"
+        :badge="effectiveBadge"
+        :show-value="variant !== 'icon'"
+        :show-label="!hideFieldLabel"
+        :show-icon="!hideCharacteristicIcon"
+        :size="size"
+    />
 
     <template v-else-if="isStateField">
         <Tooltip

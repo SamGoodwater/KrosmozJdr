@@ -186,7 +186,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                             entity-type="capabilities"
                             :entity="entity || row"
                             format="dropdown"
-                            :whitelist="['pin', 'quick-view', 'view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh']"
+                            :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                             @action="(k, e) => emit('action', k, e, row)"
                         />
                     </div>

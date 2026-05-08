@@ -1,4 +1,11 @@
 <script setup>
+import Image from "@/Pages/Atoms/data-display/Image.vue";
+import {
+    formatConditionDispellable,
+    getConditionDispellableIcon,
+    resolveEntityDissipable,
+} from "@/Composables/condition/conditionDisplay";
+
 defineProps({
     conditions: { type: Array, default: () => [] },
     size: {
@@ -9,6 +16,21 @@ defineProps({
 });
 
 const conditionName = (condition) => condition?.name || condition?._data?.name || `#${condition?.id ?? "?"}`;
+
+const dissipableIconSrc = (condition) => {
+    const d = resolveEntityDissipable(condition?.dissipable ?? condition?._data?.dissipable);
+    return getConditionDispellableIcon(d);
+};
+
+const dissipableAlt = (condition) => {
+    const d = resolveEntityDissipable(condition?.dissipable ?? condition?._data?.dissipable);
+    return formatConditionDispellable(d) || "";
+};
+
+const badgeTitle = (condition) => {
+    const parts = [dissipableAlt(condition), condition?.description || conditionName(condition)].filter(Boolean);
+    return parts.join(" · ");
+};
 </script>
 
 <template>
@@ -16,15 +38,24 @@ const conditionName = (condition) => condition?.name || condition?._data?.name |
         <span
             v-for="condition in conditions"
             :key="condition.id"
-            class="badge badge-outline border-info/50 bg-info/10 text-info-content"
+            class="badge badge-outline border-info/50 bg-info/10 text-info-content inline-flex items-center gap-1 max-w-full"
             :class="{
                 'badge-xs': size === 'xs',
                 'badge-sm': size === 'sm',
                 'badge-md': size === 'md',
             }"
-            :title="condition.description || conditionName(condition)"
+            :title="badgeTitle(condition)"
         >
-            {{ conditionName(condition) }}
+            <Image
+                v-if="dissipableIconSrc(condition)"
+                :source="dissipableIconSrc(condition)"
+                :alt="dissipableAlt(condition)"
+                fit="contain"
+                width="1.1rem"
+                height="1.1rem"
+                class="inline-flex shrink-0 max-h-4 max-w-4 opacity-95"
+            />
+            <span class="min-w-0 truncate">{{ conditionName(condition) }}</span>
         </span>
     </div>
 </template>

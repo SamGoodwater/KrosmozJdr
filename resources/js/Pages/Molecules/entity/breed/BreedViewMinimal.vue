@@ -172,7 +172,7 @@ const handleLinkedQuickView = (linkedEntity) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['pin', 'copy-link', 'quick-view', 'quick-edit']"
+                                    :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                                     @action="handleAction"
                                 />
                             </div>
@@ -276,7 +276,7 @@ const handleLinkedQuickView = (linkedEntity) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['pin', 'copy-link', 'quick-view', 'quick-edit']"
+                                    :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                                     @action="handleAction"
                                 />
                             </div>

@@ -26,7 +26,9 @@ defineProps({
             />
             <div class="min-w-0 space-y-1">
                 <div class="font-semibold leading-tight">{{ model.name }}</div>
-                <div class="text-lg font-medium text-white/90">{{ model.displayValue ?? "—" }}</div>
+                <div v-if="!model.hideDisplayValueInTooltip" class="text-lg font-medium text-white/90">
+                    {{ model.displayValue ?? "—" }}
+                </div>
             </div>
         </div>
 

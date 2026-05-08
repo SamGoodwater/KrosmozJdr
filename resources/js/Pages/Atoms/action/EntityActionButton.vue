@@ -101,12 +101,29 @@ const handleClick = (event) => {
       :color="buttonColor"
       :disabled="disabled"
       class="gap-2"
+      :class="{ 'entity-action-button--active text-primary!': action.active }"
       @click="handleClick"
     >
-      <Icon v-if="showIcon" :source="action.icon" :alt="action.label" :size="size" />
+      <Icon
+        v-if="showIcon"
+        :source="action.icon"
+        :alt="action.label"
+        :size="size"
+        :class="{ 'entity-action-button__icon--active': action.active }"
+      />
       <span v-if="showText">{{ action.label }}</span>
       <span v-if="action.badge" class="badge badge-sm badge-primary">{{ action.badge }}</span>
     </Btn>
   </Tooltip>
 </template>
+
+<style scoped>
+.entity-action-button--active {
+  text-shadow: 0 0 8px color-mix(in srgb, var(--color-primary, #60a5fa) 70%, transparent);
+}
+
+.entity-action-button__icon--active {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary, #60a5fa) 78%, transparent));
+}
+</style>
 

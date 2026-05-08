@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Gate;
  * ConditionTableController
  *
  * @description
- * Endpoint "Table v2" (TanStack Table) pour les attributs.
+ * Endpoint "Table v2" (TanStack Table) pour les états (référentiel Condition).
  * Retourne un `TableResponse` avec des cellules typées: `Cell{type,value,params}`.
  */
 class ConditionTableController extends Controller
@@ -53,7 +53,7 @@ class ConditionTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['state', 'read_level', 'write_level'] as $k) {
+        foreach (['state', 'read_level', 'write_level', 'dissipable'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -93,8 +93,22 @@ class ConditionTableController extends Controller
         if (array_key_exists('write_level', $filters) && $filters['write_level'] !== '' && $filters['write_level'] !== null) {
             $query->where('write_level', (int) $filters['write_level']);
         }
+        if (array_key_exists('dissipable', $filters) && $filters['dissipable'] !== '' && $filters['dissipable'] !== null) {
+            $rawD = $filters['dissipable'];
+            $parts = is_array($rawD) ? $rawD : [$rawD];
+            $bools = [];
+            foreach ($parts as $p) {
+                $b = $this->normalizeDissipableFilter($p);
+                if ($b !== null) {
+                    $bools[$b ? 't' : 'f'] = $b;
+                }
+            }
+            if (count($bools) === 1) {
+                $query->where('dissipable', (bool) reset($bools));
+            }
+        }
 
-        $allowedSort = ['id', 'name', 'state', 'read_level', 'write_level', 'created_at', 'updated_at'];
+        $allowedSort = ['id', 'name', 'state', 'dissipable', 'read_level', 'write_level', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $rows = $query->limit($limit)->get();
@@ -116,6 +130,10 @@ class ConditionTableController extends Controller
             ],
             'read_level' => self::LEVEL_OPTIONS,
             'write_level' => self::LEVEL_OPTIONS,
+            'dissipable' => [
+                ['value' => '1', 'label' => 'Dissipable'],
+                ['value' => '0', 'label' => 'Non dissipable'],
+            ],
         ];
 
         // Mode "entities" : retourner les entités brutes
@@ -130,6 +148,7 @@ class ConditionTableController extends Controller
                     'state' => (string) ($a->state ?? 'draft'),
                     'read_level' => (int) ($a->read_level ?? 0),
                     'write_level' => (int) ($a->write_level ?? 0),
+                    'dissipable' => (bool) ($a->dissipable ?? true),
                     'image' => $a->image,
                     'created_by' => $a->created_by,
                     'createdBy' => $createdBy ? [
@@ -166,6 +185,9 @@ class ConditionTableController extends Controller
             $createdByLabel = $createdBy?->name ?: ($createdBy?->email ?: '-');
 
             $state = (string) ($a->state ?? 'draft');
+            $dissipable = (bool) ($a->dissipable ?? true);
+            $dissipableLabel = $dissipable ? 'Dissipable' : 'Non dissipable';
+            $dissipableIcon = $dissipable ? 'icons/caracteristics/unenchantable.webp' : 'icons/caracteristics/notUnenchantable.webp';
 
             $createdAtLabel = $a->created_at ? $a->created_at->format('d/m/Y H:i') : '-';
             $createdAtSort = $a->created_at ? $a->created_at->getTimestamp() : 0;
@@ -190,6 +212,16 @@ class ConditionTableController extends Controller
                         'params' => [
                             'searchValue' => (string) ($a->description ?? ''),
                             'sortValue' => (string) ($a->description ?? ''),
+                        ],
+                    ],
+                    'dissipable' => [
+                        'type' => 'image',
+                        'value' => $dissipableIcon,
+                        'params' => [
+                            'alt' => $dissipableLabel,
+                            'filterValue' => $dissipable ? '1' : '0',
+                            'sortValue' => $dissipable ? 1 : 0,
+                            'searchValue' => $dissipableLabel,
                         ],
                     ],
                     'state' => [
@@ -252,6 +284,7 @@ class ConditionTableController extends Controller
                         'state' => (string) ($a->state ?? 'draft'),
                         'read_level' => (int) ($a->read_level ?? 0),
                         'write_level' => (int) ($a->write_level ?? 0),
+                        'dissipable' => $dissipable,
                         'image' => $a->image,
                         'created_by' => $a->created_by,
                         'createdBy' => $createdBy ? [
@@ -279,5 +312,24 @@ class ConditionTableController extends Controller
             ],
             'rows' => $tableRows,
         ]);
+    }
+
+    private function normalizeDissipableFilter(mixed $v): ?bool
+    {
+        if ($v === '' || $v === null) {
+            return null;
+        }
+        if (is_bool($v)) {
+            return $v;
+        }
+        $s = strtolower(trim((string) $v));
+        if (in_array($s, ['1', 'true', 'yes', 'oui'], true)) {
+            return true;
+        }
+        if (in_array($s, ['0', 'false', 'no', 'non'], true)) {
+            return false;
+        }
+
+        return null;
     }
 }

@@ -13,13 +13,11 @@
  */
 
 <script setup>
-import { computed, ref, watch, nextTick } from "vue";
+import { computed } from "vue";
 import { useEntityActions } from "@/Composables/entity/useEntityActions";
 import EntityActionsList from "@/Pages/Molecules/entity/EntityActionsList.vue";
 import EntityActionsDropdown from "@/Pages/Molecules/entity/EntityActionsDropdown.vue";
-import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Btn from "@/Pages/Atoms/action/Btn.vue";
+import EntityActionMenuList from "@/Pages/Molecules/entity/EntityActionMenuList.vue";
 
 const props = defineProps({
   /**
@@ -97,7 +95,7 @@ const props = defineProps({
    */
   inlineActionKeys: {
     type: Array,
-    default: () => ["pin", "copy-link", "view", "edit", "quick-view", "quick-edit"],
+    default: () => ["pin", "favorite", "copy-link", "view", "edit", "quick-view", "quick-edit"],
   },
   /** Activer les raccourcis inline (désactiver ex. barre d’outils déjà chargée). */
   showInlineShortcuts: {
@@ -129,76 +127,12 @@ const emit = defineEmits([
   "quick-edit",
   "expand",
   "copy-link",
+  "favorite",
   "download-pdf",
   "refresh",
   "minimize",
   "delete",
 ]);
-
-/** @type {import('vue').Ref<HTMLElement | null>} */
-const contextMenuListRef = ref(null);
-
-function getContextMenuButtons() {
-    const root = contextMenuListRef.value;
-    if (!root) return [];
-    return [...root.querySelectorAll("li > button")];
-}
-
-function focusFirstContextMenuItem() {
-    nextTick(() => {
-        getContextMenuButtons()[0]?.focus?.();
-    });
-}
-
-watch(
-    () => props.contextVisible && props.format === "context",
-    (on) => {
-        if (on) {
-            focusFirstContextMenuItem();
-        }
-    },
-);
-
-/**
- * Navigation clavier dans le menu contextuel + Échap → fermeture.
- * @param {KeyboardEvent} e
- */
-function onContextMenuKeydown(e) {
-    if (props.format !== "context" || !props.contextVisible) return;
-    const buttons = getContextMenuButtons();
-    if (!buttons.length) return;
-
-    const key = e.key;
-    let idx = buttons.indexOf(/** @type {HTMLElement} */ (document.activeElement));
-
-    if (key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-        emit("close");
-        return;
-    }
-    if (key === "ArrowDown") {
-        e.preventDefault();
-        const next = idx < 0 ? 0 : Math.min(buttons.length - 1, idx + 1);
-        buttons[next]?.focus?.();
-        return;
-    }
-    if (key === "ArrowUp") {
-        e.preventDefault();
-        const next = idx <= 0 ? buttons.length - 1 : idx - 1;
-        buttons[next]?.focus?.();
-        return;
-    }
-    if (key === "Home") {
-        e.preventDefault();
-        buttons[0]?.focus?.();
-        return;
-    }
-    if (key === "End") {
-        e.preventDefault();
-        buttons[buttons.length - 1]?.focus?.();
-    }
-}
 
 const { availableActions, groupedActions } = useEntityActions(
   props.entityType,
@@ -251,6 +185,8 @@ const contextMenuStyle = computed(() => {
   <!-- Format : liste de boutons -->
   <EntityActionsList
     v-if="format === 'buttons'"
+    :entity-type="entityType"
+    :entity="entity"
     :actions="availableActions"
     :display="display"
     :size="size"
@@ -280,60 +216,26 @@ const contextMenuStyle = computed(() => {
     <div
       v-if="contextVisible"
       :style="contextMenuStyle"
-      class="dropdown dropdown-open"
+      class="dropdown dropdown-open pointer-events-auto"
+      @pointerdown.stop
+      @mousedown.stop
+      @mouseup.stop
+      @click.stop
+      @contextmenu.prevent.stop
     >
-      <ul
-        ref="contextMenuListRef"
-        tabindex="-1"
-        role="menu"
-        class="dropdown-content menu bg-base-100 rounded-box z-[9999] w-56 p-2 shadow-xl border border-base-300 outline-none origin-top-left"
-        @keydown="onContextMenuKeydown"
-      >
-        <!-- Nom de l'entité en haut (discret mais visible) -->
-        <li v-if="showEntityName" class="px-3 py-2 mb-1 border-b border-base-300" aria-hidden="true">
-          <div class="text-xs text-base-content/60 font-medium truncate" :title="entityName">
-            {{ entityName }}
-          </div>
-        </li>
-
-        <template v-for="(groupActions, groupKey) in groupedActions" :key="groupKey">
-          <li
-            v-for="action in groupActions"
-            :key="action.key"
-            :class="{
-              'text-error': action.variant === 'error',
-            }"
-          >
-            <button
-              type="button"
-              role="menuitem"
-              class="entity-actions-context-item flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-lg transition-[transform,background-color,box-shadow] duration-150 ease-out outline-none hover:bg-base-200/90 focus-visible:bg-primary/12 focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:scale-[1.02] motion-reduce:transition-none motion-reduce:focus-visible:scale-100"
-              :class="{ 'text-error': action.variant === 'error' }"
-              @click="handleAction(action.key)"
-              :title="action.tooltip || action.label"
-            >
-              <Icon
-                v-if="display === 'icon-only' || display === 'icon-text'"
-                :source="action.icon"
-                :alt="action.label"
-                :size="size"
-              />
-              <span v-if="display === 'icon-text' || display === 'text'">{{ action.label }}</span>
-              <span v-else-if="display === 'icon-only' && !action.icon">{{ action.label }}</span>
-              <span v-if="action.badge" class="badge badge-sm badge-primary ml-auto">{{ action.badge }}</span>
-            </button>
-          </li>
-
-          <li
-            v-if="
-              groupKey !== Object.keys(groupedActions)[Object.keys(groupedActions).length - 1] &&
-              groupedActions[Object.keys(groupedActions)[Object.keys(groupedActions).indexOf(groupKey) + 1]]?.length > 0
-            "
-          >
-            <hr class="my-1" />
-          </li>
-        </template>
-      </ul>
+      <EntityActionMenuList
+        :entity-type="entityType"
+        :entity="entity"
+        :actions="availableActions"
+        :grouped-actions="groupedActions"
+        :display="display"
+        :size="size"
+        :entity-name="showEntityName ? entityName : ''"
+        :focus-on-mount="contextVisible"
+        menu-class="dropdown-content menu bg-base-100 rounded-box pointer-events-auto z-[9999] w-56 p-2 shadow-xl border border-base-300 outline-none origin-top-left"
+        @action="handleAction"
+        @close="emit('close')"
+      />
     </div>
   </Transition>
 </template>

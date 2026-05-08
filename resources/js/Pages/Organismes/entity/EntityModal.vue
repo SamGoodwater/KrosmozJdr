@@ -13,18 +13,15 @@
  * @emit close - Événement émis lors de la fermeture
  */
 import { computed, defineAsyncComponent, shallowRef, watch } from 'vue';
-import { router } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useEntityViewFormat } from '@/Composables/store/useEntityViewFormat';
-import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
-import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { normalizeEntityType } from '@/Entities/entity-registry';
-import { getEntitySingularRouteKey } from '@/Composables/entity/entityRouteRegistry';
+import { useEntityActionDispatcher } from '@/Composables/entity/useEntityActionDispatcher';
 import { resolveEntityViewComponent } from '@/Utils/entity/resolveEntityViewComponent';
 
 const props = defineProps({
@@ -100,14 +97,25 @@ const getEntityName = () => {
 };
 
 // Handlers pour les actions
-const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf(normalizedEntityType);
 
 /** Pluriel normalisé (ex. spells) — actions, reload Inertia */
 const entityTypePlural = computed(() => normalizeEntityType(props.entityType));
 
-/** Clé de paramètre de route au singulier (ex. spell) */
-const entityRouteParamKey = computed(() => getEntitySingularRouteKey(entityTypePlural.value));
+const { dispatchEntityAction } = useEntityActionDispatcher(entityTypePlural, {
+    openEditModal: (entity) => emit('quick-edit', entity),
+    onOpenPage: (entity) => {
+        emit('expand', entity);
+        handleClose();
+    },
+    onEditPage: (entity) => {
+        emit('edit', entity);
+        handleClose();
+    },
+    onCopyLink: (entity) => emit('copy-link', entity),
+    onRefresh: (entity) => emit('refresh', entity),
+    onDelete: (entity) => emit('delete', entity),
+});
 
 // Charger dynamiquement le composant de vue approprié
 const ViewComponent = shallowRef(null);
@@ -197,44 +205,13 @@ const handleAction = async (actionKey, entity) => {
     const entityId = targetEntity?.id ?? props.entity?.id ?? null;
     if (!entityId) return;
 
-    const plural = entityTypePlural.value;
-    const paramKey = entityRouteParamKey.value;
-
     switch (actionKey) {
-        case 'quick-edit':
-            emit('quick-edit', targetEntity);
-            break;
-
-        case 'expand':
-            // Expand depuis un modal : redirige vers view (page complète)
-            router.visit(route(`entities.${plural}.show`, { [paramKey]: entityId }));
-            emit('expand', targetEntity);
-            handleClose(); // Fermer le modal après redirection
-            break;
-
-        case 'copy-link': {
-            const cfg = getEntityRouteConfig(paramKey);
-            const url = resolveEntityRouteUrl(paramKey, 'show', entityId, cfg);
-            if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien de l'entité copié !");
-            }
-            emit('copy-link', targetEntity);
-            break;
-        }
-
         case 'download-pdf':
             await downloadPdf(entityId);
             emit('download-pdf', targetEntity);
             break;
-
-        case 'refresh':
-            router.reload({ only: [plural] });
-            emit('refresh', targetEntity);
-            break;
-
-        case 'delete':
-            emit('delete', targetEntity);
-            break;
+        default:
+            await dispatchEntityAction(actionKey, targetEntity);
     }
 };
 </script>

@@ -75,6 +75,13 @@ class CreatureTraitController extends Controller
         $data = $request->validated();
         $data['created_by'] = $request->user()->id;
         $creatureTrait = CreatureTrait::create($data);
+
+        if ($request->header('X-Inertia')) {
+            return redirect()
+                ->route('entities.creature-traits.index')
+                ->with('success', 'Trait créé avec succès.');
+        }
+
         return response()->json($creatureTrait, 201);
     }
 
@@ -84,7 +91,12 @@ class CreatureTraitController extends Controller
     public function show(CreatureTrait $creatureTrait)
     {
         $this->authorize('view', $creatureTrait);
-        return response()->json($creatureTrait);
+
+        $creatureTrait->load(['createdBy', 'creatures']);
+
+        return Inertia::render('Pages/entity/creature-trait/Show', [
+            'creatureTrait' => new CreatureTraitResource($creatureTrait),
+        ]);
     }
 
     /**
@@ -92,7 +104,13 @@ class CreatureTraitController extends Controller
      */
     public function edit(CreatureTrait $creatureTrait)
     {
-        //
+        $this->authorize('update', $creatureTrait);
+
+        $creatureTrait->load(['createdBy', 'creatures']);
+
+        return Inertia::render('Pages/entity/creature-trait/Edit', [
+            'creatureTrait' => new CreatureTraitResource($creatureTrait),
+        ]);
     }
 
     /**
@@ -100,8 +118,28 @@ class CreatureTraitController extends Controller
      */
     public function update(UpdateCreatureTraitRequest $request, CreatureTrait $creatureTrait)
     {
+        $redirectAfter = (string) $request->input('redirect_after_update', '');
         $data = $request->validated();
         $creatureTrait->update($data);
+
+        if ($request->header('X-Inertia')) {
+            if ($redirectAfter === 'edit') {
+                return redirect()
+                    ->route('entities.creature-traits.edit', $creatureTrait)
+                    ->with('success', 'Trait mis à jour avec succès.');
+            }
+
+            if ($redirectAfter === 'index') {
+                return redirect()
+                    ->route('entities.creature-traits.index')
+                    ->with('success', 'Trait mis à jour avec succès.');
+            }
+
+            return redirect()
+                ->route('entities.creature-traits.show', $creatureTrait)
+                ->with('success', 'Trait mis à jour avec succès.');
+        }
+
         return response()->json($creatureTrait);
     }
 
