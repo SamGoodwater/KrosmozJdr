@@ -13,6 +13,7 @@ use App\Services\Characteristics\CharacteristicDefinitionReader;
 use App\Services\PageService;
 use App\Support\Characteristics\CharacteristicDefinitionNaming;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 /**
  * Seed les pages de contribution : page « Nous rejoindre », présentation
@@ -253,6 +254,7 @@ class PageSeeder extends Seeder
         );
 
         $this->seedEssentialPages($creatorId);
+        $this->seedLibrariesPages($creatorId);
 
         // Sous-pages par groupe d'entité (menu_order ≥ 10 pour rester après « Nous rejoindre »).
         $menuOrder = 10;
@@ -519,6 +521,86 @@ HTML;
         }
     }
 
+    private function seedLibrariesPages(?int $creatorId): void
+    {
+        $libraries = config('nav_menu.bibliotheques', []);
+        if (! is_array($libraries) || $libraries === []) {
+            return;
+        }
+
+        foreach ($libraries as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $title = (string) ($item['label'] ?? '');
+            $routeName = (string) ($item['route'] ?? '');
+            $entityKey = (string) ($item['entity_key'] ?? '');
+            if ($title === '' || $routeName === '') {
+                continue;
+            }
+
+            $slug = 'bibliotheque-'.Str::slug($entityKey !== '' ? $entityKey : $title);
+            $menuOrder = (int) ($item['order'] ?? 0);
+            $menuItemCssClasses = is_string($item['menu_item_css_classes'] ?? null)
+                ? $item['menu_item_css_classes']
+                : ($entityKey !== '' ? 'color-'.$entityKey.'-500 box-shadow-glass' : null);
+
+            $page = $this->createOrRestorePage([
+                'title' => $title,
+                'slug' => $slug,
+                'in_menu' => true,
+                'state' => Page::STATE_PLAYABLE,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+                'menu_order' => $menuOrder,
+                'menu_group' => 'Bibliothèques',
+                'parent_id' => null,
+                'entity_key' => $entityKey !== '' ? $entityKey : null,
+                'menu_item_css_classes' => $menuItemCssClasses,
+                'icon' => null,
+                'created_by' => $creatorId,
+            ]);
+
+            $this->ensureTextSection(
+                $page,
+                $slug.'-intro',
+                'Introduction',
+                '<h2>'.$title.'</h2><p>Cette page regroupe l\'accès au tableau principal de l\'entité <strong>'.$title.'</strong>.</p>',
+                0,
+                $creatorId,
+                true
+            );
+
+            $this->ensureEntityTableSection(
+                $page,
+                $slug.'-tableau',
+                'Tableau',
+                $this->libraryEntityTableType($entityKey),
+                1,
+                $creatorId
+            );
+        }
+    }
+
+    private function libraryEntityTableType(string $entityKey): string
+    {
+        return match ($entityKey) {
+            'breed' => 'breeds',
+            'specialization' => 'specializations',
+            'spell' => 'spells',
+            'capability' => 'capabilities',
+            'monster' => 'monsters',
+            'item' => 'items',
+            'panoply' => 'panoplies',
+            'consumable' => 'consumables',
+            'resource' => 'resources',
+            'condition' => 'conditions',
+            'creature-trait' => 'creature-traits',
+            default => 'spells',
+        };
+    }
+
     /**
      * @param  array<string, mixed>  $attributes
      */
@@ -530,6 +612,62 @@ HTML;
             ->first();
 
         $attributes = array_merge(['page_id' => $page->id, 'slug' => $slug], $attributes);
+
+        if ($section) {
+            if ($section->trashed()) {
+                $section->restore();
+            }
+            $section->fill($attributes);
+            $section->save();
+
+            return $section;
+        }
+
+        return Section::create($attributes);
+    }
+
+    private function ensureEntityTableSection(
+        Page $page,
+        string $slug,
+        string $title,
+        string $entity,
+        int $order,
+        ?int $creatorId
+    ): Section {
+        $payload = [
+            'entity' => $entity,
+            'filters' => [],
+            'limit' => 50,
+            'columns' => [],
+        ];
+        $section = Section::withTrashed()
+            ->where('page_id', $page->id)
+            ->where('slug', $slug)
+            ->first();
+
+        if (! $section) {
+            $section = Section::withTrashed()
+                ->where('page_id', $page->id)
+                ->where('template', SectionType::ENTITY_TABLE->value)
+                ->where('order', $order)
+                ->first();
+        }
+
+        $attributes = [
+            'page_id' => $page->id,
+            'title' => $title,
+            'slug' => $slug,
+            'order' => $order,
+            'template' => SectionType::ENTITY_TABLE->value,
+            'type' => SectionType::ENTITY_TABLE->value,
+            'settings' => $payload,
+            'data' => $payload,
+            'params' => $payload,
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $creatorId,
+        ];
 
         if ($section) {
             if ($section->trashed()) {

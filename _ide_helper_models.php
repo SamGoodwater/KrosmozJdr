@@ -747,6 +747,7 @@ namespace App\Models\Entity{
  * @property int $write_level
  * @property string|null $icon
  * @property string|null $image
+ * @property bool $dissipable
  * @property array<array-key, mixed>|null $raw
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -790,6 +791,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereDisplayTurnRemaining($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereDissipable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereDofusdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereId($value)

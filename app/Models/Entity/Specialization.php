@@ -3,8 +3,9 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Section;
 use App\Models\User;
-use Database\Factories\SpecializationFactory;
+use Database\Factories\Entity\SpecializationFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -79,6 +80,7 @@ class Specialization extends Model implements HasMedia
      */
     protected $fillable = [
         'name',
+        'short_description',
         'description',
         'state',
         'read_level',
@@ -110,12 +112,49 @@ class Specialization extends Model implements HasMedia
      */
     public function capabilities()
     {
-        return $this->belongsToMany(Capability::class, 'capability_specialization');
+        return $this->belongsToMany(Capability::class, 'capability_specialization')
+            ->withPivot('level')
+            ->withTimestamps();
+    }
+
+    public function spells()
+    {
+        return $this->belongsToMany(Spell::class, 'specialization_spell')
+            ->withPivot('level')
+            ->withTimestamps();
     }
 
     public function creatureTraits()
     {
         return $this->belongsToMany(CreatureTrait::class, 'creature_trait_specialization')
+            ->withPivot('level')
+            ->withTimestamps();
+    }
+
+    public function consumables()
+    {
+        return $this->belongsToMany(Consumable::class, 'consumable_specialization')
+            ->withPivot(['level', 'quantity'])
+            ->withTimestamps();
+    }
+
+    public function resources()
+    {
+        return $this->belongsToMany(Resource::class, 'resource_specialization')
+            ->withPivot(['level', 'quantity'])
+            ->withTimestamps();
+    }
+
+    public function items()
+    {
+        return $this->belongsToMany(Item::class, 'item_specialization')
+            ->withPivot(['level', 'quantity'])
+            ->withTimestamps();
+    }
+
+    public function sections()
+    {
+        return $this->belongsToMany(Section::class, 'section_specialization')
             ->withPivot('level')
             ->withTimestamps();
     }

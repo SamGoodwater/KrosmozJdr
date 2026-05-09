@@ -21,6 +21,7 @@ class SpecializationResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'short_description' => $this->short_description,
             'description' => $this->description,
             'state' => $this->state,
             'read_level' => (int) ($this->read_level ?? 0),
@@ -33,8 +34,13 @@ class SpecializationResource extends JsonResource
 
             // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
-            'capabilities' => $this->whenLoaded('capabilities'),
+            'capabilities' => $this->whenLoaded('capabilities', fn () => CapabilityResource::collection($this->capabilities)->resolve($request)),
+            'spells' => $this->whenLoaded('spells', fn () => SpellResource::collection($this->spells)->resolve($request)),
             'creatureTraits' => $this->whenLoaded('creatureTraits', fn () => CreatureTraitResource::collection($this->creatureTraits)->resolve($request)),
+            'consumables' => $this->whenLoaded('consumables', fn () => ConsumableResource::collection($this->consumables)->resolve($request)),
+            'resources' => $this->whenLoaded('resources', fn () => ResourceResource::collection($this->resources)->resolve($request)),
+            'items' => $this->whenLoaded('items', fn () => ItemResource::collection($this->items)->resolve($request)),
+            'sections' => $this->whenLoaded('sections', fn () => \App\Http\Resources\SectionResource::collection($this->sections)->resolve($request)),
             'npcs' => $this->whenLoaded('npcs'),
 
             // Droits d'accès

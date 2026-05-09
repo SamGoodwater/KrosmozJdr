@@ -21,7 +21,11 @@ export class Specialization extends BaseModel {
     }
 
     get description() {
-        return this._data.description || '';
+        return this._data.description ?? null;
+    }
+
+    get shortDescription() {
+        return this._data.short_description ?? null;
     }
 
     get image() {
@@ -42,6 +46,26 @@ export class Specialization extends BaseModel {
 
     get creatureTraits() {
         return this._data.creatureTraits || [];
+    }
+
+    get spells() {
+        return this._data.spells || [];
+    }
+
+    get consumables() {
+        return this._data.consumables || [];
+    }
+
+    get resources() {
+        return this._data.resources || [];
+    }
+
+    get items() {
+        return this._data.items || [];
+    }
+
+    get sections() {
+        return this._data.sections || [];
     }
 
     get npcs() {
@@ -75,10 +99,14 @@ export class Specialization extends BaseModel {
                 return this._toNameCell(format, size, options);
             case 'description':
                 return this._toDescriptionCell(format, size, options);
+            case 'short_description':
+                return this._toShortDescriptionCell(format, size, options);
             case 'image':
                 return this._toImageCell(format, size, options);
             case 'capabilities_count':
                 return this._toCapabilitiesCountCell(format, size, options);
+            case 'spells_count':
+                return this._toSpellsCountCell(format, size, options);
             case 'created_by':
                 return this._toCreatedByCell(format, size, options);
             case 'created_at':
@@ -116,7 +144,7 @@ export class Specialization extends BaseModel {
      * Génère une cellule pour la description
      * @private
      */
-    _toDescriptionCell(format, size, options) {
+    _toDescriptionCell(format, size, _options) {
         const description = this.description || '-';
         
         return {
@@ -126,6 +154,20 @@ export class Specialization extends BaseModel {
                 truncate: format.truncate || (size === 'xs' || size === 'sm' ? 30 : (size === 'md' ? 50 : null)),
                 searchValue: description === '-' ? '' : description,
                 sortValue: description,
+            },
+        };
+    }
+
+    _toShortDescriptionCell(format, size, _options) {
+        const shortDescription = this.shortDescription || this.description || '-';
+
+        return {
+            type: 'text',
+            value: shortDescription,
+            params: {
+                truncate: format.truncate || (size === 'xs' || size === 'sm' ? 30 : (size === 'md' ? 60 : null)),
+                searchValue: shortDescription === '-' ? '' : shortDescription,
+                sortValue: shortDescription,
             },
         };
     }
@@ -143,7 +185,7 @@ export class Specialization extends BaseModel {
      * Génère une cellule pour capabilities_count
      * @private
      */
-    _toCapabilitiesCountCell(format, size, options) {
+    _toCapabilitiesCountCell(_format, _size, _options) {
         const capabilitiesCount = this.capabilities?.length || this._data.capabilities_count || 0;
         
         return {
@@ -152,6 +194,19 @@ export class Specialization extends BaseModel {
             params: {
                 sortValue: Number(capabilitiesCount),
                 searchValue: String(capabilitiesCount),
+            },
+        };
+    }
+
+    _toSpellsCountCell(_format, _size, _options) {
+        const spellsCount = this.spells?.length || this._data.spells_count || 0;
+
+        return {
+            type: 'text',
+            value: String(spellsCount),
+            params: {
+                sortValue: Number(spellsCount),
+                searchValue: String(spellsCount),
             },
         };
     }
@@ -194,7 +249,8 @@ export class Specialization extends BaseModel {
     toFormData() {
         return {
             name: this.name,
-            description: this.description,
+            short_description: this.shortDescription,
+            description: this.description ?? "",
             state: this.state,
             read_level: this.readLevel,
             write_level: this.writeLevel,

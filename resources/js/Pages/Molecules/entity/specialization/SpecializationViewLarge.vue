@@ -62,6 +62,12 @@ const linkedCreatureTraits = computed(() => {
 });
 
 const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
+const linkedCapabilities = computed(() => props.specialization?._data?.capabilities ?? props.specialization?.capabilities ?? []);
+const linkedSpells = computed(() => props.specialization?._data?.spells ?? props.specialization?.spells ?? []);
+const linkedItems = computed(() => props.specialization?._data?.items ?? props.specialization?.items ?? []);
+const linkedResources = computed(() => props.specialization?._data?.resources ?? props.specialization?.resources ?? []);
+const linkedConsumables = computed(() => props.specialization?._data?.consumables ?? props.specialization?.consumables ?? []);
+const linkedSections = computed(() => props.specialization?._data?.sections ?? props.specialization?.sections ?? []);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -92,13 +98,9 @@ const extendedFields = computed(() => {
     return fields.filter(canShowField);
 });
 
-const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
-};
+const getFieldLabel = (fieldKey) => descriptors.value?.[fieldKey]?.label || fieldKey;
 
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
-};
+const getFieldIcon = (fieldKey) => descriptors.value?.[fieldKey]?.icon || 'fa-solid fa-info-circle';
 
 const getCell = (fieldKey) => {
     return props.specialization.toCell(fieldKey, {
@@ -127,7 +129,7 @@ const handleAction = async (actionKey) => {
             const cfg = getEntityRouteConfig('specialization');
             const url = resolveEntityRouteUrl('specialization', 'show', specializationId, cfg);
             if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien de la spécialisation copié !");
+                await copyToClipboard(url, "Lien de la spécialisation copié !");
             }
             emit('copy-link', props.specialization);
             break;
@@ -157,24 +159,24 @@ const handleAction = async (actionKey) => {
                         v-if="specialization.image"
                         :src="specialization.image"
                         :alt="specialization.name || 'Specialization'"
-                        class="w-16 h-16 entity-radius-box object-cover flex-shrink-0"
+                        class="w-16 h-16 entity-radius-box object-cover shrink-0"
                     />
-                    <h2 class="text-2xl font-bold text-primary-100 break-words">
+                    <h2 class="text-2xl font-bold text-primary-100 wrap-break-word">
                         <CellRenderer
                             :cell="getCell('name')"
                             ui-color="primary"
                         />
                     </h2>
                 </div>
-                <p v-if="specialization.description" class="text-primary-300 mt-2 break-words">
+                <p v-if="specialization.description" class="text-primary-300 mt-2 wrap-break-word">
                     {{ specialization.description }}
                 </p>
             </div>
             
             <!-- Actions en haut à droite -->
-            <div v-if="showActions" class="flex-shrink-0">
+            <div v-if="showActions" class="shrink-0">
                 <EntityActions
-                    entity-type="specialization"
+                    entity-type="specializations"
                     :entity="specialization"
                     format="buttons"
                     display="icon-only"
@@ -196,6 +198,25 @@ const handleAction = async (actionKey) => {
             <CreatureTraitBadges :traits="linkedCreatureTraits" show-level size="sm" />
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="rounded-box border border-base-300 bg-base-100/40 p-3">
+                <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Capacités</h3>
+                <p class="text-sm">{{ linkedCapabilities.length }} liée(s)</p>
+            </div>
+            <div class="rounded-box border border-base-300 bg-base-100/40 p-3">
+                <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Sorts</h3>
+                <p class="text-sm">{{ linkedSpells.length }} lié(s)</p>
+            </div>
+            <div class="rounded-box border border-base-300 bg-base-100/40 p-3">
+                <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Items / Ressources / Consommables</h3>
+                <p class="text-sm">{{ linkedItems.length }} / {{ linkedResources.length }} / {{ linkedConsumables.length }}</p>
+            </div>
+            <div class="rounded-box border border-base-300 bg-base-100/40 p-3">
+                <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Sections</h3>
+                <p class="text-sm">{{ linkedSections.length }} liée(s)</p>
+            </div>
+        </div>
+
         <!-- Informations principales -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div
@@ -215,7 +236,7 @@ const handleAction = async (actionKey) => {
                             {{ getFieldLabel(fieldKey) }}
                         </span>
                     </div>
-                    <div class="text-primary-100 break-words">
+                    <div class="text-primary-100 wrap-break-word">
                         <CellRenderer
                             :cell="getCell(fieldKey)"
                             ui-color="primary"

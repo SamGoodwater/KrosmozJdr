@@ -34,6 +34,7 @@ class SpecializationBulkController extends Controller
             'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
+            'short_description' => ['sometimes', 'nullable', 'string'],
             'description' => ['sometimes', 'nullable', 'string'],
             'image' => ['sometimes', 'nullable', 'string', 'max:255'],
         ]);
@@ -51,6 +52,7 @@ class SpecializationBulkController extends Controller
             'state',
             'read_level',
             'write_level',
+            'short_description',
             'description',
             'image',
         ] as $k) {

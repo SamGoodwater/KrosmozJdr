@@ -626,7 +626,6 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
       table: {
         sortable: false,
-        filterable: { id: 'read_level', type: 'multi', defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: {
           sizes: {
@@ -659,7 +658,6 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
       table: {
         sortable: false,
-        filterable: { id: 'write_level', type: 'multi', defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: {
           sizes: {

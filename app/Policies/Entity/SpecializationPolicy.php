@@ -34,6 +34,11 @@ class SpecializationPolicy
         return $user->isAdmin();
     }
 
+    public function createAny(User $user): bool
+    {
+        return $this->create($user);
+    }
+
     /**
      * Determine whether the user can update the model.
      */
@@ -54,6 +59,16 @@ class SpecializationPolicy
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, Specialization $specialization): bool
+    {
+        return $user->isAdmin();
+    }
+
+    public function deleteAny(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
+    public function manageAny(User $user): bool
     {
         return $user->isAdmin();
     }

@@ -213,7 +213,6 @@ export function getConditionFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
-        filterable: { id: "read_level", type: "multi", defaultVisible: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -244,7 +243,6 @@ export function getConditionFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
-        filterable: { id: "write_level", type: "multi", defaultVisible: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {

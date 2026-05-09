@@ -16,6 +16,7 @@ import { Specialization } from "@/Models/Entity/Specialization";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useScrapping } from "@/Composables/utils/useScrapping";
+import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -53,6 +54,7 @@ const canModify = computed(() => canUpdateAny('specializations'));
 const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
 const { refreshEntity } = useScrapping();
+const { downloadPdf } = useDownloadPdf("specialization");
 
 // Table v2
 const selectedIds = ref([]);
@@ -131,6 +133,8 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
+const quickEditEntity = ref(null);
+const quickEditModalOpen = ref(false);
 
 const handleCreate = () => {
     createModalOpen.value = true;
@@ -192,7 +196,7 @@ const handleTableAction = async (actionKey, entity, row) => {
         }
 
         case 'download-pdf':
-            // TODO: Implémenter le téléchargement PDF
+            await downloadPdf(entityId);
             break;
 
         case 'refresh':
@@ -201,7 +205,14 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'delete':
-            // TODO: Implémenter la suppression avec confirmation
+            if (window.confirm("Supprimer cette spécialisation ? Elle sera placée en corbeille.")) {
+                router.delete(route("entities.specializations.delete", { specialization: entityId }), {
+                    onSuccess: () => {
+                        refreshToken.value++;
+                        closeModal();
+                    },
+                });
+            }
             break;
     }
 };
@@ -231,7 +242,9 @@ const handleModalCopyLink = async (entity) => {
 };
 
 const handleModalDownloadPdf = (entity) => {
-    // TODO: Implémenter le téléchargement PDF
+    const entityId = entity?.id;
+    if (!entityId) return;
+    downloadPdf(entityId);
 };
 
 const handleModalRefresh = async (entity) => {
@@ -243,7 +256,16 @@ const handleModalRefresh = async (entity) => {
 };
 
 const handleModalDelete = (entity) => {
-    // TODO: Implémenter la suppression avec confirmation
+    const entityId = entity?.id;
+    if (!entityId) return;
+    if (window.confirm("Supprimer cette spécialisation ? Elle sera placée en corbeille.")) {
+        router.delete(route("entities.specializations.delete", { specialization: entityId }), {
+            onSuccess: () => {
+                refreshToken.value++;
+                closeModal();
+            },
+        });
+    }
 };
 
 const handleQuickEditSubmit = () => {
@@ -316,7 +338,7 @@ const handleQuickEditSubmit = () => {
         <EntityModal
             v-if="selectedEntity"
             :entity="selectedEntity"
-            entity-type="specialization"
+            entity-type="specializations"
             :view="modalView"
             :open="modalOpen"
             :table-meta="tableMeta"
@@ -333,7 +355,7 @@ const handleQuickEditSubmit = () => {
         <EntityQuickEditModal
             v-if="quickEditEntity"
             :entity="quickEditEntity"
-            entity-type="specialization"
+            entity-type="specializations"
             :fields-config="fieldsConfig"
             :open="quickEditModalOpen"
             @close="quickEditModalOpen = false"

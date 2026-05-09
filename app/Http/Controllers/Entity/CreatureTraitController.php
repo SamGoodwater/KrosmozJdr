@@ -34,13 +34,7 @@ class CreatureTraitController extends Controller
         if (request()->has('state') && request()->state !== '') {
             $query->where('state', (string) request()->state);
         }
-        if (request()->has('read_level') && request()->read_level !== '') {
-            $query->where('read_level', (int) request()->read_level);
-        }
-        if (request()->has('write_level') && request()->write_level !== '') {
-            $query->where('write_level', (int) request()->write_level);
-        }
-        
+
         // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
@@ -55,7 +49,7 @@ class CreatureTraitController extends Controller
         
         return Inertia::render('Pages/entity/creature-trait/Index', [
             'creatureTraits' => CreatureTraitResource::collection($creatureTraits),
-            'filters' => request()->only(['search', 'state', 'read_level', 'write_level']),
+            'filters' => request()->only(['search', 'state']),
         ]);
     }
 

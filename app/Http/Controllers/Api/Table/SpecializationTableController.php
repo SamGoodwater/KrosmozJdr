@@ -45,16 +45,45 @@ class SpecializationTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Specialization::query()->with(['createdBy'])->withCount('capabilities');
+        $query = Specialization::query()
+            ->with([
+                'createdBy',
+                'capabilities' => fn ($q) => $q->orderBy('name'),
+                'spells' => fn ($q) => $q->orderBy('name'),
+            ])
+            ->withCount(['capabilities', 'spells']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('short_description', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
-        $allowedSort = ['id', 'name', 'capabilities_count', 'created_at', 'updated_at'];
+        if ($request->filled('description')) {
+            $needle = (string) $request->get('description');
+            $query->where(function ($q) use ($needle) {
+                $q->where('short_description', 'like', "%{$needle}%")
+                    ->orWhere('description', 'like', "%{$needle}%");
+            });
+        }
+
+        if ($request->filled('capabilities')) {
+            $needle = (string) $request->get('capabilities');
+            $query->whereHas('capabilities', function ($q) use ($needle) {
+                $q->where('name', 'like', "%{$needle}%");
+            });
+        }
+
+        if ($request->filled('spells')) {
+            $needle = (string) $request->get('spells');
+            $query->whereHas('spells', function ($q) use ($needle) {
+                $q->where('name', 'like', "%{$needle}%");
+            });
+        }
+
+        $allowedSort = ['id', 'name', 'capabilities_count', 'spells_count', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $rows = $query->limit($limit)->get();
@@ -76,11 +105,15 @@ class SpecializationTableController extends Controller
                     'id' => $s->id,
                     'name' => $s->name,
                     'description' => $s->description,
+                    'short_description' => $s->short_description,
                     'state' => (string) ($s->state ?? 'draft'),
                     'read_level' => (int) ($s->read_level ?? 0),
                     'write_level' => (int) ($s->write_level ?? 0),
                     'image' => $s->image,
                     'capabilities_count' => $s->capabilities_count ?? 0,
+                    'spells_count' => $s->spells_count ?? 0,
+                    'capabilities' => $s->capabilities->map(fn ($it) => ['id' => $it->id, 'name' => $it->name])->values()->all(),
+                    'spells' => $s->spells->map(fn ($it) => ['id' => $it->id, 'name' => $it->name])->values()->all(),
                     'created_by' => $s->created_by,
                     'createdBy' => $createdBy ? [
                         'id' => $createdBy->id,
@@ -133,9 +166,16 @@ class SpecializationTableController extends Controller
                     ],
                     'description' => [
                         'type' => 'text',
-                        'value' => (string) ($s->description ?? '-'),
+                        'value' => (string) ($s->short_description ?? $s->description ?? '-'),
                         'params' => [
-                            'searchValue' => (string) ($s->description ?? ''),
+                            'searchValue' => trim((string) (($s->short_description ?? '').' '.($s->description ?? ''))),
+                        ],
+                    ],
+                    'spells_count' => [
+                        'type' => 'text',
+                        'value' => (string) ((int) ($s->spells_count ?? 0)),
+                        'params' => [
+                            'sortValue' => (int) ($s->spells_count ?? 0),
                         ],
                     ],
                     'capabilities_count' => [
@@ -175,7 +215,10 @@ class SpecializationTableController extends Controller
                         'id' => $s->id,
                         'name' => $s->name,
                         'description' => $s->description,
+                        'short_description' => $s->short_description,
                         'state' => (string) ($s->state ?? 'draft'),
+                        'capabilities' => $s->capabilities->map(fn ($it) => ['id' => $it->id, 'name' => $it->name])->values()->all(),
+                        'spells' => $s->spells->map(fn ($it) => ['id' => $it->id, 'name' => $it->name])->values()->all(),
                         'read_level' => (int) ($s->read_level ?? 0),
                         'write_level' => (int) ($s->write_level ?? 0),
                         'image' => $s->image,

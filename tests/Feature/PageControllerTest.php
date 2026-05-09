@@ -361,5 +361,49 @@ class PageControllerTest extends TestCase
             'title' => 'Page modifiée par super admin',
         ]);
     }
+
+    /**
+     * Test : le menu Bibliothèques est servi par des pages seedées (dont Spécialisations).
+     */
+    public function test_menu_uses_bibliotheques_pages_with_specialization_entry(): void
+    {
+        Page::factory()->create([
+            'title' => 'Spécialisations',
+            'slug' => 'bibliotheque-specialization',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'menu_group' => 'Bibliothèques',
+            'menu_order' => 1,
+            'entity_key' => 'specialization',
+        ]);
+
+        Page::factory()->create([
+            'title' => 'Classes',
+            'slug' => 'bibliotheque-breed',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'menu_group' => 'Bibliothèques',
+            'menu_order' => 0,
+            'entity_key' => 'breed',
+        ]);
+
+        $response = $this->getJson(route('pages.menu'));
+        $response->assertOk();
+
+        $menu = $response->json('menu');
+        $this->assertIsArray($menu);
+
+        $libraries = collect($menu)->firstWhere('id', 'bibliotheques');
+        $this->assertNotNull($libraries, 'Le groupe Bibliothèques doit être présent.');
+        $this->assertIsArray($libraries['children'] ?? null);
+
+        $specializations = collect($libraries['children'])->firstWhere('title', 'Spécialisations');
+        $this->assertNotNull($specializations, 'L’entrée Spécialisations doit être présente.');
+        $this->assertSame('/pages/bibliotheque-specialization', $specializations['url']);
+    }
 }
 

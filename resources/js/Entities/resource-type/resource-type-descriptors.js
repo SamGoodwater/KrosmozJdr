@@ -196,7 +196,6 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       format: "enum",
       table: {
         sortable: true,
-        filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -229,7 +228,6 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       format: "enum",
       table: {
         sortable: true,
-        filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },

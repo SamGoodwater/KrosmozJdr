@@ -304,7 +304,6 @@ export function getScenarioFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-eye",
       table: {
         sortable: true,
-        filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -335,7 +334,6 @@ export function getScenarioFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-pen-to-square",
       table: {
         sortable: true,
-        filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },

@@ -110,9 +110,7 @@ const expandedFields = computed(() => {
     return sortExtendedFields(fields);
 });
 
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
-};
+const getFieldIcon = (fieldKey) => descriptors.value?.[fieldKey]?.icon || 'fa-solid fa-info-circle';
 
 const getCell = (fieldKey) => {
     return props.specialization.toCell(fieldKey, {
@@ -189,7 +187,7 @@ const handleAction = async (actionKey) => {
                 
                 <div v-if="showActions && isHovered" class="flex-shrink-0">
                     <EntityActions
-                        entity-type="specialization"
+                        entity-type="specializations"
                         :entity="specialization"
                         format="buttons"
                         display="icon-only"
@@ -252,7 +250,7 @@ const handleAction = async (actionKey) => {
                             />
                             <div class="flex-1 min-w-0">
                                 <div class="font-semibold text-primary-400">
-                                    {{ descriptors?.[key]?.general?.label || key }}:
+                                    {{ descriptors?.[key]?.label || key }}:
                                 </div>
                                 <div class="text-primary-200 truncate">
                                     <CellRenderer

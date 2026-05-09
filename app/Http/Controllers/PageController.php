@@ -308,23 +308,26 @@ class PageController extends Controller
         $reglesItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Règles')->sortBy('order')->values()->toArray();
         $referentielsItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'L\'Essentiels')->sortBy('order')->values()->toArray();
         $informationsItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Informations')->sortBy('order')->values()->toArray();
-
-        $bibliothequesItems = collect(config('nav_menu.bibliotheques', []))
-            ->sortBy('order')
-            ->map(fn (array $item) => [
-                'id' => 'bibliotheque-' . ($item['route'] ?? ($item['label'] ?? 'item')),
-                'title' => $item['label'],
-                'url' => isset($item['url'])
-                    ? $item['url']
-                    : route($item['route'], $item['route_params'] ?? [], false),
-                'entity_key' => $item['entity_key'] ?? null,
-                'order' => $item['order'] ?? 0,
-                'menu_item_css_classes' => $item['menu_item_css_classes']
-                    ?? (($item['entity_key'] ?? null) ? 'color-' . $item['entity_key'] . '-500 box-shadow-glass' : null),
-                'children' => [],
-            ])
-            ->values()
-            ->toArray();
+        $bibliothequesItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Bibliothèques')->sortBy('order')->values()->toArray();
+        if ($bibliothequesItems === []) {
+            // Compatibilité ascendante : fallback config si les pages Bibliothèques ne sont pas seedées.
+            $bibliothequesItems = collect(config('nav_menu.bibliotheques', []))
+                ->sortBy('order')
+                ->map(fn (array $item) => [
+                    'id' => 'bibliotheque-' . ($item['route'] ?? ($item['label'] ?? 'item')),
+                    'title' => $item['label'],
+                    'url' => isset($item['url'])
+                        ? $item['url']
+                        : route($item['route'], $item['route_params'] ?? [], false),
+                    'entity_key' => $item['entity_key'] ?? null,
+                    'order' => $item['order'] ?? 0,
+                    'menu_item_css_classes' => $item['menu_item_css_classes']
+                        ?? (($item['entity_key'] ?? null) ? 'color-' . $item['entity_key'] . '-500 box-shadow-glass' : null),
+                    'children' => [],
+                ])
+                ->values()
+                ->toArray();
+        }
 
         $allGroups = [
             ['id' => 'referentiels', 'title' => 'L\'Essentiels', 'menu_group' => 'L\'Essentiels', 'order' => 0, 'icon' => 'fa-book-bookmark', 'children' => $referentielsItems],

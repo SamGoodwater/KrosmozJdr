@@ -28,6 +28,7 @@ class StoreSpecializationRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'short_description' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],

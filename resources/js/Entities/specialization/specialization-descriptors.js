@@ -63,7 +63,10 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
       key: "id",
       label: "ID",
       icon: "fa-solid fa-hashtag",
-      visibleIf: () => canCreateAny,
+      visibleIf: (localCtx = {}) => {
+        const caps = localCtx?.capabilities || localCtx?.meta?.capabilities || {};
+        return Boolean(caps.updateAny);
+      },
       table: {
         sortable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -132,7 +135,36 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
           group: "Contenu",
           required: false,
           showInCompact: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          bulk: { enabled: true, nullable: true },
+        },
+      },
+    },
+    short_description: {
+      key: "short_description",
+      label: "Description courte",
+      icon: "fa-solid fa-align-left",
+      table: {
+        searchable: true,
+        filterable: { id: "description", type: "text", defaultVisible: true },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 30 }, sm: { mode: "text", truncate: 40 }, md: { mode: "text", truncate: 60 }, lg: { mode: "text", truncate: 80 }, xl: { mode: "text" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text", truncate: 30 },
+          sm: { mode: "text", truncate: 40 },
+          md: { mode: "text", truncate: 60 },
+          lg: { mode: "text", truncate: 80 },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "textarea",
+          group: "Contenu",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -143,6 +175,26 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "capabilities_count", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+    },
+    spells_count: {
+      key: "spells_count",
+      label: "Nb sorts",
+      icon: "fa-solid fa-wand-sparkles",
+      table: {
+        sortable: true,
+        filterable: { id: "spells", type: "text", defaultVisible: true },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -183,7 +235,7 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
           showInCompact: true,
           options: getEntityStateOptions,
           defaultValue: "draft",
-          bulk: { enabled: true, nullable: false, build: (v) => String(v) },
+          bulk: { enabled: true, nullable: false },
         },
       },
     },
@@ -193,7 +245,6 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-eye",
       table: {
         sortable: true,
-        filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -214,7 +265,7 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
           showInCompact: true,
           options: getUserRoleOptions,
           defaultValue: 0,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -224,7 +275,6 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-pen-to-square",
       table: {
         sortable: true,
-        filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -245,7 +295,7 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
           showInCompact: true,
           options: getUserRoleOptions,
           defaultValue: 4,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -330,7 +380,7 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
     // Configuration globale du tableau
     _tableConfig: {
       id: "specializations.index",
-      entityType: "specialization",
+      entityType: "specializations",
       quickEdit: {
         enabled: true,
         permission: "updateAny",
@@ -383,8 +433,10 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
         "state",
         "read_level",
         "write_level",
+        "short_description",
         "description",
         "image",
       ],
-    },};
+    },
+  };
 }

@@ -740,6 +740,13 @@
     "file": "entity/EntityActionsDropdown.vue"
   },
   {
+    "name": "EntityActionMenuList",
+    "description": "EntityActionMenuList — liste commune pour dropdown et menu clic droit.",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityActionMenuList.vue"
+  },
+  {
     "name": "SpellZonePreview",
     "description": "Aperçu schématique de la zone d’effet (damier) à partir de la notation Krosmoz.",
     "props": [],
@@ -2044,12 +2051,12 @@
   },
   {
     "name": "CreatureTraitViewMinimal",
-    "description": "CreatureTraitViewMinimal — Vue Minimal pour CreatureTrait",
+    "description": "CreatureTraitViewMinimal — Vue minimal (CreatureTrait)",
     "props": [
       {
         "name": "creatureTrait",
-        "type": "CreatureTrait",
-        "desc": "- Instance du modèle CreatureTrait"
+        "type": "Object",
+        "desc": "- Instance CreatureTrait (facade toCell)"
       },
       {
         "name": "showActions",
@@ -2191,12 +2198,12 @@
   },
   {
     "name": "ConditionViewMinimal",
-    "description": "ConditionViewMinimal — Vue Minimal pour Condition",
+    "description": "ConditionViewMinimal — Vue minimal (Condition)",
     "props": [
       {
         "name": "condition",
-        "type": "Condition",
-        "desc": "- Instance du modèle Condition"
+        "type": "Object",
+        "desc": "- Instance Condition (facade toCell)"
       },
       {
         "name": "showActions",
@@ -2245,18 +2252,18 @@
   },
   {
     "name": "ConditionLineRow",
-    "description": "ConditionLineRow — ligne dense pour les tables d’entité.",
+    "description": "ConditionLineRow — ligne dense pour les tables d'entité (états).",
     "props": [],
     "slots": [],
     "file": "entity/condition/ConditionLineRow.vue"
   },
   {
     "name": "ConditionInline",
-    "description": "Condition — libellé + icône optionnelle (définitions d’effets).",
+    "description": "Condition — libellé + icônes (définitions d’effets / états).",
     "props": [
       {
         "name": "condition",
-        "type": "{ id: number, name: string, icon?: string|null }",
+        "type": "{ id: number, name: string, icon?: string|null, dissipable?: boolean|null }",
         "desc": ""
       },
       {
@@ -2267,6 +2274,29 @@
     ],
     "slots": [],
     "file": "entity/condition/ConditionInline.vue"
+  },
+  {
+    "name": "ConditionDissipableHighlight",
+    "description": "Mise en avant de la dissipabilité d’un état (entité Condition).",
+    "props": [
+      {
+        "name": "dissipable",
+        "type": "boolean",
+        "desc": "- Si absent, traité comme dissipable (défaut métier)."
+      },
+      {
+        "name": "variant",
+        "type": "'inline'|'block'|'icon-only'",
+        "desc": "- Densité d’affichage."
+      },
+      {
+        "name": "showLabel",
+        "type": "boolean",
+        "desc": "- Libellé texte (masqué si variant = icon-only)."
+      }
+    ],
+    "slots": [],
+    "file": "entity/condition/ConditionDissipableHighlight.vue"
   },
   {
     "name": "CapabilityViewText",

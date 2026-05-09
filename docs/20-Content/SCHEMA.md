@@ -269,6 +269,12 @@ erDiagram
     hide_when_empty : tinyint(1)
     hide_when_false : tinyint(1)
   }
+  CONDITION_CAPABILITY {
+    condition_id : bigint(20) unsigned
+    capability_id : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   CONDITION_CREATURE {
     condition_id : bigint(20) unsigned
     creature_id : bigint(20) unsigned
@@ -309,6 +315,7 @@ erDiagram
     cant_be_tackled : tinyint(1)
     display_turn_remaining : tinyint(1)
     is_main_state : tinyint(1)
+    dissipable : tinyint(1)
     raw : longtext
     created_at : timestamp
     updated_at : timestamp
@@ -1359,6 +1366,8 @@ erDiagram
   CHARACTERISTIC_SPELL }o--|| CHARACTERISTICS : "FK characteristic_id"
   CHARACTERISTIC_SPELL }o--|| SECTIONS : "FK norms_help_section_id"
   CHARACTERISTICS }o--|| CHARACTERISTICS : "FK linked_to_characteristic_id"
+  CONDITION_CAPABILITY }o--|| CAPABILITIES : "FK capability_id"
+  CONDITION_CAPABILITY }o--|| CONDITIONS : "FK condition_id"
   CONDITION_CREATURE }o--|| CONDITIONS : "FK condition_id"
   CONDITION_CREATURE }o--|| CREATURES : "FK creature_id"
   CONDITION_SPELL }o--|| CONDITIONS : "FK condition_id"

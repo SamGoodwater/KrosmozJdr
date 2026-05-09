@@ -78,13 +78,9 @@ const compactFields = computed(() => [
     'write_level',
 ].filter(canShowField));
 
-const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
-};
+const getFieldLabel = (fieldKey) => descriptors.value?.[fieldKey]?.label || fieldKey;
 
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
-};
+const getFieldIcon = (fieldKey) => descriptors.value?.[fieldKey]?.icon || 'fa-solid fa-info-circle';
 
 const getCell = (fieldKey) => {
     return props.specialization.toCell(fieldKey, {
@@ -113,7 +109,7 @@ const handleAction = async (actionKey) => {
             const cfg = getEntityRouteConfig('specialization');
             const url = resolveEntityRouteUrl('specialization', 'show', specializationId, cfg);
             if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien copié !");
+                await copyToClipboard(url, "Lien copié !");
             }
             emit('copy-link', props.specialization);
             break;
@@ -146,7 +142,7 @@ const handleAction = async (actionKey) => {
             
             <div v-if="showActions" class="flex-shrink-0">
                 <EntityActions
-                    entity-type="specialization"
+                    entity-type="specializations"
                     :entity="specialization"
                     format="buttons"
                     display="icon-only"
