@@ -17,7 +17,6 @@ import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropert
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
@@ -82,8 +81,6 @@ const ctx = computed(() => {
 });
 
 const descriptors = computed(() => getBreedFieldDescriptors(ctx.value));
-
-const stateValue = computed(() => props.breed?.state ?? props.breed?._data?.state ?? null);
 
 const autoUpdateValue = computed(() => {
     const v = props.breed?.auto_update ?? props.breed?._data?.auto_update;
@@ -171,7 +168,7 @@ const canShowField = (fieldKey) => {
 const headlineFields = computed(() => ["life_dice"].filter(canShowField));
 
 const metaFields = computed(() =>
-    ["specificity", "state", "breed_summary_relations"]
+    ["specificity", "breed_summary_relations"]
         .filter((k) => !(k === "breed_summary_relations" && hasSpellSlots.value))
         .filter(canShowField)
         .filter((k) => !headlineFields.value.includes(k))
@@ -295,10 +292,6 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader mode="large">
             <template #media>
                 <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
-                    <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :state="stateValue" />
-                    </div>
-
                     <div
                         v-if="headlineFields.length > 0"
                         class="absolute top-2 right-2 z-20 flex flex-wrap gap-1 justify-end max-w-[75%] transition-opacity duration-150 group-hover:opacity-0"

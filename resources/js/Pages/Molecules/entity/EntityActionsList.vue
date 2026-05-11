@@ -15,6 +15,7 @@
  * />
  */
 import EntityActionButton from "@/Pages/Atoms/action/EntityActionButton.vue";
+import EntityStateAction from "@/Pages/Molecules/entity/EntityStateAction.vue";
 import { computed } from "vue";
 import { useResolvedEntityActionState } from "@/Composables/entity/useResolvedEntityActionState";
 
@@ -75,7 +76,7 @@ const { resolvedActions, runLocalAction } = useResolvedEntityActionState(
   sourceActions,
 );
 
-const handleAction = (actionKey, event) => {
+const handleAction = (actionKey, _event) => {
   if (runLocalAction(actionKey)) {
     emit("action", actionKey);
     return;
@@ -87,8 +88,18 @@ const handleAction = (actionKey, event) => {
 
 <template>
   <div class="flex items-center gap-2">
+    <EntityStateAction
+      v-for="action in resolvedActions.filter((item) => item?.key === 'state')"
+      :key="action.key"
+      :entity-type="entityType"
+      :entity="entity"
+      :action="action"
+      :display="display"
+      :size="size"
+      @action="handleAction"
+    />
     <EntityActionButton
-      v-for="action in resolvedActions"
+      v-for="action in resolvedActions.filter((item) => item?.key !== 'state')"
       :key="action.key"
       :action="action"
       :display="display"

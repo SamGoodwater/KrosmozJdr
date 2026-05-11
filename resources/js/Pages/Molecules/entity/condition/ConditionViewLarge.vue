@@ -77,7 +77,6 @@ const extendedFields = computed(() => {
         'name',
         'dissipable',
         'description',
-        'state',
         'read_level',
         'write_level',
     ];

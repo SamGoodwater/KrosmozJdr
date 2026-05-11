@@ -6,8 +6,10 @@
  * Source: API Table v2 (`api.tables.{entity}`) au format `entities`.
  */
 import { computed } from "vue";
+import { router } from "@inertiajs/vue3";
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityConfig, getEntityResponseAdapter } from "@/Entities/entity-registry";
+import { getEntitySingularRouteKey } from "@/Composables/entity/entityRouteRegistry";
 import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vue";
 
 const props = defineProps({
@@ -81,6 +83,64 @@ const serverUrl = computed(() => {
 
     return `${baseUrl}?${params.toString()}`;
 });
+
+/**
+ * Résout l’id d’une ligne (instance BaseModel ou objet API).
+ *
+ * @param {unknown} raw
+ * @returns {number|string|null}
+ */
+const resolveEntityId = (raw) => {
+    if (raw == null) return null;
+    if (typeof raw.id !== "undefined" && raw.id !== null) return raw.id;
+    if (raw._data && typeof raw._data.id !== "undefined") return raw._data.id;
+    return null;
+};
+
+/**
+ * Navigation fiche entité (pages Show / Edit) — requis car ce wrapper n’avait pas d’écouteurs `@action`.
+ *
+ * @param {string} actionKey
+ * @param {unknown} entity
+ * @param {unknown} row
+ */
+const handleTableAction = (actionKey, entity, row) => {
+    const raw = entity || row?.rowParams?.entity;
+    const entityId = resolveEntityId(raw);
+    if (entityId === null || entityId === "") return;
+
+    const plural = entityType.value;
+    const paramKey = getEntitySingularRouteKey(plural);
+
+    switch (actionKey) {
+        case "view":
+        case "quick-view":
+        case "expand":
+            router.visit(route(`entities.${plural}.show`, { [paramKey]: entityId }));
+            break;
+        case "edit":
+        case "edit-page":
+            router.visit(route(`entities.${plural}.edit`, { [paramKey]: entityId }));
+            break;
+        default:
+            break;
+    }
+};
+
+/**
+ * Double-clic : ouvrir la fiche (même comportement que sur les pages Index entité).
+ *
+ * @param {unknown} row
+ */
+const handleRowDoubleClick = (row) => {
+    const raw = row?.rowParams?.entity;
+    const entityId = resolveEntityId(raw);
+    if (entityId === null || entityId === "") return;
+
+    const plural = entityType.value;
+    const paramKey = getEntitySingularRouteKey(plural);
+    router.visit(route(`entities.${plural}.show`, { [paramKey]: entityId }));
+};
 </script>
 
 <template>
@@ -96,6 +156,8 @@ const serverUrl = computed(() => {
             :config="tableConfig"
             :server-url="serverUrl"
             :response-adapter="responseAdapter"
+            @action="handleTableAction"
+            @row-dblclick="handleRowDoubleClick"
         />
     </div>
 </template>

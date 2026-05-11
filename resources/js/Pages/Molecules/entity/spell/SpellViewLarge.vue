@@ -18,7 +18,6 @@ import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropert
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
-import EntityUsableDot from '@/Pages/Atoms/data-display/EntityUsableDot.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import SpellEffectsJournal from '@/Pages/Molecules/entity/spell/SpellEffectsJournal.vue';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
@@ -85,8 +84,6 @@ const ctx = computed(() => {
 });
 
 const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
-
-const stateValue = computed(() => props.spell?.state ?? props.spell?._data?.state ?? null);
 
 const autoUpdateValue = computed(() => {
     const v = props.spell?.auto_update ?? props.spell?._data?.auto_update;
@@ -336,10 +333,6 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader mode="large">
             <template #media>
                 <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
-                    <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :state="stateValue" />
-                    </div>
-
                     <div class="absolute top-2 right-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
                         <Badge
                             :color="getBadgeColor('level')"

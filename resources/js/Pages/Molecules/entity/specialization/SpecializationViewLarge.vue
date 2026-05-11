@@ -90,7 +90,6 @@ const extendedFields = computed(() => {
         'name',
         'description',
         'capabilities_count',
-        'state',
         'read_level',
         'write_level',
     ];

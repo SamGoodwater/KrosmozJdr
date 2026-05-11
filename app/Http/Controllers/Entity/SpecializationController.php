@@ -121,7 +121,7 @@ class SpecializationController extends Controller
             'consumables' => fn ($q) => $q->orderBy('name'),
             'resources' => fn ($q) => $q->orderBy('name'),
             'items' => fn ($q) => $q->orderBy('name'),
-            'sections' => fn ($q) => $q->orderBy('title'),
+            'sections' => fn ($q) => $q->orderByPivot('level')->orderBy('title'),
         ]);
 
         return Inertia::render('Pages/entity/specialization/Show', [
@@ -144,7 +144,7 @@ class SpecializationController extends Controller
             'consumables' => fn ($q) => $q->orderBy('name'),
             'resources' => fn ($q) => $q->orderBy('name'),
             'items' => fn ($q) => $q->orderBy('name'),
-            'sections' => fn ($q) => $q->orderBy('title'),
+            'sections' => fn ($q) => $q->orderByPivot('level')->orderBy('title'),
         ]);
 
         $request = request();

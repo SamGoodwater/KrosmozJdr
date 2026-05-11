@@ -17,7 +17,6 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCampaignFieldDescriptors } from "@/Entities/campaign/campaign-descriptors";
 import { getEntityFieldShortLabel, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
@@ -61,8 +60,6 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getCampaignFieldDescriptors(ctx.value));
 
-const stateValue = computed(() => props.campaign?.state ?? props.campaign?._data?.state ?? null);
-
 const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
 const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
 const sortExtendedFields = (fields) => {
@@ -93,11 +90,11 @@ const canShowField = (fieldKey) => {
 };
 
 // Champs importants à afficher
-const importantFields = computed(() => ['name', 'state', 'is_public'].filter(canShowField));
+const importantFields = computed(() => ['name', 'is_public'].filter(canShowField));
 
 // En mode étendu, afficher toutes les propriétés visibles non principales.
 const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image']);
+    const excluded = new Set(['name', 'image', 'state']);
     const fields = Object.keys(descriptors.value || {}).filter((key) => {
         return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
     });
@@ -161,9 +158,6 @@ const handleAction = async (actionKey) => {
         
         <div class="p-3">
             <EntityViewHeader mode="minimal">
-                <template #dot>
-                    <EntityUsableDot :state="stateValue" />
-                </template>
                 <template #media>
                     <div v-if="campaign.image" class="w-8 h-8">
                         <Image

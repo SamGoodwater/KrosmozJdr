@@ -89,7 +89,6 @@ const compactFields = computed(() => [
     'name',
     'life_dice',
     'specificity',
-    'state',
     'read_level',
     'write_level',
 ].filter(canShowField));

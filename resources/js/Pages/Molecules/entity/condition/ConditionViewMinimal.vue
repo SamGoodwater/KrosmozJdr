@@ -3,7 +3,7 @@
  * ConditionViewMinimal — Vue minimal (Condition)
  *
  * @description
- * Carte compacte : pastille d’état, image si présente, nom, description.
+ * Carte compacte : image si présente, nom, description.
  * Pas de métadonnées (niveaux, dates, auteur).
  *
  * @props {Object} condition - Instance Condition (facade toCell)
@@ -88,11 +88,7 @@ const handleAction = async (actionKey) => {
         @mouseenter="canHoverExpand && (isHovered = true)"
         @mouseleave="canHoverExpand && (isHovered = false)"
     >
-        <div class="absolute top-1 left-1 z-20">
-            <EntityUsableDot :state="stateValue" />
-        </div>
-
-        <div class="flex flex-1 flex-col gap-2 p-3 pt-6">
+        <div class="flex flex-1 flex-col gap-2 p-3">
             <div class="flex items-start justify-between gap-2">
                 <div class="flex min-w-0 flex-1 items-start gap-2">
                     <div

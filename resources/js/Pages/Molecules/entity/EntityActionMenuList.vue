@@ -10,6 +10,7 @@
  */
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import EntityStateAction from "@/Pages/Molecules/entity/EntityStateAction.vue";
 import { useResolvedEntityActionState } from "@/Composables/entity/useResolvedEntityActionState";
 
 const props = defineProps({
@@ -58,7 +59,7 @@ const getGroupActions = (groupKey) => {
 function getButtons() {
     const root = listRef.value;
     if (!root) return [];
-    return [...root.querySelectorAll("li > button")];
+    return [...root.querySelectorAll("li button")];
 }
 
 function focusFirstItem() {
@@ -145,7 +146,18 @@ function onKeydown(e) {
                 :key="action.key"
                 :class="{ 'text-error': action.variant === 'error' }"
             >
+                <EntityStateAction
+                    v-if="action.key === 'state'"
+                    :entity-type="entityType"
+                    :entity="entity"
+                    :action="action"
+                    display="icon-text"
+                    :size="size"
+                    mode="menu"
+                    @action="handleAction"
+                />
                 <button
+                    v-else
                     type="button"
                     role="menuitem"
                     class="entity-actions-menu-item flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-lg transition-[transform,background-color,box-shadow] duration-150 ease-out outline-none hover:bg-base-200/90 focus-visible:bg-primary/12 focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:scale-[1.02] motion-reduce:transition-none motion-reduce:focus-visible:scale-100"

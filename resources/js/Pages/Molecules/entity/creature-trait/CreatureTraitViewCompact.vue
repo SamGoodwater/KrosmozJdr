@@ -72,7 +72,6 @@ const canShowField = (fieldKey) => {
 const compactFields = computed(() => [
     'name',
     'description',
-    'state',
     'read_level',
     'write_level',
 ].filter(canShowField));

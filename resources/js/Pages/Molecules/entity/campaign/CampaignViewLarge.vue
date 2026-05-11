@@ -18,7 +18,6 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
@@ -60,8 +59,6 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getCampaignFieldDescriptors(ctx.value));
 
-const stateValue = computed(() => props.campaign?.state ?? props.campaign?._data?.state ?? null);
-
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
@@ -78,7 +75,6 @@ const canShowField = (fieldKey) => {
 };
 
 const headlineFields = computed(() => ([
-    'state',
     'is_public',
 ].filter(canShowField)));
 
@@ -185,10 +181,6 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader mode="large">
             <template #media>
                 <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
-                    <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :state="stateValue" />
-                    </div>
-
                     <ImageViewer
                         v-if="campaign.image"
                         :src="campaign.image"

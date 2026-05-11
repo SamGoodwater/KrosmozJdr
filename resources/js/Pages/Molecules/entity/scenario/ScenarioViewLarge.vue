@@ -77,9 +77,7 @@ const extendedFields = computed(() => {
         'slug',
         'description',
         'keyword',
-        'state',
         'is_public',
-        'state',
         'read_level',
         'write_level',
     ];

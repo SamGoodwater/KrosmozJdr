@@ -79,7 +79,6 @@ const extendedFields = computed(() => {
         'npc_name',
         'items_count',
         'price',
-        'state',
         'read_level',
         'write_level',
     ];

@@ -11,7 +11,6 @@ import { Link } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
@@ -102,7 +101,6 @@ const getCell = (fieldKey) => {
     return props.getCellFor(props.row, col) || { type: "text", value: "—", params: {} };
 };
 
-const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
 const levelValue = computed(() => entity.value?.level ?? entity.value?._data?.level ?? null);
 
 const nameCell = computed(() => getCell("name"));
@@ -167,10 +165,6 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
         @dblclick="handleDoubleClick"
         @contextmenu="handleContextMenu"
     >
-        <!-- State : coin supérieur gauche (absolute) -->
-        <div class="absolute top-2 left-2 z-10" @click.stop>
-            <EntityUsableDot :state="stateValue" />
-        </div>
         <!-- Bloc Image + titre + propriétés -->
         <div class="flex gap-3">
         <!-- Image : pleine hauteur à gauche -->
@@ -213,7 +207,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                         entity-type="items"
                         :entity="entity || row"
                         format="dropdown"
-                        :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
+                        :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                         @action="(k, e) => emit('action', k, e, row)"
                     />
                 </div>

@@ -83,7 +83,6 @@ const canShowField = (fieldKey) => {
 const extendedFields = computed(() => {
     const fields = [
         'decision',
-        'state',
         'read_level',
         'write_level',
         'resources_count',

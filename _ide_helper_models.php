@@ -1686,8 +1686,20 @@ namespace App\Models\Entity{
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @mixin \Eloquent
+ * @property string|null $short_description
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Consumable> $consumables
+ * @property-read int|null $consumables_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\CreatureTrait> $creatureTraits
  * @property-read int|null $creature_traits_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Item> $items
+ * @property-read int|null $items_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Resource> $resources
+ * @property-read int|null $resources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Section> $sections
+ * @property-read int|null $sections_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Spell> $spells
+ * @property-read int|null $spells_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereShortDescription($value)
  */
 	class Specialization extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }

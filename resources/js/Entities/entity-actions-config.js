@@ -39,10 +39,10 @@ export const SCRAPPABLE_ENTITY_TYPES = Object.freeze([
 ]);
 
 export const ENTITY_ACTION_CONTEXT_PRESETS = Object.freeze({
-  minimalLine: ["pin", "favorite", "copy-link", "quick-view", "quick-edit"],
-  modalDetail: ["favorite", "copy-link", "view", "quick-edit", "refresh", "delete"],
-  pageDetail: ["favorite", "copy-link", "edit", "refresh", "delete"],
-  tableDropdown: ["pin", "favorite", "copy-link", "quick-view", "quick-edit"],
+  minimalLine: ["state", "pin", "favorite", "copy-link", "quick-view", "quick-edit"],
+  modalDetail: ["state", "favorite", "copy-link", "view", "quick-edit", "refresh", "delete"],
+  pageDetail: ["state", "favorite", "copy-link", "edit", "refresh", "delete"],
+  tableDropdown: ["state", "pin", "favorite", "copy-link", "quick-view", "quick-edit"],
 });
 
 export function normalizeActionEntityType(entityType = "") {
@@ -222,6 +222,19 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     requiresEntity: true,
     group: "tools",
   },
+  state: {
+    key: "state",
+    label: "État",
+    tooltip: "Voir ou modifier l'état de l'entité",
+    icon: "fa-solid fa-circle",
+    permission: null,
+    requiresEntity: true,
+    group: "status",
+    visibleIf: (_context, entity) => {
+      const raw = entity?._data ?? entity;
+      return Object.prototype.hasOwnProperty.call(raw || {}, "state");
+    },
+  },
   pin: {
     key: "pin",
     label: "Épingler",
@@ -382,6 +395,7 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
  * Ordre d'affichage recommandé des groupes d'actions.
  */
 export const ACTION_GROUPS_ORDER = Object.freeze([
+  "status",
   "navigation",
   "edition",
   "tools",

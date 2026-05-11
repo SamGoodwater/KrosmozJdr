@@ -16,7 +16,6 @@ import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
@@ -65,8 +64,6 @@ const ctx = computed(() => {
 });
 
 const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
-
-const stateValue = computed(() => props.spell?.state ?? props.spell?._data?.state ?? null);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -214,9 +211,6 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader mode="compact">
             <template #media>
                 <div class="group relative w-16 h-16">
-                    <div class="absolute top-1 left-1 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :state="stateValue" />
-                    </div>
                     <div class="absolute top-1 right-1 z-20 transition-opacity duration-150 group-hover:opacity-0">
                         <Badge
                             :color="getBadgeColor('level')"

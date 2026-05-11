@@ -4290,11 +4290,12 @@ namespace PHPSTORM_META {
 'entities.scenarios.delete','entities.shops.index','entities.shops.show','entities.shops.create','entities.shops.store',
 'entities.shops.edit','entities.shops.updateItems','entities.shops.updateConsumables','entities.shops.updateResources','entities.shops.pdf',
 'entities.shops.update','entities.shops.delete','entities.specializations.index','entities.specializations.show','entities.specializations.create',
-'entities.specializations.store','entities.specializations.edit','entities.specializations.pdf','entities.specializations.update','entities.specializations.updateCreatureTraits',
-'entities.specializations.delete','entities.spells.index','entities.spells.show','entities.spells.create','entities.spells.store',
-'entities.spells.edit','entities.spells.edit-payload','entities.spells.updateBreeds','entities.spells.updateSpellTypes','entities.spells.updateEffectGroup',
-'entities.spells.pdf','entities.spells.update','entities.spells.delete','entities.spell-types.index','entities.consumable-types.index',
-'scrapping.index','storage.local','storage.local.upload',);
+'entities.specializations.store','entities.specializations.edit','entities.specializations.pdf','entities.specializations.update','entities.specializations.updateSpells',
+'entities.specializations.updateCapabilities','entities.specializations.updateCreatureTraits','entities.specializations.updateConsumables','entities.specializations.updateResources','entities.specializations.updateItems',
+'entities.specializations.updateSections','entities.specializations.delete','entities.spells.index','entities.spells.show','entities.spells.create',
+'entities.spells.store','entities.spells.edit','entities.spells.edit-payload','entities.spells.updateBreeds','entities.spells.updateSpellTypes',
+'entities.spells.updateEffectGroup','entities.spells.pdf','entities.spells.update','entities.spells.delete','entities.spell-types.index',
+'entities.consumable-types.index','scrapping.index','storage.local','storage.local.upload',);
         registerArgumentsSet('views', 
 'app','emails.feedback','emails.feedback-text','emails.layout','emails.notification',
 'emails.notification-text','emails.verify-email','emails.verify-email-text','errors.http','pdf.entities.generic',

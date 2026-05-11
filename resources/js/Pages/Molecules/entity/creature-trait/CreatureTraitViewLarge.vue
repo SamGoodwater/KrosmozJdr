@@ -77,7 +77,6 @@ const extendedFields = computed(() => {
     const fields = [
         'name',
         'description',
-        'state',
         'read_level',
         'write_level',
     ];

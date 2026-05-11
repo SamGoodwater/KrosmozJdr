@@ -95,7 +95,7 @@ const props = defineProps({
    */
   inlineActionKeys: {
     type: Array,
-    default: () => ["pin", "favorite", "copy-link", "view", "edit", "quick-view", "quick-edit"],
+    default: () => ["state", "pin", "favorite", "copy-link", "view", "edit", "quick-view", "quick-edit"],
   },
   /** Activer les raccourcis inline (désactiver ex. barre d’outils déjà chargée). */
   showInlineShortcuts: {
@@ -127,6 +127,7 @@ const emit = defineEmits([
   "quick-edit",
   "expand",
   "copy-link",
+  "state",
   "favorite",
   "download-pdf",
   "refresh",

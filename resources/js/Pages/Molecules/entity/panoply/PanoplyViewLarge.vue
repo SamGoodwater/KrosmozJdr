@@ -16,7 +16,6 @@ import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
@@ -72,8 +71,6 @@ const ctx = computed(() => {
 });
 
 const descriptors = computed(() => getPanoplyFieldDescriptors(ctx.value));
-
-const stateValue = computed(() => props.panoply?.state ?? props.panoply?._data?.state ?? null);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -212,10 +209,6 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader mode="large">
             <template #media>
                 <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
-                    <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :state="stateValue" />
-                    </div>
-
                     <div
                         v-if="headlineFields.length > 0"
                         class="absolute top-2 right-2 z-20 flex flex-wrap gap-1 justify-end max-w-[75%] transition-opacity duration-150 group-hover:opacity-0"

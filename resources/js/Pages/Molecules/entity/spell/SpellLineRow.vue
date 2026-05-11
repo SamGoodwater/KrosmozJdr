@@ -12,7 +12,6 @@ import { Link } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
@@ -94,8 +93,6 @@ const getCell = (fieldKey) => {
     return props.getCellFor(props.row, col) || { type: "text", value: "—", params: {} };
 };
 
-const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
-
 const levelValue = computed(() => {
     const lv = entity.value?.level ?? entity.value?._data?.level;
     if (lv == null || lv === "") return null;
@@ -159,9 +156,6 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
         @dblclick="handleDoubleClick"
         @contextmenu="handleContextMenu"
     >
-        <div class="absolute top-2 left-2 z-10" @click.stop>
-            <EntityUsableDot :state="stateValue" />
-        </div>
         <div class="flex gap-3">
             <div
                 class="w-20 shrink-0 self-stretch min-h-20 rounded overflow-hidden bg-base-200 flex items-center justify-center"
@@ -200,7 +194,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                             entity-type="spells"
                             :entity="entity || row"
                             format="dropdown"
-                            :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
+                            :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                             @action="(k, e) => emit('action', k, e, row)"
                         />
                     </div>

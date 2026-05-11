@@ -820,7 +820,7 @@ class ProjectRunService
         }
 
         $command->warn('⚠️ Dépendance native Tailwind manquante détectée. Tentative de réparation automatique...');
-        $repair = $this->runShellInProject($command, 'CI=true pnpm install');
+        $repair = $this->runShellInProject($command, 'pnpm install --force');
         if ($repair !== Command::SUCCESS) {
             $command->error('Échec de la réparation automatique des dépendances pnpm.');
 
@@ -873,7 +873,7 @@ class ProjectRunService
         }
 
         $command->warn('Binding natif Tailwind indisponible après mise à jour pnpm. Réparation automatique...');
-        $repair = $this->runShellInProject($command, 'CI=true pnpm install');
+        $repair = $this->runShellInProject($command, 'pnpm install --force');
         if ($repair !== Command::SUCCESS) {
             $command->error('Échec de la réparation automatique des dépendances pnpm.');
 

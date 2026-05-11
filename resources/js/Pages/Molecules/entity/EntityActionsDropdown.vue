@@ -23,6 +23,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import { computed } from "vue";
 import EntityActionMenuList from "@/Pages/Molecules/entity/EntityActionMenuList.vue";
+import EntityStateAction from "@/Pages/Molecules/entity/EntityStateAction.vue";
 import { useResolvedEntityActionState } from "@/Composables/entity/useResolvedEntityActionState";
 
 const props = defineProps({
@@ -106,7 +107,7 @@ const props = defineProps({
      */
     inlineActionKeys: {
         type: Array,
-        default: () => ["pin", "favorite", "copy-link", "view", "edit", "quick-view", "quick-edit"],
+        default: () => ["state", "pin", "favorite", "copy-link", "view", "edit", "quick-view", "quick-edit"],
     },
     showInlineShortcuts: {
         type: Boolean,
@@ -175,27 +176,37 @@ const entityName = computed(() => getEntityName());
             v-if="promotedActions.length"
             class="hidden min-[640px]:flex min-[640px]:items-center min-[640px]:gap-0.5"
         >
-            <Btn
-                v-for="action in promotedActions"
-                :key="action.key"
-                :size="size"
-                variant="ghost"
-                :color="color"
-                class="btn-square shrink-0"
-                :class="{
-                    'pin-active text-primary!': action.active,
-                }"
-                :title="action.tooltip || action.label"
-                @click.stop="handleShortcutClick(action.key)"
-            >
-                <Icon
-                    :source="action.icon"
+            <template v-for="action in promotedActions" :key="action.key">
+                <EntityStateAction
+                    v-if="action.key === 'state'"
+                    :entity-type="entityType"
+                    :entity="entity"
+                    :action="action"
+                    display="icon-only"
                     :size="size"
-                    :class="{
-                        'pin-active-icon': action.active,
-                    }"
+                    @action="handleShortcutClick"
                 />
-            </Btn>
+                <Btn
+                    v-else
+                    :size="size"
+                    variant="ghost"
+                    :color="color"
+                    class="btn-square shrink-0"
+                    :class="{
+                        'pin-active text-primary!': action.active,
+                    }"
+                    :title="action.tooltip || action.label"
+                    @click.stop="handleShortcutClick(action.key)"
+                >
+                    <Icon
+                        :source="action.icon"
+                        :size="size"
+                        :class="{
+                            'pin-active-icon': action.active,
+                        }"
+                    />
+                </Btn>
+            </template>
         </div>
         <Dropdown :placement="placement" :close-on-content-click="true">
             <template #trigger>

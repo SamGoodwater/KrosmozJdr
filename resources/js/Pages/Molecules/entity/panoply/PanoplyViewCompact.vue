@@ -74,7 +74,6 @@ const compactFields = computed(() => [
     'name',
     'bonus',
     'items_count',
-    'state',
     'read_level',
     'write_level',
 ].filter(canShowField));

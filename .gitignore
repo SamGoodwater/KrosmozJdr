@@ -7,6 +7,8 @@
 /storage/*.key
 /storage/pail
 /storage/app/seeders-data-backups
+# Exports HTML legacy (spécialisations) — générés localement, non versionnés
+/database/seeders/data/legacy-specializations/*.html
 /vendor
 .env
 .env.testing

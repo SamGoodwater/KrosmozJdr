@@ -13,7 +13,6 @@ import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
@@ -81,8 +80,6 @@ const canShowField = (fieldKey) => {
 };
 
 const entity = computed(() => props.capability);
-
-const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
 
 const levelValue = computed(() => {
     const lv = entity.value?.level ?? entity.value?._data?.level;
@@ -177,9 +174,6 @@ const handleAction = async (actionKey) => {
                 data-cy="entity-minimal-card-compact"
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
-                <div class="absolute top-1.5 left-1.5 z-10">
-                    <EntityUsableDot :state="stateValue" />
-                </div>
                 <div class="flex gap-2">
                     <div
                         class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
@@ -216,7 +210,7 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
+                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                                     @action="(k) => handleAction(k)"
                                 />
                             </div>
@@ -277,9 +271,6 @@ const handleAction = async (actionKey) => {
                 data-cy="entity-minimal-card-expanded"
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
-                <div class="absolute top-1.5 left-1.5 z-10">
-                    <EntityUsableDot :state="stateValue" />
-                </div>
                 <div class="flex gap-2">
                     <div
                         class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
@@ -316,7 +307,7 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
+                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                                     @action="(k) => handleAction(k)"
                                 />
                             </div>

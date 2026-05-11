@@ -73,7 +73,6 @@ const canShowField = (fieldKey) => {
 const compactFields = computed(() => [
     'dissipable',
     'description',
-    'state',
     'read_level',
     'write_level',
 ].filter(canShowField));

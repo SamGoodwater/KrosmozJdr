@@ -70,7 +70,6 @@ const canShowField = (fieldKey) => {
 // Champs à afficher dans la vue compacte
 const compactFields = computed(() => [
     'decision',
-    'state',
     'read_level',
     'write_level',
     'resources_count',

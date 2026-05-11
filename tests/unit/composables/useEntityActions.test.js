@@ -91,6 +91,15 @@ const mockActionsConfig = {
     requiresEntity: true,
     group: 'tools',
   },
+  state: {
+    key: 'state',
+    label: 'État',
+    icon: 'fa-solid fa-circle',
+    permission: null,
+    requiresEntity: true,
+    group: 'status',
+    visibleIf: (_ctx, entity) => Object.prototype.hasOwnProperty.call(entity || {}, 'state'),
+  },
   pin: {
     key: 'pin',
     label: 'Épingler',
@@ -137,12 +146,12 @@ const mockActionsConfig = {
 
 vi.mock('@/Entities/entity-actions-config', () => ({
   getActionsForEntityType: vi.fn(() => mockActionsConfig),
-  ACTION_GROUPS_ORDER: ['navigation', 'edition', 'tools', 'destructive'],
+  ACTION_GROUPS_ORDER: ['status', 'navigation', 'edition', 'tools', 'destructive'],
   ENTITY_ACTION_CONTEXT_PRESETS: {
-    minimalLine: ['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit'],
-    modalDetail: ['favorite', 'copy-link', 'view', 'quick-edit', 'refresh', 'delete'],
-    pageDetail: ['favorite', 'copy-link', 'edit', 'refresh', 'delete'],
-    tableDropdown: ['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit'],
+    minimalLine: ['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit'],
+    modalDetail: ['state', 'favorite', 'copy-link', 'view', 'quick-edit', 'refresh', 'delete'],
+    pageDetail: ['state', 'favorite', 'copy-link', 'edit', 'refresh', 'delete'],
+    tableDropdown: ['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit'],
   },
   normalizeActionEntityType: (entityType) => entityType,
   isScrappableEntityType: (entityType) => ['spells', 'items'].includes(entityType),
@@ -382,6 +391,60 @@ describe('useEntityActions', () => {
       expect(byKey.view).toBe('open-page');
       expect(byKey['quick-edit']).toBe('edit-modal');
       expect(byKey.favorite).toBe('favorite');
+    });
+
+    it('ajoute l\'action état si l\'entité expose un state', () => {
+      const TestComponent = defineComponent({
+        setup() {
+          const { availableActions } = useEntityActions('spells', { id: 1, state: 'draft' }, {
+            context: { viewMode: 'line', inPage: true },
+          });
+          return { availableActions };
+        },
+        template: '<div></div>',
+      });
+
+      const wrapper = mount(TestComponent);
+      const stateAction = readAvailableActions(wrapper).find((a) => a.key === 'state');
+      expect(stateAction).toBeTruthy();
+      expect(stateAction.intent).toBe('state');
+      expect(stateAction.stateValue).toBe('draft');
+      expect(stateAction.canUpdateState).toBe(true);
+      expect(stateAction.showStateLabel).toBe(false);
+    });
+
+    it('affiche le label état dans les contextes compact, large, modal et page', () => {
+      const TestComponent = defineComponent({
+        setup() {
+          const compact = useEntityActions('spells', { id: 1, state: 'draft' }, { context: { viewMode: 'compact' } }).availableActions;
+          const large = useEntityActions('spells', { id: 1, state: 'draft' }, { context: { viewMode: 'large' } }).availableActions;
+          const modal = useEntityActions('spells', { id: 1, state: 'draft' }, { context: { inModal: true } }).availableActions;
+          const page = useEntityActions('spells', { id: 1, state: 'draft' }, { context: { inPage: true } }).availableActions;
+          return { compact, large, modal, page };
+        },
+        template: '<div></div>',
+      });
+
+      const wrapper = mount(TestComponent);
+      for (const key of ['compact', 'large', 'modal', 'page']) {
+        const actions = wrapper.vm[key]?.value ?? wrapper.vm[key];
+        expect(actions.find((a) => a.key === 'state')?.showStateLabel).toBe(true);
+      }
+    });
+
+    it('masque l\'action état si l\'entité n\'expose pas de state', () => {
+      const TestComponent = defineComponent({
+        setup() {
+          const { availableActions } = useEntityActions('spells', { id: 1 }, {
+            context: { viewMode: 'line' },
+          });
+          return { availableActions };
+        },
+        template: '<div></div>',
+      });
+
+      const wrapper = mount(TestComponent);
+      expect(readAvailableActions(wrapper).map((a) => a.key)).not.toContain('state');
     });
   });
 

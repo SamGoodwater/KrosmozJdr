@@ -160,7 +160,7 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         }
         
         // Vérifier visibleIf si défini
-        if (typeof action.visibleIf === "function" && !action.visibleIf(ctx)) {
+        if (typeof action.visibleIf === "function" && !action.visibleIf(ctx, entity)) {
           return false;
         }
         
@@ -183,6 +183,12 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         }
 
         enrichedAction.intent = resolveActionIntent(action.key, ctx);
+
+        if (action.key === "state") {
+          enrichedAction.canUpdateState = checkPermission("canUpdate");
+          enrichedAction.stateValue = (entity?._data ?? entity)?.state ?? null;
+          enrichedAction.showStateLabel = shouldShowStateLabel(ctx);
+        }
         
         return enrichedAction;
       });
@@ -243,6 +249,15 @@ function resolveActionIntent(actionKey, context) {
   if (actionKey === "delete") return "delete";
   if (actionKey === "pin") return "pin";
   if (actionKey === "favorite") return "favorite";
+  if (actionKey === "state") return "state";
   return actionKey;
+}
+
+function shouldShowStateLabel(context) {
+  const viewMode = String(context?.viewMode || "").trim();
+  if (context?.inMinimal || context?.inLine || viewMode === "minimal" || viewMode === "line") return false;
+  if (viewMode === "compact" || viewMode === "large") return true;
+  if (context?.inModal || context?.inPage) return true;
+  return false;
 }
 

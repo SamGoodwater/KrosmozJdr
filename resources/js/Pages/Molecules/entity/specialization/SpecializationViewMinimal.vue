@@ -16,7 +16,6 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
@@ -60,8 +59,6 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getSpecializationFieldDescriptors(ctx.value));
 
-const stateValue = computed(() => props.specialization?.state ?? props.specialization?._data?.state ?? null);
-
 const linkedCreatureTraits = computed(() => {
     const raw = props.specialization?._data?.creatureTraits ?? props.specialization?.creatureTraits;
     return Array.isArray(raw) ? raw : [];
@@ -103,7 +100,7 @@ const sortExtendedFields = (fields) => {
 
 // En mode étendu, afficher toutes les propriétés visibles non principales.
 const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image']);
+    const excluded = new Set(['name', 'image', 'state']);
     const fields = Object.keys(descriptors.value || {}).filter((key) => {
         return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
     });
@@ -161,10 +158,6 @@ const handleAction = async (actionKey) => {
         }"
         @mouseenter="canHoverExpand && (isHovered = true)"
         @mouseleave="canHoverExpand && (isHovered = false)">
-        <div class="absolute top-1 left-1 z-20">
-            <EntityUsableDot :state="stateValue" />
-        </div>
-        
         <div class="p-3">
             <!-- En-tête avec image, nom et actions -->
             <div class="flex items-start justify-between gap-2 mb-2">

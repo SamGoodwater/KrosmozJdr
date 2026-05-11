@@ -163,6 +163,9 @@ erDiagram
   CAPABILITY_SPECIALIZATION {
     capability_id : bigint(20) unsigned
     specialization_id : bigint(20) unsigned
+    level : smallint(5) unsigned
+    created_at : timestamp
+    updated_at : timestamp
   }
   CHARACTERISTIC_CREATURE {
     id : bigint(20) unsigned
@@ -346,6 +349,14 @@ erDiagram
     quantity : int(10) unsigned
     price : varchar(255)
     comment : varchar(255)
+  }
+  CONSUMABLE_SPECIALIZATION {
+    specialization_id : bigint(20) unsigned
+    consumable_id : bigint(20) unsigned
+    level : smallint(5) unsigned
+    quantity : int(10) unsigned
+    created_at : timestamp
+    updated_at : timestamp
   }
   CONSUMABLE_TYPES {
     id : bigint(20) unsigned
@@ -650,6 +661,14 @@ erDiagram
     price : varchar(255)
     comment : varchar(255)
   }
+  ITEM_SPECIALIZATION {
+    specialization_id : bigint(20) unsigned
+    item_id : bigint(20) unsigned
+    level : smallint(5) unsigned
+    quantity : int(10) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   ITEM_TYPES {
     id : bigint(20) unsigned
     name : varchar(255)
@@ -952,6 +971,14 @@ erDiagram
     price : varchar(255)
     comment : varchar(255)
   }
+  RESOURCE_SPECIALIZATION {
+    specialization_id : bigint(20) unsigned
+    resource_id : bigint(20) unsigned
+    level : smallint(5) unsigned
+    quantity : int(10) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   RESOURCE_TYPES {
     id : bigint(20) unsigned
     name : varchar(255)
@@ -1092,6 +1119,13 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  SECTION_SPECIALIZATION {
+    specialization_id : bigint(20) unsigned
+    section_id : bigint(20) unsigned
+    level : smallint(5) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   SECTION_USER {
     section_id : bigint(20) unsigned
     user_id : bigint(20) unsigned
@@ -1139,9 +1173,17 @@ erDiagram
     created_by : bigint(20) unsigned
     npc_id : bigint(20) unsigned
   }
+  SPECIALIZATION_SPELL {
+    specialization_id : bigint(20) unsigned
+    spell_id : bigint(20) unsigned
+    level : smallint(5) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   SPECIALIZATIONS {
     id : bigint(20) unsigned
     name : varchar(255)
+    short_description : text
     description : varchar(255)
     state : varchar(255)
     read_level : tinyint(4)
@@ -1383,6 +1425,8 @@ erDiagram
   CONSUMABLE_SCENARIO }o--|| SCENARIOS : "FK scenario_id"
   CONSUMABLE_SHOP }o--|| CONSUMABLES : "FK consumable_id"
   CONSUMABLE_SHOP }o--|| SHOPS : "FK shop_id"
+  CONSUMABLE_SPECIALIZATION }o--|| CONSUMABLES : "FK consumable_id"
+  CONSUMABLE_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
   CONSUMABLE_TYPES }o--|| USERS : "FK created_by"
   CONSUMABLES }o--|| CONSUMABLE_TYPES : "FK consumable_type_id"
   CONSUMABLES }o--|| USERS : "FK created_by"
@@ -1415,6 +1459,8 @@ erDiagram
   ITEM_SCENARIO }o--|| SCENARIOS : "FK scenario_id"
   ITEM_SHOP }o--|| ITEMS : "FK item_id"
   ITEM_SHOP }o--|| SHOPS : "FK shop_id"
+  ITEM_SPECIALIZATION }o--|| ITEMS : "FK item_id"
+  ITEM_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
   ITEM_TYPES }o--|| USERS : "FK created_by"
   ITEMS }o--|| USERS : "FK created_by"
   ITEMS }o--|| ITEM_TYPES : "FK item_type_id"
@@ -1460,6 +1506,8 @@ erDiagram
   RESOURCE_SCENARIO }o--|| SCENARIOS : "FK scenario_id"
   RESOURCE_SHOP }o--|| RESOURCES : "FK resource_id"
   RESOURCE_SHOP }o--|| SHOPS : "FK shop_id"
+  RESOURCE_SPECIALIZATION }o--|| RESOURCES : "FK resource_id"
+  RESOURCE_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
   RESOURCE_TYPES }o--|| USERS : "FK created_by"
   RESOURCES }o--|| USERS : "FK created_by"
   RESOURCES }o--|| RESOURCE_TYPES : "FK resource_type_id"
@@ -1481,12 +1529,16 @@ erDiagram
   SCRAPPING_ENTITY_MAPPING_TARGETS }o--|| SCRAPPING_ENTITY_MAPPINGS : "FK scrapping_entity_mapping_id"
   SCRAPPING_ENTITY_MAPPINGS }o--|| CHARACTERISTICS : "FK characteristic_id"
   SCRAPPING_JOBS }o--|| USERS : "FK requested_by"
+  SECTION_SPECIALIZATION }o--|| SECTIONS : "FK section_id"
+  SECTION_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
   SECTION_USER }o--|| SECTIONS : "FK section_id"
   SECTION_USER }o--|| USERS : "FK user_id"
   SECTIONS }o--|| USERS : "FK created_by"
   SECTIONS }o--|| PAGES : "FK page_id"
   SHOPS }o--|| USERS : "FK created_by"
   SHOPS }o--|| NPCS : "FK npc_id"
+  SPECIALIZATION_SPELL }o--|| SPECIALIZATIONS : "FK specialization_id"
+  SPECIALIZATION_SPELL }o--|| SPELLS : "FK spell_id"
   SPECIALIZATIONS }o--|| USERS : "FK created_by"
   SPELL_EFFECTS }o--|| SPELL_EFFECT_TYPES : "FK spell_effect_type_id"
   SPELL_EFFECTS }o--|| SPELLS : "FK spell_id"

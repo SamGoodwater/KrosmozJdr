@@ -19,15 +19,13 @@ import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
-import EntityUsableDot from '@/Pages/Atoms/data-display/EntityUsableDot.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getConsumableFieldDescriptors } from '@/Entities/consumable/consumable-descriptors';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
-import { getRarityConfig, getEntityStateOptions } from '@/Utils/Entity/SharedConstants';
+import { getRarityConfig } from '@/Utils/Entity/SharedConstants';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
-import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
 import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
 import { PROPERTY_DISPLAY_MODES } from '@/Utils/Entity/Constants';
@@ -58,8 +56,6 @@ const ctx = computed(() => ({
 }));
 
 const descriptors = computed(() => getConsumableFieldDescriptors(ctx.value));
-const stateValue = computed(() => props.consumable?.state ?? props.consumable?._data?.state ?? null);
-const userCanEdit = computed(() => ctx.value.capabilities.updateAny ?? props.consumable?.can?.update ?? false);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -94,22 +90,6 @@ const getBadgeColor = (fieldKey) => {
         fieldUi: getFieldUi(fieldKey),
         localColorMap: colorMap,
     }).color;
-};
-
-const stateOptions = computed(() => getEntityStateOptions());
-const stateColorMap = { raw: 'error', draft: 'warning', playable: 'success', archived: 'info' };
-const stateBadgeColor = computed(() => stateColorMap[stateValue.value] ?? 'neutral');
-const stateLabel = computed(() => {
-    const opt = stateOptions.value.find((o) => o.value === stateValue.value);
-    return opt?.label ?? '-';
-});
-
-const handleStateChange = (newState) => {
-    if (!props.consumable?.id || !userCanEdit.value) return;
-    router.patch(route('entities.consumables.update', { consumable: props.consumable.id }), { state: newState }, {
-        preserveScroll: true,
-        preserveState: true,
-    });
 };
 
 const ingredients = computed(() => {
@@ -151,9 +131,6 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader mode="compact">
             <template #media>
                 <div class="group relative w-16 h-16">
-                    <div class="absolute top-1 left-1 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :state="stateValue" />
-                    </div>
                     <ImageViewer
                         v-if="consumable.image"
                         :src="consumable.image"
@@ -174,46 +151,6 @@ const handleAction = async (actionKey) => {
 
             <template #actions>
                 <div class="flex items-center gap-2">
-                    <template v-if="canShowField('state')">
-                        <Dropdown
-                            v-if="userCanEdit"
-                            placement="bottom-end"
-                            :close-on-content-click="true"
-                            aria-label="Changer l'état"
-                        >
-                            <template #trigger>
-                                <Badge :color="stateBadgeColor" size="xs" variant="soft" class="cursor-pointer">
-                                    {{ stateLabel }}
-                                </Badge>
-                            </template>
-                            <template #content>
-                                <ul class="dropdown-content dropdown-content-glass dropdown-content-sm py-1 min-w-[140px]" role="listbox">
-                                    <li
-                                        v-for="opt in stateOptions"
-                                        :key="opt.value"
-                                        role="option"
-                                        class="cursor-pointer px-3 py-2 text-sm hover:bg-base-300/50 flex items-center gap-2"
-                                        :class="{ 'bg-base-300/30': stateValue === opt.value }"
-                                        @click="handleStateChange(opt.value)"
-                                    >
-                                        <span
-                                            class="w-2 h-2 rounded-full shrink-0"
-                                            :class="{
-                                                'bg-error': opt.value === 'raw',
-                                                'bg-warning': opt.value === 'draft',
-                                                'bg-success': opt.value === 'playable',
-                                                'bg-info': opt.value === 'archived',
-                                            }"
-                                        />
-                                        {{ opt.label }}
-                                    </li>
-                                </ul>
-                            </template>
-                        </Dropdown>
-                        <Badge v-else :color="stateBadgeColor" size="xs" variant="soft">
-                            {{ stateLabel }}
-                        </Badge>
-                    </template>
                     <EntityActions
                         v-if="showActions"
                         entity-type="consumable"

@@ -3,7 +3,7 @@
  * CreatureTraitViewMinimal — Vue minimal (CreatureTrait)
  *
  * @description
- * Carte compacte : pastille d’état, image si présente, nom, description.
+ * Carte compacte : image si présente, nom, description.
  * Pas de métadonnées (niveaux, dates, auteur).
  *
  * @props {Object} creatureTrait - Instance CreatureTrait (facade toCell)
@@ -16,7 +16,6 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 
 const props = defineProps({
     creatureTrait: { type: Object, required: true },
@@ -33,10 +32,6 @@ const emit = defineEmits(["edit", "copy-link", "download-pdf", "refresh", "view"
 
 const isHovered = ref(props.displayMode === "extended");
 const canHoverExpand = computed(() => props.displayMode === "hover");
-
-const stateValue = computed(
-    () => props.creatureTrait?.state ?? props.creatureTrait?._data?.state ?? null
-);
 
 const imageUrl = computed(() => {
     const u = props.creatureTrait?.image ?? props.creatureTrait?._data?.image;
@@ -88,11 +83,7 @@ const handleAction = async (actionKey) => {
         @mouseenter="canHoverExpand && (isHovered = true)"
         @mouseleave="canHoverExpand && (isHovered = false)"
     >
-        <div class="absolute top-1 left-1 z-20">
-            <EntityUsableDot :state="stateValue" />
-        </div>
-
-        <div class="flex flex-1 flex-col gap-2 p-3 pt-6">
+        <div class="flex flex-1 flex-col gap-2 p-3">
             <div class="flex items-start justify-between gap-2">
                 <div class="flex min-w-0 flex-1 items-start gap-2">
                     <div

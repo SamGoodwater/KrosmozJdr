@@ -10,6 +10,7 @@
  */
 import { BaseModel } from '../BaseModel';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
+import { getFormatter } from '@/Utils/Formatters/FormatterRegistry.js';
 
 export class Specialization extends BaseModel {
     // ============================================
@@ -173,12 +174,22 @@ export class Specialization extends BaseModel {
     }
 
     /**
-     * Génère une cellule pour image
+     * Génère une cellule pour image.
+     * Ne pas appeler `super.toCell('image')` : `BaseModel.toCell` délègue déjà à `_toImageCell`, ce qui provoquerait une récursion infinie.
+     *
      * @private
      */
     _toImageCell(format, size, options) {
-        // Utiliser le ImageFormatter via la méthode de base
-        return super.toCell('image', options);
+        const FormatterClass = getFormatter('image');
+        if (FormatterClass?.toCell) {
+            const cell = FormatterClass.toCell(this._data.image, { ...options, size, format });
+            if (cell?.type) return cell;
+        }
+        return {
+            type: 'text',
+            value: this.image || '-',
+            params: { sortValue: this.image || '', searchValue: this.image || '' },
+        };
     }
 
     /**

@@ -91,7 +91,7 @@ const sortExtendedFields = (fields) => {
 
 // En mode étendu, afficher toutes les propriétés visibles non principales.
 const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image']);
+    const excluded = new Set(['name', 'image', 'state']);
     const fields = Object.keys(descriptors.value || {}).filter((key) => {
         return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
     });

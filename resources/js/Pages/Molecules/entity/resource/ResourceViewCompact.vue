@@ -20,7 +20,6 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
@@ -70,8 +69,6 @@ const ctx = computed(() => {
 
 // Obtenir les descriptors avec le contexte
 const descriptors = computed(() => getResourceFieldDescriptors(ctx.value));
-
-const stateValue = computed(() => props.resource?.state ?? props.resource?._data?.state ?? null);
 
 const autoUpdateValue = computed(() => {
     const v = props.resource?.auto_update ?? props.resource?._data?.auto_update;
@@ -221,9 +218,6 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader mode="compact">
             <template #media>
                 <div class="group relative w-16 h-16">
-                    <div class="absolute top-1 left-1 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :state="stateValue" />
-                    </div>
                     <div class="absolute top-1 right-1 z-20 transition-opacity duration-150 group-hover:opacity-0">
                         <Badge
                             :color="getBadgeColor('level')"

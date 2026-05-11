@@ -62,7 +62,7 @@ flowchart TB
 | Section | Rôle | Layout (guideline) | Responsive | Permissions | Notes |
 |---|---|---|---|---|---|
 | **Main container** | Card globale | `flex-col`, `gap`, `w-full` | Large/Compact prennent la place max ; Minimal peut être `auto` ou largeur fixée | n/a | Certaines propriétés peuvent influencer la couleur (ex: élément/type → ombre/contour) |
-| **Header** | Identité | `flex`, `items-start`, `justify-between`, `gap` | si largeur > ~200px : image ≈ 1/3 ; sinon elle se réduit | n/a | Le **dot d’état** (`state`) est positionné en haut à gauche (très discret) |
+| **Header** | Identité | `flex`, `items-start`, `justify-between`, `gap` | si largeur > ~200px : image ≈ 1/3 ; sinon elle se réduit | n/a | L’état (`state`) est rendu dans la **barre d’action**, pas en surimpression sur l’image |
 | **Header/Image** | Image carrée | conteneur carré, centré, fond transparent | s’adapte à la place | n/a | Interactions image (zoom/crop/rotate) : futur (admin vs non-admin) |
 | **Header/Barre d’action** | Actions contextuelles | icônes + tooltip, align top-right | si manque de place : bascule en menu (jusqu’à “tout sauf fermer”) | selon permissions + contexte | “Fermer” reste l’action toujours dispo en modal |
 | **Header/Title** | Titre | multi-lignes sauf Minimal compacted | Minimal compacted : 1 ligne tronquée | n/a | texte légèrement plus grand |
@@ -183,7 +183,7 @@ Utilise ces règles dans l’ordre :
 7) **Est-ce un lien vers d’autres entités (relations) ?**
 - Oui → **Body/Entités liées**
 
-> Cas spécial : `state` s’affiche plutôt en **dot** (indicateur discret) + tooltip.
+> Cas spécial : `state` s’affiche via l’action d’état centralisée : pastille + tooltip en Minimal/Line, pastille + libellé quand la place le permet, et dropdown de changement selon les droits.
 
 ### Tailles & responsive (contrats)
 

@@ -2,7 +2,6 @@
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
@@ -18,7 +17,6 @@ const props = defineProps({
 const emit = defineEmits(["row-click", "toggle-select", "action"]);
 
 const entity = computed(() => props.row?.rowParams?.entity ?? props.row);
-const stateValue = computed(() => entity.value?.state ?? null);
 const imageUrl = computed(() => entity.value?.image || null);
 const name = computed(() => entity.value?.name || "—");
 const shortDescription = computed(() => entity.value?.short_description || entity.value?.description || "");
@@ -31,10 +29,6 @@ const traits = computed(() => Array.isArray(entity.value?.creatureTraits) ? enti
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         @click="emit('row-click', row, $event)"
     >
-        <div class="absolute top-2 left-2 z-10">
-            <EntityUsableDot :state="stateValue" />
-        </div>
-
         <div class="w-16 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center">
             <Image v-if="imageUrl" :source="imageUrl" :alt="name" fit="contain" class="h-full w-full" />
             <Icon v-else source="fa-solid fa-graduation-cap" alt="" size="sm" class="text-base-content/40" />
@@ -55,7 +49,7 @@ const traits = computed(() => Array.isArray(entity.value?.creatureTraits) ? enti
                 entity-type="specializations"
                 :entity="entity || row"
                 format="dropdown"
-                :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
+                :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                 @action="(k, e) => emit('action', k, e, row)"
             />
         </div>

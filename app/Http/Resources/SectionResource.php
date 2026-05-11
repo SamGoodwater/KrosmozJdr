@@ -41,6 +41,7 @@ class SectionResource extends JsonResource
             'title' => $section->title,
             'slug' => $section->slug,
             'order' => $section->order,
+            'pivot_level' => $section->pivot?->level !== null ? (int) $section->pivot->level : null,
             'template' => $section->template instanceof \App\Enums\SectionType ? $section->template->value : $section->template,
             // Legacy compatibility: expose aussi `type` pour les clients anciens.
             'type' => $section->type instanceof \App\Enums\SectionType ? $section->type->value : $section->type,

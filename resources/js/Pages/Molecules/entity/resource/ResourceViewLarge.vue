@@ -20,17 +20,15 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
-import EntityUsableDot from '@/Pages/Atoms/data-display/EntityUsableDot.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
-import { getRarityConfig, getRoleConfig, getEntityStateOptions } from '@/Utils/Entity/SharedConstants';
+import { getRarityConfig, getRoleConfig } from '@/Utils/Entity/SharedConstants';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
 import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
-import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
 
 const props = defineProps({
@@ -61,7 +59,6 @@ const ctx = computed(() => ({
 }));
 
 const descriptors = computed(() => getResourceFieldDescriptors(ctx.value));
-const stateValue = computed(() => props.resource?.state ?? props.resource?._data?.state ?? null);
 const autoUpdateValue = computed(() => {
     const v = props.resource?.auto_update ?? props.resource?._data?.auto_update;
     return typeof v === 'boolean' ? v : null;
@@ -87,8 +84,6 @@ const hasOtherRelations = computed(() =>
     campaigns.value.length > 0 ||
     shops.value.length > 0,
 );
-
-const userCanEdit = computed(() => ctx.value.capabilities.updateAny ?? props.resource?.can?.update ?? false);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -182,22 +177,6 @@ const writeLevelLabel = computed(() => {
     return cfg?.label ?? '-';
 });
 
-const stateOptions = computed(() => getEntityStateOptions());
-const stateColorMap = { raw: 'error', draft: 'warning', playable: 'success', archived: 'info' };
-const stateBadgeColor = computed(() => stateColorMap[stateValue.value] ?? 'neutral');
-const stateLabel = computed(() => {
-    const opt = stateOptions.value.find((o) => o.value === stateValue.value);
-    return opt?.label ?? '-';
-});
-
-const handleStateChange = (newState) => {
-    if (!props.resource?.id || !userCanEdit.value) return;
-    router.patch(route('entities.resources.update', { resource: props.resource.id }), { state: newState }, {
-        preserveScroll: true,
-        preserveState: true,
-    });
-};
-
 const handleAction = async (actionKey) => {
     const resourceId = props.resource.id;
     if (!resourceId) return;
@@ -243,9 +222,6 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader mode="large">
             <template #media>
                 <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
-                    <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :state="stateValue" />
-                    </div>
                     <ImageViewer
                         v-if="resource.image"
                         :src="resource.image"
@@ -336,71 +312,6 @@ const handleAction = async (actionKey) => {
 
             <template #actions>
                 <div class="flex items-center gap-2">
-                    <!-- État : badge ou dropdown si droits d'écriture -->
-                    <template v-if="canShowField('state')">
-                        <Dropdown
-                            v-if="userCanEdit"
-                            placement="bottom-end"
-                            :close-on-content-click="true"
-                            aria-label="Changer l'état"
-                        >
-                            <template #trigger>
-                                <button
-                                    type="button"
-                                    class="btn btn-sm btn-ghost gap-1.5 min-h-0 h-8 px-2 rounded-md hover:bg-base-300/50"
-                                    aria-haspopup="listbox"
-                                    aria-expanded="false"
-                                >
-                                    <Badge
-                                        :color="stateBadgeColor"
-                                        size="xs"
-                                        variant="soft"
-                                    >
-                                        {{ stateLabel }}
-                                    </Badge>
-                                    <Icon source="fa-solid fa-chevron-down" size="xs" class="opacity-70" aria-hidden="true" />
-                                </button>
-                            </template>
-                            <template #content>
-                                <ul
-                                    class="dropdown-content dropdown-content-glass dropdown-content-sm py-1 min-w-[140px]"
-                                    role="listbox"
-                                >
-                                    <li
-                                        v-for="opt in stateOptions"
-                                        :key="opt.value"
-                                        role="option"
-                                        :aria-selected="stateValue === opt.value"
-                                        class="cursor-pointer px-3 py-2 text-sm hover:bg-base-300/50 flex items-center gap-2"
-                                        :class="{ 'bg-base-300/30': stateValue === opt.value }"
-                                        @click="handleStateChange(opt.value)"
-                                    >
-                                        <span
-                                            class="w-2 h-2 rounded-full shrink-0"
-                                            :class="{
-                                                'bg-error': opt.value === 'raw',
-                                                'bg-warning': opt.value === 'draft',
-                                                'bg-success': opt.value === 'playable',
-                                                'bg-info': opt.value === 'archived',
-                                                'bg-base-300': !['raw','draft','playable','archived'].includes(opt.value),
-                                            }"
-                                            aria-hidden="true"
-                                        />
-                                        {{ opt.label }}
-                                    </li>
-                                </ul>
-                            </template>
-                        </Dropdown>
-                        <Tooltip v-else :content="getFieldTooltip('state')" placement="top">
-                            <Badge
-                                :color="stateBadgeColor"
-                                size="xs"
-                                variant="soft"
-                            >
-                                {{ stateLabel }}
-                            </Badge>
-                        </Tooltip>
-                    </template>
                     <EntityActions
                         v-if="showActions"
                         entity-type="resource"

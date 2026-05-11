@@ -15,7 +15,6 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
 
@@ -58,8 +57,6 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getResourceTypeFieldDescriptors(ctx.value));
 
-const stateValue = computed(() => props.resourceType?.state ?? props.resourceType?._data?.state ?? null);
-
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
@@ -76,7 +73,7 @@ const canShowField = (fieldKey) => {
 };
 
 // Champs importants à afficher
-const importantFields = computed(() => ['decision', 'state', 'read_level', 'resources_count'].filter(canShowField));
+const importantFields = computed(() => ['decision', 'read_level', 'resources_count'].filter(canShowField));
 
 const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
 const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
@@ -94,7 +91,7 @@ const sortExtendedFields = (fields) => {
 
 // En mode étendu, afficher toutes les propriétés visibles non principales.
 const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image']);
+    const excluded = new Set(['name', 'image', 'state']);
     const fields = Object.keys(descriptors.value || {}).filter((key) => {
         return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
     });
@@ -154,10 +151,6 @@ const handleAction = async (actionKey) => {
         }"
         @mouseenter="canHoverExpand && (isHovered = true)"
         @mouseleave="canHoverExpand && (isHovered = false)">
-        <div class="absolute top-1 left-1 z-20">
-            <EntityUsableDot :state="stateValue" />
-        </div>
-        
         <div class="p-3">
             <!-- En-tête avec nom et actions -->
             <div class="flex items-start justify-between gap-2 mb-2">

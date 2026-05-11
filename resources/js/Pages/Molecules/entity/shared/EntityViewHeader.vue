@@ -12,7 +12,7 @@
  *
  * @props {'large'|'compact'|'minimal'} mode - Mode de rendu du header.
  *
- * @slot dot - Indicateur optionnel (ex: EntityUsableDot) positionné en absolute par le parent.
+ * @slot dot - Indicateur optionnel positionné en absolute par le parent.
  * @slot media - Image/icone (à gauche)
  * @slot title - Titre (nom)
  * @slot mainInfos - Infos principales (large/compact)

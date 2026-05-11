@@ -12,7 +12,6 @@
 import { ref, computed, onUnmounted, nextTick } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
@@ -114,8 +113,6 @@ const SUMMARY_CHARACTERISTIC_KEYS = [
     "creature_summary_damage",
 ];
 
-const stateValue = computed(() => entity.value?.state ?? entity.value?._data?.state ?? null);
-
 const levelValue = computed(() => {
     const c = entity.value?.creature ?? entity.value?._data?.creature;
     const lv = c?.level;
@@ -181,9 +178,6 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
         @click="handleRowClick"
         @contextmenu="handleContextMenu"
     >
-        <div class="absolute top-2 left-2 z-10" @click.stop>
-            <EntityUsableDot :state="stateValue" />
-        </div>
         <div
             v-if="showActions || showSelection"
             class="monster-line-actions-host absolute top-2 right-2 z-20 flex items-center gap-2"
@@ -195,7 +189,7 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
                     :entity="entity || row"
                     format="dropdown"
                     :show-inline-shortcuts="false"
-                    :whitelist="['pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
+                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
                     @action="(k, e) => emit('action', k, e, row)"
                 />
             </div>

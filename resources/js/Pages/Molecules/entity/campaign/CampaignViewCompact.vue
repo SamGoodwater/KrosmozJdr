@@ -15,7 +15,6 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
@@ -58,8 +57,6 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getCampaignFieldDescriptors(ctx.value));
 
-const stateValue = computed(() => props.campaign?.state ?? props.campaign?._data?.state ?? null);
-
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
@@ -76,7 +73,6 @@ const canShowField = (fieldKey) => {
 };
 
 const headlineFields = computed(() => ([
-    'state',
     'is_public',
 ].filter(canShowField)));
 
@@ -175,10 +171,6 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader mode="compact">
             <template #media>
                 <div class="group relative w-16 h-16">
-                    <div class="absolute top-1 left-1 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :state="stateValue" />
-                    </div>
-
                     <ImageViewer
                         v-if="campaign.image"
                         :src="campaign.image"

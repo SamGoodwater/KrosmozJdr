@@ -437,6 +437,17 @@ export function getEntityStateDisplayLabel(state) {
 }
 
 /**
+ * Libellé court pour l'action d'état.
+ *
+ * @param {string|null|undefined} state
+ * @returns {string}
+ */
+export function getEntityStateActionLabel(state) {
+  if (state === "playable") return "Actif";
+  return getEntityStateDisplayLabel(state);
+}
+
+/**
  * Options de rôles (0..5) pour selects (read_level / write_level).
  */
 export function getUserRoleOptions() {
