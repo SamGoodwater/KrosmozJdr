@@ -34,8 +34,8 @@ final class CreatureObjectBonusToCreatureVariablesTest extends TestCase
             'acrobatics' => 3,
         ]);
 
-        $this->assertSame(2.0, $variables['action_points_object']);
-        $this->assertSame(3.0, $variables['acrobatics_object']);
+        $this->assertArrayNotHasKey('action_points_object', $variables);
+        $this->assertArrayNotHasKey('acrobatics_object', $variables);
         $this->assertSame(6.0, $variables['action_points_creature']);
         $this->assertSame(3.0, $variables['acrobatie_bonus']);
     }

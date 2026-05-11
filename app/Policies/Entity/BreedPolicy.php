@@ -4,8 +4,10 @@ namespace App\Policies\Entity;
 
 use App\Models\Entity\Breed;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
+/**
+ * Lecture des classes : jouable selon {@see Breed::$read_level}, brouillon réservé à l’auteur ou au niveau {@see Breed::$write_level}.
+ */
 class BreedPolicy
 {
     /**
@@ -21,7 +23,30 @@ class BreedPolicy
      */
     public function view(?User $user, Breed $breed): bool
     {
-        return true;
+        if ($user?->isAdmin()) {
+            return true;
+        }
+
+        $state = (string) $breed->state;
+        $level = $user !== null ? (int) ($user->role ?? 0) : 0;
+
+        if ($state === Breed::STATE_ARCHIVED) {
+            return false;
+        }
+
+        if ($state === Breed::STATE_PLAYABLE) {
+            return $level >= (int) $breed->read_level;
+        }
+
+        // Brouillon / brut : pas d’invité ; auteur ; ou rôle suffisant pour l’édition de la fiche.
+        if ($user === null) {
+            return false;
+        }
+        if ($breed->created_by !== null && (int) $user->id === (int) $breed->created_by) {
+            return true;
+        }
+
+        return $level >= (int) $breed->write_level;
     }
 
     /**

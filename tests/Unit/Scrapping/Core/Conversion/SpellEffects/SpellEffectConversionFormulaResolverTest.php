@@ -49,10 +49,10 @@ class SpellEffectConversionFormulaResolverTest extends TestCase
         $this->assertSame('bouclier_spell', $this->resolver->resolveCharacteristicKeyForConversion('protéger', []));
     }
 
-    public function test_booster_with_pa_returns_action_points_spell(): void
+    public function test_booster_with_pa_returns_action_points_variation_spell(): void
     {
         $key = $this->resolver->resolveCharacteristicKeyForConversion('booster', ['characteristic' => 'pa']);
-        $this->assertSame('action_points_spell', $key);
+        $this->assertSame('action_points_variation_spell', $key);
     }
 
     public function test_booster_with_po_returns_range_spell(): void
@@ -71,9 +71,9 @@ class SpellEffectConversionFormulaResolverTest extends TestCase
         $this->assertNull($this->resolver->resolveCharacteristicKeyForConversion('booster', ['characteristic' => '']));
     }
 
-    public function test_retirer_with_pa_returns_action_points_spell(): void
+    public function test_retirer_with_pa_returns_action_points_variation_spell(): void
     {
-        $this->assertSame('action_points_spell', $this->resolver->resolveCharacteristicKeyForConversion('retirer', ['characteristic' => 'pa']));
+        $this->assertSame('action_points_variation_spell', $this->resolver->resolveCharacteristicKeyForConversion('retirer', ['characteristic' => 'pa']));
     }
 
     public function test_voler_caracteristiques_with_pm_returns_movement_points_spell(): void
@@ -81,9 +81,12 @@ class SpellEffectConversionFormulaResolverTest extends TestCase
         $this->assertSame('movement_points_spell', $this->resolver->resolveCharacteristicKeyForConversion('voler-caracteristiques', ['characteristic' => 'pm']));
     }
 
-    public function test_deplacer_returns_null(): void
+    public function test_deplacer_without_params_returns_movement_distance_spell(): void
     {
-        $this->assertNull($this->resolver->resolveCharacteristicKeyForConversion('déplacer', []));
+        $this->assertSame(
+            'movement_distance_spell',
+            $this->resolver->resolveCharacteristicKeyForConversion('déplacer', [])
+        );
     }
 
     public function test_invoquer_returns_null(): void

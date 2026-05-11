@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Creature\Runtime;
 
-use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Contracts\Characteristic\CharacteristicDefinitionLookup;
 
 /**
  * Applique les bonus agrégés d’objets (clés courtes type Dofus→Krosmoz) sur la carte de variables runtime.
@@ -42,8 +42,18 @@ final class CreatureObjectBonusToCreatureVariables
     ];
 
     public function __construct(
-        private readonly CharacteristicGetterService $getter
+        private readonly CharacteristicDefinitionLookup $getter
     ) {}
+
+    /**
+     * Noms de variables bonus compétences (français) autorisés dans les formules créature.
+     *
+     * @return list<string>
+     */
+    public static function frenchSkillBonusVariableNames(): array
+    {
+        return array_values(self::SKILL_SHORT_KEY_TO_BONUS_VARIABLE);
+    }
 
     /**
      * Fusionne les totaux d’objets dans $variables (modifié en place). Retourne les mêmes totaux pour la payload.

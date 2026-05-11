@@ -40,6 +40,7 @@ class BreedControllerTest extends TestCase
         $breed = Breed::factory()->create([
             'state' => Breed::STATE_DRAFT,
             'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
 
         $this->get(route('entities.breeds.show', $breed))
@@ -66,6 +67,7 @@ class BreedControllerTest extends TestCase
         $breed = Breed::factory()->create([
             'state' => Breed::STATE_DRAFT,
             'created_by' => $creator->id,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
 
         $this->actingAs($gm)
@@ -80,6 +82,7 @@ class BreedControllerTest extends TestCase
         $breed = Breed::factory()->create([
             'state' => Breed::STATE_DRAFT,
             'created_by' => $creator->id,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
 
         $this->actingAs($other)

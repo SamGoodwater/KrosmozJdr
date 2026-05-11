@@ -4,21 +4,29 @@ namespace Tests\Unit\User;
 
 use App\Http\Controllers\UserController;
 use App\Models\User;
+use App\Services\Media\EntityImageMediaService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 /**
  * Tests Unitaires pour UserController
- * 
+ *
  * Teste directement la logique métier sans passer par les routes HTTP
  * pour éviter les problèmes de CSRF et de middleware
  */
 class UserControllerUnitTest extends TestCase
 {
     use RefreshDatabase;
+
+    private function makeController(): UserController
+    {
+        return new UserController($this->createMock(EntityImageMediaService::class));
+    }
 
     // Note: Les tests de mise à jour de profil sont testés via les tests de policy
     // qui vérifient les autorisations. Les tests HTTP complets sont dans UserControllerTest
@@ -39,9 +47,9 @@ class UserControllerUnitTest extends TestCase
             'password' => 'newpassword123',
             'password_confirmation' => 'newpassword123',
         ]);
-        $request->setUserResolver(fn() => $user);
+        $request->setUserResolver(fn () => $user);
 
-        $controller = new UserController();
+        $controller = $this->makeController();
         $response = $controller->updatePassword($request, $user);
 
         $user->refresh();
@@ -63,18 +71,18 @@ class UserControllerUnitTest extends TestCase
             'password' => 'newpassword123',
             'password_confirmation' => 'newpassword123',
         ]);
-        $request->setUserResolver(fn() => $user);
-        
+        $request->setUserResolver(fn () => $user);
+
         // S'assurer que Auth::id() retourne bien l'ID de l'utilisateur
         $this->assertEquals($user->id, Auth::id());
 
-        $controller = new UserController();
-        
+        $controller = $this->makeController();
+
         try {
             // Ne pas passer $user en paramètre pour que la méthode utilise Auth::user()
             $response = $controller->updatePassword($request);
             $this->fail('Expected validation exception');
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             $this->assertArrayHasKey('current_password', $e->errors());
         }
 
@@ -98,13 +106,13 @@ class UserControllerUnitTest extends TestCase
             'password' => 'newpassword123',
             'password_confirmation' => 'newpassword123',
         ]);
-        $request->setUserResolver(fn() => $admin);
+        $request->setUserResolver(fn () => $admin);
 
-        $controller = new UserController();
+        $controller = $this->makeController();
         try {
             $controller->updatePassword($request, $targetUser);
             $this->fail('Authorization exception expected.');
-        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+        } catch (AuthorizationException $e) {
             $this->assertTrue(true);
         }
 
@@ -125,9 +133,9 @@ class UserControllerUnitTest extends TestCase
         $request = Request::create(route('user.admin.updateRole', $targetUser), 'PATCH', [
             'role' => User::ROLE_PLAYER,
         ]);
-        $request->setUserResolver(fn() => $admin);
+        $request->setUserResolver(fn () => $admin);
 
-        $controller = new UserController();
+        $controller = $this->makeController();
         $response = $controller->updateRole($request, $targetUser);
 
         $targetUser->refresh();
@@ -147,9 +155,9 @@ class UserControllerUnitTest extends TestCase
         $request = Request::create(route('user.admin.updateRole', $targetUser), 'PATCH', [
             'role' => User::ROLE_ADMIN,
         ]);
-        $request->setUserResolver(fn() => $admin);
+        $request->setUserResolver(fn () => $admin);
 
-        $controller = new UserController();
+        $controller = $this->makeController();
         $response = $controller->updateRole($request, $targetUser);
 
         // Le contrôleur doit retourner avec une erreur
@@ -171,9 +179,9 @@ class UserControllerUnitTest extends TestCase
         $request = Request::create(route('user.admin.updateRole', $targetUser), 'PATCH', [
             'role' => User::ROLE_ADMIN,
         ]);
-        $request->setUserResolver(fn() => $superAdmin);
+        $request->setUserResolver(fn () => $superAdmin);
 
-        $controller = new UserController();
+        $controller = $this->makeController();
         $response = $controller->updateRole($request, $targetUser);
 
         $targetUser->refresh();
@@ -193,9 +201,9 @@ class UserControllerUnitTest extends TestCase
         $request = Request::create(route('user.admin.updateRole', $targetUser), 'PATCH', [
             'role' => User::ROLE_SUPER_ADMIN,
         ]);
-        $request->setUserResolver(fn() => $superAdmin);
+        $request->setUserResolver(fn () => $superAdmin);
 
-        $controller = new UserController();
+        $controller = $this->makeController();
         $response = $controller->updateRole($request, $targetUser);
 
         // Le contrôleur doit retourner avec une erreur
@@ -204,4 +212,3 @@ class UserControllerUnitTest extends TestCase
         $this->assertNotEquals(User::ROLE_SUPER_ADMIN, $targetUser->role);
     }
 }
-

@@ -2,11 +2,15 @@
 
 namespace App\Providers;
 
+use App\Contracts\Characteristic\CharacteristicDefinitionLookup;
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
 use App\Models\DofusdbEffectMapping;
+use App\Models\Entity\Consumable;
+use App\Models\Entity\Item;
+use App\Models\Entity\Spell;
 use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
 use App\Services\Characteristic\Conversion\DofusConversionService;
@@ -24,6 +28,7 @@ use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -34,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(CharacteristicGetterService::class);
+        $this->app->singleton(CharacteristicDefinitionLookup::class, static fn ($app) => $app->make(CharacteristicGetterService::class));
         $this->app->singleton(CharacteristicLimitService::class);
         $this->app->singleton(CharacteristicFormulaService::class);
         $this->app->singleton(ConversionFunctionRegistry::class);
@@ -69,9 +75,9 @@ class AppServiceProvider extends ServiceProvider
         // Map court pour effect_usages : le scrapping stocke 'spell'/'item'/… au lieu du FQCN.
         // morphMap (sans enforce) : ajoute les mappings sans imposer aux autres relations polymorphes (User, etc.)
         Relation::morphMap([
-            'spell' => \App\Models\Entity\Spell::class,
-            'item' => \App\Models\Entity\Item::class,
-            'consumable' => \App\Models\Entity\Consumable::class,
+            'spell' => Spell::class,
+            'item' => Item::class,
+            'consumable' => Consumable::class,
             'resource' => \App\Models\Entity\Resource::class,
         ]);
 
@@ -103,7 +109,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function configureRateLimiting(): void
     {
-        RateLimiter::for('privacy-actions', function (\Illuminate\Http\Request $request) {
+        RateLimiter::for('privacy-actions', function (Request $request) {
             $key = ($request->user()?->id ?? 'guest').'|'.$request->ip();
 
             return Limit::perMinutes(15, 10)->by($key);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Characteristic\Getter;
 
+use App\Contracts\Characteristic\CharacteristicDefinitionLookup;
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Schema;
  * Getter généraliste : fournit les définitions d’une caractéristique par clé et entité.
  * Résout entity → groupe (creature, object, spell) et fusionne table générale + table de groupe.
  */
-final class CharacteristicGetterService
+final class CharacteristicGetterService implements CharacteristicDefinitionLookup
 {
     /** Valeur entity = « s'applique à toutes les entités du groupe ». */
     public const ENTITY_ALL = '*';

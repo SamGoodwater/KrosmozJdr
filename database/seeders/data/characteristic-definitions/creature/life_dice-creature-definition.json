@@ -1,7 +1,7 @@
 {
     "_schema_version": "1",
     "characteristic": {
-        "key": "life_dice_class",
+        "key": "life_dice_creature",
         "name": "Dé de vie",
         "short_name": "Dé vie",
         "helper": "Type de dé utilisé pour les points de vie de la classe (Krosmoz).",
@@ -10,13 +10,29 @@
         "icon_false": null,
         "color": "amber",
         "value_overrides": [
-            { "value": "1d4", "subtitle": "Dé de vie d4 — classes fragiles." },
-            { "value": "1d6", "subtitle": "Dé de vie d6." },
-            { "value": "1d8", "subtitle": "Dé de vie d8 — standard." },
-            { "value": "1d10", "subtitle": "Dé de vie d10 — robuste." },
-            { "value": "1d12", "subtitle": "Dé de vie d12 — très robuste." }
+            {
+                "value": "1d4",
+                "subtitle": "Dé de vie d4 — classes fragiles."
+            },
+            {
+                "value": "1d6",
+                "subtitle": "Dé de vie d6."
+            },
+            {
+                "value": "1d8",
+                "subtitle": "Dé de vie d8 — standard."
+            },
+            {
+                "value": "1d10",
+                "subtitle": "Dé de vie d10 — robuste."
+            },
+            {
+                "value": "1d12",
+                "subtitle": "Dé de vie d12 — très robuste."
+            }
         ],
         "hide_when_empty": false,
+        "hide_when_false": false,
         "unit": null,
         "type": "string",
         "status": "validee",
@@ -45,5 +61,6 @@
             "labels": null,
             "validation": null
         }
-    }
+    },
+    "relations": null
 }
