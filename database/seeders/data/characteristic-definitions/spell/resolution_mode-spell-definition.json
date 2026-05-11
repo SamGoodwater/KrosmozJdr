@@ -11,6 +11,7 @@
         "color": "indigo",
         "value_overrides": null,
         "hide_when_empty": false,
+        "hide_when_false": false,
         "unit": null,
         "type": "string",
         "status": "validee",
@@ -36,7 +37,11 @@
             "norms_conditions": null,
             "norms_description": "Grille 5×20 non utilisée : énumération métier (chaîne). Voir formulaire sort — groupe Combat.",
             "norms_help_section_id": null,
-            "value_available": ["attack_roll", "saving_throw", "auto_success"]
+            "value_available": [
+                "attack_roll",
+                "saving_throw",
+                "auto_success"
+            ]
         }
     },
     "relations": null

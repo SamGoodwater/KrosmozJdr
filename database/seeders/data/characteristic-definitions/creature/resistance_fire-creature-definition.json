@@ -11,6 +11,7 @@
         "color": "orange",
         "value_overrides": null,
         "hide_when_empty": false,
+        "hide_when_false": false,
         "unit": "%",
         "type": "int",
         "status": "a_valider",

@@ -28,6 +28,7 @@
             }
         ],
         "hide_when_empty": true,
+        "hide_when_false": false,
         "unit": null,
         "type": "int",
         "status": "validee",

@@ -20,8 +20,10 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
 import FormulaHelpHint from '@/Pages/Molecules/entity/FormulaHelpHint.vue';
 import EntityEditFormFieldBody from '@/Pages/Molecules/entity/EntityEditFormFieldBody.vue';
+import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { FORMULA_PLACEHOLDER } from '@/Utils/entity/formula-help';
 import { registerSaveShortcut } from '@/Composables/utils/saveShortcutRegistry';
+import { useEntityActionDispatcher } from '@/Composables/entity/useEntityActionDispatcher';
 import {
     invalidateKrefEntityPreviewCache,
     toKrefPreviewApiEntityType,
@@ -188,6 +190,9 @@ const entitiesPluralSegment = computed(() => {
     if (et === 'creature-trait' || et === 'creature-traits') return 'creature-traits';
     return `${et}s`;
 });
+
+const { dispatchEntityAction } = useEntityActionDispatcher(entitiesPluralSegment);
+const showReadAction = computed(() => props.isUpdating && Boolean(props.entity?.id));
 
 /**
  * Clé du paramètre de route Laravel (`capability` pour `/capabilities/{capability}`).
@@ -1038,6 +1043,10 @@ const cancel = () => {
     }
 };
 
+async function handleEditPageAction(actionKey) {
+    await dispatchEntityAction(actionKey, props.entity);
+}
+
 </script>
 
 <template>
@@ -1061,6 +1070,20 @@ const cancel = () => {
                         :required="stateField.config.required"
                         :validation="getFieldValidation(stateField.key)"
                         :searchable="false"
+                    />
+                </div>
+
+                <div v-if="showReadAction" class="top-tools-row__actions">
+                    <EntityActions
+                        :entity-type="entitiesPluralSegment"
+                        :entity="entity"
+                        format="buttons"
+                        display="icon-only"
+                        size="sm"
+                        color="primary"
+                        :whitelist="['view']"
+                        :context="{ inPage: true, pageMode: 'edit' }"
+                        @action="handleEditPageAction"
                     />
                 </div>
             </div>
@@ -1260,6 +1283,12 @@ const cancel = () => {
     .top-tools-row__formula {
         flex: 1 1 320px;
         min-width: 0;
+    }
+
+    .top-tools-row__actions {
+        display: flex;
+        align-items: center;
+        min-height: 2.5rem;
     }
 
     .form-fields {

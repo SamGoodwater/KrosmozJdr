@@ -23,6 +23,7 @@
             }
         ],
         "hide_when_empty": false,
+        "hide_when_false": false,
         "unit": null,
         "type": "bool",
         "status": "validee",

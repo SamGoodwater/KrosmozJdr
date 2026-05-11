@@ -22,6 +22,7 @@
  * @property {string} [group] - Groupe d'actions (pour séparateurs dans le menu)
  * @property {Function} [getLabel] - Fonction pour obtenir le label selon le contexte
  * @property {Function} [getTooltip] - Fonction pour obtenir le tooltip selon le contexte
+ * @property {Function} [getIcon] - Fonction pour obtenir l'icône selon le contexte
  * @property {Function} [visibleIf] - Fonction pour déterminer si l'action est visible selon le contexte
  */
 
@@ -40,8 +41,8 @@ export const SCRAPPABLE_ENTITY_TYPES = Object.freeze([
 
 export const ENTITY_ACTION_CONTEXT_PRESETS = Object.freeze({
   minimalLine: ["state", "pin", "favorite", "copy-link", "quick-view", "quick-edit"],
-  modalDetail: ["state", "favorite", "copy-link", "view", "quick-edit", "refresh", "delete"],
-  pageDetail: ["state", "favorite", "copy-link", "edit", "refresh", "delete"],
+  modalDetail: ["state", "favorite", "copy-link", "view", "edit", "quick-edit", "refresh", "delete"],
+  pageDetail: ["state", "favorite", "copy-link", "view", "edit", "refresh", "delete"],
   tableDropdown: ["state", "pin", "favorite", "copy-link", "quick-view", "quick-edit"],
 });
 
@@ -82,47 +83,34 @@ export function isScrappableEntityType(entityType) {
 export const ENTITY_ACTIONS_COMMON = Object.freeze({
   view: {
     key: "view",
-    label: "Ouvrir",
-    tooltip: "Ouvrir dans une page complète",
-    icon: "fa-solid fa-up-right-from-square",
+    label: "Afficher",
+    tooltip: "Afficher",
+    icon: "fa-solid fa-eye",
     permission: "canView",
     requiresEntity: true,
     group: "navigation",
-    getLabel: (context) => {
-      // Si on est dans un modal, le label change
-      if (context?.inModal) return "Agrandir";
-      return "Ouvrir";
-    },
-    getTooltip: (context) => {
-      if (context?.inModal) return "Ouvrir dans une page complète";
-      return "Ouvrir dans une page complète";
-    },
+    getLabel: (context) => (context?.inModal ? "Agrandir" : "Afficher"),
+    getTooltip: (context) => (context?.inModal ? "Agrandir" : "Afficher"),
+    getIcon: (context) => (context?.inModal ? "fa-solid fa-expand" : "fa-solid fa-eye"),
     visibleIf: (context) => {
-      // Sur la page de l'entité, on n'affiche pas "view" (on est déjà sur la page)
-      if (context?.inPage) return false;
       // En minimal, l'ouverture page se fait via actions dédiées seulement (pas d'ouverture implicite).
       if (context?.inMinimal) return false;
       if (context?.inLine || context?.viewMode === "line" || context?.viewMode === "minimal") return false;
+      // Sur une page d'édition, on garde l'action "Afficher" en plus du bouton retour.
+      if (context?.inPage) return context?.pageMode === "edit";
       return true;
     },
   },
   "quick-view": {
     key: "quick-view",
-    label: "Ouvrir",
-    tooltip: "Afficher dans une modal rapide",
-    icon: "fa-solid fa-window-maximize",
+    label: "Afficher",
+    tooltip: "Afficher",
+    icon: "fa-solid fa-eye",
     permission: "canView",
     requiresEntity: true,
     group: "navigation",
-    getLabel: (context) => {
-      // Si on est dans une page, on peut vouloir "Afficher" en modal
-      if (context?.inPage) return "Afficher";
-      return "Afficher";
-    },
-    getTooltip: (context) => {
-      if (context?.inPage) return "Afficher dans une modal rapide";
-      return "Afficher dans une modal rapide";
-    },
+    getLabel: () => "Afficher",
+    getTooltip: () => "Afficher",
     visibleIf: (context) => {
       // En modal, `view` devient Agrandir vers la page.
       if (context?.inModal) return false;
@@ -134,26 +122,22 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   edit: {
     key: "edit",
     label: "Éditer",
-    tooltip: "Modifier dans une page complète",
+    tooltip: "Éditer",
     icon: "fa-solid fa-pen-to-square",
     permission: "canUpdate",
     requiresEntity: true,
     group: "edition",
-    getLabel: (context) => {
-      // Si on est dans un modal de modification, le label change
-      if (context?.inModal && context?.modalMode === "edit") return "Agrandir";
-      return "Éditer";
-    },
-    getTooltip: (context) => {
-      if (context?.inModal && context?.modalMode === "edit") return "Modifier dans une page complète";
-      return "Modifier dans une page complète";
-    },
+    getLabel: (context) => (context?.inModal && context?.modalMode === "edit" ? "Agrandir" : "Éditer"),
+    getTooltip: (context) => (context?.inModal && context?.modalMode === "edit" ? "Agrandir" : "Éditer"),
+    getIcon: (context) => (context?.inModal && context?.modalMode === "edit" ? "fa-solid fa-expand" : "fa-solid fa-pen-to-square"),
     visibleIf: (context) => {
       // En vue minimal, on garde l'édition en modal rapide.
       if (context?.inMinimal) return false;
       if (context?.inLine || context?.viewMode === "line" || context?.viewMode === "minimal") return false;
-      // Visible en modal et en page (ouverture/édition mode page depuis ces contextes).
-      if (context?.inModal || context?.inPage) return true;
+      // En modal d'édition, ce bouton devient "Agrandir" vers la page d'édition.
+      if (context?.inModal) return context?.modalMode === "edit";
+      // Sur une page d'édition, l'action utile devient "Afficher".
+      if (context?.inPage) return context?.pageMode !== "edit";
       // Hors modal/page, on privilégie l'édition rapide.
       return false;
     },
@@ -161,23 +145,17 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   "quick-edit": {
     key: "quick-edit",
     label: "Éditer",
-    tooltip: "Modifier dans une modal rapide",
+    tooltip: "Éditer",
     icon: "fa-solid fa-pen-to-square",
     permission: "canUpdate",
     requiresEntity: true,
     group: "edition",
-    getLabel: (context) => {
-      // Si on est dans une page, on peut vouloir "Modifier" en modal
-      if (context?.inPage) return "Éditer";
-      return "Éditer";
-    },
-    getTooltip: (context) => {
-      if (context?.inPage) return "Modifier dans une modal rapide";
-      return "Modifier dans une modal rapide";
-    },
+    getLabel: () => "Éditer",
+    getTooltip: () => "Éditer",
     visibleIf: (context) => {
       // En page complète, on privilégie l'édition page. En modal, on garde l'édition modale.
       if (context?.inPage) return false;
+      if (context?.inModal && context?.modalMode === "edit") return false;
       return true;
     },
   },

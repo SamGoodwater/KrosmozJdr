@@ -11,6 +11,7 @@
         "color": "yellow",
         "value_overrides": null,
         "hide_when_empty": true,
+        "hide_when_false": false,
         "unit": "kamas",
         "type": "string",
         "status": "validee",

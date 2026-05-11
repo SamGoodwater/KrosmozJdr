@@ -182,6 +182,10 @@ export function useEntityActions(entityType, entity = null, options = {}) {
           enrichedAction.tooltip = action.tooltip || action.label;
         }
 
+        if (typeof action.getIcon === "function") {
+          enrichedAction.icon = action.getIcon(ctx) || action.icon;
+        }
+
         enrichedAction.intent = resolveActionIntent(action.key, ctx);
 
         if (action.key === "state") {
