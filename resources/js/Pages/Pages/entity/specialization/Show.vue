@@ -7,6 +7,7 @@ import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import EntityViewLargeWrapper from "@/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue";
 import SpecializationViewLarge from "@/Pages/Molecules/entity/specialization/SpecializationViewLarge.vue";
+import SpecializationWriteMetaPanel from "@/Pages/Molecules/entity/specialization/SpecializationWriteMetaPanel.vue";
 import EntitySectionsRenderer from "@/Pages/Organismes/entity/EntitySectionsRenderer.vue";
 
 const page = usePage();
@@ -54,6 +55,8 @@ const goEdit = () => {
                         empty-message="Aucune section liée à cette spécialisation."
                     />
                 </section>
+
+                <SpecializationWriteMetaPanel :specialization="specialization" />
             </div>
         </EntityViewLargeWrapper>
     </Container>
