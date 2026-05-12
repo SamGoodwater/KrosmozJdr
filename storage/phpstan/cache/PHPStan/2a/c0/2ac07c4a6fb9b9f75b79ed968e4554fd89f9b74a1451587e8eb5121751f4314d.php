@@ -2,7 +2,7 @@
 
 // ftm-/var/www/KrosmozJdr/vendor/laravel/framework/src/Illuminate/Console/Command.php
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v4-2.3.2',
+   'variableKey' => 'v5-2.3.2',
    'data' => 
   array (
     0 => 
@@ -2513,6 +2513,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'closure' => 'Closure',
           'reflectionclass' => 'ReflectionClass',
           'reflectionmethod' => 'ReflectionMethod',
+          'runtimeexception' => 'RuntimeException',
+          'throwable' => 'Throwable',
         ),
          'className' => 'Illuminate\\Console\\Command',
          'functionName' => NULL,
@@ -2546,6 +2548,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'closure' => 'Closure',
           'reflectionclass' => 'ReflectionClass',
           'reflectionmethod' => 'ReflectionMethod',
+          'runtimeexception' => 'RuntimeException',
+          'throwable' => 'Throwable',
         ),
          'className' => 'Illuminate\\Console\\Command',
          'functionName' => 'macro',
@@ -2579,6 +2583,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'closure' => 'Closure',
           'reflectionclass' => 'ReflectionClass',
           'reflectionmethod' => 'ReflectionMethod',
+          'runtimeexception' => 'RuntimeException',
+          'throwable' => 'Throwable',
         ),
          'className' => 'Illuminate\\Console\\Command',
          'functionName' => 'mixin',
@@ -2612,6 +2618,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'closure' => 'Closure',
           'reflectionclass' => 'ReflectionClass',
           'reflectionmethod' => 'ReflectionMethod',
+          'runtimeexception' => 'RuntimeException',
+          'throwable' => 'Throwable',
         ),
          'className' => 'Illuminate\\Console\\Command',
          'functionName' => 'hasMacro',
@@ -2645,6 +2653,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'closure' => 'Closure',
           'reflectionclass' => 'ReflectionClass',
           'reflectionmethod' => 'ReflectionMethod',
+          'runtimeexception' => 'RuntimeException',
+          'throwable' => 'Throwable',
         ),
          'className' => 'Illuminate\\Console\\Command',
          'functionName' => 'flushMacros',
@@ -2678,6 +2688,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'closure' => 'Closure',
           'reflectionclass' => 'ReflectionClass',
           'reflectionmethod' => 'ReflectionMethod',
+          'runtimeexception' => 'RuntimeException',
+          'throwable' => 'Throwable',
         ),
          'className' => 'Illuminate\\Console\\Command',
          'functionName' => '__callStatic',
@@ -2711,6 +2723,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'closure' => 'Closure',
           'reflectionclass' => 'ReflectionClass',
           'reflectionmethod' => 'ReflectionMethod',
+          'runtimeexception' => 'RuntimeException',
+          'throwable' => 'Throwable',
         ),
          'className' => 'Illuminate\\Console\\Command',
          'functionName' => '__call',
@@ -3105,7 +3119,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Console/Concerns/InteractsWithIO.php' => 'df2cda3a62b98915ab72eb4361b57cbd878f9d77c49976a7327adfc6bcdd7606',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Console/Concerns/InteractsWithSignals.php' => 'b5cbab30713dd9b48178b8ad13186fb62f9d9fbdf0407a8827b9c84a5773cb28',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Console/Concerns/PromptsForMissingInput.php' => 'b64deca387ae959be0bc7885518aad8521b65f300cbb7ac4efb46d3de2aaff35',
-      '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Macroable/Traits/Macroable.php' => '50fa4e0aa4e5c0b0e7fb6566fb3fc991808681fba5c81db09e0f8641c7e9d524',
+      '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Macroable/Traits/Macroable.php' => '6dd85b1e28b55ebeee678f9ca423dfb8375e1342bc42d8658da6321bdf97b3c0',
     ),
   ),
 ));

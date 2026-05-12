@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('page_css_classes', 500)->nullable();
             $table->string('title_css_classes', 500)->nullable();
             $table->string('menu_item_css_classes', 500)->nullable();
+            $table->json('settings')->nullable();
             $table->index('menu_group');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

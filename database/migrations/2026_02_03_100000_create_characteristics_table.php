@@ -22,11 +22,16 @@ return new class extends Migration
             $table->text('helper')->nullable();
             $table->text('descriptions')->nullable();
             $table->string('icon', 64)->nullable();
+            $table->string('icon_false', 64)->nullable()->comment('Icône alternative pour valeur booléenne « faux »');
             $table->string('color', 32)->nullable();
+            $table->json('value_overrides')->nullable()->comment('Surcharges visuelles par valeur : [{ value, icon?, color?, subtitle? }]');
             $table->string('unit', 32)->nullable();
             $table->string('type', 16)->default('string');
+            $table->string('status', 32)->default('a_valider')->comment('État de validation interne : a_valider, en_cours_de_validation, validee');
             $table->unsignedSmallInteger('sort_order')->default(0);
             $table->string('group', 16)->nullable()->comment('Groupe principal : creature, object ou spell');
+            $table->boolean('hide_when_empty')->default(false)->comment('Masquer la ligne en jeu lorsque la valeur est vide / nulle / zéro');
+            $table->boolean('hide_when_false')->default(false)->comment('Masquer la ligne en jeu lorsque la valeur booléenne est fausse');
             $table->foreignId('linked_to_characteristic_id')->nullable()->constrained('characteristics')->nullOnDelete()->comment('Caractéristique maître si cette ligne est une caractéristique liée');
             $table->timestamps();
         });

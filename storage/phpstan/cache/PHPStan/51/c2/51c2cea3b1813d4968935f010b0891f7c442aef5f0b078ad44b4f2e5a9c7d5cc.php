@@ -81,7 +81,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Support/SectionTemplateValidationRules.php' => 'c657308949d62927db116b72ca6ae9ddd5f2ba59ae36490ee9e88703f2745244',
+      '/var/www/KrosmozJdr/app/Support/SectionTemplateValidationRules.php' => '2a92b417f27f2f41037028864066daff85066325d6a0eed27172c5745d35d456',
     ),
   ),
 ));

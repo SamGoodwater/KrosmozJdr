@@ -2,7 +2,11 @@
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Models\Entity\Consumable;
+use App\Models\Entity\Item;
+use App\Models\Entity\Monster;
 use App\Models\Entity\Resource;
+use App\Models\Entity\Spell;
 use App\Models\Type\ResourceType;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
@@ -13,6 +17,7 @@ use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Services\Scrapping\Core\Preview\ScrappingPreviewBuilder;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Helper\ProgressBar;
 
@@ -453,7 +458,7 @@ class ScrappingRunCommand extends Command
                             $this->line('  <comment>['.now()->format('H:i:s')."]</comment> {$normalizedEntity} ".($idx + 1)."/{$totalImport}");
                         }
                         if (($idx + 1) % $reconnectInterval === 0) {
-                            \Illuminate\Support\Facades\DB::reconnect();
+                            DB::reconnect();
                         }
                         $this->debugLine("Import {$normalizedEntity} id={$id} (".($idx + 1)."/{$totalImport})…");
                         if ($entityKey !== null) {
@@ -1204,7 +1209,7 @@ class ScrappingRunCommand extends Command
                 });
             }
             if ($type === 'item') {
-                \App\Models\Entity\Item::query()->whereNotNull('dofusdb_id')->orderBy('id')->chunkById($chunk, function ($rows) use ($processOne) {
+                Item::query()->whereNotNull('dofusdb_id')->orderBy('id')->chunkById($chunk, function ($rows) use ($processOne) {
                     foreach ($rows as $r) {
                         if ($processOne($r, (string) $r->dofusdb_id, $r->image, 'items') === false) {
                             return false;
@@ -1215,7 +1220,7 @@ class ScrappingRunCommand extends Command
                 });
             }
             if ($type === 'consumable') {
-                \App\Models\Entity\Consumable::query()->whereNotNull('dofusdb_id')->orderBy('id')->chunkById($chunk, function ($rows) use ($processOne) {
+                Consumable::query()->whereNotNull('dofusdb_id')->orderBy('id')->chunkById($chunk, function ($rows) use ($processOne) {
                     foreach ($rows as $r) {
                         if ($processOne($r, (string) $r->dofusdb_id, $r->image, 'consumables') === false) {
                             return false;
@@ -1226,7 +1231,7 @@ class ScrappingRunCommand extends Command
                 });
             }
             if ($type === 'spell') {
-                \App\Models\Entity\Spell::query()->whereNotNull('dofusdb_id')->orderBy('id')->chunkById($chunk, function ($rows) use ($processOne) {
+                Spell::query()->whereNotNull('dofusdb_id')->orderBy('id')->chunkById($chunk, function ($rows) use ($processOne) {
                     foreach ($rows as $r) {
                         if ($processOne($r, (string) $r->dofusdb_id, $r->image, 'spells') === false) {
                             return false;
@@ -1237,7 +1242,7 @@ class ScrappingRunCommand extends Command
                 });
             }
             if ($type === 'monster') {
-                \App\Models\Entity\Monster::query()->whereNotNull('dofusdb_id')->with('creature:id,image')->orderBy('id')->chunkById($chunk, function ($rows) use ($processOne) {
+                Monster::query()->whereNotNull('dofusdb_id')->with('creature:id,image')->orderBy('id')->chunkById($chunk, function ($rows) use ($processOne) {
                     foreach ($rows as $m) {
                         $c = $m->creature;
                         if (! $c) {

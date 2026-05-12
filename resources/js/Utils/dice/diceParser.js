@@ -13,7 +13,7 @@
 
 const DICE_REGEX = /^(\d*)d(\d+)/i;
 const NUMBER_REGEX = /^\d+/;
-const OP_REGEX = /^[\+\-\*\/x:]/;
+const OP_REGEX = /^[-+*/x:]/;
 
 /**
  * Normalise la formule : remplace x par *, : par /, et supprime les espaces.

@@ -10976,7 +10976,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      'phar:///var/www/KrosmozJdr/vendor/phpstan/phpstan/phpstan.phar/vendor/jetbrains/phpstorm-stubs/SPL/SPL.stub' => '5537f52f0ebd6113384505c537859544a5134fad79119a09b40966d322760ca7',
+      'phar:///var/www/KrosmozJdr/vendor/phpstan/phpstan/phpstan.phar/vendor/jetbrains/phpstorm-stubs/SPL/SPL.stub' => 'e21bfb2fc693e0b0615a3c26e0201756fe3ad732602046ca30ee3a16b77bdda4',
     ),
   ),
 ));

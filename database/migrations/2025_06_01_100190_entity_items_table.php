@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('effect')->nullable();
             $table->text('bonus')->nullable();
             $table->string('recipe')->nullable();
+            $table->bigInteger('price_calculated')->nullable();
+            $table->bigInteger('price_custom')->nullable();
             $table->string('price')->nullable();
             $table->integer('rarity')->default(0);
             $table->string('dofus_version')->default('3');

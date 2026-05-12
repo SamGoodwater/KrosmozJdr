@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Concerns/HasMediaCustomNaming.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Concerns\HasMediaCustomNaming
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-ae3b1f9ec9da4c59b481e1f4178a824bd13a7fd5f8a89dceb6597d86c5f1aa66-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-4d2d30c927978dfb2f19ff2fd24a406d3c814153d432d2738f419461d5ba131c-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -30,7 +30,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * - MEDIA_FILE_PATTERN_{COLLECTION} : motif pour une collection (ex: MEDIA_FILE_PATTERN_IMAGES, MEDIA_FILE_PATTERN_ICONS).
  * - MEDIA_FILE_PATTERN : motif par défaut pour toutes les collections.
  *
- * Placeholders dans le motif : [name], [date], [id], [uniqid].
+ * Placeholders dans le motif : [name], [date], [id], [uniqid], [slug], [key].
  * Le nom final est passé dans Str::slug() pour éviter tout caractère inadapté au système de fichiers.
  * Exemple : \'breed-icon-[name]-[date]\' → breed-icon-eniripsa-2025-02-07
  */',
@@ -38,7 +38,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 19,
-    'endLine' => 75,
+    'endLine' => 83,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -98,9 +98,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
                 'startLine' => 27,
                 'endLine' => 27,
                 'startTokenPos' => 39,
-                'startFilePos' => 1209,
+                'startFilePos' => 1230,
                 'endTokenPos' => 39,
-                'endFilePos' => 1210,
+                'endFilePos' => 1231,
               ),
             ),
             'type' => 
@@ -161,11 +161,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Retourne le nom de fichier pour une collection selon le motif défini, ou null pour garder le nom par défaut.
  *
- * @param string $collection Nom de la collection (images, icons, files…)
- * @param string $extension Extension à ajouter (ex: png). Laissé vide si le nom doit rester sans extension.
+ * @param  string  $collection  Nom de la collection (images, icons, files…)
+ * @param  string  $extension  Extension à ajouter (ex: png). Laissé vide si le nom doit rester sans extension.
  */',
         'startLine' => 27,
-        'endLine' => 58,
+        'endLine' => 66,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -203,8 +203,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 63,
-            'endLine' => 63,
+            'startLine' => 71,
+            'endLine' => 71,
             'startColumn' => 57,
             'endColumn' => 74,
             'parameterIndex' => 0,
@@ -246,8 +246,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Retourne le motif de nommage pour la collection (constante MEDIA_FILE_PATTERN_* ou MEDIA_FILE_PATTERN).
  */',
-        'startLine' => 63,
-        'endLine' => 74,
+        'startLine' => 71,
+        'endLine' => 82,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

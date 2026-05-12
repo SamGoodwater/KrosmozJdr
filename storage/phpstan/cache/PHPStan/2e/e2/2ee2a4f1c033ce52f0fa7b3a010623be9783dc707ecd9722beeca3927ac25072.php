@@ -12,6 +12,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Resources',
          'uses' => 
         array (
+          'sectiontype' => 'App\\Enums\\SectionType',
+          'section' => 'App\\Models\\Section',
           'request' => 'Illuminate\\Http\\Request',
           'jsonresource' => 'Illuminate\\Http\\Resources\\Json\\JsonResource',
         ),
@@ -36,6 +38,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Resources',
          'uses' => 
         array (
+          'sectiontype' => 'App\\Enums\\SectionType',
+          'section' => 'App\\Models\\Section',
           'request' => 'Illuminate\\Http\\Request',
           'jsonresource' => 'Illuminate\\Http\\Resources\\Json\\JsonResource',
         ),
@@ -49,6 +53,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Http\\Resources',
            'uses' => 
           array (
+            'sectiontype' => 'App\\Enums\\SectionType',
+            'section' => 'App\\Models\\Section',
             'request' => 'Illuminate\\Http\\Request',
             'jsonresource' => 'Illuminate\\Http\\Resources\\Json\\JsonResource',
           ),
@@ -81,7 +87,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Http/Resources/SectionResource.php' => '23e08dcb01dcde440142fefd60c33f7d1d7c37820a72253a6cd3a7b52a8ac5cf',
+      '/var/www/KrosmozJdr/app/Http/Resources/SectionResource.php' => '128ae5354475d95c20042918e7a168b925287d23e2fd5671cb6b8c31071d4b55',
     ),
   ),
 ));

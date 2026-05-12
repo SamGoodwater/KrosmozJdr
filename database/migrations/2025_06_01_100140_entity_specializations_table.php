@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('specializations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('short_description')->nullable();
             $table->string('description')->nullable();
             $table->string('state')->default('draft');
             $table->tinyInteger('read_level')->default(0);
@@ -19,6 +20,11 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+
+            $table->index('name');
+            $table->index('state');
+            $table->index('read_level');
+            $table->index('write_level');
         });
     }
 

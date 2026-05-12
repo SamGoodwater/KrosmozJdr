@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
@@ -29,14 +30,14 @@ class ProjectFixPermissionsCommand extends Command
     public function handle(): int
     {
         if (! $this->guardNotProduction('Interdit en production.')) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $user = trim((string) $this->argument('user'));
         if ($user === '') {
             $this->error('Utilisateur requis.');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         return $this->projectRunService->runOptionMap([

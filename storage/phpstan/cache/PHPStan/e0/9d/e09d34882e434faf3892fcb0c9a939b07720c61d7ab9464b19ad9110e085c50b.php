@@ -2,7 +2,7 @@
 
 // ftm-phar:///var/www/KrosmozJdr/vendor/phpstan/phpstan/phpstan.phar/vendor/jetbrains/phpstorm-stubs/pcre/pcre.stub
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v4-2.3.2',
+   'variableKey' => 'v5-2.3.2',
    'data' => 
   array (
     0 => 
@@ -310,7 +310,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      'phar:///var/www/KrosmozJdr/vendor/phpstan/phpstan/phpstan.phar/vendor/jetbrains/phpstorm-stubs/pcre/pcre.stub' => 'f3480a60715eb7fa150fe7cb19a8d4e645e4ac68ad2801207ed85a89037f9898',
+      'phar:///var/www/KrosmozJdr/vendor/phpstan/phpstan/phpstan.phar/vendor/jetbrains/phpstorm-stubs/pcre/pcre.stub' => '5c2ac7d7640da2f0766c01ef263aa55cc1267f1c93f4a7987f82d804477f6eae',
     ),
   ),
 ));

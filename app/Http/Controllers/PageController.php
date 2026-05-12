@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Page;
 use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
+use App\Http\Resources\PageResource;
+use App\Models\Page;
 use App\Services\NotificationService;
 use App\Services\PageService;
+use App\Services\SectionService;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
-use App\Http\Resources\PageResource;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
+use Inertia\Response;
 
 /**
  * Contrôleur de gestion des pages dynamiques (CRUD, associations, notifications).
@@ -23,14 +27,13 @@ class PageController extends Controller
 {
     /**
      * Affiche la liste paginée des pages.
-     * @return \Inertia\Response
      */
-    public function index(Request $request): \Inertia\Response
+    public function index(Request $request): Response
     {
-        $this->authorize('viewAny', \App\Models\Page::class);
-        
+        $this->authorize('viewAny', Page::class);
+
         // OPTIMISATION : Eager loading avec select pour réduire les données
-        $pages = \App\Models\Page::with([
+        $pages = Page::with([
             'sections:id,page_id,title,template,state',
             'users:id,name,email',
             'parent:id,title,slug',
@@ -38,21 +41,21 @@ class PageController extends Controller
             // campaigns/scenarios utilisent `name` (pas `title`)
             'campaigns:id,name,slug',
             'scenarios:id,name,slug',
-            'createdBy:id,name,email'
+            'createdBy:id,name,email',
         ])->paginate(20);
-        
+
         // OPTIMISATION : Utiliser le cache pour la liste des pages (utilisée dans plusieurs endroits)
-        $allPages = \Illuminate\Support\Facades\Cache::remember('pages_select_list', 3600, function () {
+        $allPages = Cache::remember('pages_select_list', 3600, function () {
             return Page::select('id', 'title', 'slug')
                 ->orderBy('title')
                 ->get();
         });
-        
+
         return Inertia::render('Pages/page/Index', [
             'pages' => PageResource::collection($pages),
             'allPages' => $allPages,
             'can' => [
-                'create' => $request->user()?->can('create', \App\Models\Page::class) ?? false,
+                'create' => $request->user()?->can('create', Page::class) ?? false,
             ],
         ]);
     }
@@ -60,15 +63,15 @@ class PageController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): \Inertia\Response
+    public function create(): Response
     {
-        $this->authorize('create', \App\Models\Page::class);
-        
+        $this->authorize('create', Page::class);
+
         // Récupérer toutes les pages pour le select parent_id
         $pages = Page::select('id', 'title', 'slug')
             ->orderBy('title')
             ->get();
-        
+
         return Inertia::render('Pages/page/Create', [
             'pages' => $pages,
         ]);
@@ -77,42 +80,43 @@ class PageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(\App\Http\Requests\StorePageRequest $request): \Illuminate\Http\RedirectResponse
+    public function store(StorePageRequest $request): RedirectResponse
     {
-        $this->authorize('create', \App\Models\Page::class);
+        $this->authorize('create', Page::class);
         $data = $request->validated();
         $data['created_by'] = $request->user()->id;
-        $page = \App\Models\Page::create($data);
+        $page = Page::create($data);
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
-        \App\Services\NotificationService::notifyEntityCreated($page, $request->user());
+        NotificationService::notifyEntityCreated($page, $request->user());
         PageService::clearMenuCache();
+
         // Route `pages.show` utilise `{page:slug}` : on redirige explicitement avec le slug.
         return redirect()->route('pages.show', $page->slug)->with('success', 'Page créée avec succès.');
     }
 
     /**
      * Affiche une page avec ses sections.
-     * 
+     *
      * **Logique de chargement des sections :**
      * - Si l'utilisateur peut modifier la page : charge TOUTES les sections (drafts inclus)
      *   → Permet d'éditer toutes les sections, même non publiées
      * - Sinon : charge uniquement les sections affichables (publiées + visibles)
      *   → Respecte la visibilité et l'état pour les utilisateurs sans droits d'édition
-     * 
+     *
      * **Permissions :**
      * - Utilise la policy `PagePolicy::view()` pour vérifier les droits
      * - Autorise les invités si la page est visible pour eux
-     * 
-     * @param \App\Models\Page $page Page à afficher (résolue par route model binding via slug)
-     * @return \Inertia\Response Vue Inertia avec la page et ses sections
+     *
+     * @param  Page  $page  Page à afficher (résolue par route model binding via slug)
+     * @return Response Vue Inertia avec la page et ses sections
      */
-    public function show(\App\Models\Page $page): \Inertia\Response
+    public function show(Page $page): Response
     {
         // Autoriser les invités si la page est visible pour eux (policy accepte ?User)
         $this->authorize('view', $page);
 
         $user = auth()->user();
-        
+
         // OPTIMISATION : Charger toutes les relations en une seule requête
         $page->load([
             'users',
@@ -120,20 +124,20 @@ class PageController extends Controller
             'children',
             'campaigns',
             'scenarios',
-            'createdBy'
+            'createdBy',
         ]);
-        
+
         // Charger les sections selon l'utilisateur
         // Si l'utilisateur peut modifier la page, inclure toutes les sections (y compris les drafts)
         // Sinon, inclure uniquement les sections affichables (publiées)
-        $sections = \App\Services\SectionService::getSectionsForPage($page, $user);
-        
+        $sections = SectionService::getSectionsForPage($page, $user);
+
         // OPTIMISATION : Éviter le N+1 - la page est déjà chargée
         // On utilise setRelation pour associer la page à chaque section sans requête supplémentaire
         $sections->each(function ($section) use ($page) {
             $section->setRelation('page', $page);
         });
-        
+
         // Debug en développement
         if (config('app.debug')) {
             \Log::debug('PageController::show - Sections loaded', [
@@ -141,7 +145,7 @@ class PageController extends Controller
                 'user_id' => $user?->id,
                 'can_update_page' => $user ? $user->can('update', $page) : false,
                 'sections_count' => $sections->count(),
-                'sections' => $sections->map(fn($s) => [
+                'sections' => $sections->map(fn ($s) => [
                     'id' => $s->id,
                     'template' => $s->template->value ?? $s->template,
                     'state' => $s->state,
@@ -153,19 +157,19 @@ class PageController extends Controller
                 ])->toArray(),
             ]);
         }
-        
+
         $page->setRelation('sections', $sections);
-        
+
         // OPTIMISATION : Charger toutes les pages en cache (utilisé pour le menu ET le modal)
-        $pages = \Illuminate\Support\Facades\Cache::remember('pages_select_list', 3600, function () {
+        $pages = Cache::remember('pages_select_list', 3600, function () {
             return Page::select('id', 'title', 'slug')
                 ->orderBy('title')
                 ->get();
         });
-        
+
         // Filtrer la page courante côté PHP (plus rapide que requête SQL)
         $pagesFiltered = $pages->where('id', '!=', $page->id)->values();
-        
+
         return Inertia::render('Pages/page/Show', [
             'page' => new PageResource($page),
             'pages' => $pagesFiltered,
@@ -175,17 +179,17 @@ class PageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(\App\Models\Page $page): \Inertia\Response
+    public function edit(Page $page): Response
     {
         $this->authorize('update', $page);
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
-        
+
         // Récupérer toutes les pages pour le select parent_id (exclure la page courante)
         $pages = Page::select('id', 'title', 'slug')
             ->where('id', '!=', $page->id)
             ->orderBy('title')
             ->get();
-        
+
         return Inertia::render('Pages/page/Edit', [
             'page' => new PageResource($page),
             'pages' => $pages,
@@ -195,7 +199,7 @@ class PageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(\App\Http\Requests\UpdatePageRequest $request, \App\Models\Page $page): \Illuminate\Http\RedirectResponse
+    public function update(UpdatePageRequest $request, Page $page): RedirectResponse
     {
         $this->authorize('update', $page);
         // Créer une copie des attributs avant la mise à jour pour les notifications
@@ -204,17 +208,18 @@ class PageController extends Controller
         $page->update($data);
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
         // Créer un modèle temporaire avec les anciens attributs pour les notifications
-        $old = new \App\Models\Page();
+        $old = new Page;
         $old->setRawAttributes($oldAttributes);
         $old->exists = true;
         $old->id = $page->id;
         try {
-            \App\Services\NotificationService::notifyEntityModified($page, $request->user(), $old);
+            NotificationService::notifyEntityModified($page, $request->user(), $old);
         } catch (\Exception $e) {
             // Si les notifications échouent, on continue quand même
-            \Log::warning('Erreur lors de l\'envoi des notifications pour la page ' . $page->id . ': ' . $e->getMessage());
+            \Log::warning('Erreur lors de l\'envoi des notifications pour la page '.$page->id.': '.$e->getMessage());
         }
         PageService::clearMenuCache();
+
         // Route `pages.show` utilise `{page:slug}` : on redirige explicitement avec le slug.
         return redirect()->route('pages.show', $page->slug)->with('success', 'Page mise à jour.');
     }
@@ -222,83 +227,88 @@ class PageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(\App\Models\Page $page): \Illuminate\Http\RedirectResponse
+    public function delete(Page $page): RedirectResponse
     {
         $this->authorize('delete', $page);
         $user = request()->user();
         $page->delete();
-        \App\Services\NotificationService::notifyEntityDeleted($page, $user);
+        NotificationService::notifyEntityDeleted($page, $user);
         PageService::clearMenuCache();
+
         return redirect()->route('pages.index')->with('success', 'Page supprimée.');
     }
 
     /**
      * Associe un utilisateur à la page.
      */
-    public function attachUser(\Illuminate\Http\Request $request, Page $page): \Illuminate\Http\JsonResponse
+    public function attachUser(Request $request, Page $page): JsonResponse
     {
         $this->authorize('update', $page);
         $request->validate(['user_id' => 'required|exists:users,id']);
         $page->users()->attach($request->user_id);
+
         return response()->json(['success' => true]);
     }
 
     /**
      * Dissocie un utilisateur de la page.
      */
-    public function detachUser(\Illuminate\Http\Request $request, Page $page): \Illuminate\Http\JsonResponse
+    public function detachUser(Request $request, Page $page): JsonResponse
     {
         $this->authorize('update', $page);
         $request->validate(['user_id' => 'required|exists:users,id']);
         $page->users()->detach($request->user_id);
+
         return response()->json(['success' => true]);
     }
 
     /**
      * Synchronise la liste des utilisateurs associés à la page.
      */
-    public function syncUsers(\Illuminate\Http\Request $request, Page $page): \Illuminate\Http\JsonResponse
+    public function syncUsers(Request $request, Page $page): JsonResponse
     {
         $this->authorize('update', $page);
         $request->validate(['user_ids' => 'array', 'user_ids.*' => 'exists:users,id']);
         $page->users()->sync($request->user_ids);
+
         return response()->json(['success' => true]);
     }
 
     /**
      * Liste les utilisateurs associés à la page.
      */
-    public function users(Page $page): \Illuminate\Http\JsonResponse
+    public function users(Page $page): JsonResponse
     {
         $this->authorize('view', $page);
+
         return response()->json($page->users);
     }
 
-    public function restore(int $page): \Illuminate\Http\RedirectResponse
+    public function restore(int $page): RedirectResponse
     {
-        $model = \App\Models\Page::withTrashed()->findOrFail($page);
+        $model = Page::withTrashed()->findOrFail($page);
         $this->authorize('restore', $model);
         $model->restore();
-        \App\Services\NotificationService::notifyEntityRestored($model, request()->user());
+        NotificationService::notifyEntityRestored($model, request()->user());
         PageService::clearMenuCache();
+
         return redirect()->route('pages.index')->with('success', 'Page restaurée.');
     }
 
-    public function forceDelete(\App\Models\Page $page): \Illuminate\Http\RedirectResponse
+    public function forceDelete(Page $page): RedirectResponse
     {
         $this->authorize('forceDelete', $page);
         $page->forceDelete();
-        \App\Services\NotificationService::notifyEntityForceDeleted($page, request()->user());
+        NotificationService::notifyEntityForceDeleted($page, request()->user());
         PageService::clearMenuCache();
+
         return redirect()->route('pages.index')->with('success', 'Page supprimée définitivement.');
     }
 
     /**
      * Récupère les pages du menu pour un utilisateur.
-     * 
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function menu(): \Illuminate\Http\JsonResponse
+    public function menu(): JsonResponse
     {
         $user = auth()->user();
         $pages = PageService::getMenuPages($user);
@@ -311,10 +321,10 @@ class PageController extends Controller
         $bibliothequesItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Bibliothèques')->sortBy('order')->values()->toArray();
         if ($bibliothequesItems === []) {
             // Compatibilité ascendante : fallback config si les pages Bibliothèques ne sont pas seedées.
-            $bibliothequesItems = collect(config('nav_menu.bibliotheques', []))
+            $bibliothequesItems = collect(self::normalizeNavBibliothequeEntries(config('nav_menu.bibliotheques', [])))
                 ->sortBy('order')
                 ->map(fn (array $item) => [
-                    'id' => 'bibliotheque-' . ($item['route'] ?? ($item['label'] ?? 'item')),
+                    'id' => 'bibliotheque-'.($item['route'] ?? ($item['label'] ?? 'item')),
                     'title' => $item['label'],
                     'url' => isset($item['url'])
                         ? $item['url']
@@ -322,7 +332,7 @@ class PageController extends Controller
                     'entity_key' => $item['entity_key'] ?? null,
                     'order' => $item['order'] ?? 0,
                     'menu_item_css_classes' => $item['menu_item_css_classes']
-                        ?? (($item['entity_key'] ?? null) ? 'color-' . $item['entity_key'] . '-500 box-shadow-glass' : null),
+                        ?? (($item['entity_key'] ?? null) ? 'color-'.$item['entity_key'].'-500 box-shadow-glass' : null),
                     'children' => [],
                 ])
                 ->values()
@@ -337,7 +347,7 @@ class PageController extends Controller
         ];
 
         $menu = collect($allGroups)
-            ->filter(fn (array $group) => count($group['children'] ?? []) > 0)
+            ->filter(fn (array $group) => count($group['children']) > 0)
             ->sortBy('order')
             ->values()
             ->toArray();
@@ -349,13 +359,13 @@ class PageController extends Controller
 
     /**
      * Réorganise l'ordre des pages dans le menu (drag & drop).
-     * 
+     *
      * **Fonctionnement :**
      * - Reçoit un tableau de pages avec leur nouvel ordre
      * - Met à jour le champ `menu_order` de chaque page
      * - Vérifie les permissions pour chaque page individuellement
      * - Invalide le cache du menu après modification
-     * 
+     *
      * **Format de la requête :**
      * ```json
      * {
@@ -366,14 +376,15 @@ class PageController extends Controller
      *   ]
      * }
      * ```
-     * 
-     * @param \Illuminate\Http\Request $request Requête contenant le tableau de pages
-     * @return \Illuminate\Http\JsonResponse Réponse JSON avec success: true
-     * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
+     *
+     * @param  Request  $request  Requête contenant le tableau de pages
+     * @return JsonResponse Réponse JSON avec success: true
+     *
+     * @throws AuthorizationException Si l'utilisateur n'a pas les droits
      */
-    public function reorder(\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse
+    public function reorder(Request $request): JsonResponse
     {
-        $this->authorize('viewAny', \App\Models\Page::class);
+        $this->authorize('viewAny', Page::class);
 
         $data = $request->validate([
             'pages' => ['required', 'array'],
@@ -391,7 +402,7 @@ class PageController extends Controller
 
         foreach ($items as $item) {
             $page = $pages->firstWhere('id', $item['id']);
-            if (!$page) {
+            if (! $page) {
                 continue;
             }
 
@@ -405,6 +416,28 @@ class PageController extends Controller
 
         // Invalider le cache du menu après modification
         PageService::clearMenuCache();
+
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Filtre la configuration du menu « Bibliothèques » pour un flux Collection analysable statiquement.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private static function normalizeNavBibliothequeEntries(mixed $raw): array
+    {
+        if (! is_array($raw)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($raw as $item) {
+            if (is_array($item)) {
+                $normalized[] = $item;
+            }
+        }
+
+        return $normalized;
     }
 }

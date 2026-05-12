@@ -2,7 +2,7 @@
 
 // ftm-/var/www/KrosmozJdr/database/seeders/PageSeeder.php
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v4-2.3.2',
+   'variableKey' => 'v5-2.3.2',
    'data' => 
   array (
     0 => 
@@ -18,8 +18,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
         ),
          'className' => 'Database\\Seeders\\PageSeeder',
          'functionName' => NULL,
@@ -48,8 +50,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
         ),
          'className' => 'Database\\Seeders\\PageSeeder',
          'functionName' => 'run',
@@ -67,8 +71,73 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
+          ),
+           'className' => 'Database\\Seeders\\PageSeeder',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      'c4bfccefbd9d82a049411775e9cee333' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'Database\\Seeders',
+         'uses' => 
+        array (
+          'sectiontype' => 'App\\Enums\\SectionType',
+          'characteristic' => 'App\\Models\\Characteristic',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
+          'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+          'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
+        ),
+         'className' => 'Database\\Seeders\\PageSeeder',
+         'functionName' => 'nousRejoindreIntroHtml',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'Database\\Seeders',
+           'uses' => 
+          array (
+            'sectiontype' => 'App\\Enums\\SectionType',
+            'characteristic' => 'App\\Models\\Characteristic',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
+            'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+            'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
           ),
            'className' => 'Database\\Seeders\\PageSeeder',
            'functionName' => NULL,
@@ -107,8 +176,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
         ),
          'className' => 'Database\\Seeders\\PageSeeder',
          'functionName' => 'createOrRestorePage',
@@ -126,8 +197,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
           ),
            'className' => 'Database\\Seeders\\PageSeeder',
            'functionName' => NULL,
@@ -166,8 +239,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
         ),
          'className' => 'Database\\Seeders\\PageSeeder',
          'functionName' => 'ensureTextSection',
@@ -185,8 +260,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
           ),
            'className' => 'Database\\Seeders\\PageSeeder',
            'functionName' => NULL,
@@ -225,8 +302,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
         ),
          'className' => 'Database\\Seeders\\PageSeeder',
          'functionName' => 'ensureCharacteristicNormsSection',
@@ -244,8 +323,262 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
+          ),
+           'className' => 'Database\\Seeders\\PageSeeder',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      '831117679d351b3c9690538065829c2b' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'Database\\Seeders',
+         'uses' => 
+        array (
+          'sectiontype' => 'App\\Enums\\SectionType',
+          'characteristic' => 'App\\Models\\Characteristic',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
+          'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+          'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
+        ),
+         'className' => 'Database\\Seeders\\PageSeeder',
+         'functionName' => 'ensureCharacteristicReferenceTableSection',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'Database\\Seeders',
+           'uses' => 
+          array (
+            'sectiontype' => 'App\\Enums\\SectionType',
+            'characteristic' => 'App\\Models\\Characteristic',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
+            'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+            'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
+          ),
+           'className' => 'Database\\Seeders\\PageSeeder',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      'ccd483873c0c3d53be99c03fc5c3f93a' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'Database\\Seeders',
+         'uses' => 
+        array (
+          'sectiontype' => 'App\\Enums\\SectionType',
+          'characteristic' => 'App\\Models\\Characteristic',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
+          'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+          'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
+        ),
+         'className' => 'Database\\Seeders\\PageSeeder',
+         'functionName' => 'seedEssentialPages',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'Database\\Seeders',
+           'uses' => 
+          array (
+            'sectiontype' => 'App\\Enums\\SectionType',
+            'characteristic' => 'App\\Models\\Characteristic',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
+            'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+            'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
+          ),
+           'className' => 'Database\\Seeders\\PageSeeder',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      'f9e379bf597070caba1a6a062557bfbc' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'Database\\Seeders',
+         'uses' => 
+        array (
+          'sectiontype' => 'App\\Enums\\SectionType',
+          'characteristic' => 'App\\Models\\Characteristic',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
+          'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+          'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
+        ),
+         'className' => 'Database\\Seeders\\PageSeeder',
+         'functionName' => 'seedLibrariesPages',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'Database\\Seeders',
+           'uses' => 
+          array (
+            'sectiontype' => 'App\\Enums\\SectionType',
+            'characteristic' => 'App\\Models\\Characteristic',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
+            'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+            'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
+          ),
+           'className' => 'Database\\Seeders\\PageSeeder',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      'f1071236c8a2b6dec95708d9589d6e49' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'Database\\Seeders',
+         'uses' => 
+        array (
+          'sectiontype' => 'App\\Enums\\SectionType',
+          'characteristic' => 'App\\Models\\Characteristic',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
+          'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+          'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
+        ),
+         'className' => 'Database\\Seeders\\PageSeeder',
+         'functionName' => 'libraryEntityTableType',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'Database\\Seeders',
+           'uses' => 
+          array (
+            'sectiontype' => 'App\\Enums\\SectionType',
+            'characteristic' => 'App\\Models\\Characteristic',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
+            'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+            'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
           ),
            'className' => 'Database\\Seeders\\PageSeeder',
            'functionName' => NULL,
@@ -284,8 +617,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
         ),
          'className' => 'Database\\Seeders\\PageSeeder',
          'functionName' => 'ensureSection',
@@ -303,8 +638,73 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
+          ),
+           'className' => 'Database\\Seeders\\PageSeeder',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      '2fbdff1a56cbed75aa3607a636c26cd0' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'Database\\Seeders',
+         'uses' => 
+        array (
+          'sectiontype' => 'App\\Enums\\SectionType',
+          'characteristic' => 'App\\Models\\Characteristic',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
+          'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+          'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
+        ),
+         'className' => 'Database\\Seeders\\PageSeeder',
+         'functionName' => 'ensureEntityTableSection',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'Database\\Seeders',
+           'uses' => 
+          array (
+            'sectiontype' => 'App\\Enums\\SectionType',
+            'characteristic' => 'App\\Models\\Characteristic',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
+            'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+            'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
           ),
            'className' => 'Database\\Seeders\\PageSeeder',
            'functionName' => NULL,
@@ -343,8 +743,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
         ),
          'className' => 'Database\\Seeders\\PageSeeder',
          'functionName' => 'loadCharacteristicNames',
@@ -362,8 +764,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
           ),
            'className' => 'Database\\Seeders\\PageSeeder',
            'functionName' => NULL,
@@ -402,8 +806,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
         ),
          'className' => 'Database\\Seeders\\PageSeeder',
          'functionName' => 'loadCharacteristicNamesFromDefinitionFiles',
@@ -421,8 +827,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
           ),
            'className' => 'Database\\Seeders\\PageSeeder',
            'functionName' => NULL,
@@ -461,8 +869,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
         ),
          'className' => 'Database\\Seeders\\PageSeeder',
          'functionName' => 'characteristicKeysWithNormsFromDefinitions',
@@ -480,8 +890,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
           ),
            'className' => 'Database\\Seeders\\PageSeeder',
            'functionName' => NULL,
@@ -520,8 +932,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'pageservice' => 'App\\Services\\PageService',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'seeder' => 'Illuminate\\Database\\Seeder',
+          'str' => 'Illuminate\\Support\\Str',
         ),
          'className' => 'Database\\Seeders\\PageSeeder',
          'functionName' => 'resolveDefaultCreatorId',
@@ -539,8 +953,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'pageservice' => 'App\\Services\\PageService',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'seeder' => 'Illuminate\\Database\\Seeder',
+            'str' => 'Illuminate\\Support\\Str',
           ),
            'className' => 'Database\\Seeders\\PageSeeder',
            'functionName' => NULL,
@@ -571,7 +987,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/database/seeders/PageSeeder.php' => '33e180200dda97f65c11fbf73b2de51e24bd5847ce78af57b86880d9d3fd4016',
+      '/var/www/KrosmozJdr/database/seeders/PageSeeder.php' => 'f04e81dade36f98e0b003357de523a2c927e4f071707774a8bff5577f670dab7',
     ),
   ),
 ));

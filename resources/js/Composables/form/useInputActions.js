@@ -286,8 +286,6 @@ export default function useInputActions({
         inputRef.value.focus();
       } else if (inputRef.value.$el && typeof inputRef.value.$el.focus === 'function') {
         inputRef.value.$el.focus();
-      } else if (inputRef.value instanceof HTMLElement && typeof inputRef.value.focus === 'function') {
-        inputRef.value.focus();
       }
     }
   }

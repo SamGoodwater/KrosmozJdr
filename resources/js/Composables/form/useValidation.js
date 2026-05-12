@@ -50,17 +50,18 @@ export function useValidation({
           return val && val.length >= (rule.minLength || 0)
         case 'maxLength':
           return val && val.length <= (rule.maxLength || Infinity)
-        case 'password':
+        case 'password': {
           const hasUpperCase = /[A-Z]/.test(val)
           const hasLowerCase = /[a-z]/.test(val)
           const hasNumbers = /\d/.test(val)
           const hasMinLength = val && val.length >= 8
-          
+
           if (hasUpperCase && hasLowerCase && hasNumbers && hasMinLength) {
             return true
           } else {
             return false
           }
+        }
         default:
           return true
       }

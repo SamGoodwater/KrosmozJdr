@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Console\Command;
 
@@ -103,7 +104,7 @@ class ScrappingEffectsMapCommand extends Command
             $this->line($php);
         }
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

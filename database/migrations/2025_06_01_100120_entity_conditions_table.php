@@ -32,6 +32,7 @@ return new class extends Migration
             $table->boolean('cant_be_tackled')->default(false);
             $table->boolean('display_turn_remaining')->default(false);
             $table->boolean('is_main_state')->default(false);
+            $table->boolean('dissipable')->default(true);
             $table->json('raw')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
@@ -32,7 +33,7 @@ class ProjectResetCommand extends Command
     public function handle(): int
     {
         if (! $this->guardNotProduction('Interdit en production.')) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $map = [];
@@ -52,7 +53,7 @@ class ProjectResetCommand extends Command
         if ($map === []) {
             $this->warn('Indiquez au moins une option (--pnpm, --composer, --all, --full).');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         return $this->projectRunService->runOptionMap($map, $this);

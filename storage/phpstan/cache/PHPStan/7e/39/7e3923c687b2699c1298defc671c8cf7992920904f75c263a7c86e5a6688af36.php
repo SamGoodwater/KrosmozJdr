@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/Spell.php-presentSymbols
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-17d5ea70254af6566aa2471bba1d379b3a216c81ec5846d6943a7606708a0509-8.4.17',
+   'variableKey' => 'v2-519105ea32ab65877ba8de3bf95ab61e74f7649609c5435b664063220c851d79-8.4.17',
    'data' => 
   array (
     'classes' => 

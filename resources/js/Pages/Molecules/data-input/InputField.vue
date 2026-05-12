@@ -185,10 +185,10 @@ defineExpose({
     :helper="props.helper"
   >
     <!-- Slot core spécifique pour InputCore -->
-    <template #core="{ inputAttrs, listeners, inputRef }">
+    <template #core="coreSlot">
       <InputCore
-        v-bind="inputAttrs"
-        v-on="listeners"
+        v-bind="coreSlot.inputAttrs"
+        v-on="coreSlot.listeners"
         ref="inputRef"
       >
         <!-- 🔤 Labels inline start/end -->

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -91,7 +92,7 @@ final class ScrappingEffectsPipelineCommand extends Command
                 ],
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-            return $ok ? self::SUCCESS : self::FAILURE;
+            return $ok ? ArtisanExitCode::SUCCESS : ArtisanExitCode::FAILURE;
         }
 
         $this->info('Pipeline effets de sorts: import puis quality gate');
@@ -102,7 +103,7 @@ final class ScrappingEffectsPipelineCommand extends Command
             $this->newLine();
             $this->error("Import KO (code {$importCode})");
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $this->newLine();
@@ -112,13 +113,13 @@ final class ScrappingEffectsPipelineCommand extends Command
             $this->newLine();
             $this->error("Gate KO (code {$gateCode})");
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $this->newLine();
         $this->info('Pipeline OK');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

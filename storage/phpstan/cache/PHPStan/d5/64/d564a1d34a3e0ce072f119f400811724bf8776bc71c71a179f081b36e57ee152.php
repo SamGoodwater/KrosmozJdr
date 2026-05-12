@@ -1,0 +1,195 @@
+<?php declare(strict_types = 1);
+
+// osfsl-/var/www/KrosmozJdr/app/Models/Entity/Language.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Entity\Language
+return \PHPStan\Cache\CacheItem::__set_state(array(
+   'variableKey' => 'v2-2a2c5c5e854ca4769f22ebfe0728a017fd9d3ff2fd1aeff976359523181ce0a1-8.4.17-6.70.0.0',
+   'data' => 
+  array (
+    'locatedSource' => 
+    array (
+      'class' => 'PHPStan\\BetterReflection\\SourceLocator\\Located\\LocatedSource',
+      'data' => 
+      array (
+        'name' => 'App\\Models\\Entity\\Language',
+        'filename' => '/var/www/KrosmozJdr/app/Models/Entity/Language.php',
+      ),
+    ),
+    'namespace' => 'App\\Models\\Entity',
+    'name' => 'App\\Models\\Entity\\Language',
+    'shortName' => 'Language',
+    'isInterface' => false,
+    'isTrait' => false,
+    'isEnum' => false,
+    'isBackedEnum' => false,
+    'modifiers' => 0,
+    'docComment' => '/**
+ * Langue (référentiel) — associable aux classes, monstres, spécialisations, etc.
+ *
+ * @property int $id
+ * @property string $name
+ * @property string|null $description
+ * @property string $color Hex #RRGGBB
+ * @method static LanguageFactory factory($count = null, $state = [])
+ * @property \\Illuminate\\Support\\Carbon|null $created_at
+ * @property \\Illuminate\\Support\\Carbon|null $updated_at
+ * @property-read \\Illuminate\\Database\\Eloquent\\Collection<int, \\App\\Models\\Entity\\Breed> $breeds
+ * @property-read int|null $breeds_count
+ * @property-read \\Illuminate\\Database\\Eloquent\\Collection<int, \\App\\Models\\Entity\\Monster> $monsters
+ * @property-read int|null $monsters_count
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language newModelQuery()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language newQuery()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language query()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language whereColor($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language whereCreatedAt($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language whereDescription($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language whereId($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language whereName($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language whereUpdatedAt($value)
+ * @mixin \\Eloquent
+ */',
+    'attributes' => 
+    array (
+    ),
+    'startLine' => 35,
+    'endLine' => 61,
+    'startColumn' => 1,
+    'endColumn' => 1,
+    'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
+    'implementsClassNames' => 
+    array (
+    ),
+    'traitClassNames' => 
+    array (
+      0 => 'Illuminate\\Database\\Eloquent\\Factories\\HasFactory',
+    ),
+    'immediateConstants' => 
+    array (
+    ),
+    'immediateProperties' => 
+    array (
+      'fillable' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Language',
+        'implementingClassName' => 'App\\Models\\Entity\\Language',
+        'name' => 'fillable',
+        'modifiers' => 2,
+        'type' => NULL,
+        'default' => 
+        array (
+          'code' => '[\'name\', \'description\', \'color\']',
+          'attributes' => 
+          array (
+            'startLine' => 40,
+            'endLine' => 44,
+            'startTokenPos' => 52,
+            'startFilePos' => 1886,
+            'endTokenPos' => 63,
+            'endFilePos' => 1948,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 40,
+        'endLine' => 44,
+        'startColumn' => 5,
+        'endColumn' => 6,
+        'isPromoted' => false,
+        'declaredAtCompileTime' => true,
+        'immediateVirtual' => false,
+        'immediateHooks' => 
+        array (
+        ),
+      ),
+    ),
+    'immediateMethods' => 
+    array (
+      'breeds' => 
+      array (
+        'name' => 'breeds',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+          'data' => 
+          array (
+            'name' => 'Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany',
+            'isIdentifier' => false,
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => NULL,
+        'startLine' => 46,
+        'endLine' => 52,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Language',
+        'implementingClassName' => 'App\\Models\\Entity\\Language',
+        'currentClassName' => 'App\\Models\\Entity\\Language',
+        'aliasName' => NULL,
+      ),
+      'monsters' => 
+      array (
+        'name' => 'monsters',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+          'data' => 
+          array (
+            'name' => 'Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany',
+            'isIdentifier' => false,
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => NULL,
+        'startLine' => 54,
+        'endLine' => 60,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Language',
+        'implementingClassName' => 'App\\Models\\Entity\\Language',
+        'currentClassName' => 'App\\Models\\Entity\\Language',
+        'aliasName' => NULL,
+      ),
+    ),
+    'traitsData' => 
+    array (
+      'aliases' => 
+      array (
+      ),
+      'modifiers' => 
+      array (
+      ),
+      'precedences' => 
+      array (
+      ),
+      'hashes' => 
+      array (
+      ),
+    ),
+  ),
+));

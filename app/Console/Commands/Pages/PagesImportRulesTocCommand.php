@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Pages;
 
+use App\Console\ArtisanExitCode;
 use App\Enums\SectionType;
 use App\Models\Page;
 use App\Models\Section;
@@ -64,14 +65,14 @@ class PagesImportRulesTocCommand extends Command
         if (! is_file($path)) {
             $this->error("Fichier introuvable: {$path}");
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $tree = RulesTocParser::parse($path);
         if (count($tree) === 0) {
             $this->warn('Aucune hiérarchie détectée dans la table des matières.');
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $this->rulesTocSlugIndex = RulesTocSlugIndex::fromTree($tree);
@@ -95,7 +96,7 @@ class PagesImportRulesTocCommand extends Command
             $this->info('Mode dry-run: aucun changement en base.');
             $this->printTreePreview($tree);
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $creatorId = $this->resolveDefaultCreatorId();
@@ -120,7 +121,7 @@ class PagesImportRulesTocCommand extends Command
             DB::rollBack();
             $this->error('Import interrompu: '.$e->getMessage());
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $this->info('Import terminé avec succès.');
@@ -133,7 +134,7 @@ class PagesImportRulesTocCommand extends Command
             ));
         }
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

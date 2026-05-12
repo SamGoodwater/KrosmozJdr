@@ -67,7 +67,7 @@
   {
     "path": "10-BestPractices/FORMULAS_PRACTICES.md",
     "title": "Formules dynamiques — Bonnes pratiques",
-    "description": "- Toujours utiliser la syntaxe définie dans [CONTENT_OVERVIEW.md – section 5](../30-Content/CONTENT_OVERVIEW.md#5-syntaxe-des-formules-krosmoz-jdr)."
+    "description": "- Toujours utiliser la syntaxe définie dans [CONTENT_OVERVIEW.md – section 5](../20-Content/CONTENT_OVERVIEW.md#5-syntaxe-des-formules-krosmoz-jdr)."
   },
   {
     "path": "10-BestPractices/FRONTEND_TESTING.md",
@@ -82,7 +82,7 @@
   {
     "path": "10-BestPractices/I18N_PRACTICES.md",
     "title": "Internationalisation (i18n)",
-    "description": "- Fichiers de langue organisés par locale (ex : `resources/lang/fr.json`, `en.json`, etc.)."
+    "description": "- Fichiers de langue organisés par locale (ex : `lang/fr.json`, `lang/en.json`, etc.)."
   },
   {
     "path": "10-BestPractices/NAMING_CONVENTIONS.md",
@@ -367,7 +367,7 @@
   {
     "path": "30-UI/BEST_PRACTICES.md",
     "title": "Bonnes pratiques UI — KrosmozJDR",
-    "description": "```javascript"
+    "description": "Patterns UI, accessibilité, composants et cohérence avec l’Atomic Design du projet."
   },
   {
     "path": "30-UI/CHARACTERISTICS_CARD_SCHEMA.md",

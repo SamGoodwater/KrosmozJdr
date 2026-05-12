@@ -10,9 +10,15 @@
 
 ## 📊 État actuel des tests
 
-### Tests Backend (PHPUnit)
+Pour un chiffre à jour (nombre de tests, assertions, durée), exécuter localement :
 
-**159 tests passent** (941 assertions) en ~19 secondes.
+```bash
+php artisan test
+```
+
+Les sections ci-dessous décrivent l’organisation des suites, pas un total figé.
+
+### Tests Backend (PHPUnit)
 
 #### Tests Bulk Controllers (14 fichiers)
 - Tests pour toutes les opérations bulk (mise à jour en masse)

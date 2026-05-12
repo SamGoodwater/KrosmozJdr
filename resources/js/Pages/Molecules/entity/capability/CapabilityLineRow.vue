@@ -5,13 +5,12 @@
  * @description
  * Aligné sur SpellLineRow : méta {@link CapabilityMinimalUsageMetaRow}, description discrète au survol de ligne, effets mis en avant (3 lignes / complet au survol du bloc).
  */
-import { ref, computed, onUnmounted, nextTick } from "vue";
+import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
-import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
@@ -117,28 +116,6 @@ const effectItems = computed(() => {
 });
 
 const handleRowClick = (e) => emit("row-click", props.row, e);
-
-const contextMenuVisible = ref(false);
-const contextMenuPosition = ref({ x: 0, y: 0 });
-const handleContextMenu = (e) => {
-    if (!props.entityType) return;
-    e.preventDefault();
-    e.stopPropagation();
-    contextMenuPosition.value = { x: e.clientX, y: e.clientY };
-    contextMenuVisible.value = true;
-};
-const closeContextMenu = () => {
-    contextMenuVisible.value = false;
-    nextTick(() => focusTableRowById(props.row?.id));
-};
-const handleContextAction = (actionKey) => {
-    closeContextMenu();
-    emit("action", actionKey, entity.value ?? props.row, props.row);
-};
-onUnmounted(() => {
-    if (typeof window !== "undefined") document.removeEventListener("click", closeContextMenu);
-});
-if (typeof window !== "undefined") document.addEventListener("click", closeContextMenu);
 </script>
 
 <template>
@@ -148,7 +125,6 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
         style="--bg-color: var(--color-base-100)"
         data-row-contextmenu-target
         @click="handleRowClick"
-        @contextmenu="handleContextMenu"
     >
         <div class="flex gap-3">
             <div
@@ -250,21 +226,5 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
             </div>
         </div>
 
-        <Teleport to="body">
-            <EntityActions
-                v-if="entityType && contextMenuVisible"
-                :entity-type="entityType"
-                :entity="entity || row"
-                format="context"
-                display="icon-text"
-                size="sm"
-                color="primary"
-                :context="{ inPanel: false }"
-                :context-position="contextMenuPosition"
-                :context-visible="contextMenuVisible"
-                @close="closeContextMenu"
-                @action="handleContextAction"
-            />
-        </Teleport>
     </div>
 </template>

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use App\Models\DofusdbEffectMapping;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 
 /**
  * Rapport des mappings d'effets incomplets (characteristic_source=characteristic, key manquante).
@@ -48,12 +50,12 @@ final class ScrappingEffectsMissingCharacteristicsReportCommand extends Command
             $query->whereIn('dofusdb_effect_id', $effectIdsFilter);
         }
 
-        /** @var \Illuminate\Support\Collection<int, DofusdbEffectMapping> $rows */
+        /** @var Collection<int, DofusdbEffectMapping> $rows */
         $rows = $query->orderBy('dofusdb_effect_id')->get();
         if ($rows->isEmpty()) {
             $this->line($asJson ? json_encode(['total_missing_rows' => 0], JSON_PRETTY_PRINT) : 'Aucune ligne manquante trouvée.');
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $spellMapFromDb = $characteristicGetter->getDofusdbToCharacteristicKeyMap('spell');
@@ -159,7 +161,7 @@ final class ScrappingEffectsMissingCharacteristicsReportCommand extends Command
 
             $this->line((string) json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $this->info('Rapport mappings manquants (characteristic_source=characteristic)');
@@ -185,7 +187,7 @@ final class ScrappingEffectsMissingCharacteristicsReportCommand extends Command
             $tableRows
         );
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

@@ -22,6 +22,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
           'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
           'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -8923,6 +8924,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
           'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
           'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -8947,6 +8949,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
             'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
             'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -8992,6 +8995,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
           'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
           'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9016,6 +9020,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
             'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
             'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9061,6 +9066,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
           'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
           'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9085,6 +9091,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
             'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
             'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9130,6 +9137,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
           'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
           'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9154,6 +9162,220 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
             'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
+            'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
+            'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
+            'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
+          ),
+           'className' => 'App\\Models\\Entity\\Breed',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      'f33b4f254c58c727fa2e62da80cbed9f' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Models\\Entity',
+         'uses' => 
+        array (
+          'hasentityimagemedia' => 'App\\Models\\Concerns\\HasEntityImageMedia',
+          'breedspellpivot' => 'App\\Models\\Pivots\\BreedSpellPivot',
+          'user' => 'App\\Models\\User',
+          'breedfactory' => 'Database\\Factories\\Entity\\BreedFactory',
+          'builder' => 'Illuminate\\Database\\Eloquent\\Builder',
+          'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+          'hasfactory' => 'Illuminate\\Database\\Eloquent\\Factories\\HasFactory',
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
+          'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
+          'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
+          'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
+          'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
+          'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
+        ),
+         'className' => 'App\\Models\\Entity\\Breed',
+         'functionName' => 'capabilities',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'App\\Models\\Entity',
+           'uses' => 
+          array (
+            'hasentityimagemedia' => 'App\\Models\\Concerns\\HasEntityImageMedia',
+            'breedspellpivot' => 'App\\Models\\Pivots\\BreedSpellPivot',
+            'user' => 'App\\Models\\User',
+            'breedfactory' => 'Database\\Factories\\Entity\\BreedFactory',
+            'builder' => 'Illuminate\\Database\\Eloquent\\Builder',
+            'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+            'hasfactory' => 'Illuminate\\Database\\Eloquent\\Factories\\HasFactory',
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
+            'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
+            'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
+            'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
+            'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
+            'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
+          ),
+           'className' => 'App\\Models\\Entity\\Breed',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      'd9a56fb12360bdadc06aa0e500393d3f' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Models\\Entity',
+         'uses' => 
+        array (
+          'hasentityimagemedia' => 'App\\Models\\Concerns\\HasEntityImageMedia',
+          'breedspellpivot' => 'App\\Models\\Pivots\\BreedSpellPivot',
+          'user' => 'App\\Models\\User',
+          'breedfactory' => 'Database\\Factories\\Entity\\BreedFactory',
+          'builder' => 'Illuminate\\Database\\Eloquent\\Builder',
+          'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+          'hasfactory' => 'Illuminate\\Database\\Eloquent\\Factories\\HasFactory',
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
+          'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
+          'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
+          'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
+          'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
+          'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
+        ),
+         'className' => 'App\\Models\\Entity\\Breed',
+         'functionName' => 'creatureTraits',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'App\\Models\\Entity',
+           'uses' => 
+          array (
+            'hasentityimagemedia' => 'App\\Models\\Concerns\\HasEntityImageMedia',
+            'breedspellpivot' => 'App\\Models\\Pivots\\BreedSpellPivot',
+            'user' => 'App\\Models\\User',
+            'breedfactory' => 'Database\\Factories\\Entity\\BreedFactory',
+            'builder' => 'Illuminate\\Database\\Eloquent\\Builder',
+            'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+            'hasfactory' => 'Illuminate\\Database\\Eloquent\\Factories\\HasFactory',
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
+            'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
+            'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
+            'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
+            'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
+            'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
+          ),
+           'className' => 'App\\Models\\Entity\\Breed',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      '579be288fe36eaac594e2591a98db7ec' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Models\\Entity',
+         'uses' => 
+        array (
+          'hasentityimagemedia' => 'App\\Models\\Concerns\\HasEntityImageMedia',
+          'breedspellpivot' => 'App\\Models\\Pivots\\BreedSpellPivot',
+          'user' => 'App\\Models\\User',
+          'breedfactory' => 'Database\\Factories\\Entity\\BreedFactory',
+          'builder' => 'Illuminate\\Database\\Eloquent\\Builder',
+          'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+          'hasfactory' => 'Illuminate\\Database\\Eloquent\\Factories\\HasFactory',
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
+          'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
+          'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
+          'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
+          'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
+          'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
+        ),
+         'className' => 'App\\Models\\Entity\\Breed',
+         'functionName' => 'languages',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'App\\Models\\Entity',
+           'uses' => 
+          array (
+            'hasentityimagemedia' => 'App\\Models\\Concerns\\HasEntityImageMedia',
+            'breedspellpivot' => 'App\\Models\\Pivots\\BreedSpellPivot',
+            'user' => 'App\\Models\\User',
+            'breedfactory' => 'Database\\Factories\\Entity\\BreedFactory',
+            'builder' => 'Illuminate\\Database\\Eloquent\\Builder',
+            'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+            'hasfactory' => 'Illuminate\\Database\\Eloquent\\Factories\\HasFactory',
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
+            'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
+            'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
             'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9199,6 +9421,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
           'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
           'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9223,6 +9446,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
             'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
             'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9268,6 +9492,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
           'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
           'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9292,6 +9517,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
             'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
             'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9337,6 +9563,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
           'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
           'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9361,6 +9588,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
             'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
             'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9406,6 +9634,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
           'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
           'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9430,6 +9659,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
             'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
             'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9475,6 +9705,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
           'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
           'carbon' => 'Illuminate\\Support\\Carbon',
+          'fit' => 'Spatie\\Image\\Enums\\Fit',
           'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9499,6 +9730,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
             'softdeletes' => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
             'carbon' => 'Illuminate\\Support\\Carbon',
+            'fit' => 'Spatie\\Image\\Enums\\Fit',
             'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'mediacollection' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Collections\\MediaCollection',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
@@ -9532,10 +9764,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Models/Entity/Breed.php' => '49c080fbb82fceaf248006bbfe33e7cd3849d71157def6c38faff3e5346c2b34',
+      '/var/www/KrosmozJdr/app/Models/Entity/Breed.php' => '2c627c7939aba3349339484301f76bee66428acf6e7c60c9d956b22d13d11778',
       '/var/www/KrosmozJdr/app/Models/Concerns/HasEntityImageMedia.php' => 'b5b633f6bcb54e2ca03cda21ef004f49d21e57737f3fcb3c153870e38dc9c2e7',
       '/var/www/KrosmozJdr/vendor/composer/../spatie/laravel-medialibrary/src/InteractsWithMedia.php' => '2fa4c26f5b3757892fb1f79083cefb514993dbef90e48da37597f36e834ace33',
-      '/var/www/KrosmozJdr/app/Models/Concerns/HasMediaCustomNaming.php' => 'ae3b1f9ec9da4c59b481e1f4178a824bd13a7fd5f8a89dceb6597d86c5f1aa66',
+      '/var/www/KrosmozJdr/app/Models/Concerns/HasMediaCustomNaming.php' => '4d2d30c927978dfb2f19ff2fd24a406d3c814153d432d2738f419461d5ba131c',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/Factories/HasFactory.php' => 'b6cb2b164e90168e80963a5549541f5f3188a3ec8cfd368bf3611bd94fbd46a7',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/SoftDeletes.php' => 'da1b0c13d78ba2f62e97e5627c3149f4e81b9cf9b6092d4ca7f02ca5e5bbcfec',
     ),

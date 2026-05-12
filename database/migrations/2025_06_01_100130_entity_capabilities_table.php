@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('element')->default(0);
             $table->boolean('is_magic')->default(true);
             $table->boolean('ritual_available')->default(true);
+            $table->boolean('is_passive')->default(false);
             $table->string('powerful')->nullable();
             $table->string('state')->default('draft');
             $table->tinyInteger('read_level')->default(0);

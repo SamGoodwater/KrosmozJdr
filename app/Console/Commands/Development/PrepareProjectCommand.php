@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Development;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use Illuminate\Console\Command;
 
@@ -22,7 +23,7 @@ class PrepareProjectCommand extends Command
     public function handle(): int
     {
         if (! $this->guardDevelopmentOnly()) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $this->warn('server:prepare est déprécié — utilisez : php artisan project:prepare');

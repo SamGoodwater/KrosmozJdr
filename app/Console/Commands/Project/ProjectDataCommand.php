@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
+use Database\Seeders\Type\SpellTypeSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -55,12 +57,12 @@ class ProjectDataCommand extends Command
     private function runSync(): int
     {
         $catalogCode = $this->runCatalogSync();
-        if ($catalogCode !== self::SUCCESS) {
+        if ($catalogCode !== ArtisanExitCode::SUCCESS) {
             return $catalogCode;
         }
 
         if (! $this->shouldRunEntitySyncAfterCatalog()) {
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $params = $this->buildEntitySyncParams();
@@ -126,7 +128,7 @@ class ProjectDataCommand extends Command
     {
         $tokens = $this->collectCatalogTokens();
         if ($tokens === []) {
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         if (! in_array('all', $tokens, true)) {
@@ -141,7 +143,7 @@ class ProjectDataCommand extends Command
             if (! $hasKnown) {
                 $this->error('Valeurs catalogue inconnues. Utilisez : all, monster, spell, resource, consumable, item, equipment (ou --races pour les races).');
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
         }
 
@@ -154,20 +156,20 @@ class ProjectDataCommand extends Command
 
         if (in_array('all', $tokens, true)) {
             $code = $this->call('scrapping:types:seed', $catalogArgs);
-            if ($code !== self::SUCCESS) {
+            if ($code !== ArtisanExitCode::SUCCESS) {
                 return $code;
             }
             $code = $this->call('scrapping:races:seed', $catalogArgs);
-            if ($code !== self::SUCCESS) {
+            if ($code !== ArtisanExitCode::SUCCESS) {
                 return $code;
             }
             $seedCode = Artisan::call('db:seed', [
-                '--class' => \Database\Seeders\Type\SpellTypeSeeder::class,
+                '--class' => SpellTypeSeeder::class,
                 '--force' => true,
             ]);
             $this->output->write(Artisan::output());
 
-            return $seedCode === 0 ? self::SUCCESS : self::FAILURE;
+            return $seedCode === 0 ? ArtisanExitCode::SUCCESS : ArtisanExitCode::FAILURE;
         }
 
         $wantMonster = in_array('monster', $tokens, true);
@@ -187,30 +189,30 @@ class ProjectDataCommand extends Command
             $code = $this->call('scrapping:types:seed', array_merge($catalogArgs, [
                 '--only' => implode(',', $itemKeys),
             ]));
-            if ($code !== self::SUCCESS) {
+            if ($code !== ArtisanExitCode::SUCCESS) {
                 return $code;
             }
         }
 
         if ($wantMonster) {
             $code = $this->call('scrapping:races:seed', $catalogArgs);
-            if ($code !== self::SUCCESS) {
+            if ($code !== ArtisanExitCode::SUCCESS) {
                 return $code;
             }
         }
 
         if ($wantSpellType) {
             $code = Artisan::call('db:seed', [
-                '--class' => \Database\Seeders\Type\SpellTypeSeeder::class,
+                '--class' => SpellTypeSeeder::class,
                 '--force' => true,
             ]);
             $this->output->write(Artisan::output());
             if ($code !== 0) {
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
         }
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**
@@ -293,13 +295,13 @@ class ProjectDataCommand extends Command
         $this->newLine();
         $this->line('Documentation : docs/40-DevGuides/PROJECT_CLI.md');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     private function invalidAction(string $action): int
     {
         $this->error("Action inconnue « {$action} ». Utilisez : sync, init ou fill.");
 
-        return self::FAILURE;
+        return ArtisanExitCode::FAILURE;
     }
 }

@@ -7,6 +7,7 @@
 /storage/*.key
 /storage/pail
 /storage/app/seeders-data-backups
+/storage/app/dev-reports
 # Exports HTML legacy (spécialisations) — générés localement, non versionnés
 /database/seeders/data/legacy-specializations/*.html
 /vendor

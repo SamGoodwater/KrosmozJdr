@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use PDO;
@@ -66,7 +67,7 @@ class SetupCommand extends Command
             $this->info('Aucune action demandée. Utilisez --install, --update, --db, --clean ou --refresh.');
             $this->line('Exemple : php artisan setup --install --db');
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         if ($clean) {
@@ -86,14 +87,14 @@ class SetupCommand extends Command
 
         if ($db) {
             $code = $this->runDb();
-            if ($code !== self::SUCCESS) {
+            if ($code !== ArtisanExitCode::SUCCESS) {
                 return $code;
             }
         }
 
         $this->info('Setup terminé.');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /** Vérifie et installe les paquets apt manquants, affiche un tableau, puis composer install et pnpm install. */
@@ -245,7 +246,7 @@ class SetupCommand extends Command
             if (! extension_loaded('pdo_mysql')) {
                 $this->error('Extension PHP pdo_mysql manquante (ex. : apt install php-mysql).');
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
             if ($this->tryAppConnection()) {
                 $this->info('Connexion à la base OK.');
@@ -253,13 +254,13 @@ class SetupCommand extends Command
                 return $this->runMigrationAndSeed();
             }
             if (! $this->createUserAndDatabaseWithMysql()) {
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
             DB::purge($connection);
             if (! $this->tryAppConnection()) {
                 $this->error('Connexion DB_USERNAME/DB_PASSWORD échoue après création.');
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
             $this->info('Utilisateur et base créés.');
 
@@ -270,7 +271,7 @@ class SetupCommand extends Command
             if (! extension_loaded('pdo_pgsql')) {
                 $this->error('Extension PHP pdo_pgsql manquante (ex. : apt install php-pgsql).');
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
             if ($this->tryAppConnection()) {
                 $this->info('Connexion à la base OK.');
@@ -278,13 +279,13 @@ class SetupCommand extends Command
                 return $this->runMigrationAndSeed();
             }
             if (! $this->createUserAndDatabaseWithPostgres()) {
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
             DB::purge($connection);
             if (! $this->tryAppConnection()) {
                 $this->error('Connexion DB_USERNAME/DB_PASSWORD échoue après création.');
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
             $this->info('Utilisateur et base créés.');
 
@@ -408,7 +409,7 @@ class SetupCommand extends Command
             }
         }
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /** Supprime node_modules, pnpm-lock.yaml, vendor, composer.lock et vide config/cache Laravel. */

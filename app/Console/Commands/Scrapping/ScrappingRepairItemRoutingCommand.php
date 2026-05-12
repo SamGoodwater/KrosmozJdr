@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
@@ -63,7 +64,7 @@ final class ScrappingRepairItemRoutingCommand extends Command
         if ($this->itemTypeIdsByDofusType === [] && $this->resourceTypeIdsByDofusType === [] && $this->consumableTypeIdsByDofusType === []) {
             $this->error('Aucun type n\'est présent. Exécute d\'abord TypeSeeder.');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         /** @var list<array{item_id:int,dofusdb_id:string,dofus_type_id:int,target:string}> $candidates */
@@ -101,7 +102,7 @@ final class ScrappingRepairItemRoutingCommand extends Command
         ));
 
         if ($candidates === []) {
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $movedToResources = 0;
@@ -188,7 +189,7 @@ final class ScrappingRepairItemRoutingCommand extends Command
         $this->info(sprintf('Liens drops transférés     : %d', $transferredCreatureLinks));
         $this->info(sprintf('Liens recette transférés   : %d', $transferredRecipeLinks));
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     private function resolveTargetTable(int $dofusTypeId): string

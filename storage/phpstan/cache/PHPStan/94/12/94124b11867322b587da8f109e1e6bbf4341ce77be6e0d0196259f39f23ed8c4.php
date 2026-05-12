@@ -1414,7 +1414,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      'phar:///var/www/KrosmozJdr/vendor/phpstan/phpstan/phpstan.phar/vendor/jetbrains/phpstorm-stubs/standard/standard_5.stub' => 'd5844066bec9dced67231960cb8a367d56bf4ab0a4ab1d3a0790ceaab7f2dfb3',
+      'phar:///var/www/KrosmozJdr/vendor/phpstan/phpstan/phpstan.phar/vendor/jetbrains/phpstorm-stubs/standard/standard_5.stub' => 'fc9df20871cd6015b67ef9629daa74d8af701b4e8d8f2a50a4a10cb5a033a739',
     ),
   ),
 ));

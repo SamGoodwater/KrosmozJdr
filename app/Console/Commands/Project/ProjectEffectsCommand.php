@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
@@ -41,7 +42,7 @@ class ProjectEffectsCommand extends Command
     public function handle(): int
     {
         if (! $this->guardNotProduction('Interdit en production.')) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $map = [];
@@ -57,7 +58,7 @@ class ProjectEffectsCommand extends Command
                 if ($map !== []) {
                     $this->error('Une seule option parmi --quality, --quality-dev, --pipeline, --pipeline-dev.');
 
-                    return self::FAILURE;
+                    return ArtisanExitCode::FAILURE;
                 }
                 $map[$runKey] = true;
             }
@@ -66,7 +67,7 @@ class ProjectEffectsCommand extends Command
         if ($map === []) {
             $this->warn('Choisissez un mode : --quality, --quality-dev, --pipeline ou --pipeline-dev.');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         return $this->projectRunService->runOptionMap($map, $this);

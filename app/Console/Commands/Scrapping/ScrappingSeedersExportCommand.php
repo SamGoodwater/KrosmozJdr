@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\Scrapping\ScrappingEntityMappingTarget;
@@ -59,7 +60,7 @@ class ScrappingSeedersExportCommand extends Command
     public function handle(): int
     {
         if (! $this->guardDevelopmentOnly()) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $all = ! $this->option('characteristics') && ! $this->option('formulas')
@@ -97,7 +98,7 @@ class ScrappingSeedersExportCommand extends Command
 
         $this->info('Export terminé.');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

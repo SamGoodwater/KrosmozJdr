@@ -15871,7 +15871,7 @@ cases involving the need to uniquely identify objects.',
     ),
     1 => 
     array (
-      'phar:///var/www/KrosmozJdr/vendor/phpstan/phpstan/phpstan.phar/vendor/jetbrains/phpstorm-stubs/SPL/SPL_c1.stub' => 'cdf3af81238e90073ed72f4a4508732903145cfaef9780f9c1bf2540c5b6a8d6',
+      'phar:///var/www/KrosmozJdr/vendor/phpstan/phpstan/phpstan.phar/vendor/jetbrains/phpstorm-stubs/SPL/SPL_c1.stub' => '478425c2cc390345b9bcfe96aef3a131454d4807e95a2f121796aafbec84b92a',
     ),
   ),
 ));

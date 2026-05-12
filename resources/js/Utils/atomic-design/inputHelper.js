@@ -1,4 +1,5 @@
 import { variantList, sizeList, colorList } from '@/Pages/Atoms/atomMap';
+import { maskList } from '@/Pages/Atoms/data-input/data-inputMap';
 import { getCommonProps } from '@/Utils/atomic-design/uiHelper';
 
 // --- VALIDATEURS ---

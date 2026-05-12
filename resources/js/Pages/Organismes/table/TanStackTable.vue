@@ -2352,10 +2352,12 @@ const handleExport = () => {
                                 v-for="row in rowsToRender"
                                 :key="row.id"
                                 data-table-row-focus
+                                data-row-contextmenu-target
                                 :data-row-id="String(row.id)"
                                 tabindex="0"
                                 class="rounded-box transition-shadow duration-200 hover:shadow-md outline-none"
                                 @keydown="(e) => handleLineRowBlockKeydown(e, row)"
+                                @contextmenu="handleMinimalContextMenu($event, row)"
                             >
                             <component
                                 :is="lineRowComponent"
@@ -2442,6 +2444,22 @@ const handleExport = () => {
                         </Btn>
                     </div>
                 </div>
+                <Teleport to="body">
+                    <EntityActions
+                        v-if="entityType && minimalContextMenuVisible && minimalContextEntity"
+                        :entity-type="entityType"
+                        :entity="minimalContextEntity"
+                        format="context"
+                        display="icon-text"
+                        size="sm"
+                        color="primary"
+                        :context="{ inPanel: false, inMinimal: true }"
+                        :context-position="minimalContextMenuPosition"
+                        :context-visible="minimalContextMenuVisible"
+                        @close="closeMinimalContextMenu"
+                        @action="(k) => handleMinimalContextAction(k, minimalContextEntity, minimalContextMenuRow)"
+                    />
+                </Teleport>
             </div>
         </div>
 

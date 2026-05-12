@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Services\Project\ProjectBackupService;
 use Illuminate\Console\Command;
 
@@ -44,7 +45,7 @@ class ProjectBackupCommand extends Command
             );
             $this->info($dryRun ? "Fichiers concernés (simulation) : {$n}" : "Fichiers supprimés : {$n}");
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $withDatabase = ! (bool) $this->option('no-database');
@@ -53,7 +54,7 @@ class ProjectBackupCommand extends Command
         if (! $withDatabase && ! $withStorage) {
             $this->error('Indiquez au moins une cible : ne pas passer --no-database et --no-storage ensemble (utilisez --prune-only pour purger seul).');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $result = $service->run(
@@ -66,14 +67,14 @@ class ProjectBackupCommand extends Command
         );
 
         if ($result['run_id'] === '' && ($withDatabase || $withStorage)) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         if ($result['files'] !== []) {
             $this->info('Sauvegarde terminée : '.count($result['files']).' fichier(s).');
         }
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     private function makeService(): ProjectBackupService

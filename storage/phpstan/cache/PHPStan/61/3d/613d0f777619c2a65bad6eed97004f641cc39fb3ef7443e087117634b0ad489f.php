@@ -13,7 +13,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -9186,7 +9186,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -9233,7 +9233,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -9301,7 +9301,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -9348,7 +9348,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -9416,7 +9416,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -9463,7 +9463,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -9531,7 +9531,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -9578,7 +9578,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -9646,7 +9646,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -9693,7 +9693,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -9761,7 +9761,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -9808,7 +9808,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -9876,7 +9876,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -9923,7 +9923,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -9991,7 +9991,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -10038,7 +10038,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -10106,7 +10106,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -10153,7 +10153,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -10221,7 +10221,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -10268,7 +10268,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -10336,7 +10336,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -10383,7 +10383,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -10451,7 +10451,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -10498,7 +10498,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -10566,7 +10566,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -10613,7 +10613,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -10681,7 +10681,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -10728,7 +10728,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -10796,7 +10796,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -10843,7 +10843,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -10911,7 +10911,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -10958,7 +10958,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -11026,7 +11026,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -11073,7 +11073,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -11141,7 +11141,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -11188,7 +11188,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -11256,7 +11256,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -11303,7 +11303,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -11371,7 +11371,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -11418,7 +11418,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -11486,7 +11486,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -11533,7 +11533,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -11601,7 +11601,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -11648,7 +11648,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -11710,13 +11710,13 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'typeAliasClassName' => NULL,
          'traitData' => NULL,
       )),
-      '19e07dc9e9bdbc5d2603ece5084132c2' => 
+      'c39f585f8dd1eed8bf3ef30014c77dbe' => 
       \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
          'namespace' => 'App\\Models',
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -11753,7 +11753,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
         ),
          'className' => 'App\\Models\\User',
-         'functionName' => 'createdAttributes',
+         'functionName' => 'createdConditions',
          'templatePhpDocNodes' => 
         array (
         ),
@@ -11763,7 +11763,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -11831,7 +11831,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -11878,7 +11878,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -11946,7 +11946,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -11993,7 +11993,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -12061,7 +12061,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -12108,7 +12108,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -12176,7 +12176,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -12223,7 +12223,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -12291,7 +12291,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -12338,7 +12338,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -12406,7 +12406,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -12453,7 +12453,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -12521,7 +12521,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -12568,7 +12568,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -12636,7 +12636,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -12683,7 +12683,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -12751,7 +12751,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -12798,7 +12798,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -12866,7 +12866,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -12913,7 +12913,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -12981,7 +12981,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -13028,7 +13028,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -13096,7 +13096,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -13143,7 +13143,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -13211,7 +13211,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -13258,7 +13258,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -13326,7 +13326,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -13373,7 +13373,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -13441,7 +13441,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -13488,7 +13488,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -13556,7 +13556,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -13603,7 +13603,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -13671,7 +13671,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -13718,7 +13718,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -13786,7 +13786,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -13833,7 +13833,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -13901,7 +13901,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -13948,7 +13948,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -14016,7 +14016,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -14063,7 +14063,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -14131,7 +14131,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -14178,7 +14178,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -14246,7 +14246,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -14293,7 +14293,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -14361,7 +14361,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'attribute' => 'App\\Models\\Entity\\Attribute',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
@@ -14408,7 +14408,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'attribute' => 'App\\Models\\Entity\\Attribute',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
@@ -14473,9 +14473,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Models/User.php' => '875220ef11692fc9f9c5145126a7a3ed5bfd9525af004768757cc9b2b8d8baef',
+      '/var/www/KrosmozJdr/app/Models/User.php' => '184da3a6bd78bf4bd62ca1b808a45aa5e95b4338d9e24c82a46e734fe03c4380',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/Factories/HasFactory.php' => 'b6cb2b164e90168e80963a5549541f5f3188a3ec8cfd368bf3611bd94fbd46a7',
-      '/var/www/KrosmozJdr/app/Models/Concerns/HasMediaCustomNaming.php' => 'ae3b1f9ec9da4c59b481e1f4178a824bd13a7fd5f8a89dceb6597d86c5f1aa66',
+      '/var/www/KrosmozJdr/app/Models/Concerns/HasMediaCustomNaming.php' => '4d2d30c927978dfb2f19ff2fd24a406d3c814153d432d2738f419461d5ba131c',
       '/var/www/KrosmozJdr/vendor/composer/../spatie/laravel-medialibrary/src/InteractsWithMedia.php' => '2fa4c26f5b3757892fb1f79083cefb514993dbef90e48da37597f36e834ace33',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Notifications/Notifiable.php' => '573fa9bb96fa392434450c9cd9deb8d4e40a5bb93c140a648267b48dfa0433ac',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Notifications/HasDatabaseNotifications.php' => 'a7a163aa1f98a0ae4cd2135905b6852e29a850beb4296aa72c44c37d22832135',

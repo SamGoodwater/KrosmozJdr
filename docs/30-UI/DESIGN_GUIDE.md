@@ -633,7 +633,7 @@ Voici la liste initiale des organisms, avec une courte description pour chacun :
 - **Footer** : Pied de page sobre, liens utiles, copyright, mentions légales.
 - **NotificationContainer** : Organism centralisé pour l'affichage, la pile, la transition et l'accessibilité des notifications (voir section 6.4). À utiliser dans le layout principal.
 - **Card** : Bloc d'affichage d'entité (classe, monstre, objet, sort, etc.), affiche image, titre, description, actions (voir, éditer, supprimer…).
-- **EntityTable** : Tableau dynamique pour lister les entités (tri, filtres, pagination, actions). Colonnes configurables selon l'entité.
+- **TanStackTable / EntityTanStackTable** : Tableau d’entités (TanStack Table v2) : tri, filtres, pagination, actions, config par entité. Voir [TANSTACK_TABLE.md](./TANSTACK_TABLE.md).
 - **Formulaire dynamique** : Formulaire de création/édition d'entité, généré à partir d'un schéma ou d'une config. Gestion des validations, messages d'erreur, champs dynamiques.
 - **PageSection** : Bloc de section de page dynamique (texte riche, tableau, entité, fichier, etc.), utilisé dans le système de pages/sections.
 - **Modal** : Fenêtre modale pour confirmation, édition rapide, affichage de détails, etc.

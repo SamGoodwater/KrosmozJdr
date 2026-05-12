@@ -199,7 +199,7 @@ Le skeleton peut être configuré via `config.ui` :
 - **Rendu**
   - `cell`: `{ type: "text"|"badge"|"icon"|"image"|"route"|"custom", component? }`
 
-### `EntityTableConfig` (wrapper entité)
+### `TanStackTableConfig` (spec tableau + wrapper entité)
 
 - `entityType`
 - `permissions` (gating des features/colonnes via `usePermissions()` + `meta.capabilities`)

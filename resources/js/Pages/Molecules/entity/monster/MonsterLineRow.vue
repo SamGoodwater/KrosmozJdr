@@ -9,14 +9,13 @@
  * Carte Compétences sous les résumés : dépliée au survol / focus (contenu scrollable).
  * Liste des sorts de créature en fin de ligne (lien texte + aperçu minimal au survol).
  */
-import { ref, computed, onUnmounted, nextTick } from "vue";
+import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
-import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
@@ -145,28 +144,6 @@ const linkedLanguages = computed(() => {
 const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
 
 const handleRowClick = (e) => emit("row-click", props.row, e);
-
-const contextMenuVisible = ref(false);
-const contextMenuPosition = ref({ x: 0, y: 0 });
-const handleContextMenu = (e) => {
-    if (!props.entityType) return;
-    e.preventDefault();
-    e.stopPropagation();
-    contextMenuPosition.value = { x: e.clientX, y: e.clientY };
-    contextMenuVisible.value = true;
-};
-const closeContextMenu = () => {
-    contextMenuVisible.value = false;
-    nextTick(() => focusTableRowById(props.row?.id));
-};
-const handleContextAction = (actionKey) => {
-    closeContextMenu();
-    emit("action", actionKey, entity.value ?? props.row, props.row);
-};
-onUnmounted(() => {
-    if (typeof window !== "undefined") document.removeEventListener("click", closeContextMenu);
-});
-if (typeof window !== "undefined") document.addEventListener("click", closeContextMenu);
 </script>
 
 <template>
@@ -176,7 +153,6 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
         style="--bg-color: var(--color-base-100)"
         data-row-contextmenu-target
         @click="handleRowClick"
-        @contextmenu="handleContextMenu"
     >
         <div
             v-if="showActions || showSelection"
@@ -328,22 +304,6 @@ if (typeof window !== "undefined") document.addEventListener("click", closeConte
             section-class="mt-1.5 border-t border-base-300/50 pt-1.5"
         />
 
-        <Teleport to="body">
-            <EntityActions
-                v-if="entityType && contextMenuVisible"
-                :entity-type="entityType"
-                :entity="entity || row"
-                format="context"
-                display="icon-text"
-                size="sm"
-                color="primary"
-                :context="{ inPanel: false }"
-                :context-position="contextMenuPosition"
-                :context-visible="contextMenuVisible"
-                @close="closeContextMenu"
-                @action="handleContextAction"
-            />
-        </Teleport>
     </div>
 </template>
 

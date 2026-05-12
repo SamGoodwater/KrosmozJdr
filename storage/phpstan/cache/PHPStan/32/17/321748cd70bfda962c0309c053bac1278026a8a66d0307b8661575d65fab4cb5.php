@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Services/PageService.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Services\PageService
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-fbbd56d80238b7c57769f0192407d4ad22ec022ca1101df598bf66bb93bcd3d3-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-0576bd7abf1a49df612816842d28dd9f41c670174737a6871c94c34284306b7e-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -407,10 +407,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               array (
                 'startLine' => 134,
                 'endLine' => 134,
-                'startTokenPos' => 547,
-                'startFilePos' => 4710,
-                'endTokenPos' => 547,
-                'endFilePos' => 4713,
+                'startTokenPos' => 550,
+                'startFilePos' => 4717,
+                'endTokenPos' => 550,
+                'endFilePos' => 4720,
               ),
             ),
             'type' => 
@@ -531,10 +531,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               array (
                 'startLine' => 151,
                 'endLine' => 151,
-                'startTokenPos' => 589,
-                'startFilePos' => 5289,
-                'endTokenPos' => 589,
-                'endFilePos' => 5292,
+                'startTokenPos' => 592,
+                'startFilePos' => 5296,
+                'endTokenPos' => 592,
+                'endFilePos' => 5299,
               ),
             ),
             'type' => 
@@ -634,10 +634,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               array (
                 'startLine' => 182,
                 'endLine' => 182,
-                'startTokenPos' => 629,
-                'startFilePos' => 6604,
-                'endTokenPos' => 629,
-                'endFilePos' => 6607,
+                'startTokenPos' => 632,
+                'startFilePos' => 6611,
+                'endTokenPos' => 632,
+                'endFilePos' => 6614,
               ),
             ),
             'type' => 
@@ -777,10 +777,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               array (
                 'startLine' => 207,
                 'endLine' => 207,
-                'startTokenPos' => 724,
-                'startFilePos' => 7586,
-                'endTokenPos' => 724,
-                'endFilePos' => 7589,
+                'startTokenPos' => 727,
+                'startFilePos' => 7593,
+                'endTokenPos' => 727,
+                'endFilePos' => 7596,
               ),
             ),
             'type' => 
@@ -920,10 +920,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               array (
                 'startLine' => 229,
                 'endLine' => 229,
-                'startTokenPos' => 838,
-                'startFilePos' => 8312,
-                'endTokenPos' => 838,
-                'endFilePos' => 8315,
+                'startTokenPos' => 841,
+                'startFilePos' => 8319,
+                'endTokenPos' => 841,
+                'endFilePos' => 8322,
               ),
             ),
             'type' => 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use App\Models\DofusdbEffectMapping;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectConversionFormulaResolver;
 use Illuminate\Console\Command;
@@ -49,7 +50,7 @@ final class ScrappingEffectsQualityAuditCommand extends Command
         if ($asJson) {
             $this->line((string) json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $this->info('Audit qualité effets de sorts');
@@ -98,7 +99,7 @@ final class ScrappingEffectsQualityAuditCommand extends Command
             )
         );
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

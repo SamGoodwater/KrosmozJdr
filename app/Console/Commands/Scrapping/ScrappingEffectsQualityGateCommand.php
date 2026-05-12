@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use App\Models\DofusdbEffectMapping;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectConversionFormulaResolver;
 use Illuminate\Console\Command;
@@ -81,7 +82,7 @@ final class ScrappingEffectsQualityGateCommand extends Command
         if ($asJson) {
             $this->line((string) json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-            return $ok ? self::SUCCESS : self::FAILURE;
+            return $ok ? ArtisanExitCode::SUCCESS : ArtisanExitCode::FAILURE;
         }
 
         $this->info('Quality gate effets de sorts');
@@ -102,13 +103,13 @@ final class ScrappingEffectsQualityGateCommand extends Command
                 $this->line('- '.$violation);
             }
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $this->newLine();
         $this->info('Gate OK');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

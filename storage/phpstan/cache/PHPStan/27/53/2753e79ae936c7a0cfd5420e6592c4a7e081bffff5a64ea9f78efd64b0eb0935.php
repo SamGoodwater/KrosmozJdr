@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Characteristic.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Characteristic
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-583eb8e59bd8eac31839ef7fc6c1847a26d23efa43bf7dedd6e969dc1dcf912a-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-0c41b60078e6e5db6460846dd8190f46b48b02a61b034d4fe9b7cf89aba66c4a-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -38,8 +38,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property string|null $color
  * @property array|null $value_overrides
  * @property bool $hide_when_empty
+ * @property bool $hide_when_false
  * @property string|null $unit
  * @property string $type
+ * @property string $status
  * @property int $sort_order
  * @property string|null $group
  * @property int|null $linked_to_characteristic_id
@@ -56,7 +58,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property-read int|null $object_rows_count
  * @property-read Collection<int, CharacteristicSpell> $spellRows
  * @property-read int|null $spell_rows_count
- *
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Characteristic newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Characteristic newQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Characteristic query()
@@ -77,14 +78,16 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Characteristic whereUnit($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Characteristic whereUpdatedAt($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Characteristic whereValueOverrides($value)
- *
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Characteristic whereHideWhenEmpty($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Characteristic whereStatus($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Characteristic whereHideWhenFalse($value)
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 76,
-    'endLine' => 182,
+    'startLine' => 80,
+    'endLine' => 206,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -99,6 +102,122 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     'immediateConstants' => 
     array (
+      'STATUS_A_VALIDER' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Characteristic',
+        'implementingClassName' => 'App\\Models\\Characteristic',
+        'name' => 'STATUS_A_VALIDER',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'a_valider\'',
+          'attributes' => 
+          array (
+            'startLine' => 85,
+            'endLine' => 85,
+            'startTokenPos' => 104,
+            'startFilePos' => 4491,
+            'endTokenPos' => 104,
+            'endFilePos' => 4501,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 85,
+        'endLine' => 85,
+        'startColumn' => 5,
+        'endColumn' => 48,
+      ),
+      'STATUS_EN_COURS_VALIDATION' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Characteristic',
+        'implementingClassName' => 'App\\Models\\Characteristic',
+        'name' => 'STATUS_EN_COURS_VALIDATION',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'en_cours_de_validation\'',
+          'attributes' => 
+          array (
+            'startLine' => 87,
+            'endLine' => 87,
+            'startTokenPos' => 115,
+            'startFilePos' => 4551,
+            'endTokenPos' => 115,
+            'endFilePos' => 4574,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 87,
+        'endLine' => 87,
+        'startColumn' => 5,
+        'endColumn' => 71,
+      ),
+      'STATUS_VALIDEE' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Characteristic',
+        'implementingClassName' => 'App\\Models\\Characteristic',
+        'name' => 'STATUS_VALIDEE',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'validee\'',
+          'attributes' => 
+          array (
+            'startLine' => 89,
+            'endLine' => 89,
+            'startTokenPos' => 126,
+            'startFilePos' => 4612,
+            'endTokenPos' => 126,
+            'endFilePos' => 4620,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 89,
+        'endLine' => 89,
+        'startColumn' => 5,
+        'endColumn' => 44,
+      ),
+      'STATUSES' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Characteristic',
+        'implementingClassName' => 'App\\Models\\Characteristic',
+        'name' => 'STATUSES',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '[self::STATUS_A_VALIDER, self::STATUS_EN_COURS_VALIDATION, self::STATUS_VALIDEE]',
+          'attributes' => 
+          array (
+            'startLine' => 91,
+            'endLine' => 95,
+            'startTokenPos' => 137,
+            'startFilePos' => 4652,
+            'endTokenPos' => 154,
+            'endFilePos' => 4762,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 91,
+        'endLine' => 95,
+        'startColumn' => 5,
+        'endColumn' => 6,
+      ),
       'MEDIA_PATH' => 
       array (
         'declaringClassName' => 'App\\Models\\Characteristic',
@@ -111,20 +230,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'images/entity/characteristics\'',
           'attributes' => 
           array (
-            'startLine' => 82,
-            'endLine' => 82,
-            'startTokenPos' => 101,
-            'startFilePos' => 4143,
-            'endTokenPos' => 101,
-            'endFilePos' => 4173,
+            'startLine' => 98,
+            'endLine' => 98,
+            'startTokenPos' => 167,
+            'startFilePos' => 4850,
+            'endTokenPos' => 167,
+            'endFilePos' => 4880,
           ),
         ),
         'docComment' => '/** Répertoire Media Library pour ce modèle. */',
         'attributes' => 
         array (
         ),
-        'startLine' => 82,
-        'endLine' => 82,
+        'startLine' => 98,
+        'endLine' => 98,
         'startColumn' => 5,
         'endColumn' => 62,
       ),
@@ -140,20 +259,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'[key]\'',
           'attributes' => 
           array (
-            'startLine' => 85,
-            'endLine' => 85,
-            'startTokenPos' => 114,
-            'startFilePos' => 4312,
-            'endTokenPos' => 114,
-            'endFilePos' => 4318,
+            'startLine' => 101,
+            'endLine' => 101,
+            'startTokenPos' => 180,
+            'startFilePos' => 5023,
+            'endTokenPos' => 180,
+            'endFilePos' => 5029,
           ),
         ),
-        'docComment' => '/** Motif de nommage pour la collection icons (placeholders: [name], [date], [id]). */',
+        'docComment' => '/** Motif de nommage pour la collection icons (placeholders: [key], [id], [name], …). */',
         'attributes' => 
         array (
         ),
-        'startLine' => 85,
-        'endLine' => 85,
+        'startLine' => 101,
+        'endLine' => 101,
         'startColumn' => 5,
         'endColumn' => 52,
       ),
@@ -172,20 +291,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'characteristics\'',
           'attributes' => 
           array (
-            'startLine' => 87,
-            'endLine' => 87,
-            'startTokenPos' => 123,
-            'startFilePos' => 4345,
-            'endTokenPos' => 123,
-            'endFilePos' => 4361,
+            'startLine' => 103,
+            'endLine' => 103,
+            'startTokenPos' => 189,
+            'startFilePos' => 5056,
+            'endTokenPos' => 189,
+            'endFilePos' => 5072,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 87,
-        'endLine' => 87,
+        'startLine' => 103,
+        'endLine' => 103,
         'startColumn' => 5,
         'endColumn' => 41,
         'isPromoted' => false,
@@ -204,23 +323,23 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'type' => NULL,
         'default' => 
         array (
-          'code' => '[\'key\', \'name\', \'short_name\', \'helper\', \'descriptions\', \'icon\', \'icon_false\', \'color\', \'value_overrides\', \'hide_when_empty\', \'unit\', \'type\', \'sort_order\', \'group\', \'linked_to_characteristic_id\']',
+          'code' => '[\'key\', \'name\', \'short_name\', \'helper\', \'descriptions\', \'icon\', \'icon_false\', \'color\', \'value_overrides\', \'hide_when_empty\', \'hide_when_false\', \'unit\', \'type\', \'status\', \'sort_order\', \'group\', \'linked_to_characteristic_id\']',
           'attributes' => 
           array (
-            'startLine' => 90,
-            'endLine' => 106,
-            'startTokenPos' => 134,
-            'startFilePos' => 4420,
-            'endTokenPos' => 181,
-            'endFilePos' => 4740,
+            'startLine' => 106,
+            'endLine' => 124,
+            'startTokenPos' => 200,
+            'startFilePos' => 5131,
+            'endTokenPos' => 253,
+            'endFilePos' => 5496,
           ),
         ),
         'docComment' => '/** @var list<string> */',
         'attributes' => 
         array (
         ),
-        'startLine' => 90,
-        'endLine' => 106,
+        'startLine' => 106,
+        'endLine' => 124,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -239,23 +358,23 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'type' => NULL,
         'default' => 
         array (
-          'code' => '[\'sort_order\' => \'integer\', \'value_overrides\' => \'array\', \'hide_when_empty\' => \'boolean\']',
+          'code' => '[\'sort_order\' => \'integer\', \'value_overrides\' => \'array\', \'hide_when_empty\' => \'boolean\', \'hide_when_false\' => \'boolean\']',
           'attributes' => 
           array (
-            'startLine' => 109,
-            'endLine' => 113,
-            'startTokenPos' => 192,
-            'startFilePos' => 4805,
-            'endTokenPos' => 215,
-            'endFilePos' => 4924,
+            'startLine' => 127,
+            'endLine' => 132,
+            'startTokenPos' => 264,
+            'startFilePos' => 5561,
+            'endTokenPos' => 294,
+            'endFilePos' => 5720,
           ),
         ),
         'docComment' => '/** @var array<string, string> */',
         'attributes' => 
         array (
         ),
-        'startLine' => 109,
-        'endLine' => 113,
+        'startLine' => 127,
+        'endLine' => 132,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -290,8 +409,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Caractéristique maître si cette ligne est une caractéristique liée.
  */',
-        'startLine' => 118,
-        'endLine' => 121,
+        'startLine' => 137,
+        'endLine' => 140,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -329,8 +448,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *
  * @return HasMany<self>
  */',
-        'startLine' => 128,
-        'endLine' => 131,
+        'startLine' => 147,
+        'endLine' => 150,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -366,8 +485,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Indique si la caractéristique est liée à une autre.
  */',
-        'startLine' => 136,
-        'endLine' => 139,
+        'startLine' => 155,
+        'endLine' => 158,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -403,8 +522,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Retourne la caractéristique effective (maître si liée, sinon elle-même).
  */',
-        'startLine' => 144,
-        'endLine' => 153,
+        'startLine' => 163,
+        'endLine' => 172,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -438,8 +557,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 155,
-        'endLine' => 158,
+        'startLine' => 174,
+        'endLine' => 177,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -473,8 +592,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 160,
-        'endLine' => 163,
+        'startLine' => 179,
+        'endLine' => 182,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -508,8 +627,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 165,
-        'endLine' => 168,
+        'startLine' => 184,
+        'endLine' => 187,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -543,8 +662,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 170,
-        'endLine' => 173,
+        'startLine' => 189,
+        'endLine' => 192,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -571,12 +690,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 175,
-                'endLine' => 175,
-                'startTokenPos' => 517,
-                'startFilePos' => 6642,
-                'endTokenPos' => 517,
-                'endFilePos' => 6645,
+                'startLine' => 194,
+                'endLine' => 194,
+                'startTokenPos' => 596,
+                'startFilePos' => 7438,
+                'endTokenPos' => 596,
+                'endFilePos' => 7441,
               ),
             ),
             'type' => 
@@ -613,8 +732,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 175,
-            'endLine' => 175,
+            'startLine' => 194,
+            'endLine' => 194,
             'startColumn' => 46,
             'endColumn' => 65,
             'parameterIndex' => 0,
@@ -635,8 +754,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 175,
-        'endLine' => 181,
+        'startLine' => 194,
+        'endLine' => 205,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

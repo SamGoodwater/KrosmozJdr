@@ -44,7 +44,7 @@
 
 ## 3. Où documenter quoi ?
 
-- **Règles de code, conventions, style** : `docs/10-BestPractices/BEST_PRACTICES.md`
+- **Règles de code, conventions, style** : `docs/10-BestPractices/README.md` (index des fiches du dossier)
 - **Comment écrire la doc** : `docs/DOCUMENTATION_GUIDE.md` (ce fichier)
 - **API, patterns, UI, entités, etc.** : un fichier dédié par concept dans le bon dossier
 - **Checklists, TODO, idées** : à garder dans un dossier backup ou personnel, pas dans la doc principale

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
@@ -33,7 +34,7 @@ class ProjectOptimizeCommand extends Command
     public function handle(): int
     {
         if (! $this->guardNotProduction('Interdit en production.')) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $clearOnly = (bool) $this->option('clear-only');
@@ -42,7 +43,7 @@ class ProjectOptimizeCommand extends Command
         if ($clearOnly && $ideOnly) {
             $this->error('Incompatible : --clear-only et --ide-only.');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         if ($clearOnly) {

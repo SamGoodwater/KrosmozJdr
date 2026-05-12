@@ -302,10 +302,18 @@ export const quickValidation = {
         },
         includeLetter: (value) => /[a-zA-Z]/.test(value),
         includeNumber: (value) => /[0-9]/.test(value),
-        includeSpecialChar: (value) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value),
+        includeSpecialChar: (value) => {
+            if (value == null) {
+                return false;
+            }
+            const specials = '!@#$%^&*()_+-=[]{};\':"|,.<>?/\\';
+            return [...String(value)].some((ch) => specials.includes(ch));
+        },
         includeUppercase: (value) => /[A-Z]/.test(value),
         includeLowercase: (value) => /[a-z]/.test(value),
         includeSpace: (value) => /\s/.test(value),
+        // Détection volontaire des points de code de contrôle (validation mot de passe / saisie)
+        // eslint-disable-next-line no-control-regex -- plage ASCII contrôle + DEL
         includeNonPrintable: (value) => /[\x00-\x1F\x7F]/.test(value),
         url: (value) => {
             try {

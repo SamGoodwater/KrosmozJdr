@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use Illuminate\Console\Command;
@@ -89,7 +90,7 @@ class ScrappingTypesExtractCommand extends Command
 
         $this->info('Extraction terminée : '.count($resourceTypes).' ressources, '.count($consumableTypes).' consommables, '.count($itemTypes).' équipements (tous en typeIds).');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

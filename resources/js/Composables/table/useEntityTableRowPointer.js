@@ -26,3 +26,23 @@ export function classifyRowPointerModifiers(event) {
     if (event.altKey) return "edit";
     return "default";
 }
+
+/**
+ * @param {(eventName:string, ...args:any[]) => void} emit
+ * @param {object} row
+ * @param {MouseEvent} event
+ */
+export function emitLineRowClick(emit, row, event) {
+    emit("row-click", row, event);
+}
+
+/**
+ * @param {(eventName:string, ...args:any[]) => void} emit
+ * @param {object} row
+ * @param {MouseEvent} event
+ */
+export function emitLineRowDblClick(emit, row, event) {
+    if (!isRowInteractiveTarget(event)) {
+        emit("row-dblclick", row);
+    }
+}

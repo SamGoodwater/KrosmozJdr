@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Development;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -17,7 +18,7 @@ class GenerateTestCommand extends Command
     public function handle()
     {
         if (! $this->guardDevelopmentOnly()) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $name = $this->argument('name');

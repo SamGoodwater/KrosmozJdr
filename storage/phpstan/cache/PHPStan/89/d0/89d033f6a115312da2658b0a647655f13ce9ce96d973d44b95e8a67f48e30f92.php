@@ -2,7 +2,7 @@
 
 // ftm-/var/www/KrosmozJdr/database/seeders/SpellCharacteristicSeeder.php
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v4-2.3.2',
+   'variableKey' => 'v5-2.3.2',
    'data' => 
   array (
     0 => 
@@ -20,96 +20,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
          'parent' => NULL,
-         'typeAliasesMap' => 
-        array (
-        ),
-         'bypassTypeAliases' => false,
-         'constUses' => 
-        array (
-        ),
-         'typeAliasClassName' => NULL,
-         'traitData' => NULL,
-      )),
-      '4381d82ddcf65b7599c6c888829b52c5' => 
-      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
-         'namespace' => 'Database\\Seeders',
-         'uses' => 
-        array (
-          'characteristicspell' => 'App\\Models\\CharacteristicSpell',
-        ),
-         'className' => 'Database\\Seeders\\SpellCharacteristicSeeder',
-         'functionName' => 'dataPath',
-         'templatePhpDocNodes' => 
-        array (
-        ),
-         'parent' => 
-        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
-           'namespace' => 'Database\\Seeders',
-           'uses' => 
-          array (
-            'characteristicspell' => 'App\\Models\\CharacteristicSpell',
-          ),
-           'className' => 'Database\\Seeders\\SpellCharacteristicSeeder',
-           'functionName' => NULL,
-           'templatePhpDocNodes' => 
-          array (
-          ),
-           'parent' => NULL,
-           'typeAliasesMap' => 
-          array (
-          ),
-           'bypassTypeAliases' => false,
-           'constUses' => 
-          array (
-          ),
-           'typeAliasClassName' => NULL,
-           'traitData' => NULL,
-        )),
-         'typeAliasesMap' => 
-        array (
-        ),
-         'bypassTypeAliases' => false,
-         'constUses' => 
-        array (
-        ),
-         'typeAliasClassName' => NULL,
-         'traitData' => NULL,
-      )),
-      'd002a4ceda5f449a556e456848634051' => 
-      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
-         'namespace' => 'Database\\Seeders',
-         'uses' => 
-        array (
-          'characteristicspell' => 'App\\Models\\CharacteristicSpell',
-        ),
-         'className' => 'Database\\Seeders\\SpellCharacteristicSeeder',
-         'functionName' => 'normsDataPath',
-         'templatePhpDocNodes' => 
-        array (
-        ),
-         'parent' => 
-        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
-           'namespace' => 'Database\\Seeders',
-           'uses' => 
-          array (
-            'characteristicspell' => 'App\\Models\\CharacteristicSpell',
-          ),
-           'className' => 'Database\\Seeders\\SpellCharacteristicSeeder',
-           'functionName' => NULL,
-           'templatePhpDocNodes' => 
-          array (
-          ),
-           'parent' => NULL,
-           'typeAliasesMap' => 
-          array (
-          ),
-           'bypassTypeAliases' => false,
-           'constUses' => 
-          array (
-          ),
-           'typeAliasClassName' => NULL,
-           'traitData' => NULL,
-        )),
          'typeAliasesMap' => 
         array (
         ),
@@ -303,7 +213,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/database/seeders/SpellCharacteristicSeeder.php' => '1f234bd25b5aeb165554caf000e6416ba3cefa993b43e96a78da5bcd87e24539',
+      '/var/www/KrosmozJdr/database/seeders/SpellCharacteristicSeeder.php' => 'ef33356eb81017292ef3a1d121840b62cd4e2cca04ff8312419b398642b923a3',
     ),
   ),
 ));

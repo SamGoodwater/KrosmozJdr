@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Characteristics;
 
+use App\Console\ArtisanExitCode;
 use App\Models\Entity\Capability;
 use App\Support\ElementConstants;
 use Illuminate\Console\Command;
@@ -38,21 +39,21 @@ class ImportLegacyCapabilitiesCommand extends Command
         if (! is_file($path)) {
             $this->error("Fichier introuvable : {$path}");
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $raw = file_get_contents($path);
         if ($raw === false) {
             $this->error('Impossible de lire le fichier.');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $rows = $this->extractCapabilityRows($raw);
         if ($rows === null) {
             $this->error('Format JSON invalide ou aucune donnée capability trouvée.');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $dryRun = (bool) $this->option('dry-run');
@@ -106,17 +107,17 @@ class ImportLegacyCapabilitiesCommand extends Command
                     $this->line("  - {$err}");
                 }
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         } catch (\Throwable $e) {
             if (! $dryRun) {
                 DB::rollBack();
             }
             $this->error('Import interrompu : '.$e->getMessage());
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
     }
 

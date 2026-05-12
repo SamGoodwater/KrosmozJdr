@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
@@ -37,7 +38,7 @@ class ProjectDevCommand extends Command
     public function handle(): int
     {
         if (! $this->guardNotProduction('Interdit en production.')) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         if ($this->option('migrate')) {
@@ -51,14 +52,14 @@ class ProjectDevCommand extends Command
         }
 
         if (! $this->option('no-prepare')) {
-            if ($this->call('project:prepare', $prepareOptions) !== self::SUCCESS) {
-                return self::FAILURE;
+            if ($this->call('project:prepare', $prepareOptions) !== ArtisanExitCode::SUCCESS) {
+                return ArtisanExitCode::FAILURE;
             }
         }
 
         if (! $this->option('no-optimize')) {
-            if ($this->call('project:optimize') !== self::SUCCESS) {
-                return self::FAILURE;
+            if ($this->call('project:optimize') !== ArtisanExitCode::SUCCESS) {
+                return ArtisanExitCode::FAILURE;
             }
         }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Consumable;
@@ -14,6 +15,7 @@ use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -192,7 +194,7 @@ class ProjectUpdateCommand extends Command
             $this->warn("{$errors} erreur(s) rencontrée(s).");
         }
 
-        return $errors > 0 ? self::FAILURE : self::SUCCESS;
+        return $errors > 0 ? ArtisanExitCode::FAILURE : ArtisanExitCode::SUCCESS;
     }
 
     /**
@@ -201,7 +203,7 @@ class ProjectUpdateCommand extends Command
     private function getAutoUpdateIds(array $config): array
     {
         $model = $config['model'];
-        /** @var \Illuminate\Database\Eloquent\Model $instance */
+        /** @var Model $instance */
         $instance = new $model;
         $table = $instance->getTable();
         $idCol = $config['idColumn'];

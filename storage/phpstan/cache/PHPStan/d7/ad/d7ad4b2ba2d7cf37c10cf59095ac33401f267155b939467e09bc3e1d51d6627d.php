@@ -1223,6 +1223,63 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'typeAliasClassName' => NULL,
          'traitData' => NULL,
       )),
+      '949a0033409093078eae4f3523a4a4e1' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'Spatie\\MediaLibrary\\Conversions',
+         'uses' => 
+        array (
+          'arr' => 'Illuminate\\Support\\Arr',
+          'conditionable' => 'Illuminate\\Support\\Traits\\Conditionable',
+          'imagedriver' => 'Spatie\\Image\\Drivers\\ImageDriver',
+          'optimizerchainfactory' => 'Spatie\\ImageOptimizer\\OptimizerChainFactory',
+          'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
+          'widthcalculator' => 'Spatie\\MediaLibrary\\ResponsiveImages\\WidthCalculator\\WidthCalculator',
+          'filenamer' => 'Spatie\\MediaLibrary\\Support\\FileNamer\\FileNamer',
+        ),
+         'className' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
+         'functionName' => 'deferred',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'Spatie\\MediaLibrary\\Conversions',
+           'uses' => 
+          array (
+            'arr' => 'Illuminate\\Support\\Arr',
+            'conditionable' => 'Illuminate\\Support\\Traits\\Conditionable',
+            'imagedriver' => 'Spatie\\Image\\Drivers\\ImageDriver',
+            'optimizerchainfactory' => 'Spatie\\ImageOptimizer\\OptimizerChainFactory',
+            'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
+            'widthcalculator' => 'Spatie\\MediaLibrary\\ResponsiveImages\\WidthCalculator\\WidthCalculator',
+            'filenamer' => 'Spatie\\MediaLibrary\\Support\\FileNamer\\FileNamer',
+          ),
+           'className' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
       '68ebe5ca4a1a56c4012de0fb62343142' => 
       \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
          'namespace' => 'Spatie\\MediaLibrary\\Conversions',
@@ -1523,6 +1580,63 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
          'className' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
          'functionName' => 'shouldBeQueued',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'Spatie\\MediaLibrary\\Conversions',
+           'uses' => 
+          array (
+            'arr' => 'Illuminate\\Support\\Arr',
+            'conditionable' => 'Illuminate\\Support\\Traits\\Conditionable',
+            'imagedriver' => 'Spatie\\Image\\Drivers\\ImageDriver',
+            'optimizerchainfactory' => 'Spatie\\ImageOptimizer\\OptimizerChainFactory',
+            'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
+            'widthcalculator' => 'Spatie\\MediaLibrary\\ResponsiveImages\\WidthCalculator\\WidthCalculator',
+            'filenamer' => 'Spatie\\MediaLibrary\\Support\\FileNamer\\FileNamer',
+          ),
+           'className' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      '7cf57aecf62fb0c26487768ec16523f0' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'Spatie\\MediaLibrary\\Conversions',
+         'uses' => 
+        array (
+          'arr' => 'Illuminate\\Support\\Arr',
+          'conditionable' => 'Illuminate\\Support\\Traits\\Conditionable',
+          'imagedriver' => 'Spatie\\Image\\Drivers\\ImageDriver',
+          'optimizerchainfactory' => 'Spatie\\ImageOptimizer\\OptimizerChainFactory',
+          'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
+          'widthcalculator' => 'Spatie\\MediaLibrary\\ResponsiveImages\\WidthCalculator\\WidthCalculator',
+          'filenamer' => 'Spatie\\MediaLibrary\\Support\\FileNamer\\FileNamer',
+        ),
+         'className' => 'Spatie\\MediaLibrary\\Conversions\\Conversion',
+         'functionName' => 'shouldBeDeferred',
          'templatePhpDocNodes' => 
         array (
         ),
@@ -1910,7 +2024,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/vendor/spatie/laravel-medialibrary/src/Conversions/Conversion.php' => '1f12646b6bc29877cc453bd06e4546d14612d505b1ce7fc8d4baf9a1b3f3dd97',
+      '/var/www/KrosmozJdr/vendor/spatie/laravel-medialibrary/src/Conversions/Conversion.php' => 'bb13d8058dd91548b003ac0fa4101549b41227abf4d5122ae8d985677759aa2c',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Conditionable/Traits/Conditionable.php' => '5697fdba0acb78ca0b4e122e5c459cd5d97d000ed9b14fed31271cb7ffd44225',
     ),
   ),

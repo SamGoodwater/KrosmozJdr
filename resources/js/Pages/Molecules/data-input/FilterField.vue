@@ -112,10 +112,10 @@ defineExpose({
     :helper="props.helper"
   >
     <!-- Slot core spécifique pour FilterCore -->
-    <template #core="{ inputAttrs, listeners, inputRef }">
+    <template #core="coreSlot">
       <FilterCore
-        v-bind="inputAttrs"
-        v-on="listeners"
+        v-bind="coreSlot.inputAttrs"
+        v-on="coreSlot.listeners"
         ref="inputRef"
       />
     </template>

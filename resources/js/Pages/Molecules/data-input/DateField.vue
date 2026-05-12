@@ -111,10 +111,10 @@ defineExpose({
     :helper="props.helper"
   >
     <!-- Slot core spécifique pour DateCore -->
-    <template #core="{ inputAttrs, listeners, inputRef }">
+    <template #core="coreSlot">
       <DateCore
-        v-bind="inputAttrs"
-        v-on="listeners"
+        v-bind="coreSlot.inputAttrs"
+        v-on="coreSlot.listeners"
         ref="inputRef"
       />
     </template>

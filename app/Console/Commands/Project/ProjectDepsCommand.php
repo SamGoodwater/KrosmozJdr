@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
@@ -43,7 +44,7 @@ class ProjectDepsCommand extends Command
     public function handle(): int
     {
         if (! $this->guardNotProduction('Utilisez des déploiements contrôlés en production, pas project:deps.')) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         if ($this->wantsAll()) {
@@ -58,15 +59,15 @@ class ProjectDepsCommand extends Command
         }
 
         if ($this->option('composer')) {
-            if ($this->projectRunService->runComposerProjectUpdate($this) !== self::SUCCESS) {
-                return self::FAILURE;
+            if ($this->projectRunService->runComposerProjectUpdate($this) !== ArtisanExitCode::SUCCESS) {
+                return ArtisanExitCode::FAILURE;
             }
             $ran = true;
         }
 
         if ($this->option('pnpm')) {
-            if ($this->projectRunService->runPnpmProjectUpdate($this) !== self::SUCCESS) {
-                return self::FAILURE;
+            if ($this->projectRunService->runPnpmProjectUpdate($this) !== ArtisanExitCode::SUCCESS) {
+                return ArtisanExitCode::FAILURE;
             }
             $ran = true;
         }
@@ -95,11 +96,11 @@ class ProjectDepsCommand extends Command
         if (! $ran) {
             $this->warn('Aucune cible : utilisez le mode par défaut, --all, ou au moins une option (--with-system, --composer, …).');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
-        $code = $map === [] ? self::SUCCESS : $this->projectRunService->runOptionMap($map, $this);
-        if ($code !== self::SUCCESS) {
+        $code = $map === [] ? ArtisanExitCode::SUCCESS : $this->projectRunService->runOptionMap($map, $this);
+        if ($code !== ArtisanExitCode::SUCCESS) {
             return $code;
         }
 
@@ -107,7 +108,7 @@ class ProjectDepsCommand extends Command
             return $this->call('project:optimize');
         }
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**
@@ -119,12 +120,12 @@ class ProjectDepsCommand extends Command
             $this->call('setup', ['--update' => true]);
         }
 
-        if ($this->projectRunService->runComposerProjectUpdate($this) !== self::SUCCESS) {
-            return self::FAILURE;
+        if ($this->projectRunService->runComposerProjectUpdate($this) !== ArtisanExitCode::SUCCESS) {
+            return ArtisanExitCode::FAILURE;
         }
 
-        if ($this->projectRunService->runPnpmProjectUpdate($this) !== self::SUCCESS) {
-            return self::FAILURE;
+        if ($this->projectRunService->runPnpmProjectUpdate($this) !== ArtisanExitCode::SUCCESS) {
+            return ArtisanExitCode::FAILURE;
         }
 
         return $this->call('project:optimize');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -135,7 +136,7 @@ final class ScrappingEffectsAutreAuditCommand extends Command
         if ($asJson) {
             $this->line((string) json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $this->info('Audit des sous-effets "autre"');
@@ -185,7 +186,7 @@ final class ScrappingEffectsAutreAuditCommand extends Command
             }
         }
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

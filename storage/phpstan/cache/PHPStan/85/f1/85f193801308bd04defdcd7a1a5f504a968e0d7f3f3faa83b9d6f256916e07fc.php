@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/CharacteristicCreature.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\CharacteristicCreature
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-95086e1d47e91cec804d0e73fc34bad79d6a5ce36c6ee782cc0401dd5980aa8e-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-363983c7ec37df5341f86b4350c912dfbf0e3df57d90e8b990a36f49f80a9256-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -50,7 +50,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property Carbon|null $updated_at
  * @property-read Characteristic $characteristic
  * @property-read Section|null $normsHelpSection
- *
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|CharacteristicCreature newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|CharacteristicCreature newQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|CharacteristicCreature query()
@@ -77,14 +76,13 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|CharacteristicCreature whereNormsHelpSectionId($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|CharacteristicCreature whereUpdatedAt($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|CharacteristicCreature whereValidation($value)
- *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 69,
-    'endLine' => 131,
+    'startLine' => 67,
+    'endLine' => 129,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -108,20 +106,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'*\'',
           'attributes' => 
           array (
-            'startLine' => 74,
-            'endLine' => 74,
+            'startLine' => 72,
+            'endLine' => 72,
             'startTokenPos' => 61,
-            'startFilePos' => 4897,
+            'startFilePos' => 4891,
             'endTokenPos' => 61,
-            'endFilePos' => 4899,
+            'endFilePos' => 4893,
           ),
         ),
         'docComment' => '/** S\'applique à toutes les entités du groupe (défaut). */',
         'attributes' => 
         array (
         ),
-        'startLine' => 74,
-        'endLine' => 74,
+        'startLine' => 72,
+        'endLine' => 72,
         'startColumn' => 5,
         'endColumn' => 34,
       ),
@@ -137,20 +135,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'monster\'',
           'attributes' => 
           array (
-            'startLine' => 76,
-            'endLine' => 76,
+            'startLine' => 74,
+            'endLine' => 74,
             'startTokenPos' => 72,
-            'startFilePos' => 4937,
+            'startFilePos' => 4931,
             'endTokenPos' => 72,
-            'endFilePos' => 4945,
+            'endFilePos' => 4939,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 76,
-        'endLine' => 76,
+        'startLine' => 74,
+        'endLine' => 74,
         'startColumn' => 5,
         'endColumn' => 44,
       ),
@@ -166,20 +164,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'class\'',
           'attributes' => 
           array (
-            'startLine' => 78,
-            'endLine' => 78,
+            'startLine' => 76,
+            'endLine' => 76,
             'startTokenPos' => 83,
-            'startFilePos' => 4981,
+            'startFilePos' => 4975,
             'endTokenPos' => 83,
-            'endFilePos' => 4987,
+            'endFilePos' => 4981,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 78,
-        'endLine' => 78,
+        'startLine' => 76,
+        'endLine' => 76,
         'startColumn' => 5,
         'endColumn' => 40,
       ),
@@ -195,20 +193,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'npc\'',
           'attributes' => 
           array (
-            'startLine' => 80,
-            'endLine' => 80,
+            'startLine' => 78,
+            'endLine' => 78,
             'startTokenPos' => 94,
-            'startFilePos' => 5021,
+            'startFilePos' => 5015,
             'endTokenPos' => 94,
-            'endFilePos' => 5025,
+            'endFilePos' => 5019,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 80,
-        'endLine' => 80,
+        'startLine' => 78,
+        'endLine' => 78,
         'startColumn' => 5,
         'endColumn' => 36,
       ),
@@ -224,20 +222,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[self::ENTITY_MONSTER, self::ENTITY_CLASS, self::ENTITY_NPC]',
           'attributes' => 
           array (
-            'startLine' => 83,
-            'endLine' => 83,
+            'startLine' => 81,
+            'endLine' => 81,
             'startTokenPos' => 107,
-            'startFilePos' => 5086,
+            'startFilePos' => 5080,
             'endTokenPos' => 121,
-            'endFilePos' => 5145,
+            'endFilePos' => 5139,
           ),
         ),
         'docComment' => '/** @var list<string> */',
         'attributes' => 
         array (
         ),
-        'startLine' => 83,
-        'endLine' => 83,
+        'startLine' => 81,
+        'endLine' => 81,
         'startColumn' => 5,
         'endColumn' => 89,
       ),
@@ -256,20 +254,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'characteristic_creature\'',
           'attributes' => 
           array (
-            'startLine' => 71,
-            'endLine' => 71,
+            'startLine' => 69,
+            'endLine' => 69,
             'startTokenPos' => 48,
-            'startFilePos' => 4773,
+            'startFilePos' => 4767,
             'endTokenPos' => 48,
-            'endFilePos' => 4797,
+            'endFilePos' => 4791,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 71,
-        'endLine' => 71,
+        'startLine' => 69,
+        'endLine' => 69,
         'startColumn' => 5,
         'endColumn' => 49,
         'isPromoted' => false,
@@ -291,20 +289,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'characteristic_id\', \'dofusdb_characteristic_id\', \'entity\', \'db_column\', \'min\', \'max\', \'formula\', \'formula_display\', \'default_value\', \'conversion_formula\', \'conversion_function\', \'conversion_dofus_sample\', \'conversion_krosmoz_sample\', \'conversion_sample_rows\', \'norms_grid\', \'norms_conditions\', \'norms_description\', \'norms_help_section_id\', \'labels\', \'validation\']',
           'attributes' => 
           array (
-            'startLine' => 86,
-            'endLine' => 107,
+            'startLine' => 84,
+            'endLine' => 105,
             'startTokenPos' => 132,
-            'startFilePos' => 5204,
+            'startFilePos' => 5198,
             'endTokenPos' => 194,
-            'endFilePos' => 5735,
+            'endFilePos' => 5729,
           ),
         ),
         'docComment' => '/** @var list<string> */',
         'attributes' => 
         array (
         ),
-        'startLine' => 86,
-        'endLine' => 107,
+        'startLine' => 84,
+        'endLine' => 105,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -326,20 +324,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'dofusdb_characteristic_id\' => \'integer\', \'conversion_dofus_sample\' => \'array\', \'conversion_krosmoz_sample\' => \'array\', \'conversion_sample_rows\' => \'array\', \'norms_grid\' => \'array\', \'norms_conditions\' => \'array\', \'labels\' => \'array\', \'validation\' => \'array\', \'norms_help_section_id\' => \'integer\']',
           'attributes' => 
           array (
-            'startLine' => 110,
-            'endLine' => 120,
+            'startLine' => 108,
+            'endLine' => 118,
             'startTokenPos' => 205,
-            'startFilePos' => 5800,
+            'startFilePos' => 5794,
             'endTokenPos' => 270,
-            'endFilePos' => 6175,
+            'endFilePos' => 6169,
           ),
         ),
         'docComment' => '/** @var array<string, string> */',
         'attributes' => 
         array (
         ),
-        'startLine' => 110,
-        'endLine' => 120,
+        'startLine' => 108,
+        'endLine' => 118,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -372,8 +370,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 122,
-        'endLine' => 125,
+        'startLine' => 120,
+        'endLine' => 123,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -407,8 +405,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 127,
-        'endLine' => 130,
+        'startLine' => 125,
+        'endLine' => 128,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

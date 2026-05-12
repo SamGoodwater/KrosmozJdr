@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use Database\Seeders\CharacteristicSeeder;
 use Database\Seeders\CreatureCharacteristicSeeder;
 use Database\Seeders\DofusdbCharacteristicIdSeeder;
@@ -13,6 +14,7 @@ use Database\Seeders\ScrappingEntityMappingCharacteristicSeeder;
 use Database\Seeders\ScrappingEntityMappingSeeder;
 use Database\Seeders\SpellCharacteristicSeeder;
 use Database\Seeders\SpellEffectTypeSeeder;
+use Database\Seeders\Type\TypeSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -38,7 +40,7 @@ class ScrappingSetupCommand extends Command
 
     /** @var list<class-string> */
     private const SEEDERS = [
-        \Database\Seeders\Type\TypeSeeder::class,
+        TypeSeeder::class,
         CharacteristicSeeder::class,
         CreatureCharacteristicSeeder::class,
         ObjectCharacteristicSeeder::class,
@@ -62,7 +64,7 @@ class ScrappingSetupCommand extends Command
             if ($code !== 0) {
                 $this->error("Échec de {$migrationCommand}.");
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
         } else {
             $this->warn('Migrations ignorées (--skip-migrate).');
@@ -78,12 +80,12 @@ class ScrappingSetupCommand extends Command
             if ($code !== 0) {
                 $this->error("Échec du seeder {$seederClass}.");
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
         }
 
         $this->info('Bootstrap scrapping: terminé.');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 }

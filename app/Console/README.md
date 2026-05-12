@@ -186,18 +186,29 @@ Importe la table des matières des règles vers le CMS — **délègue** à `pag
 
 ### 1.14 `project:init` / `init` — installation complète
 
-Migrations, seeders, types, scrapping, capacités selon options. **`--deps`** enchaîne d’abord `project:deps`.
+Migrations, seeders (dont langues, conditions, traits, pages Création, spécialisations legacy si fichiers présents), types, scrapping, capacités selon options. **`--deps`** enchaîne d’abord `project:deps`. **`--skip-specializations`** pour ignorer l’import HTML des spécialisations (CI / base sans fichiers legacy).
 
 ```bash
 php artisan project:init --deps --fresh
 php artisan project:init -h
 ```
 
-### 1.15 `project:super-admin`
+### 1.15 `project:review` / `review`
+
+Rapport dev Markdown (alias de **`dev:review`**) : soit **profil** positionnel (`tests`, `quality`, `security`, `docs`, `all` — défaut `all`), soit **options par action** (`--pint`, `--tests`, `--test-back`, `--test-front`, `--phpstan`, `--eslint`, `--security`, `--docs`, `--all`, combinables). Sans profil ni option d’action → tout le périmètre (comme `all`). Avec options d’action, le profil positionnel est ignoré. Sortie par défaut `storage/app/dev-reports/review-<timestamp>.md` — joignable à un agent Cursor.
+
+```bash
+php artisan project:review
+php artisan project:review --pint
+php artisan project:review --test-back --eslint
+php artisan review tests --report-path=storage/app/dev-reports/rapport.md
+```
+
+### 1.16 `project:super-admin`
 
 Création interactive du premier compte **super_admin** si aucun n’existe (hors flux `init`). Partage la logique avec `project:init`.
 
-### 1.16 `project:backup` — sauvegardes locales
+### 1.17 `project:backup` — sauvegardes locales
 
 Dump BDD (gzip) + archive `storage/app` (tar.gz ou ZIP), rotation selon rétention. Configuration : `config/project-backup.php`, variables `PROJECT_BACKUP_*`.
 
@@ -209,7 +220,7 @@ php artisan project:backup --prune-only --dry-run
 
 Voir [PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md) (section backup) pour les options complètes.
 
-### 1.17 Flux dev courant
+### 1.18 Flux dev courant
 
 - **`project:dev`** (prepare + optimize + serveurs), **`project:clear`**, **`project:optimize`** pour le quotidien.
 - **`server:load`** : alias de **`project:dev`** (section [Development](#9-development--outils-locaux)).

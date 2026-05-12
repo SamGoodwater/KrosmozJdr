@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/User.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\User
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-875220ef11692fc9f9c5145126a7a3ed5bfd9525af004768757cc9b2b8d8baef-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-184da3a6bd78bf4bd62ca1b808a45aa5e95b4338d9e24c82a46e734fe03c4380-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -85,8 +85,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|User withoutTrashed()
  * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read Collection<int, Attribute> $createdAttributes
- * @property-read int|null $created_attributes_count
+ * @property-read Collection<int, Condition> $createdConditions
+ * @property-read int|null $created_conditions_count
  * @property-read Collection<int, Capability> $createdCapabilities
  * @property-read int|null $created_capabilities_count
  * @property-read Collection<int, Breed> $createdBreeds
@@ -572,7 +572,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           ),
         ),
         'docComment' => '/**
- * The attributes that are mass assignable.
+ * The conditions that are mass assignable.
  *
  * @var list<string>
  */',
@@ -611,7 +611,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           ),
         ),
         'docComment' => '/**
- * The attributes that should be hidden for serialization.
+ * The conditions that should be hidden for serialization.
  *
  * @var list<string>
  */',
@@ -650,7 +650,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           ),
         ),
         'docComment' => '/**
- * The attributes that should be cast.
+ * The conditions that should be cast.
  *
  * @var array<string, string>
  */',
@@ -1887,9 +1887,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'currentClassName' => 'App\\Models\\User',
         'aliasName' => NULL,
       ),
-      'createdAttributes' => 
+      'createdConditions' => 
       array (
-        'name' => 'createdAttributes',
+        'name' => 'createdConditions',
         'parameters' => 
         array (
         ),

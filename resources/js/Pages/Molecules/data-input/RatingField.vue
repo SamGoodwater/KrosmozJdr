@@ -115,10 +115,10 @@ defineExpose({
     input-type="rating"
   >
     <!-- Slot core spécifique pour RatingCore -->
-    <template #core="{ inputAttrs, listeners, inputRef }">
+    <template #core="coreSlot">
       <RatingCore
-        v-bind="inputAttrs"
-        v-on="listeners"
+        v-bind="coreSlot.inputAttrs"
+        v-on="coreSlot.listeners"
         ref="inputRef"
       />
     </template>

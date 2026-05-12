@@ -75,7 +75,9 @@
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan serve --host=0.0.0.0\" \"php artisan queue:listen --tries=1\" \"pnpm run dev\" --names=server,queue,vite"
         ],
         "scss": "sass --watch resources/scss:resources/css",
-        "phpstan": "php -d memory_limit=1G ./vendor/bin/phpstan analyse --configuration=phpstan.neon"
+        "phpstan": "php -d memory_limit=1G ./vendor/bin/phpstan analyse --configuration=phpstan.neon",
+        "dev:review": "@php artisan dev:review",
+        "dev:review:agent": "@php artisan dev:review all --cursor-agent"
     },
     "extra": {
         "laravel": {

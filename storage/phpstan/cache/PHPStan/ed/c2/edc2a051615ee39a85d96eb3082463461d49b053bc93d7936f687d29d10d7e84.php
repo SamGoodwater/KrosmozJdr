@@ -123,7 +123,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Models/Concerns/HasMediaCustomNaming.php' => 'ae3b1f9ec9da4c59b481e1f4178a824bd13a7fd5f8a89dceb6597d86c5f1aa66',
+      '/var/www/KrosmozJdr/app/Models/Concerns/HasMediaCustomNaming.php' => '4d2d30c927978dfb2f19ff2fd24a406d3c814153d432d2738f419461d5ba131c',
     ),
   ),
 ));

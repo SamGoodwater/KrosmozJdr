@@ -750,44 +750,6 @@
     "file": "entity/EntityEditForm.vue"
   },
   {
-    "name": "EntityActionsMenu",
-    "description": "EntityActionsMenu Organism (Legacy Wrapper)",
-    "props": [
-      {
-        "name": "entity",
-        "type": "Object",
-        "desc": "- Données de l'entité"
-      },
-      {
-        "name": "entityType",
-        "type": "String",
-        "desc": "- Type d'entité (pour générer les routes)"
-      },
-      {
-        "name": "canView",
-        "type": "Boolean",
-        "desc": "- Permission de voir l'entité"
-      },
-      {
-        "name": "canUpdate",
-        "type": "Boolean",
-        "desc": "- Permission de modifier l'entité"
-      },
-      {
-        "name": "canDelete",
-        "type": "Boolean",
-        "desc": "- Permission de supprimer l'entité"
-      },
-      {
-        "name": "disableQuickActions",
-        "type": "Boolean",
-        "desc": "- Désactiver les actions rapides (si plusieurs entités sélectionnées)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/EntityActionsMenu.vue"
-  },
-  {
     "name": "EntityActions",
     "description": "EntityActions Organism",
     "props": [],

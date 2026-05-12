@@ -59,6 +59,8 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
+const quickEditEntity = ref(null);
+const quickEditModalOpen = ref(false);
 
 // Table v2
 const selectedIds = ref([]);
@@ -249,6 +251,12 @@ const handleModalDelete = (entity) => {
 const handleQuickEditSubmit = () => {
     refreshToken.value++;
     quickEditEntity.value = null;
+    quickEditModalOpen.value = false;
+};
+
+const handleQuickEditModalClose = () => {
+    quickEditModalOpen.value = false;
+    quickEditEntity.value = null;
 };
 </script>
 
@@ -336,7 +344,7 @@ const handleQuickEditSubmit = () => {
             entity-type="shop"
             :fields-config="fieldsConfig"
             :open="quickEditModalOpen"
-            @close="quickEditModalOpen = false"
+            @close="handleQuickEditModalClose"
             @submit="handleQuickEditSubmit"
         />
     </div>

@@ -214,8 +214,9 @@ Chaque template est un dossier dans `resources/js/Pages/Organismes/section/templ
   - `settings.autoplay` : Lecture automatique (booléen)
   - `settings.controls` : Afficher les contrôles (booléen)
 
-#### `SectionEntityTable` (template `entity_table`)
-- **Description** : Affiche un tableau d'entités chargé depuis l'API tables (`api.tables.{entity}`), avec filtres optionnels. Les données sont récupérées côté client (format `entities`).
+#### Section tableau d’entités (template `entity_table`)
+- **Composants** : `SectionEntityTableRead.vue` / `SectionEntityTableEdit.vue` — rendu via **`EntityTanStackTable`** (TanStack Table v2).
+- **Description** : Tableau chargé depuis l’API tables (`api.tables.{entity}`), query `format=entities`, filtres optionnels (`settings.filters`) et limite (`settings.limit`). Voir [TANSTACK_TABLE.md](../30-UI/TANSTACK_TABLE.md).
 - **Édition** : Modal de paramètres ou formulaire inline (type d'entité, filtres JSON, limite).
 - **Paramètres** (stockés dans `settings`) :
   - `settings.entity` : Type d'entité (ex. `spells`, `monsters`, `campaigns`, `shops`, etc.).

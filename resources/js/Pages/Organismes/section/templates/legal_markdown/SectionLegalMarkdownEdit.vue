@@ -123,7 +123,7 @@ const handleFileUpload = async (event) => {
     if (!localData.value.title) {
       localData.value.title = String(file.name || '').replace(/\.[^.]+$/, '');
     }
-  } catch (error) {
+  } catch {
     uploadError.value = "Impossible d'uploader le fichier.";
   } finally {
     isUploading.value = false;

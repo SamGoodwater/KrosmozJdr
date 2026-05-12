@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/database/seeders/CharacteristicSeeder.php-PHPStan\BetterReflection\Reflection\ReflectionClass-Database\Seeders\CharacteristicSeeder
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-9003a43c363e3c985bed480366cfc2b652ff0a881e7168991c27fd7297bbefb3-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-222c77bf4310f2e9886060be04fc33c32f2fef5e960e1fcd254530ca2e4eff81-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -29,7 +29,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 16,
-    'endLine' => 287,
+    'endLine' => 295,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Seeder',
@@ -102,10 +102,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => NULL,
         'startLine' => 52,
-        'endLine' => 159,
+        'endLine' => 167,
         'startColumn' => 5,
         'endColumn' => 5,
-        'couldThrow' => true,
+        'couldThrow' => false,
         'isClosure' => false,
         'isGenerator' => false,
         'isVariadic' => false,
@@ -140,8 +140,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 168,
-            'endLine' => 168,
+            'startLine' => 176,
+            'endLine' => 176,
             'startColumn' => 59,
             'endColumn' => 68,
             'parameterIndex' => 0,
@@ -168,8 +168,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  array<string, mixed>  $row
  * @return array<string, mixed>
  */',
-        'startLine' => 168,
-        'endLine' => 182,
+        'startLine' => 176,
+        'endLine' => 190,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -207,8 +207,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 191,
-            'endLine' => 191,
+            'startLine' => 199,
+            'endLine' => 199,
             'startColumn' => 67,
             'endColumn' => 77,
             'parameterIndex' => 0,
@@ -235,8 +235,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  list<array<string, mixed>>  $rows
  * @return list<array<string, mixed>>
  */',
-        'startLine' => 191,
-        'endLine' => 222,
+        'startLine' => 199,
+        'endLine' => 230,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -274,8 +274,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 227,
-            'endLine' => 227,
+            'startLine' => 235,
+            'endLine' => 235,
             'startColumn' => 52,
             'endColumn' => 66,
             'parameterIndex' => 0,
@@ -300,8 +300,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 227,
-            'endLine' => 227,
+            'startLine' => 235,
+            'endLine' => 235,
             'startColumn' => 69,
             'endColumn' => 88,
             'parameterIndex' => 1,
@@ -343,8 +343,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * @param  array<string, array<string, mixed>>  $creatureByKey
  */',
-        'startLine' => 227,
-        'endLine' => 252,
+        'startLine' => 235,
+        'endLine' => 260,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -382,8 +382,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *
  * @return array{icons: array<string, string>, icons_false: array<string, string>, colors: array<string, string>, descriptions: array<string, string>, value_overrides: array<string, list<array<string, mixed>>>}
  */',
-        'startLine' => 259,
-        'endLine' => 262,
+        'startLine' => 267,
+        'endLine' => 270,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -421,8 +421,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *
  * @return list<array<string, mixed>>
  */',
-        'startLine' => 269,
-        'endLine' => 286,
+        'startLine' => 277,
+        'endLine' => 294,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

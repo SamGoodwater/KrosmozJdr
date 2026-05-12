@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
 use App\Console\Concerns\PromptsPrimarySuperAdmin;
 use App\Services\NotificationService;
+use Database\Seeders\CreationPagesSeeder;
 use Database\Seeders\CriticalPagesSeeder;
+use Database\Seeders\Entity\ConditionSeeder;
+use Database\Seeders\Entity\CreatureTraitSeeder;
+use Database\Seeders\Entity\LanguageSeeder;
+use Database\Seeders\Entity\SpecializationSeeder;
 use Database\Seeders\NavMenuSeeder;
 use Database\Seeders\PageSeeder;
 use Database\Seeders\SectionSeeder;
@@ -21,11 +27,20 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
- * Initialisation complète du projet : migrations, seeders, scrapping, capabilities.
+ * Initialisation complète du projet : migrations, seeders, import règles, capacités (fichier local),
+ * puis types et scrapping DofusDB (appels réseau en fin de pipeline).
  *
- * Transforme une base vide en un projet fonctionnel avec les données DofusDB.
- * Compatible exécution longue (set_time_limit(0), DB::reconnect entre phases).
- * Notifie les admin/super_admin à la fin (succès, durée, heure).
+ * Phase seeders : `scrapping:setup` (types + caractéristiques + mappings), comptes/pages,
+ * {@see SubEffectSeeder}, référentiels langues / conditions / traits, pages « Création »,
+ * import legacy spécialisations (fichiers HTML optionnels), puis import TOC règles.
+ * Capacités : commande `capabilities:import-legacy` sur `database/seeders/data/capability.json`.
+ *
+ * Les appels réseau vers DofusDB (`scrapping:types:seed`, `scrapping:races:seed`, `scrapping:run`)
+ * sont exécutés en fin de pipeline : tu peux interrompre l’init après seeders / capacités
+ * et garder une base utilisable pour les tests (`--skip-types`, `--skip-scrapping`).
+ *
+ * Transforme une base vide en un projet fonctionnel. Compatible exécution longue
+ * (`set_time_limit(0)`, `DB::reconnect` entre phases). Notifie les admin/super_admin à la fin.
  *
  * @example php artisan project:init
  * @example php artisan project:init --fresh --noimage
@@ -43,6 +58,7 @@ class ProjectInitCommand extends Command
         {--skip-seeders : Ne pas exécuter les seeders (socle déjà fait)}
         {--skip-scrapping : Ne pas scraper}
         {--skip-capabilities : Ne pas importer les capabilities}
+        {--skip-specializations : Ne pas exécuter le seeder legacy des spécialisations (HTML locaux)}
         {--skip-types : Ne pas extraire/seed les types (resources, consommables, équipements, races monstres)}
         {--noimage : Désactiver le téléchargement des images}
         {--skip-cache : Ignorer le cache HTTP pour le scrapping}
@@ -55,7 +71,7 @@ class ProjectInitCommand extends Command
         {--skip-notify : Ne pas notifier les admin à la fin}
         {--skip-super-admin-prompt : Ne pas demander la création du super_admin (CI / scripts)}';
 
-    protected $description = 'Initialise le projet (migrations, seeders, types, scrapping, capabilities)';
+    protected $description = 'Initialise le projet (migrations, seeders, capacités locales, puis types/scrapping DofusDB)';
 
     /** Ordre des entités scrapping (dépendances). */
     private const SCRAPPING_ENTITIES = [
@@ -80,9 +96,9 @@ class ProjectInitCommand extends Command
             'storage_link' => 'pending',
             'seeders' => 'pending',
             'rules_import' => 'pending',
+            'capabilities' => 'pending',
             'types' => 'pending',
             'scrapping' => 'pending',
-            'capabilities' => 'pending',
             'scheduler' => 'pending',
         ];
 
@@ -96,7 +112,7 @@ class ProjectInitCommand extends Command
             if ($code !== 0) {
                 $this->error('Échec de project:deps.');
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
             $this->newLine();
         }
@@ -129,9 +145,18 @@ class ProjectInitCommand extends Command
             }
             $this->newLine();
 
+            if (! (bool) $this->option('skip-capabilities')) {
+                $phaseStatuses['capabilities'] = $this->runCapabilitiesImport() ? 'ok' : 'warn';
+            } else {
+                $this->warn('Capabilities ignorées (--skip-capabilities).');
+                $phaseStatuses['capabilities'] = 'skipped';
+            }
+            $this->newLine();
+
             if (! (bool) $this->option('skip-types')) {
                 $phaseStatuses['types'] = $this->runTypesSetup() ? 'ok' : 'warn';
             } else {
+                $this->warn('Types DofusDB ignorés (--skip-types).');
                 $phaseStatuses['types'] = 'skipped';
             }
             $this->newLine();
@@ -139,15 +164,8 @@ class ProjectInitCommand extends Command
             if (! (bool) $this->option('skip-scrapping')) {
                 $phaseStatuses['scrapping'] = $this->runScrapping() ? 'ok' : 'warn';
             } else {
-                $this->warn('Scrapping ignoré (--skip-scrapping).');
+                $this->warn('Scrapping entités ignoré (--skip-scrapping).');
                 $phaseStatuses['scrapping'] = 'skipped';
-            }
-            $this->newLine();
-
-            if (! (bool) $this->option('skip-capabilities')) {
-                $phaseStatuses['capabilities'] = $this->runCapabilitiesImport() ? 'ok' : 'warn';
-            } else {
-                $phaseStatuses['capabilities'] = 'skipped';
             }
             $this->newLine();
 
@@ -189,11 +207,11 @@ class ProjectInitCommand extends Command
 
         $this->info('=== Initialisation terminée ===');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**
-     * @param array<string, string> $phaseStatuses
+     * @param  array<string, string>  $phaseStatuses
      */
     private function printInitSummary(
         array $phaseStatuses,
@@ -208,9 +226,9 @@ class ProjectInitCommand extends Command
             'storage_link' => 'Storage link',
             'seeders' => 'Seeders',
             'rules_import' => 'Import règles CMS',
-            'types' => 'Types',
-            'scrapping' => 'Scrapping',
-            'capabilities' => 'Capabilities',
+            'capabilities' => 'Capabilities (fichier local)',
+            'types' => 'Types DofusDB (API)',
+            'scrapping' => 'Scrapping entités (API)',
             'scheduler' => 'Scheduler',
         ];
 
@@ -286,6 +304,11 @@ class ProjectInitCommand extends Command
             PageSeeder::class,
             SectionSeeder::class,
             SubEffectSeeder::class,
+            // Alignement avec {@see DatabaseSeeder} (hors TypeSeeder / caractéristiques déjà dans scrapping:setup)
+            LanguageSeeder::class,
+            ConditionSeeder::class,
+            CreatureTraitSeeder::class,
+            CreationPagesSeeder::class,
         ];
         foreach ($seeders as $seeder) {
             $this->line("  → {$seeder}");
@@ -297,6 +320,18 @@ class ProjectInitCommand extends Command
             } elseif ($seeder === UserSeeder::class) {
                 $this->runPrimarySuperAdminPrompt();
             }
+        }
+
+        if (! (bool) $this->option('skip-specializations')) {
+            $this->line('  → '.SpecializationSeeder::class.' (legacy HTML si fichiers présents sous database/seeders/data/legacy-specializations/)');
+            $code = Artisan::call('db:seed', ['--class' => SpecializationSeeder::class, '--force' => true]);
+            $this->output->write(Artisan::output());
+            if ($code !== 0) {
+                $this->warn('  Avertissement : seeder spécialisations legacy en échec (migrations ou fichiers manquants).');
+                $hasWarnings = true;
+            }
+        } else {
+            $this->warn('  Spécialisations legacy ignorées (--skip-specializations).');
         }
 
         // MonsterRaceSeeder est inclus dans TypeSeeder (scrapping:setup)
@@ -315,6 +350,7 @@ class ProjectInitCommand extends Command
         if ($code !== 0) {
             $this->warn('  Avertissement : import des pages règles échoué.');
             $this->warn('  Vérifiez le fichier TABLE_DES_MATIERES.md et les logs de pages:import-rules-toc.');
+
             return false;
         }
 
@@ -325,7 +361,7 @@ class ProjectInitCommand extends Command
 
     private function runTypesSetup(): bool
     {
-        $this->info('Phase 3 : Récupération de tous les types depuis DofusDB');
+        $this->info('Phase 4 : Types DofusDB (API — ressources, races, types de sorts)');
         $hasWarnings = false;
 
         $typeArgs = ['--skip-cache' => (bool) $this->option('skip-cache')];
@@ -335,6 +371,7 @@ class ProjectInitCommand extends Command
         $this->output->write(Artisan::output());
         if ($code !== 0) {
             $this->warn('  Avertissement : seed types item a échoué.');
+
             return false;
         }
 
@@ -361,7 +398,7 @@ class ProjectInitCommand extends Command
 
     private function runScrapping(): bool
     {
-        $this->info('Phase 4 : Scrapping DofusDB');
+        $this->info('Phase 5 : Scrapping entités DofusDB (le plus long — classes, sorts, monstres, …)');
         $hasWarnings = false;
         DB::reconnect();
 
@@ -462,7 +499,7 @@ class ProjectInitCommand extends Command
 
     private function runCapabilitiesImport(): bool
     {
-        $this->info('Phase 5 : Capabilities');
+        $this->info('Phase 3 : Capabilities (import local, sans appel DofusDB)');
         $path = base_path('database/seeders/data/capability.json');
         if (! is_file($path)) {
             $this->line('  Fichier capability.json absent, import ignoré.');
@@ -476,6 +513,7 @@ class ProjectInitCommand extends Command
         $this->output->write(Artisan::output());
         if ($code !== 0) {
             $this->warn('  Avertissement : import capabilities a échoué.');
+
             return false;
         }
 

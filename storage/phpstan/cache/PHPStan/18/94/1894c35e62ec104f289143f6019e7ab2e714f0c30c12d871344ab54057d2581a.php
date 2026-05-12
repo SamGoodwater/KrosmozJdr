@@ -2,7 +2,7 @@
 
 // ftm-/var/www/KrosmozJdr/app/Services/Characteristics/CharacteristicDefinitionsExportFromDatabaseService.php
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v4-2.3.2',
+   'variableKey' => 'v5-2.3.2',
    'data' => 
   array (
     0 => 
@@ -19,6 +19,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'file' => 'Illuminate\\Support\\Facades\\File',
+          'schema' => 'Illuminate\\Support\\Facades\\Schema',
         ),
          'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
          'functionName' => NULL,
@@ -48,6 +49,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'file' => 'Illuminate\\Support\\Facades\\File',
+          'schema' => 'Illuminate\\Support\\Facades\\Schema',
         ),
          'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
          'functionName' => 'exportToDataDirectory',
@@ -66,6 +68,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'file' => 'Illuminate\\Support\\Facades\\File',
+            'schema' => 'Illuminate\\Support\\Facades\\Schema',
           ),
            'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
            'functionName' => NULL,
@@ -105,6 +108,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'file' => 'Illuminate\\Support\\Facades\\File',
+          'schema' => 'Illuminate\\Support\\Facades\\Schema',
         ),
          'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
          'functionName' => 'buildCharacteristicBlock',
@@ -123,6 +127,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'file' => 'Illuminate\\Support\\Facades\\File',
+            'schema' => 'Illuminate\\Support\\Facades\\Schema',
           ),
            'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
            'functionName' => NULL,
@@ -162,6 +167,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'file' => 'Illuminate\\Support\\Facades\\File',
+          'schema' => 'Illuminate\\Support\\Facades\\Schema',
         ),
          'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
          'functionName' => 'buildEntitiesFromDatabase',
@@ -180,6 +186,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'file' => 'Illuminate\\Support\\Facades\\File',
+            'schema' => 'Illuminate\\Support\\Facades\\Schema',
           ),
            'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
            'functionName' => NULL,
@@ -219,6 +226,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'file' => 'Illuminate\\Support\\Facades\\File',
+          'schema' => 'Illuminate\\Support\\Facades\\Schema',
         ),
          'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
          'functionName' => 'filterCreatureEntity',
@@ -237,6 +245,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'file' => 'Illuminate\\Support\\Facades\\File',
+            'schema' => 'Illuminate\\Support\\Facades\\Schema',
           ),
            'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
            'functionName' => NULL,
@@ -276,6 +285,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'file' => 'Illuminate\\Support\\Facades\\File',
+          'schema' => 'Illuminate\\Support\\Facades\\Schema',
         ),
          'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
          'functionName' => 'filterObjectEntity',
@@ -294,6 +304,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'file' => 'Illuminate\\Support\\Facades\\File',
+            'schema' => 'Illuminate\\Support\\Facades\\Schema',
           ),
            'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
            'functionName' => NULL,
@@ -333,6 +344,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'file' => 'Illuminate\\Support\\Facades\\File',
+          'schema' => 'Illuminate\\Support\\Facades\\Schema',
         ),
          'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
          'functionName' => 'filterSpellEntity',
@@ -351,6 +363,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'characteristicdefinitionjson' => 'App\\Support\\Characteristics\\CharacteristicDefinitionJson',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'file' => 'Illuminate\\Support\\Facades\\File',
+            'schema' => 'Illuminate\\Support\\Facades\\Schema',
           ),
            'className' => 'App\\Services\\Characteristics\\CharacteristicDefinitionsExportFromDatabaseService',
            'functionName' => NULL,
@@ -381,7 +394,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Services/Characteristics/CharacteristicDefinitionsExportFromDatabaseService.php' => '0c1ce9c0c02239dd0ac8c3a9e7a651ff7f9c25f864624937a10a37b88007db00',
+      '/var/www/KrosmozJdr/app/Services/Characteristics/CharacteristicDefinitionsExportFromDatabaseService.php' => '97d577559bafff1e9a227a64f860dde5943614d4be5612477eefcf7ac78f3f16',
     ),
   ),
 ));

@@ -41,6 +41,8 @@ return new class extends Migration
             $table->string('do_fixe_feu')->default('0');
             $table->string('do_fixe_air')->default('0');
             $table->string('do_fixe_eau')->default('0');
+            $table->string('do_sagesse')->default('0');
+            $table->string('do_vitalite')->default('0');
             $table->text('res_fixe_neutre')->default('0');
             $table->text('res_fixe_terre')->default('0');
             $table->text('res_fixe_feu')->default('0');
@@ -51,6 +53,8 @@ return new class extends Migration
             $table->string('res_feu')->default('0');
             $table->string('res_air')->default('0');
             $table->string('res_eau')->default('0');
+            $table->string('res_sagesse')->default('0');
+            $table->string('res_vitalite')->default('0');
             $table->string('acrobatie_bonus')->default('0');
             $table->string('discretion_bonus')->default('0');
             $table->string('escamotage_bonus')->default('0');

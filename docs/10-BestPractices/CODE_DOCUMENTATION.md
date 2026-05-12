@@ -59,4 +59,4 @@
 - Un docbloc = une intention claire, pas de blabla.
 - Toujours référencer la doc projet si le composant suit un pattern factorisé.
 - Exemples courts, pas de duplication.
-- Pour les conventions globales, voir aussi BEST_PRACTICES.md. 
+- Pour les conventions globales, voir aussi [l’index bonnes pratiques](./README.md). 

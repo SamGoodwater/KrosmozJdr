@@ -2,7 +2,7 @@
 
 // ftm-/var/www/KrosmozJdr/app/Models/Type/ItemType.php
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v4-2.3.2',
+   'variableKey' => 'v5-2.3.2',
    'data' => 
   array (
     0 => 
@@ -1835,7 +1835,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Models/Type/ItemType.php' => '25dd48901fb89e2bab82513afb0347d8da2a665e65e47ff7f51d6d4c6a5d2d93',
+      '/var/www/KrosmozJdr/app/Models/Type/ItemType.php' => 'ee431c38eae5e5a1790f02e10932b96dfc2985b75b7d1200356f178a21e5f6ee',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/Factories/HasFactory.php' => 'b6cb2b164e90168e80963a5549541f5f3188a3ec8cfd368bf3611bd94fbd46a7',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/SoftDeletes.php' => 'da1b0c13d78ba2f62e97e5627c3149f4e81b9cf9b6092d4ca7f02ca5e5bbcfec',
     ),

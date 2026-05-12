@@ -116,10 +116,10 @@ defineExpose({
     :helper="props.helper"
   >
     <!-- Slot core spécifique pour RangeCore -->
-    <template #core="{ inputAttrs, listeners, inputRef }">
+    <template #core="coreSlot">
       <RangeCore
-        v-bind="inputAttrs"
-        v-on="listeners"
+        v-bind="coreSlot.inputAttrs"
+        v-on="coreSlot.listeners"
         ref="inputRef"
       />
     </template>

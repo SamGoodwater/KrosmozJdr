@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Media;
 
+use App\Console\ArtisanExitCode;
+use App\Console\Kernel;
 use App\Services\ImageService;
 use Illuminate\Console\Command;
 
 /**
  * Nettoie les fichiers du répertoire « thumbnails » géré par {@see ImageService} (hors conversions Spatie).
  *
- * Planifié quotidiennement dans {@see \App\Console\Kernel::schedule} : doit pouvoir s’exécuter en production.
+ * Planifié quotidiennement dans {@see Kernel::schedule} : doit pouvoir s’exécuter en production.
  */
 class CleanThumbnailsCommand extends Command
 {
@@ -27,6 +29,6 @@ class CleanThumbnailsCommand extends Command
 
         $this->info('Nettoyage des thumbnails terminé.');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 }

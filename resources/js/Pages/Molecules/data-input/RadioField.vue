@@ -115,10 +115,10 @@ defineExpose({
     input-type="radio"
   >
     <!-- Slot core spécifique pour RadioCore -->
-    <template #core="{ inputAttrs, listeners, inputRef }">
+    <template #core="coreSlot">
       <RadioCore
-        v-bind="inputAttrs"
-        v-on="listeners"
+        v-bind="coreSlot.inputAttrs"
+        v-on="coreSlot.listeners"
         ref="inputRef"
       >
         <!-- Options par défaut -->
@@ -133,7 +133,7 @@ defineExpose({
               :value="option.value || option"
               :disabled="option.disabled"
               :checked="currentValue === (option.value || option)"
-              @change="listeners.change"
+              @change="coreSlot.listeners.change"
             />
             <span>{{ option.label || option }}</span>
           </label>

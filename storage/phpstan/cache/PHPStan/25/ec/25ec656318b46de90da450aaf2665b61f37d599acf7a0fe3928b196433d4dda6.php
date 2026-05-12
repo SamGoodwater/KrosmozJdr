@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/database/factories/Entity/BreedFactory.php-PHPStan\BetterReflection\Reflection\ReflectionClass-Database\Factories\Entity\BreedFactory
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-a43febe3ea07a8b93d35ed0ae4617aa9d1e3273ba3f2e4ac466dd4ccaceba95d-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-e69d271ab655a7ddba057b563ba88ba67deb36def5517f3a03e08f611f8f452b-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -23,13 +23,13 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'isBackedEnum' => false,
     'modifiers' => 0,
     'docComment' => '/**
- * @extends \\Illuminate\\Database\\Eloquent\\Factories\\Factory<\\App\\Models\\Entity\\Breed>
+ * @extends Factory<Breed>
  */',
     'attributes' => 
     array (
     ),
     'startLine' => 12,
-    'endLine' => 53,
+    'endLine' => 52,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
@@ -59,9 +59,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'startLine' => 14,
             'endLine' => 14,
             'startTokenPos' => 40,
-            'startFilePos' => 302,
+            'startFilePos' => 243,
             'endTokenPos' => 42,
-            'endFilePos' => 313,
+            'endFilePos' => 254,
           ),
         ),
         'docComment' => NULL,
@@ -105,7 +105,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @return array<string, mixed>
  */',
         'startLine' => 19,
-        'endLine' => 52,
+        'endLine' => 51,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

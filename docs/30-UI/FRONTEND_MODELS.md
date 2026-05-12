@@ -175,30 +175,9 @@ const initializeForm = () => {
 };
 ```
 
-### **EntityTableRow**
+### **TanStackTableRow**
 
-Le composant `EntityTableRow` gère automatiquement les instances de modèles :
-
-```javascript
-// Dans EntityTableRow.vue
-const getCellValue = (column) => {
-    let value;
-    
-    // Si l'entité est une instance de modèle, utiliser les getters
-    if (props.entity && typeof props.entity._data !== 'undefined') {
-        const getterName = column.key;
-        if (typeof props.entity[getterName] !== 'undefined') {
-            value = props.entity[getterName];
-        } else {
-            value = props.entity._data?.[column.key];
-        }
-    } else {
-        // Objet brut, accès direct
-        value = props.entity[column.key];
-    }
-    // ...
-};
-```
+Les lignes du tableau TanStack (`TanStackTableRow.vue`) résolvent les valeurs de cellules à partir du modèle front (instances `BaseModel` ou objets bruts) selon la configuration des colonnes. Voir [TANSTACK_TABLE.md](./TANSTACK_TABLE.md).
 
 ### **EntityModal**
 
@@ -291,26 +270,26 @@ Cela permet une migration progressive sans casser le code existant.
 
 ## 📚 **Exemples Complets**
 
-### **Vue Index complète**
+### **Vue Index complète (tableau entités)**
+
+Le listage d’entités repose sur **TanStack Table** : préférer le wrapper `EntityTanStackTable` (fetch serveur optionnel, permissions). Voir [TANSTACK_TABLE.md](./TANSTACK_TABLE.md).
 
 ```vue
 <script setup>
 import { Head, router } from "@inertiajs/vue3";
-import { ref, computed, onBeforeUnmount } from "vue";
+import { ref, computed } from "vue";
 import { Item } from "@/Models/Entity/Item";
-import EntityTable from '@/Pages/Molecules/data-display/EntityTable.vue';
+import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vue";
 
 const props = defineProps({
-    items: {
-        type: Object,
-        required: true
-    }
+    items: { type: Object, required: true },
 });
 
-// Transformation des entités en instances de modèles
-const items = computed(() => {
-    return Item.fromArray(props.items.data || []);
-});
+const items = computed(() => Item.fromArray(props.items.data || []));
+
+// Exemple minimal : en production, importer ou construire le TanStackTableConfig
+// de l’entité (voir TANSTACK_TABLE.md et entity-registry).
+const tableConfig = {};
 
 const handleDelete = (entity) => {
     const itemModel = entity instanceof Item ? entity : new Item(entity);
@@ -321,11 +300,11 @@ const handleDelete = (entity) => {
 </script>
 
 <template>
-    <EntityTable
-        :entities="items"
-        :pagination="props.items"
+    <EntityTanStackTable
         entity-type="items"
-        @delete="handleDelete"
+        :config="tableConfig"
+        :rows="items"
+        @action="(payload) => payload?.action === 'delete' && handleDelete(payload.entity)"
     />
 </template>
 ```
@@ -366,5 +345,5 @@ const item = computed(() => {
 
 - [BaseModel.js](../../resources/js/Models/BaseModel.js) - Classe de base
 - [EntityEditForm](../50-Fonctionnalités/EntityEditForm/README.md) - Composant de formulaire
-- [EntityTableRow](../../resources/js/Pages/Molecules/data-display/EntityTableRow.vue) - Ligne de tableau
+- [TanStackTableRow](../../resources/js/Pages/Molecules/table/TanStackTableRow.vue) - Ligne de tableau (TanStack)
 

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('description_fast')->nullable();
             $table->string('description')->nullable();
+            $table->longText('evolution')->nullable();
             $table->string('life')->nullable();
             $table->string('life_dice')->nullable();
             $table->string('specificity')->nullable();

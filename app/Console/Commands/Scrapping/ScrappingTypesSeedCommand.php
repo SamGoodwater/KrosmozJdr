@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
+use Database\Seeders\Type\ConsumableTypeSeeder;
+use Database\Seeders\Type\ItemTypeSeeder;
+use Database\Seeders\Type\ResourceTypeSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -30,9 +34,9 @@ class ScrappingTypesSeedCommand extends Command
 
     /** @var array<string, class-string> */
     private const ITEM_TYPE_SEEDERS = [
-        'resource' => \Database\Seeders\Type\ResourceTypeSeeder::class,
-        'consumable' => \Database\Seeders\Type\ConsumableTypeSeeder::class,
-        'item' => \Database\Seeders\Type\ItemTypeSeeder::class,
+        'resource' => ResourceTypeSeeder::class,
+        'consumable' => ConsumableTypeSeeder::class,
+        'item' => ItemTypeSeeder::class,
     ];
 
     public function handle(): int
@@ -45,7 +49,7 @@ class ScrappingTypesSeedCommand extends Command
         if ($keys === []) {
             $this->error('Aucun type item valide dans --only (attendu : resource, consumable, item, equipment, all).');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         if (! $noFiles) {
@@ -54,10 +58,10 @@ class ScrappingTypesSeedCommand extends Command
                 '--lang' => $lang,
                 '--skip-cache' => $skipCache,
             ]);
-            if ($extractCode !== self::SUCCESS) {
+            if ($extractCode !== ArtisanExitCode::SUCCESS) {
                 $this->error('Échec de l’extraction des types item.');
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
         } else {
             $this->info('Étape 1/2 : ignorée (--no-files). Utilisation des fichiers data existants.');
@@ -71,13 +75,13 @@ class ScrappingTypesSeedCommand extends Command
             if ($code !== 0) {
                 $this->error("Échec du seeder {$seederClass}.");
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
         }
 
         $this->info('Terminé. Les types item sélectionnés sont à jour depuis l’API DofusDB.');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

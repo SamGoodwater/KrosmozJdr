@@ -7,7 +7,7 @@
  * - Génération des URLs de thumbnails
  * - Support des icônes FontAwesome
  * - Cache côté client
- * - Gestion des erreurs avec retry
+ * - URLs construites sans requête HEAD (évite 403 inutiles)
  *
  * @example
  * // Récupérer l'URL d'une image
@@ -28,11 +28,6 @@ export const FALLBACK_IMAGE_URL = '/storage/images/no_found.svg';
 export class ImageService {
     static #cache = new Map();
     static #CACHE_TTL = 3600000; // 1 heure en millisecondes
-    static #MAX_RETRIES = 3;
-    static #RETRY_DELAY = 1000; // 1 seconde
-
-    /** Chemins statiques (icônes, etc.) : pas de HEAD, URL construite directement pour éviter latence et 403. */
-    static #STATIC_PATH_PREFIX = 'icons/';
 
     /**
      * Dossier réel sous `storage/app/public/images/icons/` : **caracteristics** (sans « h »).

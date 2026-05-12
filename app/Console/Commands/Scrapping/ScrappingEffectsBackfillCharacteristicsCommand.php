@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use App\Models\DofusdbEffectMapping;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 
 /**
  * Backfill characteristic_key pour les mappings d'effets DofusDB en source "characteristic".
@@ -52,13 +54,13 @@ final class ScrappingEffectsBackfillCharacteristicsCommand extends Command
             $query->whereIn('dofusdb_effect_id', $effectIds);
         }
 
-        /** @var \Illuminate\Support\Collection<int, DofusdbEffectMapping> $rows */
+        /** @var Collection<int, DofusdbEffectMapping> $rows */
         $rows = $query->orderBy('dofusdb_effect_id')->get();
 
         if ($rows->isEmpty()) {
             $this->info('Aucune ligne à corriger (characteristic_source=characteristic avec characteristic_key vide).');
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $spellMapFromDb = $characteristicGetter->getDofusdbToCharacteristicKeyMap('spell');
@@ -131,7 +133,7 @@ final class ScrappingEffectsBackfillCharacteristicsCommand extends Command
             [[(string) $rows->count(), (string) $updated, (string) $proposed, (string) $unresolved, (string) $errors]]
         );
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

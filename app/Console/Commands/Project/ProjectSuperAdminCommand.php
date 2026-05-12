@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\PromptsPrimarySuperAdmin;
 use Illuminate\Console\Command;
 
@@ -23,7 +24,7 @@ class ProjectSuperAdminCommand extends Command
         if (app()->environment('production')) {
             $this->error('Cette commande ne doit pas être utilisée en production sans processus contrôlé.');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         try {
@@ -31,9 +32,9 @@ class ProjectSuperAdminCommand extends Command
         } catch (\RuntimeException $e) {
             $this->error($e->getMessage());
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 }

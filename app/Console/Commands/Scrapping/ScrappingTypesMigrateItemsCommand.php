@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use App\Models\Entity\Item;
 use App\Models\Type\ItemType;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
@@ -117,6 +118,6 @@ class ScrappingTypesMigrateItemsCommand extends Command
             $this->info('Relancez sans --dry-run pour appliquer les changements.');
         }
 
-        return $errors > 0 ? self::FAILURE : self::SUCCESS;
+        return $errors > 0 ? ArtisanExitCode::FAILURE : ArtisanExitCode::SUCCESS;
     }
 }

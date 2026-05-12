@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Characteristics;
 
+use App\Console\ArtisanExitCode;
 use App\Services\Characteristic\CharacteristicColorCssGenerator;
 use Illuminate\Console\Command;
 
@@ -18,11 +19,11 @@ class GenerateCharacteristicColorCssCommand extends Command
         if ($generator->generate()) {
             $this->info('Fichier '.CharacteristicColorCssGenerator::OUTPUT_PATH.' généré.');
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $this->error('Échec de la génération du fichier CSS.');
 
-        return self::FAILURE;
+        return ArtisanExitCode::FAILURE;
     }
 }

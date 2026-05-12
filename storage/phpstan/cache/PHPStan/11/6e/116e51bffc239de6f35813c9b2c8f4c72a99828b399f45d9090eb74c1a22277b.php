@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Support/SectionTemplateValidationRules.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Support\SectionTemplateValidationRules
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-c657308949d62927db116b72ca6ae9ddd5f2ba59ae36490ee9e88703f2745244-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-2a92b417f27f2f41037028864066daff85066325d6a0eed27172c5745d35d456-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -32,7 +32,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 14,
-    'endLine' => 122,
+    'endLine' => 123,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -99,7 +99,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @return array<string, array<int, mixed>>
  */',
         'startLine' => 19,
-        'endLine' => 121,
+        'endLine' => 122,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

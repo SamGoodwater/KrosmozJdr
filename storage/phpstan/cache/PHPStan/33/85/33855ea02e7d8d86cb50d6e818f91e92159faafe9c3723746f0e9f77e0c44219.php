@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/database/seeders/CharacteristicGroupSeeder.php-PHPStan\BetterReflection\Reflection\ReflectionClass-Database\Seeders\CharacteristicGroupSeeder
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-71127b3e1d38e1fa9f5d32bb2f99cb5479f46cf4d61295476b06a672069fb151-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-3217ef4458a784e50c94a21b17ac595881d58aed7a739f87a7e351a61421da25-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -29,8 +29,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 18,
-    'endLine' => 193,
+    'startLine' => 19,
+    'endLine' => 258,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Seeder',
@@ -70,8 +70,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * @return class-string<Model>
  */',
-        'startLine' => 23,
-        'endLine' => 23,
+        'startLine' => 24,
+        'endLine' => 24,
         'startColumn' => 5,
         'endColumn' => 53,
         'couldThrow' => false,
@@ -107,8 +107,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Clé entity par défaut si absente du row (ex. \'*\' ou \'spell\').
  */',
-        'startLine' => 28,
-        'endLine' => 31,
+        'startLine' => 29,
+        'endLine' => 32,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -146,8 +146,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 39,
-            'endLine' => 39,
+            'startLine' => 40,
+            'endLine' => 40,
             'startColumn' => 41,
             'endColumn' => 50,
             'parameterIndex' => 0,
@@ -173,8 +173,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  array<string, mixed>  $row
  * @return array<string, mixed>
  */',
-        'startLine' => 39,
-        'endLine' => 59,
+        'startLine' => 40,
+        'endLine' => 60,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -210,8 +210,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Sous-dossier de {@see CharacteristicDefinitionNaming::RELATIVE_ROOT} (creature|object|spell).
  */',
-        'startLine' => 64,
-        'endLine' => 64,
+        'startLine' => 65,
+        'endLine' => 65,
         'startColumn' => 5,
         'endColumn' => 64,
         'couldThrow' => false,
@@ -249,8 +249,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *
  * @return list<string>
  */',
-        'startLine' => 71,
-        'endLine' => 87,
+        'startLine' => 72,
+        'endLine' => 88,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -288,8 +288,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *
  * @return array<string, int>
  */',
-        'startLine' => 94,
-        'endLine' => 98,
+        'startLine' => 95,
+        'endLine' => 99,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -327,8 +327,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 106,
-            'endLine' => 106,
+            'startLine' => 107,
+            'endLine' => 107,
             'startColumn' => 52,
             'endColumn' => 61,
             'parameterIndex' => 0,
@@ -354,8 +354,77 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  array<mixed>  $raw
  * @return list<int>
  */',
-        'startLine' => 106,
-        'endLine' => 121,
+        'startLine' => 107,
+        'endLine' => 122,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 2,
+        'namespace' => 'Database\\Seeders',
+        'declaringClassName' => 'Database\\Seeders\\CharacteristicGroupSeeder',
+        'implementingClassName' => 'Database\\Seeders\\CharacteristicGroupSeeder',
+        'currentClassName' => 'Database\\Seeders\\CharacteristicGroupSeeder',
+        'aliasName' => NULL,
+      ),
+      'resolveCharacteristicObjectItemTypeIdsForSync' => 
+      array (
+        'name' => 'resolveCharacteristicObjectItemTypeIdsForSync',
+        'parameters' => 
+        array (
+          'row' => 
+          array (
+            'name' => 'row',
+            'default' => NULL,
+            'type' => 
+            array (
+              'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+              'data' => 
+              array (
+                'name' => 'array',
+                'isIdentifier' => true,
+              ),
+            ),
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 133,
+            'endLine' => 133,
+            'startColumn' => 70,
+            'endColumn' => 79,
+            'parameterIndex' => 0,
+            'isOptional' => false,
+          ),
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+          'data' => 
+          array (
+            'name' => 'array',
+            'isIdentifier' => true,
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Résout les ids pivot `item_types.id` pour une ligne entité objet.
+ * Si `item_type_dofus_ids` est renseigné : résolution par `dofusdb_type_id` uniquement (pas de repli
+ * sur `item_type_ids`, souvent des ids BDD d’un autre environnement).
+ * Sinon : `item_type_ids` filtrés pour ne garder que des ids présents en base.
+ *
+ * @param  array<string, mixed>  $row
+ * @return list<int>
+ */',
+        'startLine' => 133,
+        'endLine' => 183,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -391,8 +460,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Seed depuis les fichiers `stem-groupe-definition.json`.
  */',
-        'startLine' => 126,
-        'endLine' => 173,
+        'startLine' => 188,
+        'endLine' => 238,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -426,11 +495,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 175,
-        'endLine' => 184,
+        'startLine' => 240,
+        'endLine' => 249,
         'startColumn' => 5,
         'endColumn' => 5,
-        'couldThrow' => true,
+        'couldThrow' => false,
         'isClosure' => false,
         'isGenerator' => false,
         'isVariadic' => false,
@@ -465,8 +534,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 192,
-            'endLine' => 192,
+            'startLine' => 257,
+            'endLine' => 257,
             'startColumn' => 52,
             'endColumn' => 61,
             'parameterIndex' => 0,
@@ -492,8 +561,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  array<string, mixed>  $row
  * @return array<string, mixed>
  */',
-        'startLine' => 192,
-        'endLine' => 192,
+        'startLine' => 257,
+        'endLine' => 257,
         'startColumn' => 5,
         'endColumn' => 70,
         'couldThrow' => false,

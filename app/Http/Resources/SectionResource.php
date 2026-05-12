@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\SectionType;
+use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -13,7 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class SectionResource extends JsonResource
 {
-    /** @mixin \App\Models\Section */
+    /** @mixin Section */
     /**
      * Transform the resource into an array.
      *
@@ -22,29 +24,29 @@ class SectionResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
-        /** @var \App\Models\Section $section */
+        /** @var Section $section */
         $section = $this->resource;
-        
+
         // IMPORTANT : S'assurer que la page est chargée pour que canBeEditedBy() puisse vérifier les droits
         // La méthode canBeEditedBy() de Section vérifie les droits sur la section ET sur la page
-        if (!$section->relationLoaded('page') && $section->page_id) {
+        if (! $section->relationLoaded('page') && $section->page_id) {
             try {
                 $section->load('page');
             } catch (\Exception $e) {
                 // Si la page ne peut pas être chargée, continuer quand même
             }
         }
-        
+
         return [
             'id' => $section->id,
             'page_id' => $section->page_id,
             'title' => $section->title,
             'slug' => $section->slug,
             'order' => $section->order,
-            'pivot_level' => $section->pivot?->level !== null ? (int) $section->pivot->level : null,
-            'template' => $section->template instanceof \App\Enums\SectionType ? $section->template->value : $section->template,
+            'pivot_level' => ($pivotLevel = data_get($section, 'pivot.level')) !== null ? (int) $pivotLevel : null,
+            'template' => $section->template instanceof SectionType ? $section->template->value : $section->template,
             // Legacy compatibility: expose aussi `type` pour les clients anciens.
-            'type' => $section->type instanceof \App\Enums\SectionType ? $section->type->value : $section->type,
+            'type' => $section->type instanceof SectionType ? $section->type->value : $section->type,
             'settings' => $section->settings,
             'data' => $section->data,
             'state' => $section->state,

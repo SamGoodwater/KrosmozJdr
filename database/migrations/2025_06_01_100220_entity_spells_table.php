@@ -20,11 +20,14 @@ return new class extends Migration
             $table->string('po_max', 64)->default('1');
             $table->boolean('po_editable')->default(true);
             $table->string('pa')->default('3');
+            $table->string('casting_time', 255)->nullable();
+            $table->boolean('ritual_available')->nullable();
             $table->string('cast_per_turn')->default('1');
             $table->string('cast_per_target')->default('0');
             $table->boolean('sight_line')->default(true);
             $table->string('number_between_two_cast')->default('0');
-            $table->integer('element')->default(0);
+            $table->string('duration')->nullable();
+            $table->integer('element')->nullable();
             $table->integer('category')->default(0);
             $table->boolean('is_magic')->default(true);
             $table->integer('powerful')->default(0);
@@ -33,6 +36,8 @@ return new class extends Migration
             $table->string('save_characteristic_key', 64)->nullable();
             $table->string('save_dc_formula', 255)->nullable();
             $table->text('save_success_note')->nullable();
+            $table->boolean('auto_success_if_willing_target')->default(false);
+            $table->boolean('allows_reaction')->default(false);
             $table->string('state')->default('draft');
             $table->tinyInteger('read_level')->default(0);
             $table->tinyInteger('write_level')->default(3);

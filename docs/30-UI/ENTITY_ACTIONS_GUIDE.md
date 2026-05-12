@@ -417,11 +417,11 @@ export const ACTION_GROUPS_ORDER = Object.freeze([
 
 ---
 
-## 🔄 Migration depuis `EntityActionsMenu`
+## Migration depuis l'ancien wrapper `EntityActionsMenu`
 
-Si vous utilisez encore `EntityActionsMenu` (legacy), voici comment migrer :
+Le composant `EntityActionsMenu` a été **retiré** du dépôt (aucun usage restant). Si une branche locale ou un fork l'utilise encore, remplace-le par **`EntityActions`** (permissions via policies / `usePermissions`, événement `@action`).
 
-### Avant (legacy)
+### Ancienne forme (référence)
 
 ```vue
 <EntityActionsMenu
@@ -436,7 +436,7 @@ Si vous utilisez encore `EntityActionsMenu` (legacy), voici comment migrer :
 />
 ```
 
-### Après (nouveau système)
+### Forme actuelle
 
 ```vue
 <EntityActions
@@ -461,8 +461,6 @@ const handleAction = (actionKey, entity) => {
 };
 </script>
 ```
-
-**Note** : `EntityActionsMenu` est toujours disponible comme wrapper de compatibilité, mais il est déprécié. Utilisez `EntityActions` directement pour les nouveaux composants.
 
 ---
 

@@ -14,7 +14,7 @@ Ce document recense les points de sécurité vérifiés et les recommandations i
 | **Autorisation** | ✅ | Policies systématiques sur les contrôleurs (viewAny, update, delete, etc.) |
 | **Mise à jour profil** | ✅ | `UpdateUserRequest` n'inclut pas `role` — pas de mass assignment sur le rôle |
 | **Rôle utilisateur** | ✅ | Modification du rôle via route dédiée `updateRole` avec policy |
-| **Tri / SQL** | ✅ | Colonnes de tri whitelistées dans EntityTableDataController, SpellController, TableControllers |
+| **Tri / SQL** | ✅ | Colonnes de tri whitelistées dans `EntityTableDataController` (routes `entity-table`), `SpellController`, `*TableController` (trait `InterpretsEntityTableSort`) |
 | **Raw SQL** | ✅ | `DB::raw`, `orderByRaw` utilisent des chaînes fixes (pas d'injection) |
 | **Secrets** | ✅ | `.env` dans `.gitignore`, pas de clés en dur |
 | **RGPD** | ✅ | Export, suppression, rate limiting, confirmation mot de passe |

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Scrapping;
 
+use App\Console\ArtisanExitCode;
 use App\Models\Type\MonsterRace;
 use App\Models\User;
 use App\Services\Scrapping\Catalog\DofusDbMonsterRacesCatalogService;
@@ -43,7 +44,7 @@ class ScrappingRacesSeedCommand extends Command
         if (empty($races)) {
             $this->warn('Aucune race trouvée dans le catalogue DofusDB.');
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $systemUser = User::getSystemUser();
@@ -89,6 +90,6 @@ class ScrappingRacesSeedCommand extends Command
             count($races)
         ));
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 }

@@ -15,11 +15,11 @@ Bienvenue sur la documentation du projet **Krosmoz JDR**.
 ## Navigation documentaire
 
 - **Vue d'ensemble et contexte** : ce fichier
-- **Présentation fonctionnelle, architecture, droits, formules, pages dynamiques** : [CONTENT_OVERVIEW.md](./CONTENT_OVERVIEW.md)
-- **Détail métier, entités, typages, schéma SQL** : [ENTITIES_OVERVIEW.md](./ENTITIES_OVERVIEW.md)
-- **Design system, thèmes, layouts, atomic design** : [DESIGN_GUIDE.md](./DESIGN_GUIDE.md)
+- **Présentation fonctionnelle, architecture, droits, formules, pages dynamiques** : [CONTENT_OVERVIEW.md](../20-Content/CONTENT_OVERVIEW.md)
+- **Détail métier, entités, typages, schéma SQL** : [ENTITIES_OVERVIEW.md](../20-Content/21-Entities/ENTITIES_OVERVIEW.md)
+- **Design system, thèmes, layouts, atomic design** : [DESIGN_GUIDE.md](../30-UI/DESIGN_GUIDE.md)
 - **Stack technique, outils, organisation, CI/CD** : [TECHNOLOGIES.md](./TECHNOLOGIES.md)
-- **Bonnes pratiques (code, tests, sécurité, doc)** : [BEST_PRACTICES.md](./BEST_PRACTICES.md)
+- **Bonnes pratiques (code, tests, sécurité, doc)** : [Index bonnes pratiques](../10-BestPractices/README.md)
 
 ## Philosophie documentaire
 

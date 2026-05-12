@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Http/Controllers/SectionController.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Http\Controllers\SectionController
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-2a2b43f1d2b1b3fd4bc0c6ef5491598d8fcc6bb8dfc322e2708d2e75aa7f9321-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-295785dc2dadcd0ad342974a5375136d3225f0f02b6359bbe2176e089fa85768-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -32,7 +32,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 27,
-    'endLine' => 401,
+    'endLine' => 388,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'App\\Http\\Controllers\\Controller',
@@ -71,10 +71,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Affiche la liste paginée des sections.
- * @return \\Inertia\\Response
  */',
-        'startLine' => 34,
-        'endLine' => 41,
+        'startLine' => 32,
+        'endLine' => 40,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -109,11 +108,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Affiche le formulaire de création d\'une section.
- * @return \\Illuminate\\Http\\RedirectResponse
+ *
  * @deprecated Utiliser le modal CreateSectionModal depuis la page
  */',
-        'startLine' => 48,
-        'endLine' => 52,
+        'startLine' => 47,
+        'endLine' => 51,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -154,7 +153,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'startLine' => 73,
             'endLine' => 73,
             'startColumn' => 27,
-            'endColumn' => 73,
+            'endColumn' => 54,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -174,25 +173,26 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Enregistre une nouvelle section.
- * 
+ *
  * **Flux :**
  * 1. Validation des données via `StoreSectionRequest`
  * 2. Création de la section via `SectionService::create()` (avec valeurs par défaut)
  * 3. Envoi d\'une notification de création
  * 4. Redirection vers la page parente (pour afficher la nouvelle section)
- * 
+ *
  * **Valeurs par défaut :**
  * - L\'ordre est calculé automatiquement (dernière position)
  * - Les valeurs par défaut du template sont appliquées
  * - État initial : `draft`
  * - Visibilité initiale : `guest`
- * 
- * @param StoreSectionRequest $request Requête validée contenant les données de la section
- * @return \\Illuminate\\Http\\RedirectResponse|\\Illuminate\\Http\\JsonResponse Redirection Inertia ou réponse JSON
- * @throws \\Illuminate\\Auth\\Access\\AuthorizationException Si l\'utilisateur n\'a pas les droits
+ *
+ * @param  StoreSectionRequest  $request  Requête validée contenant les données de la section
+ * @return RedirectResponse Redirection vers la page parente après création
+ *
+ * @throws AuthorizationException Si l\'utilisateur n\'a pas les droits
  */',
         'startLine' => 73,
-        'endLine' => 90,
+        'endLine' => 91,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -230,10 +230,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 97,
-            'endLine' => 97,
+            'startLine' => 96,
+            'endLine' => 96,
             'startColumn' => 26,
-            'endColumn' => 53,
+            'endColumn' => 41,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -253,11 +253,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Affiche une section spécifique.
- * @param Section $section
- * @return \\Inertia\\Response
  */',
-        'startLine' => 97,
-        'endLine' => 108,
+        'startLine' => 96,
+        'endLine' => 107,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -295,10 +293,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 116,
-            'endLine' => 116,
+            'startLine' => 114,
+            'endLine' => 114,
             'startColumn' => 26,
-            'endColumn' => 53,
+            'endColumn' => 41,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -318,12 +316,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Affiche le formulaire de modification d\'une section.
- * @param Section $section
- * @return \\Illuminate\\Http\\RedirectResponse
+ *
  * @deprecated Utiliser le modal SectionParamsModal depuis la page
  */',
-        'startLine' => 116,
-        'endLine' => 121,
+        'startLine' => 114,
+        'endLine' => 120,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -364,7 +361,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'startLine' => 142,
             'endLine' => 142,
             'startColumn' => 28,
-            'endColumn' => 75,
+            'endColumn' => 56,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -389,8 +386,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             ),
             'startLine' => 142,
             'endLine' => 142,
-            'startColumn' => 78,
-            'endColumn' => 105,
+            'startColumn' => 59,
+            'endColumn' => 74,
             'parameterIndex' => 1,
             'isOptional' => false,
           ),
@@ -429,25 +426,26 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Met à jour une section existante.
- * 
+ *
  * **Flux :**
  * 1. Validation des données via `UpdateSectionRequest`
  * 2. Sauvegarde des anciens attributs pour les notifications
  * 3. Mise à jour via `SectionService::update()` (fusion des settings/data)
  * 4. Envoi d\'une notification de modification (avec anciens/nouveaux attributs)
  * 5. Redirection vers la page parente
- * 
+ *
  * **Fusion des données :**
  * - Les `settings` et `data` sont fusionnés avec les valeurs existantes
  * - Permet de mettre à jour seulement une partie des données sans perdre le reste
- * 
- * @param UpdateSectionRequest $request Requête validée contenant les données à mettre à jour
- * @param Section $section Section à mettre à jour (résolue par route model binding)
- * @return \\Illuminate\\Http\\RedirectResponse Redirection vers la page parente
- * @throws \\Illuminate\\Auth\\Access\\AuthorizationException Si l\'utilisateur n\'a pas les droits
+ *
+ * @param  UpdateSectionRequest  $request  Requête validée contenant les données à mettre à jour
+ * @param  Section  $section  Section à mettre à jour (résolue par route model binding)
+ * @return RedirectResponse Redirection vers la page parente
+ *
+ * @throws AuthorizationException Si l\'utilisateur n\'a pas les droits
  */',
         'startLine' => 142,
-        'endLine' => 178,
+        'endLine' => 179,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -485,10 +483,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 185,
-            'endLine' => 185,
+            'startLine' => 184,
+            'endLine' => 184,
             'startColumn' => 28,
-            'endColumn' => 55,
+            'endColumn' => 43,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -508,11 +506,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Supprime une section (soft delete).
- * @param Section $section
- * @return \\Illuminate\\Http\\RedirectResponse
  */',
-        'startLine' => 185,
-        'endLine' => 200,
+        'startLine' => 184,
+        'endLine' => 199,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -550,8 +546,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 210,
-            'endLine' => 210,
+            'startLine' => 205,
+            'endLine' => 205,
             'startColumn' => 31,
             'endColumn' => 55,
             'parameterIndex' => 0,
@@ -576,8 +572,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 210,
-            'endLine' => 210,
+            'startLine' => 205,
+            'endLine' => 205,
             'startColumn' => 58,
             'endColumn' => 73,
             'parameterIndex' => 1,
@@ -600,13 +596,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Ajoute un fichier à une section (Spatie Media Library).
  * Les images sont converties en WebP et une miniature est générée.
- *
- * @param StoreFileRequest $request
- * @param Section $section
- * @return \\Illuminate\\Http\\JsonResponse
  */',
-        'startLine' => 210,
-        'endLine' => 247,
+        'startLine' => 205,
+        'endLine' => 242,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -644,8 +636,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 256,
-            'endLine' => 256,
+            'startLine' => 249,
+            'endLine' => 249,
             'startColumn' => 32,
             'endColumn' => 47,
             'parameterIndex' => 0,
@@ -670,8 +662,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 256,
-            'endLine' => 256,
+            'startLine' => 249,
+            'endLine' => 249,
             'startColumn' => 50,
             'endColumn' => 62,
             'parameterIndex' => 1,
@@ -694,12 +686,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Supprime un fichier (média) lié à une section.
  *
- * @param Section $section
- * @param Media $medium Média à supprimer (doit appartenir à cette section)
- * @return \\Illuminate\\Http\\JsonResponse
+ * @param  Media  $medium  Média à supprimer (doit appartenir à cette section)
  */',
-        'startLine' => 256,
-        'endLine' => 267,
+        'startLine' => 249,
+        'endLine' => 260,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -737,10 +727,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 275,
-            'endLine' => 275,
+            'startLine' => 265,
+            'endLine' => 265,
             'startColumn' => 32,
-            'endColumn' => 64,
+            'endColumn' => 47,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -763,10 +753,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 275,
-            'endLine' => 275,
-            'startColumn' => 67,
-            'endColumn' => 82,
+            'startLine' => 265,
+            'endLine' => 265,
+            'startColumn' => 50,
+            'endColumn' => 65,
             'parameterIndex' => 1,
             'isOptional' => false,
           ),
@@ -786,12 +776,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Associe un utilisateur à la section.
- * @param \\Illuminate\\Http\\Request $request
- * @param Section $section
- * @return \\Illuminate\\Http\\JsonResponse
  */',
-        'startLine' => 275,
-        'endLine' => 281,
+        'startLine' => 265,
+        'endLine' => 272,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -829,10 +816,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 289,
-            'endLine' => 289,
+            'startLine' => 277,
+            'endLine' => 277,
             'startColumn' => 32,
-            'endColumn' => 64,
+            'endColumn' => 47,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -855,10 +842,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 289,
-            'endLine' => 289,
-            'startColumn' => 67,
-            'endColumn' => 82,
+            'startLine' => 277,
+            'endLine' => 277,
+            'startColumn' => 50,
+            'endColumn' => 65,
             'parameterIndex' => 1,
             'isOptional' => false,
           ),
@@ -878,12 +865,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Dissocie un utilisateur de la section.
- * @param \\Illuminate\\Http\\Request $request
- * @param Section $section
- * @return \\Illuminate\\Http\\JsonResponse
  */',
-        'startLine' => 289,
-        'endLine' => 295,
+        'startLine' => 277,
+        'endLine' => 284,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -921,10 +905,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 303,
-            'endLine' => 303,
+            'startLine' => 289,
+            'endLine' => 289,
             'startColumn' => 31,
-            'endColumn' => 63,
+            'endColumn' => 46,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -947,10 +931,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 303,
-            'endLine' => 303,
-            'startColumn' => 66,
-            'endColumn' => 81,
+            'startLine' => 289,
+            'endLine' => 289,
+            'startColumn' => 49,
+            'endColumn' => 64,
             'parameterIndex' => 1,
             'isOptional' => false,
           ),
@@ -970,12 +954,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Synchronise la liste des utilisateurs associés à la section.
- * @param \\Illuminate\\Http\\Request $request
- * @param Section $section
- * @return \\Illuminate\\Http\\JsonResponse
  */',
-        'startLine' => 303,
-        'endLine' => 309,
+        'startLine' => 289,
+        'endLine' => 296,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1013,8 +994,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 316,
-            'endLine' => 316,
+            'startLine' => 301,
+            'endLine' => 301,
             'startColumn' => 27,
             'endColumn' => 42,
             'parameterIndex' => 0,
@@ -1036,11 +1017,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Liste les utilisateurs associés à la section.
- * @param Section $section
- * @return \\Illuminate\\Http\\JsonResponse
  */',
-        'startLine' => 316,
-        'endLine' => 320,
+        'startLine' => 301,
+        'endLine' => 306,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1078,8 +1057,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 327,
-            'endLine' => 327,
+            'startLine' => 313,
+            'endLine' => 313,
             'startColumn' => 29,
             'endColumn' => 40,
             'parameterIndex' => 0,
@@ -1101,11 +1080,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Restaure une section supprimée.
- * @param int $section ID de la section (soft-deleted)
- * @return \\Illuminate\\Http\\RedirectResponse
+ *
+ * @param  int  $section  ID de la section (soft-deleted)
  */',
-        'startLine' => 327,
-        'endLine' => 334,
+        'startLine' => 313,
+        'endLine' => 321,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1143,10 +1122,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 341,
-            'endLine' => 341,
+            'startLine' => 326,
+            'endLine' => 326,
             'startColumn' => 33,
-            'endColumn' => 60,
+            'endColumn' => 48,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -1166,11 +1145,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Supprime définitivement une section.
- * @param Section $section
- * @return \\Illuminate\\Http\\RedirectResponse
  */',
-        'startLine' => 341,
-        'endLine' => 347,
+        'startLine' => 326,
+        'endLine' => 333,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1208,8 +1185,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 373,
-            'endLine' => 373,
+            'startLine' => 360,
+            'endLine' => 360,
             'startColumn' => 29,
             'endColumn' => 44,
             'parameterIndex' => 0,
@@ -1231,13 +1208,13 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Réorganise l\'ordre des sections (drag & drop).
- * 
+ *
  * **Fonctionnement :**
  * - Reçoit un tableau de sections avec leur nouvel ordre
  * - Met à jour le champ `order` de chaque section
  * - Vérifie les permissions pour chaque section individuellement
  * - Utilise une transaction pour garantir la cohérence
- * 
+ *
  * **Format de la requête :**
  * ```json
  * {
@@ -1248,13 +1225,14 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *   ]
  * }
  * ```
- * 
- * @param Request $request Requête contenant le tableau de sections
- * @return \\Illuminate\\Http\\JsonResponse Réponse JSON avec success: true
- * @throws \\Illuminate\\Auth\\Access\\AuthorizationException Si l\'utilisateur n\'a pas les droits
+ *
+ * @param  Request  $request  Requête contenant le tableau de sections
+ * @return JsonResponse Réponse JSON avec success: true
+ *
+ * @throws AuthorizationException Si l\'utilisateur n\'a pas les droits
  */',
-        'startLine' => 373,
-        'endLine' => 400,
+        'startLine' => 360,
+        'endLine' => 387,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

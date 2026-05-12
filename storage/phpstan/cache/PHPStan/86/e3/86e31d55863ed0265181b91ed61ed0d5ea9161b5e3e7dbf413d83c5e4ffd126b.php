@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Http/Resources/SectionResource.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Http\Resources\SectionResource
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-23e08dcb01dcde440142fefd60c33f7d1d7c37820a72253a6cd3a7b52a8ac5cf-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-128ae5354475d95c20042918e7a168b925287d23e2fd5671cb6b8c31071d4b55-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -31,8 +31,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 14,
-    'endLine' => 83,
+    'startLine' => 16,
+    'endLine' => 86,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Http\\Resources\\Json\\JsonResource',
@@ -74,8 +74,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 22,
-            'endLine' => 22,
+            'startLine' => 24,
+            'endLine' => 24,
             'startColumn' => 29,
             'endColumn' => 44,
             'parameterIndex' => 0,
@@ -100,8 +100,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *
  * @return array<string, mixed>
  */',
-        'startLine' => 22,
-        'endLine' => 82,
+        'startLine' => 24,
+        'endLine' => 85,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

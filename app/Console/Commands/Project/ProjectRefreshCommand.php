@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Project;
 
+use App\Console\ArtisanExitCode;
 use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
 
@@ -30,13 +31,13 @@ class ProjectRefreshCommand extends Command
         if (app()->environment('production')) {
             $this->error('Interdit en production.');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         if (! $this->option('force') && ! $this->confirm('⚠️  migrate:fresh détruira toutes les tables. Continuer ?')) {
             $this->info('Annulé.');
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         if ($this->option('hard')) {
@@ -68,6 +69,6 @@ class ProjectRefreshCommand extends Command
 
         $this->info('✅ project:refresh terminé.');
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 }

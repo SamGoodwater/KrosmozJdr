@@ -30,6 +30,10 @@ return new class extends Migration
             $table->json('conversion_dofus_sample')->nullable()->comment('Niveau → valeur Dofus (ex. {"1":200,"200":50000})');
             $table->json('conversion_krosmoz_sample')->nullable()->comment('Niveau → valeur Krosmoz (ex. {"1":1,"20":20})');
             $table->json('conversion_sample_rows')->nullable()->comment('Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]');
+            $table->json('norms_grid')->nullable()->comment('Grille 5×20 : {power_level: [val_lvl1..val_lvl20]}');
+            $table->json('norms_conditions')->nullable()->comment('Conditions de lecture : [{characteristic_key, operator, value, target, modifier, comment}]');
+            $table->text('norms_description')->nullable()->comment('Description libre de la norme');
+            $table->foreignId('norms_help_section_id')->nullable()->constrained('sections')->nullOnDelete()->comment('Section texte riche (CMS) affichée sous la charte');
             $table->json('labels')->nullable();
             $table->json('validation')->nullable();
             $table->timestamps();

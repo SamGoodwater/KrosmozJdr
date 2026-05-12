@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Characteristics;
 
+use App\Console\ArtisanExitCode;
 use App\Services\Characteristic\Formula\CreatureFormulaPlaceholderValidator;
 use Illuminate\Console\Command;
 
@@ -26,7 +27,7 @@ class ValidateCreatureFormulaPlaceholdersCommand extends Command
         if ($errors === []) {
             $this->info('Aucune variable inconnue dans les formules creature.');
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $this->error(count($errors).' placeholder(s) inconnu(s) :');
@@ -41,6 +42,6 @@ class ValidateCreatureFormulaPlaceholdersCommand extends Command
             ));
         }
 
-        return self::FAILURE;
+        return ArtisanExitCode::FAILURE;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Pages;
 
+use App\Console\ArtisanExitCode;
 use App\Support\Cms\RulesCharacteristicKrefReplacementCatalog;
 use Illuminate\Console\Command;
 use RecursiveDirectoryIterator;
@@ -41,7 +42,7 @@ class RulesInjectCharacteristicKrefsInMarkdownCommand extends Command
         if (! is_dir($root)) {
             $this->error("Répertoire introuvable : {$root}");
 
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         $rootReal = realpath($root) ?: $root;
@@ -90,6 +91,6 @@ class RulesInjectCharacteristicKrefsInMarkdownCommand extends Command
             $dryRun ? ' (aucune écriture)' : ''
         ));
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 }

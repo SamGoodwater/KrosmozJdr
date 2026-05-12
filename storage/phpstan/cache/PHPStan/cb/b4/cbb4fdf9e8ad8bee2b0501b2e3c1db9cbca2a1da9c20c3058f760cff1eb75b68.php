@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Http/Controllers/PageController.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Http\Controllers\PageController
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-c8032c7d62569067b02b6c5b10014d9d1d10a9c662299257edd1af7d51af57e6-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-dd5f4c52d9222abbac912387a9ea22fa8736792f47f0d459c8ad241eae3bb29d-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -31,8 +31,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 22,
-    'endLine' => 407,
+    'startLine' => 26,
+    'endLine' => 443,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'App\\Http\\Controllers\\Controller',
@@ -74,8 +74,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 28,
-            'endLine' => 28,
+            'startLine' => 31,
+            'endLine' => 31,
             'startColumn' => 27,
             'endColumn' => 42,
             'parameterIndex' => 0,
@@ -97,10 +97,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Affiche la liste paginée des pages.
- * @return \\Inertia\\Response
  */',
-        'startLine' => 28,
-        'endLine' => 58,
+        'startLine' => 31,
+        'endLine' => 61,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -136,8 +135,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Show the form for creating a new resource.
  */',
-        'startLine' => 63,
-        'endLine' => 75,
+        'startLine' => 66,
+        'endLine' => 78,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -175,10 +174,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 80,
-            'endLine' => 80,
+            'startLine' => 83,
+            'endLine' => 83,
             'startColumn' => 27,
-            'endColumn' => 70,
+            'endColumn' => 51,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -199,8 +198,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Store a newly created resource in storage.
  */',
-        'startLine' => 80,
-        'endLine' => 91,
+        'startLine' => 83,
+        'endLine' => 95,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -238,10 +237,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 109,
-            'endLine' => 109,
+            'startLine' => 113,
+            'endLine' => 113,
             'startColumn' => 26,
-            'endColumn' => 47,
+            'endColumn' => 35,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -261,22 +260,22 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Affiche une page avec ses sections.
- * 
+ *
  * **Logique de chargement des sections :**
  * - Si l\'utilisateur peut modifier la page : charge TOUTES les sections (drafts inclus)
  *   → Permet d\'éditer toutes les sections, même non publiées
  * - Sinon : charge uniquement les sections affichables (publiées + visibles)
  *   → Respecte la visibilité et l\'état pour les utilisateurs sans droits d\'édition
- * 
+ *
  * **Permissions :**
  * - Utilise la policy `PagePolicy::view()` pour vérifier les droits
  * - Autorise les invités si la page est visible pour eux
- * 
- * @param \\App\\Models\\Page $page Page à afficher (résolue par route model binding via slug)
- * @return \\Inertia\\Response Vue Inertia avec la page et ses sections
+ *
+ * @param  Page  $page  Page à afficher (résolue par route model binding via slug)
+ * @return Response Vue Inertia avec la page et ses sections
  */',
-        'startLine' => 109,
-        'endLine' => 173,
+        'startLine' => 113,
+        'endLine' => 177,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -314,10 +313,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 178,
-            'endLine' => 178,
+            'startLine' => 182,
+            'endLine' => 182,
             'startColumn' => 26,
-            'endColumn' => 47,
+            'endColumn' => 35,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -338,8 +337,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Show the form for editing the specified resource.
  */',
-        'startLine' => 178,
-        'endLine' => 193,
+        'startLine' => 182,
+        'endLine' => 197,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -377,10 +376,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 198,
-            'endLine' => 198,
+            'startLine' => 202,
+            'endLine' => 202,
             'startColumn' => 28,
-            'endColumn' => 72,
+            'endColumn' => 53,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -403,10 +402,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 198,
-            'endLine' => 198,
-            'startColumn' => 75,
-            'endColumn' => 96,
+            'startLine' => 202,
+            'endLine' => 202,
+            'startColumn' => 56,
+            'endColumn' => 65,
             'parameterIndex' => 1,
             'isOptional' => false,
           ),
@@ -427,8 +426,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Update the specified resource in storage.
  */',
-        'startLine' => 198,
-        'endLine' => 220,
+        'startLine' => 202,
+        'endLine' => 225,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -466,10 +465,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 225,
-            'endLine' => 225,
+            'startLine' => 230,
+            'endLine' => 230,
             'startColumn' => 28,
-            'endColumn' => 49,
+            'endColumn' => 37,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -490,8 +489,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Remove the specified resource from storage.
  */',
-        'startLine' => 225,
-        'endLine' => 233,
+        'startLine' => 230,
+        'endLine' => 239,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -529,10 +528,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 238,
-            'endLine' => 238,
+            'startLine' => 244,
+            'endLine' => 244,
             'startColumn' => 32,
-            'endColumn' => 64,
+            'endColumn' => 47,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -555,10 +554,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 238,
-            'endLine' => 238,
-            'startColumn' => 67,
-            'endColumn' => 76,
+            'startLine' => 244,
+            'endLine' => 244,
+            'startColumn' => 50,
+            'endColumn' => 59,
             'parameterIndex' => 1,
             'isOptional' => false,
           ),
@@ -579,8 +578,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Associe un utilisateur à la page.
  */',
-        'startLine' => 238,
-        'endLine' => 244,
+        'startLine' => 244,
+        'endLine' => 251,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -618,10 +617,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 249,
-            'endLine' => 249,
+            'startLine' => 256,
+            'endLine' => 256,
             'startColumn' => 32,
-            'endColumn' => 64,
+            'endColumn' => 47,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -644,10 +643,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 249,
-            'endLine' => 249,
-            'startColumn' => 67,
-            'endColumn' => 76,
+            'startLine' => 256,
+            'endLine' => 256,
+            'startColumn' => 50,
+            'endColumn' => 59,
             'parameterIndex' => 1,
             'isOptional' => false,
           ),
@@ -668,8 +667,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Dissocie un utilisateur de la page.
  */',
-        'startLine' => 249,
-        'endLine' => 255,
+        'startLine' => 256,
+        'endLine' => 263,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -707,10 +706,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 260,
-            'endLine' => 260,
+            'startLine' => 268,
+            'endLine' => 268,
             'startColumn' => 31,
-            'endColumn' => 63,
+            'endColumn' => 46,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -733,10 +732,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 260,
-            'endLine' => 260,
-            'startColumn' => 66,
-            'endColumn' => 75,
+            'startLine' => 268,
+            'endLine' => 268,
+            'startColumn' => 49,
+            'endColumn' => 58,
             'parameterIndex' => 1,
             'isOptional' => false,
           ),
@@ -757,8 +756,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Synchronise la liste des utilisateurs associés à la page.
  */',
-        'startLine' => 260,
-        'endLine' => 266,
+        'startLine' => 268,
+        'endLine' => 275,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -796,8 +795,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 271,
-            'endLine' => 271,
+            'startLine' => 280,
+            'endLine' => 280,
             'startColumn' => 27,
             'endColumn' => 36,
             'parameterIndex' => 0,
@@ -820,8 +819,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Liste les utilisateurs associés à la page.
  */',
-        'startLine' => 271,
-        'endLine' => 275,
+        'startLine' => 280,
+        'endLine' => 285,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -859,8 +858,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 277,
-            'endLine' => 277,
+            'startLine' => 287,
+            'endLine' => 287,
             'startColumn' => 29,
             'endColumn' => 37,
             'parameterIndex' => 0,
@@ -881,8 +880,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 277,
-        'endLine' => 285,
+        'startLine' => 287,
+        'endLine' => 296,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -920,10 +919,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 287,
-            'endLine' => 287,
+            'startLine' => 298,
+            'endLine' => 298,
             'startColumn' => 33,
-            'endColumn' => 54,
+            'endColumn' => 42,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -942,8 +941,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 287,
-        'endLine' => 294,
+        'startLine' => 298,
+        'endLine' => 306,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -978,11 +977,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Récupère les pages du menu pour un utilisateur.
- * 
- * @return \\Illuminate\\Http\\JsonResponse
  */',
-        'startLine' => 301,
-        'endLine' => 345,
+        'startLine' => 311,
+        'endLine' => 358,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1020,10 +1017,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 371,
-            'endLine' => 371,
+            'startLine' => 385,
+            'endLine' => 385,
             'startColumn' => 29,
-            'endColumn' => 61,
+            'endColumn' => 44,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -1043,13 +1040,13 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Réorganise l\'ordre des pages dans le menu (drag & drop).
- * 
+ *
  * **Fonctionnement :**
  * - Reçoit un tableau de pages avec leur nouvel ordre
  * - Met à jour le champ `menu_order` de chaque page
  * - Vérifie les permissions pour chaque page individuellement
  * - Invalide le cache du menu après modification
- * 
+ *
  * **Format de la requête :**
  * ```json
  * {
@@ -1060,13 +1057,14 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *   ]
  * }
  * ```
- * 
- * @param \\Illuminate\\Http\\Request $request Requête contenant le tableau de pages
- * @return \\Illuminate\\Http\\JsonResponse Réponse JSON avec success: true
- * @throws \\Illuminate\\Auth\\Access\\AuthorizationException Si l\'utilisateur n\'a pas les droits
+ *
+ * @param  Request  $request  Requête contenant le tableau de pages
+ * @return JsonResponse Réponse JSON avec success: true
+ *
+ * @throws AuthorizationException Si l\'utilisateur n\'a pas les droits
  */',
-        'startLine' => 371,
-        'endLine' => 406,
+        'startLine' => 385,
+        'endLine' => 421,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1074,6 +1072,71 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'isGenerator' => false,
         'isVariadic' => false,
         'modifiers' => 1,
+        'namespace' => 'App\\Http\\Controllers',
+        'declaringClassName' => 'App\\Http\\Controllers\\PageController',
+        'implementingClassName' => 'App\\Http\\Controllers\\PageController',
+        'currentClassName' => 'App\\Http\\Controllers\\PageController',
+        'aliasName' => NULL,
+      ),
+      'normalizeNavBibliothequeEntries' => 
+      array (
+        'name' => 'normalizeNavBibliothequeEntries',
+        'parameters' => 
+        array (
+          'raw' => 
+          array (
+            'name' => 'raw',
+            'default' => NULL,
+            'type' => 
+            array (
+              'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+              'data' => 
+              array (
+                'name' => 'mixed',
+                'isIdentifier' => true,
+              ),
+            ),
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 428,
+            'endLine' => 428,
+            'startColumn' => 61,
+            'endColumn' => 70,
+            'parameterIndex' => 0,
+            'isOptional' => false,
+          ),
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+          'data' => 
+          array (
+            'name' => 'array',
+            'isIdentifier' => true,
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Filtre la configuration du menu « Bibliothèques » pour un flux Collection analysable statiquement.
+ *
+ * @return array<int, array<string, mixed>>
+ */',
+        'startLine' => 428,
+        'endLine' => 442,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 20,
         'namespace' => 'App\\Http\\Controllers',
         'declaringClassName' => 'App\\Http\\Controllers\\PageController',
         'implementingClassName' => 'App\\Http\\Controllers\\PageController',

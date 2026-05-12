@@ -293,6 +293,68 @@ Inchangé fonctionnellement, avec en plus :
 
 Super admin : toujours via le flux seed + prompt (logique partagée avec `project:super-admin`, trait `PromptsPrimarySuperAdmin`).
 
+### Données couvertes par `project:init` (sans `--skip-*`)
+
+**Ordre d’exécution** : d’abord socle BDD / seeders / règles / capacités (fichier local), **puis** appels DofusDB (types API, scrapping entités — les plus longs), pour pouvoir arrêter l’init après les phases utiles aux tests.
+
+| Étape | Contenu |
+|--------|---------|
+| Migrations | `migrate` ou `migrate:fresh` (`--fresh`) |
+| `scrapping:setup` | Types (`TypeSeeder`), caractéristiques, pivots, mappings DofusDB / scrapping, effets |
+| Seeders pages | `UserSeeder`, `CriticalPagesSeeder`, `NavMenuSeeder`, `PageSeeder`, `SectionSeeder`, `SubEffectSeeder` |
+| Référentiels jeu | `LanguageSeeder`, `ConditionSeeder`, `CreatureTraitSeeder`, `CreationPagesSeeder` |
+| Spécialisations | `SpecializationSeeder` (HTML sous `database/seeders/data/legacy-specializations/`) — désactivable avec `--skip-specializations` |
+| Import règles | `project:data:import-rules-toc` |
+| Capacités | `capabilities:import-legacy` sur `database/seeders/data/capability.json` (absent = ignoré) — **avant** les appels DofusDB lourds |
+| Types DofusDB | `scrapping:types:seed`, `scrapping:races:seed`, `SpellTypeSeeder` |
+| Scrapping entités | classes, sorts, monstres, ressources, consommables, items, panoplies (`scrapping:run`) — **en dernier** avant le scheduler |
+
+Pour un `db:seed` classique global, voir aussi {@see \Database\Seeders\DatabaseSeeder} : il reprend une partie des mêmes seeders ; `project:init` ajoute scrapping, types API, import legacy spécialisations et TOC.
+
+---
+
+## `project:review` / `review` — rapport Markdown pour agent
+
+Alias de **`dev:review`**. Le rapport est écrit en Markdown sous `storage/app/dev-reports/` par défaut.
+
+### Mode profil (sans options d’action)
+
+Argument optionnel : `tests`, `quality`, `security`, `docs`, `all` (défaut **`all`** si rien n’est passé).
+
+- **`tests`** : PHPUnit + Vitest (`pnpm run test:run`).
+- **`quality`** : PHPStan, Pint (`--test`), ESLint.
+- **`security`** / **`docs`** : inchangés.
+- **`all`** : tout le périmètre ci-dessus + audit Composer + contrôles doc.
+
+### Mode actions (options, combinables)
+
+Dès qu’une de ces options est présente, **l’argument profil est ignoré** (avertissement terminal).
+
+| Option | Action |
+|--------|--------|
+| `--all` | Tout : tests back + front, PHPStan, Pint, ESLint, audit Composer, doc |
+| `--tests` | `php artisan test` + `pnpm run test:run` |
+| `--test-back` | PHPUnit uniquement |
+| `--test-front` | Vitest uniquement (`pnpm run test:run`) |
+| `--pint` | Laravel Pint en `--test` ; avec **`--fix-pint`**, application Pint (écriture) après la section Pint |
+| `--phpstan` | Larastan / PHPStan |
+| `--eslint` | `pnpm run lint` |
+| `--security` | `composer audit` |
+| `--docs` | Contrôles sur `docs/` (index JSON, fichiers d’entrée) |
+
+**Sans argument de profil et sans aucune de ces options d’action** : comportement identique au profil **`all`** (équivalent pratique à `--all`).
+
+Options inchangées : `--report-path`, `--no-cursor-prompts`, `--fix-pint`, `--cursor-agent`.
+
+```bash
+php artisan project:review
+php artisan project:review --pint
+php artisan project:review --test-back --phpstan
+php artisan project:review --tests
+php artisan project:review --all
+php artisan review tests --report-path=storage/app/dev-reports/dernier-run.md
+```
+
 ---
 
 ## `project:super-admin`

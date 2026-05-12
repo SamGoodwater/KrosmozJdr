@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Effects;
 
+use App\Console\ArtisanExitCode;
 use App\Models\EffectDegree;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use Illuminate\Console\Command;
@@ -30,7 +31,7 @@ final class EffectsRebuildSignaturesCommand extends Command
             if ($ids === []) {
                 $this->error('Liste d\'IDs invalide.');
 
-                return self::FAILURE;
+                return ArtisanExitCode::FAILURE;
             }
             $query->whereIn('id', $ids);
         }
@@ -40,7 +41,7 @@ final class EffectsRebuildSignaturesCommand extends Command
         if ($degrees->isEmpty()) {
             $this->info('Aucun degré à traiter.');
 
-            return self::SUCCESS;
+            return ArtisanExitCode::SUCCESS;
         }
 
         $updated = 0;
@@ -78,6 +79,6 @@ final class EffectsRebuildSignaturesCommand extends Command
             $this->warn('Mode --dry-run : aucune modification en base. Relancez sans --dry-run pour appliquer.');
         }
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 }

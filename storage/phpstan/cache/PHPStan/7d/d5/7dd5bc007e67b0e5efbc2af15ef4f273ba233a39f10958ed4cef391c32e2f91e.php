@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Http/Resources/SectionResource.php-presentSymbols
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-23e08dcb01dcde440142fefd60c33f7d1d7c37820a72253a6cd3a7b52a8ac5cf-8.4.17',
+   'variableKey' => 'v2-128ae5354475d95c20042918e7a168b925287d23e2fd5671cb6b8c31071d4b55-8.4.17',
    'data' => 
   array (
     'classes' => 

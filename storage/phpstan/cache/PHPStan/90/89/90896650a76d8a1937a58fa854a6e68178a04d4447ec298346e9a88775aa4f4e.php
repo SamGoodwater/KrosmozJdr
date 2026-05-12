@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/database/seeders/SpellCharacteristicSeeder.php-PHPStan\BetterReflection\Reflection\ReflectionClass-Database\Seeders\SpellCharacteristicSeeder
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-1f234bd25b5aeb165554caf000e6416ba3cefa993b43e96a78da5bcd87e24539-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-ef33356eb81017292ef3a1d121840b62cd4e2cca04ff8312419b398642b923a3-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -29,7 +29,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 12,
-    'endLine' => 52,
+    'endLine' => 42,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Database\\Seeders\\CharacteristicGroupSeeder',
@@ -47,95 +47,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     'immediateMethods' => 
     array (
-      'dataPath' => 
-      array (
-        'name' => 'dataPath',
-        'parameters' => 
-        array (
-        ),
-        'returnsReference' => false,
-        'returnType' => 
-        array (
-          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
-          'data' => 
-          array (
-            'name' => 'string',
-            'isIdentifier' => true,
-          ),
-        ),
-        'attributes' => 
-        array (
-        ),
-        'docComment' => NULL,
-        'startLine' => 14,
-        'endLine' => 17,
-        'startColumn' => 5,
-        'endColumn' => 5,
-        'couldThrow' => false,
-        'isClosure' => false,
-        'isGenerator' => false,
-        'isVariadic' => false,
-        'modifiers' => 2,
-        'namespace' => 'Database\\Seeders',
-        'declaringClassName' => 'Database\\Seeders\\SpellCharacteristicSeeder',
-        'implementingClassName' => 'Database\\Seeders\\SpellCharacteristicSeeder',
-        'currentClassName' => 'Database\\Seeders\\SpellCharacteristicSeeder',
-        'aliasName' => NULL,
-      ),
-      'normsDataPath' => 
-      array (
-        'name' => 'normsDataPath',
-        'parameters' => 
-        array (
-        ),
-        'returnsReference' => false,
-        'returnType' => 
-        array (
-          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionUnionType',
-          'data' => 
-          array (
-            'types' => 
-            array (
-              0 => 
-              array (
-                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
-                'data' => 
-                array (
-                  'name' => 'string',
-                  'isIdentifier' => true,
-                ),
-              ),
-              1 => 
-              array (
-                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
-                'data' => 
-                array (
-                  'name' => 'null',
-                  'isIdentifier' => true,
-                ),
-              ),
-            ),
-          ),
-        ),
-        'attributes' => 
-        array (
-        ),
-        'docComment' => NULL,
-        'startLine' => 19,
-        'endLine' => 22,
-        'startColumn' => 5,
-        'endColumn' => 5,
-        'couldThrow' => false,
-        'isClosure' => false,
-        'isGenerator' => false,
-        'isVariadic' => false,
-        'modifiers' => 2,
-        'namespace' => 'Database\\Seeders',
-        'declaringClassName' => 'Database\\Seeders\\SpellCharacteristicSeeder',
-        'implementingClassName' => 'Database\\Seeders\\SpellCharacteristicSeeder',
-        'currentClassName' => 'Database\\Seeders\\SpellCharacteristicSeeder',
-        'aliasName' => NULL,
-      ),
       'defaultEntity' => 
       array (
         'name' => 'defaultEntity',
@@ -156,8 +67,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 24,
-        'endLine' => 27,
+        'startLine' => 14,
+        'endLine' => 17,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -193,8 +104,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * @return class-string<CharacteristicSpell>
  */',
-        'startLine' => 32,
-        'endLine' => 35,
+        'startLine' => 22,
+        'endLine' => 25,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -228,8 +139,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 37,
-        'endLine' => 40,
+        'startLine' => 27,
+        'endLine' => 30,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -267,8 +178,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 46,
-            'endLine' => 46,
+            'startLine' => 36,
+            'endLine' => 36,
             'startColumn' => 43,
             'endColumn' => 52,
             'parameterIndex' => 0,
@@ -292,8 +203,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  array<string, mixed>  $row
  * @return array<string, mixed>
  */',
-        'startLine' => 46,
-        'endLine' => 51,
+        'startLine' => 36,
+        'endLine' => 41,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

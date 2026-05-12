@@ -113,10 +113,10 @@ defineExpose({
     input-type="checkbox"
   >
     <!-- Slot core spécifique pour CheckboxCore -->
-    <template #core="{ inputAttrs, listeners, inputRef }">
+    <template #core="coreSlot">
       <CheckboxCore
-        v-bind="inputAttrs"
-        v-on="listeners"
+        v-bind="coreSlot.inputAttrs"
+        v-on="coreSlot.listeners"
         ref="inputRef"
       />
     </template>

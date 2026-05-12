@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Development;
 
+use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use Illuminate\Console\Command;
 
@@ -23,7 +24,7 @@ class LoadDevelopmentServersCommand extends Command
     public function handle(): int
     {
         if (! $this->guardNotProduction('Cette commande est interdite en production.')) {
-            return self::FAILURE;
+            return ArtisanExitCode::FAILURE;
         }
 
         return $this->call('project:dev');

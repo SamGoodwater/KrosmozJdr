@@ -2,7 +2,7 @@
 
 // ftm-/var/www/KrosmozJdr/database/seeders/CharacteristicGroupSeeder.php
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v4-2.3.2',
+   'variableKey' => 'v5-2.3.2',
    'data' => 
   array (
     0 => 
@@ -14,6 +14,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -42,6 +43,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -59,6 +61,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'characteristic' => 'App\\Models\\Characteristic',
             'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -97,6 +100,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -114,6 +118,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'characteristic' => 'App\\Models\\Characteristic',
             'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -152,6 +157,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -169,6 +175,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'characteristic' => 'App\\Models\\Characteristic',
             'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -207,6 +214,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -224,6 +232,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'characteristic' => 'App\\Models\\Characteristic',
             'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -262,6 +271,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -279,6 +289,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'characteristic' => 'App\\Models\\Characteristic',
             'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -317,6 +328,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -334,6 +346,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'characteristic' => 'App\\Models\\Characteristic',
             'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -372,6 +385,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -389,6 +403,64 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'characteristic' => 'App\\Models\\Characteristic',
             'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
+            'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+            'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+            'model' => 'Illuminate\\Database\\Eloquent\\Model',
+            'seeder' => 'Illuminate\\Database\\Seeder',
+          ),
+           'className' => 'Database\\Seeders\\CharacteristicGroupSeeder',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      '17b2a86a3c718d63a0e9664608abf8d0' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'Database\\Seeders',
+         'uses' => 
+        array (
+          'characteristic' => 'App\\Models\\Characteristic',
+          'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
+          'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
+          'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
+          'model' => 'Illuminate\\Database\\Eloquent\\Model',
+          'seeder' => 'Illuminate\\Database\\Seeder',
+        ),
+         'className' => 'Database\\Seeders\\CharacteristicGroupSeeder',
+         'functionName' => 'resolveCharacteristicObjectItemTypeIdsForSync',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'Database\\Seeders',
+           'uses' => 
+          array (
+            'characteristic' => 'App\\Models\\Characteristic',
+            'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -427,6 +499,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -444,6 +517,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'characteristic' => 'App\\Models\\Characteristic',
             'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -482,6 +556,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -499,6 +574,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'characteristic' => 'App\\Models\\Characteristic',
             'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -537,6 +613,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'characteristic' => 'App\\Models\\Characteristic',
           'characteristicobject' => 'App\\Models\\CharacteristicObject',
+          'itemtype' => 'App\\Models\\Type\\ItemType',
           'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
           'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
           'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -554,6 +631,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'characteristic' => 'App\\Models\\Characteristic',
             'characteristicobject' => 'App\\Models\\CharacteristicObject',
+            'itemtype' => 'App\\Models\\Type\\ItemType',
             'characteristicdefinitionreader' => 'App\\Services\\Characteristics\\CharacteristicDefinitionReader',
             'characteristicdefinitionnaming' => 'App\\Support\\Characteristics\\CharacteristicDefinitionNaming',
             'model' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -588,7 +666,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/database/seeders/CharacteristicGroupSeeder.php' => '71127b3e1d38e1fa9f5d32bb2f99cb5479f46cf4d61295476b06a672069fb151',
+      '/var/www/KrosmozJdr/database/seeders/CharacteristicGroupSeeder.php' => '3217ef4458a784e50c94a21b17ac595881d58aed7a739f87a7e351a61421da25',
     ),
   ),
 ));

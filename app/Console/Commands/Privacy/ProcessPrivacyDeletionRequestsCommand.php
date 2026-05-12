@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Privacy;
 
+use App\Console\ArtisanExitCode;
 use App\Jobs\ExecuteUserErasureJob;
 use App\Models\DataSubjectRequest;
 use Illuminate\Console\Command;
@@ -42,6 +43,6 @@ class ProcessPrivacyDeletionRequestsCommand extends Command
             $this->info("{$count} demande(s) de suppression envoyée(s) au traitement.");
         }
 
-        return self::SUCCESS;
+        return ArtisanExitCode::SUCCESS;
     }
 }

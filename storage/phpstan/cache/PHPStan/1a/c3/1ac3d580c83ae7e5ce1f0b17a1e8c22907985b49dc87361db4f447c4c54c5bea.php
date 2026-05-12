@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/BreedElementOrientation.php-presentSymbols
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-e9ee7b359594b97c37037bb7d6522a306cde5aac28b804b94a0621f3a3d14bd9-8.4.17',
+   'variableKey' => 'v2-6cd0353b39c033301e974f51c708c4e00408c4b3bf0b8c6aef1f24bd8f72cc21-8.4.17',
    'data' => 
   array (
     'classes' => 
