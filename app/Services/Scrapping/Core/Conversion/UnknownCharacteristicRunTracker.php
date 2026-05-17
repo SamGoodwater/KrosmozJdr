@@ -16,21 +16,21 @@ final class UnknownCharacteristicRunTracker
 
     public static function reset(?string $runId): void
     {
-        if (!is_string($runId) || $runId === '') {
+        if (! is_string($runId) || $runId === '') {
             return;
         }
         self::$countsByRun[$runId] = [];
     }
 
     /**
-     * @param array<int, int> $counts
+     * @param  array<int, int>  $counts
      */
     public static function addCounts(?string $runId, array $counts): void
     {
-        if (!is_string($runId) || $runId === '' || $counts === []) {
+        if (! is_string($runId) || $runId === '' || $counts === []) {
             return;
         }
-        if (!isset(self::$countsByRun[$runId])) {
+        if (! isset(self::$countsByRun[$runId])) {
             self::$countsByRun[$runId] = [];
         }
         foreach ($counts as $id => $count) {
@@ -53,7 +53,7 @@ final class UnknownCharacteristicRunTracker
      */
     public static function summary(?string $runId): ?array
     {
-        if (!is_string($runId) || $runId === '' || !isset(self::$countsByRun[$runId])) {
+        if (! is_string($runId) || $runId === '' || ! isset(self::$countsByRun[$runId])) {
             return null;
         }
         $ids = self::$countsByRun[$runId];
@@ -71,4 +71,3 @@ final class UnknownCharacteristicRunTracker
         ];
     }
 }
-

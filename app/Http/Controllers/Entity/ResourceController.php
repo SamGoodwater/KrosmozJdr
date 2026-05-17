@@ -15,10 +15,12 @@ use App\Models\Entity\Resource;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Shop;
 use App\Models\Type\ResourceType;
+use App\Models\User;
 use App\Services\PdfService;
 use App\Support\Entity\ObjectEffectEditOptions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class ResourceController extends Controller
@@ -125,8 +127,8 @@ class ResourceController extends Controller
 
         // Valeurs par défaut d'accès/état
         $data['state'] = $data['state'] ?? \App\Models\Entity\Resource::STATE_DRAFT;
-        $data['read_level'] = array_key_exists('read_level', $data) && $data['read_level'] !== null ? (int) $data['read_level'] : \App\Models\User::ROLE_GUEST;
-        $data['write_level'] = array_key_exists('write_level', $data) && $data['write_level'] !== null ? (int) $data['write_level'] : \App\Models\User::ROLE_GAME_MASTER;
+        $data['read_level'] = array_key_exists('read_level', $data) && $data['read_level'] !== null ? (int) $data['read_level'] : User::ROLE_GUEST;
+        $data['write_level'] = array_key_exists('write_level', $data) && $data['write_level'] !== null ? (int) $data['write_level'] : User::ROLE_GAME_MASTER;
         if ((int) $data['write_level'] < (int) $data['read_level']) {
             $data['write_level'] = (int) $data['read_level'];
         }
@@ -408,7 +410,7 @@ class ResourceController extends Controller
      * Télécharge un PDF pour un ou plusieurs resources.
      *
      * @param  resource|null  $resource  La resource unique (si une seule)
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function downloadPdf(?Resource $resource = null)
     {

@@ -94,12 +94,35 @@ export class Spell extends BaseModel {
     }
 
     get level() {
-        return this._data.level || null;
+        const v = this._data.level;
+        if (v === null || v === undefined || v === '') {
+            return null;
+        }
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
     }
 
     /** Affichage portée (calculé côté API à partir de po_min/po_max). */
     get po() {
-        return this._data.po ?? null;
+        const v = this._data.po;
+        if (v === null || v === undefined || v === '') {
+            return null;
+        }
+        if (typeof v === 'number') {
+            return Number.isFinite(v) ? v : null;
+        }
+        if (typeof v === 'string') {
+            const t = v.trim();
+            if (t === '') {
+                return null;
+            }
+            const n = Number(t);
+            if (Number.isFinite(n) && t === String(n)) {
+                return n;
+            }
+            return v;
+        }
+        return v;
     }
 
     get poMin() {
@@ -115,7 +138,12 @@ export class Spell extends BaseModel {
     }
 
     get pa() {
-        return this._data.pa || null;
+        const v = this._data.pa;
+        if (v === null || v === undefined || v === '') {
+            return null;
+        }
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
     }
 
     /** Temps d'incantation (texte libre), chaîne vide si absent. */

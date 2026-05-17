@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Entity;
 
+use App\Http\Resources\SectionResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,6 +19,7 @@ class SpecializationResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -40,7 +42,7 @@ class SpecializationResource extends JsonResource
             'consumables' => $this->whenLoaded('consumables', fn () => ConsumableResource::collection($this->consumables)->resolve($request)),
             'resources' => $this->whenLoaded('resources', fn () => ResourceResource::collection($this->resources)->resolve($request)),
             'items' => $this->whenLoaded('items', fn () => ItemResource::collection($this->items)->resolve($request)),
-            'sections' => $this->whenLoaded('sections', fn () => \App\Http\Resources\SectionResource::collection($this->sections)->resolve($request)),
+            'sections' => $this->whenLoaded('sections', fn () => SectionResource::collection($this->sections)->resolve($request)),
             'npcs' => $this->whenLoaded('npcs'),
 
             // Droits d'accès
@@ -52,4 +54,3 @@ class SpecializationResource extends JsonResource
         ];
     }
 }
-

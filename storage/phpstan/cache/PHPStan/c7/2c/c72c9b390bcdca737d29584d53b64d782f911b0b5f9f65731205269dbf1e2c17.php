@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Support/SectionTemplatePayloadValidator.php-presentSymbols
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-9d7df9e884fc1111ea1e0b4c1adc85e536dd6b8c9c40885990975983d12c7925-8.4.17',
+   'variableKey' => 'v2-530b4f5f7602f1f86403be72e2550df19d1f1fcfa621b8006eae7f08070a849c-8.4.17',
    'data' => 
   array (
     'classes' => 

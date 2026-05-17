@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use App\Mail\NotificationMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -35,6 +34,7 @@ class ProjectMaintenanceNotification extends Notification implements ShouldQueue
     public function via(object $notifiable): array
     {
         $ch = array_intersect($this->channels, ['database', 'mail']);
+
         return $ch !== [] ? array_values($ch) : ['database'];
     }
 
@@ -71,7 +71,7 @@ class ProjectMaintenanceNotification extends Notification implements ShouldQueue
             'duration_human' => $duration,
             'finished_at' => $this->finishedAt,
             'message' => "Project:{$this->command} — {$status} (durée : {$duration}, fin : {$this->finishedAt})."
-                . ($this->message ? " {$this->message}" : ''),
+                .($this->message ? " {$this->message}" : ''),
             'url' => url('/admin'),
         ];
     }
@@ -79,15 +79,16 @@ class ProjectMaintenanceNotification extends Notification implements ShouldQueue
     private function formatDuration(float $seconds): string
     {
         if ($seconds < 60) {
-            return round($seconds, 1) . ' s';
+            return round($seconds, 1).' s';
         }
         $m = (int) floor($seconds / 60);
         $s = round($seconds % 60, 1);
         if ($m < 60) {
-            return $m . ' min ' . $s . ' s';
+            return $m.' min '.$s.' s';
         }
         $h = (int) floor($m / 60);
         $m = $m % 60;
-        return $h . ' h ' . $m . ' min';
+
+        return $h.' h '.$m.' min';
     }
 }

@@ -2,9 +2,10 @@
 
 namespace Tests\Feature\Api\Bulk;
 
-use App\Models\User;
-use App\Models\Entity\Scenario;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Campaign;
+use App\Models\Entity\Scenario;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -25,7 +26,7 @@ class ScenarioBulkControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
     }
 
     /**

@@ -22,7 +22,7 @@ class CharacteristicFormulaServiceTest extends TestCase
     {
         parent::setUp();
         $this->service = new CharacteristicFormulaService(
-            new FormulaResolutionService(new SafeExpressionEvaluator())
+            new FormulaResolutionService(new SafeExpressionEvaluator)
         );
     }
 

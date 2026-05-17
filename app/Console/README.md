@@ -15,6 +15,7 @@ Les commandes sont chargées **récursivement** depuis `app/Console/Commands/` (
 | Sauvegarde (purge fichiers) | `tests/Unit/Services/Project/ProjectBackupServiceTest.php` |
 | UI admin sync / backup / `project:deps` web | `tests/Feature/Admin/ProjectMaintenanceControllerTest.php`, `ProjectBackupWebControllerTest.php`, `ProjectDepsWebControllerTest.php`, `AdminDashboardControllerTest.php` |
 | Commande `project:clear` (smoke) | `tests/Feature/Console/ProjectClearCommandTest.php` |
+| Commande `project:review` (smoke Pint/options) | `tests/Feature/Console/ProjectReviewCommandTest.php` |
 | Scrapping (Artisan) | `tests/Feature/Scrapping/ScrappingRunCommandTest.php`, effets / seeders export, etc. |
 
 Les tests **Feature** avec `RefreshDatabase` attendent une base MySQL dédiée (ex. `krosmoz_testing` selon `phpunit.xml`). Sans serveur MySQL accessible, PHPUnit échoue à la connexion — lancer les tests sur une machine où la BDD de test est créée.
@@ -197,9 +198,13 @@ php artisan project:init -h
 
 Rapport dev Markdown (alias de **`dev:review`**) : soit **profil** positionnel (`tests`, `quality`, `security`, `docs`, `all` — défaut `all`), soit **options par action** (`--pint`, `--tests`, `--test-back`, `--test-front`, `--phpstan`, `--eslint`, `--security`, `--docs`, `--all`, combinables). Sans profil ni option d’action → tout le périmètre (comme `all`). Avec options d’action, le profil positionnel est ignoré. Sortie par défaut `storage/app/dev-reports/review-<timestamp>.md` — joignable à un agent Cursor.
 
+Pint dispose d’options dédiées pour rendre les reviews de feature plus robustes : `--pint-dirty` limite l’analyse aux fichiers Git modifiés, `--pint-timeout=300` règle le timeout, et un fallback par lots est lancé automatiquement si le run global dépasse ce timeout (`--no-pint-batches` le désactive).
+
 ```bash
 php artisan project:review
 php artisan project:review --pint
+php artisan project:review --pint --pint-dirty
+php artisan project:review --all --pint-timeout=900
 php artisan project:review --test-back --eslint
 php artisan review tests --report-path=storage/app/dev-reports/rapport.md
 ```

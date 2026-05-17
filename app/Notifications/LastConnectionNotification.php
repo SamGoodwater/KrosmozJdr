@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Mail\NotificationMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -28,14 +27,14 @@ class LastConnectionNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Connexion enregistrée')
             ->greeting('Bonjour !')
-            ->line('Ta connexion a été enregistrée le ' . $this->loggedAtIso . '.');
+            ->line('Ta connexion a été enregistrée le '.$this->loggedAtIso.'.');
     }
 
     public function toArray($notifiable): array
     {
         return [
             'logged_at' => $this->loggedAtIso,
-            'message' => 'Connexion enregistrée le ' . $this->loggedAtIso . '.',
+            'message' => 'Connexion enregistrée le '.$this->loggedAtIso.'.',
             'url' => url('/user'),
         ];
     }

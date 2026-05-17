@@ -79,15 +79,8 @@ describe('entity-registry', () => {
             expect(config).toBeDefined();
             expect(config.key).toBe('resources');
             expect(config.getDescriptors).toBeDefined();
-            expect(config.buildCell).toBeDefined();
-            // viewFields peut être un tableau (QUICK_EDIT_FIELDS) ou un objet avec quickEdit/compact/extended
-            expect(config.viewFields).toBeDefined();
-            // Pour resources, c'est encore un objet, pour les autres entités migrées c'est un tableau
-            if (Array.isArray(config.viewFields)) {
-                expect(config.viewFields.length).toBeGreaterThan(0);
-            } else {
-                expect(config.viewFields).toHaveProperty('quickEdit');
-            }
+            const descriptors = config.getDescriptors({});
+            expect(descriptors._quickeditConfig?.fields?.length).toBeGreaterThan(0);
             expect(config.responseAdapter).toBeDefined();
         });
 
@@ -97,15 +90,15 @@ describe('entity-registry', () => {
             expect(config).toBeDefined();
             expect(config.key).toBe('spells');
             expect(config.getDescriptors).toBeDefined();
-            expect(config.buildCell).toBeDefined();
+            const descriptors = config.getDescriptors({});
+            expect(descriptors._quickeditConfig?.fields?.length).toBeGreaterThan(0);
             expect(config.responseAdapter).toBeDefined();
         });
 
-        it('retourne la config pour creatures', () => {
+        it('retourne null pour creatures (entité abstraite / pas de grille dédiée)', () => {
             const config = getEntityConfig('creatures');
 
-            expect(config).toBeDefined();
-            expect(config.key).toBe('creatures');
+            expect(config).toBeNull();
         });
 
         it('retourne null pour un type inconnu', () => {

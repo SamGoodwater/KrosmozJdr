@@ -2,20 +2,18 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Resource;
-use App\Models\Entity\Item;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
+use App\Models\Entity\Resource;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Resource
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class ResourceModelTest extends TestCase
 {
@@ -27,7 +25,7 @@ class ResourceModelTest extends TestCase
     public function test_resource_factory_creates_valid_resource(): void
     {
         $user = User::factory()->create();
-        
+
         $resource = Resource::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -76,7 +74,7 @@ class ResourceModelTest extends TestCase
 
         $resource->refresh();
         $this->assertCount(2, $resource->items);
-        
+
         $pivot1 = $resource->items->where('id', $item1->id)->first()->pivot;
         $this->assertEquals('2', $pivot1->quantity);
     }
@@ -133,4 +131,3 @@ class ResourceModelTest extends TestCase
         $this->assertCount(2, $resource->creatures);
     }
 }
-

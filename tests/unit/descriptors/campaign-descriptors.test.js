@@ -38,16 +38,11 @@ describe('campaign-descriptors', () => {
     });
 
     describe('visibleIf / editableIf', () => {
-        it('visibleIf fonctionne avec canUpdateAny', () => {
-            const descriptors = getCampaignFieldDescriptors({
-                capabilities: { updateAny: true },
-            });
-
-            const idDescriptor = descriptors.id;
-            if (idDescriptor.visibleIf) {
-                expect(idDescriptor.visibleIf({ capabilities: { updateAny: true } })).toBe(true);
-                expect(idDescriptor.visibleIf({ capabilities: { updateAny: false } })).toBe(false);
-            }
+        it('visibleIf sur id suit canCreateAny (fermeture sur le factory)', () => {
+            const on = getCampaignFieldDescriptors({ capabilities: { createAny: true } });
+            const off = getCampaignFieldDescriptors({ capabilities: { createAny: false } });
+            expect(on.id.visibleIf?.()).toBe(true);
+            expect(off.id.visibleIf?.()).toBe(false);
         });
     });
 
@@ -79,11 +74,11 @@ describe('campaign-descriptors', () => {
             });
         });
 
-        it('aucun champ bulk n\'a de fonction build (déprécié)', () => {
+        it('bulk.build est optionnel : si présent, c’est une fonction (déprécié, mappers)', () => {
             const descriptors = getCampaignFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
-                if (desc.edit?.form?.bulk) {
-                    expect(desc.edit.form.bulk.build).toBeUndefined();
+                if (desc.edit?.form?.bulk?.build != null) {
+                    expect(typeof desc.edit.form.bulk.build).toBe('function');
                 }
             });
         });

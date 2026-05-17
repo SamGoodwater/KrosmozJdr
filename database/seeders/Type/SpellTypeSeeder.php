@@ -2,13 +2,13 @@
 
 namespace Database\Seeders\Type;
 
-use Illuminate\Database\Seeder;
 use App\Models\Type\SpellType;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 /**
  * Seeder pour les types de sorts
- * 
+ *
  * Initialise les types de sorts de base avec leurs couleurs
  */
 class SpellTypeSeeder extends Seeder
@@ -84,7 +84,6 @@ class SpellTypeSeeder extends Seeder
             );
         }
 
-        $this->command->info('✅ Types de sorts créés : ' . count($spellTypes));
+        $this->command->info('✅ Types de sorts créés : '.count($spellTypes));
     }
 }
-

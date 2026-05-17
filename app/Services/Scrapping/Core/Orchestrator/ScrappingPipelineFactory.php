@@ -7,6 +7,8 @@ namespace App\Services\Scrapping\Core\Orchestrator;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Characteristic\Limit\CharacteristicLimitService;
+use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Conversion\ConversionService;
@@ -41,8 +43,8 @@ final class ScrappingPipelineFactory
             $getter,
             $itemEffectsConverter,
             null,
-            app(\App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService::class),
-            app(\App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService::class)
+            app(DofusDbItemTypesCatalogService::class),
+            app(DofusDbItemSuperTypeMappingService::class)
         );
 
         $orchestrator = new Orchestrator(

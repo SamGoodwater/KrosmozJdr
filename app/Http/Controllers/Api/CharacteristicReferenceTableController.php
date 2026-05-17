@@ -38,4 +38,3 @@ final class CharacteristicReferenceTableController extends Controller
         return response()->json($payload);
     }
 }
-

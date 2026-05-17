@@ -29,7 +29,7 @@ describe('Section Workflow - Intégration', () => {
       // 3. Adapter vers UI
       const uiData = adaptSectionToUI(sectionModel);
       expect(uiData.color).toBe('success');
-      expect(uiData.badge.text).toBe('Publié');
+      expect(uiData.badge.text).toBe('Jouable');
       expect(uiData.metadata.hasContent).toBe(true);
     });
 
@@ -82,8 +82,8 @@ describe('Section Workflow - Intégration', () => {
 
       // Obtenir les valeurs par défaut pour un template
       const defaults = getDefaults('text');
-      expect(defaults.settings).toEqual({ align: 'left', size: 'md' });
-      expect(defaults.data).toEqual({ content: '' });
+      expect(defaults.settings).toEqual({ enableRichReferences: false });
+      expect(defaults.data).toEqual({ content: null });
 
       // Créer une section avec ces valeurs
       const section = createMockSection({

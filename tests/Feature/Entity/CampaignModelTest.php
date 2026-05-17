@@ -2,22 +2,20 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
 use App\Models\Entity\Campaign;
+use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
-use App\Models\Entity\Creature;
-use App\Models\Entity\Spell;
 use App\Models\Entity\Panoply;
+use App\Models\Entity\Spell;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Campaign
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class CampaignModelTest extends TestCase
 {
@@ -29,7 +27,7 @@ class CampaignModelTest extends TestCase
     public function test_campaign_factory_creates_valid_campaign(): void
     {
         $user = User::factory()->create();
-        
+
         $campaign = Campaign::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -151,4 +149,3 @@ class CampaignModelTest extends TestCase
         $this->assertCount(2, $campaign->panoplies);
     }
 }
-

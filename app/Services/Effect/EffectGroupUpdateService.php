@@ -74,7 +74,7 @@ final class EffectGroupUpdateService
         }
 
         $degree->effectSubEffects()->delete();
-        $sanitizer = new \App\Services\Effect\EffectTextSanitizer;
+        $sanitizer = new EffectTextSanitizer;
         foreach ($rows as $i => $row) {
             $params = $row['params'] ?? null;
             if ($params && ! empty($params['value_formula'])) {

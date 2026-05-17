@@ -14,5 +14,9 @@ return new class extends Migration
             $table->primary(['condition_id', 'creature_id']);
         });
     }
-    public function down(): void { Schema::dropIfExists('condition_creature'); }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('condition_creature');
+    }
 };

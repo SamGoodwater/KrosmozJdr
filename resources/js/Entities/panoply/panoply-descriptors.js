@@ -129,6 +129,7 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       edit: {
         form: {
           type: "textarea",
+          group: "Contenu",
           required: false,
           showInCompact: false,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },

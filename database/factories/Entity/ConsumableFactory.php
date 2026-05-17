@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Entity\Consumable>
+ * @extends Factory<Consumable>
  */
 class ConsumableFactory extends Factory
 {

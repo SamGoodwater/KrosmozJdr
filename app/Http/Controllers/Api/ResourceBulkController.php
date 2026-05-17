@@ -91,8 +91,9 @@ class ResourceBulkController extends Controller
 
             foreach ($ids as $id) {
                 $model = $models->firstWhere('id', $id);
-                if (!$model) {
+                if (! $model) {
                     $errors[] = ['id' => $id, 'error' => 'Not found'];
+
                     continue;
                 }
 
@@ -111,6 +112,7 @@ class ResourceBulkController extends Controller
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour en masse.',
@@ -129,5 +131,3 @@ class ResourceBulkController extends Controller
         ]);
     }
 }
-
-

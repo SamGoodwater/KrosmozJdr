@@ -16,4 +16,4 @@ $throttle = config('feedback.throttle_per_minute', 6);
 
 Route::post('/feedback', [FeedbackController::class, 'store'])
     ->name('feedback.store')
-    ->middleware('throttle:' . $throttle . ',1');
+    ->middleware('throttle:'.$throttle.',1');

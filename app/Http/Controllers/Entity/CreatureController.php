@@ -8,12 +8,17 @@ use App\Http\Requests\Entity\UpdateCreatureCreatureTraitsRequest;
 use App\Http\Requests\Entity\UpdateCreatureRequest;
 use App\Http\Resources\Entity\CreatureResource;
 use App\Http\Resources\Entity\CreatureTraitResource;
+use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\CreatureTrait;
+use App\Models\Entity\Item;
+use App\Models\Entity\Resource;
+use App\Models\Entity\Spell;
 use App\Services\Creature\Runtime\CreatureRuntimeStatsService;
 use App\Services\PdfService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class CreatureController extends Controller
@@ -108,7 +113,7 @@ class CreatureController extends Controller
         ]);
 
         // Charger toutes les entités disponibles pour la recherche
-        $availableItems = \App\Models\Entity\Item::select('id', 'name', 'description', 'level')
+        $availableItems = Item::select('id', 'name', 'description', 'level')
             ->orderBy('name')
             ->get();
 
@@ -116,11 +121,11 @@ class CreatureController extends Controller
             ->orderBy('name')
             ->get();
 
-        $availableConsumables = \App\Models\Entity\Consumable::select('id', 'name', 'description', 'level')
+        $availableConsumables = Consumable::select('id', 'name', 'description', 'level')
             ->orderBy('name')
             ->get();
 
-        $availableSpells = \App\Models\Entity\Spell::select('id', 'name', 'description', 'level')
+        $availableSpells = Spell::select('id', 'name', 'description', 'level')
             ->orderBy('name')
             ->get();
 
@@ -165,7 +170,7 @@ class CreatureController extends Controller
     /**
      * Update the items of a creature (avec quantités).
      */
-    public function updateItems(\Illuminate\Http\Request $request, Creature $creature)
+    public function updateItems(Request $request, Creature $creature)
     {
         $this->authorize('update', $creature);
 
@@ -183,7 +188,7 @@ class CreatureController extends Controller
 
         if (! empty($syncData)) {
             $itemIds = array_keys($syncData);
-            $existingItems = \App\Models\Entity\Item::whereIn('id', $itemIds)->pluck('id')->toArray();
+            $existingItems = Item::whereIn('id', $itemIds)->pluck('id')->toArray();
             $invalidIds = array_diff($itemIds, $existingItems);
 
             if (! empty($invalidIds)) {
@@ -202,7 +207,7 @@ class CreatureController extends Controller
     /**
      * Update the resources of a creature (avec quantités).
      */
-    public function updateResources(\Illuminate\Http\Request $request, Creature $creature)
+    public function updateResources(Request $request, Creature $creature)
     {
         $this->authorize('update', $creature);
 
@@ -239,7 +244,7 @@ class CreatureController extends Controller
     /**
      * Update the consumables of a creature (avec quantités).
      */
-    public function updateConsumables(\Illuminate\Http\Request $request, Creature $creature)
+    public function updateConsumables(Request $request, Creature $creature)
     {
         $this->authorize('update', $creature);
 
@@ -257,7 +262,7 @@ class CreatureController extends Controller
 
         if (! empty($syncData)) {
             $consumableIds = array_keys($syncData);
-            $existingConsumables = \App\Models\Entity\Consumable::whereIn('id', $consumableIds)->pluck('id')->toArray();
+            $existingConsumables = Consumable::whereIn('id', $consumableIds)->pluck('id')->toArray();
             $invalidIds = array_diff($consumableIds, $existingConsumables);
 
             if (! empty($invalidIds)) {
@@ -276,7 +281,7 @@ class CreatureController extends Controller
     /**
      * Update the spells of a creature.
      */
-    public function updateSpells(\Illuminate\Http\Request $request, Creature $creature)
+    public function updateSpells(Request $request, Creature $creature)
     {
         $this->authorize('update', $creature);
 
@@ -295,7 +300,7 @@ class CreatureController extends Controller
      * Télécharge un PDF pour un ou plusieurs creatures.
      *
      * @param  Creature|null  $creature  La creature unique (si une seule)
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function downloadPdf(?Creature $creature = null)
     {

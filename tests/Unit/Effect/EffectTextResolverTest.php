@@ -17,7 +17,7 @@ class EffectTextResolverTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->resolver = new EffectTextResolver();
+        $this->resolver = new EffectTextResolver;
     }
 
     public function test_resolve_effect_text_replaces_variables(): void

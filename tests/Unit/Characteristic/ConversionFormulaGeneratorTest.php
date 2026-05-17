@@ -16,7 +16,7 @@ class ConversionFormulaGeneratorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->generator = new ConversionFormulaGenerator();
+        $this->generator = new ConversionFormulaGenerator;
     }
 
     public function test_pairs_from_samples_matches_by_level(): void

@@ -18,6 +18,7 @@ class NavMenuSeeder extends Seeder
         $bibliotheques = config('nav_menu.bibliotheques', []);
         if (empty($bibliotheques)) {
             $this->command?->warn('NavMenuSeeder : config/nav_menu.php manquant ou vide.');
+
             return;
         }
         PageService::clearMenuCache();

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Entity\ConditionController;
+use Illuminate\Support\Facades\Route;
 
 // Routes publiques (accessibles sans authentification)
 Route::prefix('entities/conditions')->name('entities.conditions.')->group(function () {
@@ -18,4 +18,3 @@ Route::prefix('entities/conditions')->name('entities.conditions.')->middleware('
     Route::patch('/{condition}', [ConditionController::class, 'update'])->name('update');
     Route::delete('/{condition}', [ConditionController::class, 'delete'])->name('delete');
 });
-

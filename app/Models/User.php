@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasMediaCustomNaming;
-use App\Models\Entity\Condition;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Capability;
+use App\Models\Entity\Condition;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
@@ -59,12 +59,14 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $avatar Chemin de l'avatar ou null
  * @property bool $notifications_enabled Notifications activées ?
  * @property array $notification_channels Canaux de notification
+ *
  * @method bool wantsNotification(string $type = null) L'utilisateur veut-il des notifications ?
  * @method array notificationChannels() Retourne les canaux de notification
  * @method bool wantsProfileNotification() Toujours true (modif profil)
  * @method string avatarPath() URL de l'avatar (jamais null)
  * @method bool verifyRole(string|int $role) Possède au moins le rôle donné
  * @method bool updateRole(User $user) Peut-il modifier le rôle d'un autre ?
+ *
  * @property Carbon|null $email_verified_at
  * @property string|null $remember_token
  * @property Carbon|null $deleted_at
@@ -80,6 +82,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $pages_count
  * @property-read Collection<int, Section> $sections
  * @property-read int|null $sections_count
+ *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
@@ -100,6 +103,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
+ *
  * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read Collection<int, Condition> $createdConditions
@@ -144,9 +148,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $media_count
  * @property-read Collection<int, OAuthAccount> $oauthAccounts
  * @property-read int|null $oauth_accounts_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsSystem($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastLoginAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNotificationPreferences($value)
+ *
  * @mixin \Eloquent
  */
 class User extends Authenticatable implements HasMedia, MustVerifyEmail

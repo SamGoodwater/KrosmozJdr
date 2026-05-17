@@ -3,7 +3,6 @@
 namespace App\Policies\Entity;
 
 use App\Models\Entity\Item;
-use App\Models\User;
 
 /**
  * Policy d'autorisation pour l'entité Item.

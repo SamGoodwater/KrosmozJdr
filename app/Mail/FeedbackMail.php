@@ -3,11 +3,12 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Http\UploadedFile;
 
 /**
  * Email envoyé aux admins lors d'un retour utilisateur (bug, erreur, suggestion, autre).
@@ -26,12 +27,11 @@ class FeedbackMail extends Mailable
         public ?string $url = null,
         public ?string $pseudo = null,
         public ?UploadedFile $attachment = null,
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {
-        $subject = '[' . config('app.name') . '] Retour utilisateur — ' . $this->typeLabel;
+        $subject = '['.config('app.name').'] Retour utilisateur — '.$this->typeLabel;
 
         return new Envelope(subject: $subject);
     }
@@ -53,14 +53,14 @@ class FeedbackMail extends Mailable
     }
 
     /**
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array<int, Attachment>
      */
     public function attachments(): array
     {
         $attachments = [];
 
         if ($this->attachment !== null) {
-            $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromData(
+            $attachments[] = Attachment::fromData(
                 fn () => $this->attachment->get(),
                 $this->attachment->getClientOriginalName()
             )->withMime($this->attachment->getMimeType());

@@ -30,7 +30,7 @@ use Illuminate\Database\Seeder;
 class DofusdbEffectMappingSeeder extends Seeder
 {
     /** Fichier de mappings suggérés généré par scrapping:effects:map (optionnel). */
-    private const DATA_FILE = __DIR__ . '/data/dofusdb_effect_mappings_suggested.php';
+    private const DATA_FILE = __DIR__.'/data/dofusdb_effect_mappings_suggested.php';
 
     /**
      * Mappings par défaut (utilisés si le fichier data n’existe pas).

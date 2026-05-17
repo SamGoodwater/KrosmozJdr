@@ -26,9 +26,9 @@ class ResourceTypeSeeder extends Seeder
     public function run(): void
     {
         $path = base_path(self::DATA_FILE);
-        if (!is_file($path)) {
+        if (! is_file($path)) {
             if ($this->command) {
-                $this->command->warn('Fichier absent : ' . self::DATA_FILE . ' — exécutez php artisan scrapping:types:extract');
+                $this->command->warn('Fichier absent : '.self::DATA_FILE.' — exécutez php artisan scrapping:types:extract');
             }
 
             return;
@@ -57,7 +57,7 @@ class ResourceTypeSeeder extends Seeder
         }
 
         if ($this->command) {
-            $this->command->info('✅ ResourceTypeSeeder : ' . count($rows) . ' types.');
+            $this->command->info('✅ ResourceTypeSeeder : '.count($rows).' types.');
         }
     }
 }

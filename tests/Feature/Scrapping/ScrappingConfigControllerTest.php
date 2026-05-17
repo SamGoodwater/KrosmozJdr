@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Scrapping;
 
+use App\Http\Middleware\RequirePasswordWithInactivity;
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,7 +18,7 @@ class ScrappingConfigControllerTest extends TestCase
         parent::setUp();
         $this->seedScrappingPipeline();
         // Routes scrapping protégées par password.confirm ; en tests on contourne pour éviter 423
-        $this->withoutMiddleware(\App\Http\Middleware\RequirePasswordWithInactivity::class);
+        $this->withoutMiddleware(RequirePasswordWithInactivity::class);
     }
 
     public function test_config_endpoint_returns_sources_and_entities(): void
@@ -82,4 +83,3 @@ class ScrappingConfigControllerTest extends TestCase
         $this->assertGreaterThanOrEqual(1, (int) ($health['errorCount'] ?? 0));
     }
 }
-

@@ -18,12 +18,12 @@ use Illuminate\Support\Facades\Cache;
 final class DofusdbEffectMappingService
 {
     private const CACHE_KEY = 'scrapping.dofusdb_effect_mappings';
+
     private const CACHE_TTL_SECONDS = 3600;
 
     public function __construct(
         private DofusdbEffectMapping $model
-    ) {
-    }
+    ) {}
 
     /**
      * Retourne [sub_effect_slug, characteristic_source] ou [sub_effect_slug, characteristic_source, characteristic_key].
@@ -37,14 +37,17 @@ final class DofusdbEffectMappingService
             if ($row->characteristic_key !== null && $row->characteristic_key !== '') {
                 $result[] = $row->characteristic_key;
             }
+
             return $result;
         }
+
         return FallbackEffectMapping::getSubEffectForEffectId($effectId);
     }
 
     private function findByEffectId(int $effectId): ?DofusdbEffectMapping
     {
         $all = $this->getAllMappingsIndexedById();
+
         return $all[$effectId] ?? null;
     }
 
@@ -59,6 +62,7 @@ final class DofusdbEffectMappingService
             foreach ($rows as $row) {
                 $indexed[$row->dofusdb_effect_id] = $row;
             }
+
             return $indexed;
         });
     }

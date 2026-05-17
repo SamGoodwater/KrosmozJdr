@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Http/Requests/UpdatePageRequest.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Http\Requests\UpdatePageRequest
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-3a37a92daf074e23b2131178cdd944157c9b06f64a52e2bf97d5fd731ee7310a-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-197a4e73efd0fee9fe09515390ea29db8f7cbfa011e3f3a205456827a41ba038-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -30,8 +30,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 14,
-    'endLine' => 115,
+    'startLine' => 16,
+    'endLine' => 119,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Foundation\\Http\\FormRequest',
@@ -71,8 +71,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine if the user is authorized to make this request.
  */',
-        'startLine' => 19,
-        'endLine' => 23,
+        'startLine' => 21,
+        'endLine' => 26,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -108,10 +108,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the validation rules that apply to the request.
  *
- * @return array<string, \\Illuminate\\Contracts\\Validation\\ValidationRule|array<mixed>|string>
+ * @return array<string, ValidationRule|array<mixed>|string>
  */',
-        'startLine' => 30,
-        'endLine' => 51,
+        'startLine' => 33,
+        'endLine' => 55,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -149,10 +149,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 53,
-            'endLine' => 53,
+            'startLine' => 57,
+            'endLine' => 57,
             'startColumn' => 35,
-            'endColumn' => 77,
+            'endColumn' => 54,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -171,8 +171,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 53,
-        'endLine' => 74,
+        'startLine' => 57,
+        'endLine' => 78,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -198,8 +198,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 76,
-        'endLine' => 114,
+        'startLine' => 80,
+        'endLine' => 118,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

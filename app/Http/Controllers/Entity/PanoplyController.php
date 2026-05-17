@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Entity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StorePanoplyRequest;
 use App\Http\Requests\Entity\UpdatePanoplyRequest;
-use App\Models\Entity\Panoply;
 use App\Http\Resources\Entity\PanoplyResource;
+use App\Models\Entity\Item;
+use App\Models\Entity\Panoply;
 use App\Services\PdfService;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class PanoplyController extends Controller
@@ -18,36 +21,36 @@ class PanoplyController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Panoply::class);
-        
+
         $query = Panoply::with(['createdBy', 'items']);
-        
+
         // Recherche
         if (request()->has('search') && request()->search) {
             $search = request()->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhere('bonus', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('bonus', 'like', "%{$search}%");
             });
         }
-        
+
         // Filtres
         if (request()->has('state') && request()->state !== '') {
             $query->where('state', (string) request()->state);
         }
-        
+
         // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
-        
+
         if (in_array($sortColumn, ['id', 'name', 'dofusdb_id', 'state', 'created_at'], true)) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
         }
-        
+
         $panoplies = $query->paginate(20)->withQueryString();
-        
+
         return Inertia::render('Pages/entity/panoply/Index', [
             'panoplies' => PanoplyResource::collection($panoplies),
             'filters' => request()->only(['search', 'state']),
@@ -84,14 +87,14 @@ class PanoplyController extends Controller
     public function edit(Panoply $panoply)
     {
         $this->authorize('update', $panoply);
-        
+
         $panoply->load(['createdBy', 'items']);
-        
+
         // Charger tous les items disponibles pour la recherche
-        $availableItems = \App\Models\Entity\Item::select('id', 'name', 'description', 'level')
+        $availableItems = Item::select('id', 'name', 'description', 'level')
             ->orderBy('name')
             ->get();
-        
+
         return Inertia::render('Pages/entity/panoply/Edit', [
             'panoply' => new PanoplyResource($panoply),
             'availableItems' => $availableItems,
@@ -104,11 +107,11 @@ class PanoplyController extends Controller
     public function update(UpdatePanoplyRequest $request, Panoply $panoply)
     {
         $this->authorize('update', $panoply);
-        
+
         $panoply->update($request->validated());
-        
+
         $panoply->load(['createdBy', 'items']);
-        
+
         return redirect()->route('entities.panoplies.show', $panoply)
             ->with('success', 'Panoplie mise à jour avec succès.');
     }
@@ -116,19 +119,19 @@ class PanoplyController extends Controller
     /**
      * Update the items of a panoply.
      */
-    public function updateItems(\Illuminate\Http\Request $request, Panoply $panoply)
+    public function updateItems(Request $request, Panoply $panoply)
     {
         $this->authorize('update', $panoply);
-        
+
         $request->validate([
             'items' => 'present|array',
             'items.*' => 'exists:items,id',
         ]);
-        
+
         $panoply->items()->sync($request->items);
-        
+
         $panoply->load(['createdBy', 'items']);
-        
+
         return redirect()->back()
             ->with('success', 'Items de la panoplie mis à jour avec succès.');
     }
@@ -143,39 +146,39 @@ class PanoplyController extends Controller
 
     /**
      * Télécharge un PDF pour un ou plusieurs panoplies.
-     * 
-     * @param Panoply|null $panoply La panoply unique (si une seule)
-     * @return \Illuminate\Http\Response
+     *
+     * @param  Panoply|null  $panoply  La panoply unique (si une seule)
+     * @return Response
      */
     public function downloadPdf(?Panoply $panoply = null)
     {
         $ids = request()->get('ids');
-        
-        if (!empty($ids)) {
+
+        if (! empty($ids)) {
             if (is_string($ids)) {
                 $ids = explode(',', $ids);
             }
-            
+
             if (is_array($ids) && count($ids) > 0) {
                 $panoplies = Panoply::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Panoply::class);
-                
+
                 $pdf = PdfService::generateForEntities($panoplies, 'panoply');
-                $filename = 'panoplies-' . now()->format('Y-m-d-His') . '.pdf';
-                
+                $filename = 'panoplies-'.now()->format('Y-m-d-His').'.pdf';
+
                 return $pdf->download($filename);
             }
         }
-        
-        if (!$panoply) {
+
+        if (! $panoply) {
             abort(404);
         }
-        
+
         $this->authorize('view', $panoply);
-        
+
         $pdf = PdfService::generateForEntity($panoply, 'panoply');
-        $filename = 'panoply-' . $panoply->id . '-' . now()->format('Y-m-d-His') . '.pdf';
-        
+        $filename = 'panoply-'.$panoply->id.'-'.now()->format('Y-m-d-His').'.pdf';
+
         return $pdf->download($filename);
     }
 }

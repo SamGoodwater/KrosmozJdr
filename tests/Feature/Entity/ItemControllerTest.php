@@ -2,15 +2,16 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests Feature pour ItemController
- * 
+ *
  * Vérifie que :
  * - Un utilisateur peut modifier un item qu'il a créé
  * - Un admin peut modifier n'importe quel item
@@ -25,7 +26,7 @@ class ItemControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
         // S'assurer que la session est configurée
         $this->withSession(['_token' => 'test-token']);
     }
@@ -92,7 +93,7 @@ class ItemControllerTest extends TestCase
         $item = Item::factory()->create();
         $resource1 = Resource::factory()->create();
         $resource2 = Resource::factory()->create();
-        
+
         // Ajouter initialement avec des quantités
         $item->resources()->attach([
             $resource1->id => ['quantity' => 3],
@@ -125,7 +126,7 @@ class ItemControllerTest extends TestCase
         $resource1 = Resource::factory()->create();
         $resource2 = Resource::factory()->create();
         $resource3 = Resource::factory()->create();
-        
+
         // Ajouter initialement 3 ressources
         $item->resources()->attach([
             $resource1->id => ['quantity' => 5],
@@ -159,7 +160,7 @@ class ItemControllerTest extends TestCase
         $item = Item::factory()->create();
         $resource1 = Resource::factory()->create();
         $resource2 = Resource::factory()->create();
-        
+
         // Ajouter des ressources initialement
         $item->resources()->attach([
             $resource1->id => ['quantity' => 5],
@@ -253,7 +254,7 @@ class ItemControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $item = Item::factory()->create();
         $resource = Resource::factory()->create();
-        
+
         // Supprimer la ressource pour qu'elle n'existe plus
         $resource->delete();
 
@@ -323,14 +324,14 @@ class ItemControllerTest extends TestCase
             ->get(route('entities.items.edit', $item));
 
         $response->assertOk();
-        
+
         // Vérifier la structure de base
         $response->assertInertia(fn ($page) => $page
             ->component('Pages/entity/item/Edit')
             ->has('item')
             ->has('availableResources')
         );
-        
+
         // Vérifier que les ressources sont présentes
         // Note: Inertia enveloppe les ressources uniques dans une clé 'data'
         $response->assertInertia(fn ($page) => $page
@@ -363,4 +364,3 @@ class ItemControllerTest extends TestCase
         $this->assertCount(0, $item->fresh()->resources);
     }
 }
-

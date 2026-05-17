@@ -2,17 +2,18 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Shop;
-use App\Models\Entity\Item;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Consumable;
+use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
+use App\Models\Entity\Shop;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests Feature pour ShopController
- * 
+ *
  * Vérifie que :
  * - Un utilisateur peut modifier une hotel de vente qu'il a créée
  * - Un admin peut modifier n'importe quelle hotel de vente
@@ -27,7 +28,7 @@ class ShopControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
         // S'assurer que la session est configurée
         $this->withSession(['_token' => 'test-token']);
     }
@@ -62,12 +63,12 @@ class ShopControllerTest extends TestCase
 
         $response->assertRedirect();
         $this->assertCount(2, $shop->fresh()->items);
-        
+
         $pivot1 = $shop->fresh()->items->find($item1->id)->pivot;
         $this->assertEquals(5, $pivot1->quantity);
         $this->assertEquals(100.50, $pivot1->price);
         $this->assertEquals('En stock', $pivot1->comment);
-        
+
         $pivot2 = $shop->fresh()->items->find($item2->id)->pivot;
         $this->assertEquals(10, $pivot2->quantity);
         $this->assertEquals(200.75, $pivot2->price);
@@ -104,7 +105,7 @@ class ShopControllerTest extends TestCase
 
         $response->assertRedirect();
         $this->assertCount(2, $shop->fresh()->consumables);
-        
+
         $pivot1 = $shop->fresh()->consumables->find($consumable1->id)->pivot;
         $this->assertEquals(3, $pivot1->quantity);
         $this->assertEquals(50.25, $pivot1->price);
@@ -141,7 +142,7 @@ class ShopControllerTest extends TestCase
 
         $response->assertRedirect();
         $this->assertCount(2, $shop->fresh()->resources);
-        
+
         $pivot1 = $shop->fresh()->resources->find($resource1->id)->pivot;
         $this->assertEquals(20, $pivot1->quantity);
         $this->assertEquals(15.50, $pivot1->price);
@@ -156,7 +157,7 @@ class ShopControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $shop = Shop::factory()->create();
         $item = Item::factory()->create();
-        
+
         // Ajouter initialement avec des données
         $shop->items()->attach($item->id, [
             'quantity' => 5,
@@ -224,7 +225,7 @@ class ShopControllerTest extends TestCase
         $item1 = Item::factory()->create();
         $item2 = Item::factory()->create();
         $item3 = Item::factory()->create();
-        
+
         // Ajouter initialement 3 items
         $shop->items()->attach([
             $item1->id => ['quantity' => 5, 'price' => 100.00],
@@ -259,7 +260,7 @@ class ShopControllerTest extends TestCase
         $item = Item::factory()->create();
         $consumable = Consumable::factory()->create();
         $resource = Resource::factory()->create();
-        
+
         // Ajouter des relations initialement
         $shop->items()->attach($item->id, ['quantity' => 5, 'price' => 100.00]);
         $shop->consumables()->attach($consumable->id, ['quantity' => 3, 'price' => 50.00]);
@@ -272,14 +273,14 @@ class ShopControllerTest extends TestCase
                 '_method' => 'PATCH',
                 'items' => [],
             ]);
-        
+
         $this->actingAs($admin)
             ->from(route('entities.shops.edit', $shop))
             ->post(route('entities.shops.updateConsumables', $shop), [
                 '_method' => 'PATCH',
                 'consumables' => [],
             ]);
-        
+
         $this->actingAs($admin)
             ->from(route('entities.shops.edit', $shop))
             ->post(route('entities.shops.updateResources', $shop), [
@@ -377,7 +378,7 @@ class ShopControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $shop = Shop::factory()->create();
         $item = Item::factory()->create();
-        
+
         // Supprimer l'item pour qu'il n'existe plus
         $item->delete();
 
@@ -489,4 +490,3 @@ class ShopControllerTest extends TestCase
         $this->assertEquals('Prix à négocier', $pivot->comment);
     }
 }
-

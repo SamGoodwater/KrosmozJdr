@@ -14,10 +14,12 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
+import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
+import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
@@ -37,10 +39,10 @@ const props = defineProps({
     entityType: { type: String, default: "monsters" },
 });
 
-const emit = defineEmits(["row-click", "toggle-select", "action"]);
+const emit = defineEmits(["row-click", "row-dblclick", "toggle-select", "action"]);
 
 /** Entité source : rowParams.entity (API) ou row lui-même (données plates) */
-const entity = computed(() => props.row?.rowParams?.entity ?? props.row);
+const entity = computed(() => getRowEntity(props.row));
 
 const permissions = usePermissions();
 const monsterDescriptorCtx = computed(() => ({
@@ -143,7 +145,6 @@ const linkedLanguages = computed(() => {
 
 const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
 
-const handleRowClick = (e) => emit("row-click", props.row, e);
 </script>
 
 <template>
@@ -152,20 +153,18 @@ const handleRowClick = (e) => emit("row-click", props.row, e);
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         style="--bg-color: var(--color-base-100)"
         data-row-contextmenu-target
-        @click="handleRowClick"
+        @click="(e) => emitLineRowClick(emit, row, e)"
+        @dblclick="(e) => emitLineRowDblClick(emit, row, e)"
     >
         <div
             v-if="showActions || showSelection"
             class="monster-line-actions-host absolute top-2 right-2 z-20 flex items-center gap-2"
             @click.stop
         >
-            <div v-if="showActions" class="entity-row-actions-hover-reveal monster-line-actions-reveal">
-                <EntityActions
+            <div v-if="showActions" class="monster-line-actions-reveal">
+                <EntityLineRowActions
                     entity-type="monsters"
-                    :entity="entity || row"
-                    format="dropdown"
-                    :show-inline-shortcuts="false"
-                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
+                    :entity="entity"
                     @action="(k, e) => emit('action', k, e, row)"
                 />
             </div>
@@ -313,21 +312,21 @@ const handleRowClick = (e) => emit("row-click", props.row, e);
  * `.entity-row-actions-hover-reveal`) — cela change la boîte absolue et peut faire « sauter »
  * le contenu (overflow, alignements). On révèle par opacité : largeur stable, overlay au-dessus.
  */
-.monster-line-actions-host :deep(.monster-line-actions-reveal.entity-row-actions-hover-reveal) {
+.monster-line-actions-reveal :deep(.entity-row-actions-hover-reveal) {
     max-width: none !important;
     overflow: visible !important;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.15s ease;
 }
-.group:hover .monster-line-actions-host :deep(.monster-line-actions-reveal.entity-row-actions-hover-reveal),
-.group:focus-within .monster-line-actions-host :deep(.monster-line-actions-reveal.entity-row-actions-hover-reveal),
+.group:hover .monster-line-actions-reveal :deep(.entity-row-actions-hover-reveal),
+.group:focus-within .monster-line-actions-reveal :deep(.entity-row-actions-hover-reveal),
 .group:has(.monster-line-actions-host .entity-row-actions-hover-reveal [data-dropdown-open="true"])
-    .monster-line-actions-host
-    :deep(.monster-line-actions-reveal.entity-row-actions-hover-reveal),
+    .monster-line-actions-reveal
+    :deep(.entity-row-actions-hover-reveal),
 .group:has(.monster-line-actions-host .entity-row-actions-hover-reveal [aria-expanded="true"])
-    .monster-line-actions-host
-    :deep(.monster-line-actions-reveal.entity-row-actions-hover-reveal) {
+    .monster-line-actions-reveal
+    :deep(.entity-row-actions-hover-reveal) {
     opacity: 1;
     pointer-events: auto;
 }

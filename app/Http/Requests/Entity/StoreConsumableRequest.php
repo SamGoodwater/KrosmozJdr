@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Entity;
 
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -14,6 +15,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreConsumableRequest extends FormRequest
 {
     use HasCharacteristicValidation;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,7 +27,7 @@ class StoreConsumableRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {

@@ -2,9 +2,11 @@
 
 namespace App\Enums;
 
+use App\Models\User;
+
 /**
  * Enum pour les niveaux de visibilité.
- * 
+ *
  * @method static self GUEST()
  * @method static self USER()
  * @method static self GAME_MASTER()
@@ -19,12 +21,10 @@ enum Visibility: string
 
     /**
      * Retourne le label traduit de la visibilité.
-     * 
-     * @return string
      */
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::GUEST => 'Invité',
             self::USER => 'Utilisateur',
             self::GAME_MASTER => 'Maître de jeu',
@@ -34,21 +34,18 @@ enum Visibility: string
 
     /**
      * Vérifie si un utilisateur a le niveau de visibilité requis.
-     * 
-     * @param \App\Models\User|null $user
-     * @return bool
      */
-    public function isAccessibleBy(?\App\Models\User $user): bool
+    public function isAccessibleBy(?User $user): bool
     {
         if ($this === self::GUEST) {
             return true; // Toujours accessible
         }
 
-        if (!$user) {
+        if (! $user) {
             return false; // Nécessite une connexion
         }
 
-        return match($this) {
+        return match ($this) {
             self::USER => true, // Tous les utilisateurs connectés
             self::GAME_MASTER => $user->isGameMaster(),
             self::ADMIN => $user->isAdmin(),
@@ -57,7 +54,7 @@ enum Visibility: string
 
     /**
      * Retourne tous les niveaux de visibilité possibles.
-     * 
+     *
      * @return array<string, string>
      */
     public static function toArray(): array
@@ -67,7 +64,7 @@ enum Visibility: string
 
     /**
      * Retourne tous les niveaux avec leurs labels.
-     * 
+     *
      * @return array<string, string>
      */
     public static function toArrayWithLabels(): array
@@ -76,7 +73,7 @@ enum Visibility: string
         foreach (self::cases() as $case) {
             $result[$case->value] = $case->label();
         }
+
         return $result;
     }
 }
-

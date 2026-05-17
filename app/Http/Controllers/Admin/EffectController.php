@@ -14,6 +14,7 @@ use App\Services\Effect\EffectGroupUpdateService;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -275,7 +276,7 @@ class EffectController extends Controller
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, Effect>  $definitions
+     * @param  Collection<int, Effect>  $definitions
      * @return list<array<string, mixed>>
      */
     private function buildSidebarGroups($definitions): array

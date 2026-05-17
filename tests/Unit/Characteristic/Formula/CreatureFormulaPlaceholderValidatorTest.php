@@ -7,11 +7,10 @@ namespace Tests\Unit\Characteristic\Formula;
 use App\Services\Characteristic\Formula\CreatureFormulaPlaceholderValidator;
 use App\Services\Characteristic\Formula\FormulaResolutionService;
 use App\Services\Characteristic\Formula\SafeExpressionEvaluator;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Services\Characteristic\Formula\CreatureFormulaPlaceholderValidator
- */
+#[CoversClass(CreatureFormulaPlaceholderValidator::class)]
 final class CreatureFormulaPlaceholderValidatorTest extends TestCase
 {
     public function test_validate_creature_definition_file_detects_unknown_placeholder(): void

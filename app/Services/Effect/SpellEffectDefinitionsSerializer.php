@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Effect;
 
 use App\Models\Effect;
-use App\Models\Entity\Monster;
 use App\Models\Entity\Condition;
+use App\Models\Entity\Monster;
 use Illuminate\Support\Collection;
 
 /**
@@ -167,11 +167,7 @@ final class SpellEffectDefinitionsSerializer
         }
 
         return Condition::query()
-            ->where(static function ($query) use ($ids): void {
-                foreach ($ids as $id) {
-                    $query->orWhereKey($id);
-                }
-            })
+            ->whereKey(array_values(array_unique($ids)))
             ->get()
             ->keyBy('id');
     }

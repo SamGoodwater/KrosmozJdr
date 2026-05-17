@@ -3,7 +3,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { Page } from '@/Models';
-import { createMockPage } from '../../setup.js';
+import { createMockPage, createMockSection } from '../../setup.js';
 
 describe('Page Model', () => {
   describe('Constructor', () => {
@@ -43,7 +43,6 @@ describe('Page Model', () => {
     });
 
     it('devrait gérer les sections', () => {
-      const { createMockSection } = require('../../setup.js');
       const rawData = createMockPage({
         sections: [
           createMockSection({ id: 1 }),

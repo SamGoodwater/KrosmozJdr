@@ -14,8 +14,7 @@ final class CollectAliasResolver
 
     public function __construct(
         private string $baseDir
-    ) {
-    }
+    ) {}
 
     public static function default(): self
     {
@@ -31,7 +30,7 @@ final class CollectAliasResolver
     {
         $data = $this->loadConfig();
         $aliases = $data['aliases'] ?? [];
-        if (!is_array($aliases)) {
+        if (! is_array($aliases)) {
             return null;
         }
         $key = strtolower(trim($alias));
@@ -49,7 +48,7 @@ final class CollectAliasResolver
     {
         $data = $this->loadConfig();
         $aliases = $data['aliases'] ?? [];
-        if (!is_array($aliases)) {
+        if (! is_array($aliases)) {
             return [];
         }
         $list = array_keys($aliases);
@@ -63,8 +62,8 @@ final class CollectAliasResolver
      */
     private function loadConfig(): array
     {
-        $path = rtrim($this->baseDir, '/') . '/' . self::FILENAME;
-        if (!is_file($path)) {
+        $path = rtrim($this->baseDir, '/').'/'.self::FILENAME;
+        if (! is_file($path)) {
             return [];
         }
         $raw = file_get_contents($path);

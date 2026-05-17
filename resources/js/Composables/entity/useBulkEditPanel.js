@@ -171,15 +171,14 @@ export function useBulkEditPanel(opts) {
     () => (selectedEntities.value || []).map(getId).join(","),
     () => {
       nextTick(() => {
-        // Ne réinitialiser que si on n'a pas de modifications en cours
-        const hasDirty = Object.values(dirty).some(Boolean);
-        if (!hasDirty) {
-          resetFromSelection();
-        }
+        resetFromSelection();
       });
     },
     { immediate: true }
   );
+
+  // État initial form/dirty (clés déjà définies sans attendre le tick du watch immediate)
+  resetFromSelection();
 
   const placeholder = (same) => (same ? "Choisir…" : "Valeurs différentes");
 

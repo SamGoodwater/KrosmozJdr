@@ -26,7 +26,7 @@ class SpellEffectTypeSeeder extends Seeder
     {
         $path = base_path(self::DATA_FILE);
         if (! is_file($path) && $this->command) {
-            $this->command->warn('Fichier absent : ' . self::DATA_FILE);
+            $this->command->warn('Fichier absent : '.self::DATA_FILE);
         }
 
         $types = $this->loadDataFile(self::DATA_FILE);
@@ -47,7 +47,7 @@ class SpellEffectTypeSeeder extends Seeder
             );
         }
         if ($this->command) {
-            $this->command->info('SpellEffectTypeSeeder : ' . count($types) . ' types d\'effets créés.');
+            $this->command->info('SpellEffectTypeSeeder : '.count($types).' types d\'effets créés.');
         }
     }
 }

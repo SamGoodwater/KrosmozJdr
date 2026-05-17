@@ -1,9 +1,15 @@
 <?php
 
+use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\EnsureAdminAreaAccess;
+use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\RequirePasswordWithInactivity;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
 use Inertia\Inertia;
@@ -18,8 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
-            \App\Http\Middleware\HandleInertiaRequests::class,
-            \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            HandleInertiaRequests::class,
+            AddLinkHeadersForPreloadedAssets::class,
         ]);
 
         // Exclure les routes API scrapping de la vérification CSRF (appelées depuis l'UI, auth + role:admin).
@@ -30,10 +36,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Enregistrer les middlewares
         $middleware->alias([
-            'role' => \App\Http\Middleware\CheckRole::class,
-            'password.confirm' => \App\Http\Middleware\RequirePasswordWithInactivity::class,
-            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-            'admin.area' => \App\Http\Middleware\EnsureAdminAreaAccess::class,
+            'role' => CheckRole::class,
+            'password.confirm' => RequirePasswordWithInactivity::class,
+            'verified' => EnsureEmailIsVerified::class,
+            'admin.area' => EnsureAdminAreaAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

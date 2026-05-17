@@ -68,6 +68,6 @@ class ScrappingEntityMappingCharacteristicSeeder extends Seeder
             $count += count($characteristics);
         }
 
-        $this->command?->info('Liens bonus (item + panoply) : ' . count($characteristics) . ' caractéristique(s) liée(s).');
+        $this->command?->info('Liens bonus (item + panoply) : '.count($characteristics).' caractéristique(s) liée(s).');
     }
 }

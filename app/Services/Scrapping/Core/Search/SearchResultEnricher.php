@@ -11,6 +11,7 @@ use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
+use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
@@ -262,7 +263,7 @@ final class SearchResultEnricher
             try {
                 $name = $this->monsterRacesCatalog->fetchName($raceId, $lang, false);
                 $items[$i]['raceName'] = $name ?: null;
-                \App\Models\Type\MonsterRace::touchDofusdbRace($raceId, $name ?: null);
+                MonsterRace::touchDofusdbRace($raceId, $name ?: null);
             } catch (\Throwable) {
                 $items[$i]['raceName'] = null;
             }

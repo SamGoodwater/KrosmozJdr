@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\Table;
 
-use App\Models\User;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Resource;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -23,7 +24,7 @@ class ResourceTableControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
     }
 
     /**
@@ -161,4 +162,3 @@ class ResourceTableControllerTest extends TestCase
         $this->assertEquals(5, $data['meta']['query']['limit']);
     }
 }
-

@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Mail\NotificationMail;
 use App\Services\NotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -32,11 +31,11 @@ class DigestNotification extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        $label = config('notifications.types.' . $this->notificationType . '.label', $this->notificationType);
+        $label = config('notifications.types.'.$this->notificationType.'.label', $this->notificationType);
         $mail = (new MailMessage)
-            ->subject('Récapitulatif : ' . $label)
+            ->subject('Récapitulatif : '.$label)
             ->greeting('Bonjour !')
-            ->line('Voici le récapitulatif de tes notifications (' . count($this->items) . ' élément(s)).');
+            ->line('Voici le récapitulatif de tes notifications ('.count($this->items).' élément(s)).');
 
         $displayed = 0;
         foreach ($this->items as $item) {
@@ -45,11 +44,12 @@ class DigestNotification extends Notification implements ShouldQueue
                 break;
             }
             $msg = $item['message'] ?? $item['entity_name'] ?? 'Modification';
-            $mail->line('• ' . $msg);
+            $mail->line('• '.$msg);
             $displayed++;
         }
 
         $mail->action('Voir les notifications', url('/notifications'));
+
         return $mail;
     }
 
@@ -59,11 +59,12 @@ class DigestNotification extends Notification implements ShouldQueue
         foreach ($this->items as $item) {
             $sanitized[] = self::sanitizePayload($item);
         }
+
         return [
             'notification_type' => $this->notificationType,
             'frequency' => $this->frequency,
             'count' => count($this->items),
-            'message' => 'Récapitulatif : ' . count($this->items) . ' notification(s).',
+            'message' => 'Récapitulatif : '.count($this->items).' notification(s).',
             'url' => url('/notifications'),
             'items' => $sanitized,
         ];
@@ -95,6 +96,7 @@ class DigestNotification extends Notification implements ShouldQueue
                 ];
             }
         }
+
         return $out;
     }
 }

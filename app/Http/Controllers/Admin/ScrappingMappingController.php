@@ -25,8 +25,7 @@ class ScrappingMappingController extends Controller
     public function __construct(
         private readonly ConfigLoader $configLoader,
         private readonly ScrappingMappingService $mappingService
-    ) {
-    }
+    ) {}
 
     /**
      * Page liste : choix source/entité + liste des règles de mapping pour l'entité sélectionnée.

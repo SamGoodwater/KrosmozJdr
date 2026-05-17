@@ -16,4 +16,3 @@ class MonsterRacePolicy extends BaseEntityPolicy
 {
     // Toutes les méthodes sont héritées de BaseEntityPolicy
 }
-

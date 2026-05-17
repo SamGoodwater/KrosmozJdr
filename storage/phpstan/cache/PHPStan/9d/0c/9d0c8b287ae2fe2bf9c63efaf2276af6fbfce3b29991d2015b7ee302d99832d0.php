@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Support/SectionRichReferencesValidator.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Support\SectionRichReferencesValidator
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-bd27e2c27766c9036431b97ffe9174e93bf8da7ababeb1a4505905c3334dbbc0-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-3618f3ead6d16c1ffe6289b9391467036694b48e70095c684fc903adc5bbf2f4-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -29,7 +29,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 15,
-    'endLine' => 243,
+    'endLine' => 242,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,

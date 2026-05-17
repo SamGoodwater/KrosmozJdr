@@ -1,5 +1,26 @@
 <?php
 
+use App\Http\Controllers\Api\Table\BreedTableController;
+use App\Http\Controllers\Api\Table\CampaignTableController;
+use App\Http\Controllers\Api\Table\CapabilityTableController;
+use App\Http\Controllers\Api\Table\ConditionTableController;
+use App\Http\Controllers\Api\Table\ConsumableTableController;
+use App\Http\Controllers\Api\Table\ConsumableTypeTableController;
+use App\Http\Controllers\Api\Table\CreatureTableController;
+use App\Http\Controllers\Api\Table\CreatureTraitTableController;
+use App\Http\Controllers\Api\Table\ItemTableController;
+use App\Http\Controllers\Api\Table\ItemTypeTableController;
+use App\Http\Controllers\Api\Table\MonsterRaceTableController;
+use App\Http\Controllers\Api\Table\MonsterTableController;
+use App\Http\Controllers\Api\Table\NpcTableController;
+use App\Http\Controllers\Api\Table\PanoplyTableController;
+use App\Http\Controllers\Api\Table\ResourceTableController;
+use App\Http\Controllers\Api\Table\ResourceTypeTableController;
+use App\Http\Controllers\Api\Table\ScenarioTableController;
+use App\Http\Controllers\Api\Table\ShopTableController;
+use App\Http\Controllers\Api\Table\SpecializationTableController;
+use App\Http\Controllers\Api\Table\SpellCategoryTableController;
+use App\Http\Controllers\Api\Table\SpellTableController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,46 +34,46 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['web'])->prefix('tables')->group(function () {
-    Route::get('/resources', [App\Http\Controllers\Api\Table\ResourceTableController::class, 'index'])
+    Route::get('/resources', [ResourceTableController::class, 'index'])
         ->name('api.tables.resources');
-    Route::get('/resource-types', [App\Http\Controllers\Api\Table\ResourceTypeTableController::class, 'index'])
+    Route::get('/resource-types', [ResourceTypeTableController::class, 'index'])
         ->name('api.tables.resource-types');
-    Route::get('/items', [App\Http\Controllers\Api\Table\ItemTableController::class, 'index'])
+    Route::get('/items', [ItemTableController::class, 'index'])
         ->name('api.tables.items');
-    Route::get('/item-types', [App\Http\Controllers\Api\Table\ItemTypeTableController::class, 'index'])
+    Route::get('/item-types', [ItemTypeTableController::class, 'index'])
         ->name('api.tables.item-types');
-    Route::get('/consumable-types', [App\Http\Controllers\Api\Table\ConsumableTypeTableController::class, 'index'])
+    Route::get('/consumable-types', [ConsumableTypeTableController::class, 'index'])
         ->name('api.tables.consumable-types');
-    Route::get('/monster-races', [App\Http\Controllers\Api\Table\MonsterRaceTableController::class, 'index'])
+    Route::get('/monster-races', [MonsterRaceTableController::class, 'index'])
         ->name('api.tables.monster-races');
-    Route::get('/spell-categories', [App\Http\Controllers\Api\Table\SpellCategoryTableController::class, 'index'])
+    Route::get('/spell-categories', [SpellCategoryTableController::class, 'index'])
         ->name('api.tables.spell-categories');
-    Route::get('/spells', [App\Http\Controllers\Api\Table\SpellTableController::class, 'index'])
+    Route::get('/spells', [SpellTableController::class, 'index'])
         ->name('api.tables.spells');
-    Route::get('/monsters', [App\Http\Controllers\Api\Table\MonsterTableController::class, 'index'])
+    Route::get('/monsters', [MonsterTableController::class, 'index'])
         ->name('api.tables.monsters');
-    Route::get('/npcs', [App\Http\Controllers\Api\Table\NpcTableController::class, 'index'])
+    Route::get('/npcs', [NpcTableController::class, 'index'])
         ->name('api.tables.npcs');
-    Route::get('/campaigns', [App\Http\Controllers\Api\Table\CampaignTableController::class, 'index'])
+    Route::get('/campaigns', [CampaignTableController::class, 'index'])
         ->name('api.tables.campaigns');
-    Route::get('/scenarios', [App\Http\Controllers\Api\Table\ScenarioTableController::class, 'index'])
+    Route::get('/scenarios', [ScenarioTableController::class, 'index'])
         ->name('api.tables.scenarios');
-    Route::get('/conditions', [App\Http\Controllers\Api\Table\ConditionTableController::class, 'index'])
+    Route::get('/conditions', [ConditionTableController::class, 'index'])
         ->name('api.tables.conditions');
-    Route::get('/capabilities', [App\Http\Controllers\Api\Table\CapabilityTableController::class, 'index'])
+    Route::get('/capabilities', [CapabilityTableController::class, 'index'])
         ->name('api.tables.capabilities');
-    Route::get('/breeds', [App\Http\Controllers\Api\Table\BreedTableController::class, 'index'])
+    Route::get('/breeds', [BreedTableController::class, 'index'])
         ->name('api.tables.breeds');
-    Route::get('/specializations', [App\Http\Controllers\Api\Table\SpecializationTableController::class, 'index'])
+    Route::get('/specializations', [SpecializationTableController::class, 'index'])
         ->name('api.tables.specializations');
-    Route::get('/creatures', [App\Http\Controllers\Api\Table\CreatureTableController::class, 'index'])
+    Route::get('/creatures', [CreatureTableController::class, 'index'])
         ->name('api.tables.creatures');
-    Route::get('/consumables', [App\Http\Controllers\Api\Table\ConsumableTableController::class, 'index'])
+    Route::get('/consumables', [ConsumableTableController::class, 'index'])
         ->name('api.tables.consumables');
-    Route::get('/panoplies', [App\Http\Controllers\Api\Table\PanoplyTableController::class, 'index'])
+    Route::get('/panoplies', [PanoplyTableController::class, 'index'])
         ->name('api.tables.panoplies');
-    Route::get('/creature-traits', [App\Http\Controllers\Api\Table\CreatureTraitTableController::class, 'index'])
+    Route::get('/creature-traits', [CreatureTraitTableController::class, 'index'])
         ->name('api.tables.creature-traits');
-    Route::get('/shops', [App\Http\Controllers\Api\Table\ShopTableController::class, 'index'])
+    Route::get('/shops', [ShopTableController::class, 'index'])
         ->name('api.tables.shops');
 });

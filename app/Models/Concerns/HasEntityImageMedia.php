@@ -2,7 +2,6 @@
 
 namespace App\Models\Concerns;
 
-use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -13,8 +12,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 trait HasEntityImageMedia
 {
-    use InteractsWithMedia;
     use HasMediaCustomNaming;
+    use InteractsWithMedia;
 
     public function registerMediaCollections(): void
     {

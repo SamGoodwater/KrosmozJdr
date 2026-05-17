@@ -2,8 +2,8 @@
 
 namespace Database\Factories\Type;
 
-use App\Models\Type\ScenarioLink;
 use App\Models\Entity\Scenario;
+use App\Models\Type\ScenarioLink;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ScenarioLinkFactory extends Factory

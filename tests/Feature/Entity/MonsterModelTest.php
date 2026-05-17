@@ -2,19 +2,17 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Monster;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Monster
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class MonsterModelTest extends TestCase
 {
@@ -29,7 +27,7 @@ class MonsterModelTest extends TestCase
         $creature = Creature::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $monster = Monster::factory()->create([
             'creature_id' => $creature->id,
         ]);
@@ -48,7 +46,7 @@ class MonsterModelTest extends TestCase
         $creature = Creature::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $monster = Monster::factory()->create([
             'creature_id' => $creature->id,
         ]);
@@ -85,4 +83,3 @@ class MonsterModelTest extends TestCase
         $this->assertTrue($monster->spellInvocations->contains($spell2));
     }
 }
-

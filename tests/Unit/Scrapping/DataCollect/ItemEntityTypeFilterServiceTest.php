@@ -54,4 +54,3 @@ class ItemEntityTypeFilterServiceTest extends TestCase
         $this->assertTrue($this->service->isTypeIdAllowedForEntity('resource', 51, ItemEntityTypeFilterService::TYPE_MODE_ALLOWED));
     }
 }
-

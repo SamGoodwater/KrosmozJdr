@@ -8,8 +8,10 @@
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
+import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
+import { getRowEntity } from "@/Utils/Entity/rowEntity";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -23,9 +25,9 @@ const props = defineProps({
     entityType: { type: String, default: "panoplies" },
 });
 
-const emit = defineEmits(["row-click", "toggle-select", "action"]);
+const emit = defineEmits(["row-click", "row-dblclick", "toggle-select", "action"]);
 
-const entity = computed(() => props.row?.rowParams?.entity ?? props.row);
+const entity = computed(() => getRowEntity(props.row));
 
 const getCell = (fieldKey) => {
     const col = props.columns.find((c) => (c.cellId || c.id) === fieldKey);
@@ -42,7 +44,6 @@ const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
 );
 
-const handleRowClick = (e) => emit("row-click", props.row, e);
 </script>
 
 <template>
@@ -51,7 +52,8 @@ const handleRowClick = (e) => emit("row-click", props.row, e);
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         style="--bg-color: var(--color-base-100)"
         data-row-contextmenu-target
-        @click="handleRowClick"
+        @click="(e) => emitLineRowClick(emit, row, e)"
+        @dblclick="(e) => emitLineRowDblClick(emit, row, e)"
     >
         <div class="flex gap-3">
             <div
@@ -66,19 +68,12 @@ const handleRowClick = (e) => emit("row-click", props.row, e);
                             <span class="font-semibold truncate block">{{ nameCell?.value || "—" }}</span>
                         </div>
                     </div>
-                    <div
+                    <EntityLineRowActions
                         v-if="showActions"
-                        class="entity-row-actions-hover-reveal"
-                        @click.stop
-                    >
-                        <EntityActions
-                            entity-type="panoplies"
-                            :entity="entity || row"
-                            format="dropdown"
-                            :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                            @action="(k, e) => emit('action', k, e, row)"
-                        />
-                    </div>
+                        entity-type="panoplies"
+                        :entity="entity"
+                        @action="(k, e) => emit('action', k, e, row)"
+                    />
                     <div
                         v-if="showSelection"
                         class="flex shrink-0 items-center transition-[max-width,opacity] duration-150 ease-out"

@@ -2,14 +2,15 @@
 
 namespace Tests\Feature\Policies;
 
-use App\Models\User;
 use App\Models\Page;
+use App\Models\User;
+use App\Policies\PagePolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests de la PagePolicy (Autorisation)
- * 
+ *
  * Vérifie que les règles d'accès aux pages sont correctement appliquées :
  * - Visibilité (guest, user, game_master, admin)
  * - Création (admin uniquement)
@@ -31,7 +32,7 @@ class PagePolicyTest extends TestCase
         ]);
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->view(null, $page)
         );
     }
@@ -47,7 +48,7 @@ class PagePolicyTest extends TestCase
         ]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->view(null, $page)
         );
     }
@@ -64,7 +65,7 @@ class PagePolicyTest extends TestCase
         ]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->view($user, $page)
         );
     }
@@ -77,7 +78,7 @@ class PagePolicyTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->create($admin)
         );
     }
@@ -90,7 +91,7 @@ class PagePolicyTest extends TestCase
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->create($gm)
         );
     }
@@ -103,7 +104,7 @@ class PagePolicyTest extends TestCase
         $user = User::factory()->create(['role' => User::ROLE_USER]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->create($user)
         );
     }
@@ -120,7 +121,7 @@ class PagePolicyTest extends TestCase
         ]);
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->update($author, $page)
         );
     }
@@ -132,14 +133,14 @@ class PagePolicyTest extends TestCase
     {
         $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $other = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
-        
+
         $page = Page::factory()->create([
             'created_by' => $author->id,
             'write_level' => User::ROLE_ADMIN, // Nécessite admin
         ]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->update($other, $page)
         );
     }
@@ -151,14 +152,14 @@ class PagePolicyTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
-        
+
         $page = Page::factory()->create([
             'created_by' => $author->id,
             'write_level' => User::ROLE_ADMIN,
         ]);
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->update($admin, $page)
         );
     }
@@ -174,7 +175,7 @@ class PagePolicyTest extends TestCase
         ]);
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->delete($author, $page)
         );
     }
@@ -186,13 +187,13 @@ class PagePolicyTest extends TestCase
     {
         $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $other = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
-        
+
         $page = Page::factory()->create([
             'created_by' => $author->id,
         ]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->delete($other, $page)
         );
     }
@@ -204,13 +205,13 @@ class PagePolicyTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
-        
+
         $page = Page::factory()->create([
             'created_by' => $author->id,
         ]);
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->delete($admin, $page)
         );
     }
@@ -227,7 +228,7 @@ class PagePolicyTest extends TestCase
         ]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->delete($admin, $page)
         );
     }
@@ -239,16 +240,16 @@ class PagePolicyTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $user = User::factory()->create(['role' => User::ROLE_USER]);
-        
+
         $page = Page::factory()->create();
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->forceDelete($user, $page)
         );
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->forceDelete($admin, $page)
         );
     }
@@ -265,9 +266,8 @@ class PagePolicyTest extends TestCase
         ]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\PagePolicy::class)
+            $this->app->make(PagePolicy::class)
                 ->forceDelete($admin, $page)
         );
     }
 }
-

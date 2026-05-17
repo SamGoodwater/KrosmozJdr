@@ -23,8 +23,7 @@ class DofusdbEffectMappingController extends Controller
 {
     public function __construct(
         private readonly DofusdbEffectMappingService $mappingService
-    ) {
-    }
+    ) {}
 
     /**
      * Page liste des mappings + formulaire création/édition.
@@ -52,7 +51,7 @@ class DofusdbEffectMappingController extends Controller
 
         $characteristicsForSelect = Characteristic::orderBy('sort_order')->orderBy('key')
             ->get(['id', 'key', 'name'])
-            ->map(fn ($c) => ['value' => $c->key, 'label' => ($c->name ?? $c->key) . ' (' . $c->key . ')'])
+            ->map(fn ($c) => ['value' => $c->key, 'label' => ($c->name ?? $c->key).' ('.$c->key.')'])
             ->values()
             ->all();
 
@@ -106,7 +105,7 @@ class DofusdbEffectMappingController extends Controller
         ]);
 
         if (isset($validated['dofusdb_effect_id']) && (int) $validated['dofusdb_effect_id'] !== $mapping->dofusdb_effect_id) {
-            $request->validate(['dofusdb_effect_id' => 'unique:dofusdb_effect_mappings,dofusdb_effect_id,' . $mapping->id]);
+            $request->validate(['dofusdb_effect_id' => 'unique:dofusdb_effect_mappings,dofusdb_effect_id,'.$mapping->id]);
         }
 
         $mapping->fill(array_filter([
@@ -164,6 +163,7 @@ class DofusdbEffectMappingController extends Controller
         if ($source !== DofusdbEffectMapping::SOURCE_CHARACTERISTIC) {
             return null;
         }
+
         return $key !== null && $key !== '' ? $key : null;
     }
 }

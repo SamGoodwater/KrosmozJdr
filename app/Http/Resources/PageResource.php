@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -13,7 +14,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PageResource extends JsonResource
 {
-    /** @mixin \App\Models\Page */
+    /** @mixin Page */
     /**
      * Transform the resource into an array.
      *
@@ -22,8 +23,9 @@ class PageResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
-        /** @var \App\Models\Page $page */
+        /** @var Page $page */
         $page = $this->resource;
+
         return [
             'id' => $page->id,
             'title' => $page->title,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Creature\Runtime;
 
 use App\Models\Entity\Item;
+use Illuminate\Support\Collection;
 
 /**
  * Agrège les bonus JSON des objets liés à une créature (quantités prises en compte).
@@ -19,7 +20,7 @@ final class CreatureItemBonusAggregator
     /**
      * Somme par clé courte (ex. strength, athletics) — même convention que ItemEffectsToBonusConverter.
      *
-     * @param  \Illuminate\Support\Collection<int, Item>|\Illuminate\Database\Eloquent\Collection<int, Item>  $items
+     * @param  Collection<int, Item>|\Illuminate\Database\Eloquent\Collection<int, Item>  $items
      * @return array<string, int>
      */
     public function aggregateTotals($items): array
@@ -43,7 +44,7 @@ final class CreatureItemBonusAggregator
     /**
      * Détail par objet (pour décomposition UI).
      *
-     * @param  \Illuminate\Support\Collection<int, Item>|\Illuminate\Database\Eloquent\Collection<int, Item>  $items
+     * @param  Collection<int, Item>|\Illuminate\Database\Eloquent\Collection<int, Item>  $items
      * @return list<array{item_id: int, name: string, quantity: int, bonuses: array<string, int>}>
      */
     public function aggregatePerItemLines($items): array

@@ -14,10 +14,12 @@ import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
-import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
+import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
 import { getRarityConfig } from "@/Utils/Entity/SharedConstants";
+import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
@@ -68,22 +70,8 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-const isInteractiveTarget = (event) => {
-    const el = event?.target;
-    if (!el || typeof el.closest !== "function") return false;
-    return Boolean(
-        el.closest(
-            'a,button,input,select,textarea,[role="button"],[role="link"],[contenteditable="true"],[data-no-row-select]',
-        ),
-    );
-};
-
-const handleDoubleClick = (e) => {
-    if (!isInteractiveTarget(e)) emit("row-dblclick", props.row);
-};
-
 /** Entité source : rowParams.entity (API) ou row lui-même (données plates) */
-const entity = computed(() => props.row?.rowParams?.entity ?? props.row);
+const entity = computed(() => getRowEntity(props.row));
 
 const showPriceKamas = computed(() => {
     const raw = entity.value?.price ?? entity.value?._data?.price;
@@ -129,7 +117,6 @@ const ingredients = computed(
     () => entity.value?.resources ?? entity.value?._data?.resources ?? []
 );
 
-const handleRowClick = (e) => emit("row-click", props.row, e);
 </script>
 
 <template>
@@ -138,8 +125,8 @@ const handleRowClick = (e) => emit("row-click", props.row, e);
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         style="--bg-color: var(--color-base-100)"
         data-row-contextmenu-target
-        @click="handleRowClick"
-        @dblclick="handleDoubleClick"
+        @click="(e) => emitLineRowClick(emit, row, e)"
+        @dblclick="(e) => emitLineRowDblClick(emit, row, e)"
     >
         <!-- Bloc Image + titre + propriétés -->
         <div class="flex gap-3">
@@ -174,19 +161,12 @@ const handleRowClick = (e) => emit("row-click", props.row, e);
                         <span v-else class="font-semibold truncate block">{{ nameCell?.value || "—" }}</span>
                     </div>
                 </div>
-                <div
+                <EntityLineRowActions
                     v-if="showActions"
-                    class="entity-row-actions-hover-reveal"
-                    @click.stop
-                >
-                    <EntityActions
-                        entity-type="items"
-                        :entity="entity || row"
-                        format="dropdown"
-                        :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                        @action="(k, e) => emit('action', k, e, row)"
-                    />
-                </div>
+                    entity-type="items"
+                    :entity="entity"
+                    @action="(k, e) => emit('action', k, e, row)"
+                />
                 <div
                     v-if="showSelection"
                     class="flex shrink-0 items-center transition-[max-width,opacity] duration-150 ease-out"

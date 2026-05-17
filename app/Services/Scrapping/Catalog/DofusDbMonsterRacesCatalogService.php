@@ -25,7 +25,7 @@ class DofusDbMonsterRacesCatalogService
         $cacheKey = "dofusdb_monster_races_catalog_{$lang}";
         $ttl = (int) config('scrapping.data_collect.cache_ttl', 3600);
 
-        if (!$skipCache && $ttl > 0) {
+        if (! $skipCache && $ttl > 0) {
             $cached = Cache::get($cacheKey);
             if (is_array($cached)) {
                 /** @var array<int, array{id:int, name: string|null}> $cached */
@@ -43,14 +43,18 @@ class DofusDbMonsterRacesCatalogService
             $url = "{$baseUrl}/monster-races?lang={$lang}&\$limit={$limit}&\$skip={$skip}";
             $resp = $this->client->getJson($url, ['skip_cache' => $skipCache]);
             $data = $resp['data'] ?? null;
-            if (!is_array($data)) {
+            if (! is_array($data)) {
                 break;
             }
 
             foreach ($data as $row) {
-                if (!is_array($row)) continue;
+                if (! is_array($row)) {
+                    continue;
+                }
                 $id = $row['id'] ?? null;
-                if (!(is_int($id) || (is_string($id) && ctype_digit($id)))) continue;
+                if (! (is_int($id) || (is_string($id) && ctype_digit($id)))) {
+                    continue;
+                }
                 $id = (int) $id;
 
                 $name = null;
@@ -76,14 +80,18 @@ class DofusDbMonsterRacesCatalogService
                 : null;
 
             $skip += max(1, $apiLimit);
-            if ($returned < $apiLimit) break;
-            if ($total !== null && $skip >= $total) break;
+            if ($returned < $apiLimit) {
+                break;
+            }
+            if ($total !== null && $skip >= $total) {
+                break;
+            }
         }
 
         $list = array_values($out);
         usort($list, fn ($a, $b) => (string) ($a['name'] ?? '') <=> (string) ($b['name'] ?? ''));
 
-        if (!$skipCache && $ttl > 0) {
+        if (! $skipCache && $ttl > 0) {
             Cache::put($cacheKey, $list, $ttl);
         }
 
@@ -98,12 +106,15 @@ class DofusDbMonsterRacesCatalogService
         $map = [];
         foreach ($this->listAll($lang, $skipCache) as $r) {
             $id = (int) ($r['id'] ?? 0);
-            if ($id <= 0) continue;
+            if ($id <= 0) {
+                continue;
+            }
             $name = $r['name'] ?? null;
             if (is_string($name) && $name !== '') {
                 $map[$id] = $name;
             }
         }
+
         return $map;
     }
 
@@ -142,7 +153,7 @@ class DofusDbMonsterRacesCatalogService
         $needle = $normalize($name);
         foreach ($this->listAll($lang, $skipCache) as $r) {
             $raceName = $r['name'] ?? null;
-            if (!is_string($raceName) || $raceName === '') {
+            if (! is_string($raceName) || $raceName === '') {
                 continue;
             }
             if ($normalize($raceName) === $needle) {
@@ -155,4 +166,3 @@ class DofusDbMonsterRacesCatalogService
         return null;
     }
 }
-

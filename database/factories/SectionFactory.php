@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Enums\SectionType;
 use App\Models\Section;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Section>
+ * @extends Factory<Section>
  */
 class SectionFactory extends Factory
 {
@@ -28,7 +28,7 @@ class SectionFactory extends Factory
         ]);
 
         // Générer des settings et data selon le template
-        [$settings, $data] = match($template) {
+        [$settings, $data] = match ($template) {
             SectionType::TEXT->value => [
                 ['align' => $this->faker->randomElement(['left', 'center', 'right']), 'size' => $this->faker->randomElement(['sm', 'md', 'lg', 'xl'])],
                 ['content' => $this->faker->paragraph()],

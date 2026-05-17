@@ -10,6 +10,40 @@
 import { vi } from 'vitest';
 import { config } from '@vue/test-utils';
 
+/**
+ * Stockage Web local en mémoire (Node / Vitest sans experimental localStorage).
+ * Évite : Cannot read properties of undefined (reading 'clear').
+ */
+function createLocalStorageMock() {
+  const storage = new Map();
+  return {
+    getItem: (k) => (storage.has(k) ? storage.get(k) : null),
+    setItem: (k, v) => {
+      storage.set(String(k), String(v));
+    },
+    removeItem: (k) => {
+      storage.delete(String(k));
+    },
+    clear: () => {
+      storage.clear();
+    },
+    key: (i) => {
+      const keys = [...storage.keys()];
+      return keys[i] ?? null;
+    },
+    get length() {
+      return storage.size;
+    },
+  };
+}
+
+const localStorageMock = createLocalStorageMock();
+Object.defineProperty(globalThis, 'localStorage', {
+  value: localStorageMock,
+  configurable: true,
+  writable: true,
+});
+
 // Polyfill pour URL si nécessaire
 if (typeof URL === 'undefined') {
   global.URL = class URL {
@@ -35,6 +69,11 @@ global.route = vi.fn((name, params) => {
 
 // Mock de window.location (jsdom / happy-dom uniquement)
 if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'localStorage', {
+    value: localStorageMock,
+    configurable: true,
+    writable: true,
+  });
   Object.defineProperty(window, 'location', {
     value: {
       origin: 'http://localhost:5173',

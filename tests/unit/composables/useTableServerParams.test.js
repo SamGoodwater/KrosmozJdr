@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildFetchUrl } from "../../resources/js/Composables/table/useTableServerParams.js";
+import { buildFetchUrl } from "@/Composables/table/useTableServerParams.js";
 
 describe("buildFetchUrl", () => {
     it("ajoute sorts[i][field] et sorts[i][dir] sans conflit avec sort legacy", () => {

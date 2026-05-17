@@ -10,7 +10,6 @@ describe('useSectionMode', () => {
   let sectionId;
 
   beforeEach(() => {
-    // Réinitialiser le localStorage
     localStorage.clear();
     sectionId = ref(1);
   });
@@ -30,7 +29,8 @@ describe('useSectionMode', () => {
 
     const wrapper = mount(TestComponent);
 
-    expect(wrapper.vm.isEditing.value).toBe(false);
+    // Sur l'instance du composant, les computed sont déjà « unwrap » (pas de .value)
+    expect(wrapper.vm.isEditing).toBe(false);
   });
 
   it('devrait basculer le mode édition', async () => {
@@ -44,17 +44,17 @@ describe('useSectionMode', () => {
 
     const wrapper = mount(TestComponent);
 
-    expect(wrapper.vm.isEditing.value).toBe(false);
+    expect(wrapper.vm.isEditing).toBe(false);
 
     wrapper.vm.toggleEditMode();
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.vm.isEditing.value).toBe(true);
+    expect(wrapper.vm.isEditing).toBe(true);
 
     wrapper.vm.toggleEditMode();
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.vm.isEditing.value).toBe(false);
+    expect(wrapper.vm.isEditing).toBe(false);
   });
 
   it('devrait définir explicitement le mode édition', async () => {
@@ -71,31 +71,39 @@ describe('useSectionMode', () => {
     wrapper.vm.setEditMode(true);
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.vm.isEditing.value).toBe(true);
+    expect(wrapper.vm.isEditing).toBe(true);
 
     wrapper.vm.setEditMode(false);
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.vm.isEditing.value).toBe(false);
+    expect(wrapper.vm.isEditing).toBe(false);
   });
 
-  it('devrait persister le mode édition dans localStorage', async () => {
-    const TestComponent = defineComponent({
+  it("devrait partager l'état d'édition entre composants pour le même sectionId", async () => {
+    const sharedId = ref(1);
+    const A = defineComponent({
       setup() {
-        const { isEditing, setEditMode } = useSectionMode(sectionId);
+        const { isEditing, setEditMode } = useSectionMode(sharedId);
         return { isEditing, setEditMode };
       },
       template: '<div></div>',
     });
+    const B = defineComponent({
+      setup() {
+        const { isEditing } = useSectionMode(sharedId);
+        return { isEditing };
+      },
+      template: '<div></div>',
+    });
 
-    const wrapper = mount(TestComponent);
+    const wa = mount(A);
+    const wb = mount(B);
 
-    wrapper.vm.setEditMode(true);
-    await wrapper.vm.$nextTick();
+    expect(wb.vm.isEditing).toBe(false);
+    wa.vm.setEditMode(true);
+    await wa.vm.$nextTick();
+    await wb.vm.$nextTick();
 
-    // Vérifier que c'est sauvegardé dans localStorage
-    const saved = localStorage.getItem('section-edit-mode-1');
-    expect(saved).toBe('true');
+    expect(wb.vm.isEditing).toBe(true);
   });
 });
-

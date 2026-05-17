@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\Entity;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Entity\Resource;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * FormRequest pour la mise à jour de la recette d'une ressource (ingrédients + quantités).
@@ -18,13 +19,14 @@ class UpdateResourceRecipeRequest extends FormRequest
     public function authorize(): bool
     {
         $resource = $this->route('resource');
+
         return $resource && $this->user()?->can('update', $resource);
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -35,13 +37,14 @@ class UpdateResourceRecipeRequest extends FormRequest
                 'present',
                 'array',
                 function (string $attribute, mixed $value, \Closure $fail) use ($resourceId) {
-                    if (!is_array($value)) {
+                    if (! is_array($value)) {
                         return;
                     }
                     foreach ($value as $ingredientId => $pivotData) {
                         $id = is_numeric((string) $ingredientId) ? (int) $ingredientId : null;
-                        if (!$id || !Resource::whereKey($id)->exists()) {
+                        if (! $id || ! Resource::whereKey($id)->exists()) {
                             $fail("La ressource ingrédient {$ingredientId} n'existe pas.");
+
                             return;
                         }
                         if ($resourceId !== null && (int) $id === (int) $resourceId) {
@@ -63,9 +66,10 @@ class UpdateResourceRecipeRequest extends FormRequest
         $recipe = $this->input('recipe');
         if ($recipe === null) {
             $this->merge(['recipe' => []]);
+
             return;
         }
-        if (!is_array($recipe)) {
+        if (! is_array($recipe)) {
             return;
         }
         $normalized = [];

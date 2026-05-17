@@ -159,9 +159,9 @@ class UserDataExportService
             $disk->makeDirectory($directory);
         }
 
-        $absolutePath = storage_path('app/private/' . $relativePath);
+        $absolutePath = storage_path('app/private/'.$relativePath);
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         $result = $zip->open($absolutePath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
         if ($result !== true) {
             throw new \RuntimeException('Impossible de créer l’archive RGPD.');
@@ -186,4 +186,3 @@ class UserDataExportService
         );
     }
 }
-

@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Policies/PagePolicy.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Policies\PagePolicy
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-b73645db91dfa3bd8c1c9c2d7f5ad4cd223e7b88fb5e0f9f11ce3e10e7fe3b2c-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-3224029978e10817c4c74972d540aabba8f7e9859dcb0ba6856fc25688f74bbf-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -31,8 +31,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 15,
-    'endLine' => 132,
+    'startLine' => 14,
+    'endLine' => 128,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -93,8 +93,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 23,
-            'endLine' => 23,
+            'startLine' => 22,
+            'endLine' => 22,
             'startColumn' => 29,
             'endColumn' => 39,
             'parameterIndex' => 0,
@@ -120,8 +120,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Signature Laravel : Gate::allows(\'viewAny\', Page::class)
  * → un seul paramètre : l\'utilisateur.
  */',
-        'startLine' => 23,
-        'endLine' => 28,
+        'startLine' => 22,
+        'endLine' => 27,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -178,8 +178,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 37,
-            'endLine' => 37,
+            'startLine' => 35,
+            'endLine' => 35,
             'startColumn' => 26,
             'endColumn' => 36,
             'parameterIndex' => 0,
@@ -204,8 +204,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 37,
-            'endLine' => 37,
+            'startLine' => 35,
+            'endLine' => 35,
             'startColumn' => 39,
             'endColumn' => 48,
             'parameterIndex' => 1,
@@ -227,13 +227,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Determine whether the user can view the model.
- * 
- * @param \\App\\Models\\User|null $user L\'utilisateur (null pour les invités)
- * @param \\App\\Models\\Page $page La page à vérifier
- * @return bool
+ *
+ * @param  User|null  $user  L\'utilisateur (null pour les invités)
+ * @param  Page  $page  La page à vérifier
  */',
-        'startLine' => 37,
-        'endLine' => 40,
+        'startLine' => 35,
+        'endLine' => 38,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -271,8 +270,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 45,
-            'endLine' => 45,
+            'startLine' => 43,
+            'endLine' => 43,
             'startColumn' => 28,
             'endColumn' => 37,
             'parameterIndex' => 0,
@@ -295,8 +294,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine whether the user can create models.
  */',
-        'startLine' => 45,
-        'endLine' => 48,
+        'startLine' => 43,
+        'endLine' => 46,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -334,8 +333,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 56,
-            'endLine' => 56,
+            'startLine' => 53,
+            'endLine' => 53,
             'startColumn' => 31,
             'endColumn' => 40,
             'parameterIndex' => 0,
@@ -358,11 +357,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Capacité "globale" : créer des pages (ex: outils admin / maintenance).
  *
- * @param User $user Utilisateur courant
- * @return bool
+ * @param  User  $user  Utilisateur courant
  */',
-        'startLine' => 56,
-        'endLine' => 59,
+        'startLine' => 53,
+        'endLine' => 56,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -400,8 +398,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 68,
-            'endLine' => 68,
+            'startLine' => 64,
+            'endLine' => 64,
             'startColumn' => 31,
             'endColumn' => 40,
             'parameterIndex' => 0,
@@ -425,11 +423,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Capacité "globale" : gérer/éditer les pages (ex: accès UI de gestion).
  * Utilisé côté frontend pour afficher le menu "Pages" de manière policy-driven.
  *
- * @param User $user Utilisateur courant
- * @return bool
+ * @param  User  $user  Utilisateur courant
  */',
-        'startLine' => 68,
-        'endLine' => 71,
+        'startLine' => 64,
+        'endLine' => 67,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -467,8 +464,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 76,
-            'endLine' => 76,
+            'startLine' => 72,
+            'endLine' => 72,
             'startColumn' => 28,
             'endColumn' => 37,
             'parameterIndex' => 0,
@@ -493,8 +490,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 76,
-            'endLine' => 76,
+            'startLine' => 72,
+            'endLine' => 72,
             'startColumn' => 40,
             'endColumn' => 49,
             'parameterIndex' => 1,
@@ -517,8 +514,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine whether the user can update the model.
  */',
-        'startLine' => 76,
-        'endLine' => 79,
+        'startLine' => 72,
+        'endLine' => 75,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -556,8 +553,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 84,
-            'endLine' => 84,
+            'startLine' => 80,
+            'endLine' => 80,
             'startColumn' => 28,
             'endColumn' => 37,
             'parameterIndex' => 0,
@@ -582,8 +579,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 84,
-            'endLine' => 84,
+            'startLine' => 80,
+            'endLine' => 80,
             'startColumn' => 40,
             'endColumn' => 49,
             'parameterIndex' => 1,
@@ -606,8 +603,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine whether the user can delete the model.
  */',
-        'startLine' => 84,
-        'endLine' => 90,
+        'startLine' => 80,
+        'endLine' => 87,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -645,8 +642,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 98,
-            'endLine' => 98,
+            'startLine' => 94,
+            'endLine' => 94,
             'startColumn' => 31,
             'endColumn' => 40,
             'parameterIndex' => 0,
@@ -669,11 +666,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Capacité "globale" : supprimer des pages (ex: outils admin / maintenance).
  *
- * @param User $user Utilisateur courant
- * @return bool
+ * @param  User  $user  Utilisateur courant
  */',
-        'startLine' => 98,
-        'endLine' => 101,
+        'startLine' => 94,
+        'endLine' => 97,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -711,8 +707,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 109,
-            'endLine' => 109,
+            'startLine' => 104,
+            'endLine' => 104,
             'startColumn' => 31,
             'endColumn' => 40,
             'parameterIndex' => 0,
@@ -735,11 +731,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Capacité "globale" : actions de maintenance / administration (ex: refresh).
  *
- * @param User $user Utilisateur courant
- * @return bool
+ * @param  User  $user  Utilisateur courant
  */',
-        'startLine' => 109,
-        'endLine' => 112,
+        'startLine' => 104,
+        'endLine' => 107,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -777,8 +772,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 117,
-            'endLine' => 117,
+            'startLine' => 112,
+            'endLine' => 112,
             'startColumn' => 29,
             'endColumn' => 38,
             'parameterIndex' => 0,
@@ -803,8 +798,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 117,
-            'endLine' => 117,
+            'startLine' => 112,
+            'endLine' => 112,
             'startColumn' => 41,
             'endColumn' => 50,
             'parameterIndex' => 1,
@@ -827,8 +822,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine whether the user can restore the model.
  */',
-        'startLine' => 117,
-        'endLine' => 120,
+        'startLine' => 112,
+        'endLine' => 115,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -866,8 +861,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 125,
-            'endLine' => 125,
+            'startLine' => 120,
+            'endLine' => 120,
             'startColumn' => 33,
             'endColumn' => 42,
             'parameterIndex' => 0,
@@ -892,8 +887,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 125,
-            'endLine' => 125,
+            'startLine' => 120,
+            'endLine' => 120,
             'startColumn' => 45,
             'endColumn' => 54,
             'parameterIndex' => 1,
@@ -916,8 +911,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine whether the user can permanently delete the model.
  */',
-        'startLine' => 125,
-        'endLine' => 131,
+        'startLine' => 120,
+        'endLine' => 127,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

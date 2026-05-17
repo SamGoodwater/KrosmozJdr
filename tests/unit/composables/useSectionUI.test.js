@@ -85,7 +85,7 @@ describe('useSectionUI', () => {
     const wrapper = mount(TestComponent);
 
     expect(wrapper.vm.url).toContain('test-page');
-    expect(wrapper.vm.url).toContain('section-123');
+    expect(wrapper.vm.url).toContain('section-test-section');
   });
 });
 

@@ -15,6 +15,8 @@ use App\Models\Type\ItemType;
 use App\Models\Type\ResourceType;
 use App\Models\User;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
+use App\Services\Scrapping\Core\Relation\RelationResolutionService;
+use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\CreatesSystemUser;
@@ -69,7 +71,7 @@ class ScrappingRelationsTest extends TestCase
      *
      * superTypeId : 2 = équipement (Arme), 6 = consommable, 9 = ressource (voir item-super-types.json).
      *
-     * @return \GuzzleHttp\Promise\PromiseInterface|null
+     * @return PromiseInterface|null
      */
     private function dofusdbHttpStubIfGlobalEndpoint(string $url): mixed
     {
@@ -212,7 +214,7 @@ class ScrappingRelationsTest extends TestCase
         }
         $creatureId = $r->getIntegrationResult()?->getCreatureId();
         $monsterId = $r->getIntegrationResult()?->getMonsterId();
-        $relationOut = app(\App\Services\Scrapping\Core\Relation\RelationResolutionService::class)
+        $relationOut = app(RelationResolutionService::class)
             ->resolveAndSyncMonsterRelations($monsterData, $creatureId, ['integrate' => true, 'dry_run' => false]);
         $result = [
             'success' => true,

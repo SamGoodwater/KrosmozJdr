@@ -557,12 +557,12 @@ namespace App\Models\Entity{
  * @property-read int|null $element_orientations_count
  * @property-read BreedSpellPivot|null $pivot
  * @method static Builder<static>|Breed visibleToUser(?\App\Models\User $user)
- * @property-read Collection<int, \App\Models\Entity\Language> $languages
+ * @property-read Collection<int, Language> $languages
  * @property-read int|null $languages_count
  * @method static Builder<static>|Breed whereEvolution($value)
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\CreatureTrait> $creatureTraits
+ * @property-read Collection<int, CreatureTrait> $creatureTraits
  * @property-read int|null $creature_traits_count
+ * @mixin \Eloquent
  */
 	class Breed extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -724,12 +724,12 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read Collection<int, \App\Models\Entity\Breed> $breeds
+ * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsPassive($value)
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Condition> $conditions
+ * @property-read Collection<int, Condition> $conditions
  * @property-read int|null $conditions_count
+ * @mixin \Eloquent
  */
 	class Capability extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -758,7 +758,6 @@ namespace App\Models\Entity{
  * @property-read Collection<int, Spell> $spells
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @mixin \Eloquent
  * @property bool $prevents_spell_cast
  * @property bool $prevents_fight
  * @property bool $cant_be_moved
@@ -811,6 +810,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withoutTrashed()
+ * @mixin \Eloquent
  */
 	class Condition extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1131,9 +1131,9 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveVitalityMastery($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomBonus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomMastery($value)
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\CreatureTrait> $creatureTraits
+ * @property-read Collection<int, CreatureTrait> $creatureTraits
  * @property-read int|null $creature_traits_count
+ * @mixin \Eloquent
  */
 	class Creature extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1149,18 +1149,18 @@ namespace App\Models\Entity{
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
+ * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
- * @property-read \App\Models\User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Creature> $creatures
+ * @property-read User|null $createdBy
+ * @property-read Collection<int, Creature> $creatures
  * @property-read int|null $creatures_count
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Specialization> $specializations
+ * @property-read Collection<int, Specialization> $specializations
  * @property-read int|null $specializations_count
  * @method static \Database\Factories\Entity\CreatureTraitFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait newModelQuery()
@@ -1180,6 +1180,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait withoutTrashed()
+ * @mixin \Eloquent
  */
 	class CreatureTrait extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -1273,11 +1274,11 @@ namespace App\Models\Entity{
  * @property string|null $description
  * @property string $color Hex #RRGGBB
  * @method static LanguageFactory factory($count = null, $state = [])
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Monster> $monsters
+ * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newQuery()
@@ -1337,7 +1338,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereWriteLevel($value)
- * @property-read Collection<int, \App\Models\Entity\Language> $languages
+ * @property-read Collection<int, Language> $languages
  * @property-read int|null $languages_count
  * @mixin \Eloquent
  */
@@ -1685,21 +1686,21 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withoutTrashed()
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- * @mixin \Eloquent
  * @property string|null $short_description
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Consumable> $consumables
+ * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\CreatureTrait> $creatureTraits
+ * @property-read Collection<int, CreatureTrait> $creatureTraits
  * @property-read int|null $creature_traits_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Item> $items
+ * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Resource> $resources
+ * @property-read Collection<int, \App\Models\Entity\Resource> $resources
  * @property-read int|null $resources_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Section> $sections
+ * @property-read Collection<int, Section> $sections
  * @property-read int|null $sections_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Spell> $spells
+ * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereShortDescription($value)
+ * @mixin \Eloquent
  */
 	class Specialization extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
@@ -2266,6 +2267,7 @@ namespace App\Models{
  * @property-read Page $page
  * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
+ * @property-read Pivot|null $pivot Présent lorsque la section est chargée via une relation pivot (ex. page ↔ sections).
  * @method static \Database\Factories\SectionFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section newQuery()

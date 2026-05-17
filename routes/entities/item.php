@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Entity\ItemController;
+use Illuminate\Support\Facades\Route;
 
 // Routes publiques (accessibles sans authentification)
 Route::prefix('entities/items')->name('entities.items.')->group(function () {

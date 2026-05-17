@@ -60,7 +60,7 @@ class UserTest extends TestCase
 
     public function test_user_policy_basic_functionality()
     {
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
         $admin = User::factory()->create(['role' => 4]);
         $user = User::factory()->create(['role' => 1]);
 

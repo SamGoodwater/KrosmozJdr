@@ -7,5 +7,5 @@ declare(strict_types=1);
  * Généré par php artisan scrapping:seeders:export
  */
 
-return array (
-);
+return [
+];

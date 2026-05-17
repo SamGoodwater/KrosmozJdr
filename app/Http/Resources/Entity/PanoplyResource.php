@@ -18,6 +18,7 @@ class PanoplyResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+
         return [
             'id' => $this->id,
             'dofusdb_id' => $this->dofusdb_id,
@@ -56,4 +57,3 @@ class PanoplyResource extends JsonResource
         ];
     }
 }
-

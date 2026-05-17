@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::bind('user', function ($value) {
-            return \App\Models\User::withTrashed()->findOrFail($value);
+            return User::withTrashed()->findOrFail($value);
         });
 
         RateLimiter::for('api', function (Request $request) {
@@ -33,7 +34,8 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('privacy-actions', function (Request $request) {
-            $key = ($request->user()?->id ?? 'guest') . '|' . $request->ip();
+            $key = ($request->user()?->id ?? 'guest').'|'.$request->ip();
+
             return [
                 Limit::perMinutes(15, 3)->by($key),
             ];

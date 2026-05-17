@@ -9,8 +9,8 @@ use App\Models\Entity\Spell;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Jdr\DiceNotationService;
-use App\Services\Scrapping\Config\DofusDbEffectCatalog;
 use App\Services\Scrapping\Config\DofusDbConditionCatalog;
+use App\Services\Scrapping\Config\DofusDbEffectCatalog;
 use Illuminate\Support\Str;
 
 /**

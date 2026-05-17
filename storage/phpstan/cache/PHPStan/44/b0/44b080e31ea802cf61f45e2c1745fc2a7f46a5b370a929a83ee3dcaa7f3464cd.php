@@ -12,9 +12,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Database\\Factories',
          'uses' => 
         array (
-          'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
+          'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
         ),
          'className' => 'Database\\Factories\\PageFactory',
          'functionName' => NULL,
@@ -37,9 +37,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Database\\Factories',
          'uses' => 
         array (
-          'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
+          'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
         ),
          'className' => 'Database\\Factories\\PageFactory',
          'functionName' => 'definition',
@@ -51,9 +51,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Database\\Factories',
            'uses' => 
           array (
-            'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
+            'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
           ),
            'className' => 'Database\\Factories\\PageFactory',
            'functionName' => NULL,
@@ -84,7 +84,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/database/factories/PageFactory.php' => 'd116ca464c7ccbd610108d3b3026a617ae4f84160d66931cb1f918a397ffe7cf',
+      '/var/www/KrosmozJdr/database/factories/PageFactory.php' => '43e21b980c9dc7b210e94b7004e3c1902f0677c1f8cc8406cf99f518f174fb13',
     ),
   ),
 ));

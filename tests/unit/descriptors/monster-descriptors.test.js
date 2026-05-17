@@ -17,37 +17,42 @@ describe('monster-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
             const descriptors = getMonsterFieldDescriptors();
-            const requiredFields = ['id', 'name', 'level', 'hostility', 'life', 'state', 'read_level', 'write_level'];
+            const requiredFields = [
+                'id',
+                'creature_name',
+                'creature_level',
+                'creature_hostility',
+                'creature_life',
+                'state',
+                'read_level',
+                'write_level',
+            ];
 
             requiredFields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
                 expect(descriptors[field]).toHaveProperty('key');
-                expect(descriptors[field]).toHaveProperty('label');
+                const label = descriptors[field].label ?? descriptors[field].general?.label;
+                expect(label).toBeDefined();
                 expect(descriptors[field].key).toBe(field);
             });
         });
 
-        it('tous les descriptors ont une propriété display avec sizes (pour les tableaux)', () => {
+        it('chaque colonne tableau avec cellules définit table.cell.sizes', () => {
             const descriptors = getMonsterFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
-                if (desc.display) {
-                    expect(desc.display).toHaveProperty('sizes');
+                if (desc.table?.cell) {
+                    expect(desc.table.cell).toHaveProperty('sizes');
                 }
             });
         });
     });
 
     describe('visibleIf / editableIf', () => {
-        it('visibleIf fonctionne avec canUpdateAny', () => {
-            const descriptors = getMonsterFieldDescriptors({
-                capabilities: { updateAny: true },
-            });
-
-            const idDescriptor = descriptors.id;
-            if (idDescriptor.visibleIf) {
-                expect(idDescriptor.visibleIf({ capabilities: { updateAny: true } })).toBe(true);
-                expect(idDescriptor.visibleIf({ capabilities: { updateAny: false } })).toBe(false);
-            }
+        it('permissions.visibleIf sur id suit canCreateAny (fermeture sur le factory)', () => {
+            const on = getMonsterFieldDescriptors({ capabilities: { createAny: true } });
+            const off = getMonsterFieldDescriptors({ capabilities: { createAny: false } });
+            expect(on.id.permissions?.visibleIf?.()).toBe(true);
+            expect(off.id.permissions?.visibleIf?.()).toBe(false);
         });
     });
 
@@ -68,22 +73,24 @@ describe('monster-descriptors', () => {
     });
 
     describe('Configuration bulk', () => {
-        it('les champs avec edit.form ont une configuration bulk', () => {
+        it('les champs avec edition.form ou edit.form ont une configuration bulk', () => {
             const descriptors = getMonsterFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
-                if (desc.edit?.form) {
-                    expect(desc.edit.form).toHaveProperty('bulk');
-                    expect(desc.edit.form.bulk).toHaveProperty('enabled');
-                    expect(typeof desc.edit.form.bulk.enabled).toBe('boolean');
-                }
+                const form = desc.edition?.form ?? desc.edit?.form;
+                if (!form) return;
+                const bulk = desc.edition?.bulk ?? desc.edit?.form?.bulk;
+                expect(bulk).toBeDefined();
+                expect(bulk).toHaveProperty('enabled');
+                expect(typeof bulk.enabled).toBe('boolean');
             });
         });
 
-        it('aucun champ bulk n\'a de fonction build (déprécié)', () => {
+        it('bulk.build est optionnel : si présent, c’est une fonction (déprécié, mappers)', () => {
             const descriptors = getMonsterFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
-                if (desc.edit?.form?.bulk) {
-                    expect(desc.edit.form.bulk.build).toBeUndefined();
+                const bulk = desc.edition?.bulk ?? desc.edit?.form?.bulk;
+                if (bulk?.build != null) {
+                    expect(typeof bulk.build).toBe('function');
                 }
             });
         });

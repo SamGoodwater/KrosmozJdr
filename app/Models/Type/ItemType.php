@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property-read User|null $createdBy
  * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
+ *
  * @method static \Database\Factories\Type\ItemTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType newQuery()
@@ -42,12 +43,14 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withoutTrashed()
+ *
  * @property int|null $dofusdb_type_id
  * @property string $decision
  * @property int $seen_count
  * @property Carbon|null $last_seen_at
  * @property-read Collection<int, CharacteristicObject> $allowedCharacteristicObjects
  * @property-read int|null $allowed_characteristic_objects_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType allowed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType blocked()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType pending()
@@ -55,6 +58,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereDofusdbTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereLastSeenAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereSeenCount($value)
+ *
  * @mixin \Eloquent
  */
 class ItemType extends Model

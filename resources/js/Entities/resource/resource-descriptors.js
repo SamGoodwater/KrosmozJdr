@@ -111,8 +111,11 @@ import { getEntityStateOptions, getRarityOptions, getUserRoleOptions } from '@/U
  * @returns {Record<string, ResourceFieldDescriptor>} Objet avec tous les descripteurs
  */
 export function getResourceFieldDescriptors(ctx = {}) {
-  // Extraire le contexte de manière pure (pas de calculs, pas de logique)
-  void ctx;
+  const resourceTypes = Array.isArray(ctx?.resourceTypes)
+    ? ctx.resourceTypes
+    : Array.isArray(ctx?.meta?.resourceTypes)
+      ? ctx.meta.resourceTypes
+      : [];
 
   return {
     id: {
@@ -417,6 +420,44 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Type (métier) de la ressource",
       },
       // Pas de section edition : champ en lecture seule (relation)
+    },
+
+    resource_type_id: {
+      key: "resource_type_id",
+      general: {
+        label: "Type (ID)",
+        icon: "fa-solid fa-tag",
+        tooltip: "Identifiant du type de ressource (métier)",
+      },
+      table: {
+        order: 2,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: {
+          sizes: {
+            xs: { mode: "badge" },
+            sm: { mode: "badge" },
+            md: { mode: "badge" },
+            lg: { mode: "badge" },
+            xl: { mode: "badge" },
+          },
+        },
+      },
+      display: {
+        tooltip: "Type de ressource (ID)",
+      },
+      edition: {
+        form: {
+          type: "select",
+          group: "Informations générales",
+          required: false,
+          help: "Type métier de la ressource (aligné sur le bulk / quick edit).",
+          options: () => [{ value: "", label: "—" }, ...resourceTypes.map((t) => ({ value: t.id, label: t.name }))],
+        },
+        bulk: {
+          enabled: true,
+          nullable: true,
+        },
+      },
     },
 
     resource_summary_relations: {

@@ -18,6 +18,7 @@ class ConsumableResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+
         return [
             'id' => $this->id,
             'official_id' => $this->official_id,
@@ -59,4 +60,3 @@ class ConsumableResource extends JsonResource
         ];
     }
 }
-

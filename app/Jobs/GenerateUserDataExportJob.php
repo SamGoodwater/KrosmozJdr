@@ -15,8 +15,7 @@ class GenerateUserDataExportJob implements ShouldQueue
     public function __construct(
         public int $privacyExportId,
         public ?int $dataSubjectRequestId = null
-    ) {
-    }
+    ) {}
 
     public function handle(UserDataExportService $exportService): void
     {
@@ -68,4 +67,3 @@ class GenerateUserDataExportJob implements ShouldQueue
         }
     }
 }
-

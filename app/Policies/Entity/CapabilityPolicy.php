@@ -4,7 +4,6 @@ namespace App\Policies\Entity;
 
 use App\Models\Entity\Capability;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class CapabilityPolicy
 {

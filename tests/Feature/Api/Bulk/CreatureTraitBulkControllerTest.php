@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\Bulk;
 
-use App\Models\User;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\CreatureTrait;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -23,7 +24,7 @@ class CreatureTraitBulkControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
     }
 
     /**
@@ -111,7 +112,7 @@ class CreatureTraitBulkControllerTest extends TestCase
     /**
      * Test : Un utilisateur non-admin ne peut pas faire de bulk update
      */
-    public function test_user_cannot_bulk_update_creatureTraits(): void
+    public function test_user_cannot_bulk_update_creature_traits(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
         $creatureTrait = CreatureTrait::factory()->create();

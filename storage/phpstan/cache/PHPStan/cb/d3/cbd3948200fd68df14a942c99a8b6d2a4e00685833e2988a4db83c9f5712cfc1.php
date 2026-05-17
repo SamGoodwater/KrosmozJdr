@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Support/SectionTemplatePayloadValidator.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Support\SectionTemplatePayloadValidator
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-9d7df9e884fc1111ea1e0b4c1adc85e536dd6b8c9c40885990975983d12c7925-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-530b4f5f7602f1f86403be72e2550df19d1f1fcfa621b8006eae7f08070a849c-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -29,7 +29,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 10,
-    'endLine' => 112,
+    'endLine' => 113,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -276,7 +276,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => NULL,
         'startLine' => 40,
-        'endLine' => 82,
+        'endLine' => 84,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -333,8 +333,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 91,
-            'endLine' => 91,
+            'startLine' => 92,
+            'endLine' => 92,
             'startColumn' => 59,
             'endColumn' => 76,
             'parameterIndex' => 0,
@@ -377,11 +377,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Valide l\'URL source d\'une section legal_markdown (same-origin uniquement).
  * Accepte uniquement les chemins relatifs pour éviter SSRF et injections.
  *
- * @param string|null $sourceUrl
  * @return string|null Message d\'erreur ou null si valide
  */',
-        'startLine' => 91,
-        'endLine' => 111,
+        'startLine' => 92,
+        'endLine' => 112,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

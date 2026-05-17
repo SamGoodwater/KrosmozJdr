@@ -22,7 +22,7 @@ final class ConfigLoader
         private string $baseDir,
         private ?ScrappingMappingService $mappingService = null
     ) {
-        if (!is_dir($this->baseDir)) {
+        if (! is_dir($this->baseDir)) {
             throw new \InvalidArgumentException("Répertoire config scrapping introuvable: {$this->baseDir}");
         }
     }
@@ -41,11 +41,11 @@ final class ConfigLoader
             return $this->sourceCache[$source];
         }
 
-        $path = $this->baseDir . "/sources/{$source}/source.json";
+        $path = $this->baseDir."/sources/{$source}/source.json";
         $data = $this->readJson($path);
 
         if (($data['source'] ?? null) !== $source) {
-            throw new \InvalidArgumentException("Source mismatch: attendu '{$source}', trouvé '" . ($data['source'] ?? 'null') . "'");
+            throw new \InvalidArgumentException("Source mismatch: attendu '{$source}', trouvé '".($data['source'] ?? 'null')."'");
         }
 
         $this->sourceCache[$source] = $data;
@@ -58,12 +58,12 @@ final class ConfigLoader
      */
     public function listEntities(string $source): array
     {
-        $dir = $this->baseDir . "/sources/{$source}/entities";
-        if (!is_dir($dir)) {
+        $dir = $this->baseDir."/sources/{$source}/entities";
+        if (! is_dir($dir)) {
             return [];
         }
 
-        $files = glob($dir . '/*.json') ?: [];
+        $files = glob($dir.'/*.json') ?: [];
         $entities = [];
         foreach ($files as $file) {
             $name = basename($file, '.json');
@@ -86,7 +86,7 @@ final class ConfigLoader
             return $this->entityCache[$cacheKey];
         }
 
-        $path = $this->baseDir . "/sources/{$source}/entities/{$entity}.json";
+        $path = $this->baseDir."/sources/{$source}/entities/{$entity}.json";
         $data = $this->readJson($path);
 
         if (($data['source'] ?? null) !== $source) {
@@ -97,7 +97,7 @@ final class ConfigLoader
         }
 
         $endpoints = $data['endpoints'] ?? null;
-        if (!is_array($endpoints)) {
+        if (! is_array($endpoints)) {
             throw new \InvalidArgumentException("Config entité '{$source}/{$entity}': 'endpoints' requis.");
         }
 
@@ -113,8 +113,8 @@ final class ConfigLoader
                     $data['mapping'] = $jsonMapping;
                 } else {
                     throw new \RuntimeException(
-                        "Aucun mapping BDD pour {$source}/{$entity}. " .
-                        "Exécutez le seeder ScrappingEntityMappingSeeder."
+                        "Aucun mapping BDD pour {$source}/{$entity}. ".
+                        'Exécutez le seeder ScrappingEntityMappingSeeder.'
                     );
                 }
             } else {
@@ -138,7 +138,7 @@ final class ConfigLoader
      */
     public function getEntityMappingEntriesFromFile(string $source, string $entity): array
     {
-        $path = $this->baseDir . "/sources/{$source}/entities/{$entity}.json";
+        $path = $this->baseDir."/sources/{$source}/entities/{$entity}.json";
         $data = $this->readJson($path);
         $mapping = $data['mapping'] ?? [];
         if (! is_array($mapping)) {
@@ -169,6 +169,7 @@ final class ConfigLoader
                 'formatters' => $formatters,
             ];
         }
+
         return $out;
     }
 
@@ -177,11 +178,12 @@ final class ConfigLoader
      */
     public function getEntityLabel(string $source, string $entity): string
     {
-        $path = $this->baseDir . "/sources/{$source}/entities/{$entity}.json";
+        $path = $this->baseDir."/sources/{$source}/entities/{$entity}.json";
         if (! is_file($path)) {
             return $entity;
         }
         $data = $this->readJson($path);
+
         return (string) ($data['label'] ?? $entity);
     }
 
@@ -190,7 +192,7 @@ final class ConfigLoader
      */
     private function readJson(string $path): array
     {
-        if (!is_file($path)) {
+        if (! is_file($path)) {
             throw new \RuntimeException("Config JSON introuvable: {$path}");
         }
         $raw = file_get_contents($path);
@@ -198,7 +200,7 @@ final class ConfigLoader
             throw new \RuntimeException("Impossible de lire le fichier JSON: {$path}");
         }
         $decoded = json_decode($raw, true);
-        if (!is_array($decoded)) {
+        if (! is_array($decoded)) {
             throw new \RuntimeException("JSON invalide: {$path}");
         }
 

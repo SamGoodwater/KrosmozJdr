@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Entity\ShopController;
+use Illuminate\Support\Facades\Route;
 
 // Routes publiques (accessibles sans authentification)
 Route::prefix('entities/shops')->name('entities.shops.')->group(function () {

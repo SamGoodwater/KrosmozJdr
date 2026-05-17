@@ -10,7 +10,6 @@ use App\Services\Scrapping\Http\DofusDbClient;
 use App\Services\Scrapping\Registry\ItemTypeCategoryMoveService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 /**
  * API de gestion des typeId DofusDB détectés (registry) pour les équipements/objets.
@@ -77,14 +76,17 @@ class ItemTypeRegistryController extends Controller
         // Améliorer les placeholders "DofusDB type #X" en allant chercher le vrai nom côté DofusDB.
         foreach ($rows as $model) {
             $typeId = is_numeric($model->dofusdb_type_id) ? (int) $model->dofusdb_type_id : 0;
-            if ($typeId <= 0) continue;
+            if ($typeId <= 0) {
+                continue;
+            }
 
             $currentName = $this->stripDofusdbSuffix(is_string($model->name) ? $model->name : null);
             $isPlaceholder = $currentName === null || $currentName === '' || str_starts_with($currentName, 'DofusDB type #');
 
-            if (!$isPlaceholder) {
+            if (! $isPlaceholder) {
                 // On nettoie juste un éventuel suffixe (DofusDB) en sortie sans écraser le nom en base
                 $model->name = $currentName;
+
                 continue;
             }
 
@@ -113,6 +115,7 @@ class ItemTypeRegistryController extends Controller
     public function pending(Request $request): JsonResponse
     {
         $request->merge(['decision' => 'pending']);
+
         return $this->index($request);
     }
 
@@ -186,7 +189,7 @@ class ItemTypeRegistryController extends Controller
 
         $result = $this->typeCategoryMove->move('equipment', $itemType->id, $validated['target']);
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return response()->json([
                 'success' => false,
                 'message' => $result['message'],
@@ -235,4 +238,3 @@ class ItemTypeRegistryController extends Controller
         ]);
     }
 }
-

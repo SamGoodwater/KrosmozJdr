@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Scrapping\Core;
 
+use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Services\Scrapping\Core\Orchestrator\OrchestratorResult;
-use App\Models\Scrapping\ScrappingEntityMapping;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Tests\SeedsScrappingPipeline;
@@ -38,6 +38,7 @@ class OrchestratorTest extends TestCase
                     'level' => 5,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -122,6 +123,7 @@ class OrchestratorTest extends TestCase
                     'skip' => 2,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -209,6 +211,7 @@ class OrchestratorTest extends TestCase
                     'grades' => [['level' => 5, 'lifePoints' => 100]],
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 

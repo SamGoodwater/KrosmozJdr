@@ -23,6 +23,17 @@ export class Npc extends BaseModel {
         return this._data.creature_id || null;
     }
 
+    get name() {
+        if (this._data.name) {
+            return String(this._data.name);
+        }
+        return this.creature?.name ? String(this.creature.name) : '';
+    }
+
+    get classe_id() {
+        return this._data.classe_id ?? null;
+    }
+
     get story() {
         return this._data.story || null;
     }

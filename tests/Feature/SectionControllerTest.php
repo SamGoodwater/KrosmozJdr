@@ -2,10 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Enums\SectionType;
+use App\Http\Middleware\CheckRole;
 use App\Models\Page;
 use App\Models\Section;
-use App\Enums\SectionType;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
@@ -14,7 +15,7 @@ use Tests\TestCase;
 
 /**
  * Tests Feature pour SectionController
- * 
+ *
  * Vérifie que :
  * - Les utilisateurs peuvent créer des sections selon les permissions
  * - Les utilisateurs peuvent modifier les sections selon les permissions
@@ -30,8 +31,8 @@ class SectionControllerTest extends TestCase
     {
         parent::setUp();
         // Désactiver le middleware role pour les tests (on teste les policies directement)
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
-        
+        $this->withoutMiddleware(CheckRole::class);
+
         // Désactiver les notifications dans les tests pour éviter les erreurs
         Notification::fake();
     }
@@ -846,4 +847,3 @@ class SectionControllerTest extends TestCase
         $this->assertCount(0, $section->fresh()->getMedia('files'));
     }
 }
-

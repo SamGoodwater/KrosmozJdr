@@ -10,10 +10,6 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use Inertia\Inertia;
-use App\Rules\FileRules;
-use Illuminate\Support\Facades\Storage;
 
 Route::middleware('web')->group(function () {
     Route::get('auth/{provider}', [OAuthController::class, 'redirect'])

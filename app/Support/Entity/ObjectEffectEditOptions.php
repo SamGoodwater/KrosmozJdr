@@ -9,6 +9,7 @@ use App\Models\Characteristic;
 use App\Models\Entity\Monster;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 /**
  * Listes pour les sélecteurs d’effets d’objet (pages d’édition Inertia).
@@ -16,7 +17,7 @@ use Illuminate\Http\Request;
 final class ObjectEffectEditOptions
 {
     /**
-     * @return array{objectEffectCharacteristics: \Illuminate\Support\Collection<int, \App\Models\Characteristic>, objectEffectMonsters: \Illuminate\Support\Collection<int, object>}
+     * @return array{objectEffectCharacteristics: Collection<int, Characteristic>, objectEffectMonsters: Collection<int, object>}
      */
     public static function toArray(): array
     {

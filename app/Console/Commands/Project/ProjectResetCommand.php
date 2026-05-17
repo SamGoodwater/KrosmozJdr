@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 
 /**
  * Réinitialisations lourdes ({@see ProjectRunService}).
+ * Les modes `--all` et `--full` enchaînent un grand ménage (reviews, caches PHPStan, logs Laravel via {@see ProjectRunService::resetAll}) puis la suite habituelle (pnpm, caches, etc.).
  */
 class ProjectResetCommand extends Command
 {

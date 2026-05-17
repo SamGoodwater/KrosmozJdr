@@ -72,7 +72,7 @@ class EntityTableDataController extends Controller
 
         $sortColumn = (string) $request->get('sort', 'id');
         $sortOrder = (string) $request->get('order', 'desc');
-        if (!in_array($sortOrder, ['asc', 'desc'], true)) {
+        if (! in_array($sortOrder, ['asc', 'desc'], true)) {
             $sortOrder = 'desc';
         }
 
@@ -122,7 +122,7 @@ class EntityTableDataController extends Controller
 
         $sortColumn = (string) $request->get('sort', 'id');
         $sortOrder = (string) $request->get('order', 'desc');
-        if (!in_array($sortOrder, ['asc', 'desc'], true)) {
+        if (! in_array($sortOrder, ['asc', 'desc'], true)) {
             $sortOrder = 'desc';
         }
 
@@ -143,5 +143,3 @@ class EntityTableDataController extends Controller
         ]);
     }
 }
-
-

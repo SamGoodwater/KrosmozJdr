@@ -5,9 +5,10 @@ namespace Database\Factories\Entity;
 use App\Models\Entity\Scenario;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Entity\Scenario>
+ * @extends Factory<Scenario>
  */
 class ScenarioFactory extends Factory
 {
@@ -19,7 +20,7 @@ class ScenarioFactory extends Factory
     public function definition(): array
     {
         $name = fake()->unique()->words(3, true);
-        $slug = \Illuminate\Support\Str::slug($name . '-' . fake()->unique()->randomNumber(3));
+        $slug = Str::slug($name.'-'.fake()->unique()->randomNumber(3));
 
         $levels = [
             User::ROLE_GUEST,

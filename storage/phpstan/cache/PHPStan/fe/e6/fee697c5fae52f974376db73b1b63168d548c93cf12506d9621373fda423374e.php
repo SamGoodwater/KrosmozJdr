@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Enums/Visibility.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Enums\Visibility
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-6dc6d08764fd735f7a90e9c88ed9981f1c5f8ef878329746cafae855dc442920-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-22d4f8abb9b2d66911e2a6328b52219bfe09aaa0ba5cecda9572e48fca55e579-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -24,7 +24,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'modifiers' => 0,
     'docComment' => '/**
  * Enum pour les niveaux de visibilité.
- * 
+ *
  * @method static self GUEST()
  * @method static self USER()
  * @method static self GAME_MASTER()
@@ -33,8 +33,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 13,
-    'endLine' => 81,
+    'startLine' => 15,
+    'endLine' => 79,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -135,8 +135,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Retourne le label traduit de la visibilité.
- * 
- * @return string
  */',
         'startLine' => 25,
         'endLine' => 33,
@@ -196,10 +194,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 41,
-            'endLine' => 41,
+            'startLine' => 38,
+            'endLine' => 38,
             'startColumn' => 36,
-            'endColumn' => 58,
+            'endColumn' => 46,
             'parameterIndex' => 0,
             'isOptional' => false,
           ),
@@ -219,12 +217,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Vérifie si un utilisateur a le niveau de visibilité requis.
- * 
- * @param \\App\\Models\\User|null $user
- * @return bool
  */',
-        'startLine' => 41,
-        'endLine' => 56,
+        'startLine' => 38,
+        'endLine' => 53,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -259,11 +254,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Retourne tous les niveaux de visibilité possibles.
- * 
+ *
  * @return array<string, string>
  */',
-        'startLine' => 63,
-        'endLine' => 66,
+        'startLine' => 60,
+        'endLine' => 63,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -298,11 +293,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Retourne tous les niveaux avec leurs labels.
- * 
+ *
  * @return array<string, string>
  */',
-        'startLine' => 73,
-        'endLine' => 80,
+        'startLine' => 70,
+        'endLine' => 78,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -561,20 +556,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'guest\'',
           'attributes' => 
           array (
-            'startLine' => 15,
-            'endLine' => 15,
-            'startTokenPos' => 24,
-            'startFilePos' => 254,
-            'endTokenPos' => 24,
-            'endFilePos' => 260,
+            'startLine' => 17,
+            'endLine' => 17,
+            'startTokenPos' => 29,
+            'startFilePos' => 275,
+            'endTokenPos' => 29,
+            'endFilePos' => 281,
           ),
         ),
         'attributes' => 
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 15,
-        'endLine' => 15,
+        'startLine' => 17,
+        'endLine' => 17,
         'startColumn' => 5,
         'endColumn' => 25,
       ),
@@ -586,20 +581,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'user\'',
           'attributes' => 
           array (
-            'startLine' => 16,
-            'endLine' => 16,
-            'startTokenPos' => 33,
-            'startFilePos' => 279,
-            'endTokenPos' => 33,
-            'endFilePos' => 284,
+            'startLine' => 18,
+            'endLine' => 18,
+            'startTokenPos' => 38,
+            'startFilePos' => 300,
+            'endTokenPos' => 38,
+            'endFilePos' => 305,
           ),
         ),
         'attributes' => 
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 16,
-        'endLine' => 16,
+        'startLine' => 18,
+        'endLine' => 18,
         'startColumn' => 5,
         'endColumn' => 23,
       ),
@@ -611,20 +606,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'game_master\'',
           'attributes' => 
           array (
-            'startLine' => 17,
-            'endLine' => 17,
-            'startTokenPos' => 42,
-            'startFilePos' => 310,
-            'endTokenPos' => 42,
-            'endFilePos' => 322,
+            'startLine' => 19,
+            'endLine' => 19,
+            'startTokenPos' => 47,
+            'startFilePos' => 331,
+            'endTokenPos' => 47,
+            'endFilePos' => 343,
           ),
         ),
         'attributes' => 
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 17,
-        'endLine' => 17,
+        'startLine' => 19,
+        'endLine' => 19,
         'startColumn' => 5,
         'endColumn' => 37,
       ),
@@ -636,20 +631,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'admin\'',
           'attributes' => 
           array (
-            'startLine' => 18,
-            'endLine' => 18,
-            'startTokenPos' => 51,
-            'startFilePos' => 342,
-            'endTokenPos' => 51,
-            'endFilePos' => 348,
+            'startLine' => 20,
+            'endLine' => 20,
+            'startTokenPos' => 56,
+            'startFilePos' => 363,
+            'endTokenPos' => 56,
+            'endFilePos' => 369,
           ),
         ),
         'attributes' => 
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 18,
-        'endLine' => 18,
+        'startLine' => 20,
+        'endLine' => 20,
         'startColumn' => 5,
         'endColumn' => 25,
       ),

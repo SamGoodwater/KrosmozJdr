@@ -23,6 +23,8 @@ use Throwable;
  * @example php artisan dev:review tests
  * @example php artisan dev:review quality
  * @example php artisan dev:review all --fix-pint
+ * @example php artisan dev:review --pint --pint-dirty
+ * @example php artisan dev:review --pint --pint-timeout=900
  * @example php artisan dev:review --pint
  * @example php artisan dev:review --test-back --phpstan
  * @example php artisan dev:review --tests
@@ -40,6 +42,9 @@ class DevReviewCommand extends Command
         {--report-path= : Chemin absolu ou relatif au rapport Markdown (défaut : storage/app/dev-reports/review-<timestamp>.md)}
         {--no-cursor-prompts : N’affiche pas le rappel terminal sur les prompts (les prompts restent en fin de rapport Markdown)}
         {--fix-pint : Après Pint (--test), appliquer Laravel Pint sans mode test (modifie les fichiers)}
+        {--pint-dirty : Limiter Pint aux fichiers modifiés selon Git (`pint --dirty`)}
+        {--pint-timeout=300 : Timeout Pint en secondes avant échec/fallback par lots}
+        {--no-pint-batches : Désactive le fallback Pint par lots en cas de timeout}
         {--cursor-agent : Après le rapport, enchaîne des Agent.prompt locaux (@cursor/sdk) pour chaque bloc « Prompts Cursor » ; requiert CURSOR_API_KEY, Node et pnpm install}
         {--all : Toutes les étapes (tests back+front, PHPStan, Pint, ESLint, audit Composer, doc)}
         {--pint : Laravel Pint en mode --test uniquement}
@@ -62,6 +67,16 @@ class DevReviewCommand extends Command
      * @var array<string, bool>
      */
     private array $actionPlan = [];
+
+    /** @var list<string> */
+    private const PINT_BATCH_PATHS = [
+        'app',
+        'routes',
+        'config',
+        'database',
+        'tests',
+        'lang',
+    ];
 
     public function handle(): int
     {
@@ -347,7 +362,7 @@ MD;
             $labels[] = 'PHPStan';
         }
         if ($this->actionPlan['pint']) {
-            $labels[] = 'Pint (`--test`)';
+            $labels[] = 'Pint --test';
         }
         if ($this->actionPlan['eslint']) {
             $labels[] = 'ESLint';
@@ -420,9 +435,16 @@ MD;
 
         if ($pint) {
             $md .= "\n### Laravel Pint (--test)\n\n";
-            $pintResult = $this->runProcess([PHP_BINARY, base_path('vendor/bin/pint'), '--test'], 300);
+            $md .= $this->pintStrategyMarkdown();
+            $pintResult = $this->runProcess($this->pintCommand(test: true), $this->pintTimeoutSeconds());
             $md .= $this->markdownProcessResult($pintResult);
-            if ($pintResult['exit'] !== 0) {
+            $pintSuccess = $pintResult['exit'] === 0;
+            if (! $pintSuccess && $this->shouldRunPintBatches($pintResult)) {
+                $batch = $this->runPintBatches(test: true);
+                $md .= $batch['markdown'];
+                $pintSuccess = $batch['success'];
+            }
+            if (! $pintSuccess) {
                 $this->failures[] = 'pint';
             }
         }
@@ -497,18 +519,105 @@ MD;
     {
         $this->warn('Application de Pint (écriture des fichiers)…');
         $md = "\n## Laravel Pint (apply)\n\n";
-        $pint = $this->runProcess([PHP_BINARY, base_path('vendor/bin/pint')], 300);
+        $md .= $this->pintStrategyMarkdown();
+        $pint = $this->runProcess($this->pintCommand(test: false), $this->pintTimeoutSeconds());
         $md .= $this->markdownProcessResult($pint);
-        if ($pint['exit'] !== 0) {
+        $pintSuccess = $pint['exit'] === 0;
+        if (! $pintSuccess && $this->shouldRunPintBatches($pint)) {
+            $batch = $this->runPintBatches(test: false);
+            $md .= $batch['markdown'];
+            $pintSuccess = $batch['success'];
+        }
+        if (! $pintSuccess) {
             $this->failures[] = 'pint-apply';
         }
 
         return $md;
     }
 
+    private function pintTimeoutSeconds(): int
+    {
+        $raw = $this->option('pint-timeout');
+        $seconds = is_numeric($raw) ? (int) $raw : 300;
+
+        return max(30, $seconds);
+    }
+
+    private function pintDirty(): bool
+    {
+        return (bool) $this->option('pint-dirty');
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function pintCommand(bool $test, ?string $path = null): array
+    {
+        $command = [PHP_BINARY, base_path('vendor/bin/pint')];
+        if ($test) {
+            $command[] = '--test';
+        }
+        if ($this->pintDirty()) {
+            $command[] = '--dirty';
+        }
+        if ($path !== null && $path !== '') {
+            $command[] = $path;
+        }
+
+        return $command;
+    }
+
+    private function pintStrategyMarkdown(): string
+    {
+        $parts = [
+            'timeout '.$this->pintTimeoutSeconds().'s',
+            $this->pintDirty() ? '`--dirty`' : 'tout le dépôt',
+        ];
+        if (! $this->option('no-pint-batches')) {
+            $parts[] = 'fallback par lots si timeout';
+        }
+
+        return '> Stratégie Pint : '.implode(' ; ', $parts).".\n\n";
+    }
+
+    /**
+     * @param  array{exit: int, output: string, combined: string, timed_out?: bool}  $result
+     */
+    private function shouldRunPintBatches(array $result): bool
+    {
+        return ! $this->option('no-pint-batches')
+            && (bool) ($result['timed_out'] ?? false);
+    }
+
+    /**
+     * @return array{markdown: string, success: bool}
+     */
+    private function runPintBatches(bool $test): array
+    {
+        $mode = $test ? '--test' : 'apply';
+        $md = "\n#### Laravel Pint ({$mode}) — fallback par lots\n\n";
+        $md .= "> Le run global a dépassé le timeout. Les dossiers ci-dessous sont exécutés séparément pour obtenir un rapport exploitable.\n\n";
+        $success = true;
+
+        foreach (self::PINT_BATCH_PATHS as $path) {
+            if (! File::exists(base_path($path))) {
+                continue;
+            }
+
+            $md .= '##### `'.$path."`\n\n";
+            $result = $this->runProcess($this->pintCommand($test, $path), $this->pintTimeoutSeconds());
+            $md .= $this->markdownProcessResult($result);
+            if ($result['exit'] !== 0) {
+                $success = false;
+            }
+        }
+
+        return ['markdown' => $md, 'success' => $success];
+    }
+
     /**
      * @param  list<string>  $command
-     * @return array{exit: int, output: string, combined: string}
+     * @return array{exit: int, output: string, combined: string, timed_out: bool}
      */
     private function runProcess(array $command, int $timeoutSeconds): array
     {
@@ -524,18 +633,22 @@ MD;
                 'exit' => $result->exitCode() ?? 1,
                 'output' => $out,
                 'combined' => $combined !== '' ? $combined : '(sortie vide)',
+                'timed_out' => false,
             ];
         } catch (Throwable $e) {
+            $message = $e->getMessage();
+
             return [
                 'exit' => 1,
                 'output' => '',
-                'combined' => '**Exception** : '.$e->getMessage(),
+                'combined' => '**Exception** : '.$message,
+                'timed_out' => str_contains($message, 'exceeded the timeout'),
             ];
         }
     }
 
     /**
-     * @param  array{exit: int, output: string, combined: string}  $result
+     * @param  array{exit: int, output: string, combined: string, timed_out?: bool}  $result
      */
     private function markdownProcessResult(array $result): string
     {

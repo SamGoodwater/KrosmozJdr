@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Http/Requests/UpdateSectionRequest.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Http\Requests\UpdateSectionRequest
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-f9edc90a45e9e646829599d71e6c4a35841ed3d212e644bc30f3e45fd69e4381-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-0104ae2153c49c2d64894b3e7540414c1666274d432fc9bf2e33c3c918900657-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -30,8 +30,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 18,
-    'endLine' => 166,
+    'startLine' => 19,
+    'endLine' => 168,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Foundation\\Http\\FormRequest',
@@ -71,8 +71,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine if the user is authorized to make this request.
  */',
-        'startLine' => 23,
-        'endLine' => 27,
+        'startLine' => 24,
+        'endLine' => 29,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -108,10 +108,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the validation rules that apply to the request.
  *
- * @return array<string, \\Illuminate\\Contracts\\Validation\\ValidationRule|array<mixed>|string>
+ * @return array<string, ValidationRule|array<mixed>|string>
  */',
-        'startLine' => 34,
-        'endLine' => 72,
+        'startLine' => 36,
+        'endLine' => 74,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -149,8 +149,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 80,
-            'endLine' => 80,
+            'startLine' => 82,
+            'endLine' => 82,
             'startColumn' => 51,
             'endColumn' => 71,
             'parameterIndex' => 0,
@@ -172,12 +172,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Retourne les règles de validation pour les settings et data selon le template de section.
- * 
- * @param SectionType $template Template de section
+ *
+ * @param  SectionType  $template  Template de section
  * @return array<string, mixed> Règles de validation
  */',
-        'startLine' => 80,
-        'endLine' => 83,
+        'startLine' => 82,
+        'endLine' => 85,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -214,8 +214,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @description
  * Normalise les payloads legacy {type, params} vers le format moderne {template, data}.
  */',
-        'startLine' => 89,
-        'endLine' => 102,
+        'startLine' => 91,
+        'endLine' => 104,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -253,8 +253,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 104,
-            'endLine' => 104,
+            'startLine' => 106,
+            'endLine' => 106,
             'startColumn' => 35,
             'endColumn' => 54,
             'parameterIndex' => 0,
@@ -275,8 +275,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 104,
-        'endLine' => 165,
+        'startLine' => 106,
+        'endLine' => 167,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

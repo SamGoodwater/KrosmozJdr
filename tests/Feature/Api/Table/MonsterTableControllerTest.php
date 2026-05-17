@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Api\Table;
 
-use App\Models\User;
+use App\Http\Middleware\CheckRole;
+use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -24,7 +26,7 @@ class MonsterTableControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
     }
 
     /**
@@ -102,7 +104,7 @@ class MonsterTableControllerTest extends TestCase
     public function test_entities_format_includes_relations(): void
     {
         $user = User::factory()->create();
-        $creature = \App\Models\Entity\Creature::factory()->create(['created_by' => $user->id]);
+        $creature = Creature::factory()->create(['created_by' => $user->id]);
         $monster = Monster::factory()->create(['creature_id' => $creature->id]);
 
         $response = $this->actingAs($user)
@@ -160,9 +162,9 @@ class MonsterTableControllerTest extends TestCase
     public function test_entities_format_supports_search(): void
     {
         $user = User::factory()->create();
-        $creature1 = \App\Models\Entity\Creature::factory()->create(['name' => 'Dragon']);
-        $creature2 = \App\Models\Entity\Creature::factory()->create(['name' => 'Goblin']);
-        $creature3 = \App\Models\Entity\Creature::factory()->create(['name' => 'Orc']);
+        $creature1 = Creature::factory()->create(['name' => 'Dragon']);
+        $creature2 = Creature::factory()->create(['name' => 'Goblin']);
+        $creature3 = Creature::factory()->create(['name' => 'Orc']);
         Monster::factory()->create(['creature_id' => $creature1->id]);
         Monster::factory()->create(['creature_id' => $creature2->id]);
         Monster::factory()->create(['creature_id' => $creature3->id]);
@@ -175,8 +177,7 @@ class MonsterTableControllerTest extends TestCase
         $data = $response->json();
         $this->assertGreaterThanOrEqual(1, count($data['entities']));
         $this->assertTrue(
-            collect($data['entities'])->contains(fn ($e) => 
-                $e['creature'] && str_contains($e['creature']['name'], 'Dragon')
+            collect($data['entities'])->contains(fn ($e) => $e['creature'] && str_contains($e['creature']['name'], 'Dragon')
             )
         );
     }
@@ -187,8 +188,8 @@ class MonsterTableControllerTest extends TestCase
     public function test_entities_format_supports_sorting(): void
     {
         $user = User::factory()->create();
-        $creature1 = \App\Models\Entity\Creature::factory()->create(['name' => 'Z Monster']);
-        $creature2 = \App\Models\Entity\Creature::factory()->create(['name' => 'A Monster']);
+        $creature1 = Creature::factory()->create(['name' => 'Z Monster']);
+        $creature2 = Creature::factory()->create(['name' => 'A Monster']);
         Monster::factory()->create(['creature_id' => $creature1->id]);
         Monster::factory()->create(['creature_id' => $creature2->id]);
 
@@ -203,4 +204,3 @@ class MonsterTableControllerTest extends TestCase
         $this->assertArrayHasKey('creature', $data['entities'][0]);
     }
 }
-

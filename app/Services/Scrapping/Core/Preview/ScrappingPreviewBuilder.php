@@ -15,19 +15,19 @@ final class ScrappingPreviewBuilder
      * Extrait du brut DofusDB les valeurs utiles à Krosmoz (chemins du mapping).
      * Clés = champ cible (field), valeur = valeur brute à ce chemin.
      *
-     * @param array<string, mixed> $raw Données brutes DofusDB
-     * @param array<string, mixed> $entityConfig Config entité (mapping avec from.path et to[].field)
+     * @param  array<string, mixed>  $raw  Données brutes DofusDB
+     * @param  array<string, mixed>  $entityConfig  Config entité (mapping avec from.path et to[].field)
      * @return array<string, mixed>
      */
     public static function buildRawUseful(array $raw, array $entityConfig): array
     {
         $out = [];
         $mapping = $entityConfig['mapping'] ?? [];
-        if (!is_array($mapping)) {
+        if (! is_array($mapping)) {
             return $out;
         }
         foreach ($mapping as $map) {
-            if (!is_array($map)) {
+            if (! is_array($map)) {
                 continue;
             }
             $from = (array) ($map['from'] ?? []);
@@ -37,11 +37,11 @@ final class ScrappingPreviewBuilder
             }
             $value = self::getByPath($raw, $path);
             $targets = $map['to'] ?? [];
-            if (!is_array($targets)) {
+            if (! is_array($targets)) {
                 continue;
             }
             foreach ($targets as $target) {
-                if (!is_array($target)) {
+                if (! is_array($target)) {
                     continue;
                 }
                 $field = $target['field'] ?? null;
@@ -50,36 +50,38 @@ final class ScrappingPreviewBuilder
                 }
             }
         }
+
         return $out;
     }
 
     /**
      * Fusionne les modèles convertis en un seul tableau (clé => valeur).
      *
-     * @param array<string, array<string, mixed>> $converted Structure par modèle (creatures, monsters, …)
+     * @param  array<string, array<string, mixed>>  $converted  Structure par modèle (creatures, monsters, …)
      * @return array<string, mixed>
      */
     public static function mergeConverted(array $converted): array
     {
         $merged = [];
         foreach ($converted as $model => $fields) {
-            if (!is_array($fields)) {
+            if (! is_array($fields)) {
                 continue;
             }
             foreach ($fields as $field => $value) {
                 $merged[$field] = $value;
             }
         }
+
         return $merged;
     }
 
     /**
      * Construit la structure verbose pour un item : par propriété, raw / converti / valide / existant.
      *
-     * @param array<string, mixed> $rawUseful Valeurs brutes utiles (champ => valeur)
-     * @param array<string, mixed> $convertedMerged Données converties fusionnées
-     * @param list<array{path: string, message: string}> $validationErrors Erreurs de validation
-     * @param array<string, mixed>|null $existing Attributs de l'entité existante en BDD (mêmes clés)
+     * @param  array<string, mixed>  $rawUseful  Valeurs brutes utiles (champ => valeur)
+     * @param  array<string, mixed>  $convertedMerged  Données converties fusionnées
+     * @param  list<array{path: string, message: string}>  $validationErrors  Erreurs de validation
+     * @param  array<string, mixed>|null  $existing  Attributs de l'entité existante en BDD (mêmes clés)
      * @return array<string, array{raw_value: mixed, converted_value: mixed, valid: bool, existing_value: mixed}> Propriété => détail
      */
     public static function buildVerboseProperties(
@@ -101,7 +103,7 @@ final class ScrappingPreviewBuilder
         $allKeys = array_values(array_unique($allKeys));
         $properties = [];
         foreach ($allKeys as $key) {
-            $valid = !isset($errorPaths[$key]);
+            $valid = ! isset($errorPaths[$key]);
             $properties[$key] = [
                 'raw_value' => $rawUseful[$key] ?? null,
                 'converted_value' => $convertedMerged[$key] ?? null,
@@ -109,27 +111,29 @@ final class ScrappingPreviewBuilder
                 'existing_value' => $existing[$key] ?? null,
             ];
         }
+
         return $properties;
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @return mixed
+     * @param  array<string, mixed>  $data
      */
     private static function getByPath(array $data, string $path): mixed
     {
         $parts = explode('.', $path);
         $cur = $data;
         foreach ($parts as $part) {
-            if (!is_array($cur)) {
+            if (! is_array($cur)) {
                 return null;
             }
             if (ctype_digit($part)) {
                 $cur = $cur[(int) $part] ?? null;
+
                 continue;
             }
             $cur = $cur[$part] ?? null;
         }
+
         return $cur;
     }
 }

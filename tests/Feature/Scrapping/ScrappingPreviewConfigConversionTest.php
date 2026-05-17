@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Scrapping;
 
+use App\Http\Middleware\RequirePasswordWithInactivity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -17,7 +18,7 @@ class ScrappingPreviewConfigConversionTest extends TestCase
     {
         parent::setUp();
         $this->seedScrappingPipeline();
-        $this->withoutMiddleware(\App\Http\Middleware\RequirePasswordWithInactivity::class);
+        $this->withoutMiddleware(RequirePasswordWithInactivity::class);
     }
 
     public function test_preview_monster_uses_config_driven_conversion_shape(): void
@@ -35,6 +36,7 @@ class ScrappingPreviewConfigConversionTest extends TestCase
                     'img' => 'https://api.dofusdb.fr/img/monsters/31.png',
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -71,6 +73,4 @@ class ScrappingPreviewConfigConversionTest extends TestCase
         $this->assertIsArray($converted);
         $this->assertEquals('Béco du Tofu', $converted['spells']['name'] ?? $converted['name'] ?? null);
     }
-
 }
-

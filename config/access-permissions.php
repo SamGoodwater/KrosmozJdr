@@ -45,5 +45,3 @@ return [
         ['entity' => 'pages', 'ability' => 'updateAny'],
     ],
 ];
-
-

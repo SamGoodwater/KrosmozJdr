@@ -7,6 +7,7 @@ use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
 use App\Models\EffectUsage;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Condition;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
@@ -14,7 +15,6 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
-use App\Models\Entity\Condition;
 use App\Models\SubEffect;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
@@ -953,7 +953,7 @@ final class IntegrationService
     /**
      * Recalcule la config_signature d’un degré d’effet (target_type sur la définition, area sur le degré).
      */
-    public function rebuildConfigSignatureForEffectDegree(\App\Models\EffectDegree $degree): ?string
+    public function rebuildConfigSignatureForEffectDegree(EffectDegree $degree): ?string
     {
         $degree->loadMissing(['effectSubEffects', 'effect']);
         $rows = [];

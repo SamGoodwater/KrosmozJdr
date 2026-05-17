@@ -2,19 +2,17 @@
 
 namespace Tests\Feature\Type;
 
-use App\Models\User;
-use App\Models\Type\MonsterRace;
-use App\Models\Entity\Monster;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Monster;
+use App\Models\Type\MonsterRace;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle MonsterRace
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Type
  */
 class MonsterRaceModelTest extends TestCase
 {
@@ -26,7 +24,7 @@ class MonsterRaceModelTest extends TestCase
     public function test_monster_race_factory_creates_valid_monster_race(): void
     {
         $user = User::factory()->create();
-        
+
         $monsterRace = MonsterRace::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -88,7 +86,7 @@ class MonsterRaceModelTest extends TestCase
         $superRace = MonsterRace::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $subRace = MonsterRace::factory()->create([
             'created_by' => $user->id,
             'id_super_race' => $superRace->id,
@@ -107,7 +105,7 @@ class MonsterRaceModelTest extends TestCase
         $superRace = MonsterRace::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $subRace1 = MonsterRace::factory()->create([
             'created_by' => $user->id,
             'id_super_race' => $superRace->id,
@@ -123,4 +121,3 @@ class MonsterRaceModelTest extends TestCase
         $this->assertTrue($superRace->subRaces->contains($subRace2));
     }
 }
-

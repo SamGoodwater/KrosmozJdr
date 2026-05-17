@@ -603,8 +603,8 @@ export function getNpcFieldDescriptors(ctx = {}) {
     // Configuration globale du quickedit
     _quickeditConfig: {
       fields: [
-        "breed_id",
-        "specialization_id",
+        "breed",
+        "specialization",
         "age",
         "size",
         "state",

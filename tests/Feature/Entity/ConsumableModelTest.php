@@ -2,19 +2,17 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
 use App\Models\Entity\Consumable;
-use App\Models\Entity\Resource;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Resource;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Consumable
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class ConsumableModelTest extends TestCase
 {
@@ -26,7 +24,7 @@ class ConsumableModelTest extends TestCase
     public function test_consumable_factory_creates_valid_consumable(): void
     {
         $user = User::factory()->create();
-        
+
         $consumable = Consumable::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -75,10 +73,10 @@ class ConsumableModelTest extends TestCase
 
         $consumable->refresh();
         $this->assertCount(2, $consumable->resources);
-        
+
         $pivot1 = $consumable->resources->where('id', $resource1->id)->first()->pivot;
         $this->assertEquals('2', $pivot1->quantity);
-        
+
         $pivot2 = $consumable->resources->where('id', $resource2->id)->first()->pivot;
         $this->assertEquals('3', $pivot2->quantity);
     }
@@ -109,4 +107,3 @@ class ConsumableModelTest extends TestCase
         $this->assertCount(2, $consumable->creatures);
     }
 }
-

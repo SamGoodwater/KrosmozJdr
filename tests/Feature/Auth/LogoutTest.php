@@ -45,8 +45,8 @@ class LogoutTest extends TestCase
 
         $response->assertRedirect('/');
         $this->assertGuest();
-        
+
         $this->assertNotEquals($sessionId, session()->getId());
     }
     */
-} 
+}

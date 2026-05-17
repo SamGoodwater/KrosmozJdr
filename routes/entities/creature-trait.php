@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Entity\CreatureTraitController;
+use Illuminate\Support\Facades\Route;
 
 // Routes publiques (accessibles sans authentification)
 Route::prefix('entities/creature-traits')->name('entities.creature-traits.')->group(function () {
@@ -18,4 +18,3 @@ Route::prefix('entities/creature-traits')->name('entities.creature-traits.')->mi
     Route::patch('/{creatureTrait}', [CreatureTraitController::class, 'update'])->name('update');
     Route::delete('/{creatureTrait}', [CreatureTraitController::class, 'delete'])->name('delete');
 });
-

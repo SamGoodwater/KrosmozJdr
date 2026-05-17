@@ -1,11 +1,13 @@
 <?php
 
+use Database\Seeders\NavMenuSeeder;
+
 /**
  * Configuration du menu de navigation (groupes, entrées).
  *
  * Seedée par NavMenuSeeder. Structure des Bibliothèques pour le menu principal.
  *
- * @see \Database\Seeders\NavMenuSeeder
+ * @see NavMenuSeeder
  */
 return [
     'bibliotheques' => [

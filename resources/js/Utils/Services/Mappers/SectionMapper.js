@@ -86,25 +86,36 @@ export class SectionMapper extends BaseMapper {
         // Normaliser createdBy (relation)
         const createdBy = extract('createdBy') || extract('created_by_user');
 
+        const templateDirect = extract('template');
+        const typeDirect = extract('type');
+        // `type` est l’alias historique : s’il est renseigné, il doit primer sur `template`
+        // (ex. createMockSection({ type: 'image' }) garde encore template: 'text' par défaut).
+        const templateResolved =
+            typeDirect != null && typeDirect !== ''
+                ? typeDirect
+                : templateDirect != null && templateDirect !== ''
+                  ? templateDirect
+                  : 'text';
+
         return {
             // Propriétés de base
             id: extract('id'),
             page_id: extract('page_id'),
             title: extract('title', null),
             slug: extract('slug', null),
-            order: extract('order', 0),
-            
+            order: extract('order', null) ?? 0,
+
             // Template/Type (gérer la compatibilité avec 'type' et 'template')
-            template: extract('template') || extract('type', 'text'),
+            template: templateResolved,
             
             // Settings et data
-            settings: extract('settings', {}),
-            data: extract('data', {}),
+            settings: extract('settings', null) ?? {},
+            data: extract('data', null) ?? {},
             
             // State + niveaux d'accès
-            state: extract('state', 'draft'),
-            read_level: extract('read_level', 0),
-            write_level: extract('write_level', 4),
+            state: extract('state', null) ?? 'draft',
+            read_level: extract('read_level', null) ?? 0,
+            write_level: extract('write_level', null) ?? 4,
             
             // Timestamps
             created_by: extract('created_by', null),

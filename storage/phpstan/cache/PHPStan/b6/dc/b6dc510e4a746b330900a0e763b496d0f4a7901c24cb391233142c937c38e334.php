@@ -12,10 +12,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Database\\Factories',
          'uses' => 
         array (
-          'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
           'sectiontype' => 'App\\Enums\\SectionType',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
+          'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
         ),
          'className' => 'Database\\Factories\\SectionFactory',
          'functionName' => NULL,
@@ -38,10 +38,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'Database\\Factories',
          'uses' => 
         array (
-          'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
           'sectiontype' => 'App\\Enums\\SectionType',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
+          'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
         ),
          'className' => 'Database\\Factories\\SectionFactory',
          'functionName' => 'definition',
@@ -53,10 +53,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'Database\\Factories',
            'uses' => 
           array (
-            'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
             'sectiontype' => 'App\\Enums\\SectionType',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
+            'factory' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
           ),
            'className' => 'Database\\Factories\\SectionFactory',
            'functionName' => NULL,
@@ -87,7 +87,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/database/factories/SectionFactory.php' => 'dbf9afa53b7bd1facd903d5c46e12957a937719685272c64ad7150904dafa1ab',
+      '/var/www/KrosmozJdr/database/factories/SectionFactory.php' => '1ddb1225765802739e8a6d0761bf98308cee812d3d978e2d707e77c68051b0bc',
     ),
   ),
 ));

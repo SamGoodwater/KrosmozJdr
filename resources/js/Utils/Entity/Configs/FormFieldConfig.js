@@ -168,6 +168,7 @@ export class FormFieldConfig {
    */
   build() {
     const config = {
+      key: this.key,
       type: this.type,
       required: this.required,
       showInCompact: this.showInCompact,
@@ -179,7 +180,7 @@ export class FormFieldConfig {
     if (this.tooltip) config.tooltip = this.tooltip;
     if (this.placeholder) config.placeholder = this.placeholder;
     if (this.defaultValue !== null) config.defaultValue = this.defaultValue;
-    if (this.options) config.options = this.options;
+    config.options = this.options;
 
     return config;
   }

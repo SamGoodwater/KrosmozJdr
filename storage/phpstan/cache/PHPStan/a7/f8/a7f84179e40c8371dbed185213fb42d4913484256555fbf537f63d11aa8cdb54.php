@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/database/factories/Entity/ScenarioFactory.php-PHPStan\BetterReflection\Reflection\ReflectionClass-Database\Factories\Entity\ScenarioFactory
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-5f0ecfedc2e7e3c42074142d804b9fcf4ed92902287820c7ea3c98483edfd910-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-a4f9ef7c5cc0c778eb3d10e1c6b8b201d27c4124a9860dfe20230b0020bd73cb-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -23,13 +23,13 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'isBackedEnum' => false,
     'modifiers' => 0,
     'docComment' => '/**
- * @extends \\Illuminate\\Database\\Eloquent\\Factories\\Factory<\\App\\Models\\Entity\\Scenario>
+ * @extends Factory<Scenario>
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 12,
-    'endLine' => 49,
+    'startLine' => 13,
+    'endLine' => 50,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Factories\\Factory',
@@ -71,8 +71,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  *
  * @return array<string, mixed>
  */',
-        'startLine' => 19,
-        'endLine' => 48,
+        'startLine' => 20,
+        'endLine' => 49,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

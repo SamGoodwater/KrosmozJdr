@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
 use App\Services\Scrapping\Core\Collect\CollectService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -39,6 +39,7 @@ class DataCollectController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Erreur lors du test de l\'API DofusDB', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors du test de l\'API',
@@ -56,6 +57,7 @@ class DataCollectController extends Controller
 
         try {
             $classData = $this->collectService->fetchOne('dofusdb', 'breed', (int) $request->id);
+
             return response()->json([
                 'success' => true,
                 'message' => "Classe {$request->id} collectée avec succès",
@@ -63,6 +65,7 @@ class DataCollectController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Erreur collecte classe', ['class_id' => $request->id, 'error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
                 'message' => "Erreur lors de la collecte de la classe {$request->id}",
@@ -80,6 +83,7 @@ class DataCollectController extends Controller
 
         try {
             $monsterData = $this->collectService->fetchOne('dofusdb', 'monster', (int) $request->id);
+
             return response()->json([
                 'success' => true,
                 'message' => "Monstre {$request->id} collecté avec succès",
@@ -87,6 +91,7 @@ class DataCollectController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Erreur collecte monstre', ['monster_id' => $request->id, 'error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
                 'message' => "Erreur lors de la collecte du monstre {$request->id}",
@@ -104,6 +109,7 @@ class DataCollectController extends Controller
 
         try {
             $itemData = $this->collectService->fetchOne('dofusdb', 'item', (int) $request->id);
+
             return response()->json([
                 'success' => true,
                 'message' => "Objet {$request->id} collecté avec succès",
@@ -111,6 +117,7 @@ class DataCollectController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Erreur collecte objet', ['item_id' => $request->id, 'error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
                 'message' => "Erreur lors de la collecte de l'objet {$request->id}",
@@ -128,6 +135,7 @@ class DataCollectController extends Controller
 
         try {
             $spellData = $this->collectService->fetchOne('dofusdb', 'spell', (int) $request->id);
+
             return response()->json([
                 'success' => true,
                 'message' => "Sort {$request->id} collecté avec succès",
@@ -135,6 +143,7 @@ class DataCollectController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Erreur collecte sort', ['spell_id' => $request->id, 'error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
                 'message' => "Erreur lors de la collecte du sort {$request->id}",
@@ -149,6 +158,7 @@ class DataCollectController extends Controller
     public function testCollectEffect(Request $request): JsonResponse
     {
         $request->validate(['id' => 'required|integer|min:1|max:1000']);
+
         return response()->json([
             'success' => false,
             'message' => 'Collecte d\'effet non disponible en V2.',
@@ -182,6 +192,7 @@ class DataCollectController extends Controller
 
         try {
             $itemData = $this->collectService->fetchOne('dofusdb', 'item', $itemId);
+
             return response()->json([
                 'success' => true,
                 'message' => "Objet {$itemId} collecté",
@@ -194,6 +205,7 @@ class DataCollectController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Erreur collecte item par type', ['type_id' => $request->type_id, 'error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
                 'message' => "Erreur lors de la collecte d'objets de type {$request->type_id}",

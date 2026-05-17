@@ -12,8 +12,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Requests',
          'uses' => 
         array (
-          'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
           'fileservice' => 'App\\Services\\FileService',
+          'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
         ),
          'className' => 'App\\Http\\Requests\\StoreFileRequest',
          'functionName' => NULL,
@@ -36,8 +36,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Requests',
          'uses' => 
         array (
-          'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
           'fileservice' => 'App\\Services\\FileService',
+          'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
         ),
          'className' => 'App\\Http\\Requests\\StoreFileRequest',
          'functionName' => 'authorize',
@@ -60,8 +60,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Requests',
          'uses' => 
         array (
-          'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
           'fileservice' => 'App\\Services\\FileService',
+          'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
         ),
          'className' => 'App\\Http\\Requests\\StoreFileRequest',
          'functionName' => 'rules',
@@ -82,7 +82,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Http/Requests/StoreFileRequest.php' => 'd4be38d8821172db121d435e9d21c297cc714d8d1c30864c055c46131b95ea4c',
+      '/var/www/KrosmozJdr/app/Http/Requests/StoreFileRequest.php' => 'ab64fce4dce15c97f74424fd02f0838e9832364c7967c76e82261e2a21783c52',
     ),
   ),
 ));

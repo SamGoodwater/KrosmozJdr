@@ -37,7 +37,7 @@ final class RelationImportStackCacheBenchmarkTest extends TestCase
             ],
         ];
 
-        $stack = new RelationImportStack();
+        $stack = new RelationImportStack;
 
         DB::flushQueryLog();
         DB::enableQueryLog();

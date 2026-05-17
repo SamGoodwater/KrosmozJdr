@@ -3,10 +3,11 @@
 namespace Database\Factories\Entity;
 
 use App\Models\Entity\Creature;
+use App\Models\Entity\Monster;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Entity\Monster>
+ * @extends Factory<Monster>
  */
 class MonsterFactory extends Factory
 {
@@ -18,7 +19,7 @@ class MonsterFactory extends Factory
     public function definition(): array
     {
         $isBoss = fake()->boolean(10);
-        
+
         return [
             'creature_id' => Creature::factory(),
             'official_id' => fake()->optional()->numerify('####'),

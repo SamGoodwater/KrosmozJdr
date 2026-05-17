@@ -165,18 +165,18 @@ return [
             'step_timeout' => 300,
             'collection_timeout' => 600,
             'conversion_timeout' => 300,
-            'integration_timeout' => 600
+            'integration_timeout' => 600,
         ],
         'batch_import' => [
             'total_timeout' => env('SCRAPPING_BATCH_TIMEOUT', 7200),
             'entity_timeout' => 600,
-            'batch_timeout' => 1800
+            'batch_timeout' => 1800,
         ],
         'category_import' => [
             'total_timeout' => env('SCRAPPING_CATEGORY_TIMEOUT', 14400),
             'batch_timeout' => 3600,
-            'entity_timeout' => 300
-        ]
+            'entity_timeout' => 300,
+        ],
     ],
 
     /*
@@ -195,8 +195,8 @@ return [
         'resource_limits' => [
             'memory_per_process' => env('SCRAPPING_MEMORY_PER_PROCESS', 512),
             'cpu_per_process' => env('SCRAPPING_CPU_PER_PROCESS', 50),
-            'network_connections' => env('SCRAPPING_MAX_NETWORK_CONNECTIONS', 10)
-        ]
+            'network_connections' => env('SCRAPPING_MAX_NETWORK_CONNECTIONS', 10),
+        ],
     ],
 
     /*
@@ -231,20 +231,20 @@ return [
             'max_attempts' => 3,
             'backoff_multiplier' => 2,
             'initial_delay' => 5,
-            'max_delay' => 60
+            'max_delay' => 60,
         ],
         'conversion_errors' => [
             'max_attempts' => 2,
             'backoff_multiplier' => 1.5,
             'initial_delay' => 1,
-            'max_delay' => 10
+            'max_delay' => 10,
         ],
         'integration_errors' => [
             'max_attempts' => 3,
             'backoff_multiplier' => 2,
             'initial_delay' => 10,
-            'max_delay' => 120
-        ]
+            'max_delay' => 120,
+        ],
     ],
 
     /*
@@ -261,7 +261,7 @@ return [
         'missing_required_field' => 'use_default',
         'invalid_format' => 'skip_entity',
         'service_unavailable' => 'retry_later',
-        'database_error' => 'rollback_and_retry'
+        'database_error' => 'rollback_and_retry',
     ],
 
     /*

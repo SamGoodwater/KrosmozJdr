@@ -16,11 +16,13 @@ use App\Models\Type\MonsterRace;
 class MonsterRaceFilterService
 {
     public const RACE_MODE_ALL = 'all';
+
     public const RACE_MODE_ALLOWED = 'allowed';
+
     public const RACE_MODE_SELECTED = 'selected';
 
     /**
-     * @param array<string,mixed> $filters
+     * @param  array<string,mixed>  $filters
      * @return array<string,mixed>
      */
     public function applyDefaults(array $filters, string $raceMode = self::RACE_MODE_ALLOWED): array
@@ -52,7 +54,7 @@ class MonsterRaceFilterService
                 ->values()
                 ->all();
 
-            if (!empty($ids)) {
+            if (! empty($ids)) {
                 $filters['raceIds'] = $ids;
             }
         } catch (\Throwable) {
@@ -65,6 +67,7 @@ class MonsterRaceFilterService
     private function normalizeRaceMode(string $mode): string
     {
         $mode = strtolower(trim((string) $mode));
+
         return match ($mode) {
             self::RACE_MODE_ALL => self::RACE_MODE_ALL,
             self::RACE_MODE_SELECTED => self::RACE_MODE_SELECTED,
@@ -72,4 +75,3 @@ class MonsterRaceFilterService
         };
     }
 }
-

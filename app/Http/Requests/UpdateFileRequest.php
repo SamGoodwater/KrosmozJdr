@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Services\FileService;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateFileRequest extends FormRequest
 {
@@ -15,7 +15,7 @@ class UpdateFileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'sometimes|file|mimes:' . implode(',', FileService::getAllowedExtensions()) . '|max:' . FileService::MAX_SIZE,
+            'file' => 'sometimes|file|mimes:'.implode(',', FileService::getAllowedExtensions()).'|max:'.FileService::MAX_SIZE,
             'title' => 'sometimes|nullable|string|max:255',
             'comment' => 'sometimes|nullable|string|max:255',
             'description' => 'sometimes|nullable|string',

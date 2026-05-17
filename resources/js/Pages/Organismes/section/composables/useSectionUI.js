@@ -364,10 +364,10 @@ function getSectionUrl(section) {
  */
 function getMetadata(section) {
   return {
-    createdAt: section?.created_at || null,
-    updatedAt: section?.updated_at || null,
-    createdBy: section?.createdBy || section?.created_by_user || null,
-    order: section?.order || 0,
+    createdAt: section?.createdAt ?? section?.created_at ?? null,
+    updatedAt: section?.updatedAt ?? section?.updated_at ?? null,
+    createdBy: section?.createdByUser ?? section?.createdBy ?? section?.created_by_user ?? null,
+    order: section?.order ?? 0,
     hasContent: hasContent(section),
     isEmpty: isEmpty(section),
   };

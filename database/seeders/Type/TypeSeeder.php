@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 
 /**
  * Seeder principal pour tous les types
- * 
+ *
  * Appelle tous les seeders de types
  */
 class TypeSeeder extends Seeder
@@ -27,4 +27,3 @@ class TypeSeeder extends Seeder
         $this->command->info('✅ Tous les types ont été initialisés');
     }
 }
-

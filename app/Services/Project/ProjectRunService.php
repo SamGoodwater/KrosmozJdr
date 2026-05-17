@@ -42,7 +42,7 @@ class ProjectRunService
             $actions[] = 'resetFull';
         }
 
-        if ($this->opt($o, 'kill') || $this->opt($o, 'all')) {
+        if ($this->opt($o, 'kill')) {
             $actions[] = 'killServers';
         }
 
@@ -50,20 +50,26 @@ class ProjectRunService
             $actions[] = 'clearTestArtifacts';
         }
 
-        if ($this->opt($o, 'clear:all') || $this->opt($o, 'all')) {
-            $actions = array_merge($actions, [
-                'clearCss',
-                'clearCache',
-                'clearConfig',
-                'clearRoute',
-                'clearView',
-                'clearDebugbar',
-                'clearQueue',
-                'clearSchedule',
-                'clearEvent',
-                'clearOptimize',
-            ]);
-        } else {
+        $bundledClearsChosen = false;
+        $clearDeep = $this->opt($o, 'clear:deep');
+        $clearCron = $this->opt($o, 'clear:cron');
+        $clearAll = $this->opt($o, 'clear:all');
+
+        if ($clearDeep) {
+            $bundledClearsChosen = true;
+            $actions = array_merge($actions, $this->clearFullDeveloperStackMethodNames());
+            $actions[] = 'clearDevReports';
+            $actions[] = 'clearPhpstanStorageCache';
+            $actions[] = 'clearLaravelLogFiles';
+        } elseif ($clearCron) {
+            $bundledClearsChosen = true;
+            $actions = array_merge($actions, $this->clearCronSafeLaravelMethodNames());
+        } elseif ($clearAll) {
+            $bundledClearsChosen = true;
+            $actions = array_merge($actions, $this->clearFullDeveloperStackMethodNames());
+        }
+
+        if (! $bundledClearsChosen) {
             if ($this->opt($o, 'clear:css')) {
                 $actions[] = 'clearCss';
             }
@@ -96,6 +102,19 @@ class ProjectRunService
             }
         }
 
+        if ($this->opt($o, 'clear:reviews')) {
+            $actions[] = 'clearDevReports';
+        }
+        if ($this->opt($o, 'clear:backups')) {
+            $actions[] = 'clearProjectBackupFiles';
+        }
+        if ($this->opt($o, 'clear:logs')) {
+            $actions[] = 'clearLaravelLogFiles';
+        }
+        if ($this->opt($o, 'clear:phpstan-cache')) {
+            $actions[] = 'clearPhpstanStorageCache';
+        }
+
         if ($this->opt($o, 'update:all')) {
             $actions[] = 'runSetupInstall';
             $actions[] = 'runComposerProjectUpdate';
@@ -124,7 +143,7 @@ class ProjectRunService
             }
         }
 
-        if ($this->opt($o, 'optimise:all') || $this->opt($o, 'all')) {
+        if ($this->opt($o, 'optimise:all')) {
             $actions = array_merge($actions, [
                 'optimiseIde',
                 'optimiseLaravel',
@@ -138,7 +157,7 @@ class ProjectRunService
             }
         }
 
-        if ($this->opt($o, 'migrate') || $this->opt($o, 'update:base') || $this->opt($o, 'all')) {
+        if ($this->opt($o, 'migrate') || $this->opt($o, 'update:base')) {
             $actions[] = 'runSetupDb';
         }
 
@@ -155,7 +174,7 @@ class ProjectRunService
             $actions[] = 'pipelineEffectsQualityDev';
         }
 
-        if ($this->opt($o, 'dev') || $this->opt($o, 'all')) {
+        if ($this->opt($o, 'dev')) {
             $actions[] = 'runDev';
         }
         if ($this->opt($o, 'dev:watch')) {
@@ -190,6 +209,45 @@ class ProjectRunService
         }
 
         return false;
+    }
+
+    /**
+     * Laravel uniquement — adapté cron / prod (sans pnpm/queue/Debugbar/CSS).
+     *
+     * @return list<string>
+     */
+    private function clearCronSafeLaravelMethodNames(): array
+    {
+        return [
+            'clearCache',
+            'clearConfig',
+            'clearRoute',
+            'clearView',
+            'clearSchedule',
+            'clearEvent',
+            'clearOptimize',
+        ];
+    }
+
+    /**
+     * Nettoyage large local / refresh (pnpm, queue, caches artisans).
+     *
+     * @return list<string>
+     */
+    private function clearFullDeveloperStackMethodNames(): array
+    {
+        return [
+            'clearCss',
+            'clearCache',
+            'clearConfig',
+            'clearRoute',
+            'clearView',
+            'clearDebugbar',
+            'clearQueue',
+            'clearSchedule',
+            'clearEvent',
+            'clearOptimize',
+        ];
     }
 
     /**
@@ -299,6 +357,119 @@ class ProjectRunService
             File::cleanDirectory($testingDir);
             $command->line('  Vidé : storage/framework/testing/');
         }
+    }
+
+    /**
+     * Supprime tout le contenu de `storage/app/dev-reports` (sorties Markdown de `project:review` / `dev:review`).
+     */
+    public function clearDevReports(Command $command): void
+    {
+        $command->info('Suppression des rapports `project:review` (`storage/app/dev-reports`)…');
+        $dir = storage_path('app/dev-reports');
+        File::ensureDirectoryExists($dir);
+        $this->purgeDirectoryLeavingGitignore($dir, $command);
+        $command->info('✅ Rapports dev-reports nettoyés.');
+    }
+
+    /**
+     * Supprime les fichiers du dossier défini dans `project-backup` (défaut `storage/app/backups`),
+     * uniquement si ce dossier demeure sous la racine du dépôt.
+     */
+    public function clearProjectBackupFiles(Command $command): void
+    {
+        $root = ProjectBackupService::fromConfig()->resolvedBackupDirectory();
+        $command->info('Suppression des fichiers de sauvegarde (`'.$root.'`)…');
+
+        if (! $this->isDestructiveCleanupPathInsideProjectRoot($root, $command)) {
+            return;
+        }
+
+        if (! File::isDirectory($root)) {
+            $command->line('  (répertoire absent — aucune sauvegarde à retirer)');
+
+            return;
+        }
+
+        $this->purgeDirectoryLeavingGitignore($root, $command);
+        $command->info('✅ Répertoire des sauvegardes nettoyé.');
+    }
+
+    /** Efface tous les fichiers `*.log` dans `storage/logs` (sans toucher `.gitignore`). */
+    public function clearLaravelLogFiles(Command $command): void
+    {
+        $command->info('Suppression des fichiers `*.log` dans `storage/logs`…');
+        $dir = storage_path('logs');
+
+        if (! File::isDirectory($dir)) {
+            return;
+        }
+
+        foreach (glob($dir.DIRECTORY_SEPARATOR.'*.log') ?: [] as $path) {
+            if (File::isFile((string) $path)) {
+                File::delete((string) $path);
+                $command->line('  Supprimé : logs/'.basename((string) $path));
+            }
+        }
+
+        $command->info('✅ Logs Laravel nettoyés.');
+    }
+
+    /** Supprime le cache d’analyse stocké sous `storage/phpstan` (régénéré au prochain lancement de PHPStan). */
+    public function clearPhpstanStorageCache(Command $command): void
+    {
+        $dir = storage_path('phpstan');
+        $command->info('Suppression du cache localement stocké sous `storage/phpstan`…');
+
+        if (! File::isDirectory($dir)) {
+            return;
+        }
+
+        File::deleteDirectory($dir);
+        $command->info('✅ Répertoire `storage/phpstan` supprimé.');
+    }
+
+    /**
+     * @param  non-empty-string  $absoluteDirectory
+     */
+    private function purgeDirectoryLeavingGitignore(string $absoluteDirectory, Command $command): void
+    {
+        foreach (glob($absoluteDirectory.DIRECTORY_SEPARATOR.'*') ?: [] as $path) {
+            $name = basename((string) $path);
+            if ($name === '.gitignore') {
+                continue;
+            }
+            if (File::isDirectory((string) $path)) {
+                File::deleteDirectory((string) $path);
+                $command->line('  Supprimé : '.$name.'/');
+            } elseif (File::exists((string) $path)) {
+                File::delete((string) $path);
+                $command->line('  Supprimé : '.$name);
+            }
+        }
+    }
+
+    /** Refuse tout chemin hors de {@see base_path()} pour éviter de vider une config `PROJECT_BACKUP_PATH` hors dépôt. */
+    private function isDestructiveCleanupPathInsideProjectRoot(string $path, Command $command): bool
+    {
+        $base = realpath(base_path());
+        if ($base === false) {
+            $command->warn('Nettoyage annulé : racine projet introuvable.');
+
+            return false;
+        }
+
+        $candidate = str_starts_with($path, DIRECTORY_SEPARATOR) ? $path : base_path($path);
+
+        $resolved = realpath($candidate);
+        if ($resolved !== false) {
+            return str_starts_with($resolved, $base.DIRECTORY_SEPARATOR) || $resolved === $base;
+        }
+
+        $parent = dirname($candidate);
+        $parentResolved = realpath($parent);
+
+        return $parentResolved !== false
+            && (str_starts_with($parentResolved, $base.DIRECTORY_SEPARATOR) || $parentResolved === $base);
     }
 
     public function clearCss(Command $command): void
@@ -507,6 +678,11 @@ class ProjectRunService
 
     public function resetAll(Command $command): void
     {
+        $command->info('Grand ménage (rapports review, caches PHPStan, fichiers *.log Laravel)…');
+        $this->clearDevReports($command);
+        $this->clearPhpstanStorageCache($command);
+        $this->clearLaravelLogFiles($command);
+
         $command->info('Réinitialisation de tout (pnpm, composer, css, docs, dump)...');
         $this->killServers($command);
         $this->clearCss($command);

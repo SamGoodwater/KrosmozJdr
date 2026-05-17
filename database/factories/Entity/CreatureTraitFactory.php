@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CreatureTrait>
+ * @extends Factory<\App\Models\CreatureTrait>
  */
 class CreatureTraitFactory extends Factory
 {

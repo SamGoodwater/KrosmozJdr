@@ -9,8 +9,10 @@ use App\Http\Requests\Entity\UpdateItemResourcesRequest;
 use App\Http\Resources\Entity\ItemResource;
 use App\Models\Effect;
 use App\Models\Entity\Item;
+use App\Models\Entity\Resource;
 use App\Services\PdfService;
 use App\Support\Entity\ObjectEffectEditOptions;
+use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class ItemController extends Controller
@@ -109,7 +111,7 @@ class ItemController extends Controller
                 'name' => ($u->effectDegree->effect->name ?? $u->effectDegree->effect->slug ?? 'Effet #'.$u->effectDegree->effect_id).' · D'.$u->effectDegree->degree,
                 'slug' => $u->effectDegree->slug,
                 'degree' => $u->effectDegree->degree,
-                'target_type' => $u->effectDegree->effect->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+                'target_type' => $u->effectDegree->effect->target_type ?? Effect::TARGET_DIRECT,
                 'area' => $u->effectDegree->area,
                 'effect_definition_id' => $u->effectDegree->effect_id,
             ] : null,
@@ -125,7 +127,7 @@ class ItemController extends Controller
                     'name' => ($e->name ?? $e->slug ?? 'Effet #'.$e->id).' · D'.$d->degree,
                     'slug' => $d->slug,
                     'degree' => $d->degree,
-                    'target_type' => $e->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+                    'target_type' => $e->target_type ?? Effect::TARGET_DIRECT,
                     'area' => $d->area,
                     'effect_definition_id' => $e->id,
                 ]);
@@ -190,7 +192,7 @@ class ItemController extends Controller
      * Télécharge un PDF pour un ou plusieurs items.
      *
      * @param  Item|null  $item  L'item unique (si un seul)
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function downloadPdf(?Item $item = null)
     {

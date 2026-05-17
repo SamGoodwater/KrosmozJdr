@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Entity;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use App\Models\Entity\Resource;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * FormRequest pour la mise à jour des ressources d'un Item.
@@ -24,7 +24,7 @@ class UpdateItemResourcesRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -34,10 +34,12 @@ class UpdateItemResourcesRequest extends FormRequest
                 'present',
                 'array',
                 function (string $attribute, mixed $value, \Closure $fail) {
-                    if (!is_array($value)) return;
+                    if (! is_array($value)) {
+                        return;
+                    }
                     foreach ($value as $resourceId => $pivotData) {
                         $id = is_numeric((string) $resourceId) ? (int) $resourceId : null;
-                        if (!$id || !Resource::whereKey($id)->exists()) {
+                        if (! $id || ! Resource::whereKey($id)->exists()) {
                             $fail("La ressource {$resourceId} n'existe pas.");
                         }
                     }
@@ -60,9 +62,10 @@ class UpdateItemResourcesRequest extends FormRequest
             // Le "resources => []" en form-data peut être envoyé comme champ absent.
             // On force la présence pour permettre le "clear all".
             $this->merge(['resources' => []]);
+
             return;
         }
-        if (!is_array($resources)) {
+        if (! is_array($resources)) {
             // Laisser la validation `array` produire une erreur au lieu de throw.
             return;
         }
@@ -71,10 +74,10 @@ class UpdateItemResourcesRequest extends FormRequest
 
         foreach ($resources as $resourceId => $pivotData) {
             $resourceId = (int) $resourceId;
-            
+
             if (is_array($pivotData) && isset($pivotData['quantity']) && $pivotData['quantity'] > 0) {
                 $normalized[$resourceId] = [
-                    'quantity' => (int) $pivotData['quantity']
+                    'quantity' => (int) $pivotData['quantity'],
                 ];
             }
         }
@@ -98,4 +101,3 @@ class UpdateItemResourcesRequest extends FormRequest
         ];
     }
 }
-

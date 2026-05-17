@@ -64,7 +64,7 @@ class CharacteristicValueOverridesTest extends TestCase
             $this->markTestSkipped('Migration value_overrides non exécutée.');
         }
 
-        $service = new CharacteristicMetaByDbColumnService();
+        $service = new CharacteristicMetaByDbColumnService;
 
         $reflection = new \ReflectionClass($service);
         $method = $reflection->getMethod('normalizeValueOverridesIcons');
@@ -87,7 +87,7 @@ class CharacteristicValueOverridesTest extends TestCase
 
     public function test_meta_service_returns_null_for_empty_overrides(): void
     {
-        $service = new CharacteristicMetaByDbColumnService();
+        $service = new CharacteristicMetaByDbColumnService;
 
         $reflection = new \ReflectionClass($service);
         $method = $reflection->getMethod('normalizeValueOverridesIcons');

@@ -21,18 +21,18 @@ final class FormulaVariableResolver
      * Enrichit la map avec des alias nom court (sans suffixe) pour le groupe donné.
      * Les clés existantes sont conservées pour que [level_creature] et [level] fonctionnent.
      *
-     * @param array<string, int|float> $fullKeyToValue Map clé BDD complète => valeur
+     * @param  array<string, int|float>  $fullKeyToValue  Map clé BDD complète => valeur
      * @return array<string, int|float> Map incluant les alias (nom court => valeur)
      */
     public static function withShortNames(string $group, array $fullKeyToValue): array
     {
-        $suffix = '_' . $group;
+        $suffix = '_'.$group;
         $out = $fullKeyToValue;
 
         foreach ($fullKeyToValue as $key => $value) {
             if ($key !== '' && str_ends_with($key, $suffix)) {
                 $shortName = substr($key, 0, -strlen($suffix));
-                if ($shortName !== '' && !array_key_exists($shortName, $out)) {
+                if ($shortName !== '' && ! array_key_exists($shortName, $out)) {
                     $out[$shortName] = $value;
                 }
             }
@@ -54,6 +54,7 @@ final class FormulaVariableResolver
                 return substr($fullKey, 0, -strlen($suffix));
             }
         }
+
         return $fullKey;
     }
 }

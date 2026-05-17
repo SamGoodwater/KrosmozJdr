@@ -2,20 +2,18 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Specialization;
 use App\Models\Entity\Capability;
-use App\Models\Entity\Npc;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Npc;
+use App\Models\Entity\Specialization;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Specialization
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class SpecializationModelTest extends TestCase
 {
@@ -27,7 +25,7 @@ class SpecializationModelTest extends TestCase
     public function test_specialization_factory_creates_valid_specialization(): void
     {
         $user = User::factory()->create();
-        
+
         $specialization = Specialization::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -105,4 +103,3 @@ class SpecializationModelTest extends TestCase
         $this->assertTrue($specialization->npcs->contains($npc2));
     }
 }
-

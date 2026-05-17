@@ -221,7 +221,7 @@ class UserPrivacyController extends Controller
         $request->session()->regenerateToken();
 
         $message = $withdrawalDays > 0
-            ? "Ta demande de suppression a été enregistrée. Tu disposes de {$withdrawalDays} jours pour changer d'avis. Si tu te reconnectes avant le " . $expiresAt->translatedFormat('d/m/Y') . ", tu pourras annuler la demande et récupérer ton compte. Passé ce délai, un administrateur pourra effectuer la suppression définitive."
+            ? "Ta demande de suppression a été enregistrée. Tu disposes de {$withdrawalDays} jours pour changer d'avis. Si tu te reconnectes avant le ".$expiresAt->translatedFormat('d/m/Y').', tu pourras annuler la demande et récupérer ton compte. Passé ce délai, un administrateur pourra effectuer la suppression définitive.'
             : 'Ta demande de suppression a été enregistrée. Un administrateur pourra effectuer la suppression définitive.';
 
         return redirect()->route('home')->with('success', $message);
@@ -260,4 +260,3 @@ class UserPrivacyController extends Controller
         return back()->with('success', 'Ta demande de suppression a été annulée. Ton compte est conservé.');
     }
 }
-

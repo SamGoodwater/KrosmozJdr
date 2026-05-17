@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\Requests;
 
-use App\Models\User;
 use App\Models\Page;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests de validation pour StorePageRequest
- * 
+ *
  * Vérifie que les règles de validation sont correctement appliquées :
  * - Titre obligatoire (max 255)
  * - Slug obligatoire, unique, format correct
@@ -85,7 +85,7 @@ class StorePageRequestTest extends TestCase
     public function test_slug_unique(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        
+
         // Créer une page existante
         Page::factory()->create(['slug' => 'existing-slug']);
 
@@ -217,4 +217,3 @@ class StorePageRequestTest extends TestCase
         ]);
     }
 }
-

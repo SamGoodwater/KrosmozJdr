@@ -18,7 +18,7 @@ final class RecipeToResourceRecipeConverter
      * Préfère recipe (depuis /recipes?resultId=) pour les quantités réelles ;
      * sinon fallback sur recipeIds (qty 1 par id).
      *
-     * @param array<string, mixed> $raw Données brutes (pour recipeIds si value n'a pas ingredientIds)
+     * @param  array<string, mixed>  $raw  Données brutes (pour recipeIds si value n'a pas ingredientIds)
      */
     public function convert(mixed $value, array $raw): array
     {
@@ -43,15 +43,15 @@ final class RecipeToResourceRecipeConverter
     }
 
     /**
-     * @param list<mixed> $ids
-     * @param list<mixed> $quantities
+     * @param  list<mixed>  $ids
+     * @param  list<mixed>  $quantities
      * @return list<array{ingredient_dofusdb_id: string, quantity: int}>
      */
     private function fromIngredientIdsAndQuantities(array $ids, array $quantities): array
     {
         $out = [];
         foreach ($ids as $idx => $id) {
-            if (!is_numeric($id)) {
+            if (! is_numeric($id)) {
                 continue;
             }
             $qty = isset($quantities[$idx]) && is_numeric($quantities[$idx])
@@ -69,7 +69,7 @@ final class RecipeToResourceRecipeConverter
     /**
      * Fallback : transforme recipeIds (liste d'ids) en recipe_ingredients avec quantité 1 par id.
      *
-     * @param list<mixed> $recipeIds
+     * @param  list<mixed>  $recipeIds
      * @return list<array{ingredient_dofusdb_id: string, quantity: int}>
      */
     private function fromRecipeIds(array $recipeIds): array

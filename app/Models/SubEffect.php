@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, EffectDegree> $effectDegrees
  * @property-read int|null $effect_degrees_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect query()
@@ -39,6 +40,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereTypeSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereVariablesAllowed($value)
+ *
  * @mixin \Eloquent
  */
 class SubEffect extends Model

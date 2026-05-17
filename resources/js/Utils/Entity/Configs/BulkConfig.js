@@ -34,7 +34,8 @@ function createBulkFieldFromDescriptor(fieldKey, descriptor, ctx = {}) {
   }
 
   const quickeditConfig = descriptor.quickedit || {};
-  const bulkConfig = descriptor.edit?.form?.bulk || {};
+  const bulkConfig =
+    descriptor.edit?.form?.bulk || descriptor.edition?.bulk || {};
 
   const config = quickeditConfig.enabled !== undefined ? quickeditConfig : bulkConfig;
 
@@ -179,7 +180,9 @@ export class BulkConfig {
       const descriptor = descriptors[key];
       
       const hasQuickedit = descriptor.quickedit?.enabled;
-      const hasBulk = descriptor.edit?.form?.bulk?.enabled;
+      const hasBulk =
+        descriptor.edit?.form?.bulk?.enabled === true ||
+        descriptor.edition?.bulk?.enabled === true;
 
       if (hasQuickedit || hasBulk) {
         try {

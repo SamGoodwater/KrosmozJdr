@@ -2673,7 +2673,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Models/Page.php' => 'aca708bf49464f68daa6df06c4e0d79650bd711ab61ab76b17eeb41e52454e44',
+      '/var/www/KrosmozJdr/app/Models/Page.php' => 'b3cc22f94cc254bd77f86ea89c0ab7895e5b5d824dfac0bfa6e2b7f3cae9e91e',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/Factories/HasFactory.php' => 'b6cb2b164e90168e80963a5549541f5f3188a3ec8cfd368bf3611bd94fbd46a7',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/SoftDeletes.php' => 'da1b0c13d78ba2f62e97e5627c3149f4e81b9cf9b6092d4ca7f02ca5e5bbcfec',
     ),

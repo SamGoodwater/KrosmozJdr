@@ -9,7 +9,8 @@ use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
 
 /**
- * Réinstallation lourde : dépendances, base vide, caches. À utiliser en local uniquement.
+ * Réinstallation locale lourde : grand ménage disque puis optionnellement `setup --refresh`, `migrate:fresh`, puis clears alignés avec `project:cron --clear`.
+ * Interdit en production.
  */
 class ProjectRefreshCommand extends Command
 {
@@ -24,7 +25,7 @@ class ProjectRefreshCommand extends Command
         {--without-seed : Ne pas passer --seed à migrate:fresh}
         {--force : Ne pas demander confirmation (scripts/CI)}';
 
-    protected $description = 'Repartir sur une base propre : optionnellement réinstaller les libs, migrate:fresh, caches';
+    protected $description = 'Réinit locale : après confirmation — grand ménage (clear:deep), setup --hard optionnel, migrate:fresh, puis clears équivalent `project:cron --clear`';
 
     public function handle(): int
     {
@@ -38,6 +39,13 @@ class ProjectRefreshCommand extends Command
             $this->info('Annulé.');
 
             return ArtisanExitCode::FAILURE;
+        }
+
+        $this->info('→ Grand ménage local (CSS/pnpm via clear:deep + rapports review + logs Laravel + purge queue locale)');
+
+        $code = $this->projectRunService->runOptionMap(['clear:deep' => true], $this);
+        if ($code !== 0) {
+            return $code;
         }
 
         if ($this->option('hard')) {
@@ -61,8 +69,12 @@ class ProjectRefreshCommand extends Command
             return $code;
         }
 
-        $this->info('→ project:clear --all');
-        $code = $this->projectRunService->runOptionMap(['clear:all' => true], $this);
+        $this->info('→ Même jeu de clears qu’avec `project:cron --clear`');
+        $code = $this->projectRunService->runOptionMap([
+            'clear:cron' => true,
+            'clear:reviews' => true,
+            'clear:phpstan-cache' => true,
+        ], $this);
         if ($code !== 0) {
             return $code;
         }

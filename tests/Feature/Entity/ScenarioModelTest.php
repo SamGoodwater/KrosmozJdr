@@ -2,21 +2,19 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Scenario;
+use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
-use App\Models\Entity\Creature;
+use App\Models\Entity\Scenario;
 use App\Models\Entity\Spell;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Scenario
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class ScenarioModelTest extends TestCase
 {
@@ -28,7 +26,7 @@ class ScenarioModelTest extends TestCase
     public function test_scenario_factory_creates_valid_scenario(): void
     {
         $user = User::factory()->create();
-        
+
         $scenario = Scenario::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -127,4 +125,3 @@ class ScenarioModelTest extends TestCase
         $this->assertCount(2, $scenario->spells);
     }
 }
-

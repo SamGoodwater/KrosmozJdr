@@ -13,6 +13,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { getSpellFieldDescriptors } from '@/Entities/spell/spell-descriptors';
+import { getDescriptorForm, getDescriptorFormOptions, resolveDescriptorOptions } from './descriptor-test-helpers.js';
 
 describe('spell-descriptors', () => {
     describe('Structure des descriptors', () => {
@@ -52,35 +53,18 @@ describe('spell-descriptors', () => {
     });
 
     describe('visibleIf / editableIf', () => {
-        it('visibleIf fonctionne avec canCreateAny', () => {
-            const descriptorsWithCreate = getSpellFieldDescriptors({
-                capabilities: { createAny: true },
-            });
-            const descriptorsWithoutCreate = getSpellFieldDescriptors({
-                capabilities: { createAny: false },
-            });
-
-            const idDescriptor = descriptorsWithCreate.id;
-            if (idDescriptor.visibleIf) {
-                expect(idDescriptor.visibleIf({ capabilities: { createAny: true } })).toBe(true);
-                expect(idDescriptor.visibleIf({ capabilities: { createAny: false } })).toBe(false);
-            }
+        it('visibleIf sur id suit canCreateAny (fermeture sur le factory)', () => {
+            const on = getSpellFieldDescriptors({ capabilities: { createAny: true } });
+            const off = getSpellFieldDescriptors({ capabilities: { createAny: false } });
+            expect(on.id.visibleIf?.()).toBe(true);
+            expect(off.id.visibleIf?.()).toBe(false);
         });
 
-        it('visibleIf fonctionne avec canUpdateAny', () => {
-            const descriptors = getSpellFieldDescriptors({
-                capabilities: { updateAny: true },
-            });
-
-            // Vérifier que les champs avec visibleIf basé sur updateAny fonctionnent
-            Object.values(descriptors).forEach((desc) => {
-                if (desc.visibleIf && typeof desc.visibleIf === 'function') {
-                    const resultWith = desc.visibleIf({ capabilities: { updateAny: true } });
-                    const resultWithout = desc.visibleIf({ capabilities: { updateAny: false } });
-                    expect(typeof resultWith).toBe('boolean');
-                    expect(typeof resultWithout).toBe('boolean');
-                }
-            });
+        it('visibleIf sur dofusdb_id suit canUpdateAny (fermeture sur le factory)', () => {
+            const on = getSpellFieldDescriptors({ capabilities: { updateAny: true } });
+            const off = getSpellFieldDescriptors({ capabilities: { updateAny: false } });
+            expect(on.dofusdb_id.visibleIf?.()).toBe(true);
+            expect(off.dofusdb_id.visibleIf?.()).toBe(false);
         });
 
         it('editableIf fonctionne correctement', () => {
@@ -207,35 +191,39 @@ describe('spell-descriptors', () => {
     });
 
     describe('Options des selects', () => {
-        it('les champs de type select ont des options définies', () => {
+        it('les champs de type select ont des options résolubles (tableau non vide)', () => {
             const descriptors = getSpellFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
-                if (desc.edit?.form?.type === 'select') {
-                    expect(desc.edit.form).toHaveProperty('options');
-                    expect(Array.isArray(desc.edit.form.options)).toBe(true);
-                    expect(desc.edit.form.options.length).toBeGreaterThan(0);
-                }
+                const form = getDescriptorForm(desc);
+                if (form?.type !== 'select' || !form.options) return;
+                const opts = resolveDescriptorOptions(form.options, {});
+                expect(Array.isArray(opts)).toBe(true);
+                expect(opts.length).toBeGreaterThan(0);
             });
         });
 
         it('les options des selects ont value et label', () => {
             const descriptors = getSpellFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
-                if (desc.edit?.form?.type === 'select' && desc.edit.form.options) {
-                    desc.edit.form.options.forEach((option) => {
-                        expect(option).toHaveProperty('value');
-                        expect(option).toHaveProperty('label');
-                    });
-                }
+                const form = getDescriptorForm(desc);
+                if (form?.type !== 'select' || !form.options) return;
+                const opts = resolveDescriptorOptions(form.options, {});
+                if (!Array.isArray(opts)) return;
+                opts.forEach((option) => {
+                    expect(option).toHaveProperty('value');
+                    expect(option).toHaveProperty('label');
+                });
             });
         });
 
         it('read_level a les bonnes options', () => {
             const descriptors = getSpellFieldDescriptors();
             const isVisibleDesc = descriptors.read_level;
+            const form = getDescriptorForm(isVisibleDesc);
 
-            if (isVisibleDesc?.edit?.form?.type === 'select') {
-                const options = isVisibleDesc.edit.form.options;
+            if (form?.type === 'select') {
+                const options = resolveDescriptorOptions(getDescriptorFormOptions(isVisibleDesc), {});
+                expect(Array.isArray(options)).toBe(true);
                 const values = options.map((opt) => opt.value);
                 expect(values).toContain(0);
                 expect(values).toContain(1);

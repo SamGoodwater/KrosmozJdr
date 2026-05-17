@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use App\Models\User;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 /**
  * FormRequest pour la mise à jour d'un utilisateur.
@@ -18,9 +18,10 @@ class UpdateUserRequest extends FormRequest
     public function authorize(): bool
     {
         $target = $this->route('user') ?? Auth::user();
-        if (!$target instanceof User) {
+        if (! $target instanceof User) {
             return false;
         }
+
         return (bool) $this->user()?->can('update', $target);
     }
 
@@ -39,7 +40,7 @@ class UpdateUserRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                \Illuminate\Validation\Rule::unique('users', 'email')->ignore(optional($this->route('user'))?->id ?? Auth::id()),
+                Rule::unique('users', 'email')->ignore(optional($this->route('user'))?->id ?? Auth::id()),
             ],
             'notifications_enabled' => ['sometimes', 'boolean'],
             'notification_channels' => ['sometimes', 'array'],
@@ -62,7 +63,7 @@ class UpdateUserRequest extends FormRequest
                 'notifications_enabled' => filter_var($data['notifications_enabled'], FILTER_VALIDATE_BOOLEAN),
             ]);
         }
-        if (!isset($data['notification_channels'])) {
+        if (! isset($data['notification_channels'])) {
             $this->merge([
                 'notification_channels' => [],
             ]);

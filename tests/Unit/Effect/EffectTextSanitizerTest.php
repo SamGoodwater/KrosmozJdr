@@ -19,7 +19,7 @@ class EffectTextSanitizerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->sanitizer = new EffectTextSanitizer();
+        $this->sanitizer = new EffectTextSanitizer;
     }
 
     public function test_sanitize_plain_text_unchanged(): void

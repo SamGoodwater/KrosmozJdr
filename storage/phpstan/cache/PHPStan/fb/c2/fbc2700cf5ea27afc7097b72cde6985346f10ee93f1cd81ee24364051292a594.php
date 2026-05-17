@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Policies/SectionPolicy.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Policies\SectionPolicy
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-3fbf3d47b3e57a08d769eeea89a1794e401c367802c1ba573bc8645a37b73b38-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-a6fe03388f9c535bacf7f549a7cafe75e975681123d4f5381acf2d29e949d099-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -33,7 +33,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 16,
-    'endLine' => 90,
+    'endLine' => 89,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -176,8 +176,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 33,
-            'endLine' => 33,
+            'startLine' => 32,
+            'endLine' => 32,
             'startColumn' => 26,
             'endColumn' => 36,
             'parameterIndex' => 0,
@@ -202,8 +202,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 33,
-            'endLine' => 33,
+            'startLine' => 32,
+            'endLine' => 32,
             'startColumn' => 39,
             'endColumn' => 54,
             'parameterIndex' => 1,
@@ -225,13 +225,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Determine whether the user can view the model.
- * 
- * @param \\App\\Models\\User|null $user L\'utilisateur (null pour les invités)
- * @param \\App\\Models\\Section $section La section à vérifier
- * @return bool
+ *
+ * @param  User|null  $user  L\'utilisateur (null pour les invités)
+ * @param  Section  $section  La section à vérifier
  */',
-        'startLine' => 33,
-        'endLine' => 42,
+        'startLine' => 32,
+        'endLine' => 41,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -269,8 +268,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 47,
-            'endLine' => 47,
+            'startLine' => 46,
+            'endLine' => 46,
             'startColumn' => 28,
             'endColumn' => 37,
             'parameterIndex' => 0,
@@ -284,12 +283,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 47,
-                'endLine' => 47,
+                'startLine' => 46,
+                'endLine' => 46,
                 'startTokenPos' => 143,
-                'startFilePos' => 1357,
+                'startFilePos' => 1282,
                 'endTokenPos' => 143,
-                'endFilePos' => 1360,
+                'endFilePos' => 1285,
               ),
             ),
             'type' => 
@@ -326,10 +325,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 47,
-            'endLine' => 47,
+            'startLine' => 46,
+            'endLine' => 46,
             'startColumn' => 40,
-            'endColumn' => 69,
+            'endColumn' => 57,
             'parameterIndex' => 1,
             'isOptional' => true,
           ),
@@ -350,8 +349,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine whether the user can create models.
  */',
-        'startLine' => 47,
-        'endLine' => 56,
+        'startLine' => 46,
+        'endLine' => 55,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -389,8 +388,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 61,
-            'endLine' => 61,
+            'startLine' => 60,
+            'endLine' => 60,
             'startColumn' => 28,
             'endColumn' => 37,
             'parameterIndex' => 0,
@@ -415,8 +414,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 61,
-            'endLine' => 61,
+            'startLine' => 60,
+            'endLine' => 60,
             'startColumn' => 40,
             'endColumn' => 55,
             'parameterIndex' => 1,
@@ -439,8 +438,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine whether the user can update the model.
  */',
-        'startLine' => 61,
-        'endLine' => 65,
+        'startLine' => 60,
+        'endLine' => 64,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -478,8 +477,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 70,
-            'endLine' => 70,
+            'startLine' => 69,
+            'endLine' => 69,
             'startColumn' => 28,
             'endColumn' => 37,
             'parameterIndex' => 0,
@@ -504,8 +503,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 70,
-            'endLine' => 70,
+            'startLine' => 69,
+            'endLine' => 69,
             'startColumn' => 40,
             'endColumn' => 55,
             'parameterIndex' => 1,
@@ -528,8 +527,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine whether the user can delete the model.
  */',
-        'startLine' => 70,
-        'endLine' => 73,
+        'startLine' => 69,
+        'endLine' => 72,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -567,8 +566,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 78,
-            'endLine' => 78,
+            'startLine' => 77,
+            'endLine' => 77,
             'startColumn' => 29,
             'endColumn' => 38,
             'parameterIndex' => 0,
@@ -593,8 +592,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 78,
-            'endLine' => 78,
+            'startLine' => 77,
+            'endLine' => 77,
             'startColumn' => 41,
             'endColumn' => 56,
             'parameterIndex' => 1,
@@ -617,8 +616,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine whether the user can restore the model.
  */',
-        'startLine' => 78,
-        'endLine' => 81,
+        'startLine' => 77,
+        'endLine' => 80,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -656,8 +655,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 86,
-            'endLine' => 86,
+            'startLine' => 85,
+            'endLine' => 85,
             'startColumn' => 33,
             'endColumn' => 42,
             'parameterIndex' => 0,
@@ -682,8 +681,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 86,
-            'endLine' => 86,
+            'startLine' => 85,
+            'endLine' => 85,
             'startColumn' => 45,
             'endColumn' => 60,
             'parameterIndex' => 1,
@@ -706,8 +705,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine whether the user can permanently delete the model.
  */',
-        'startLine' => 86,
-        'endLine' => 89,
+        'startLine' => 85,
+        'endLine' => 88,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

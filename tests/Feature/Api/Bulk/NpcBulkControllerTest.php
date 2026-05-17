@@ -2,10 +2,11 @@
 
 namespace Tests\Feature\Api\Bulk;
 
-use App\Models\User;
-use App\Models\Entity\Npc;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Npc;
 use App\Models\Entity\Specialization;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -26,7 +27,7 @@ class NpcBulkControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
     }
 
     /**
@@ -211,4 +212,3 @@ class NpcBulkControllerTest extends TestCase
             ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
     }
 }
-

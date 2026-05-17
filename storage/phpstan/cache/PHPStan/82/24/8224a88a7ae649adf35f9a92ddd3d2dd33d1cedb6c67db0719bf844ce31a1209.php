@@ -45,7 +45,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Models\\Concerns',
          'uses' => 
         array (
-          'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'interactswithmedia' => 'Spatie\\MediaLibrary\\InteractsWithMedia',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
         ),
@@ -70,6 +69,140 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           2 => 'App\\Models\\Concerns\\HasEntityImageMedia',
           3 => NULL,
           4 => '/** @use HasFactory<CampaignFactory> */',
+        ),
+      )),
+      'c70f6cef41d07f8c8110ca2c068897e1' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Models\\Concerns',
+         'uses' => 
+        array (
+          'str' => 'Illuminate\\Support\\Str',
+        ),
+         'className' => 'App\\Models\\Entity\\Campaign',
+         'functionName' => NULL,
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => NULL,
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
+         'traitData' => 
+        array (
+          0 => '/var/www/KrosmozJdr/app/Models/Entity/Campaign.php',
+          1 => 'App\\Models\\Entity\\Campaign',
+          2 => 'App\\Models\\Concerns\\HasMediaCustomNaming',
+          3 => 'App\\Models\\Concerns\\HasEntityImageMedia',
+          4 => NULL,
+        ),
+      )),
+      '543ee93157e01cde84ec8c573094ee6b' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Models\\Concerns',
+         'uses' => 
+        array (
+          'str' => 'Illuminate\\Support\\Str',
+        ),
+         'className' => 'App\\Models\\Entity\\Campaign',
+         'functionName' => 'getMediaFileNameForCollection',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'App\\Models\\Concerns',
+           'uses' => 
+          array (
+            'str' => 'Illuminate\\Support\\Str',
+          ),
+           'className' => 'App\\Models\\Entity\\Campaign',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
+         'traitData' => 
+        array (
+          0 => '/var/www/KrosmozJdr/app/Models/Entity/Campaign.php',
+          1 => 'App\\Models\\Entity\\Campaign',
+          2 => 'App\\Models\\Concerns\\HasMediaCustomNaming',
+          3 => 'App\\Models\\Concerns\\HasEntityImageMedia',
+          4 => NULL,
+        ),
+      )),
+      '6851dd16abe768f579001beca5d2f408' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Models\\Concerns',
+         'uses' => 
+        array (
+          'str' => 'Illuminate\\Support\\Str',
+        ),
+         'className' => 'App\\Models\\Entity\\Campaign',
+         'functionName' => 'getMediaFilePatternForCollection',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'App\\Models\\Concerns',
+           'uses' => 
+          array (
+            'str' => 'Illuminate\\Support\\Str',
+          ),
+           'className' => 'App\\Models\\Entity\\Campaign',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
+         'traitData' => 
+        array (
+          0 => '/var/www/KrosmozJdr/app/Models/Entity/Campaign.php',
+          1 => 'App\\Models\\Entity\\Campaign',
+          2 => 'App\\Models\\Concerns\\HasMediaCustomNaming',
+          3 => 'App\\Models\\Concerns\\HasEntityImageMedia',
+          4 => NULL,
         ),
       )),
       'e70f0c2a053e7f85575530922af891e2' => 
@@ -7315,146 +7448,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           4 => NULL,
         ),
       )),
-      'c70f6cef41d07f8c8110ca2c068897e1' => 
-      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
-         'namespace' => 'App\\Models\\Concerns',
-         'uses' => 
-        array (
-          'str' => 'Illuminate\\Support\\Str',
-        ),
-         'className' => 'App\\Models\\Entity\\Campaign',
-         'functionName' => NULL,
-         'templatePhpDocNodes' => 
-        array (
-        ),
-         'parent' => NULL,
-         'typeAliasesMap' => 
-        array (
-        ),
-         'bypassTypeAliases' => false,
-         'constUses' => 
-        array (
-        ),
-         'typeAliasClassName' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-         'traitData' => 
-        array (
-          0 => '/var/www/KrosmozJdr/app/Models/Entity/Campaign.php',
-          1 => 'App\\Models\\Entity\\Campaign',
-          2 => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          3 => 'App\\Models\\Concerns\\HasEntityImageMedia',
-          4 => NULL,
-        ),
-      )),
-      '543ee93157e01cde84ec8c573094ee6b' => 
-      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
-         'namespace' => 'App\\Models\\Concerns',
-         'uses' => 
-        array (
-          'str' => 'Illuminate\\Support\\Str',
-        ),
-         'className' => 'App\\Models\\Entity\\Campaign',
-         'functionName' => 'getMediaFileNameForCollection',
-         'templatePhpDocNodes' => 
-        array (
-        ),
-         'parent' => 
-        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
-           'namespace' => 'App\\Models\\Concerns',
-           'uses' => 
-          array (
-            'str' => 'Illuminate\\Support\\Str',
-          ),
-           'className' => 'App\\Models\\Entity\\Campaign',
-           'functionName' => NULL,
-           'templatePhpDocNodes' => 
-          array (
-          ),
-           'parent' => NULL,
-           'typeAliasesMap' => 
-          array (
-          ),
-           'bypassTypeAliases' => false,
-           'constUses' => 
-          array (
-          ),
-           'typeAliasClassName' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-           'traitData' => NULL,
-        )),
-         'typeAliasesMap' => 
-        array (
-        ),
-         'bypassTypeAliases' => false,
-         'constUses' => 
-        array (
-        ),
-         'typeAliasClassName' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-         'traitData' => 
-        array (
-          0 => '/var/www/KrosmozJdr/app/Models/Entity/Campaign.php',
-          1 => 'App\\Models\\Entity\\Campaign',
-          2 => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          3 => 'App\\Models\\Concerns\\HasEntityImageMedia',
-          4 => NULL,
-        ),
-      )),
-      '6851dd16abe768f579001beca5d2f408' => 
-      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
-         'namespace' => 'App\\Models\\Concerns',
-         'uses' => 
-        array (
-          'str' => 'Illuminate\\Support\\Str',
-        ),
-         'className' => 'App\\Models\\Entity\\Campaign',
-         'functionName' => 'getMediaFilePatternForCollection',
-         'templatePhpDocNodes' => 
-        array (
-        ),
-         'parent' => 
-        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
-           'namespace' => 'App\\Models\\Concerns',
-           'uses' => 
-          array (
-            'str' => 'Illuminate\\Support\\Str',
-          ),
-           'className' => 'App\\Models\\Entity\\Campaign',
-           'functionName' => NULL,
-           'templatePhpDocNodes' => 
-          array (
-          ),
-           'parent' => NULL,
-           'typeAliasesMap' => 
-          array (
-          ),
-           'bypassTypeAliases' => false,
-           'constUses' => 
-          array (
-          ),
-           'typeAliasClassName' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-           'traitData' => NULL,
-        )),
-         'typeAliasesMap' => 
-        array (
-        ),
-         'bypassTypeAliases' => false,
-         'constUses' => 
-        array (
-        ),
-         'typeAliasClassName' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-         'traitData' => 
-        array (
-          0 => '/var/www/KrosmozJdr/app/Models/Entity/Campaign.php',
-          1 => 'App\\Models\\Entity\\Campaign',
-          2 => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          3 => 'App\\Models\\Concerns\\HasEntityImageMedia',
-          4 => NULL,
-        ),
-      )),
       '80642c5f28b04e43f6d8713742751432' => 
       \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
          'namespace' => 'App\\Models\\Concerns',
          'uses' => 
         array (
-          'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'interactswithmedia' => 'Spatie\\MediaLibrary\\InteractsWithMedia',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
         ),
@@ -7468,7 +7466,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Models\\Concerns',
            'uses' => 
           array (
-            'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'interactswithmedia' => 'Spatie\\MediaLibrary\\InteractsWithMedia',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
           ),
@@ -7510,7 +7507,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Models\\Concerns',
          'uses' => 
         array (
-          'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'interactswithmedia' => 'Spatie\\MediaLibrary\\InteractsWithMedia',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
         ),
@@ -7524,7 +7520,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Models\\Concerns',
            'uses' => 
           array (
-            'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'interactswithmedia' => 'Spatie\\MediaLibrary\\InteractsWithMedia',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
           ),
@@ -7566,7 +7561,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Models\\Concerns',
          'uses' => 
         array (
-          'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
           'interactswithmedia' => 'Spatie\\MediaLibrary\\InteractsWithMedia',
           'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
         ),
@@ -7580,7 +7574,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Models\\Concerns',
            'uses' => 
           array (
-            'hasmedia' => 'Spatie\\MediaLibrary\\HasMedia',
             'interactswithmedia' => 'Spatie\\MediaLibrary\\InteractsWithMedia',
             'media' => 'Spatie\\MediaLibrary\\MediaCollections\\Models\\Media',
           ),
@@ -9819,10 +9812,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Models/Entity/Campaign.php' => '222261be879500a03388a4f72c8ec84175d172a8d16d89d4f72f038ff13550e3',
-      '/var/www/KrosmozJdr/app/Models/Concerns/HasEntityImageMedia.php' => 'b5b633f6bcb54e2ca03cda21ef004f49d21e57737f3fcb3c153870e38dc9c2e7',
-      '/var/www/KrosmozJdr/vendor/composer/../spatie/laravel-medialibrary/src/InteractsWithMedia.php' => '2fa4c26f5b3757892fb1f79083cefb514993dbef90e48da37597f36e834ace33',
+      '/var/www/KrosmozJdr/app/Models/Entity/Campaign.php' => '8fccf3e7f0b45be5fa35dc55a8d52f5bfa0cd600c947e870dfc68161cf5d7384',
+      '/var/www/KrosmozJdr/app/Models/Concerns/HasEntityImageMedia.php' => '196c739f0e2eb6979751c413127d9c756f9cad8e9c8ac8e0810468f2d1e5274d',
       '/var/www/KrosmozJdr/app/Models/Concerns/HasMediaCustomNaming.php' => '4d2d30c927978dfb2f19ff2fd24a406d3c814153d432d2738f419461d5ba131c',
+      '/var/www/KrosmozJdr/vendor/composer/../spatie/laravel-medialibrary/src/InteractsWithMedia.php' => '2fa4c26f5b3757892fb1f79083cefb514993dbef90e48da37597f36e834ace33',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/Factories/HasFactory.php' => 'b6cb2b164e90168e80963a5549541f5f3188a3ec8cfd368bf3611bd94fbd46a7',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/SoftDeletes.php' => 'da1b0c13d78ba2f62e97e5627c3149f4e81b9cf9b6092d4ca7f02ca5e5bbcfec',
     ),

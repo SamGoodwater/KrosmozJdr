@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Effect;
 
+use App\Models\Effect;
+use App\Models\EffectDegree;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Représente un {@see \App\Models\EffectDegree} actif (aperçu / API for-entity).
+ * Représente un {@see EffectDegree} actif (aperçu / API for-entity).
  */
 class ResolvedEffectDegreeResource extends JsonResource
 {
@@ -17,7 +19,7 @@ class ResolvedEffectDegreeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        /** @var \App\Models\EffectDegree $deg */
+        /** @var EffectDegree $deg */
         $deg = $this->resource;
         $deg->loadMissing('effect');
 
@@ -27,7 +29,7 @@ class ResolvedEffectDegreeResource extends JsonResource
             'name' => $deg->effect?->name,
             'slug' => $deg->effect?->slug,
             'description' => $deg->effect?->description,
-            'target_type' => $deg->effect?->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+            'target_type' => $deg->effect?->target_type ?? Effect::TARGET_DIRECT,
             'degree' => $deg->degree,
             'area' => $deg->area,
             'required_creature_level' => $deg->required_creature_level,

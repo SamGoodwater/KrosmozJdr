@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
+use Illuminate\Http\Request;
 
 class VerifyCsrfToken extends Middleware
 {
@@ -22,14 +23,14 @@ class VerifyCsrfToken extends Middleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  \Closure  $next
      * @return mixed
      */
     /**
      * Determine if the request should be excluded from CSRF verification.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return bool
      */
     protected function inExceptArray($request)
@@ -51,7 +52,7 @@ class VerifyCsrfToken extends Middleware
     /**
      * Determine if the session and input CSRF tokens match.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return bool
      */
     protected function tokensMatch($request)

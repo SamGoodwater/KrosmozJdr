@@ -31,4 +31,3 @@ class DofusDbMonsterRacesCatalogController extends Controller
         ]);
     }
 }
-

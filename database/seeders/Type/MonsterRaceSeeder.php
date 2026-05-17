@@ -2,13 +2,13 @@
 
 namespace Database\Seeders\Type;
 
-use Illuminate\Database\Seeder;
 use App\Models\Type\MonsterRace;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 /**
  * Seeder pour les races de monstres
- * 
+ *
  * Initialise les races de monstres de base avec leur hiérarchie
  */
 class MonsterRaceSeeder extends Seeder
@@ -76,7 +76,6 @@ class MonsterRaceSeeder extends Seeder
         }
 
         $totalRaces = count($mainRaces) + count($subRaces);
-        $this->command->info('✅ Races de monstres créées : ' . $totalRaces);
+        $this->command->info('✅ Races de monstres créées : '.$totalRaces);
     }
 }
-

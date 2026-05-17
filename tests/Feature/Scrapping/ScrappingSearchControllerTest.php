@@ -2,10 +2,11 @@
 
 namespace Tests\Feature\Scrapping;
 
+use App\Http\Middleware\RequirePasswordWithInactivity;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
-use Tests\TestCase;
 use Tests\SeedsScrappingPipeline;
+use Tests\TestCase;
 
 class ScrappingSearchControllerTest extends TestCase
 {
@@ -15,7 +16,7 @@ class ScrappingSearchControllerTest extends TestCase
     {
         parent::setUp();
         $this->seedScrappingPipeline();
-        $this->withoutMiddleware(\App\Http\Middleware\RequirePasswordWithInactivity::class);
+        $this->withoutMiddleware(RequirePasswordWithInactivity::class);
     }
 
     public function test_search_endpoint_returns_items_and_meta(): void
@@ -25,6 +26,7 @@ class ScrappingSearchControllerTest extends TestCase
 
         Http::fake(function ($request) use (&$seenUrl) {
             $seenUrl = $request->url();
+
             return Http::response([
                 'data' => [
                     ['id' => 31, 'name' => ['fr' => 'Bouftou']],
@@ -60,6 +62,7 @@ class ScrappingSearchControllerTest extends TestCase
 
         Http::fake(function ($request) use (&$seenUrl) {
             $seenUrl = $request->url();
+
             return Http::response([
                 'data' => [
                     ['id' => 10, 'name' => ['fr' => 'Test']],
@@ -128,4 +131,3 @@ class ScrappingSearchControllerTest extends TestCase
         $res->assertJsonPath('success', false);
     }
 }
-

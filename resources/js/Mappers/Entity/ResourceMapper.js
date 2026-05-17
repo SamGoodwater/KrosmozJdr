@@ -40,6 +40,7 @@ export class ResourceMapper {
     }
 
     return new Resource({
+      ...payload,
       // Identifiants
       id: payload.id ?? null,
       dofusdb_id: payload.dofusdb_id ?? payload.dofusdbId ?? null,
@@ -48,10 +49,24 @@ export class ResourceMapper {
       // Propriétés de base
       name: payload.name ?? '',
       description: payload.description ?? '',
-      level: payload.level !== undefined ? Number(payload.level) : null,
-      price: payload.price !== undefined ? Number(payload.price) : null,
-      weight: payload.weight !== undefined ? Number(payload.weight) : null,
-      rarity: payload.rarity !== undefined ? Number(payload.rarity) : 0,
+      level:
+        payload.level === null || payload.level === undefined || payload.level === ''
+          ? null
+          : Number(payload.level),
+      price:
+        payload.price === null || payload.price === undefined || payload.price === ''
+          ? null
+          : Number(payload.price),
+      weight:
+        payload.weight === null || payload.weight === undefined || payload.weight === ''
+          ? null
+          : Number(payload.weight),
+      rarity:
+        payload.rarity === null || payload.rarity === ''
+          ? null
+          : payload.rarity === undefined
+            ? 0
+            : Number(payload.rarity),
       dofus_version: payload.dofus_version ?? payload.dofusVersion ?? null,
       state: payload.state ?? 'draft',
       auto_update: Boolean(payload.auto_update ?? payload.autoUpdate),
@@ -124,14 +139,21 @@ export class ResourceMapper {
 
       // Propriétés de base
       name: formData.name ?? '',
-      description: formData.description ?? '',
+      description:
+        formData.description === '' || formData.description === null || formData.description === undefined
+          ? null
+          : String(formData.description),
       level: formData.level !== undefined && formData.level !== '' ? Number(formData.level) : null,
       price: formData.price !== undefined && formData.price !== '' ? Number(formData.price) : null,
       weight: formData.weight !== undefined && formData.weight !== '' ? Number(formData.weight) : null,
       rarity: formData.rarity !== undefined ? Number(formData.rarity) : 0,
       dofus_version: formData.dofus_version ?? formData.dofusVersion ?? null,
       state: formData.state ?? 'draft',
-      auto_update: Boolean(formData.auto_update ?? formData.autoUpdate),
+      auto_update:
+        formData.auto_update === '1' ||
+        formData.auto_update === 1 ||
+        formData.auto_update === true ||
+        formData.autoUpdate === true,
       read_level: formData.read_level !== undefined ? Number(formData.read_level) : (formData.readLevel !== undefined ? Number(formData.readLevel) : 0),
       write_level: formData.write_level !== undefined ? Number(formData.write_level) : (formData.writeLevel !== undefined ? Number(formData.writeLevel) : 4),
 
@@ -139,7 +161,12 @@ export class ResourceMapper {
       image: formData.image ?? '',
 
       // Relations
-      resource_type_id: formData.resource_type_id ?? formData.resourceTypeId ?? null,
+      resource_type_id:
+        formData.resource_type_id === '' ||
+        formData.resource_type_id === null ||
+        formData.resource_type_id === undefined
+          ? null
+          : Number(formData.resource_type_id ?? formData.resourceTypeId),
     });
   }
 

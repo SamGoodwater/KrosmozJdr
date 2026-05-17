@@ -653,6 +653,13 @@
     "file": "entity/PanoplyItemsManager.vue"
   },
   {
+    "name": "EntityStateAction",
+    "description": "EntityStateAction — pastille d'état dynamique dans la barre d'actions.",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityStateAction.vue"
+  },
+  {
     "name": "EntityQuickEdit",
     "description": "EntityQuickEdit — Vue QuickEdit générique pour toutes les entités",
     "props": [
@@ -1032,6 +1039,19 @@
     "file": "entity/spell/presenters/SpellSubEffectDamagePresenter.vue"
   },
   {
+    "name": "SpecializationWriteMetaPanel",
+    "description": "Bandeau métadonnées « Rédaction » (niveaux, audit) pour une spécialisation.",
+    "props": [
+      {
+        "name": "specialization",
+        "type": "Object",
+        "desc": "- Instance ou payload `Specialization` (méthode `toCell`)."
+      }
+    ],
+    "slots": [],
+    "file": "entity/specialization/SpecializationWriteMetaPanel.vue"
+  },
+  {
     "name": "SpecializationViewText",
     "description": "SpecializationViewText — Vue Texte pour Specialization",
     "props": [
@@ -1213,7 +1233,7 @@
     "slots": [
       {
         "name": "dot",
-        "desc": "- Indicateur optionnel (ex: EntityUsableDot) positionné en absolute par le parent."
+        "desc": "- Indicateur optionnel positionné en absolute par le parent."
       },
       {
         "name": "media",
@@ -1394,6 +1414,13 @@
       }
     ],
     "file": "entity/shared/EntityMinimalCard.vue"
+  },
+  {
+    "name": "EntityLineRowActions",
+    "description": "EntityLineRowActions — raccourcis d'actions communs aux vues ligne.",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityLineRowActions.vue"
   },
   {
     "name": "ScenarioViewText",

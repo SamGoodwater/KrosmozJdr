@@ -38,16 +38,18 @@ describe('breed-descriptors', () => {
     });
 
     describe('visibleIf / editableIf', () => {
-        it('visibleIf fonctionne avec canUpdateAny', () => {
-            const descriptors = getBreedFieldDescriptors({
-                capabilities: { updateAny: true },
+        it('visibleIf sur id suit canCreateAny (fermeture, pas le paramètre du call)', () => {
+            const visibleOn = getBreedFieldDescriptors({
+                capabilities: { createAny: true },
+            });
+            const visibleOff = getBreedFieldDescriptors({
+                capabilities: { createAny: false },
             });
 
-            const idDescriptor = descriptors.id;
-            if (idDescriptor.visibleIf) {
-                expect(idDescriptor.visibleIf({ capabilities: { updateAny: true } })).toBe(true);
-                expect(idDescriptor.visibleIf({ capabilities: { updateAny: false } })).toBe(false);
-            }
+            expect(visibleOn.id.visibleIf?.()).toBe(true);
+            expect(visibleOff.id.visibleIf?.()).toBe(false);
+            // La fonction ignore l’argument : ne pas s’appuyer sur ctx passé à visibleIf().
+            expect(visibleOn.id.visibleIf?.({ capabilities: { createAny: false } })).toBe(true);
         });
     });
 

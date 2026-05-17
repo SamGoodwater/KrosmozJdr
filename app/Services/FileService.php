@@ -6,8 +6,11 @@ class FileService
 {
     // Constantes pour les extensions autorisées
     public const EXTENSIONS_IMAGE = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+
     public const EXTENSIONS_VIDEO = ['mp4', 'webm', 'ogg'];
+
     public const EXTENSIONS_AUDIO = ['mp3', 'wav', 'ogg'];
+
     public const EXTENSIONS_DOCUMENT = [
         'pdf',
         'txt',
@@ -23,6 +26,7 @@ class FileService
         'ods',
         'odp',
     ];
+
     public const EXTENSIONS_ARCHIVE = ['zip', 'rar', '7z', 'tar', 'gz'];
 
     // Taille maximale en Ko
@@ -37,6 +41,7 @@ class FileService
     public static function isImagePath(string $path): bool
     {
         $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
         return in_array($extension, self::EXTENSIONS_IMAGE);
     }
 

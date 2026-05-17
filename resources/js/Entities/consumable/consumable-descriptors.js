@@ -429,6 +429,37 @@ export function getConsumableFieldDescriptors(ctx = {}) {
         },
       },
     },
+
+    consumable_type_id: {
+      key: "consumable_type_id",
+      label: "Type (ID)",
+      icon: "fa-solid fa-tags",
+      table: {
+        sortable: false,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Général",
+          required: false,
+          showInCompact: true,
+          options: () => [{ value: "", label: "—" }, ...consumableTypes.map((t) => ({ value: t.id, label: t.name }))],
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+        },
+      },
+    },
+
     consumable_summary_relations: {
       key: "consumable_summary_relations",
       label: "Relations",
@@ -619,7 +650,7 @@ export function getConsumableFieldDescriptors(ctx = {}) {
         "write_level",
         "price",
         "dofus_version",
-        "description",
+        "effect",
         "image",
         "dofusdb_id",
       ],

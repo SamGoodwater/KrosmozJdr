@@ -2,14 +2,16 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Http\Middleware\CheckRole;
 use App\Models\Page;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 /**
  * Tests Feature pour PageController
- * 
+ *
  * Vérifie que :
  * - Les admins peuvent créer des pages
  * - Les utilisateurs peuvent voir les pages selon leur visibilité
@@ -25,10 +27,10 @@ class PageControllerTest extends TestCase
     {
         parent::setUp();
         // Désactiver le middleware role pour les tests (on teste les policies directement)
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
-        
+        $this->withoutMiddleware(CheckRole::class);
+
         // Désactiver les notifications dans les tests pour éviter les erreurs
-        \Illuminate\Support\Facades\Notification::fake();
+        Notification::fake();
     }
 
     /**
@@ -406,4 +408,3 @@ class PageControllerTest extends TestCase
         $this->assertSame('/pages/bibliotheque-specialization', $specializations['url']);
     }
 }
-

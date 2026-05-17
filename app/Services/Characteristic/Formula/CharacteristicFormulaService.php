@@ -15,14 +15,13 @@ final class CharacteristicFormulaService
 {
     public function __construct(
         private readonly FormulaResolutionService $resolutionService
-    ) {
-    }
+    ) {}
 
     /**
      * Évalue une formule ou une table JSON avec les variables fournies.
      *
-     * @param string|null $formula Formule (ex. floor([d]/10)) ou table (ex. {"characteristic":"level","0":0,"3":1})
-     * @param array<string, int|float> $variables Map id => valeur (ex. d, level)
+     * @param  string|null  $formula  Formule (ex. floor([d]/10)) ou table (ex. {"characteristic":"level","0":0,"3":1})
+     * @param  array<string, int|float>  $variables  Map id => valeur (ex. d, level)
      * @return float|null Résultat ou null si invalide
      */
     public function evaluate(?string $formula, array $variables): ?float
@@ -40,11 +39,11 @@ final class CharacteristicFormulaService
      * Évalue une formule pour chaque valeur d'une variable sur une plage [min, max].
      * Utilisé par l’API formula-preview (courbe niveau → valeur).
      *
-     * @param string|null $formula Formule ou table JSON
-     * @param string $variableName Nom de la variable à faire varier (ex. "level")
-     * @param int $min Valeur minimale (incluse)
-     * @param int $max Valeur maximale (incluse)
-     * @param array<string, int|float> $baseVariables Variables fixes
+     * @param  string|null  $formula  Formule ou table JSON
+     * @param  string  $variableName  Nom de la variable à faire varier (ex. "level")
+     * @param  int  $min  Valeur minimale (incluse)
+     * @param  int  $max  Valeur maximale (incluse)
+     * @param  array<string, int|float>  $baseVariables  Variables fixes
      * @return array<int, float> Map valeur_variable => résultat
      */
     public function evaluateForVariableRange(

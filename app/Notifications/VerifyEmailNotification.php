@@ -5,10 +5,6 @@ namespace App\Notifications;
 use App\Mail\VerifyEmailMail;
 use Illuminate\Auth\Notifications\VerifyEmail as VerifyEmailBase;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\URL;
 
 /**
  * Notification de vérification d'email pour les comptes classiques.

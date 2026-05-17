@@ -14,7 +14,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => NULL,
@@ -39,7 +38,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'viewAny',
@@ -53,7 +51,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -88,7 +85,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'view',
@@ -102,7 +98,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -137,7 +132,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'create',
@@ -151,7 +145,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -186,7 +179,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'createAny',
@@ -200,7 +192,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -235,7 +226,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'updateAny',
@@ -249,7 +239,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -284,7 +273,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'update',
@@ -298,7 +286,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -333,7 +320,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'delete',
@@ -347,7 +333,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -382,7 +367,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'deleteAny',
@@ -396,7 +380,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -431,7 +414,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'manageAny',
@@ -445,7 +427,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -480,7 +461,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'restore',
@@ -494,7 +474,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -529,7 +508,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
           'page' => 'App\\Models\\Page',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\PagePolicy',
          'functionName' => 'forceDelete',
@@ -543,7 +521,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           array (
             'page' => 'App\\Models\\Page',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\PagePolicy',
            'functionName' => NULL,
@@ -574,7 +551,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Policies/PagePolicy.php' => 'b73645db91dfa3bd8c1c9c2d7f5ad4cd223e7b88fb5e0f9f11ce3e10e7fe3b2c',
+      '/var/www/KrosmozJdr/app/Policies/PagePolicy.php' => '3224029978e10817c4c74972d540aabba8f7e9859dcb0ba6856fc25688f74bbf',
     ),
   ),
 ));

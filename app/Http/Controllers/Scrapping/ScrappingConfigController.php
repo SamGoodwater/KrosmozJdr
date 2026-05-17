@@ -49,8 +49,8 @@ class ScrappingConfigController extends Controller
             $entityConfigs[] = [
                 'entity' => $entity,
                 'label' => (($aliasCfg !== null ? ($aliasCfg['label'] ?? null) : null) ?? $cfg['label'] ?? ucfirst((string) $entity)),
-                'meta' => $cfg['meta'] ?? new \stdClass(),
-                'filters' => $cfg['filters'] ?? new \stdClass(),
+                'meta' => $cfg['meta'] ?? new \stdClass,
+                'filters' => $cfg['filters'] ?? new \stdClass,
                 'relations' => array_keys((array) ($cfg['relations'] ?? [])),
                 'comparisonKeys' => $this->extractComparisonKeys($cfg),
                 'mappingDiagnostics' => $diagnostics,
@@ -64,8 +64,8 @@ class ScrappingConfigController extends Controller
         // Exposer resource, consumable, equipment (même config que item) pour le sélecteur d'entité UI
         if ($itemConfig !== null) {
             $itemLike = [
-                'meta' => $itemConfig['meta'] ?? new \stdClass(),
-                'filters' => $itemConfig['filters'] ?? new \stdClass(),
+                'meta' => $itemConfig['meta'] ?? new \stdClass,
+                'filters' => $itemConfig['filters'] ?? new \stdClass,
                 'relations' => array_keys((array) ($itemConfig['relations'] ?? [])),
                 'comparisonKeys' => $this->extractComparisonKeys($itemConfig),
             ];
@@ -86,7 +86,7 @@ class ScrappingConfigController extends Controller
         $totalEntities = count($entityConfigs);
         $errorEntities = 0;
         foreach ($entityConfigs as $cfg) {
-            if (!empty($cfg['configError'])) {
+            if (! empty($cfg['configError'])) {
                 $errorEntities++;
             }
         }
@@ -121,7 +121,7 @@ class ScrappingConfigController extends Controller
     /**
      * Extrait les clés du mapping (une seule source pour l'affichage comparaison).
      *
-     * @param array<string, mixed> $cfg Config entité (mapping avec entrées "key")
+     * @param  array<string, mixed>  $cfg  Config entité (mapping avec entrées "key")
      * @return list<string>
      */
     private function extractComparisonKeys(array $cfg): array
@@ -144,7 +144,7 @@ class ScrappingConfigController extends Controller
     /**
      * Calcule un diagnostic de couverture du mapping pour l'UI admin.
      *
-     * @param array<string, mixed> $cfg
+     * @param  array<string, mixed>  $cfg
      * @return array{
      *   total: int,
      *   valid: int,
@@ -210,6 +210,7 @@ class ScrappingConfigController extends Controller
                     'actionUrl' => route('admin.scrapping-mappings.index', ['source' => $source, 'entity' => $entity]),
                 ];
                 $blocking++;
+
                 continue;
             }
 
@@ -267,6 +268,7 @@ class ScrappingConfigController extends Controller
                         ]),
                     ];
                 }
+
                 continue;
             }
 
@@ -284,7 +286,7 @@ class ScrappingConfigController extends Controller
             $warnings[] = [
                 'code' => 'mapping.incomplete',
                 'severity' => 'blocking',
-                'message' => "Règle {$label} incomplète (" . implode(', ', $parts) . ').',
+                'message' => "Règle {$label} incomplète (".implode(', ', $parts).').',
                 'mappingKey' => $label,
                 'actionUrl' => route('admin.scrapping-mappings.index', [
                     'source' => $source,
@@ -315,7 +317,7 @@ class ScrappingConfigController extends Controller
     /**
      * Ajoute un warning bloquant lié au chargement de config/mapping BDD.
      *
-     * @param array<string, mixed> $diagnostics
+     * @param  array<string, mixed>  $diagnostics
      * @return array<string, mixed>
      */
     private function prependConfigErrorWarning(array $diagnostics, string $source, string $entity, string $errorMessage): array
@@ -338,4 +340,3 @@ class ScrappingConfigController extends Controller
         return $diagnostics;
     }
 }
-

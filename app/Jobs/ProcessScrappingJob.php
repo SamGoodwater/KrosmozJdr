@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ProcessScrappingJob implements ShouldQueue
 {
@@ -43,7 +44,7 @@ class ProcessScrappingJob implements ShouldQueue
         $options = is_array($payload['options'] ?? null) ? $payload['options'] : [];
         $runId = (string) ($job->run_id ?: ($options['run_id'] ?? ''));
         if ($runId === '') {
-            $runId = (string) \Illuminate\Support\Str::uuid();
+            $runId = (string) Str::uuid();
             $options['run_id'] = $runId;
         }
         UnknownCharacteristicRunTracker::reset($runId);
@@ -68,6 +69,7 @@ class ProcessScrappingJob implements ShouldQueue
                 $job->results = $results;
                 $job->finished_at = now();
                 $job->save();
+
                 return;
             }
 
@@ -85,6 +87,7 @@ class ProcessScrappingJob implements ShouldQueue
                 $errorCount++;
                 $doneCount++;
                 $this->saveProgress($job, $doneCount, $results, $successCount, $errorCount);
+
                 continue;
             }
 
@@ -104,32 +107,32 @@ class ProcessScrappingJob implements ShouldQueue
             } else {
                 try {
                     $result = $orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
-                $success = $result->isSuccess();
-                $results[] = [
-                    'type' => $type,
-                    'id' => $id,
-                    'success' => $success,
-                    'data' => $success ? ($result->getIntegrationResult()?->getData() ?? $result->getConverted()) : null,
-                    'error' => $success ? null : $result->getMessage(),
-                    'validation_errors' => $success ? [] : $result->getValidationErrors(),
-                    'relations' => $success ? ($result->getRelations() ?? []) : [],
-                ];
-                if ($success) {
-                    $successCount++;
-                } else {
+                    $success = $result->isSuccess();
+                    $results[] = [
+                        'type' => $type,
+                        'id' => $id,
+                        'success' => $success,
+                        'data' => $success ? ($result->getIntegrationResult()?->getData() ?? $result->getConverted()) : null,
+                        'error' => $success ? null : $result->getMessage(),
+                        'validation_errors' => $success ? [] : $result->getValidationErrors(),
+                        'relations' => $success ? ($result->getRelations() ?? []) : [],
+                    ];
+                    if ($success) {
+                        $successCount++;
+                    } else {
+                        $errorCount++;
+                    }
+                } catch (\Throwable $e) {
+                    $results[] = [
+                        'type' => $type,
+                        'id' => $id,
+                        'success' => false,
+                        'error' => $e->getMessage(),
+                        'validation_errors' => [],
+                        'relations' => [],
+                    ];
                     $errorCount++;
                 }
-                } catch (\Throwable $e) {
-                $results[] = [
-                    'type' => $type,
-                    'id' => $id,
-                    'success' => false,
-                    'error' => $e->getMessage(),
-                    'validation_errors' => [],
-                    'relations' => [],
-                ];
-                $errorCount++;
-            }
             }
 
             $doneCount++;
@@ -144,6 +147,7 @@ class ProcessScrappingJob implements ShouldQueue
             $job->results = $results;
             $job->finished_at = now();
             $job->save();
+
             return;
         }
 

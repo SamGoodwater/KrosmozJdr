@@ -14,6 +14,11 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        // La route `home` renvoie 302 vers la page CMS « accueil » si elle existe et est visible, sinon 200 (Inertia).
+        $this->assertContains(
+            $response->getStatusCode(),
+            [200, 302],
+            'La page d\'accueil doit répondre par une page (200) ou une redirection vers le CMS (302).'
+        );
     }
 }

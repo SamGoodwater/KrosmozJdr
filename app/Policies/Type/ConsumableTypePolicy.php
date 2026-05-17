@@ -16,4 +16,3 @@ class ConsumableTypePolicy extends BaseEntityPolicy
 {
     // Toutes les méthodes sont héritées de BaseEntityPolicy
 }
-

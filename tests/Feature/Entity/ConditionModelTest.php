@@ -2,18 +2,16 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
 use App\Models\Entity\Condition;
 use App\Models\Entity\Creature;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Condition
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class ConditionModelTest extends TestCase
 {
@@ -25,7 +23,7 @@ class ConditionModelTest extends TestCase
     public function test_condition_factory_creates_valid_condition(): void
     {
         $user = User::factory()->create();
-        
+
         $condition = Condition::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -144,4 +142,3 @@ class ConditionModelTest extends TestCase
         ]);
     }
 }
-

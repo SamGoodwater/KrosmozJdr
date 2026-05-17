@@ -2,18 +2,16 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Creature;
+use App\Models\Entity\CreatureTrait;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle CreatureTrait
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class CreatureTraitModelTest extends TestCase
 {
@@ -25,7 +23,7 @@ class CreatureTraitModelTest extends TestCase
     public function test_creature_trait_factory_creates_valid_creature_trait(): void
     {
         $user = User::factory()->create();
-        
+
         $creatureTrait = CreatureTrait::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -144,4 +142,3 @@ class CreatureTraitModelTest extends TestCase
         ]);
     }
 }
-

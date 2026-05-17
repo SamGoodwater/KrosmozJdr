@@ -10,6 +10,7 @@ use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 /**
  * Liste les caractéristiques d’un groupe ayant une grille de normes définie.
@@ -63,7 +64,7 @@ class CharacteristicNormsCatalogController extends Controller
     }
 
     /**
-     * @return \Illuminate\Support\Collection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>
+     * @return Collection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>
      */
     private function queryPivotRows(string $group, string $entity)
     {

@@ -2,16 +2,16 @@
 
 namespace Tests\Feature\Security;
 
-use App\Models\User;
+use App\Enums\SectionType;
 use App\Models\Page;
 use App\Models\Section;
-use App\Enums\SectionType;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests de prévention XSS
- * 
+ *
  * Vérifie que le HTML dangereux est correctement sanitizé :
  * - <script> neutralisé
  * - Attributs onclick/onerror retirés
@@ -192,4 +192,3 @@ class XssPreventionTest extends TestCase
         $this->assertStringContainsString('Updated', $content);
     }
 }
-

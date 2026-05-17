@@ -30,9 +30,9 @@ final class ItemTypeCategoryMoveService
     /**
      * Déplace le type identifié par $id depuis la catégorie $from vers la catégorie $to.
      *
-     * @param string $from 'resource' | 'consumable' | 'equipment'
-     * @param int $id ID de l'enregistrement (ResourceType, ConsumableType ou ItemType)
-     * @param string $to 'resource' | 'consumable' | 'equipment' (différent de $from)
+     * @param  string  $from  'resource' | 'consumable' | 'equipment'
+     * @param  int  $id  ID de l'enregistrement (ResourceType, ConsumableType ou ItemType)
+     * @param  string  $to  'resource' | 'consumable' | 'equipment' (différent de $from)
      * @return array{success: bool, message: string, target_id?: int}
      */
     public function move(string $from, int $id, string $to): array
@@ -41,7 +41,7 @@ final class ItemTypeCategoryMoveService
         $to = strtolower(trim($to));
 
         $allowed = ['resource', 'consumable', 'equipment'];
-        if (!in_array($from, $allowed, true) || !in_array($to, $allowed, true) || $from === $to) {
+        if (! in_array($from, $allowed, true) || ! in_array($to, $allowed, true) || $from === $to) {
             return ['success' => false, 'message' => 'Catégorie source ou cible invalide.'];
         }
 
@@ -85,9 +85,10 @@ final class ItemTypeCategoryMoveService
             ];
         } catch (\Throwable $e) {
             DB::rollBack();
+
             return [
                 'success' => false,
-                'message' => 'Erreur lors du déplacement : ' . $e->getMessage(),
+                'message' => 'Erreur lors du déplacement : '.$e->getMessage(),
             ];
         }
     }
@@ -96,9 +97,9 @@ final class ItemTypeCategoryMoveService
      * Déplace en masse les types identifiés par $ids depuis la catégorie $from vers $to.
      * Chaque déplacement est tenté individuellement ; les échecs (entités utilisent le type, etc.) sont collectés.
      *
-     * @param string $from 'resource' | 'consumable' | 'equipment'
-     * @param list<int> $ids IDs des enregistrements à déplacer
-     * @param string $to 'resource' | 'consumable' | 'equipment'
+     * @param  string  $from  'resource' | 'consumable' | 'equipment'
+     * @param  list<int>  $ids  IDs des enregistrements à déplacer
+     * @param  string  $to  'resource' | 'consumable' | 'equipment'
      * @return array{moved: int, failed: int, errors: list<array{id: int, message: string}>}
      */
     public function moveBulk(string $from, array $ids, string $to): array
@@ -106,7 +107,7 @@ final class ItemTypeCategoryMoveService
         $from = strtolower(trim($from));
         $to = strtolower(trim($to));
         $allowed = ['resource', 'consumable', 'equipment'];
-        if (!in_array($from, $allowed, true) || !in_array($to, $allowed, true) || $from === $to) {
+        if (! in_array($from, $allowed, true) || ! in_array($to, $allowed, true) || $from === $to) {
             return [
                 'moved' => 0,
                 'failed' => 1,
@@ -141,30 +142,30 @@ final class ItemTypeCategoryMoveService
             'consumable' => 'Consommables',
             'equipment' => 'Équipements',
         ];
+
         return $labels[strtolower(trim($target))] ?? $target;
     }
 
     /**
      * Message utilisateur pour un résultat moveBulk (une seule source pour les 3 contrôleurs).
      *
-     * @param array{moved: int, failed: int, errors: list<array{id: int, message: string}>} $result
+     * @param  array{moved: int, failed: int, errors: list<array{id: int, message: string}>}  $result
      */
     public function formatBulkMoveMessage(array $result, string $target): string
     {
         $label = $this->getTargetLabel($target);
         $message = $result['moved'] > 0
-            ? $result['moved'] . ' type(s) déplacé(s) vers ' . $label . '.'
+            ? $result['moved'].' type(s) déplacé(s) vers '.$label.'.'
             : 'Aucun type déplacé.';
-        if ($result['failed'] > 0 && !empty($result['errors'])) {
+        if ($result['failed'] > 0 && ! empty($result['errors'])) {
             $first = $result['errors'][0]['message'] ?? '';
-            $message .= ' ' . $result['failed'] . ' échec(s). Ex. : ' . $first;
+            $message .= ' '.$result['failed'].' échec(s). Ex. : '.$first;
         }
+
         return $message;
     }
 
     /**
-     * @param string $from
-     * @param int $id
      * @return ResourceType|ConsumableType|ItemType|null
      */
     private function findSourceModel(string $from, int $id)
@@ -199,7 +200,7 @@ final class ItemTypeCategoryMoveService
     }
 
     /**
-     * @param ResourceType|ConsumableType|ItemType $model
+     * @param  ResourceType|ConsumableType|ItemType  $model
      * @return ResourceType|ConsumableType|ItemType
      */
     private function createInTarget(string $to, $model)
@@ -224,7 +225,7 @@ final class ItemTypeCategoryMoveService
     }
 
     /**
-     * @param ResourceType|ConsumableType|ItemType $model
+     * @param  ResourceType|ConsumableType|ItemType  $model
      */
     private function deleteSource(string $from, $model): void
     {
@@ -240,6 +241,6 @@ final class ItemTypeCategoryMoveService
 
     private function moveSuccessMessage(string $from, string $to): string
     {
-        return 'Type déplacé de ' . $this->getTargetLabel($from) . ' vers ' . $this->getTargetLabel($to) . '.';
+        return 'Type déplacé de '.$this->getTargetLabel($from).' vers '.$this->getTargetLabel($to).'.';
     }
 }

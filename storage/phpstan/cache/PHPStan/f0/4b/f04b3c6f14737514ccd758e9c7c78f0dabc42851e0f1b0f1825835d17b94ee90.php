@@ -19958,7 +19958,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php' => '5d1306bb2bd622b57befc10b8e4d7c892a95cbcd82a6b0a99e1beed81f30fa65',
+      '/var/www/KrosmozJdr/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php' => '807b1ec61c5649b9e11d4418cc11162b59312d77564aeca65361fcaac97e333c',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php' => '8ea5428ad1592fca250ef6724cbb4384185c5f95ef7bda850062a0d20e56bec1',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Conditionable/Traits/Conditionable.php' => '5697fdba0acb78ca0b4e122e5c459cd5d97d000ed9b14fed31271cb7ffd44225',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Support/Traits/ForwardsCalls.php' => 'b90103bc7248a11bd7629c525e064a45a50dd93ae0d836bcb79937e63f0b3568',

@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/Condition.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Entity\Condition
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-ca7fd2f8516a0023894158d4327132bd0368241538545cc0d2c1f3a92875c1ed-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-5c1ea1e4863746f6201cb69356edd93d476c7090ce9cc25f9753925a1df33ffa-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -45,13 +45,67 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property-read Collection<int, Spell> $spells
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ * @property bool $prevents_spell_cast
+ * @property bool $prevents_fight
+ * @property bool $cant_be_moved
+ * @property bool $cant_be_pushed
+ * @property bool $cant_deal_damage
+ * @property bool $invulnerable
+ * @property bool $cant_switch_position
+ * @property bool $incurable
+ * @property bool $invulnerable_melee
+ * @property bool $invulnerable_range
+ * @property bool $cant_tackle
+ * @property bool $cant_be_tackled
+ * @property bool $display_turn_remaining
+ * @property bool $is_main_state
+ * @property-read int|null $creatures_count
+ * @property-read int|null $spells_count
+ *
+ * @method static \\Database\\Factories\\Entity\\ConditionFactory factory($count = null, $state = [])
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition newModelQuery()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition newQuery()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition onlyTrashed()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition query()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereCantBeMoved($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereCantBePushed($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereCantBeTackled($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereCantDealDamage($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereCantSwitchPosition($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereCantTackle($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereCreatedAt($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereCreatedBy($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereDeletedAt($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereDescription($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereDisplayTurnRemaining($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereDissipable($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereDofusdbId($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereIcon($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereId($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereImage($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereIncurable($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereInvulnerable($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereInvulnerableMelee($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereInvulnerableRange($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereIsMainState($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereName($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition wherePreventsFight($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition wherePreventsSpellCast($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereRaw($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereReadLevel($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereState($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereUpdatedAt($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition whereWriteLevel($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition withTrashed(bool $withTrashed = true)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Condition withoutTrashed()
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 41,
-    'endLine' => 63,
+    'startLine' => 95,
+    'endLine' => 132,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -79,20 +133,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'raw\'',
           'attributes' => 
           array (
-            'startLine' => 46,
-            'endLine' => 46,
+            'startLine' => 100,
+            'endLine' => 100,
             'startTokenPos' => 94,
-            'startFilePos' => 1513,
+            'startFilePos' => 5598,
             'endTokenPos' => 94,
-            'endFilePos' => 1517,
+            'endFilePos' => 5602,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 46,
-        'endLine' => 46,
+        'startLine' => 100,
+        'endLine' => 100,
         'startColumn' => 5,
         'endColumn' => 35,
       ),
@@ -108,20 +162,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'draft\'',
           'attributes' => 
           array (
-            'startLine' => 47,
-            'endLine' => 47,
+            'startLine' => 102,
+            'endLine' => 102,
             'startTokenPos' => 105,
-            'startFilePos' => 1551,
+            'startFilePos' => 5637,
             'endTokenPos' => 105,
-            'endFilePos' => 1557,
+            'endFilePos' => 5643,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 47,
-        'endLine' => 47,
+        'startLine' => 102,
+        'endLine' => 102,
         'startColumn' => 5,
         'endColumn' => 39,
       ),
@@ -137,20 +191,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'playable\'',
           'attributes' => 
           array (
-            'startLine' => 48,
-            'endLine' => 48,
+            'startLine' => 104,
+            'endLine' => 104,
             'startTokenPos' => 116,
-            'startFilePos' => 1594,
+            'startFilePos' => 5681,
             'endTokenPos' => 116,
-            'endFilePos' => 1603,
+            'endFilePos' => 5690,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 48,
-        'endLine' => 48,
+        'startLine' => 104,
+        'endLine' => 104,
         'startColumn' => 5,
         'endColumn' => 45,
       ),
@@ -166,20 +220,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'archived\'',
           'attributes' => 
           array (
-            'startLine' => 49,
-            'endLine' => 49,
+            'startLine' => 106,
+            'endLine' => 106,
             'startTokenPos' => 127,
-            'startFilePos' => 1640,
+            'startFilePos' => 5728,
             'endTokenPos' => 127,
-            'endFilePos' => 1649,
+            'endFilePos' => 5737,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 49,
-        'endLine' => 49,
+        'startLine' => 106,
+        'endLine' => 106,
         'startColumn' => 5,
         'endColumn' => 45,
       ),
@@ -195,20 +249,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'images/entity/conditions\'',
           'attributes' => 
           array (
-            'startLine' => 51,
-            'endLine' => 51,
+            'startLine' => 108,
+            'endLine' => 108,
             'startTokenPos' => 138,
-            'startFilePos' => 1683,
+            'startFilePos' => 5771,
             'endTokenPos' => 138,
-            'endFilePos' => 1708,
+            'endFilePos' => 5796,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 51,
-        'endLine' => 51,
+        'startLine' => 108,
+        'endLine' => 108,
         'startColumn' => 5,
         'endColumn' => 57,
       ),
@@ -224,20 +278,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'image-[id]-[name]\'',
           'attributes' => 
           array (
-            'startLine' => 52,
-            'endLine' => 52,
+            'startLine' => 110,
+            'endLine' => 110,
             'startTokenPos' => 149,
-            'startFilePos' => 1756,
+            'startFilePos' => 5845,
             'endTokenPos' => 149,
-            'endFilePos' => 1774,
+            'endFilePos' => 5863,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 52,
-        'endLine' => 52,
+        'startLine' => 110,
+        'endLine' => 110,
         'startColumn' => 5,
         'endColumn' => 65,
       ),
@@ -256,22 +310,22 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'dofusdb_id\', \'name\', \'description\', \'state\', \'read_level\', \'write_level\', \'icon\', \'image\', \'prevents_spell_cast\', \'prevents_fight\', \'cant_be_moved\', \'cant_be_pushed\', \'cant_deal_damage\', \'invulnerable\', \'cant_switch_position\', \'incurable\', \'invulnerable_melee\', \'invulnerable_range\', \'cant_tackle\', \'cant_be_tackled\', \'display_turn_remaining\', \'is_main_state\', \'dissipable\', \'raw\', \'created_by\']',
           'attributes' => 
           array (
-            'startLine' => 55,
-            'endLine' => 55,
+            'startLine' => 113,
+            'endLine' => 113,
             'startTokenPos' => 160,
-            'startFilePos' => 1833,
-            'endTokenPos' => 210,
-            'endFilePos' => 2205,
+            'startFilePos' => 5922,
+            'endTokenPos' => 234,
+            'endFilePos' => 6318,
           ),
         ),
         'docComment' => '/** @var list<string> */',
         'attributes' => 
         array (
         ),
-        'startLine' => 55,
-        'endLine' => 55,
+        'startLine' => 113,
+        'endLine' => 113,
         'startColumn' => 5,
-        'endColumn' => 400,
+        'endColumn' => 424,
         'isPromoted' => false,
         'declaredAtCompileTime' => true,
         'immediateVirtual' => false,
@@ -291,22 +345,22 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'dofusdb_id\' => \'integer\', \'read_level\' => \'integer\', \'write_level\' => \'integer\', \'prevents_spell_cast\' => \'boolean\', \'prevents_fight\' => \'boolean\', \'cant_be_moved\' => \'boolean\', \'cant_be_pushed\' => \'boolean\', \'cant_deal_damage\' => \'boolean\', \'invulnerable\' => \'boolean\', \'cant_switch_position\' => \'boolean\', \'incurable\' => \'boolean\', \'invulnerable_melee\' => \'boolean\', \'invulnerable_range\' => \'boolean\', \'cant_tackle\' => \'boolean\', \'cant_be_tackled\' => \'boolean\', \'display_turn_remaining\' => \'boolean\', \'is_main_state\' => \'boolean\', \'dissipable\' => \'boolean\', \'raw\' => \'array\']',
           'attributes' => 
           array (
-            'startLine' => 58,
-            'endLine' => 58,
-            'startTokenPos' => 221,
-            'startFilePos' => 2270,
-            'endTokenPos' => 297,
-            'endFilePos' => 2792,
+            'startLine' => 116,
+            'endLine' => 116,
+            'startTokenPos' => 245,
+            'startFilePos' => 6383,
+            'endTokenPos' => 377,
+            'endFilePos' => 6961,
           ),
         ),
         'docComment' => '/** @var array<string, string> */',
         'attributes' => 
         array (
         ),
-        'startLine' => 58,
-        'endLine' => 58,
+        'startLine' => 116,
+        'endLine' => 116,
         'startColumn' => 5,
-        'endColumn' => 547,
+        'endColumn' => 603,
         'isPromoted' => false,
         'declaredAtCompileTime' => true,
         'immediateVirtual' => false,
@@ -329,10 +383,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 60,
-        'endLine' => 60,
+        'startLine' => 118,
+        'endLine' => 121,
         'startColumn' => 5,
-        'endColumn' => 87,
+        'endColumn' => 5,
         'couldThrow' => false,
         'isClosure' => false,
         'isGenerator' => false,
@@ -356,10 +410,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 61,
-        'endLine' => 61,
+        'startLine' => 123,
+        'endLine' => 126,
         'startColumn' => 5,
-        'endColumn' => 103,
+        'endColumn' => 5,
         'couldThrow' => false,
         'isClosure' => false,
         'isGenerator' => false,
@@ -383,10 +437,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 62,
-        'endLine' => 62,
+        'startLine' => 128,
+        'endLine' => 131,
         'startColumn' => 5,
-        'endColumn' => 202,
+        'endColumn' => 5,
         'couldThrow' => false,
         'isClosure' => false,
         'isGenerator' => false,

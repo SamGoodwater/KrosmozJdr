@@ -16,7 +16,7 @@ class DofusDbClientTest extends TestCase
         Log::shouldReceive('error')->zeroOrMoreTimes();
 
         $url = 'https://api.dofusdb.fr/breeds/1';
-        $cacheKey = 'dofusdb_' . md5($url);
+        $cacheKey = 'dofusdb_'.md5($url);
 
         Cache::put($cacheKey, ['id' => 1, 'description' => ['fr' => 'A']], 3600);
 
@@ -33,4 +33,3 @@ class DofusDbClientTest extends TestCase
         $this->assertEquals('B', $data['description']['fr'] ?? null);
     }
 }
-

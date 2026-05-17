@@ -43,5 +43,3 @@ class LoginDeletedUserTest extends TestCase
         $this->assertGuest();
     }
 }
-
-

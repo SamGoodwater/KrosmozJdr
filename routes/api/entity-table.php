@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\EntityTableDataController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,8 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['web', 'auth'])->prefix('entity-table')->group(function () {
-    Route::get('/resources', [App\Http\Controllers\Api\EntityTableDataController::class, 'resources'])
+    Route::get('/resources', [EntityTableDataController::class, 'resources'])
         ->name('api.entity-table.resources');
-    Route::get('/resource-types', [App\Http\Controllers\Api\EntityTableDataController::class, 'resourceTypes'])
+    Route::get('/resource-types', [EntityTableDataController::class, 'resourceTypes'])
         ->name('api.entity-table.resource-types');
 });

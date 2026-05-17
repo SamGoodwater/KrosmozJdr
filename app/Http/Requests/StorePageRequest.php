@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Page;
+use App\Models\User;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\Page;
 
 /**
  * FormRequest pour la création d'une page dynamique.
@@ -18,13 +20,13 @@ class StorePageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('create', \App\Models\Page::class) ?? false;
+        return $this->user()?->can('create', Page::class) ?? false;
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -51,7 +53,7 @@ class StorePageRequest extends FormRequest
     protected function prepareForValidation()
     {
         $data = $this->all();
-        if (isset($data['title']) && !isset($data['slug'])) {
+        if (isset($data['title']) && ! isset($data['slug'])) {
             $this->merge([
                 'slug' => \Str::slug($data['title']),
             ]);
@@ -61,16 +63,16 @@ class StorePageRequest extends FormRequest
                 'in_menu' => filter_var($data['in_menu'], FILTER_VALIDATE_BOOLEAN),
             ]);
         }
-        if (!isset($data['state'])) {
+        if (! isset($data['state'])) {
             $this->merge([
                 'state' => Page::STATE_DRAFT,
             ]);
         }
-        if (!isset($data['read_level'])) {
-            $this->merge(['read_level' => \App\Models\User::ROLE_GUEST]);
+        if (! isset($data['read_level'])) {
+            $this->merge(['read_level' => User::ROLE_GUEST]);
         }
-        if (!isset($data['write_level'])) {
-            $this->merge(['write_level' => \App\Models\User::ROLE_ADMIN]);
+        if (! isset($data['write_level'])) {
+            $this->merge(['write_level' => User::ROLE_ADMIN]);
         }
         if (array_key_exists('menu_group', $data)) {
             $group = trim((string) $data['menu_group']);

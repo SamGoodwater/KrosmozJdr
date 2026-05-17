@@ -60,5 +60,3 @@ class IntendedRedirectTest extends TestCase
         $this->assertStringEndsWith('/user/edit', (string) session('url.intended'));
     }
 }
-
-

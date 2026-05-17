@@ -239,5 +239,4 @@ class SectionRichReferencesValidator
             throw new \InvalidArgumentException('accès refusé à cette section.');
         }
     }
-
 }

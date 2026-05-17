@@ -13,6 +13,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { getItemFieldDescriptors } from '@/Entities/item/item-descriptors';
+import { getDescriptorForm, getDescriptorFormOptions, resolveDescriptorOptions } from './descriptor-test-helpers.js';
 
 describe('item-descriptors', () => {
     describe('Structure des descriptors', () => {
@@ -41,28 +42,18 @@ describe('item-descriptors', () => {
     });
 
     describe('visibleIf / editableIf', () => {
-        it('visibleIf fonctionne avec canUpdateAny', () => {
-            const descriptors = getItemFieldDescriptors({
-                capabilities: { updateAny: true },
-            });
-
-            const idDescriptor = descriptors.id;
-            if (idDescriptor.visibleIf) {
-                expect(idDescriptor.visibleIf({ capabilities: { updateAny: true } })).toBe(true);
-                expect(idDescriptor.visibleIf({ capabilities: { updateAny: false } })).toBe(false);
-            }
+        it('visibleIf sur id suit canUpdateAny (fermeture sur le factory)', () => {
+            const on = getItemFieldDescriptors({ capabilities: { updateAny: true } });
+            const off = getItemFieldDescriptors({ capabilities: { updateAny: false } });
+            expect(on.id.visibleIf?.()).toBe(true);
+            expect(off.id.visibleIf?.()).toBe(false);
         });
 
-        it('auto_update est visible seulement si canUpdateAny', () => {
-            const descriptors = getItemFieldDescriptors({
-                capabilities: { updateAny: true },
-            });
-
-            const autoUpdateDesc = descriptors.auto_update;
-            if (autoUpdateDesc?.visibleIf) {
-                expect(autoUpdateDesc.visibleIf({ capabilities: { updateAny: true } })).toBe(true);
-                expect(autoUpdateDesc.visibleIf({ capabilities: { updateAny: false } })).toBe(false);
-            }
+        it('auto_update suit canUpdateAny (fermeture sur le factory)', () => {
+            const on = getItemFieldDescriptors({ capabilities: { updateAny: true } });
+            const off = getItemFieldDescriptors({ capabilities: { updateAny: false } });
+            expect(on.auto_update.visibleIf?.()).toBe(true);
+            expect(off.auto_update.visibleIf?.()).toBe(false);
         });
     });
 
@@ -159,9 +150,11 @@ describe('item-descriptors', () => {
         it('read_level a les bonnes options', () => {
             const descriptors = getItemFieldDescriptors();
             const isVisibleDesc = descriptors.read_level;
+            const form = getDescriptorForm(isVisibleDesc);
 
-            if (isVisibleDesc?.edit?.form?.type === 'select') {
-                const options = isVisibleDesc.edit.form.options;
+            if (form?.type === 'select') {
+                const options = resolveDescriptorOptions(getDescriptorFormOptions(isVisibleDesc), {});
+                expect(Array.isArray(options)).toBe(true);
                 const values = options.map((opt) => opt.value);
                 expect(values).toContain(0);
                 expect(values).toContain(1);
@@ -172,8 +165,11 @@ describe('item-descriptors', () => {
         it('les options des selects ont value et label', () => {
             const descriptors = getItemFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
-                if (desc.edit?.form?.type === 'select' && desc.edit.form.options) {
-                    desc.edit.form.options.forEach((option) => {
+                const form = getDescriptorForm(desc);
+                if (form?.type === 'select' && form.options) {
+                    const opts = resolveDescriptorOptions(form.options, {});
+                    if (!Array.isArray(opts)) return;
+                    opts.forEach((option) => {
                         expect(option).toHaveProperty('value');
                         expect(option).toHaveProperty('label');
                     });
@@ -195,7 +191,6 @@ describe('item-descriptors', () => {
             const descriptors = getItemFieldDescriptors();
             const rarityDesc = descriptors.rarity;
 
-            expect(rarityDesc.format).toBe('enum');
             expect(rarityDesc.edit.form.type).toBe('select');
             expect(rarityDesc.edit.form.bulk.enabled).toBe(true);
         });

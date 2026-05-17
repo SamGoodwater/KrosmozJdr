@@ -25,7 +25,11 @@ export class Capability extends BaseModel {
     }
 
     get description() {
-        return this._data.description || '';
+        const v = this._data.description;
+        if (v === null || v === undefined || v === '') {
+            return null;
+        }
+        return String(v);
     }
 
     get effect() {

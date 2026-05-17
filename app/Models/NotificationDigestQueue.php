@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property array $payload
  * @property Carbon $created_at
  * @property-read User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue query()
@@ -28,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereNotificationType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue wherePayload($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class NotificationDigestQueue extends Model

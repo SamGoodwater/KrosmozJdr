@@ -32,6 +32,7 @@ import { resolveEntityRouteHref } from "@/Composables/entity/entityRouteRegistry
 import { BREAKPOINTS } from "@/Utils/Entity/Constants.js";
 import { getEntityConfig, normalizeEntityType } from "@/Entities/entity-registry.js";
 import { resolveEntityViewComponentSync } from "@/Utils/entity/resolveEntityViewComponent.js";
+import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
@@ -372,8 +373,8 @@ const effectiveColumnVisibilityEnabled = computed(
 
 /** Récupère l'entité depuis une row (rowParams.entity ou fallback via Model) */
 function getEntityFromRow(row, entityType) {
-    const entity = row?.rowParams?.entity;
-    if (entity) return entity;
+    const entity = getRowEntity(row);
+    if (entity && entity !== row) return entity;
     const et = normalizeEntityType(entityType);
     const cfg = getEntityConfig(et);
     const Model = cfg?.model;

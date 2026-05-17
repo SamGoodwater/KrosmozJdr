@@ -9,7 +9,7 @@
  * - Les quickEditFields sont correctement configurés
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { BulkConfig } from "@/Utils/Entity/Configs/BulkConfig.js";
 import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors.js";
 
@@ -28,7 +28,7 @@ describe("BulkConfig", () => {
     it("lance une erreur si entityType est manquant", () => {
       expect(() => {
         new BulkConfig({});
-      }).toThrow("entityType est obligatoire");
+      }).toThrow("BulkConfig: 'entityType' est obligatoire");
     });
 
     it("ajoute un champ bulk-editable", () => {
@@ -111,17 +111,15 @@ describe("BulkConfig", () => {
       expect(config.quickEditFields.length).toBeGreaterThan(0);
     });
 
-    it("utilise _quickEditFields si _quickeditConfig.fields n'est pas défini", () => {
+    it("utilise _quickeditConfig.fields pour les champs quick edit", () => {
       const descriptors = getResourceFieldDescriptors();
-      
-      // Vérifier que _quickEditFields existe
-      expect(descriptors._quickEditFields).toBeDefined();
-      expect(Array.isArray(descriptors._quickEditFields)).toBe(true);
+
+      expect(descriptors._quickeditConfig?.fields).toBeDefined();
+      expect(Array.isArray(descriptors._quickeditConfig.fields)).toBe(true);
 
       const bulkConfig = BulkConfig.fromDescriptors(descriptors);
       const config = bulkConfig.build();
 
-      // Les quickEditFields devraient correspondre à _quickEditFields
       expect(config.quickEditFields.length).toBeGreaterThan(0);
     });
 

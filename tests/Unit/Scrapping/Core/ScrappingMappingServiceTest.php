@@ -45,7 +45,7 @@ class ScrappingMappingServiceTest extends TestCase
 
     public function test_list_mappings_for_characteristic_returns_summary_array(): void
     {
-        $key = 'level_creature_test_' . uniqid();
+        $key = 'level_creature_test_'.uniqid();
         $char = Characteristic::create([
             'key' => $key,
             'name' => 'Niveau',

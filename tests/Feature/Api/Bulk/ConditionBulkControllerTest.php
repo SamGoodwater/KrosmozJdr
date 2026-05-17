@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\Bulk;
 
-use App\Models\User;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Condition;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -23,7 +24,7 @@ class ConditionBulkControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
     }
 
     /**

@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Page;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 /**
  * Policy d'autorisation pour l'entité Page.
@@ -29,10 +28,9 @@ class PagePolicy
 
     /**
      * Determine whether the user can view the model.
-     * 
-     * @param \App\Models\User|null $user L'utilisateur (null pour les invités)
-     * @param \App\Models\Page $page La page à vérifier
-     * @return bool
+     *
+     * @param  User|null  $user  L'utilisateur (null pour les invités)
+     * @param  Page  $page  La page à vérifier
      */
     public function view(?User $user, Page $page): bool
     {
@@ -50,8 +48,7 @@ class PagePolicy
     /**
      * Capacité "globale" : créer des pages (ex: outils admin / maintenance).
      *
-     * @param User $user Utilisateur courant
-     * @return bool
+     * @param  User  $user  Utilisateur courant
      */
     public function createAny(User $user): bool
     {
@@ -62,8 +59,7 @@ class PagePolicy
      * Capacité "globale" : gérer/éditer les pages (ex: accès UI de gestion).
      * Utilisé côté frontend pour afficher le menu "Pages" de manière policy-driven.
      *
-     * @param User $user Utilisateur courant
-     * @return bool
+     * @param  User  $user  Utilisateur courant
      */
     public function updateAny(User $user): bool
     {
@@ -86,14 +82,14 @@ class PagePolicy
         if ($page->isCriticalPage()) {
             return false;
         }
+
         return $page->canBeEditedBy($user);
     }
 
     /**
      * Capacité "globale" : supprimer des pages (ex: outils admin / maintenance).
      *
-     * @param User $user Utilisateur courant
-     * @return bool
+     * @param  User  $user  Utilisateur courant
      */
     public function deleteAny(User $user): bool
     {
@@ -103,8 +99,7 @@ class PagePolicy
     /**
      * Capacité "globale" : actions de maintenance / administration (ex: refresh).
      *
-     * @param User $user Utilisateur courant
-     * @return bool
+     * @param  User  $user  Utilisateur courant
      */
     public function manageAny(User $user): bool
     {
@@ -127,6 +122,7 @@ class PagePolicy
         if ($page->isCriticalPage()) {
             return false;
         }
+
         return $user->isAdmin();
     }
 }

@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/database/factories/SectionFactory.php-PHPStan\BetterReflection\Reflection\ReflectionClass-Database\Factories\SectionFactory
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-dbf9afa53b7bd1facd903d5c46e12957a937719685272c64ad7150904dafa1ab-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-1ddb1225765802739e8a6d0761bf98308cee812d3d978e2d707e77c68051b0bc-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -23,7 +23,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'isBackedEnum' => false,
     'modifiers' => 0,
     'docComment' => '/**
- * @extends \\Illuminate\\Database\\Eloquent\\Factories\\Factory<\\App\\Models\\Section>
+ * @extends Factory<Section>
  */',
     'attributes' => 
     array (

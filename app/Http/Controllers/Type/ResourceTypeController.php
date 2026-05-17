@@ -152,5 +152,3 @@ class ResourceTypeController extends Controller
             ->with('success', 'Type de ressource supprimé avec succès.');
     }
 }
-
-

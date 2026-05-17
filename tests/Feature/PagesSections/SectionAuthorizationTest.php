@@ -4,7 +4,6 @@ namespace Tests\Feature\PagesSections;
 
 use App\Enums\SectionType;
 use App\Models\Page;
-use App\Models\Section;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -71,5 +70,3 @@ class SectionAuthorizationTest extends TestCase
         ]);
     }
 }
-
-

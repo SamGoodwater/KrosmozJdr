@@ -2,18 +2,16 @@
 
 namespace Tests\Feature\Type;
 
-use App\Models\User;
-use App\Models\Type\ScenarioLink;
 use App\Models\Entity\Scenario;
+use App\Models\Type\ScenarioLink;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle ScenarioLink
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Type
  */
 class ScenarioLinkModelTest extends TestCase
 {
@@ -21,7 +19,7 @@ class ScenarioLinkModelTest extends TestCase
 
     /**
      * Test de création d'un lien de scénario
-     * 
+     *
      * Note: ScenarioLink n'a pas de factory, on crée directement
      */
     public function test_scenario_link_can_be_created(): void
@@ -33,7 +31,7 @@ class ScenarioLinkModelTest extends TestCase
         $scenario2 = Scenario::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $scenarioLink = ScenarioLink::create([
             'scenario_id' => $scenario1->id,
             'next_scenario_id' => $scenario2->id,
@@ -58,7 +56,7 @@ class ScenarioLinkModelTest extends TestCase
         $scenario2 = Scenario::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $scenarioLink = ScenarioLink::create([
             'scenario_id' => $scenario1->id,
             'next_scenario_id' => $scenario2->id,
@@ -80,7 +78,7 @@ class ScenarioLinkModelTest extends TestCase
         $scenario2 = Scenario::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $scenarioLink = ScenarioLink::create([
             'scenario_id' => $scenario1->id,
             'next_scenario_id' => $scenario2->id,
@@ -90,4 +88,3 @@ class ScenarioLinkModelTest extends TestCase
         $this->assertEquals($scenario2->id, $scenarioLink->nextScenario->id);
     }
 }
-

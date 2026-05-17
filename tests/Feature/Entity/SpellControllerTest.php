@@ -2,16 +2,18 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Spell;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Spell;
 use App\Models\Type\SpellType;
+use App\Models\User;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests Feature pour SpellController
- * 
+ *
  * Vérifie que :
  * - Un utilisateur peut modifier un sort qu'il a créé
  * - Un admin peut modifier n'importe quel sort
@@ -28,9 +30,9 @@ class SpellControllerTest extends TestCase
     {
         parent::setUp();
         // Désactiver le middleware role pour les tests (on teste les policies directement)
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
         // Désactiver explicitement le CSRF pour ces tests
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+        $this->withoutMiddleware(VerifyCsrfToken::class);
     }
 
     /**
@@ -302,7 +304,7 @@ class SpellControllerTest extends TestCase
         $spellType1 = SpellType::factory()->create();
         $spellType2 = SpellType::factory()->create();
         $spellType3 = SpellType::factory()->create();
-        
+
         // Ajouter initialement 3 types de sort
         $spell->spellTypes()->attach([$spellType1->id, $spellType2->id, $spellType3->id]);
 
@@ -333,7 +335,7 @@ class SpellControllerTest extends TestCase
         $oldSpellType = SpellType::factory()->create();
         $newSpellType1 = SpellType::factory()->create();
         $newSpellType2 = SpellType::factory()->create();
-        
+
         // Ajouter un type de sort initialement
         $spell->spellTypes()->attach($oldSpellType->id);
 
@@ -363,7 +365,7 @@ class SpellControllerTest extends TestCase
         ]);
         $spellType1 = SpellType::factory()->create();
         $spellType2 = SpellType::factory()->create();
-        
+
         // Ajouter des types de sort initialement
         $spell->spellTypes()->attach([$spellType1->id, $spellType2->id]);
 
@@ -455,7 +457,7 @@ class SpellControllerTest extends TestCase
             'created_by' => $user->id,
         ]);
         $spellType = SpellType::factory()->create();
-        
+
         // Supprimer définitivement le type de sort pour qu'il n'existe plus
         $spellType->forceDelete();
 
@@ -661,4 +663,3 @@ class SpellControllerTest extends TestCase
         }
     }
 }
-

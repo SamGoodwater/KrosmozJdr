@@ -168,7 +168,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Support/SectionTemplatePayloadValidator.php' => '9d7df9e884fc1111ea1e0b4c1adc85e536dd6b8c9c40885990975983d12c7925',
+      '/var/www/KrosmozJdr/app/Support/SectionTemplatePayloadValidator.php' => '530b4f5f7602f1f86403be72e2550df19d1f1fcfa621b8006eae7f08070a849c',
     ),
   ),
 ));

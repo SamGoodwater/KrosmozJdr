@@ -6,7 +6,6 @@ namespace App\Services\Scrapping\Core\Conversion;
 
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
-use App\Services\Scrapping\Core\Conversion\UnknownCharacteristicRunTracker;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -22,17 +21,16 @@ final class ItemEffectsToBonusConverter
     public function __construct(
         private readonly CharacteristicGetterService $getter,
         private readonly ?DofusConversionService $conversionService = null
-    ) {
-    }
+    ) {}
 
     /**
-     * @param mixed $value item.effects ou panoply.effects (liste d'objets avec characteristic, from, to, value/min/max)
-     * @param array<string, mixed> $raw Données brutes de l'item/panoply (non utilisées ici, réservé au contexte)
-     * @param array<string, mixed> $context entityType (item|panoply), lang, etc. pour DofusConversionService
+     * @param  mixed  $value  item.effects ou panoply.effects (liste d'objets avec characteristic, from, to, value/min/max)
+     * @param  array<string, mixed>  $raw  Données brutes de l'item/panoply (non utilisées ici, réservé au contexte)
+     * @param  array<string, mixed>  $context  entityType (item|panoply), lang, etc. pour DofusConversionService
      */
     public function convert(mixed $value, array $raw, array $context = []): ?string
     {
-        if (!is_array($value) || $value === []) {
+        if (! is_array($value) || $value === []) {
             return null;
         }
 
@@ -46,6 +44,7 @@ final class ItemEffectsToBonusConverter
             }
             try {
                 $encoded = json_encode($tieredBonus, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+
                 return $encoded !== false ? $encoded : null;
             } catch (\JsonException) {
                 return null;
@@ -61,6 +60,7 @@ final class ItemEffectsToBonusConverter
 
         try {
             $encoded = json_encode($bonus, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+
             return $encoded !== false ? $encoded : null;
         } catch (\JsonException) {
             return null;
@@ -70,12 +70,12 @@ final class ItemEffectsToBonusConverter
     /**
      * Détecte la structure DofusDB de panoplie: effects = [ [], [effect...], [effect...] ... ].
      *
-     * @param array<int, mixed> $value
+     * @param  array<int, mixed>  $value
      */
     private function looksLikeTieredSetEffects(array $value): bool
     {
         foreach ($value as $row) {
-            if (!is_array($row)) {
+            if (! is_array($row)) {
                 return false;
             }
             if (array_key_exists('characteristic', $row)) {
@@ -89,8 +89,8 @@ final class ItemEffectsToBonusConverter
     /**
      * Convertit les bonus de panoplie par palier (nombre d'objets équipés).
      *
-     * @param array<int, mixed> $tiers
-     * @param array<string, mixed> $context
+     * @param  array<int, mixed>  $tiers
+     * @param  array<string, mixed>  $context
      * @return array<string, array<string, int>>
      */
     private function convertTieredSetEffects(array $tiers, array $context, array &$unknownCharacteristicCounts): array
@@ -99,7 +99,7 @@ final class ItemEffectsToBonusConverter
         $out = [];
 
         foreach (array_values($tiers) as $index => $tierEffects) {
-            if (!is_array($tierEffects) || $tierEffects === []) {
+            if (! is_array($tierEffects) || $tierEffects === []) {
                 continue;
             }
             $tierBonus = $this->convertEffectsListToBonus($tierEffects, $entityType, $context, $unknownCharacteristicCounts);
@@ -115,7 +115,7 @@ final class ItemEffectsToBonusConverter
     /**
      * Convertit une liste d'effets DofusDB en map bonus Krosmoz (clé courte => valeur).
      *
-     * @param array<int, mixed> $effects
+     * @param  array<int, mixed>  $effects
      * @return array<string, int>
      */
     private function convertEffectsListToBonus(
@@ -128,7 +128,7 @@ final class ItemEffectsToBonusConverter
         $bonus = [];
 
         foreach ($effects as $effect) {
-            if (!is_array($effect)) {
+            if (! is_array($effect)) {
                 continue;
             }
             $charId = isset($effect['characteristic']) ? (int) $effect['characteristic'] : null;
@@ -136,8 +136,9 @@ final class ItemEffectsToBonusConverter
                 continue;
             }
             $charKey = $objectMap[$charId] ?? null;
-            if (!is_string($charKey) || $charKey === '') {
+            if (! is_string($charKey) || $charKey === '') {
                 $unknownCharacteristicCounts[$charId] = ($unknownCharacteristicCounts[$charId] ?? 0) + 1;
+
                 continue;
             }
             $from = isset($effect['from']) && is_numeric($effect['from']) ? (int) $effect['from'] : null;
@@ -167,9 +168,9 @@ final class ItemEffectsToBonusConverter
     }
 
     /**
-     * @param array<int, int> $unknownCharacteristicCounts
-     * @param array<string, mixed> $context
-     * @param array<string, mixed> $raw
+     * @param  array<int, int>  $unknownCharacteristicCounts
+     * @param  array<string, mixed>  $context
+     * @param  array<string, mixed>  $raw
      */
     private function logUnknownCharacteristics(array $unknownCharacteristicCounts, array $context, array $raw): void
     {

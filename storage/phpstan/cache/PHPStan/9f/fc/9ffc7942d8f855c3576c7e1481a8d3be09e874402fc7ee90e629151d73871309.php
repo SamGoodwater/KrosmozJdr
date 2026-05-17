@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/Npc.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Entity\Npc
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-c4db4d57b7d2fc1aa964d1a4aaf422badb30a1cc37036ed92119af8091cbb553-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-e67b1b23ef3214f825d0f242909cf147d1b643187d2b4b261743e8a129ee8e1e-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -43,6 +43,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property-read int|null $scenarios_count
  * @property-read Shop|null $shop
  * @property-read Specialization|null $specialization
+ *
  * @method static \\Database\\Factories\\Entity\\NpcFactory factory($count = null, $state = [])
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Npc newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Npc newQuery()
@@ -57,19 +58,22 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Npc whereSpecializationId($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Npc whereStory($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Npc whereUpdatedAt($value)
+ *
  * @property string $state
  * @property int $read_level
  * @property int $write_level
+ *
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Npc whereReadLevel($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Npc whereState($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Npc whereWriteLevel($value)
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 53,
-    'endLine' => 141,
+    'startLine' => 57,
+    'endLine' => 145,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -97,12 +101,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'creature_id\', \'story\', \'historical\', \'age\', \'size\', \'breed_id\', \'specialization_id\', \'state\', \'read_level\', \'write_level\']',
           'attributes' => 
           array (
-            'startLine' => 63,
-            'endLine' => 74,
+            'startLine' => 67,
+            'endLine' => 78,
             'startTokenPos' => 54,
-            'startFilePos' => 2845,
+            'startFilePos' => 2857,
             'endTokenPos' => 86,
-            'endFilePos' => 3055,
+            'endFilePos' => 3067,
           ),
         ),
         'docComment' => '/**
@@ -113,8 +117,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 63,
-        'endLine' => 74,
+        'startLine' => 67,
+        'endLine' => 78,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -136,12 +140,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'read_level\' => \'integer\', \'write_level\' => \'integer\']',
           'attributes' => 
           array (
-            'startLine' => 81,
-            'endLine' => 84,
+            'startLine' => 85,
+            'endLine' => 88,
             'startTokenPos' => 97,
-            'startFilePos' => 3182,
+            'startFilePos' => 3194,
             'endTokenPos' => 113,
-            'endFilePos' => 3259,
+            'endFilePos' => 3271,
           ),
         ),
         'docComment' => '/**
@@ -152,8 +156,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 81,
-        'endLine' => 84,
+        'startLine' => 85,
+        'endLine' => 88,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -180,8 +184,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the creature associated with the NPC.
  */',
-        'startLine' => 89,
-        'endLine' => 92,
+        'startLine' => 93,
+        'endLine' => 96,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -209,8 +213,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les panoplies associées à ce PNJ.
  */',
-        'startLine' => 97,
-        'endLine' => 100,
+        'startLine' => 101,
+        'endLine' => 104,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -238,8 +242,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the breed (affichée « Classe ») associated with the NPC.
  */',
-        'startLine' => 105,
-        'endLine' => 108,
+        'startLine' => 109,
+        'endLine' => 112,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -267,8 +271,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the specialization associated with the NPC.
  */',
-        'startLine' => 113,
-        'endLine' => 116,
+        'startLine' => 117,
+        'endLine' => 120,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -296,8 +300,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les scénarios associés à ce PNJ.
  */',
-        'startLine' => 121,
-        'endLine' => 124,
+        'startLine' => 125,
+        'endLine' => 128,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -325,8 +329,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les campagnes associées à ce PNJ.
  */',
-        'startLine' => 129,
-        'endLine' => 132,
+        'startLine' => 133,
+        'endLine' => 136,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -354,8 +358,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * La hotel de vente associée à ce PNJ.
  */',
-        'startLine' => 137,
-        'endLine' => 140,
+        'startLine' => 141,
+        'endLine' => 144,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

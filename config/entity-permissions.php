@@ -11,13 +11,13 @@
  * NB: Les permissions "par instance" restent exposées via les API Resources (champ `can`).
  */
 
-use App\Models\Entity\Condition;
-use App\Models\Entity\CreatureTrait;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Capability;
-use App\Models\Entity\Breed;
+use App\Models\Entity\Condition;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
+use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Npc;
@@ -25,11 +25,11 @@ use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Shop;
-use App\Models\Entity\Spell;
 use App\Models\Entity\Specialization;
+use App\Models\Entity\Spell;
+use App\Models\Page;
 use App\Models\Type\ResourceType;
 use App\Models\User;
-use App\Models\Page;
 
 return [
     /**
@@ -63,5 +63,3 @@ return [
     'users' => User::class,
     'pages' => Page::class,
 ];
-
-

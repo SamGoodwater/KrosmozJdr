@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -22,14 +23,14 @@ class UpdateScenarioRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
-            'slug' => ['sometimes', 'required', 'string', 'max:255', 'unique:scenarios,slug,' . $this->route('scenario')],
+            'slug' => ['sometimes', 'required', 'string', 'max:255', 'unique:scenarios,slug,'.$this->route('scenario')],
             'keyword' => ['nullable', 'string', 'max:255'],
             'is_public' => ['sometimes', 'required', 'boolean'],
             'progress_state' => ['sometimes', 'required', 'integer', 'in:0,1,2,3'],

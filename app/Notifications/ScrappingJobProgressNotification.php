@@ -10,7 +10,7 @@ class ScrappingJobProgressNotification extends Notification
     use Queueable;
 
     /**
-     * @param array<string, mixed> $payload
+     * @param  array<string, mixed>  $payload
      */
     public function __construct(private array $payload) {}
 

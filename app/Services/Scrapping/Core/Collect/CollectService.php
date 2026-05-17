@@ -20,8 +20,7 @@ final class CollectService
         private ConfigLoader $configLoader,
         private ?DofusDbClient $dofusDbClient = null,
         private ?CollectAliasResolver $aliasResolver = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Résout un alias d'entité (ex. class) vers la clé de config (ex. breed).
@@ -42,7 +41,7 @@ final class CollectService
     /**
      * Récupère un seul objet par ID.
      *
-     * @param array{skip_cache?: bool} $options
+     * @param  array{skip_cache?: bool}  $options
      * @return array<string, mixed>
      */
     public function fetchOne(string $source, string $entity, int $id, array $options = []): array
@@ -55,16 +54,16 @@ final class CollectService
         $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
 
         $fetchOne = $entityConfig['endpoints']['fetchOne'] ?? null;
-        if (!is_array($fetchOne) || empty($fetchOne['pathTemplate'])) {
+        if (! is_array($fetchOne) || empty($fetchOne['pathTemplate'])) {
             return $this->fetchOneViaFetchMany($source, $configEntity, $id, $options);
         }
 
         $path = str_replace('{id}', (string) $id, (string) $fetchOne['pathTemplate']);
         $query = $this->interpolateQuery($fetchOne['queryDefaults'] ?? [], $lang);
-        $url = $baseUrl . $path . ($query !== '' ? '?' . $query : '');
+        $url = $baseUrl.$path.($query !== '' ? '?'.$query : '');
 
         $data = $this->getJson($url, $options);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return [];
         }
 
@@ -76,22 +75,22 @@ final class CollectService
      * { "data": { ... } } ou { "data": [ { ... } ] }. On retourne l’objet interne pour que
      * les relations (spells, drops, etc.) soient accessibles dans $raw.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     private function unwrapSingleResource(array $data): array
     {
-        if (!isset($data['data'])) {
+        if (! isset($data['data'])) {
             return $data;
         }
         $inner = $data['data'];
-        if (!is_array($inner)) {
+        if (! is_array($inner)) {
             return $data;
         }
         if (array_is_list($inner) && isset($inner[0]) && is_array($inner[0])) {
             return $inner[0];
         }
-        if (!array_is_list($inner)) {
+        if (! array_is_list($inner)) {
             return $inner;
         }
 
@@ -102,7 +101,7 @@ final class CollectService
      * Récupère la recette DofusDB pour un objet (ingredientIds + quantities).
      * Utilise l'endpoint /recipes?resultId= pour obtenir les quantités réelles.
      *
-     * @param array{skip_cache?: bool} $options
+     * @param  array{skip_cache?: bool}  $options
      * @return array{ingredientIds: list<int>, quantities: list<int>}|null
      */
     public function fetchRecipeByResultId(string $source, int $resultId, array $options = []): ?array
@@ -111,22 +110,22 @@ final class CollectService
         $baseUrl = rtrim((string) ($sourceConfig['baseUrl'] ?? 'https://api.dofusdb.fr'), '/');
         $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
         $query = http_build_query(['resultId' => $resultId, 'lang' => $lang], '', '&', PHP_QUERY_RFC3986);
-        $url = $baseUrl . '/recipes?' . $query;
+        $url = $baseUrl.'/recipes?'.$query;
         $response = $this->getJson($url, $options);
         $data = $response['data'] ?? [];
-        if (!is_array($data) || $data === []) {
+        if (! is_array($data) || $data === []) {
             return null;
         }
         $first = $data[0] ?? null;
-        if (!is_array($first)) {
+        if (! is_array($first)) {
             return null;
         }
         $ingredientIds = $first['ingredientIds'] ?? [];
         $quantities = $first['quantities'] ?? [];
-        if (!is_array($ingredientIds)) {
+        if (! is_array($ingredientIds)) {
             $ingredientIds = [];
         }
-        if (!is_array($quantities)) {
+        if (! is_array($quantities)) {
             $quantities = [];
         }
 
@@ -148,11 +147,11 @@ final class CollectService
         $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
         $queryParams = ['spellId' => $spellId, 'lang' => $lang, '$limit' => 50, '$sort' => 'grade'];
         $query = http_build_query($queryParams, '', '&', PHP_QUERY_RFC3986);
-        $url = $baseUrl . '/spell-levels?' . $query;
+        $url = $baseUrl.'/spell-levels?'.$query;
 
         $response = $this->getJson($url, $options);
         $data = $response['data'] ?? [];
-        if (!is_array($data) || $data === []) {
+        if (! is_array($data) || $data === []) {
             return [];
         }
 
@@ -188,15 +187,15 @@ final class CollectService
                 '$limit' => $pageSize,
                 '$skip' => $skip,
             ], '', '&', PHP_QUERY_RFC3986);
-            $url = $baseUrl . '/spell-levels?' . $query;
+            $url = $baseUrl.'/spell-levels?'.$query;
             $response = $this->getJson($url, $options);
             $data = $response['data'] ?? [];
-            if (!is_array($data)) {
+            if (! is_array($data)) {
                 $data = [];
             }
 
             foreach ($data as $row) {
-                if (!is_array($row)) {
+                if (! is_array($row)) {
                     continue;
                 }
                 $id = $row['spellId'] ?? $row['spell_id'] ?? $row['id'] ?? null;
@@ -243,19 +242,19 @@ final class CollectService
                 '$limit' => $pageSize,
                 '$skip' => $skip,
             ], '', '&', PHP_QUERY_RFC3986);
-            $url = $baseUrl . '/spell-variants?' . $query;
+            $url = $baseUrl.'/spell-variants?'.$query;
             $response = $this->getJson($url, $options);
             $data = $response['data'] ?? [];
-            if (!is_array($data)) {
+            if (! is_array($data)) {
                 $data = [];
             }
 
             foreach ($data as $row) {
-                if (!is_array($row)) {
+                if (! is_array($row)) {
                     continue;
                 }
                 $ids = $row['spellIds'] ?? $row['spell_ids'] ?? [];
-                if (!is_array($ids)) {
+                if (! is_array($ids)) {
                     continue;
                 }
                 foreach ($ids as $id) {
@@ -285,8 +284,8 @@ final class CollectService
     /**
      * Récupère une liste d'objets (pagination API en interne). limit=0 => tout, offset=0 par défaut.
      *
-     * @param array<string, mixed> $filters Filtres (id, idMin, idMax, ids, name, raceId, levelMin, levelMax, etc.)
-     * @param array{skip_cache?: bool, limit?: int, offset?: int, page_size?: int} $options limit=0 => tout, offset=0 par défaut, page_size=50 pour les requêtes API
+     * @param  array<string, mixed>  $filters  Filtres (id, idMin, idMax, ids, name, raceId, levelMin, levelMax, etc.)
+     * @param  array{skip_cache?: bool, limit?: int, offset?: int, page_size?: int}  $options  limit=0 => tout, offset=0 par défaut, page_size=50 pour les requêtes API
      * @return array{items: list<array<string, mixed>>, meta: array{total: int, limit: int, offset: int, collected: int}}
      */
     public function fetchMany(string $source, string $entity, array $filters = [], array $options = []): array
@@ -298,7 +297,7 @@ final class CollectService
         $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
 
         $fetchMany = $entityConfig['endpoints']['fetchMany'] ?? null;
-        if (!is_array($fetchMany) || empty($fetchMany['path'])) {
+        if (! is_array($fetchMany) || empty($fetchMany['path'])) {
             throw new \InvalidArgumentException("Config entité '{$source}/{$entity}': endpoints.fetchMany.path requis.");
         }
 
@@ -319,11 +318,11 @@ final class CollectService
                 $this->filtersToQueryParams($entityConfig, $filters)
             );
             $query = http_build_query($queryParams, '', '&', PHP_QUERY_RFC3986);
-            $url = $baseUrl . '/' . ltrim($path, '/') . '?' . $query;
+            $url = $baseUrl.'/'.ltrim($path, '/').'?'.$query;
 
             $response = $this->getJson($url, $options);
             $dataList = $response['data'] ?? [];
-            if (!is_array($dataList)) {
+            if (! is_array($dataList)) {
                 $dataList = [];
             }
 
@@ -371,22 +370,23 @@ final class CollectService
     /**
      * Applique une stratégie de post-traitement sur les items collectés (ex. groupement par superTypeId).
      *
-     * @param array<string, mixed> $entityConfig
-     * @param list<array<string, mixed>> $items
+     * @param  array<string, mixed>  $entityConfig
+     * @param  list<array<string, mixed>>  $items
      * @return list<array<string, mixed>>
      */
     private function applyCollectStrategy(array $entityConfig, array $items, string $lang): array
     {
         $strategy = $entityConfig['meta']['collectStrategy'] ?? null;
-        if (!is_array($strategy)) {
+        if (! is_array($strategy)) {
             return $items;
         }
 
         if (($strategy['filterOutCosmetic'] ?? false) === true) {
             return array_values(array_filter($items, static function ($row): bool {
-                if (!is_array($row)) {
+                if (! is_array($row)) {
                     return false;
                 }
+
                 return ($row['isCosmetic'] ?? true) !== true;
             }));
         }
@@ -397,7 +397,7 @@ final class CollectService
 
         $bySuperTypeId = [];
         foreach ($items as $row) {
-            if (!is_array($row)) {
+            if (! is_array($row)) {
                 continue;
             }
             $superTypeId = isset($row['superTypeId']) ? (int) $row['superTypeId'] : 0;
@@ -425,7 +425,7 @@ final class CollectService
     /**
      * Simule fetchOne via fetchMany (id=…&$limit=1) quand fetchOne n’existe pas ou n’est pas fiable.
      *
-     * @param array{skip_cache?: bool} $options
+     * @param  array{skip_cache?: bool}  $options
      * @return array<string, mixed>
      */
     private function fetchOneViaFetchMany(string $source, string $entity, int $id, array $options = []): array
@@ -439,15 +439,15 @@ final class CollectService
     /**
      * Construit les paramètres de requête Feathers à partir des filtres config.
      *
-     * @param array<string, mixed> $entityConfig
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $entityConfig
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     private function filtersToQueryParams(array $entityConfig, array $filters): array
     {
         $params = [];
         $supported = $entityConfig['filters']['supported'] ?? [];
-        if (!is_array($supported)) {
+        if (! is_array($supported)) {
             return $params;
         }
 
@@ -460,8 +460,8 @@ final class CollectService
             'name' => 'name[$search]',
             'raceId' => 'raceId',
             'raceIds' => 'raceIds[]',
-            'levelMin' => $levelPath . '[$gte]',
-            'levelMax' => $levelPath . '[$lte]',
+            'levelMin' => $levelPath.'[$gte]',
+            'levelMax' => $levelPath.'[$lte]',
             'typeId' => 'typeId',
             'typeIds' => 'typeId[$in][]',
         ];
@@ -484,7 +484,7 @@ final class CollectService
     }
 
     /**
-     * @param array<string, mixed> $queryDefaults
+     * @param  array<string, mixed>  $queryDefaults
      */
     private function interpolateQuery(array $queryDefaults, string $lang): string
     {
@@ -494,7 +494,7 @@ final class CollectService
     }
 
     /**
-     * @param array<string, mixed> $queryDefaults
+     * @param  array<string, mixed>  $queryDefaults
      * @return array<string, mixed>
      */
     private function interpolateQueryArray(array $queryDefaults, string $lang): array
@@ -511,7 +511,7 @@ final class CollectService
     }
 
     /**
-     * @param array{skip_cache?: bool} $options
+     * @param  array{skip_cache?: bool}  $options
      * @return array<string, mixed>
      */
     private function getJson(string $url, array $options = []): array
@@ -525,21 +525,22 @@ final class CollectService
         }
 
         $response = Http::timeout(30)->get($url);
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new \RuntimeException("Erreur HTTP {$response->status()} : {$url}");
         }
         $data = $response->json();
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return [];
         }
+
         return $data;
     }
 
     /**
      * Variante fetchMany retournant meta (skip, pages, returned) compatible recherche/batch.
      *
-     * @param array<string, mixed> $filters
-     * @param array{skip_cache?: bool, limit?: int, offset?: int, start_skip?: int, max_pages?: int, max_items?: int, page_size?: int} $options
+     * @param  array<string, mixed>  $filters
+     * @param  array{skip_cache?: bool, limit?: int, offset?: int, start_skip?: int, max_pages?: int, max_items?: int, page_size?: int}  $options
      * @return array{items: list<array<string, mixed>>, meta: array{total: int, limit: int, skip: int, pages: int, returned: int}}
      */
     public function fetchManyResult(string $source, string $entity, array $filters = [], array $options = []): array
@@ -547,6 +548,7 @@ final class CollectService
         $configEntity = $this->resolveConfigEntity($entity);
         $result = $this->fetchManyWithFeathersEncoding($source, $configEntity, $filters, $options);
         $meta = $result['meta'];
+
         return [
             'items' => $result['items'],
             'meta' => [
@@ -562,8 +564,8 @@ final class CollectService
     /**
      * fetchMany avec encodage Feathers (tableaux en key[]=v) et meta complète.
      *
-     * @param array<string, mixed> $filters
-     * @param array{skip_cache?: bool, limit?: int, offset?: int, start_skip?: int, max_pages?: int, max_items?: int, page_size?: int, debug_callback?: callable(string): void} $options
+     * @param  array<string, mixed>  $filters
+     * @param  array{skip_cache?: bool, limit?: int, offset?: int, start_skip?: int, max_pages?: int, max_items?: int, page_size?: int, debug_callback?: callable(string): void}  $options
      * @return array{items: list<array<string, mixed>>, meta: array{total: int, limit: int, offset: int, skip: int, pages: int, returned: int, collected: int}}
      */
     private function fetchManyWithFeathersEncoding(string $source, string $entity, array $filters = [], array $options = []): array
@@ -573,7 +575,7 @@ final class CollectService
         $baseUrl = rtrim((string) ($sourceConfig['baseUrl'] ?? 'https://api.dofusdb.fr'), '/');
         $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
         $fetchMany = $entityConfig['endpoints']['fetchMany'] ?? null;
-        if (!is_array($fetchMany) || empty($fetchMany['path'])) {
+        if (! is_array($fetchMany) || empty($fetchMany['path'])) {
             throw new \InvalidArgumentException("Config entité '{$source}/{$entity}': endpoints.fetchMany.path requis.");
         }
         $path = (string) $fetchMany['path'];
@@ -619,18 +621,18 @@ final class CollectService
                 $options['query_overrides'] ?? []
             );
             $queryString = $this->buildFeathersQueryString($query);
-            $url = $baseUrl . '/' . ltrim($path, '/') . '?' . $queryString;
+            $url = $baseUrl.'/'.ltrim($path, '/').'?'.$queryString;
             if ($isDebug) {
-                $shortUrl = '/' . ltrim($path, '/') . '?$limit=' . $requestLimit . '&$skip=' . $skip;
+                $shortUrl = '/'.ltrim($path, '/').'?$limit='.$requestLimit.'&$skip='.$skip;
                 if ($page === 1) {
-                    $debugCb("Collecte page 1 : GET " . $shortUrl . " (total API connu après 1ère réponse)");
+                    $debugCb('Collecte page 1 : GET '.$shortUrl.' (total API connu après 1ère réponse)');
                 } elseif ($page % 10 === 0 || $page <= 3) {
                     $debugCb("Collecte page {$page} (skip={$skip})…");
                 }
             }
             $response = $this->getJson($url, $options);
             $dataList = $response['data'] ?? [];
-            if (!is_array($dataList)) {
+            if (! is_array($dataList)) {
                 $dataList = [];
             }
             $total = (int) ($response['total'] ?? $total);
@@ -646,7 +648,7 @@ final class CollectService
                 $progressCb($page, $cumul, $total);
             }
             if ($isDebug) {
-                $debugCb("  page {$page} : +{$pageCount} items, cumul={$cumul}" . ($total > 0 ? ", total API={$total}" : ""));
+                $debugCb("  page {$page} : +{$pageCount} items, cumul={$cumul}".($total > 0 ? ", total API={$total}" : ''));
             }
             foreach ($dataList as $item) {
                 if (is_array($item)) {
@@ -688,49 +690,54 @@ final class CollectService
     /**
      * Construit une query string compatible Feathers (tableaux en key[]=v).
      *
-     * @param array<string, mixed> $query
+     * @param  array<string, mixed>  $query
      */
     private function buildFeathersQueryString(array $query): string
     {
         $pairs = [];
         foreach ($query as $k => $v) {
-            if (!is_string($k) || $k === '') {
+            if (! is_string($k) || $k === '') {
                 continue;
             }
             $this->flattenQueryPairs($pairs, $k, $v);
         }
         $out = [];
         foreach ($pairs as [$key, $value]) {
-            $out[] = rawurlencode((string) $key) . '=' . rawurlencode((string) $value);
+            $out[] = rawurlencode((string) $key).'='.rawurlencode((string) $value);
         }
+
         return implode('&', $out);
     }
 
     /**
-     * @param array<int, array{0:string, 1:string|int|float|bool}> $pairs
+     * @param  array<int, array{0:string, 1:string|int|float|bool}>  $pairs
      */
     private function flattenQueryPairs(array &$pairs, string $prefix, mixed $value): void
     {
         if (is_array($value)) {
             foreach ($value as $k => $v) {
                 if (is_int($k)) {
-                    $this->flattenQueryPairs($pairs, $prefix . '[]', $v);
+                    $this->flattenQueryPairs($pairs, $prefix.'[]', $v);
                 } else {
-                    $this->flattenQueryPairs($pairs, $prefix . '[' . (string) $k . ']', $v);
+                    $this->flattenQueryPairs($pairs, $prefix.'['.(string) $k.']', $v);
                 }
             }
+
             return;
         }
         if (is_bool($value)) {
             $pairs[] = [$prefix, $value ? 'true' : 'false'];
+
             return;
         }
         if (is_int($value) || is_float($value)) {
             $pairs[] = [$prefix, (string) $value];
+
             return;
         }
         if (is_string($value) && $value !== '') {
             $pairs[] = [$prefix, $value];
+
             return;
         }
         if (is_string($value) && $value === '') {
@@ -744,14 +751,14 @@ final class CollectService
     /**
      * Filtres métier → query Feathers (DofusDB : race pour monster, pas raceId).
      *
-     * @param array<string, mixed> $entityConfig
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $entityConfig
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     private function filtersToFeathersQuery(array $entityConfig, array $filters): array
     {
         $supported = $entityConfig['filters']['supported'] ?? [];
-        if (!is_array($supported)) {
+        if (! is_array($supported)) {
             return [];
         }
         $supportedKeys = [];
@@ -764,7 +771,7 @@ final class CollectService
         $q = [];
 
         foreach ($filters as $key => $value) {
-            if (!is_string($key) || !isset($supportedKeys[$key])) {
+            if (! is_string($key) || ! isset($supportedKeys[$key])) {
                 continue;
             }
             switch ($key) {
@@ -802,7 +809,7 @@ final class CollectService
                         if ($max > 0) {
                             $ids = array_slice($ids, 0, $max);
                         }
-                        if (!empty($ids)) {
+                        if (! empty($ids)) {
                             $q['id'] = ['$in' => $ids];
                         }
                     }
@@ -830,7 +837,7 @@ final class CollectService
                         if ($max > 0) {
                             $ids = array_slice($ids, 0, $max);
                         }
-                        if (!empty($ids)) {
+                        if (! empty($ids)) {
                             $q['race'] = ($q['race'] ?? []);
                             if (is_array($q['race'])) {
                                 $q['race']['$in'] = $ids;
@@ -861,7 +868,7 @@ final class CollectService
                         if ($max > 0) {
                             $ids = array_slice($ids, 0, $max);
                         }
-                        if (!empty($ids)) {
+                        if (! empty($ids)) {
                             $q['typeId'] = ($q['typeId'] ?? []);
                             if (is_array($q['typeId'])) {
                                 $q['typeId']['$in'] = $ids;
@@ -882,7 +889,7 @@ final class CollectService
                         if ($max > 0) {
                             $ids = array_slice($ids, 0, $max);
                         }
-                        if (!empty($ids)) {
+                        if (! empty($ids)) {
                             $q['typeId'] = ($q['typeId'] ?? []);
                             if (is_array($q['typeId'])) {
                                 $q['typeId']['$nin'] = $ids;
@@ -912,6 +919,7 @@ final class CollectService
                     break;
             }
         }
+
         return $q;
     }
 }

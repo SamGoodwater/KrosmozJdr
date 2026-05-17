@@ -189,7 +189,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Models/OAuthAccount.php' => '79721839a70bec27eb57a94ffb0eec74a2443d5e574c860b12002c1e5e5fd061',
+      '/var/www/KrosmozJdr/app/Models/OAuthAccount.php' => '06caf96e8aa626d978d259170401e49cc4569de739d21aaaa5508de41fec26f8',
     ),
   ),
 ));

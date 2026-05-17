@@ -2,7 +2,10 @@
 
 namespace Tests\Unit\Scrapping\Core;
 
+use App\Models\Effect;
+use App\Models\EffectSubEffect;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Condition;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
@@ -10,9 +13,6 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
-use App\Models\Effect;
-use App\Models\EffectSubEffect;
-use App\Models\Entity\Condition;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;

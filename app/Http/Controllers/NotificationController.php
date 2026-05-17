@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Notifications\ScrappingJobProgressNotification;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -22,8 +22,6 @@ class NotificationController extends Controller
     /**
      * Liste des notifications (API JSON) ou page plein écran (Inertia).
      * En JSON : filtre archived=0|1, pagination, unread_count.
-     *
-     * @return JsonResponse|Response
      */
     public function index(Request $request): JsonResponse|Response
     {
@@ -206,8 +204,7 @@ class NotificationController extends Controller
     /**
      * Marquer une notification comme lue.
      *
-     * @param string $id UUID de la notification
-     * @return JsonResponse
+     * @param  string  $id  UUID de la notification
      */
     public function markAsRead(Request $request, string $id): JsonResponse
     {
@@ -216,7 +213,7 @@ class NotificationController extends Controller
             ->where('id', $id)
             ->first();
 
-        if (!$notification) {
+        if (! $notification) {
             return response()->json(['message' => 'Notification introuvable.'], 404);
         }
 
@@ -230,8 +227,6 @@ class NotificationController extends Controller
 
     /**
      * Marquer toutes les notifications comme lues (non archivées).
-     *
-     * @return JsonResponse
      */
     public function markAllAsRead(Request $request): JsonResponse
     {
@@ -249,8 +244,7 @@ class NotificationController extends Controller
     /**
      * Archiver une notification.
      *
-     * @param string $id UUID de la notification
-     * @return JsonResponse
+     * @param  string  $id  UUID de la notification
      */
     public function archive(Request $request, string $id): JsonResponse
     {
@@ -270,8 +264,7 @@ class NotificationController extends Controller
     /**
      * Désarchiver une notification.
      *
-     * @param string $id UUID de la notification
-     * @return JsonResponse
+     * @param  string  $id  UUID de la notification
      */
     public function unarchive(Request $request, string $id): JsonResponse
     {
@@ -291,8 +284,7 @@ class NotificationController extends Controller
     /**
      * Épingler une notification (mise en avant).
      *
-     * @param string $id UUID de la notification
-     * @return JsonResponse
+     * @param  string  $id  UUID de la notification
      */
     public function pin(Request $request, string $id): JsonResponse
     {
@@ -309,8 +301,7 @@ class NotificationController extends Controller
     /**
      * Désépingler une notification.
      *
-     * @param string $id UUID de la notification
-     * @return JsonResponse
+     * @param  string  $id  UUID de la notification
      */
     public function unpin(Request $request, string $id): JsonResponse
     {
@@ -327,8 +318,7 @@ class NotificationController extends Controller
     /**
      * Supprimer définitivement une notification.
      *
-     * @param string $id UUID de la notification
-     * @return JsonResponse
+     * @param  string  $id  UUID de la notification
      */
     public function destroy(Request $request, string $id): JsonResponse
     {
@@ -353,8 +343,6 @@ class NotificationController extends Controller
 
     /**
      * Récupère une notification appartenant à l'utilisateur connecté.
-     *
-     * @return DatabaseNotification|null
      */
     private function findNotification(Request $request, string $id): ?DatabaseNotification
     {

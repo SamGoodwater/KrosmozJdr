@@ -20,8 +20,7 @@ class DofusConversionFormulaController extends Controller
         private readonly CharacteristicGetterService $getter,
         private readonly CharacteristicFormulaService $formulaService,
         private readonly DofusConversionService $conversionService
-    ) {
-    }
+    ) {}
 
     public function handlers(): JsonResponse
     {

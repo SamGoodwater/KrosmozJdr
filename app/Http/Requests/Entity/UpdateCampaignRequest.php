@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCampaignRequest extends FormRequest
@@ -17,14 +18,14 @@ class UpdateCampaignRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['sometimes', 'nullable', 'string', 'max:1000'],
-            'slug' => ['sometimes', 'required', 'string', 'max:255', 'unique:campaigns,slug,' . $this->route('campaign')],
+            'slug' => ['sometimes', 'required', 'string', 'max:255', 'unique:campaigns,slug,'.$this->route('campaign')],
             'keyword' => ['sometimes', 'nullable', 'string', 'max:255'],
             'is_public' => ['sometimes', 'required', 'boolean'],
             'progress_state' => ['sometimes', 'required', 'integer', 'in:0,1,2,3'],

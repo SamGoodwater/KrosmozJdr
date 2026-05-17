@@ -2,10 +2,10 @@
 
 namespace App\Support\EntityPermissions;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
-use App\Models\User;
 
 /**
  * EntityPermissionService
@@ -33,7 +33,6 @@ class EntityPermissionService
     /**
      * Retourne les permissions globales par entité pour un utilisateur.
      *
-     * @param User|null $user
      * @return array<string, mixed>
      */
     public function forUser(?User $user): array
@@ -41,7 +40,7 @@ class EntityPermissionService
         // Non connecté :
         // - on expose au minimum `viewAny` par entité (utile pour masquer/afficher des colonnes côté front)
         // - les autres permissions restent à false
-        if (!$user) {
+        if (! $user) {
             /** @var array<string, class-string> $registry */
             $registry = (array) Config::get('entity-permissions', []);
             /** @var array<string, array<int, array{entity?: string, ability?: string}>> $accessRegistry */
@@ -65,11 +64,11 @@ class EntityPermissionService
                 foreach ((array) $rules as $rule) {
                     $entityType = (string) ($rule['entity'] ?? '');
                     $ability = (string) ($rule['ability'] ?? '');
-                    if (!$entityType || !$ability) {
+                    if (! $entityType || ! $ability) {
                         continue;
                     }
                     $modelClass = $registry[$entityType] ?? null;
-                    if (!$modelClass) {
+                    if (! $modelClass) {
                         continue;
                     }
                     if (Gate::allows($ability, $modelClass)) {
@@ -86,7 +85,7 @@ class EntityPermissionService
             ];
         }
 
-        $cacheKey = self::CACHE_PREFIX . $user->id;
+        $cacheKey = self::CACHE_PREFIX.$user->id;
 
         return Cache::remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($user) {
             /** @var array<string, class-string> $registry */
@@ -118,11 +117,11 @@ class EntityPermissionService
                 foreach ((array) $rules as $rule) {
                     $entityType = (string) ($rule['entity'] ?? '');
                     $ability = (string) ($rule['ability'] ?? '');
-                    if (!$entityType || !$ability) {
+                    if (! $entityType || ! $ability) {
                         continue;
                     }
                     $modelClass = $registry[$entityType] ?? null;
-                    if (!$modelClass) {
+                    if (! $modelClass) {
                         continue;
                     }
                     if ($user->can($ability, $modelClass)) {
@@ -145,8 +144,6 @@ class EntityPermissionService
      */
     public function forgetForUser(User $user): void
     {
-        Cache::forget(self::CACHE_PREFIX . $user->id);
+        Cache::forget(self::CACHE_PREFIX.$user->id);
     }
 }
-
-

@@ -65,11 +65,11 @@ class RegistrationTest extends TestCase
 
         $validator = validator($request->all(), $request->rules());
         $this->assertTrue($validator->fails());
-        
+
         $errors = $validator->errors();
         $this->assertTrue($errors->has('name'));
         $this->assertTrue($errors->has('email'));
         $this->assertTrue($errors->has('password'));
     }
     */
-} 
+}

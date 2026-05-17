@@ -59,4 +59,3 @@ class DeletionRequestTest extends TestCase
         ]);
     }
 }
-

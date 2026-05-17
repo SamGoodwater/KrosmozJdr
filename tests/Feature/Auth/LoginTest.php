@@ -44,7 +44,7 @@ class LoginTest extends TestCase
         $user = User::factory()->create();
 
         $controller = new \App\Http\Controllers\Auth\AuthenticatedSessionController();
-        
+
         $request = new \App\Http\Requests\Auth\LoginRequest();
         $request->merge([
             'identifier' => $user->email,
@@ -52,7 +52,7 @@ class LoginTest extends TestCase
         ]);
 
         $request->authenticate();
-        
+
         $this->assertAuthenticated();
         $this->assertAuthenticatedAs($user);
     }
@@ -68,7 +68,7 @@ class LoginTest extends TestCase
         ]);
 
         $request->authenticate();
-        
+
         $this->assertAuthenticated();
         $this->assertAuthenticatedAs($user);
     }
@@ -99,9 +99,9 @@ class LoginTest extends TestCase
         ]);
 
         $request->authenticate();
-        
+
         $this->assertAuthenticated();
         $this->assertAuthenticatedAs($user);
     }
     */
-} 
+}

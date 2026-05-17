@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { registerSaveShortcut } from "../../resources/js/Composables/utils/saveShortcutRegistry.js";
+import { registerSaveShortcut } from "@/Composables/utils/saveShortcutRegistry.js";
 
 /**
  * @returns {void}

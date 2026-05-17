@@ -79,4 +79,4 @@ class EmailVerificationTest extends TestCase
         $response->assertRedirect('/user');
     }
     */
-} 
+}

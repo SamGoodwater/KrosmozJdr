@@ -27,4 +27,3 @@ class SpellTypeController extends Controller
         ]);
     }
 }
-

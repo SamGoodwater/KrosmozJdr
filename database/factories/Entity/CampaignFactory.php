@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Entity\Campaign>
+ * @extends Factory<Campaign>
  */
 class CampaignFactory extends Factory
 {
@@ -20,7 +20,7 @@ class CampaignFactory extends Factory
     public function definition(): array
     {
         $name = $this->faker->unique()->words(3, true);
-        $slug = Str::slug($name . '-' . $this->faker->unique()->randomNumber(3));
+        $slug = Str::slug($name.'-'.$this->faker->unique()->randomNumber(3));
 
         $levels = [
             User::ROLE_GUEST,

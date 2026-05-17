@@ -20,29 +20,29 @@ class DiceNotationServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new DiceNotationService();
+        $this->service = new DiceNotationService;
     }
 
-    public function test_single_value_returns_ndX_or_ndX_plus_y(): void
+    public function test_single_value_returns_nd_x_or_nd_x_plus_y(): void
     {
         $result = $this->service->toDiceNotation(11);
         $this->assertMatchesRegularExpression('/^\d+d\d+(?:\+\d+)?$/', $result);
     }
 
-    public function test_close_range_returns_ndX_plus_y(): void
+    public function test_close_range_returns_nd_x_plus_y(): void
     {
         $result = $this->service->toDiceNotation(11, 11.4);
         $this->assertStringContainsString('+', $result, 'Écart < 5 % doit privilégier ndX+y');
     }
 
-    public function test_wide_range_returns_ndX_only(): void
+    public function test_wide_range_returns_nd_x_only(): void
     {
         $result = $this->service->toDiceNotation(5, 20);
         $this->assertMatchesRegularExpression('/^\d+d\d+$/', $result);
         $this->assertStringNotContainsString('+', $result, 'Écart > 30 % doit retourner ndX sans y');
     }
 
-    public function test_medium_range_returns_ndX_only(): void
+    public function test_medium_range_returns_nd_x_only(): void
     {
         $result = $this->service->toDiceNotation(4, 12);
         $this->assertMatchesRegularExpression('/^\d+d\d+$/', $result);

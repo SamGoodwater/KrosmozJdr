@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Entity;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Entity\StoreSpecializationRequest;
 use App\Http\Requests\Entity\UpdateSpecializationCapabilitiesRequest;
 use App\Http\Requests\Entity\UpdateSpecializationConsumablesRequest;
-use App\Http\Requests\Entity\StoreSpecializationRequest;
 use App\Http\Requests\Entity\UpdateSpecializationCreatureTraitsRequest;
 use App\Http\Requests\Entity\UpdateSpecializationItemsRequest;
-use App\Http\Requests\Entity\UpdateSpecializationResourcesRequest;
 use App\Http\Requests\Entity\UpdateSpecializationRequest;
+use App\Http\Requests\Entity\UpdateSpecializationResourcesRequest;
 use App\Http\Requests\Entity\UpdateSpecializationSectionsRequest;
 use App\Http\Requests\Entity\UpdateSpecializationSpellsRequest;
 use App\Http\Resources\Entity\CapabilityResource;
@@ -41,7 +41,7 @@ class SpecializationController extends Controller
     public function index(): Response
     {
         $this->authorize('viewAny', Specialization::class);
-        
+
         $query = Specialization::query()
             ->with([
                 'createdBy',
@@ -50,29 +50,29 @@ class SpecializationController extends Controller
                 'spells' => fn ($q) => $q->orderBy('name'),
             ])
             ->withCount(['capabilities', 'spells']);
-        
+
         // Recherche
         if (request()->has('search') && request()->search) {
             $search = request()->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('short_description', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('short_description', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
-        
+
         // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
-        
+
         if (in_array($sortColumn, ['id', 'name', 'capabilities_count', 'spells_count', 'created_at'])) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
         }
-        
+
         $specializations = $query->paginate(20)->withQueryString();
-        
+
         return Inertia::render('Pages/entity/specialization/Index', [
             'specializations' => SpecializationResource::collection($specializations),
             'filters' => request()->only(['search']),
@@ -270,39 +270,39 @@ class SpecializationController extends Controller
 
     /**
      * Télécharge un PDF pour un ou plusieurs specializations.
-     * 
-     * @param Specialization|null $specialization La specialization unique (si une seule)
+     *
+     * @param  Specialization|null  $specialization  La specialization unique (si une seule)
      * @return \Illuminate\Http\Response
      */
     public function downloadPdf(?Specialization $specialization = null)
     {
         $ids = request()->get('ids');
-        
-        if (!empty($ids)) {
+
+        if (! empty($ids)) {
             if (is_string($ids)) {
                 $ids = explode(',', $ids);
             }
-            
+
             if (is_array($ids) && count($ids) > 0) {
                 $specializations = Specialization::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Specialization::class);
-                
+
                 $pdf = PdfService::generateForEntities($specializations, 'specialization');
-                $filename = 'specializations-' . now()->format('Y-m-d-His') . '.pdf';
-                
+                $filename = 'specializations-'.now()->format('Y-m-d-His').'.pdf';
+
                 return $pdf->download($filename);
             }
         }
-        
-        if (!$specialization) {
+
+        if (! $specialization) {
             abort(404);
         }
-        
+
         $this->authorize('view', $specialization);
-        
+
         $pdf = PdfService::generateForEntity($specialization, 'specialization');
-        $filename = 'specialization-' . $specialization->id . '-' . now()->format('Y-m-d-His') . '.pdf';
-        
+        $filename = 'specialization-'.$specialization->id.'-'.now()->format('Y-m-d-His').'.pdf';
+
         return $pdf->download($filename);
     }
 }

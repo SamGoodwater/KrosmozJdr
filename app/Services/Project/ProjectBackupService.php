@@ -18,6 +18,14 @@ class ProjectBackupService
         private readonly string $filenamePrefix,
     ) {}
 
+    /**
+     * Répertoire des sauvegardes tel que résolu (config ou défaut {@see storage_path}('app/backups')).
+     */
+    public function resolvedBackupDirectory(): string
+    {
+        return $this->backupRoot;
+    }
+
     public static function fromConfig(): self
     {
         $configured = (string) config('project-backup.path', '');

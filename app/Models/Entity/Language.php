@@ -3,9 +3,11 @@
 namespace App\Models\Entity;
 
 use Database\Factories\Entity\LanguageFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Langue (référentiel) — associable aux classes, monstres, spécialisations, etc.
@@ -14,13 +16,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $name
  * @property string|null $description
  * @property string $color Hex #RRGGBB
+ *
  * @method static LanguageFactory factory($count = null, $state = [])
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
+ *
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Monster> $monsters
+ * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language query()
@@ -30,6 +35,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Language extends Model

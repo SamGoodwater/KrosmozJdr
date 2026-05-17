@@ -44,6 +44,7 @@ final class DofusDbEffectMapping
         if ($elementId === null) {
             return null;
         }
+
         return self::ELEMENT_ID_TO_KEY[$elementId] ?? null;
     }
 }

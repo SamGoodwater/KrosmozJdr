@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Services/NotificationService.php-presentSymbols
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-42144e6214b2d16183ec50411c8dd09a767f0c7b0c2a8c36ebfedfe2a20ae993-8.4.17',
+   'variableKey' => 'v2-07dcb7e3a7582b930334f42404bc03102560bfd0253f1f9ada26206ae7139ae2-8.4.17',
    'data' => 
   array (
     'classes' => 

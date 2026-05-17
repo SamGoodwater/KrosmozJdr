@@ -5,9 +5,14 @@ namespace App\Http\Controllers\Entity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreNpcRequest;
 use App\Http\Requests\Entity\UpdateNpcRequest;
-use App\Models\Entity\Npc;
 use App\Http\Resources\Entity\NpcResource;
+use App\Models\Entity\Campaign;
+use App\Models\Entity\Npc;
+use App\Models\Entity\Panoply;
+use App\Models\Entity\Scenario;
 use App\Services\PdfService;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class NpcController extends Controller
@@ -18,38 +23,38 @@ class NpcController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Npc::class);
-        
+
         $query = Npc::with(['creature', 'breed', 'specialization']);
-        
+
         // Recherche
         if (request()->has('search') && request()->search) {
             $search = request()->search;
-            $query->whereHas('creature', function($q) use ($search) {
+            $query->whereHas('creature', function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%");
             });
         }
-        
+
         // Filtres
         if (request()->has('breed_id') && request()->breed_id !== '') {
             $query->where('breed_id', request()->breed_id);
         }
-        
+
         if (request()->has('specialization_id') && request()->specialization_id !== '') {
             $query->where('specialization_id', request()->specialization_id);
         }
-        
+
         // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
-        
+
         if (in_array($sortColumn, ['id', 'created_at'])) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
         }
-        
+
         $npcs = $query->paginate(20)->withQueryString();
-        
+
         return Inertia::render('Pages/entity/npc/Index', [
             'npcs' => NpcResource::collection($npcs),
             'filters' => request()->only(['search', 'breed_id', 'specialization_id']),
@@ -86,22 +91,22 @@ class NpcController extends Controller
     public function edit(Npc $npc)
     {
         $this->authorize('update', $npc);
-        
+
         $npc->load(['creature', 'breed', 'specialization', 'panoplies', 'scenarios', 'campaigns']);
-        
+
         // Charger toutes les entités disponibles pour la recherche
-        $availablePanoplies = \App\Models\Entity\Panoply::select('id', 'name', 'description')
+        $availablePanoplies = Panoply::select('id', 'name', 'description')
             ->orderBy('name')
             ->get();
-        
-        $availableScenarios = \App\Models\Entity\Scenario::select('id', 'name', 'description')
+
+        $availableScenarios = Scenario::select('id', 'name', 'description')
             ->orderBy('name')
             ->get();
-        
-        $availableCampaigns = \App\Models\Entity\Campaign::select('id', 'name', 'description')
+
+        $availableCampaigns = Campaign::select('id', 'name', 'description')
             ->orderBy('name')
             ->get();
-        
+
         return Inertia::render('Pages/entity/npc/Edit', [
             'npc' => new NpcResource($npc),
             'availablePanoplies' => $availablePanoplies,
@@ -129,17 +134,17 @@ class NpcController extends Controller
     /**
      * Update the panoplies of an NPC.
      */
-    public function updatePanoplies(\Illuminate\Http\Request $request, Npc $npc)
+    public function updatePanoplies(Request $request, Npc $npc)
     {
         $this->authorize('update', $npc);
-        
+
         $request->validate([
             'panoplies' => 'required|array',
             'panoplies.*' => 'exists:panoplies,id',
         ]);
-        
+
         $npc->panoplies()->sync($request->panoplies);
-        
+
         return redirect()->back()
             ->with('success', 'Panoplies du PNJ mises à jour avec succès.');
     }
@@ -147,17 +152,17 @@ class NpcController extends Controller
     /**
      * Update the scenarios of an NPC.
      */
-    public function updateScenarios(\Illuminate\Http\Request $request, Npc $npc)
+    public function updateScenarios(Request $request, Npc $npc)
     {
         $this->authorize('update', $npc);
-        
+
         $request->validate([
             'scenarios' => 'required|array',
             'scenarios.*' => 'exists:scenarios,id',
         ]);
-        
+
         $npc->scenarios()->sync($request->scenarios);
-        
+
         return redirect()->back()
             ->with('success', 'Scénarios du PNJ mis à jour avec succès.');
     }
@@ -165,56 +170,56 @@ class NpcController extends Controller
     /**
      * Update the campaigns of an NPC.
      */
-    public function updateCampaigns(\Illuminate\Http\Request $request, Npc $npc)
+    public function updateCampaigns(Request $request, Npc $npc)
     {
         $this->authorize('update', $npc);
-        
+
         $request->validate([
             'campaigns' => 'required|array',
             'campaigns.*' => 'exists:campaigns,id',
         ]);
-        
+
         $npc->campaigns()->sync($request->campaigns);
-        
+
         return redirect()->back()
             ->with('success', 'Campagnes du PNJ mises à jour avec succès.');
     }
 
     /**
      * Télécharge un PDF pour un ou plusieurs npcs.
-     * 
-     * @param Npc|null $npc Le npc unique (si un seul)
-     * @return \Illuminate\Http\Response
+     *
+     * @param  Npc|null  $npc  Le npc unique (si un seul)
+     * @return Response
      */
     public function downloadPdf(?Npc $npc = null)
     {
         $ids = request()->get('ids');
-        
-        if (!empty($ids)) {
+
+        if (! empty($ids)) {
             if (is_string($ids)) {
                 $ids = explode(',', $ids);
             }
-            
+
             if (is_array($ids) && count($ids) > 0) {
                 $npcs = Npc::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Npc::class);
-                
+
                 $pdf = PdfService::generateForEntities($npcs, 'npc');
-                $filename = 'npcs-' . now()->format('Y-m-d-His') . '.pdf';
-                
+                $filename = 'npcs-'.now()->format('Y-m-d-His').'.pdf';
+
                 return $pdf->download($filename);
             }
         }
-        
-        if (!$npc) {
+
+        if (! $npc) {
             abort(404);
         }
-        
+
         $this->authorize('view', $npc);
-        
+
         $pdf = PdfService::generateForEntity($npc, 'npc');
-        $filename = 'npc-' . $npc->id . '-' . now()->format('Y-m-d-His') . '.pdf';
-        
+        $filename = 'npc-'.$npc->id.'-'.now()->format('Y-m-d-His').'.pdf';
+
         return $pdf->download($filename);
     }
 }

@@ -2,18 +2,16 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Panoply;
 use App\Models\Entity\Item;
+use App\Models\Entity\Panoply;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Panoply
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class PanoplyModelTest extends TestCase
 {
@@ -25,7 +23,7 @@ class PanoplyModelTest extends TestCase
     public function test_panoply_factory_creates_valid_panoply(): void
     {
         $user = User::factory()->create();
-        
+
         $panoply = Panoply::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -106,7 +104,7 @@ class PanoplyModelTest extends TestCase
 
     /**
      * Test de suppression en cascade (panoply supprimée, relations supprimées)
-     * 
+     *
      * Note: Panoply utilise SoftDeletes, mais la migration item_panoply a cascadeOnDelete,
      * donc la suppression définitive devrait supprimer les relations dans la table pivot.
      */
@@ -175,4 +173,3 @@ class PanoplyModelTest extends TestCase
         $this->assertEquals($panoply->id, $found->id);
     }
 }
-

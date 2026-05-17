@@ -2,22 +2,20 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Shop;
-use App\Models\Entity\Npc;
+use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
-use App\Models\Entity\Consumable;
+use App\Models\Entity\Npc;
 use App\Models\Entity\Resource;
+use App\Models\Entity\Shop;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Shop
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class ShopModelTest extends TestCase
 {
@@ -29,7 +27,7 @@ class ShopModelTest extends TestCase
     public function test_shop_factory_creates_valid_shop(): void
     {
         $user = User::factory()->create();
-        
+
         $shop = Shop::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -66,7 +64,7 @@ class ShopModelTest extends TestCase
         $npc = Npc::factory()->create([
             'creature_id' => $creature->id,
         ]);
-        
+
         $shop = Shop::factory()->create([
             'created_by' => $user->id,
             'npc_id' => $npc->id,
@@ -100,7 +98,7 @@ class ShopModelTest extends TestCase
 
         $shop->refresh();
         $this->assertCount(2, $shop->items);
-        
+
         $pivot1 = $shop->items->where('id', $item1->id)->first()->pivot;
         $this->assertEquals('5', $pivot1->quantity);
         $this->assertEquals('100', $pivot1->price);
@@ -158,4 +156,3 @@ class ShopModelTest extends TestCase
         $this->assertCount(2, $shop->resources);
     }
 }
-

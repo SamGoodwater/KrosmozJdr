@@ -35,4 +35,3 @@ class HomeRouteTest extends TestCase
         $response->assertOk();
     }
 }
-

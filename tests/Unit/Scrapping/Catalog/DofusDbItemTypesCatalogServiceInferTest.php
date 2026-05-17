@@ -6,11 +6,10 @@ namespace Tests\Unit\Scrapping\Catalog;
 
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Http\DofusDbClient;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService::inferSuperTypeIdFromItemRaw
- */
+#[CoversMethod(DofusDbItemTypesCatalogService::class, 'inferSuperTypeIdFromItemRaw')]
 class DofusDbItemTypesCatalogServiceInferTest extends TestCase
 {
     public function test_infer_from_type_super_type_id(): void

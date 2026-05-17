@@ -20,7 +20,7 @@ class FormulaResolutionServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new FormulaResolutionService(new SafeExpressionEvaluator());
+        $this->service = new FormulaResolutionService(new SafeExpressionEvaluator);
     }
 
     public function test_evaluate_simple_formula(): void

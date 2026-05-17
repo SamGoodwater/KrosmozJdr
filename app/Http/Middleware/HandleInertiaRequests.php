@@ -2,20 +2,20 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Resources\UserLightResource;
+use App\Models\DataSubjectRequest;
 use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
+use App\Support\EntityPermissions\EntityPermissionService;
 use App\Support\OAuthConfig;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
-use App\Http\Resources\UserLightResource;
-use App\Support\EntityPermissions\EntityPermissionService;
 
 class HandleInertiaRequests extends Middleware
 {
     public function __construct(
         private readonly CharacteristicMetaByDbColumnService $characteristicMeta
-    ) {
-    }
+    ) {}
 
     /**
      * The root template that is loaded on the first page visit.
@@ -39,7 +39,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $permissionService = new EntityPermissionService();
+        $permissionService = new EntityPermissionService;
+
         return [
             ...parent::share($request),
             'pending_erasure' => function () use ($request) {
@@ -47,10 +48,10 @@ class HandleInertiaRequests extends Middleware
                 if (! $user) {
                     return null;
                 }
-                $dsr = \App\Models\DataSubjectRequest::query()
+                $dsr = DataSubjectRequest::query()
                     ->where('user_id', $user->id)
-                    ->where('type', \App\Models\DataSubjectRequest::TYPE_ERASURE)
-                    ->where('status', \App\Models\DataSubjectRequest::STATUS_PENDING)
+                    ->where('type', DataSubjectRequest::TYPE_ERASURE)
+                    ->where('status', DataSubjectRequest::STATUS_PENDING)
                     ->whereNotNull('expires_at')
                     ->where('expires_at', '>', now())
                     ->latest('id')
@@ -58,15 +59,17 @@ class HandleInertiaRequests extends Middleware
                 if (! $dsr) {
                     return null;
                 }
+
                 return [
                     'expires_at' => $dsr->expires_at->toIso8601String(),
                 ];
             },
             'auth' => [
                 'user' => function () use ($request) {
-                    if (!$request->user()) {
+                    if (! $request->user()) {
                         return null;
                     }
+
                     return (new UserLightResource($request->user()))->toArray($request);
                 },
                 'isLogged' => fn () => $request->user() !== null,
@@ -90,6 +93,7 @@ class HandleInertiaRequests extends Middleware
                     if (! $request->user()) {
                         return 0;
                     }
+
                     return $request->user()->unreadNotifications()->whereNull('archived_at')->count();
                 },
             ],
@@ -111,8 +115,8 @@ class HandleInertiaRequests extends Middleware
              *   }
              * }
              */
-            'permissions' => fn() => $permissionService->forUser($request->user()),
-            'ziggy' => fn() => [
+            'permissions' => fn () => $permissionService->forUser($request->user()),
+            'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],

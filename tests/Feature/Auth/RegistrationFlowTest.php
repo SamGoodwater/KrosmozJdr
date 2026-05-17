@@ -3,13 +3,14 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 /**
  * Tests Feature pour la chaîne complète d'inscription
- * 
+ *
  * Vérifie que :
  * - La page d'inscription est accessible
  * - Un utilisateur peut s'inscrire avec des données valides
@@ -27,7 +28,7 @@ class RegistrationFlowTest extends TestCase
         parent::setUp();
         // Le CSRF est déjà désactivé dans TestCase::setUp()
         // Mais on s'assure qu'il est bien désactivé ici aussi
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+        $this->withoutMiddleware(VerifyCsrfToken::class);
     }
 
     /**
@@ -249,4 +250,3 @@ class RegistrationFlowTest extends TestCase
         $response->assertRedirect();
     }
 }
-

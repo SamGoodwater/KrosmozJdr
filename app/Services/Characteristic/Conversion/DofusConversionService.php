@@ -20,6 +20,7 @@ final class DofusConversionService
 
     /** Contexte pour la fonction personnalisée : convertedOutput, raw. */
     public const CONTEXT_CONVERTED_OUTPUT = 'convertedOutput';
+
     public const CONTEXT_RAW = 'raw';
 
     public function __construct(
@@ -27,15 +28,14 @@ final class DofusConversionService
         private readonly CharacteristicFormulaService $formulaService,
         private readonly CharacteristicLimitService $limitService,
         private readonly ConversionFunctionRegistry $functionRegistry
-    ) {
-    }
+    ) {}
 
     /**
      * Conversion : formule BDD puis éventuelle fonction personnalisée (conversion_function en BDD) puis clamp.
      *
-     * @param array<string, float|int> $variables Ex. ['d' => 100] ou ['d' => 50, 'level' => 5]
-     * @param float|null $fallbackWhenFormulaNull Si formule absente en BDD, valeur utilisée avant clamp (sinon 0)
-     * @param array<string, mixed> $context Optionnel : convertedOutput, raw (pour la fonction personnalisée)
+     * @param  array<string, float|int>  $variables  Ex. ['d' => 100] ou ['d' => 50, 'level' => 5]
+     * @param  float|null  $fallbackWhenFormulaNull  Si formule absente en BDD, valeur utilisée avant clamp (sinon 0)
+     * @param  array<string, mixed>  $context  Optionnel : convertedOutput, raw (pour la fonction personnalisée)
      */
     public function convert(string $characteristicKey, array $variables, string $entityType, ?float $fallbackWhenFormulaNull = null, array $context = []): int
     {
@@ -71,11 +71,11 @@ final class DofusConversionService
      * Convertit un attribut Dofus (Force, Intelligence, etc.) en Krosmoz.
      * Construit la clé comme characteristicId + '_creature'. Transmet $context à convert() pour la fonction personnalisée éventuelle.
      *
-     * @param array<string, mixed> $context Transmis à convert() (convertedOutput, raw pour conversion_function)
+     * @param  array<string, mixed>  $context  Transmis à convert() (convertedOutput, raw pour conversion_function)
      */
     public function convertAttribute(string $characteristicId, int|float|string|null $dofusValue, string $entityType, array $context = []): int
     {
-        $key = $characteristicId . '_creature';
+        $key = $characteristicId.'_creature';
 
         return $this->convertByCharacteristicKey($key, $dofusValue, $entityType, $context);
     }
@@ -84,7 +84,7 @@ final class DofusConversionService
      * Convertit une valeur Dofus en Krosmoz via la formule et les limites de la caractéristique (clé BDD).
      * Utilisé par le pipeline lorsque la règle de mapping a un characteristic_id. Transmet $context à convert().
      *
-     * @param array<string, mixed> $context Transmis à convert() (convertedOutput, raw pour conversion_function)
+     * @param  array<string, mixed>  $context  Transmis à convert() (convertedOutput, raw pour conversion_function)
      */
     public function convertByCharacteristicKey(string $characteristicKey, int|float|string|null $dofusValue, string $entityType, array $context = []): int
     {
@@ -98,10 +98,10 @@ final class DofusConversionService
      * Convertit une valeur Dofus d’effet d’équipement (item/resource/consumable/panoply) en valeur Krosmoz.
      * Formule et limites depuis la BDD (clé du groupe object).
      *
-     * @param string $characteristicKey Clé du groupe object (ex. intel_object, strong_object)
-     * @param int|float $dofusValue Valeur Dofus (ex. 12 pour from=10, to=13)
-     * @param string $entityType item, consumable, resource ou panoply
-     * @param array<string, mixed> $context Transmis à convert() (pour conversion_function)
+     * @param  string  $characteristicKey  Clé du groupe object (ex. intel_object, strong_object)
+     * @param  int|float  $dofusValue  Valeur Dofus (ex. 12 pour from=10, to=13)
+     * @param  string  $entityType  item, consumable, resource ou panoply
+     * @param  array<string, mixed>  $context  Transmis à convert() (pour conversion_function)
      */
     public function convertObjectAttribute(string $characteristicKey, int|float $dofusValue, string $entityType, array $context = []): int
     {
@@ -142,7 +142,7 @@ final class DofusConversionService
      * Convertit en batch les résistances DofusDB (grades.0.*Resistance) vers les champs res_* Krosmoz.
      * Utilisé par le scrapping quand resistanceBatch est activé dans la config d’entité (ex. monster).
      *
-     * @param array<string, mixed> $raw Données brutes (ex. grades.0.neutralResistance, earthResistance, …)
+     * @param  array<string, mixed>  $raw  Données brutes (ex. grades.0.neutralResistance, earthResistance, …)
      * @return array<string, int|string> Map res_neutre, res_terre, res_feu, res_air, res_eau => valeur
      */
     public function convertResistancesBatch(array $raw, string $entityType): array
@@ -178,6 +178,7 @@ final class DofusConversionService
         if (in_array($entityType, ['monster', 'class', 'npc'], true)) {
             return 'level_creature';
         }
+
         return 'level_object';
     }
 
@@ -190,6 +191,7 @@ final class DofusConversionService
                 return $rarity;
             }
         }
+
         return 0;
     }
 }

@@ -2,21 +2,19 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Npc;
-use App\Models\Entity\Creature;
 use App\Models\Entity\Breed;
-use App\Models\Entity\Specialization;
+use App\Models\Entity\Creature;
+use App\Models\Entity\Npc;
 use App\Models\Entity\Panoply;
+use App\Models\Entity\Specialization;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Npc
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class NpcModelTest extends TestCase
 {
@@ -31,7 +29,7 @@ class NpcModelTest extends TestCase
         $creature = Creature::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $npc = Npc::factory()->create([
             'creature_id' => $creature->id,
         ]);
@@ -50,7 +48,7 @@ class NpcModelTest extends TestCase
         $creature = Creature::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $npc = Npc::factory()->create([
             'creature_id' => $creature->id,
         ]);
@@ -93,7 +91,7 @@ class NpcModelTest extends TestCase
         $specialization = Specialization::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $npc = Npc::factory()->create([
             'creature_id' => $creature->id,
             'specialization_id' => $specialization->id,
@@ -131,4 +129,3 @@ class NpcModelTest extends TestCase
         $this->assertTrue($npc->panoplies->contains($panoply2));
     }
 }
-

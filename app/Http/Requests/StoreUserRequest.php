@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\User;
 
 /**
  * FormRequest pour la création d'un utilisateur.
@@ -58,12 +58,12 @@ class StoreUserRequest extends FormRequest
                 'notifications_enabled' => filter_var($data['notifications_enabled'], FILTER_VALIDATE_BOOLEAN),
             ]);
         }
-        if (!isset($data['notification_channels'])) {
+        if (! isset($data['notification_channels'])) {
             $this->merge([
                 'notification_channels' => [],
             ]);
         }
-        if (!isset($data['role']) || !is_numeric($data['role'])) {
+        if (! isset($data['role']) || ! is_numeric($data['role'])) {
             $this->merge([
                 'role' => User::ROLE_USER,
             ]);

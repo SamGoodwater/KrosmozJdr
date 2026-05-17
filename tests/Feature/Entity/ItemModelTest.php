@@ -2,19 +2,17 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
 use App\Models\Entity\Item;
-use App\Models\Entity\Resource;
 use App\Models\Entity\Panoply;
+use App\Models\Entity\Resource;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle Item
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Entity
  */
 class ItemModelTest extends TestCase
 {
@@ -26,7 +24,7 @@ class ItemModelTest extends TestCase
     public function test_item_factory_creates_valid_item(): void
     {
         $user = User::factory()->create();
-        
+
         $item = Item::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -61,10 +59,10 @@ class ItemModelTest extends TestCase
 
         $item->refresh();
         $this->assertCount(2, $item->resources);
-        
+
         $pivot1 = $item->resources->where('id', $resource1->id)->first()->pivot;
         $this->assertEquals('2', $pivot1->quantity);
-        
+
         $pivot2 = $item->resources->where('id', $resource2->id)->first()->pivot;
         $this->assertEquals('3', $pivot2->quantity);
     }
@@ -94,4 +92,3 @@ class ItemModelTest extends TestCase
         $this->assertTrue($item->panoplies->contains($panoply2));
     }
 }
-

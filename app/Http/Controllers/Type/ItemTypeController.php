@@ -27,4 +27,3 @@ class ItemTypeController extends Controller
         ]);
     }
 }
-

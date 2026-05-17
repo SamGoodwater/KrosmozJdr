@@ -5,13 +5,14 @@ namespace App\Services;
 use App\Models\NotificationDigestQueue;
 use App\Models\Page;
 use App\Models\Section;
+use App\Models\User;
 use App\Notifications\EntityModifiedNotification;
 use App\Notifications\LastConnectionNotification;
 use App\Notifications\NewUserCreatedNotification;
 use App\Notifications\ProfileModifiedNotification;
 use App\Notifications\ProjectMaintenanceNotification;
 use App\Notifications\UserDeletedNotification;
-use App\Models\User;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -30,10 +31,9 @@ class NotificationService
      * Enfile une notification pour envoi en digest (quotidien, hebdo, mensuel).
      * Le payload est normalisé pour être stocké en JSON (scalaires, tableaux, pas d'objets).
      *
-     * @param int $userId
-     * @param string $notificationType Clé du type (config notifications.types)
-     * @param string $frequency daily|weekly|monthly
-     * @param array<string, mixed> $payload Données à inclure dans le digest (seront sérialisées en JSON)
+     * @param  string  $notificationType  Clé du type (config notifications.types)
+     * @param  string  $frequency  daily|weekly|monthly
+     * @param  array<string, mixed>  $payload  Données à inclure dans le digest (seront sérialisées en JSON)
      */
     public static function pushToDigestQueue(int $userId, string $notificationType, string $frequency, array $payload): void
     {
@@ -52,12 +52,12 @@ class NotificationService
      * Rend un tableau sérialisable en JSON (Carbon → chaîne ISO, Enum → value, objets → tableau).
      * Évite les erreurs lors de l'écriture en colonne JSON.
      *
-     * @param mixed $data
+     * @param  mixed  $data
      * @return mixed
      */
     private static function payloadForJson($data)
     {
-        if ($data instanceof \Carbon\CarbonInterface) {
+        if ($data instanceof CarbonInterface) {
             return $data->toIso8601String();
         }
         if ($data instanceof \BackedEnum) {
@@ -73,6 +73,7 @@ class NotificationService
         foreach ($data as $k => $v) {
             $out[$k] = self::payloadForJson($v);
         }
+
         return $out;
     }
 
@@ -80,10 +81,10 @@ class NotificationService
      * Notifie le créateur (hors self), les users avec droits (page/section), et les admins lors de la modification.
      * Pour Page/Section : types page_section_modified / page_section_modified_admin et destinataires étendus.
      *
-     * @param object $entity Entité modifiée (doit avoir created_by, id, name ou title)
-     * @param User $modifier Utilisateur ayant fait la modification
-     * @param object|null $entityOld Ancienne entité (avant update, optionnel)
-     * @param array $changes Tableau des changements (optionnel, surcharge le calcul automatique)
+     * @param  object  $entity  Entité modifiée (doit avoir created_by, id, name ou title)
+     * @param  User  $modifier  Utilisateur ayant fait la modification
+     * @param  object|null  $entityOld  Ancienne entité (avant update, optionnel)
+     * @param  array  $changes  Tableau des changements (optionnel, surcharge le calcul automatique)
      */
     public static function notifyEntityModified($entity, User $modifier, $entityOld = null, array $changes = [])
     {
@@ -92,7 +93,7 @@ class NotificationService
         }
         $entityType = class_basename($entity);
         $entityId = $entity->id;
-        $entityName = $entity->name ?? $entity->title ?? ('#' . $entityId);
+        $entityName = $entity->name ?? $entity->title ?? ('#'.$entityId);
         $isPageOrSection = $entity instanceof Page || $entity instanceof Section;
         $typeCreator = $isPageOrSection ? 'page_section_modified' : 'entity_modified';
         $typeAdmin = $isPageOrSection ? 'page_section_modified_admin' : 'entity_modified_admin';
@@ -114,6 +115,7 @@ class NotificationService
                     $changes,
                     $entityUrl
                 ));
+
                 return;
             }
             self::pushToDigestQueue($user->id, $type, $frequency, [
@@ -149,7 +151,7 @@ class NotificationService
             ->where('id', '!=', $modifier->id)
             ->get();
         foreach ($admins as $admin) {
-            if (!$admin->wantsNotificationForType($typeAdmin)) {
+            if (! $admin->wantsNotificationForType($typeAdmin)) {
                 continue;
             }
             $notifyOne($admin, $typeAdmin);
@@ -159,11 +161,11 @@ class NotificationService
     /**
      * Notifie l'utilisateur dont le profil a été modifié (respecte fréquence instant / digest).
      *
-     * @param User $user Utilisateur modifié
-     * @param User $modifier Utilisateur ayant fait la modification
-     * @param User|null $old Ancien utilisateur (avant update, optionnel)
+     * @param  User  $user  Utilisateur modifié
+     * @param  User  $modifier  Utilisateur ayant fait la modification
+     * @param  User|null  $old  Ancien utilisateur (avant update, optionnel)
      */
-    public static function notifyProfileModified(User $user, User $modifier, User $old = null)
+    public static function notifyProfileModified(User $user, User $modifier, ?User $old = null)
     {
         $channels = $user->getChannelsForNotificationType('profile_modified');
         if (empty($channels)) {
@@ -173,13 +175,14 @@ class NotificationService
         $frequency = $user->getFrequencyForNotificationType('profile_modified');
         if ($frequency === 'instant') {
             $user->notify(new ProfileModifiedNotification($user, $modifier, $channels, $changes));
+
             return;
         }
         $payload = [
             'modified_user_id' => $user->id,
             'modifier_name' => $modifier->name,
             'message' => "Ton profil a été modifié par {$modifier->name}.",
-            'url' => url('/users/' . $user->id),
+            'url' => url('/users/'.$user->id),
             'changes' => $changes,
         ];
         self::pushToDigestQueue($user->id, 'profile_modified', $frequency, $payload);
@@ -188,18 +191,20 @@ class NotificationService
     /**
      * Calcule les changements entre deux entités Eloquent (avant/après update).
      *
-     * @param object $old Ancienne entité (avant update)
-     * @param object $new Nouvelle entité (après update)
-     * @param array $ignore Champs à ignorer (par défaut ['updated_at'])
+     * @param  object  $old  Ancienne entité (avant update)
+     * @param  object  $new  Nouvelle entité (après update)
+     * @param  array  $ignore  Champs à ignorer (par défaut ['updated_at'])
      * @return array Tableau des changements (clé => [old, new, is_image, image_url])
      */
     public static function computeChanges($old, $new, $ignore = ['updated_at'])
     {
         $changes = [];
         foreach ($new->getChanges() as $field => $newValue) {
-            if (in_array($field, $ignore)) continue;
+            if (in_array($field, $ignore)) {
+                continue;
+            }
             $isImage = is_string($newValue) && FileService::isImagePath($newValue);
-            
+
             // Récupérer l'ancienne valeur de manière sécurisée
             $oldValue = null;
             if (is_object($old) && method_exists($old, 'getAttribute')) {
@@ -209,7 +214,7 @@ class NotificationService
             } elseif (is_array($old) && isset($old[$field])) {
                 $oldValue = $old[$field];
             }
-            
+
             // Convertir les enums en valeurs si nécessaire
             if ($oldValue instanceof \BackedEnum) {
                 $oldValue = $oldValue->value;
@@ -218,13 +223,14 @@ class NotificationService
             if ($newValueForChange instanceof \BackedEnum) {
                 $newValueForChange = $newValueForChange->value;
             }
-            
+
             $changes[$field] = [
                 'old' => $oldValue,
                 'new' => $newValueForChange,
                 'image_url' => $isImage ? Storage::disk('public')->url($newValue) : null,
             ];
         }
+
         return $changes;
     }
 
@@ -232,14 +238,14 @@ class NotificationService
      * Notifie tous les admins lors de la création d'une entité.
      * Envoi immédiat uniquement (pas de digest pour ce type).
      *
-     * @param object $entity Entité créée
-     * @param User $creator Utilisateur ayant créé l'entité
+     * @param  object  $entity  Entité créée
+     * @param  User  $creator  Utilisateur ayant créé l'entité
      */
     public static function notifyEntityCreated($entity, User $creator)
     {
         $entityType = class_basename($entity);
         $entityId = $entity->id;
-        $entityName = $entity->name ?? $entity->title ?? ('#' . $entityId);
+        $entityName = $entity->name ?? $entity->title ?? ('#'.$entityId);
         $message = "L'entité {$entityType} : '{$entityName}' a été créée par {$creator->name}.";
 
         // Notifier tous les admins (hors self)
@@ -247,7 +253,7 @@ class NotificationService
             ->where('id', '!=', $creator->id)
             ->get();
         foreach ($admins as $admin) {
-            if (!$admin->wantsNotificationForType('entity_created')) {
+            if (! $admin->wantsNotificationForType('entity_created')) {
                 continue;
             }
             $channels = $admin->getChannelsForNotificationType('entity_created');
@@ -269,7 +275,7 @@ class NotificationService
     {
         $entityType = class_basename($entity);
         $entityId = $entity->id;
-        $entityName = $entity->name ?? $entity->title ?? ('#' . $entityId);
+        $entityName = $entity->name ?? $entity->title ?? ('#'.$entityId);
         $message = "L'entité {$entityType} : '{$entityName}' a été supprimée par {$deleter->name}.";
         $isPageOrSection = $entity instanceof Page || $entity instanceof Section;
         $typeCreator = $isPageOrSection ? 'page_section_deleted' : 'entity_deleted';
@@ -293,6 +299,7 @@ class NotificationService
                     ['action' => ['old' => null, 'new' => $message]],
                     $entityUrl
                 ));
+
                 return;
             }
             self::pushToDigestQueue($user->id, $type, $frequency, [
@@ -337,14 +344,14 @@ class NotificationService
      * Notifie le créateur (hors self) et les admins lors de la restauration d'une entité.
      * Envoi immédiat uniquement (pas de digest).
      *
-     * @param object $entity Entité restaurée
-     * @param User $restorer Utilisateur ayant restauré l'entité
+     * @param  object  $entity  Entité restaurée
+     * @param  User  $restorer  Utilisateur ayant restauré l'entité
      */
     public static function notifyEntityRestored($entity, User $restorer)
     {
         $entityType = class_basename($entity);
         $entityId = $entity->id;
-        $entityName = $entity->name ?? $entity->title ?? ('#' . $entityId);
+        $entityName = $entity->name ?? $entity->title ?? ('#'.$entityId);
         $message = "L'entité {$entityType} : '{$entityName}' a été restaurée par {$restorer->name}.";
 
         // Notifier le créateur (hors self)
@@ -367,7 +374,7 @@ class NotificationService
             ->where('id', '!=', $restorer->id)
             ->get();
         foreach ($admins as $admin) {
-            if (!$admin->wantsNotificationForType('entity_restored')) {
+            if (! $admin->wantsNotificationForType('entity_restored')) {
                 continue;
             }
             $channels = $admin->getChannelsForNotificationType('entity_restored');
@@ -386,14 +393,14 @@ class NotificationService
      * Notifie le créateur (hors self) et les admins lors de la suppression définitive d'une entité.
      * Envoi immédiat uniquement (pas de digest).
      *
-     * @param object $entity Entité supprimée définitivement
-     * @param User $forcer Utilisateur ayant supprimé définitivement l'entité
+     * @param  object  $entity  Entité supprimée définitivement
+     * @param  User  $forcer  Utilisateur ayant supprimé définitivement l'entité
      */
     public static function notifyEntityForceDeleted($entity, User $forcer)
     {
         $entityType = class_basename($entity);
         $entityId = $entity->id;
-        $entityName = $entity->name ?? $entity->title ?? ('#' . $entityId);
+        $entityName = $entity->name ?? $entity->title ?? ('#'.$entityId);
         $message = "L'entité {$entityType} : '{$entityName}' a été supprimée définitivement par {$forcer->name}.";
 
         // Notifier le créateur (hors self)
@@ -416,7 +423,7 @@ class NotificationService
             ->where('id', '!=', $forcer->id)
             ->get();
         foreach ($admins as $admin) {
-            if (!$admin->wantsNotificationForType('entity_force_deleted')) {
+            if (! $admin->wantsNotificationForType('entity_force_deleted')) {
                 continue;
             }
             $channels = $admin->getChannelsForNotificationType('entity_force_deleted');
@@ -435,20 +442,22 @@ class NotificationService
      * Construit l'URL d'accès à l'entité (pour le lien dans la notification).
      * Pour Section : utilise la relation page si chargée, sinon une requête est exécutée.
      *
-     * @param object $entity Page, Section ou autre modèle avec id (et optionnellement slug, page_id)
+     * @param  object  $entity  Page, Section ou autre modèle avec id (et optionnellement slug, page_id)
      * @return string URL absolue
      */
     public static function entityUrl($entity): string
     {
         if ($entity instanceof Page && ! empty($entity->slug)) {
-            return url('/pages/' . $entity->slug);
+            return url('/pages/'.$entity->slug);
         }
         if ($entity instanceof Section && isset($entity->page_id)) {
             $page = $entity->relationLoaded('page') ? $entity->page : $entity->page()->first();
-            return $page ? url('/pages/' . ($page->slug ?? $page->id)) : url('/pages');
+
+            return $page ? url('/pages/'.($page->slug ?? $page->id)) : url('/pages');
         }
         $type = strtolower(class_basename($entity));
-        return url('/' . $type . 's/' . ($entity->id ?? ''));
+
+        return url('/'.$type.'s/'.($entity->id ?? ''));
     }
 
     /**
@@ -464,6 +473,7 @@ class NotificationService
             $frequency = $admin->getFrequencyForNotificationType('new_account_registered');
             if ($frequency === 'instant') {
                 $admin->notify(new NewUserCreatedNotification($newUser));
+
                 continue;
             }
             self::pushToDigestQueue($admin->id, 'new_account_registered', $frequency, [
@@ -496,6 +506,7 @@ class NotificationService
                     $deletedUser->email,
                     $deleter
                 ));
+
                 continue;
             }
             self::pushToDigestQueue($admin->id, 'user_deleted', $frequency, [
@@ -522,11 +533,12 @@ class NotificationService
         $frequency = $user->getFrequencyForNotificationType('last_connection');
         if ($frequency === 'instant') {
             $user->notify(new LastConnectionNotification($loggedAtIso));
+
             return;
         }
         self::pushToDigestQueue($user->id, 'last_connection', $frequency, [
             'logged_at' => $loggedAtIso,
-            'message' => 'Connexion enregistrée le ' . $loggedAtIso . '.',
+            'message' => 'Connexion enregistrée le '.$loggedAtIso.'.',
             'url' => url('/user'),
         ]);
     }
@@ -534,11 +546,9 @@ class NotificationService
     /**
      * Notifie tous les admin/super_admin du résultat de project:init ou project:update.
      *
-     * @param string $command 'init'|'update'
-     * @param bool $success
-     * @param float $durationSeconds
-     * @param string $finishedAt Date/heure de fin formatée
-     * @param string|null $message Optionnel (ex: nombre d'erreurs)
+     * @param  string  $command  'init'|'update'
+     * @param  string  $finishedAt  Date/heure de fin formatée
+     * @param  string|null  $message  Optionnel (ex: nombre d'erreurs)
      */
     public static function notifyProjectMaintenance(
         string $command,
@@ -568,8 +578,7 @@ class NotificationService
      * Tronque et nettoie une valeur potentiellement longue ou HTML.
      * Supprime les balises et leur contenu dangereux (script, style, etc.).
      *
-     * @param mixed $value
-     * @return string
+     * @param  mixed  $value
      */
     public static function truncateAndSanitize($value): string
     {
@@ -579,8 +588,9 @@ class NotificationService
         $str = preg_replace('/<style\b[^>]*>[\s\S]*?<\/style>/iu', '', $str);
         $str = strip_tags($str);
         if (mb_strlen($str) > 120) {
-            $str = mb_substr($str, 0, 117) . '...';
+            $str = mb_substr($str, 0, 117).'...';
         }
+
         return trim($str);
     }
 }

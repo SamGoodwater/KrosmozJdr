@@ -79,8 +79,8 @@ final class AreaConstants
         $shape = self::extractShapeFromNotation($area);
 
         return $shape !== null
-            ? self::ICON_BASE . '/' . $shape . '.svg'
-            : self::ICON_BASE . '/point.svg';
+            ? self::ICON_BASE.'/'.$shape.'.svg'
+            : self::ICON_BASE.'/point.svg';
     }
 
     /**

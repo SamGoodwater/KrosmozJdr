@@ -38,7 +38,12 @@ export class Consumable extends BaseModel {
     }
 
     get level() {
-        return this._data.level || null;
+        const v = this._data.level;
+        if (v === null || v === undefined || v === '') {
+            return null;
+        }
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
     }
 
     get recipe() {

@@ -18,6 +18,7 @@ class NpcResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+
         return [
             'id' => $this->id,
             'creature_id' => $this->creature_id,
@@ -51,4 +52,3 @@ class NpcResource extends JsonResource
         ];
     }
 }
-

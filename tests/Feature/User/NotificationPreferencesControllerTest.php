@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\User;
 
+use App\Http\Middleware\CheckRole;
 use App\Models\User;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -22,8 +24,8 @@ class NotificationPreferencesControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
-        $this->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+        $this->withoutMiddleware(CheckRole::class);
+        $this->withoutMiddleware([VerifyCsrfToken::class]);
     }
 
     public function test_user_can_update_notification_preferences_from_settings(): void
@@ -33,7 +35,7 @@ class NotificationPreferencesControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->patchJson(route('user.update') . '?redirect=settings', [
+            ->patchJson(route('user.update').'?redirect=settings', [
                 'name' => $user->name,
                 'email' => $user->email,
                 'notification_preferences' => [

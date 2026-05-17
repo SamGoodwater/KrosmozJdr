@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Http/Requests/StorePageRequest.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Http\Requests\StorePageRequest
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-0e80fc3115322df157b0272808033de17b123ab028cf5f64947071d673252fce-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-302f29f7d74b3c40e7851a9ef9abc214bd4a83f5e1c7ff1dd2dfb665a401f50b-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -30,8 +30,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 14,
-    'endLine' => 101,
+    'startLine' => 16,
+    'endLine' => 103,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Foundation\\Http\\FormRequest',
@@ -71,8 +71,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine if the user is authorized to make this request.
  */',
-        'startLine' => 19,
-        'endLine' => 22,
+        'startLine' => 21,
+        'endLine' => 24,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -108,10 +108,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the validation rules that apply to the request.
  *
- * @return array<string, \\Illuminate\\Contracts\\Validation\\ValidationRule|array<mixed>|string>
+ * @return array<string, ValidationRule|array<mixed>|string>
  */',
-        'startLine' => 29,
-        'endLine' => 49,
+        'startLine' => 31,
+        'endLine' => 51,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -137,8 +137,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 51,
-        'endLine' => 100,
+        'startLine' => 53,
+        'endLine' => 102,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

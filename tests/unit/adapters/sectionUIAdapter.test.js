@@ -3,6 +3,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { useSectionUI } from '@/Pages/Organismes/section/composables/useSectionUI';
+import { adaptSectionToUI } from '@/Pages/Organismes/section/adapters/sectionUIAdapter';
 import { createMockSection } from '../../setup.js';
 
 describe('sectionUIAdapter', () => {
@@ -16,7 +17,7 @@ describe('sectionUIAdapter', () => {
       const { uiData } = useSectionUI(section);
 
       expect(uiData.value.color).toBe('success');
-      expect(uiData.value.icon).toBe('fa-file-text');
+      expect(uiData.value.icon).toBe('fa-solid fa-file-lines');
       expect(uiData.value.badge.text).toBe('Jouable');
       expect(uiData.value.badge.color).toBe('success');
       expect(uiData.value.containerClass).toContain('section-state-playable');
@@ -42,7 +43,7 @@ describe('sectionUIAdapter', () => {
 
       const { uiData } = useSectionUI(section);
 
-      expect(uiData.value.icon).toBe('fa-image');
+      expect(uiData.value.icon).toBe('fa-solid fa-image');
       expect(uiData.value.containerClass).toContain('section-template-image');
     });
 
@@ -56,7 +57,7 @@ describe('sectionUIAdapter', () => {
       const { uiData } = useSectionUI(section);
 
       expect(uiData.value.url).toContain('test-page');
-      expect(uiData.value.url).toContain('section-123');
+      expect(uiData.value.url).toContain('section-test-section');
     });
 
     it('devrait détecter si une section a du contenu', () => {

@@ -27,4 +27,3 @@ class MonsterRaceController extends Controller
         ]);
     }
 }
-

@@ -7,8 +7,8 @@ use App\Models\PrivacyAuditLog;
 use App\Models\PrivacyExport;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -29,7 +29,6 @@ class UserErasureService
      * @param  User  $user  Utilisateur à effacer (doit exister, non système, pas dernier super_admin)
      * @param  DataSubjectRequest|null  $request  Demande RGPD associée (optionnel)
      * @param  int|null  $actorId  ID de l'acteur (null = auto-demandé)
-     * @return void
      *
      * @throws \RuntimeException Si l'utilisateur est système ou dernier super_admin
      */
@@ -40,7 +39,7 @@ class UserErasureService
         $userId = $user->id;
         $actorId = $actorId ?? $userId;
 
-        DB::transaction(function () use ($user, $userId, $request): void {
+        DB::transaction(function () use ($user, $userId): void {
             // 1. Dissocier created_by sur le contenu (conserver le contenu, anonymiser l'auteur)
             $this->dissociateCreatedBy($userId);
 
@@ -197,5 +196,4 @@ class UserErasureService
 
         $user->delete();
     }
-
 }

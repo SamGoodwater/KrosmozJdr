@@ -2,15 +2,16 @@
 
 namespace Tests\Feature\Entity;
 
-use App\Models\User;
-use App\Models\Entity\Panoply;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Item;
+use App\Models\Entity\Panoply;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests Feature pour PanoplyController
- * 
+ *
  * Vérifie que :
  * - Un utilisateur peut modifier une panoplie qu'il a créée
  * - Un admin peut modifier n'importe quelle panoplie
@@ -26,7 +27,7 @@ class PanoplyControllerTest extends TestCase
     {
         parent::setUp();
         // Désactiver le middleware role pour les tests (on teste les policies directement)
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
     }
 
     /**
@@ -93,7 +94,7 @@ class PanoplyControllerTest extends TestCase
         $item1 = Item::factory()->create();
         $item2 = Item::factory()->create();
         $item3 = Item::factory()->create();
-        
+
         // Ajouter initialement 3 items
         $panoply->items()->attach([$item1->id, $item2->id, $item3->id]);
 
@@ -124,7 +125,7 @@ class PanoplyControllerTest extends TestCase
         $oldItem = Item::factory()->create();
         $newItem1 = Item::factory()->create();
         $newItem2 = Item::factory()->create();
-        
+
         // Ajouter un item initialement
         $panoply->items()->attach($oldItem->id);
 
@@ -154,7 +155,7 @@ class PanoplyControllerTest extends TestCase
         ]);
         $item1 = Item::factory()->create();
         $item2 = Item::factory()->create();
-        
+
         // Ajouter des items initialement
         $panoply->items()->attach([$item1->id, $item2->id]);
 
@@ -246,7 +247,7 @@ class PanoplyControllerTest extends TestCase
             'created_by' => $user->id,
         ]);
         $item = Item::factory()->create();
-        
+
         // Supprimer définitivement l'item pour qu'il n'existe plus
         $item->forceDelete();
 
@@ -346,4 +347,3 @@ class PanoplyControllerTest extends TestCase
         }
     }
 }
-

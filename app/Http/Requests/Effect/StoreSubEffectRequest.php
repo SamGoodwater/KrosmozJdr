@@ -29,7 +29,7 @@ class StoreSubEffectRequest extends FormRequest
 
     protected function passedValidation(): void
     {
-        $s = new EffectTextSanitizer();
+        $s = new EffectTextSanitizer;
         if ($this->filled('template_text')) {
             $this->merge(['template_text' => $s->sanitize((string) $this->template_text)]);
         }

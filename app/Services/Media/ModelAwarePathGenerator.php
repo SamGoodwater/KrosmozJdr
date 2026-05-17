@@ -2,10 +2,10 @@
 
 namespace App\Services\Media;
 
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Spatie\MediaLibrary\Support\PathGenerator\DefaultPathGenerator;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Models\Section;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\MediaLibrary\Support\PathGenerator\DefaultPathGenerator;
 
 /**
  * PathGenerator qui lit le répertoire depuis la constante MEDIA_PATH du modèle.
@@ -30,15 +30,16 @@ class ModelAwarePathGenerator extends DefaultPathGenerator
             $sectionId = (int) ($media->model_id ?? 0);
             if ($sectionId > 0) {
                 $path = "sections/{$sectionId}/{$media->getKey()}";
-                return $prefix !== '' ? $prefix . '/' . $path : $path;
+
+                return $prefix !== '' ? $prefix.'/'.$path : $path;
             }
         }
 
         if ($modelClass !== '' && is_string($modelClass) && class_exists($modelClass) && defined("{$modelClass}::MEDIA_PATH")) {
             $base = trim($modelClass::MEDIA_PATH, '/');
-            $path = $base . '/' . $media->getKey();
+            $path = $base.'/'.$media->getKey();
 
-            return $prefix !== '' ? $prefix . '/' . $path : $path;
+            return $prefix !== '' ? $prefix.'/'.$path : $path;
         }
 
         return parent::getBasePath($media);

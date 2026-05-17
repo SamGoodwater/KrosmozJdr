@@ -13,8 +13,11 @@ use App\Models\Type\SpellType;
 use App\Services\Effect\EffectGroupEditorDataService;
 use App\Services\Effect\EffectGroupUpdateService;
 use App\Services\PdfService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class SpellController extends Controller
@@ -133,7 +136,7 @@ class SpellController extends Controller
      *
      * @return array{
      *     spell: Spell,
-     *     availableSpellTypes: \Illuminate\Database\Eloquent\Collection,
+     *     availableSpellTypes: Collection,
      *     availableEffects: array<int, array<string, mixed>>,
      *     effectEntityType: string,
      *     effectFormOptions: array<string, mixed>,
@@ -281,7 +284,7 @@ class SpellController extends Controller
      * Synchronise les classes (breeds) liées au sort.
      * L’UI principale pour lier un sort à une classe est la fiche classe ; cette route reste pour tests / usages programmatiques.
      */
-    public function updateBreeds(\Illuminate\Http\Request $request, Spell $spell)
+    public function updateBreeds(Request $request, Spell $spell)
     {
         $this->authorize('update', $spell);
 
@@ -301,7 +304,7 @@ class SpellController extends Controller
     /**
      * Update the spell types of a spell.
      */
-    public function updateSpellTypes(\Illuminate\Http\Request $request, Spell $spell)
+    public function updateSpellTypes(Request $request, Spell $spell)
     {
         $this->authorize('update', $spell);
 
@@ -334,7 +337,7 @@ class SpellController extends Controller
      * Télécharge un PDF pour un ou plusieurs spells.
      *
      * @param  Spell|null  $spell  Le spell unique (si un seul)
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function downloadPdf(?Spell $spell = null)
     {

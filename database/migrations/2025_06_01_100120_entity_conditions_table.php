@@ -39,5 +39,9 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
         });
     }
-    public function down(): void { Schema::dropIfExists('conditions'); }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('conditions');
+    }
 };

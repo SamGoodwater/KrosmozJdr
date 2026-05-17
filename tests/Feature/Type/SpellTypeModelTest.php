@@ -2,18 +2,16 @@
 
 namespace Tests\Feature\Type;
 
-use App\Models\User;
-use App\Models\Type\SpellType;
 use App\Models\Entity\Spell;
+use App\Models\Type\SpellType;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle SpellType
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Type
  */
 class SpellTypeModelTest extends TestCase
 {
@@ -25,7 +23,7 @@ class SpellTypeModelTest extends TestCase
     public function test_spell_type_factory_creates_valid_spell_type(): void
     {
         $user = User::factory()->create();
-        
+
         $spellType = SpellType::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -75,4 +73,3 @@ class SpellTypeModelTest extends TestCase
         $this->assertTrue($spellType->spells->contains($spell2));
     }
 }
-

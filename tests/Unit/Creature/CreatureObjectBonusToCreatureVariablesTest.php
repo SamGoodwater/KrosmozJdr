@@ -8,11 +8,10 @@ use App\Contracts\Characteristic\CharacteristicDefinitionLookup;
 use App\Services\Creature\Runtime\CreatureObjectBonusToCreatureVariables;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Services\Creature\Runtime\CreatureObjectBonusToCreatureVariables
- */
+#[CoversClass(CreatureObjectBonusToCreatureVariables::class)]
 final class CreatureObjectBonusToCreatureVariablesTest extends TestCase
 {
     use MockeryPHPUnitIntegration;

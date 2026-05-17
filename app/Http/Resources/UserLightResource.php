@@ -2,12 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Ressource légère pour les données utilisateur partagées avec Inertia
- * 
+ *
  * @property int $id
  * @property string $name
  * @property string $email
@@ -25,7 +26,7 @@ class UserLightResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $this->resource;
 
         return [

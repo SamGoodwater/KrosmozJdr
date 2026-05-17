@@ -10,6 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
+import { nextTick, ref } from 'vue';
 import { useBulkEditPanel } from '@/Composables/entity/useBulkEditPanel';
 
 describe('useBulkEditPanel', () => {
@@ -212,12 +213,13 @@ describe('useBulkEditPanel', () => {
             expect(dirty.level).toBe(true);
         });
 
-        it('reset les champs dirty lors du changement de sélection', () => {
+        it('reset les champs dirty lors du changement de sélection', async () => {
             const entities1 = [{ id: 1, level: '10' }];
             const entities2 = [{ id: 2, level: '20' }];
 
-            const { dirty, onChange, selectedEntities } = useBulkEditPanel({
-                selectedEntities: entities1,
+            const entitiesRef = ref(entities1);
+            const { dirty, onChange } = useBulkEditPanel({
+                selectedEntities: entitiesRef,
                 isAdmin: true,
                 fieldMeta: mockFieldMeta,
             });
@@ -225,11 +227,11 @@ describe('useBulkEditPanel', () => {
             onChange('level', '50');
             expect(dirty.level).toBe(true);
 
-            // Simuler changement de sélection
-            selectedEntities.value = entities2;
+            entitiesRef.value = entities2;
+            await nextTick();
+            await nextTick();
 
-            // Note: En réalité, watch() devrait reset, mais dans les tests on peut vérifier manuellement
-            // Pour un test complet, il faudrait utiliser @vue/test-utils
+            expect(dirty.level).toBe(false);
         });
     });
 

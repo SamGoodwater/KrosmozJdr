@@ -12,9 +12,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Requests',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
+          'user' => 'App\\Models\\User',
+          'validationrule' => 'Illuminate\\Contracts\\Validation\\ValidationRule',
           'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
           'rule' => 'Illuminate\\Validation\\Rule',
-          'page' => 'App\\Models\\Page',
         ),
          'className' => 'App\\Http\\Requests\\StorePageRequest',
          'functionName' => NULL,
@@ -37,9 +39,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Requests',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
+          'user' => 'App\\Models\\User',
+          'validationrule' => 'Illuminate\\Contracts\\Validation\\ValidationRule',
           'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
           'rule' => 'Illuminate\\Validation\\Rule',
-          'page' => 'App\\Models\\Page',
         ),
          'className' => 'App\\Http\\Requests\\StorePageRequest',
          'functionName' => 'authorize',
@@ -51,9 +55,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Http\\Requests',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
+            'user' => 'App\\Models\\User',
+            'validationrule' => 'Illuminate\\Contracts\\Validation\\ValidationRule',
             'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
             'rule' => 'Illuminate\\Validation\\Rule',
-            'page' => 'App\\Models\\Page',
           ),
            'className' => 'App\\Http\\Requests\\StorePageRequest',
            'functionName' => NULL,
@@ -86,9 +92,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Requests',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
+          'user' => 'App\\Models\\User',
+          'validationrule' => 'Illuminate\\Contracts\\Validation\\ValidationRule',
           'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
           'rule' => 'Illuminate\\Validation\\Rule',
-          'page' => 'App\\Models\\Page',
         ),
          'className' => 'App\\Http\\Requests\\StorePageRequest',
          'functionName' => 'rules',
@@ -100,9 +108,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Http\\Requests',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
+            'user' => 'App\\Models\\User',
+            'validationrule' => 'Illuminate\\Contracts\\Validation\\ValidationRule',
             'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
             'rule' => 'Illuminate\\Validation\\Rule',
-            'page' => 'App\\Models\\Page',
           ),
            'className' => 'App\\Http\\Requests\\StorePageRequest',
            'functionName' => NULL,
@@ -135,9 +145,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Requests',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
+          'user' => 'App\\Models\\User',
+          'validationrule' => 'Illuminate\\Contracts\\Validation\\ValidationRule',
           'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
           'rule' => 'Illuminate\\Validation\\Rule',
-          'page' => 'App\\Models\\Page',
         ),
          'className' => 'App\\Http\\Requests\\StorePageRequest',
          'functionName' => 'prepareForValidation',
@@ -149,9 +161,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Http\\Requests',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
+            'user' => 'App\\Models\\User',
+            'validationrule' => 'Illuminate\\Contracts\\Validation\\ValidationRule',
             'formrequest' => 'Illuminate\\Foundation\\Http\\FormRequest',
             'rule' => 'Illuminate\\Validation\\Rule',
-            'page' => 'App\\Models\\Page',
           ),
            'className' => 'App\\Http\\Requests\\StorePageRequest',
            'functionName' => NULL,
@@ -182,7 +196,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Http/Requests/StorePageRequest.php' => '0e80fc3115322df157b0272808033de17b123ab028cf5f64947071d673252fce',
+      '/var/www/KrosmozJdr/app/Http/Requests/StorePageRequest.php' => '302f29f7d74b3c40e7851a9ef9abc214bd4a83f5e1c7ff1dd2dfb665a401f50b',
     ),
   ),
 ));

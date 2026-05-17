@@ -16,8 +16,7 @@ class CharacteristicController extends Controller
 {
     public function __construct(
         private readonly CharacteristicMetaByDbColumnService $characteristicMeta
-    ) {
-    }
+    ) {}
 
     /**
      * Retourne toutes les caractéristiques (creature, spell, object par entité).

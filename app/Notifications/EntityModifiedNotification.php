@@ -3,9 +3,11 @@
 namespace App\Notifications;
 
 use App\Mail\NotificationMail;
+use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
@@ -14,7 +16,7 @@ use Illuminate\Notifications\Notification;
  * @property string $entityType
  * @property int $entityId
  * @property string $entityName
- * @property \App\Models\User $modifier
+ * @property User $modifier
  * @property array $channels
  * @property array $changes
  */
@@ -41,7 +43,7 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
      * @param  string  $entityType
      * @param  int  $entityId
      * @param  string  $entityName
-     * @param  \App\Models\User  $modifier
+     * @param  User  $modifier
      * @param  array  $channels
      * @param  array  $changes
      * @param  string|null  $url
@@ -72,7 +74,7 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return MailMessage
      */
     public function toMail($notifiable)
     {

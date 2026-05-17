@@ -2,23 +2,6 @@
 
 ```mermaid
 erDiagram
-  ATTRIBUTE_CREATURE {
-    attribute_id : bigint(20) unsigned
-    creature_id : bigint(20) unsigned
-  }
-  ATTRIBUTES {
-    id : bigint(20) unsigned
-    name : varchar(255)
-    description : varchar(255)
-    state : varchar(255)
-    read_level : tinyint(4)
-    write_level : tinyint(4)
-    image : varchar(255)
-    created_at : timestamp
-    updated_at : timestamp
-    deleted_at : timestamp
-    created_by : bigint(20) unsigned
-  }
   BREED_CAPABILITY {
     id : bigint(20) unsigned
     breed_id : bigint(20) unsigned
@@ -29,6 +12,7 @@ erDiagram
   BREED_CREATURE_TRAIT {
     breed_id : bigint(20) unsigned
     creature_trait_id : bigint(20) unsigned
+    level : smallint(5) unsigned
     created_at : timestamp
     updated_at : timestamp
   }
@@ -49,9 +33,9 @@ erDiagram
     updated_at : timestamp
   }
   BREED_SPELL {
+    id : bigint(20) unsigned
     breed_id : bigint(20) unsigned
     spell_id : bigint(20) unsigned
-    id : bigint(20) unsigned
     character_level : smallint(5) unsigned
     slot_index : tinyint(3) unsigned
     choice_order : tinyint(3) unsigned
@@ -266,11 +250,11 @@ erDiagram
     status : varchar(32)
     sort_order : smallint(5) unsigned
     group : varchar(16)
+    hide_when_empty : tinyint(1)
+    hide_when_false : tinyint(1)
     linked_to_characteristic_id : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp
-    hide_when_empty : tinyint(1)
-    hide_when_false : tinyint(1)
   }
   CONDITION_CAPABILITY {
     condition_id : bigint(20) unsigned
@@ -419,6 +403,7 @@ erDiagram
   CREATURE_TRAIT_SPECIALIZATION {
     specialization_id : bigint(20) unsigned
     creature_trait_id : bigint(20) unsigned
+    level : smallint(5) unsigned
     created_at : timestamp
     updated_at : timestamp
   }
@@ -1231,42 +1216,6 @@ erDiagram
     spell_id : bigint(20) unsigned
     monster_id : bigint(20) unsigned
   }
-  SPELL_SPELL_STATE {
-    id : bigint(20) unsigned
-    spell_id : bigint(20) unsigned
-    spell_state_id : bigint(20) unsigned
-    application_mode : varchar(16)
-    dofus_effect_id : int(10) unsigned
-    duration : int(11)
-    dispellable : tinyint(1)
-    target_mask : varchar(64)
-    created_at : timestamp
-    updated_at : timestamp
-  }
-  SPELL_STATES {
-    id : bigint(20) unsigned
-    dofusdb_id : int(10) unsigned
-    name : varchar(255)
-    icon : varchar(255)
-    image : varchar(255)
-    prevents_spell_cast : tinyint(1)
-    prevents_fight : tinyint(1)
-    cant_be_moved : tinyint(1)
-    cant_be_pushed : tinyint(1)
-    cant_deal_damage : tinyint(1)
-    invulnerable : tinyint(1)
-    cant_switch_position : tinyint(1)
-    incurable : tinyint(1)
-    invulnerable_melee : tinyint(1)
-    invulnerable_range : tinyint(1)
-    cant_tackle : tinyint(1)
-    cant_be_tackled : tinyint(1)
-    display_turn_remaining : tinyint(1)
-    is_main_state : tinyint(1)
-    raw : longtext
-    created_at : timestamp
-    updated_at : timestamp
-  }
   SPELL_TYPE {
     spell_id : bigint(20) unsigned
     spell_type_id : bigint(20) unsigned
@@ -1368,9 +1317,6 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
-  ATTRIBUTE_CREATURE }o--|| ATTRIBUTES : "FK attribute_id"
-  ATTRIBUTE_CREATURE }o--|| CREATURES : "FK creature_id"
-  ATTRIBUTES }o--|| USERS : "FK created_by"
   BREED_CAPABILITY }o--|| BREEDS : "FK breed_id"
   BREED_CAPABILITY }o--|| CAPABILITIES : "FK capability_id"
   BREED_CREATURE_TRAIT }o--|| BREEDS : "FK breed_id"
@@ -1545,8 +1491,6 @@ erDiagram
   SPELL_EFFECTS }o--|| MONSTERS : "FK summon_monster_id"
   SPELL_INVOCATION }o--|| MONSTERS : "FK monster_id"
   SPELL_INVOCATION }o--|| SPELLS : "FK spell_id"
-  SPELL_SPELL_STATE }o--|| SPELLS : "FK spell_id"
-  SPELL_SPELL_STATE }o--|| SPELL_STATES : "FK spell_state_id"
   SPELL_TYPE }o--|| SPELLS : "FK spell_id"
   SPELL_TYPE }o--|| SPELL_TYPES : "FK spell_type_id"
   SPELL_TYPES }o--|| USERS : "FK created_by"

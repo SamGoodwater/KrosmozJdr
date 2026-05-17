@@ -589,7 +589,7 @@ final class Orchestrator
         string $entityType,
         array $raw,
         array $converted,
-        \App\Services\Scrapping\Core\Integration\IntegrationResult $integrationResult,
+        IntegrationResult $integrationResult,
         array $options
     ): array {
         $stack = $options['relation_import_stack'] ?? null;

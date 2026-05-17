@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\Table;
 
-use App\Models\User;
+use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Item;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -24,7 +25,7 @@ class ItemTableControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+        $this->withoutMiddleware(CheckRole::class);
     }
 
     /**
@@ -208,4 +209,3 @@ class ItemTableControllerTest extends TestCase
         $this->assertEquals('Z Item', $data['entities'][1]['name']);
     }
 }
-

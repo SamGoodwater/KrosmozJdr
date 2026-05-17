@@ -2,18 +2,16 @@
 
 namespace Tests\Feature\Type;
 
-use App\Models\User;
-use App\Models\Type\ResourceType;
 use App\Models\Entity\Resource;
+use App\Models\Type\ResourceType;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle ResourceType
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Type
  */
 class ResourceTypeModelTest extends TestCase
 {
@@ -25,7 +23,7 @@ class ResourceTypeModelTest extends TestCase
     public function test_resource_type_factory_creates_valid_resource_type(): void
     {
         $user = User::factory()->create();
-        
+
         $resourceType = ResourceType::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -75,4 +73,3 @@ class ResourceTypeModelTest extends TestCase
         $this->assertTrue($resourceType->resources->contains($resource2));
     }
 }
-

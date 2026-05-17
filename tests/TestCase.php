@@ -2,6 +2,11 @@
 
 namespace Tests;
 
+use App\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
+use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
+use Illuminate\Foundation\Http\Middleware\TrimStrings;
+use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Vite;
@@ -49,15 +54,15 @@ abstract class TestCase extends BaseTestCase
         // On doit le désactiver explicitement pour les tests
         $this->withoutMiddleware([
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
+            VerifyCsrfToken::class,
         ]);
 
         // Désactiver d'autres middlewares non essentiels pour l'auth
         $this->withoutMiddleware([
-            \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-            \Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class,
-            \Illuminate\Foundation\Http\Middleware\TrimStrings::class,
-            \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+            ValidatePostSize::class,
+            PreventRequestsDuringMaintenance::class,
+            TrimStrings::class,
+            ConvertEmptyStringsToNull::class,
         ]);
 
         // Désactiver complètement le CSRF au niveau de l'application

@@ -67,7 +67,7 @@ class ProjectDepsWebControllerTest extends TestCase
     }
 
     /**
-     * La garde production est aussi dans {@see \App\Jobs\RunProjectDepsJob} (évite un run CLI si l’UI dérape).
+     * La garde production est aussi dans {@see RunProjectDepsJob} (évite un run CLI si l’UI dérape).
      */
     public function test_run_project_deps_job_aborts_in_production_before_side_effects(): void
     {

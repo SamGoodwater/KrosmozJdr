@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Scrapping\Concerns;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,8 +19,8 @@ trait BulkDecisionUpdateTrait
     /**
      * Applique une mise à jour en masse du champ `decision`.
      *
-     * @param class-string<\Illuminate\Database\Eloquent\Model> $modelClass
-     * @param callable(string):string $normalizeDecision
+     * @param  class-string<Model>  $modelClass
+     * @param  callable(string):string  $normalizeDecision
      */
     protected function bulkUpdateDecision(Request $request, string $modelClass, callable $normalizeDecision): JsonResponse
     {
@@ -46,13 +48,14 @@ trait BulkDecisionUpdateTrait
 
         DB::beginTransaction();
         try {
-            /** @var \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Database\Eloquent\Model> $models */
+            /** @var Collection<int, Model> $models */
             $models = $modelClass::query()->whereIn('id', $ids)->get();
 
             foreach ($ids as $id) {
                 $model = $models->firstWhere('id', $id);
-                if (!$model) {
+                if (! $model) {
                     $errors[] = ['id' => $id, 'error' => 'Not found'];
+
                     continue;
                 }
 
@@ -62,6 +65,7 @@ trait BulkDecisionUpdateTrait
                     // On n’applique la registry qu’aux entrées liées à DofusDB.
                     if ($model->getAttribute('dofusdb_type_id') === null) {
                         $errors[] = ['id' => $id, 'error' => 'Not linked to dofusdb_type_id'];
+
                         continue;
                     }
 
@@ -76,6 +80,7 @@ trait BulkDecisionUpdateTrait
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour en masse.',
@@ -94,4 +99,3 @@ trait BulkDecisionUpdateTrait
         ]);
     }
 }
-

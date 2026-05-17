@@ -5,7 +5,6 @@ namespace Tests\Unit\Auth;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class RegisterRequestTest extends TestCase
@@ -17,7 +16,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_passes_with_valid_data(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'email' => 'john@example.com',
@@ -36,7 +35,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_fails_without_name(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'email' => 'john@example.com',
             'password' => 'password123',
@@ -55,7 +54,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_fails_without_email(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'password' => 'password123',
@@ -74,7 +73,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_fails_without_password(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'email' => 'john@example.com',
@@ -93,7 +92,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_fails_with_name_too_long(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => str_repeat('a', 256),
             'email' => 'john@example.com',
@@ -113,7 +112,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_fails_with_invalid_email_format(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'email' => 'invalid-email',
@@ -135,7 +134,7 @@ class RegisterRequestTest extends TestCase
     {
         User::factory()->create(['email' => 'john@example.com']);
 
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'email' => 'john@example.com',
@@ -155,7 +154,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_fails_with_password_confirmation_mismatch(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'email' => 'john@example.com',
@@ -175,7 +174,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_fails_with_weak_password(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'email' => 'john@example.com',
@@ -195,7 +194,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_email_is_converted_to_lowercase(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'email' => 'JOHN@EXAMPLE.COM',
@@ -206,7 +205,7 @@ class RegisterRequestTest extends TestCase
         // Tester que la règle 'lowercase' est présente
         $rules = $request->rules();
         $this->assertStringContainsString('lowercase', $rules['email']);
-        
+
         // L'email reste en majuscules dans la request car la conversion se fait lors de la validation
         $this->assertEquals('JOHN@EXAMPLE.COM', $request->input('email'));
     }
@@ -216,7 +215,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_custom_error_messages(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $messages = $request->messages();
 
         $this->assertArrayHasKey('name.required', $messages);
@@ -233,7 +232,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_passes_with_special_characters_in_name(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'Jean-Pierre O\'Connor',
             'email' => 'john@example.com',
@@ -252,7 +251,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_passes_with_special_characters_in_email(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'email' => 'john+tag@example.com',
@@ -271,7 +270,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_passes_with_complex_password(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'email' => 'john@example.com',
@@ -290,7 +289,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_passes_with_short_name(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'Jo',
             'email' => 'john@example.com',
@@ -309,7 +308,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_passes_with_name_at_limit(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => str_repeat('a', 255),
             'email' => 'john@example.com',
@@ -328,7 +327,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_passes_with_long_email(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John Doe',
             'email' => 'very.long.email.address.with.many.subdomains@example.com',
@@ -347,7 +346,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_authorize_method_returns_true(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $this->assertTrue($request->authorize());
     }
 
@@ -356,7 +355,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_fails_with_empty_data(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([]);
 
         $rules = $request->rules();
@@ -373,7 +372,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_passes_with_spaces_in_name(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => '  John Doe  ',
             'email' => 'john@example.com',
@@ -394,7 +393,7 @@ class RegisterRequestTest extends TestCase
      */
     public function test_validation_passes_with_numbers_in_name(): void
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
         $request->merge([
             'name' => 'John123',
             'email' => 'john@example.com',
@@ -407,4 +406,4 @@ class RegisterRequestTest extends TestCase
 
         $this->assertFalse($validator->fails());
     }
-} 
+}

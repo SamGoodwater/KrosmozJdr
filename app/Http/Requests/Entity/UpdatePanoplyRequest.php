@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePanoplyRequest extends FormRequest
@@ -13,7 +14,9 @@ class UpdatePanoplyRequest extends FormRequest
     {
         $user = $this->user();
         $panoply = $this->route('panoply');
-        if (!$user || !$panoply) return false;
+        if (! $user || ! $panoply) {
+            return false;
+        }
 
         return $user->can('update', $panoply);
     }
@@ -21,7 +24,7 @@ class UpdatePanoplyRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {

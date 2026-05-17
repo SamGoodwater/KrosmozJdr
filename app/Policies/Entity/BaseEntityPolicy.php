@@ -175,4 +175,3 @@ abstract class BaseEntityPolicy
         return false;
     }
 }
-

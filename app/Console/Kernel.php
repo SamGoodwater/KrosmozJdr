@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\SendNotificationDigestsJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -9,7 +10,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 class Kernel extends ConsoleKernel
 {
     protected $middleware = [
-        \App\Http\Middleware\HandleInertiaRequests::class,
+        HandleInertiaRequests::class,
     ];
 
     /**

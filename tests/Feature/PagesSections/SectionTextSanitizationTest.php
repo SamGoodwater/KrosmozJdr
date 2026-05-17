@@ -6,6 +6,7 @@ use App\Enums\SectionType;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -21,7 +22,7 @@ class SectionTextSanitizationTest extends TestCase
 
     public function test_section_text_content_is_sanitized_on_update(): void
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        /** @var Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $page = Page::factory()->create([
@@ -58,7 +59,7 @@ class SectionTextSanitizationTest extends TestCase
 
     public function test_section_text_preserves_kref_spans_after_sanitization(): void
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        /** @var Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $page = Page::factory()->create([
@@ -100,7 +101,7 @@ class SectionTextSanitizationTest extends TestCase
 
     public function test_section_text_preserves_kref_nav_class_for_navigable_references(): void
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        /** @var Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $page = Page::factory()->create([
@@ -151,7 +152,7 @@ class SectionTextSanitizationTest extends TestCase
 
     public function test_section_text_rejects_unsupported_kref_type(): void
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        /** @var Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $page = Page::factory()->create([
@@ -189,7 +190,7 @@ class SectionTextSanitizationTest extends TestCase
 
     public function test_section_text_rejects_overly_long_kref_title(): void
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        /** @var Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $page = Page::factory()->create([
@@ -222,7 +223,7 @@ class SectionTextSanitizationTest extends TestCase
 
     public function test_section_text_rejects_overly_long_legacy_kref_payload(): void
     {
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
+        /** @var Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $page = Page::factory()->create([

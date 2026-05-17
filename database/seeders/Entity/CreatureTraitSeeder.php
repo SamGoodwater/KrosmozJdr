@@ -22,6 +22,8 @@ class CreatureTraitSeeder extends Seeder
             ['name' => 'Vif / Vive', 'description' => 'Commence le combat en premier sans jet d’initiative.'],
             ['name' => 'Agile', 'description' => 'Réussit automatiquement ses jets de fuite et ne peut pas être taclé.'],
         ];
-        foreach ($traits as $trait) { CreatureTrait::query()->updateOrCreate(['name' => $trait['name']], array_merge($defaults, $trait)); }
+        foreach ($traits as $trait) {
+            CreatureTrait::query()->updateOrCreate(['name' => $trait['name']], array_merge($defaults, $trait));
+        }
     }
 }

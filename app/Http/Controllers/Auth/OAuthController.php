@@ -93,7 +93,7 @@ class OAuthController extends Controller
             }
             if ($intendedLink && $user->id === Auth::id()) {
                 return redirect()->route('user.settings')
-                    ->with('success', 'Ce compte ' . $provider . ' est déjà lié.');
+                    ->with('success', 'Ce compte '.$provider.' est déjà lié.');
             }
             $this->updateOAuthAccount($oauthAccount, $providerEmail, $providerName, $avatarUrl);
             Auth::login($user, true);
@@ -103,6 +103,7 @@ class OAuthController extends Controller
             } catch (\Throwable $e) {
                 report($e);
             }
+
             return redirect()->intended(route('user.show', absolute: false));
         }
 
@@ -118,8 +119,9 @@ class OAuthController extends Controller
                 'avatar_url' => $avatarUrl,
             ]);
             $this->maybeUpdateUserFromOAuth($user, $providerName, $providerEmail, $avatarUrl);
-            return redirect()->to(route('user.settings') . '#connections')
-                ->with('success', 'Compte ' . $provider . ' lié avec succès.');
+
+            return redirect()->to(route('user.settings').'#connections')
+                ->with('success', 'Compte '.$provider.' lié avec succès.');
         }
 
         $user = null;
@@ -136,6 +138,7 @@ class OAuthController extends Controller
                 'avatar_url' => $avatarUrl,
                 'existing_user_id' => $user->id,
             ]);
+
             return redirect()->route('oauth.confirm-link');
         }
 
@@ -156,6 +159,7 @@ class OAuthController extends Controller
         } catch (\Throwable $e) {
             report($e);
         }
+
         return redirect()->intended(route('user.show', absolute: false));
     }
 
@@ -189,8 +193,9 @@ class OAuthController extends Controller
         string $name,
         ?string $avatarUrl
     ): User {
-        $email = $email ?: $provider . '_' . $providerId . '@oauth.placeholder';
+        $email = $email ?: $provider.'_'.$providerId.'@oauth.placeholder';
         $name = $this->ensureUniqueName($name);
+
         return User::create([
             'name' => $name,
             'email' => $email,
@@ -207,8 +212,9 @@ class OAuthController extends Controller
         $suffix = 0;
         while (User::query()->where('name', $candidate)->exists()) {
             $suffix++;
-            $candidate = Str::limit($base, 45) . '_' . $suffix;
+            $candidate = Str::limit($base, 45).'_'.$suffix;
         }
+
         return $candidate;
     }
 
@@ -225,6 +231,7 @@ class OAuthController extends Controller
         $user = User::query()->with('oauthAccounts')->find($pending['existing_user_id']);
         if (! $user) {
             $request->session()->forget('oauth.pending_link');
+
             return redirect()->route('login')->with('error', 'Compte introuvable.');
         }
 
@@ -272,8 +279,8 @@ class OAuthController extends Controller
             report($e);
         }
 
-        return redirect()->to(route('user.settings') . '#connections')
-            ->with('success', 'Compte ' . ($pending['provider'] ?? '') . ' lié avec succès. Tu es connecté.');
+        return redirect()->to(route('user.settings').'#connections')
+            ->with('success', 'Compte '.($pending['provider'] ?? '').' lié avec succès. Tu es connecté.');
     }
 
     /**
@@ -335,8 +342,8 @@ class OAuthController extends Controller
             $pending['avatar_url'] ?? null
         );
 
-        return redirect()->to(route('user.settings') . '#connections')
-            ->with('success', 'Compte ' . $pending['provider'] . ' transféré et lié avec succès.');
+        return redirect()->to(route('user.settings').'#connections')
+            ->with('success', 'Compte '.$pending['provider'].' transféré et lié avec succès.');
     }
 
     /**
@@ -346,7 +353,7 @@ class OAuthController extends Controller
     {
         $request->session()->forget('oauth.transfer_pending');
 
-        return redirect()->to(route('user.settings') . '#connections')
+        return redirect()->to(route('user.settings').'#connections')
             ->with('info', 'Transfert annulé.');
     }
 }

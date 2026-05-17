@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Type/SpellType.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Type\SpellType
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-9ab74590102da1db1b88bb793c70b4829db7275e9a9d40f27b1c3d8c7be12de4-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-25b8850e188c6c8eef8553549514a9d4689484a9614e9508d9b8118df6173040-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -38,6 +38,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property-read User|null $createdBy
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
+ *
  * @method static \\Database\\Factories\\Type\\SpellTypeFactory factory($count = null, $state = [])
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|SpellType newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|SpellType newQuery()
@@ -57,13 +58,14 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|SpellType whereWriteLevel($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|SpellType withTrashed()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|SpellType withoutTrashed()
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 51,
-    'endLine' => 105,
+    'startLine' => 53,
+    'endLine' => 107,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -89,20 +91,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'raw\'',
           'attributes' => 
           array (
-            'startLine' => 56,
-            'endLine' => 56,
+            'startLine' => 58,
+            'endLine' => 58,
             'startTokenPos' => 77,
-            'startFilePos' => 2777,
+            'startFilePos' => 2783,
             'endTokenPos' => 77,
-            'endFilePos' => 2781,
+            'endFilePos' => 2787,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 56,
-        'endLine' => 56,
+        'startLine' => 58,
+        'endLine' => 58,
         'startColumn' => 5,
         'endColumn' => 35,
       ),
@@ -118,20 +120,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'draft\'',
           'attributes' => 
           array (
-            'startLine' => 58,
-            'endLine' => 58,
+            'startLine' => 60,
+            'endLine' => 60,
             'startTokenPos' => 88,
-            'startFilePos' => 2816,
+            'startFilePos' => 2822,
             'endTokenPos' => 88,
-            'endFilePos' => 2822,
+            'endFilePos' => 2828,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 58,
-        'endLine' => 58,
+        'startLine' => 60,
+        'endLine' => 60,
         'startColumn' => 5,
         'endColumn' => 39,
       ),
@@ -147,20 +149,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'playable\'',
           'attributes' => 
           array (
-            'startLine' => 60,
-            'endLine' => 60,
+            'startLine' => 62,
+            'endLine' => 62,
             'startTokenPos' => 99,
-            'startFilePos' => 2860,
+            'startFilePos' => 2866,
             'endTokenPos' => 99,
-            'endFilePos' => 2869,
+            'endFilePos' => 2875,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 60,
-        'endLine' => 60,
+        'startLine' => 62,
+        'endLine' => 62,
         'startColumn' => 5,
         'endColumn' => 45,
       ),
@@ -176,20 +178,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'archived\'',
           'attributes' => 
           array (
-            'startLine' => 62,
-            'endLine' => 62,
+            'startLine' => 64,
+            'endLine' => 64,
             'startTokenPos' => 110,
-            'startFilePos' => 2907,
+            'startFilePos' => 2913,
             'endTokenPos' => 110,
-            'endFilePos' => 2916,
+            'endFilePos' => 2922,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 62,
-        'endLine' => 62,
+        'startLine' => 64,
+        'endLine' => 64,
         'startColumn' => 5,
         'endColumn' => 45,
       ),
@@ -208,12 +210,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'name\', \'description\', \'color\', \'icon\', \'state\', \'read_level\', \'write_level\', \'created_by\']',
           'attributes' => 
           array (
-            'startLine' => 69,
-            'endLine' => 78,
+            'startLine' => 71,
+            'endLine' => 80,
             'startTokenPos' => 121,
-            'startFilePos' => 3042,
+            'startFilePos' => 3048,
             'endTokenPos' => 147,
-            'endFilePos' => 3204,
+            'endFilePos' => 3210,
           ),
         ),
         'docComment' => '/**
@@ -224,8 +226,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 69,
-        'endLine' => 78,
+        'startLine' => 71,
+        'endLine' => 80,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -247,12 +249,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'read_level\' => \'integer\', \'write_level\' => \'integer\']',
           'attributes' => 
           array (
-            'startLine' => 85,
-            'endLine' => 88,
+            'startLine' => 87,
+            'endLine' => 90,
             'startTokenPos' => 158,
-            'startFilePos' => 3331,
+            'startFilePos' => 3337,
             'endTokenPos' => 174,
-            'endFilePos' => 3408,
+            'endFilePos' => 3414,
           ),
         ),
         'docComment' => '/**
@@ -263,8 +265,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 85,
-        'endLine' => 88,
+        'startLine' => 87,
+        'endLine' => 90,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -291,8 +293,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the user that created the spell type.
  */',
-        'startLine' => 93,
-        'endLine' => 96,
+        'startLine' => 95,
+        'endLine' => 98,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -320,8 +322,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les sorts de ce type.
  */',
-        'startLine' => 101,
-        'endLine' => 104,
+        'startLine' => 103,
+        'endLine' => 106,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

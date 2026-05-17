@@ -22,7 +22,7 @@ final class ScrappingMappingService
      * characteristic_id (nullable), characteristic_key (nullable, clé BDD de la caractéristique).
      *
      * @return list<array{key: string, from: array{path: string, langAware?: bool}, to: list<array{model: string, field: string}>, formatters?: list<array{name: string, args: array}>, characteristic_id?: int|null, characteristic_key?: string|null}>|null
-     *         null si aucun mapping en BDD (le pipeline utilisera le JSON).
+     *                                                                                                                                                                                                                                                        null si aucun mapping en BDD (le pipeline utilisera le JSON).
      */
     public function getMappingForEntity(string $source, string $entity): ?array
     {

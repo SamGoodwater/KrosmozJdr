@@ -37,6 +37,7 @@ trait HasCharacteristicValidation
 
         if ($type === 'boolean' || $type === 'bool') {
             $rules[] = 'boolean';
+
             return $rules;
         }
 
@@ -44,8 +45,9 @@ trait HasCharacteristicValidation
             $allowed = $def['value_available'] ?? null;
             if (is_array($allowed) && $allowed !== []) {
                 $rules[] = $numericType;
-                $rules[] = 'in:' . implode(',', array_map(strval(...), $allowed));
+                $rules[] = 'in:'.implode(',', array_map(strval(...), $allowed));
             }
+
             return $rules;
         }
 
@@ -53,12 +55,13 @@ trait HasCharacteristicValidation
         $rules[] = $numericType;
         if ($limits !== null) {
             if (isset($limits['min'])) {
-                $rules[] = 'min:' . $limits['min'];
+                $rules[] = 'min:'.$limits['min'];
             }
             if (isset($limits['max'])) {
-                $rules[] = 'max:' . $limits['max'];
+                $rules[] = 'max:'.$limits['max'];
             }
         }
+
         return $rules;
     }
 
@@ -84,11 +87,12 @@ trait HasCharacteristicValidation
         }
         $rules = [];
         if (isset($limits['min'])) {
-            $rules[] = 'min:' . $limits['min'];
+            $rules[] = 'min:'.$limits['min'];
         }
         if (isset($limits['max'])) {
-            $rules[] = 'max:' . $limits['max'];
+            $rules[] = 'max:'.$limits['max'];
         }
+
         return $rules;
     }
 }

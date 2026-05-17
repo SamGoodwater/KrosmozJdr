@@ -207,4 +207,3 @@ final class CharacteristicReferenceTableService
         return round((float) $value, 2);
     }
 }
-

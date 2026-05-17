@@ -50,4 +50,4 @@ class MiddlewareTest extends TestCase
         $this->assertContains($response->getStatusCode(), [200, 302]);
     }
     */
-} 
+}

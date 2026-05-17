@@ -23,6 +23,27 @@ export class Monster extends BaseModel {
         return this._data.creature_id || null;
     }
 
+    get name() {
+        if (this._data.name) {
+            return String(this._data.name);
+        }
+        return this.creature?.name ? String(this.creature.name) : '';
+    }
+
+    get level() {
+        const v = this._data.level;
+        if (v !== null && v !== undefined && v !== '') {
+            const n = Number(v);
+            return Number.isFinite(n) ? n : null;
+        }
+        const c = this._data.creature?.level;
+        if (c === null || c === undefined || c === '') {
+            return null;
+        }
+        const n = Number(c);
+        return Number.isFinite(n) ? n : null;
+    }
+
     get officialId() {
         return this._data.official_id || null;
     }

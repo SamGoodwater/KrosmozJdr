@@ -16,5 +16,9 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-    public function down(): void { Schema::dropIfExists('breed_creature_trait'); }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('breed_creature_trait');
+    }
 };

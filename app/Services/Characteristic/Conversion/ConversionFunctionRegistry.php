@@ -32,7 +32,7 @@ final class ConversionFunctionRegistry
     /**
      * Enregistre une fonction de conversion.
      *
-     * @param callable(float, array, array, string, string): int|float $callable
+     * @param  callable(float, array, array, string, string): int|float  $callable
      */
     public function register(string $id, callable $callable, string $label = ''): void
     {
@@ -58,6 +58,7 @@ final class ConversionFunctionRegistry
         foreach ($this->ids() as $id) {
             $out[] = ['id' => $id, 'label' => $this->labels[$id] ?? $id];
         }
+
         return $out;
     }
 

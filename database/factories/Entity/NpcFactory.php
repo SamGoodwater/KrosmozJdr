@@ -2,10 +2,11 @@
 
 namespace Database\Factories\Entity;
 
+use App\Models\Npc;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Npc>
+ * @extends Factory<Npc>
  */
 class NpcFactory extends Factory
 {

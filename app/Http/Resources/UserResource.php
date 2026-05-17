@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\User;
 
 /**
  * Resource API/Frontend pour l'entité User.
@@ -26,12 +26,12 @@ class UserResource extends JsonResource
     /**
      * Transforme la ressource User en tableau pour l'API/frontend.
      *
-     * @param Request $request
      * @return array<string, mixed> Données exposées pour le frontend/API
      */
     public function toArray(Request $request): array
     {
         $user = $request->user();
+
         return [
             'id' => $this->id,
             'name' => $this->name,

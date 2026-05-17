@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Effect;
 
+use App\Models\Effect;
 use App\Rules\ValidAreaNotation;
 use App\Services\Effect\EffectTextSanitizer;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEffectRequest extends FormRequest
@@ -16,7 +18,7 @@ class StoreEffectRequest extends FormRequest
     }
 
     /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -37,7 +39,7 @@ class StoreEffectRequest extends FormRequest
             $this->merge(['description' => (new EffectTextSanitizer)->sanitize((string) $this->description)]);
         }
         if (! $this->filled('target_type')) {
-            $this->merge(['target_type' => \App\Models\Effect::TARGET_DIRECT]);
+            $this->merge(['target_type' => Effect::TARGET_DIRECT]);
         }
     }
 }

@@ -200,7 +200,7 @@ export class BaseMapper {
         if (Array.isArray(keys)) {
             for (const key of keys) {
                 const value = this.extractValue(obj, key, undefined);
-                if (value !== undefined) {
+                if (value !== undefined && value !== null) {
                     return value;
                 }
             }

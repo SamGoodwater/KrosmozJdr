@@ -4,7 +4,6 @@ namespace App\Policies\Entity;
 
 use App\Models\Entity\Panoply;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class PanoplyPolicy
 {

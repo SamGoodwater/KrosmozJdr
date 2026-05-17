@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Type\MonsterRaceTypeApiController;
+use App\Http\Controllers\Type\SpellTypeApiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,20 +15,20 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth'])->prefix('types')->group(function () {
     Route::prefix('monster-races')->group(function () {
-        Route::get('/', [App\Http\Controllers\Type\MonsterRaceTypeApiController::class, 'index'])
+        Route::get('/', [MonsterRaceTypeApiController::class, 'index'])
             ->name('types.monster-races.index');
-        Route::patch('/bulk', [App\Http\Controllers\Type\MonsterRaceTypeApiController::class, 'bulkUpdate'])
+        Route::patch('/bulk', [MonsterRaceTypeApiController::class, 'bulkUpdate'])
             ->name('types.monster-races.bulk');
-        Route::delete('/{monsterRace}', [App\Http\Controllers\Type\MonsterRaceTypeApiController::class, 'destroy'])
+        Route::delete('/{monsterRace}', [MonsterRaceTypeApiController::class, 'destroy'])
             ->name('types.monster-races.delete');
     });
 
     Route::prefix('spell-types')->group(function () {
-        Route::get('/', [App\Http\Controllers\Type\SpellTypeApiController::class, 'index'])
+        Route::get('/', [SpellTypeApiController::class, 'index'])
             ->name('types.spell-types.index');
-        Route::patch('/bulk', [App\Http\Controllers\Type\SpellTypeApiController::class, 'bulkUpdate'])
+        Route::patch('/bulk', [SpellTypeApiController::class, 'bulkUpdate'])
             ->name('types.spell-types.bulk');
-        Route::delete('/{spellType}', [App\Http\Controllers\Type\SpellTypeApiController::class, 'destroy'])
+        Route::delete('/{spellType}', [SpellTypeApiController::class, 'destroy'])
             ->name('types.spell-types.delete');
     });
 });

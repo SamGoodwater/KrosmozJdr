@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/Monster.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Entity\Monster
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-de1d3888748c439778fd4caac6ea01e9e01cb282cbed23b2a746e03cc396154b-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-6c70121b987ef2db20b9b65e0b0873736a2cbe764d3b166184b4ecfb9a2bd7bf-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -41,6 +41,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, Spell> $spellInvocations
  * @property-read int|null $spell_invocations_count
+ *
  * @method static \\Database\\Factories\\Entity\\MonsterFactory factory($count = null, $state = [])
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Monster newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Monster newQuery()
@@ -55,25 +56,31 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Monster whereOfficialId($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Monster whereSize($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Monster whereUpdatedAt($value)
+ *
  * @property int $is_boss
  * @property string $boss_pa
+ *
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Monster whereBossPa($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Monster whereIsBoss($value)
+ *
  * @property string $state
  * @property int $read_level
  * @property int $write_level
+ *
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Monster whereReadLevel($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Monster whereState($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Monster whereWriteLevel($value)
- * @property-read Collection<int, \\App\\Models\\Entity\\Language> $languages
+ *
+ * @property-read Collection<int, Language> $languages
  * @property-read int|null $languages_count
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 59,
-    'endLine' => 160,
+    'startLine' => 66,
+    'endLine' => 167,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -98,20 +105,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[0 => \'Minuscule\', 1 => \'Petit\', 2 => \'Moyen\', 3 => \'Grand\', 4 => \'Colossal\', 5 => \'Gigantesque\']',
           'attributes' => 
           array (
-            'startLine' => 64,
-            'endLine' => 71,
+            'startLine' => 71,
+            'endLine' => 78,
             'startTokenPos' => 62,
-            'startFilePos' => 3172,
+            'startFilePos' => 3174,
             'endTokenPos' => 106,
-            'endFilePos' => 3323,
+            'endFilePos' => 3325,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 64,
-        'endLine' => 71,
+        'startLine' => 71,
+        'endLine' => 78,
         'startColumn' => 5,
         'endColumn' => 6,
       ),
@@ -127,20 +134,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[0 => \'Amical\', 1 => \'Curieux\', 2 => \'Neutre\', 3 => \'Hostile\', 4 => \'Aggressif\']',
           'attributes' => 
           array (
-            'startLine' => 73,
-            'endLine' => 79,
+            'startLine' => 80,
+            'endLine' => 86,
             'startTokenPos' => 115,
-            'startFilePos' => 3349,
+            'startFilePos' => 3351,
             'endTokenPos' => 152,
-            'endFilePos' => 3475,
+            'endFilePos' => 3477,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 73,
-        'endLine' => 79,
+        'startLine' => 80,
+        'endLine' => 86,
         'startColumn' => 5,
         'endColumn' => 6,
       ),
@@ -159,12 +166,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'creature_id\', \'official_id\', \'dofusdb_id\', \'dofus_version\', \'auto_update\', \'size\', \'is_boss\', \'boss_pa\', \'monster_race_id\', \'state\', \'read_level\', \'write_level\']',
           'attributes' => 
           array (
-            'startLine' => 86,
-            'endLine' => 99,
+            'startLine' => 93,
+            'endLine' => 106,
             'startTokenPos' => 163,
-            'startFilePos' => 3601,
+            'startFilePos' => 3603,
             'endTokenPos' => 201,
-            'endFilePos' => 3866,
+            'endFilePos' => 3868,
           ),
         ),
         'docComment' => '/**
@@ -175,8 +182,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 86,
-        'endLine' => 99,
+        'startLine' => 93,
+        'endLine' => 106,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -198,12 +205,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'size\' => \'integer\', \'auto_update\' => \'boolean\', \'read_level\' => \'integer\', \'write_level\' => \'integer\']',
           'attributes' => 
           array (
-            'startLine' => 106,
-            'endLine' => 111,
+            'startLine' => 113,
+            'endLine' => 118,
             'startTokenPos' => 212,
-            'startFilePos' => 3993,
+            'startFilePos' => 3995,
             'endTokenPos' => 242,
-            'endFilePos' => 4135,
+            'endFilePos' => 4137,
           ),
         ),
         'docComment' => '/**
@@ -214,8 +221,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 106,
-        'endLine' => 111,
+        'startLine' => 113,
+        'endLine' => 118,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -242,8 +249,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the creature associated with the monster.
  */',
-        'startLine' => 116,
-        'endLine' => 119,
+        'startLine' => 123,
+        'endLine' => 126,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -271,8 +278,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the race of the monster.
  */',
-        'startLine' => 124,
-        'endLine' => 127,
+        'startLine' => 131,
+        'endLine' => 134,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -300,8 +307,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les scénarios associés à ce monstre.
  */',
-        'startLine' => 132,
-        'endLine' => 135,
+        'startLine' => 139,
+        'endLine' => 142,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -329,8 +336,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les campagnes associées à ce monstre.
  */',
-        'startLine' => 140,
-        'endLine' => 143,
+        'startLine' => 147,
+        'endLine' => 150,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -356,8 +363,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 145,
-        'endLine' => 151,
+        'startLine' => 152,
+        'endLine' => 158,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -385,8 +392,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les sorts d\'invocation de ce monstre.
  */',
-        'startLine' => 156,
-        'endLine' => 159,
+        'startLine' => 163,
+        'endLine' => 166,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

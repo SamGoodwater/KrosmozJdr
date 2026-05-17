@@ -3,6 +3,8 @@
 namespace Tests\Unit;
 
 use App\Models\User;
+use App\Notifications\LastConnectionNotification;
+use App\Notifications\NewUserCreatedNotification;
 use App\Notifications\ProfileModifiedNotification;
 use App\Services\NotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -82,7 +84,7 @@ class NotificationServiceTest extends TestCase
 
         NotificationService::notifyNewUserCreated($newUser);
 
-        Notification::assertNotSentTo($admin, \App\Notifications\NewUserCreatedNotification::class);
+        Notification::assertNotSentTo($admin, NewUserCreatedNotification::class);
     }
 
     public function test_notify_new_user_created_notifies_admin_with_mail_channel(): void
@@ -97,7 +99,7 @@ class NotificationServiceTest extends TestCase
 
         NotificationService::notifyNewUserCreated($newUser);
 
-        Notification::assertSentTo($admin, \App\Notifications\NewUserCreatedNotification::class);
+        Notification::assertSentTo($admin, NewUserCreatedNotification::class);
     }
 
     public function test_notify_last_connection_does_not_notify_when_channels_empty(): void
@@ -123,7 +125,7 @@ class NotificationServiceTest extends TestCase
 
         NotificationService::notifyLastConnection($user);
 
-        Notification::assertSentTo($user, \App\Notifications\LastConnectionNotification::class);
+        Notification::assertSentTo($user, LastConnectionNotification::class);
     }
 
     public function test_truncate_and_sanitize_strips_tags_and_truncates(): void

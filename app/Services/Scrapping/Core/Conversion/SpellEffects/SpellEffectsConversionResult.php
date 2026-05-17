@@ -11,16 +11,15 @@ namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
 final class SpellEffectsConversionResult
 {
     /**
-     * @param array{name: string, slug: string} $effectGroup
-     * @param list<array> $effects Chaque entrée : degree, name, slug, description, sub_effects[]
-     * @param array<string, string|null> $spellResolution Paramètres de résolution au niveau du sort
+     * @param  array{name: string, slug: string}  $effectGroup
+     * @param  list<array>  $effects  Chaque entrée : degree, name, slug, description, sub_effects[]
+     * @param  array<string, string|null>  $spellResolution  Paramètres de résolution au niveau du sort
      */
     public function __construct(
         private readonly array $effectGroup,
         private readonly array $effects,
         private readonly array $spellResolution = [],
-    ) {
-    }
+    ) {}
 
     public function getEffectGroup(): array
     {

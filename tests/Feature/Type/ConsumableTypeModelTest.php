@@ -2,18 +2,16 @@
 
 namespace Tests\Feature\Type;
 
-use App\Models\User;
-use App\Models\Type\ConsumableType;
 use App\Models\Entity\Consumable;
+use App\Models\Type\ConsumableType;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle ConsumableType
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Type
  */
 class ConsumableTypeModelTest extends TestCase
 {
@@ -25,7 +23,7 @@ class ConsumableTypeModelTest extends TestCase
     public function test_consumable_type_factory_creates_valid_consumable_type(): void
     {
         $user = User::factory()->create();
-        
+
         $consumableType = ConsumableType::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -75,4 +73,3 @@ class ConsumableTypeModelTest extends TestCase
         $this->assertTrue($consumableType->consumables->contains($consumable2));
     }
 }
-

@@ -15,4 +15,3 @@ Route::middleware(['web', 'auth'])->prefix('table-presets')->name('api.table-pre
     Route::patch('/{tablePreset}', [TableFilterPresetController::class, 'update'])->name('update');
     Route::delete('/{tablePreset}', [TableFilterPresetController::class, 'destroy'])->name('destroy');
 });
-

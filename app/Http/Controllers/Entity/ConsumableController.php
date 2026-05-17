@@ -8,8 +8,10 @@ use App\Http\Requests\Entity\UpdateConsumableRequest;
 use App\Http\Resources\Entity\ConsumableResource;
 use App\Models\Effect;
 use App\Models\Entity\Consumable;
+use App\Models\Type\ConsumableType;
 use App\Services\PdfService;
 use App\Support\Entity\ObjectEffectEditOptions;
+use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class ConsumableController extends Controller
@@ -92,7 +94,7 @@ class ConsumableController extends Controller
 
         $consumable->load(['createdBy', 'consumableType', 'resources', 'effectUsages.effectDegree.effect', 'objectEffects']);
 
-        $availableConsumableTypes = \App\Models\Type\ConsumableType::select('id', 'name', 'description')
+        $availableConsumableTypes = ConsumableType::select('id', 'name', 'description')
             ->orderBy('name')
             ->get();
 
@@ -104,7 +106,7 @@ class ConsumableController extends Controller
                 'name' => ($u->effectDegree->effect->name ?? $u->effectDegree->effect->slug ?? 'Effet #'.$u->effectDegree->effect_id).' · D'.$u->effectDegree->degree,
                 'slug' => $u->effectDegree->slug,
                 'degree' => $u->effectDegree->degree,
-                'target_type' => $u->effectDegree->effect->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+                'target_type' => $u->effectDegree->effect->target_type ?? Effect::TARGET_DIRECT,
                 'area' => $u->effectDegree->area,
                 'effect_definition_id' => $u->effectDegree->effect_id,
             ] : null,
@@ -120,7 +122,7 @@ class ConsumableController extends Controller
                     'name' => ($e->name ?? $e->slug ?? 'Effet #'.$e->id).' · D'.$d->degree,
                     'slug' => $d->slug,
                     'degree' => $d->degree,
-                    'target_type' => $e->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+                    'target_type' => $e->target_type ?? Effect::TARGET_DIRECT,
                     'area' => $d->area,
                     'effect_definition_id' => $e->id,
                 ]);
@@ -164,7 +166,7 @@ class ConsumableController extends Controller
      * Télécharge un PDF pour un ou plusieurs consumables.
      *
      * @param  Consumable|null  $consumable  Le consumable unique (si un seul)
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function downloadPdf(?Consumable $consumable = null)
     {

@@ -21,7 +21,7 @@ class SendNotificationDigestsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-        public function __construct(
+    public function __construct(
         public string $frequency
     ) {
         $this->onQueue('notifications');
@@ -37,7 +37,7 @@ class SendNotificationDigestsJob implements ShouldQueue
             ->orderBy('user_id')
             ->orderBy('notification_type')
             ->get();
-        $grouped = $rows->groupBy(fn ($r) => $r->user_id . '|' . $r->notification_type);
+        $grouped = $rows->groupBy(fn ($r) => $r->user_id.'|'.$r->notification_type);
 
         $itemIds = fn ($items) => $items->pluck('id')->all();
 
@@ -47,6 +47,7 @@ class SendNotificationDigestsJob implements ShouldQueue
             if (! $user) {
                 // Utilisateur supprimé : on retire les entrées orphelines
                 NotificationDigestQueue::whereIn('id', $itemIds($items))->delete();
+
                 continue;
             }
             $payloads = $items->pluck('payload')->all();

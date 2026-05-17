@@ -2,18 +2,16 @@
 
 namespace Tests\Feature\Type;
 
-use App\Models\User;
-use App\Models\Type\ItemType;
 use App\Models\Entity\Item;
+use App\Models\Type\ItemType;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests d'intégration pour le modèle ItemType
- * 
+ *
  * Vérifie que le modèle fonctionne correctement avec ses relations
- * 
- * @package Tests\Feature\Type
  */
 class ItemTypeModelTest extends TestCase
 {
@@ -25,7 +23,7 @@ class ItemTypeModelTest extends TestCase
     public function test_item_type_factory_creates_valid_item_type(): void
     {
         $user = User::factory()->create();
-        
+
         $itemType = ItemType::factory()->create([
             'created_by' => $user->id,
         ]);
@@ -75,4 +73,3 @@ class ItemTypeModelTest extends TestCase
         $this->assertTrue($itemType->items->contains($item2));
     }
 }
-

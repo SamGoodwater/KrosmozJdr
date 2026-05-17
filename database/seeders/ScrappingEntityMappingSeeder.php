@@ -23,6 +23,7 @@ class ScrappingEntityMappingSeeder extends Seeder
     use LoadsSeederDataFile;
 
     private const DATA_FILE = 'database/seeders/data/scrapping_entity_mappings.php';
+
     private const SOURCE_CONFIG_BASE = 'resources/scrapping/config/sources';
 
     public function run(): void
@@ -32,6 +33,7 @@ class ScrappingEntityMappingSeeder extends Seeder
             $rows = $this->loadRowsFromEntityJson();
             if ($rows === []) {
                 $this->command?->info('Aucun mapping scrapping trouvé (data file + JSON). Passez.');
+
                 return;
             }
             $this->command?->info('ScrappingEntityMappingSeeder : bootstrap depuis les JSON d’entité.');
@@ -42,7 +44,7 @@ class ScrappingEntityMappingSeeder extends Seeder
 
         foreach ($rows as $row) {
             $characteristicId = null;
-            if (!empty($row['characteristic_key'])) {
+            if (! empty($row['characteristic_key'])) {
                 $char = Characteristic::where('key', (string) $row['characteristic_key'])->first();
                 $characteristicId = $char?->id;
             }
@@ -62,7 +64,7 @@ class ScrappingEntityMappingSeeder extends Seeder
             $targets = $row['targets'] ?? [];
             if (is_array($targets)) {
                 foreach ($targets as $i => $target) {
-                    if (!is_array($target)) {
+                    if (! is_array($target)) {
                         continue;
                     }
                     $model = (string) ($target['target_model'] ?? '');
@@ -80,7 +82,7 @@ class ScrappingEntityMappingSeeder extends Seeder
             }
         }
 
-        $this->command?->info('Scrapping entity mappings : ' . count($rows) . ' règle(s) importée(s).');
+        $this->command?->info('Scrapping entity mappings : '.count($rows).' règle(s) importée(s).');
     }
 
     /**
@@ -96,10 +98,10 @@ class ScrappingEntityMappingSeeder extends Seeder
         }
 
         $rows = [];
-        $sourceDirs = glob($base . '/*', GLOB_ONLYDIR) ?: [];
+        $sourceDirs = glob($base.'/*', GLOB_ONLYDIR) ?: [];
         foreach ($sourceDirs as $sourceDir) {
             $source = basename($sourceDir);
-            $entityFiles = glob($sourceDir . '/entities/*.json') ?: [];
+            $entityFiles = glob($sourceDir.'/entities/*.json') ?: [];
             foreach ($entityFiles as $entityFile) {
                 $entityData = $this->readJsonFile($entityFile);
                 if (! is_array($entityData)) {

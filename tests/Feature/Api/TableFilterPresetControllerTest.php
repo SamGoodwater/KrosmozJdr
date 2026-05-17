@@ -88,4 +88,3 @@ class TableFilterPresetControllerTest extends TestCase
         $this->assertFalse((bool) $p1->is_default);
     }
 }
-

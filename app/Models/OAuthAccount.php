@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount forUser(int $userId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount newQuery()
@@ -36,6 +37,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereProviderName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OAuthAccount whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class OAuthAccount extends Model

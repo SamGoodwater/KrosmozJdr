@@ -2,7 +2,6 @@
 
 namespace Database\Seeders\Entity;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class BreedSeeder extends Seeder

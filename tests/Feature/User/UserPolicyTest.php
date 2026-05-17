@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 /**
  * Tests Feature pour UserPolicy
- * 
+ *
  * Vérifie que les policies autorisent correctement :
  * - Un utilisateur peut modifier son propre profil
  * - Un admin peut modifier n'importe quel utilisateur
@@ -26,7 +26,7 @@ class UserPolicyTest extends TestCase
     public function test_user_can_update_own_profile(): void
     {
         $user = User::factory()->create();
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertTrue($policy->update($user, $user));
     }
@@ -38,7 +38,7 @@ class UserPolicyTest extends TestCase
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
         $otherUser = User::factory()->create();
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertFalse($policy->update($user, $otherUser));
     }
@@ -50,7 +50,7 @@ class UserPolicyTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $targetUser = User::factory()->create();
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertTrue($policy->update($admin, $targetUser));
     }
@@ -62,7 +62,7 @@ class UserPolicyTest extends TestCase
     {
         $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
         $targetUser = User::factory()->create();
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         // Le super_admin a tous les droits via before()
         $this->assertTrue($policy->update($superAdmin, $targetUser));
@@ -75,7 +75,7 @@ class UserPolicyTest extends TestCase
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
         $targetUser = User::factory()->create(['role' => User::ROLE_USER]);
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertFalse($policy->updateRole($user, $targetUser));
     }
@@ -87,7 +87,7 @@ class UserPolicyTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $targetUser = User::factory()->create(['role' => User::ROLE_USER]);
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertTrue($policy->updateRole($admin, $targetUser));
     }
@@ -99,7 +99,7 @@ class UserPolicyTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $targetAdmin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertFalse($policy->updateRole($admin, $targetAdmin));
     }
@@ -111,7 +111,7 @@ class UserPolicyTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $targetSuperAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertFalse($policy->updateRole($admin, $targetSuperAdmin));
     }
@@ -123,7 +123,7 @@ class UserPolicyTest extends TestCase
     {
         $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
         $targetUser = User::factory()->create(['role' => User::ROLE_USER]);
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         // Le super_admin a tous les droits via before()
         $this->assertTrue($policy->updateRole($superAdmin, $targetUser));
@@ -136,7 +136,7 @@ class UserPolicyTest extends TestCase
     {
         $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
         $targetSuperAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         // Même si le super_admin a tous les droits, la logique métier dans le contrôleur empêche la promotion en super_admin
         // Ici on teste juste la policy, qui autorise (mais le contrôleur bloquera)
@@ -150,7 +150,7 @@ class UserPolicyTest extends TestCase
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertFalse($policy->viewAny($user));
         $this->assertTrue($policy->viewAny($admin));
@@ -163,7 +163,7 @@ class UserPolicyTest extends TestCase
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertFalse($policy->create($user));
         $this->assertTrue($policy->create($admin));
@@ -177,11 +177,10 @@ class UserPolicyTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
         $target = User::factory()->create(['role' => User::ROLE_USER]);
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertFalse($policy->resetPassword($admin, $target));
         $this->assertTrue($policy->resetPassword($superAdmin, $target));
         $this->assertFalse($policy->resetPassword($superAdmin, $superAdmin));
     }
 }
-

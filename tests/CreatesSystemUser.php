@@ -8,21 +8,17 @@ use Illuminate\Support\Str;
 
 /**
  * Trait pour créer l'utilisateur système dans les tests
- * 
- * @package Tests
  */
 trait CreatesSystemUser
 {
     /**
      * Crée l'utilisateur système si il n'existe pas
-     * 
-     * @return User
      */
     protected function createSystemUser(): User
     {
         $systemUser = User::getSystemUser();
-        
-        if (!$systemUser) {
+
+        if (! $systemUser) {
             $systemUser = User::create([
                 'name' => 'Système',
                 'email' => User::SYSTEM_USER_EMAIL,
@@ -34,8 +30,7 @@ trait CreatesSystemUser
                 'is_system' => true,
             ]);
         }
-        
+
         return $systemUser;
     }
 }
-

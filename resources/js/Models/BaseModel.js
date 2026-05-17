@@ -64,17 +64,28 @@ export class BaseModel {
             // Si 'can' existe au niveau racine, on doit préserver cette structure
             const hasCanAtRoot = 'can' in raw || raw.can !== undefined;
             const hasDataProperty = raw.data && typeof raw.data === 'object';
-            
-            // Si 'can' est au niveau racine ET qu'il y a une propriété .data,
-            // on doit fusionner les deux pour ne pas perdre 'can'
+
             if (hasCanAtRoot && hasDataProperty) {
-                // Fusionner : données de .data + propriétés au niveau racine (comme 'can')
-                return {
-                    ...raw.data,
-                    can: raw.can, // Préserver 'can' au niveau racine
-                };
+                const data = raw.data;
+                const rootHasEntityIdentity =
+                    (Object.prototype.hasOwnProperty.call(raw, 'id') && raw.id != null) ||
+                    Object.prototype.hasOwnProperty.call(raw, 'page_id');
+                const dataLooksLikeWrappedEntity =
+                    data &&
+                    typeof data === 'object' &&
+                    (Object.prototype.hasOwnProperty.call(data, 'id') ||
+                        Object.prototype.hasOwnProperty.call(data, 'page_id'));
+
+                if (dataLooksLikeWrappedEntity && !rootHasEntityIdentity) {
+                    return {
+                        ...data,
+                        can: raw.can,
+                    };
+                }
+
+                return raw;
             }
-            
+
             // Si les données sont dans .data (structure Inertia Resource)
             if (hasDataProperty && !hasCanAtRoot) {
                 return raw.data;
@@ -92,7 +103,7 @@ export class BaseModel {
     // ============================================
 
     get id() {
-        return this._data.id;
+        return this._data.id ?? null;
     }
 
     get createdById() {

@@ -17,12 +17,14 @@ class SubEffectController extends Controller
     public function index(): AnonymousResourceCollection
     {
         $list = SubEffect::orderBy('type_slug')->orderBy('slug')->get();
+
         return SubEffectResource::collection($list);
     }
 
     public function store(StoreSubEffectRequest $request): JsonResponse
     {
         $sub = SubEffect::create($request->validated());
+
         return (new SubEffectResource($sub))->response()->setStatusCode(201);
     }
 
@@ -34,12 +36,14 @@ class SubEffectController extends Controller
     public function update(UpdateSubEffectRequest $request, SubEffect $subEffect): SubEffectResource
     {
         $subEffect->update($request->validated());
+
         return new SubEffectResource($subEffect->fresh());
     }
 
     public function destroy(SubEffect $subEffect): JsonResponse
     {
         $subEffect->delete();
+
         return response()->json(null, 204);
     }
 }

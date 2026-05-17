@@ -2,12 +2,13 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Section;
-use Illuminate\Validation\Rule;
 use App\Enums\SectionType;
-use App\Support\SectionTemplateValidationRules;
+use App\Models\Section;
 use App\Support\SectionTemplatePayloadValidator;
+use App\Support\SectionTemplateValidationRules;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 /**
@@ -23,24 +24,25 @@ class UpdateSectionRequest extends FormRequest
     public function authorize(): bool
     {
         $section = $this->route('section');
+
         return $this->user()?->can('update', $section) ?? false;
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         $template = $this->input('template') ?? $this->input('type') ?? $this->route('section')?->template;
-        
+
         // Convertir le template en string si c'est un enum
         // Si c'est déjà un SectionType, extraire sa valeur
         if ($template instanceof SectionType) {
             $template = $template->value;
         }
-        
+
         $rules = [
             'page_id' => ['sometimes', 'exists:pages,id'],
             'title' => ['sometimes', 'nullable', 'string', 'max:255'],
@@ -60,7 +62,7 @@ class UpdateSectionRequest extends FormRequest
         // $template est maintenant garanti d'être une string ou null
         if ($template && $sectionType = SectionType::tryFrom($template)) {
             $validationRules = $this->getTemplateValidationRules($sectionType);
-            if (!empty($validationRules)) {
+            if (! empty($validationRules)) {
                 // Rendre toutes les règles conditionnelles pour l'update partiel.
                 foreach ($validationRules as $key => $rule) {
                     $rules[$key] = array_merge(['sometimes'], $rule);
@@ -73,8 +75,8 @@ class UpdateSectionRequest extends FormRequest
 
     /**
      * Retourne les règles de validation pour les settings et data selon le template de section.
-     * 
-     * @param SectionType $template Template de section
+     *
+     * @param  SectionType  $template  Template de section
      * @return array<string, mixed> Règles de validation
      */
     protected function getTemplateValidationRules(SectionType $template): array
@@ -110,14 +112,14 @@ class UpdateSectionRequest extends FormRequest
             }
 
             $template = is_string($templateRaw) ? SectionType::tryFrom($templateRaw) : null;
-            if (!$template) {
+            if (! $template) {
                 return;
             }
 
             if ($template === SectionType::IMAGE) {
                 foreach (['data.src', 'params.src'] as $key) {
                     $value = $this->input($key);
-                    if (!is_string($value) || trim($value) === '') {
+                    if (! is_string($value) || trim($value) === '') {
                         continue;
                     }
                     $error = SectionTemplatePayloadValidator::validateImageSource($value);
@@ -152,7 +154,7 @@ class UpdateSectionRequest extends FormRequest
             if ($template === SectionType::LEGAL_MARKDOWN) {
                 foreach (['data.sourceUrl', 'params.sourceUrl'] as $key) {
                     $value = $this->input($key);
-                    if (!is_string($value) || trim($value) === '') {
+                    if (! is_string($value) || trim($value) === '') {
                         continue;
                     }
                     $error = SectionTemplatePayloadValidator::validateLegalMarkdownSourceUrl($value);

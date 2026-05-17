@@ -21,7 +21,7 @@ class DofusDbClient
     /**
      * Émet un log "info" en privilégiant le canal scrapping, avec fallback.
      *
-     * @param array<string, mixed> $context
+     * @param  array<string, mixed>  $context
      */
     private function logInfo(string $message, array $context = []): void
     {
@@ -35,7 +35,7 @@ class DofusDbClient
     /**
      * Émet un log "error" en privilégiant le canal scrapping, avec fallback.
      *
-     * @param array<string, mixed> $context
+     * @param  array<string, mixed>  $context
      */
     private function logError(string $message, array $context = []): void
     {
@@ -47,7 +47,7 @@ class DofusDbClient
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param  array<string, mixed>  $config
      */
     public function __construct(private array $config = [])
     {
@@ -60,8 +60,7 @@ class DofusDbClient
     /**
      * Récupère une réponse JSON DofusDB (array) avec cache optionnel.
      *
-     * @param string $url
-     * @param array{skip_cache?:bool, cache_ttl?:int|null} $options
+     * @param  array{skip_cache?:bool, cache_ttl?:int|null}  $options
      * @return array<string, mixed>
      */
     public function getJson(string $url, array $options = []): array
@@ -70,11 +69,12 @@ class DofusDbClient
         if (app()->environment('testing')) {
             $skipCache = true;
         }
-        $cacheKey = 'dofusdb_' . md5($url);
+        $cacheKey = 'dofusdb_'.md5($url);
         $cacheTtl = $options['cache_ttl'] ?? ($this->config['cache_ttl'] ?? 3600);
 
-        if (!$skipCache && Cache::has($cacheKey)) {
+        if (! $skipCache && Cache::has($cacheKey)) {
             $this->logInfo('dofusdb.cache.hit', ['url' => $url]);
+
             return (array) Cache::get($cacheKey);
         }
 
@@ -87,16 +87,16 @@ class DofusDbClient
                 ->retry($retryAttempts, $retryDelayMs)
                 ->get($url);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 throw new \RuntimeException("Erreur HTTP {$response->status()} lors de la récupération depuis {$url}");
             }
 
             $data = $response->json();
-            if (!is_array($data)) {
+            if (! is_array($data)) {
                 $data = [];
             }
 
-            if (!$skipCache && $cacheTtl !== null) {
+            if (! $skipCache && $cacheTtl !== null) {
                 Cache::put($cacheKey, $data, (int) $cacheTtl);
             }
 
@@ -118,4 +118,3 @@ class DofusDbClient
         }
     }
 }
-

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Entity;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreMonsterRequest;
-use App\Http\Requests\Entity\UpdateMonsterLanguagesRequest;
 use App\Http\Requests\Entity\UpdateMonsterCreatureTraitsRequest;
+use App\Http\Requests\Entity\UpdateMonsterLanguagesRequest;
 use App\Http\Requests\Entity\UpdateMonsterRequest;
 use App\Http\Resources\Entity\CreatureTraitResource;
 use App\Http\Resources\Entity\LanguageResource;

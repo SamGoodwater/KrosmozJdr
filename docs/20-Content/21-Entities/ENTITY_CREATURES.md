@@ -16,6 +16,7 @@ Les créatures représentent tous les êtres vivants ou animés du jeu : perso
 - **Capacités** : via le pivot `capability_creature` (relation N:N avec `capabilities`).
 - **Consommables** : via le pivot `consumable_creature` (relation N:N avec `consumables`).
 - **Panoplies** : via le pivot `npc_panoply` (pour les NPC).
+- **Spécialisations** : **aucune** relation directe entre la table `creatures` et `specializations` (pas de `specialization_id` sur `creatures`). Une spécialisation éventuelle est portée par le **NPC** (`npcs.specialization_id`) ou par la fiche entité spécialisation, pas par la créature seule.
 - **Autres** : relations avec campagnes, scénarios, etc. via d'autres pivots.
 
 ## Exemples d’utilisation
@@ -24,6 +25,7 @@ Les créatures représentent tous les êtres vivants ou animés du jeu : perso
 - Gestion des relations entre créatures et autres entités du jeu.
 
 ## Liens utiles
+- [ENTITY_SPECIALIZATIONS.md](ENTITY_SPECIALIZATIONS.md) — pas de lien direct créature ↔ spécialisation
 - [entity_npcs.md](entity_npcs.md) — NPC (sous-type de créature)
 - [entity_monsters.md](entity_monsters.md) — Monster (sous-type de créature)
 - [pivot_creature_item.md](../pivots/pivot_creature_item.md)

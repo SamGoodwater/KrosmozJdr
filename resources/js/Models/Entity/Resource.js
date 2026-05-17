@@ -30,7 +30,11 @@ export class Resource extends BaseModel {
     }
 
     get description() {
-        return this._data.description || '';
+        const v = this._data.description;
+        if (v === null || v === undefined || v === '') {
+            return null;
+        }
+        return String(v);
     }
 
     get effect() {
@@ -50,8 +54,15 @@ export class Resource extends BaseModel {
     }
 
     get rarity() {
-        // La colonne est NOT NULL en base : on garantit un int.
-        return this._data.rarity ?? 0;
+        const v = this._data.rarity;
+        if (v === null || v === '') {
+            return null;
+        }
+        if (v === undefined) {
+            return 0;
+        }
+        const n = Number(v);
+        return Number.isFinite(n) ? n : 0;
     }
 
     get dofusVersion() {
@@ -68,6 +79,35 @@ export class Resource extends BaseModel {
 
     get resourceTypeId() {
         return this._data.resource_type_id || null;
+    }
+
+    /** Alias snake_case (payload API / légacy). */
+    get dofus_version() {
+        return this.dofusVersion;
+    }
+
+    get auto_update() {
+        return this.autoUpdate;
+    }
+
+    get resource_type_id() {
+        return this.resourceTypeId;
+    }
+
+    get read_level() {
+        return this.readLevel ?? null;
+    }
+
+    get write_level() {
+        return this.writeLevel ?? null;
+    }
+
+    get created_at() {
+        return this.createdAt ?? null;
+    }
+
+    get updated_at() {
+        return this.updatedAt ?? null;
     }
 
     // ============================================

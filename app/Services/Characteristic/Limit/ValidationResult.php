@@ -13,8 +13,7 @@ final class ValidationResult
     public function __construct(
         private bool $valid,
         private array $errors = []
-    ) {
-    }
+    ) {}
 
     public function isValid(): bool
     {

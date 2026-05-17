@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Shop>
+ * @extends Factory<\App\Models\Shop>
  */
 class ShopFactory extends Factory
 {
@@ -30,7 +30,7 @@ class ShopFactory extends Factory
         $writeLevel = fake()->randomElement(array_values(array_filter($levels, fn (int $lvl) => $lvl >= $readLevel)));
 
         return [
-            'name' => fake()->unique()->words(2, true) . ' Shop',
+            'name' => fake()->unique()->words(2, true).' Shop',
             'description' => fake()->optional()->sentence(),
             'location' => fake()->optional()->city(),
             'price' => fake()->numberBetween(0, 100),

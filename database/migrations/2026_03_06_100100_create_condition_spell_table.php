@@ -23,5 +23,9 @@ return new class extends Migration
             $table->index(['spell_id', 'condition_id', 'application_mode'], 'condition_spell_mode_index');
         });
     }
-    public function down(): void { Schema::dropIfExists('condition_spell'); }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('condition_spell');
+    }
 };

@@ -15,8 +15,7 @@ final class IntegrationResult
         private string $monsterAction = '',
         private string $message = '',
         private array $data = []
-    ) {
-    }
+    ) {}
 
     public function isSuccess(): bool
     {

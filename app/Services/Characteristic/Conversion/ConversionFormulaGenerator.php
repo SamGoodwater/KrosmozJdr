@@ -22,8 +22,8 @@ final class ConversionFormulaGenerator
      * Construit les paires (valeur Dofus, valeur Krosmoz) à partir des deux échantillons
      * en faisant correspondre les niveaux. Les niveaux doivent être présents dans les deux.
      *
-     * @param array<int|string, int|float> $dofusSample Niveau → valeur Dofus (clés numériques ou "1", "200", etc.)
-     * @param array<int|string, int|float> $krosmozSample Niveau → valeur Krosmoz
+     * @param  array<int|string, int|float>  $dofusSample  Niveau → valeur Dofus (clés numériques ou "1", "200", etc.)
+     * @param  array<int|string, int|float>  $krosmozSample  Niveau → valeur Krosmoz
      * @return list<array{d: float, k: float}>
      */
     public function pairsFromSamples(array $dofusSample, array $krosmozSample): array
@@ -43,6 +43,7 @@ final class ConversionFormulaGenerator
             $pairs[] = ['d' => $d, 'k' => $k];
         }
         usort($pairs, static fn (array $a, array $b) => $a['d'] <=> $b['d']);
+
         return $pairs;
     }
 
@@ -50,7 +51,7 @@ final class ConversionFormulaGenerator
      * Génère une table de conversion (JSON) par valeur Dofus à partir des paires (d, k).
      * Chaque seuil d reçoit la valeur k correspondante. Convient à toute forme de courbe.
      *
-     * @param list<array{d: float, k: float}> $pairs Paires (valeur Dofus, valeur Krosmoz)
+     * @param  list<array{d: float, k: float}>  $pairs  Paires (valeur Dofus, valeur Krosmoz)
      * @return string JSON : {"characteristic":"d","d1":k1,"d2":k2,...}
      */
     public function generateTableFromPairs(array $pairs): string
@@ -64,6 +65,7 @@ final class ConversionFormulaGenerator
             $k = (float) $pair['k'];
             $table[(string) $d] = round($k, 4) == (int) round($k, 4) ? (int) round($k) : round($k, 4);
         }
+
         return json_encode($table, JSON_THROW_ON_ERROR);
     }
 
@@ -78,7 +80,7 @@ final class ConversionFormulaGenerator
     /**
      * Ajustement linéaire k = a * d + b (régression linéaire).
      *
-     * @param list<array{d: float, k: float}> $pairs
+     * @param  list<array{d: float, k: float}>  $pairs
      * @return array{formula: string, a: float, b: float, r2: float}|null
      */
     public function fitLinear(array $pairs): ?array
@@ -105,6 +107,7 @@ final class ConversionFormulaGenerator
         $b = ($sumK - $a * $sumD) / $n;
         $formula = $this->formatLinearFormula($a, $b);
         $r2 = $this->r2Linear($pairs, $a, $b);
+
         return ['formula' => $formula, 'a' => $a, 'b' => $b, 'r2' => $r2];
     }
 
@@ -112,7 +115,7 @@ final class ConversionFormulaGenerator
      * Ajustement puissance k = a * d^b (régression log-log).
      * Retourne null si les données ne permettent pas un bon ajustement (d ou k ≤ 0).
      *
-     * @param list<array{d: float, k: float}> $pairs
+     * @param  list<array{d: float, k: float}>  $pairs
      * @return array{formula: string, a: float, b: float, r2: float}|null
      */
     public function fitPower(array $pairs): ?array
@@ -142,6 +145,7 @@ final class ConversionFormulaGenerator
         $a = exp(($sumLogK - $b * $sumLogD) / $n);
         $formula = $this->formatPowerFormula($a, $b);
         $r2 = $this->r2Power($pairs, $a, $b);
+
         return ['formula' => $formula, 'a' => $a, 'b' => $b, 'r2' => $r2];
     }
 
@@ -149,7 +153,7 @@ final class ConversionFormulaGenerator
      * Ajustement puissance décalée k = a + b * ((d - c) / e)^f.
      * On fixe c = min(d), e = max(d) - min(d) (ou 1) puis on cherche a, b, f.
      *
-     * @param list<array{d: float, k: float}> $pairs
+     * @param  list<array{d: float, k: float}>  $pairs
      * @return array{formula: string, a: float, b: float, c: float, e: float, f: float, r2: float}|null
      */
     public function fitShiftedPower(array $pairs): ?array
@@ -174,13 +178,14 @@ final class ConversionFormulaGenerator
                 $best = $result;
             }
         }
+
         return $best;
     }
 
     /**
      * Ajustement exponentiel k = a * exp(b * d). Régression sur (d, ln(k)) ; exige k > 0.
      *
-     * @param list<array{d: float, k: float}> $pairs
+     * @param  list<array{d: float, k: float}>  $pairs
      * @return array{formula: string, a: float, b: float, r2: float}|null
      */
     public function fitExponential(array $pairs): ?array
@@ -209,13 +214,14 @@ final class ConversionFormulaGenerator
         $a = exp(($sumLogK - $b * $sumD) / $n);
         $formula = $this->formatExponentialFormula($a, $b);
         $r2 = $this->r2Exponential($pairs, $a, $b);
+
         return ['formula' => $formula, 'a' => $a, 'b' => $b, 'r2' => $r2];
     }
 
     /**
      * Ajustement logarithmique k = a * log(d) + b. Régression sur (ln(d), k) ; exige d > 0.
      *
-     * @param list<array{d: float, k: float}> $pairs
+     * @param  list<array{d: float, k: float}>  $pairs
      * @return array{formula: string, a: float, b: float, r2: float}|null
      */
     public function fitLogarithmic(array $pairs): ?array
@@ -244,13 +250,14 @@ final class ConversionFormulaGenerator
         $b = ($sumK - $a * $sumLogD) / $n;
         $formula = $this->formatLogarithmicFormula($a, $b);
         $r2 = $this->r2Logarithmic($pairs, $a, $b);
+
         return ['formula' => $formula, 'a' => $a, 'b' => $b, 'r2' => $r2];
     }
 
     /**
      * Ajustement polynôme degré 2 : k = a * d² + b * d + c.
      *
-     * @param list<array{d: float, k: float}> $pairs
+     * @param  list<array{d: float, k: float}>  $pairs
      * @return array{formula: string, a: float, b: float, c: float, r2: float}|null
      */
     public function fitPolynomial2(array $pairs): ?array
@@ -290,14 +297,15 @@ final class ConversionFormulaGenerator
         [$c, $b, $a] = $sol;
         $formula = $this->formatPolynomial2Formula($a, $b, $c);
         $r2 = $this->r2Polynomial2($pairs, $a, $b, $c);
+
         return ['formula' => $formula, 'a' => $a, 'b' => $b, 'c' => $c, 'r2' => $r2];
     }
 
     /**
      * Résout un système 3×3 (Cramer ou substitution). Retourne [x0, x1, x2] ou null.
      *
-     * @param array<int, array<int, float>> $m
-     * @param array<int, float> $rhs
+     * @param  array<int, array<int, float>>  $m
+     * @param  array<int, float>  $rhs
      * @return array{0: float, 1: float, 2: float}|null
      */
     private function solve3x3(array $m, array $rhs): ?array
@@ -317,31 +325,34 @@ final class ConversionFormulaGenerator
         $det2 = $m[0][0] * ($m[1][1] * $rhs[2] - $rhs[1] * $m[2][1])
             - $m[0][1] * ($m[1][0] * $rhs[2] - $rhs[1] * $m[2][0])
             + $rhs[0] * ($m[1][0] * $m[2][1] - $m[1][1] * $m[2][0]);
+
         return [$det0 / $det, $det1 / $det, $det2 / $det];
     }
 
     /**
      * Retourne la table générée + les formules suggérées (linéaire, puissance, puissance décalée, exponentielle, log, polynôme 2) avec leur R².
      *
-     * @param array<int|string, int|float> $dofusSample
-     * @param array<int|string, int|float> $krosmozSample
+     * @param  array<int|string, int|float>  $dofusSample
+     * @param  array<int|string, int|float>  $krosmozSample
      * @return array{table: string, linear: array{formula: string, a: float, b: float, r2: float}|null, power: array{formula: string, a: float, b: float, r2: float}|null, shifted_power: array{formula: string, a: float, b: float, c: float, e: float, f: float, r2: float}|null}
      */
     public function suggestFormulas(array $dofusSample, array $krosmozSample): array
     {
         $pairs = $this->pairsFromSamples($dofusSample, $krosmozSample);
+
         return $this->suggestFormulasFromPairs($pairs);
     }
 
     /**
      * Même retour que suggestFormulas mais à partir de paires (d, k) explicites (une paire par ligne du tableau).
      *
-     * @param list<array{d: float, k: float}> $pairs
+     * @param  list<array{d: float, k: float}>  $pairs
      * @return array{table: string, linear: array{formula: string, a: float, b: float, r2: float}|null, power: array{formula: string, a: float, b: float, r2: float}|null, shifted_power: array{formula: string, a: float, b: float, c: float, e: float, f: float, r2: float}|null}
      */
     public function suggestFormulasFromPairs(array $pairs): array
     {
         $table = $this->generateTableFromPairs($pairs);
+
         return [
             'table' => $table,
             'linear' => $this->fitLinear($pairs),
@@ -358,7 +369,7 @@ final class ConversionFormulaGenerator
      */
     private function wrapInteger(string $expr): string
     {
-        return 'floor(' . $expr . ')';
+        return 'floor('.$expr.')';
     }
 
     private function formatLinearFormula(float $a, float $b): string
@@ -366,19 +377,21 @@ final class ConversionFormulaGenerator
         $aStr = $this->formatCoeff($a);
         $bStr = $this->formatCoeff($b);
         if (abs($b) < 1e-9) {
-            return $this->wrapInteger($aStr . ' * [d]');
+            return $this->wrapInteger($aStr.' * [d]');
         }
         if ($b >= 0) {
-            return $this->wrapInteger($aStr . ' * [d] + ' . $bStr);
+            return $this->wrapInteger($aStr.' * [d] + '.$bStr);
         }
-        return $this->wrapInteger($aStr . ' * [d] - ' . $this->formatCoeff(-$b));
+
+        return $this->wrapInteger($aStr.' * [d] - '.$this->formatCoeff(-$b));
     }
 
     private function formatPowerFormula(float $a, float $b): string
     {
         $aStr = $this->formatCoeff($a);
         $bStr = $this->formatCoeff($b);
-        return $this->wrapInteger($aStr . ' * pow([d], ' . $bStr . ')');
+
+        return $this->wrapInteger($aStr.' * pow([d], '.$bStr.')');
     }
 
     private function formatShiftedPowerFormula(float $a, float $b, float $c, float $e, float $f): string
@@ -388,21 +401,24 @@ final class ConversionFormulaGenerator
         $cStr = $this->formatCoeff($c);
         $eStr = $this->formatCoeff($e);
         $fStr = $this->formatCoeff($f);
-        return $this->wrapInteger($aStr . ' + ' . $bStr . ' * pow(([d]-' . $cStr . ')/' . $eStr . ', ' . $fStr . ')');
+
+        return $this->wrapInteger($aStr.' + '.$bStr.' * pow(([d]-'.$cStr.')/'.$eStr.', '.$fStr.')');
     }
 
     private function formatExponentialFormula(float $a, float $b): string
     {
         $aStr = $this->formatCoeff($a);
         $bStr = $this->formatCoeff($b);
-        return $this->wrapInteger($aStr . ' * exp(' . $bStr . ' * [d])');
+
+        return $this->wrapInteger($aStr.' * exp('.$bStr.' * [d])');
     }
 
     private function formatLogarithmicFormula(float $a, float $b): string
     {
         $aStr = $this->formatCoeff($a);
         $bStr = $this->formatCoeff($b);
-        return $this->wrapInteger($aStr . ' * log([d]) + ' . $bStr);
+
+        return $this->wrapInteger($aStr.' * log([d]) + '.$bStr);
     }
 
     private function formatPolynomial2Formula(float $a, float $b, float $c): string
@@ -410,7 +426,8 @@ final class ConversionFormulaGenerator
         $aStr = $this->formatCoeff($a);
         $bStr = $this->formatCoeff($b);
         $cStr = $this->formatCoeff($c);
-        return $this->wrapInteger($aStr . ' * pow([d], 2) + ' . $bStr . ' * [d] + ' . $cStr);
+
+        return $this->wrapInteger($aStr.' * pow([d], 2) + '.$bStr.' * [d] + '.$cStr);
     }
 
     private function formatCoeff(float $x): string
@@ -418,6 +435,7 @@ final class ConversionFormulaGenerator
         if (round($x, 4) == (int) $x) {
             return (string) (int) $x;
         }
+
         return (string) round($x, 4);
     }
 
@@ -434,6 +452,7 @@ final class ConversionFormulaGenerator
         if ($ssTot < 1e-15) {
             return 1.0;
         }
+
         return (float) max(0, 1 - $ssRes / $ssTot);
     }
 
@@ -450,6 +469,7 @@ final class ConversionFormulaGenerator
         if ($ssTot < 1e-15) {
             return 1.0;
         }
+
         return (float) max(0, 1 - $ssRes / $ssTot);
     }
 
@@ -478,6 +498,7 @@ final class ConversionFormulaGenerator
         $a = ($sumK - $b * $sumX) / $n;
         $formula = $this->formatShiftedPowerFormula($a, $b, $c, $e, $f);
         $r2 = $this->r2ShiftedPower($pairs, $a, $b, $c, $e, $f);
+
         return [
             'formula' => $formula,
             'a' => $a,
@@ -503,6 +524,7 @@ final class ConversionFormulaGenerator
         if ($ssTot < 1e-15) {
             return 1.0;
         }
+
         return (float) max(0, 1 - $ssRes / $ssTot);
     }
 
@@ -519,6 +541,7 @@ final class ConversionFormulaGenerator
         if ($ssTot < 1e-15) {
             return 1.0;
         }
+
         return (float) max(0, 1 - $ssRes / $ssTot);
     }
 
@@ -535,6 +558,7 @@ final class ConversionFormulaGenerator
         if ($ssTot < 1e-15) {
             return 1.0;
         }
+
         return (float) max(0, 1 - $ssRes / $ssTot);
     }
 
@@ -552,6 +576,7 @@ final class ConversionFormulaGenerator
         if ($ssTot < 1e-15) {
             return 1.0;
         }
+
         return (float) max(0, 1 - $ssRes / $ssTot);
     }
 }

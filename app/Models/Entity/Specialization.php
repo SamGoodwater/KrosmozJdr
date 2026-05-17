@@ -32,6 +32,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read User|null $createdBy
  * @property-read Collection<int, Npc> $npcs
  * @property-read int|null $npcs_count
+ *
  * @method static \Database\Factories\Entity\SpecializationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization newQuery()
@@ -50,8 +51,25 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withoutTrashed()
+ *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ * @property string|null $short_description
+ * @property-read Collection<int, Consumable> $consumables
+ * @property-read int|null $consumables_count
+ * @property-read Collection<int, CreatureTrait> $creatureTraits
+ * @property-read int|null $creature_traits_count
+ * @property-read Collection<int, Item> $items
+ * @property-read int|null $items_count
+ * @property-read Collection<int, \App\Models\Entity\Resource> $resources
+ * @property-read int|null $resources_count
+ * @property-read Collection<int, Section> $sections
+ * @property-read int|null $sections_count
+ * @property-read Collection<int, Spell> $spells
+ * @property-read int|null $spells_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereShortDescription($value)
+ *
  * @mixin \Eloquent
  */
 class Specialization extends Model implements HasMedia

@@ -76,4 +76,3 @@ class ScrappingEffectsBackfillCharacteristicsCommandTest extends TestCase
         $this->assertStringContainsString('UPDATED effect 116', Artisan::output());
     }
 }
-

@@ -9,6 +9,7 @@ use App\Models\Type\SpellType;
 use App\Services\Effect\SpellEffectDefinitionsSerializer;
 use App\Services\Effect\SpellEffectUsagesDataService;
 use App\Support\AreaConstants;
+use App\Support\ElementBitmask;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -235,7 +236,7 @@ class SpellTableController extends Controller
                 ['value' => '2', 'label' => 'Sort apprenable'],
                 ['value' => '3', 'label' => 'Sort consommable'],
             ],
-            'element' => \App\Support\ElementBitmask::allFilterOptions(),
+            'element' => ElementBitmask::allFilterOptions(),
             'is_magic' => [
                 ['value' => '1', 'label' => 'Wakfu'],
                 ['value' => '0', 'label' => 'Physique'],

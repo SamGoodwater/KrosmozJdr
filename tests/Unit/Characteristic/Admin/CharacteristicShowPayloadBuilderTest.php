@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Characteristic\Admin;
 
 use App\Models\Characteristic;
-use App\Models\CharacteristicCreature;
+use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Services\Characteristic\Admin\CharacteristicShowPayloadBuilder;
 use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
@@ -70,7 +70,7 @@ class CharacteristicShowPayloadBuilderTest extends TestCase
     {
         $characteristic = Characteristic::where('key', 'life_points_creature')->first();
         $this->assertNotNull($characteristic);
-        $mapping = \App\Models\Scrapping\ScrappingEntityMapping::create([
+        $mapping = ScrappingEntityMapping::create([
             'source' => 'dofusdb',
             'entity' => 'monster',
             'mapping_key' => 'life',

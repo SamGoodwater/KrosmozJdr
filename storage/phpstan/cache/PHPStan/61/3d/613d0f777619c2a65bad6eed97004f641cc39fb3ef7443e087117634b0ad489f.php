@@ -13,10 +13,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9186,10 +9186,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9233,10 +9233,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9301,10 +9301,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9348,10 +9348,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9416,10 +9416,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9463,10 +9463,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9531,10 +9531,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9578,10 +9578,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9646,10 +9646,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9693,10 +9693,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9761,10 +9761,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9808,10 +9808,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9876,10 +9876,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9923,10 +9923,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -9991,10 +9991,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10038,10 +10038,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10106,10 +10106,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10153,10 +10153,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10221,10 +10221,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10268,10 +10268,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10336,10 +10336,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10383,10 +10383,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10451,10 +10451,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10498,10 +10498,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10566,10 +10566,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10613,10 +10613,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10681,10 +10681,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10728,10 +10728,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10796,10 +10796,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10843,10 +10843,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10911,10 +10911,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -10958,10 +10958,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11026,10 +11026,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11073,10 +11073,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11141,10 +11141,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11188,10 +11188,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11256,10 +11256,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11303,10 +11303,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11371,10 +11371,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11418,10 +11418,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11486,10 +11486,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11533,10 +11533,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11601,10 +11601,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11648,10 +11648,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11716,10 +11716,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11763,10 +11763,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11831,10 +11831,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11878,10 +11878,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11946,10 +11946,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -11993,10 +11993,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12061,10 +12061,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12108,10 +12108,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12176,10 +12176,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12223,10 +12223,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12291,10 +12291,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12338,10 +12338,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12406,10 +12406,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12453,10 +12453,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12521,10 +12521,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12568,10 +12568,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12636,10 +12636,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12683,10 +12683,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12751,10 +12751,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12798,10 +12798,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12866,10 +12866,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12913,10 +12913,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -12981,10 +12981,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13028,10 +13028,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13096,10 +13096,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13143,10 +13143,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13211,10 +13211,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13258,10 +13258,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13326,10 +13326,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13373,10 +13373,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13441,10 +13441,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13488,10 +13488,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13556,10 +13556,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13603,10 +13603,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13671,10 +13671,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13718,10 +13718,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13786,10 +13786,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13833,10 +13833,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13901,10 +13901,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -13948,10 +13948,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -14016,10 +14016,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -14063,10 +14063,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -14131,10 +14131,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -14178,10 +14178,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -14246,10 +14246,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -14293,10 +14293,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -14361,10 +14361,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'uses' => 
         array (
           'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-          'condition' => 'App\\Models\\Entity\\Condition',
           'breed' => 'App\\Models\\Entity\\Breed',
           'campaign' => 'App\\Models\\Entity\\Campaign',
           'capability' => 'App\\Models\\Entity\\Capability',
+          'condition' => 'App\\Models\\Entity\\Condition',
           'consumable' => 'App\\Models\\Entity\\Consumable',
           'item' => 'App\\Models\\Entity\\Item',
           'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -14408,10 +14408,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'uses' => 
           array (
             'hasmediacustomnaming' => 'App\\Models\\Concerns\\HasMediaCustomNaming',
-            'condition' => 'App\\Models\\Entity\\Condition',
             'breed' => 'App\\Models\\Entity\\Breed',
             'campaign' => 'App\\Models\\Entity\\Campaign',
             'capability' => 'App\\Models\\Entity\\Capability',
+            'condition' => 'App\\Models\\Entity\\Condition',
             'consumable' => 'App\\Models\\Entity\\Consumable',
             'item' => 'App\\Models\\Entity\\Item',
             'panoply' => 'App\\Models\\Entity\\Panoply',
@@ -14473,7 +14473,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Models/User.php' => '184da3a6bd78bf4bd62ca1b808a45aa5e95b4338d9e24c82a46e734fe03c4380',
+      '/var/www/KrosmozJdr/app/Models/User.php' => '95d33265a43380414ae1e49c60fab44e5e54579045f18793b07ed07445bde91c',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/Factories/HasFactory.php' => 'b6cb2b164e90168e80963a5549541f5f3188a3ec8cfd368bf3611bd94fbd46a7',
       '/var/www/KrosmozJdr/app/Models/Concerns/HasMediaCustomNaming.php' => '4d2d30c927978dfb2f19ff2fd24a406d3c814153d432d2738f419461d5ba131c',
       '/var/www/KrosmozJdr/vendor/composer/../spatie/laravel-medialibrary/src/InteractsWithMedia.php' => '2fa4c26f5b3757892fb1f79083cefb514993dbef90e48da37597f36e834ace33',

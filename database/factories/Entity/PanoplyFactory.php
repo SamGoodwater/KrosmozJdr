@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Entity\Panoply>
+ * @extends Factory<Panoply>
  */
 class PanoplyFactory extends Factory
 {
@@ -30,7 +30,7 @@ class PanoplyFactory extends Factory
             'Panoplie du Gobelin Royal',
             'Panoplie du Bwork Royal',
         ];
-        
+
         $levels = [
             User::ROLE_GUEST,
             User::ROLE_USER,

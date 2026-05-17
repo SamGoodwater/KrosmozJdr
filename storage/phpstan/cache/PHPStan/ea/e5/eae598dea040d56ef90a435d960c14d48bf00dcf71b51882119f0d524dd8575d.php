@@ -7,7 +7,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
   array (
     '/var/www/KrosmozJdr/vendor/nette/utils/src/HtmlStringable.php' => 
     array (
-      0 => '93642c60ec599c28de21897d83d927637e220c69e51722aae1a53b1b98408092',
+      0 => 'f7c08ab93a14029e6c10bf7b1c44525b088e55ef8a60bc7ece6a0163e2798ed9',
       1 => 
       array (
         0 => 'nette\\htmlstringable',
@@ -22,7 +22,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Iterators/CachingIterator.php' => 
     array (
-      0 => '5a0a2b987bfc1d95c1e360c6bdb00178d22faeaf1910f35a09972fa67ea51365',
+      0 => 'a5b723c838ac12bc6b63dbd41651b03103dda62577fa6ffa66bc9289045c7e77',
       1 => 
       array (
         0 => 'nette\\iterators\\cachingiterator',
@@ -48,7 +48,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Iterators/Mapper.php' => 
     array (
-      0 => '5d29122e56c2cb1497c1573c725d19ed836ac4f5d904f2e7ba3d44a2342e296b',
+      0 => 'bf53b41b3690fa2813e036d5b200175106022b6e623c7390f616c2173e9c122a',
       1 => 
       array (
         0 => 'nette\\iterators\\mapper',
@@ -64,7 +64,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/SmartObject.php' => 
     array (
-      0 => 'cc1ce6ad4e0d817377dfcac3c0720d96e9584cd107e50ab97634ad9029f6998a',
+      0 => '64a43e804d3f9c994a8fd97bfa384c05f60a76eacdccdfd38147e9dcf0a57428',
       1 => 
       array (
         0 => 'nette\\smartobject',
@@ -84,7 +84,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/StaticClass.php' => 
     array (
-      0 => 'db38b3d449b6a394a971101f96ed19c6f83c1aa0d724fda98e941464db58c8ef',
+      0 => '08221ffca05d01a3b559fb4e4abc818b4c9c11980dea126445b6053b161be67d',
       1 => 
       array (
         0 => 'nette\\staticclass',
@@ -99,7 +99,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Translator.php' => 
     array (
-      0 => '8acaeb4df41eb5fbd5cdaff1b22f01709ca5fa4555ee23c94c3aa3073989ba42',
+      0 => 'f1e4a18658a428766a4469fefd2deb23e7e98aed59a93bc25eee754fc0e51454',
       1 => 
       array (
         0 => 'nette\\localization\\translator',
@@ -114,7 +114,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/ArrayHash.php' => 
     array (
-      0 => '1109c54dc6ea8118068d2568897f440c2b660fd9a7ca04da10cf0caeba90eed9',
+      0 => '09b468234ef4dcfaa7e27167c44d174bcbb6ce309bb978582bb2193f654602bb',
       1 => 
       array (
         0 => 'nette\\utils\\arrayhash',
@@ -135,7 +135,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/ArrayList.php' => 
     array (
-      0 => 'd35dbc5fa4ea11d17cab0ec2b51b23e7b68a08688fd0cd9920855d0bdb9a6524',
+      0 => 'cf6b035182d7ecde55fbc6f644caa198b40fdd0464c880aca59909f92d589366',
       1 => 
       array (
         0 => 'nette\\utils\\arraylist',
@@ -157,7 +157,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Arrays.php' => 
     array (
-      0 => '7c38532d6c667436240d0f4a2f9c46a075a9d62449c3799b00ffbba8a005f9d0',
+      0 => '7737f1556fb2ba5342d013fcb400ebbada74c4fec4a8756671cbb64b0cf08ba3',
       1 => 
       array (
         0 => 'nette\\utils\\',
@@ -202,7 +202,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Callback.php' => 
     array (
-      0 => 'e17c6fd3ca2d245da00d86d6330b4b55d3b927cb8642bc389b342b0664fe5c8c',
+      0 => 'af98e0c4e7e0b8be390cfb2ebdee140052d4a283462231036f4d6c263cbbdfdf',
       1 => 
       array (
         0 => 'nette\\utils\\callback',
@@ -222,7 +222,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/DateTime.php' => 
     array (
-      0 => 'db13ac298dce93b66406a9aee51a1ce5792ba408e0f4e290939d0c16b97a8fdc',
+      0 => 'c1701705adcff3191fb4f5093614b88df888fad737adce17a34161b544a2b3ea',
       1 => 
       array (
         0 => 'nette\\utils\\datetime',
@@ -249,7 +249,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/FileInfo.php' => 
     array (
-      0 => '3a6f32a299b37dd8b44d7a4c2215643e5d4a1ba7e8f3e4b611467f96c9a08d6d',
+      0 => '2386a24cfb5b9493780b179d0b082cb4a017c708060b95a4181ea0972838b0ed',
       1 => 
       array (
         0 => 'nette\\utils\\fileinfo',
@@ -268,7 +268,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/FileSystem.php' => 
     array (
-      0 => 'b3cfe20c8d93703e132f4634d65053f965b8f11fe3d8efb0f0226356d65c13de',
+      0 => 'd71f111c9966aa7933c5afa275125a6dd08a6b084514e0669f13505e32e0e3a4',
       1 => 
       array (
         0 => 'nette\\utils\\filesystem',
@@ -285,11 +285,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         7 => 'nette\\utils\\write',
         8 => 'nette\\utils\\makewritable',
         9 => 'nette\\utils\\isabsolute',
-        10 => 'nette\\utils\\normalizepath',
-        11 => 'nette\\utils\\joinpaths',
-        12 => 'nette\\utils\\resolvepath',
-        13 => 'nette\\utils\\unixslashes',
-        14 => 'nette\\utils\\platformslashes',
+        10 => 'nette\\utils\\isvalidfilename',
+        11 => 'nette\\utils\\normalizepath',
+        12 => 'nette\\utils\\joinpaths',
+        13 => 'nette\\utils\\resolvepath',
+        14 => 'nette\\utils\\unixslashes',
+        15 => 'nette\\utils\\platformslashes',
       ),
       3 => 
       array (
@@ -297,7 +298,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Finder.php' => 
     array (
-      0 => 'f1d7454d5e8fd66cf2653c613837efdb59c6857d33ae9560c4026bc32c0e5b25',
+      0 => 'cbdb6e73802ba372cb9b293e8633994c4fde32262de8ab0944254589d853e307',
       1 => 
       array (
         0 => 'nette\\utils\\',
@@ -341,7 +342,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Floats.php' => 
     array (
-      0 => '7f81559defb46588013671c0fd4f7ff4192818bfa0375fda975fd1bb993c07ec',
+      0 => '06f04405ebb5c07eca71082dc9e0e34048291eedf2a9522333c31d8c8e21231e',
       1 => 
       array (
         0 => 'nette\\utils\\floats',
@@ -363,7 +364,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Helpers.php' => 
     array (
-      0 => 'c52d1e0fea8b584cb0f9128065c505ad5a62c64d161f3fb65f4e921cf3446f2e',
+      0 => 'a41b50784a15ad86782be9f39e96fcad92085eb4ae4503350224f8c4ea969cdc',
       1 => 
       array (
         0 => 'nette\\utils\\helpers',
@@ -384,7 +385,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Html.php' => 
     array (
-      0 => 'edcd64d79ea3bc75b0a9824353ceeedc7db10040009f8a2ca98bb687b3ef2273',
+      0 => '53e383e575403ea25eb224d626f89a3611d09148a22a6946d5bd54920dd416b5',
       1 => 
       array (
         0 => 'nette\\utils\\',
@@ -444,7 +445,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Image.php' => 
     array (
-      0 => '03dfc626dcf9fa4fc62c166a044872f6d18927ef6c3da2106fc80fb18f41b218',
+      0 => '633045351f0f15606a1ab96c88e7df18f05b7fd165991cf8e7608885da05468c',
       1 => 
       array (
         0 => 'nette\\utils\\',
@@ -498,7 +499,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/ImageColor.php' => 
     array (
-      0 => '1c8810c881d036a1115e2e665b86c9c320749ecc02e203d7ce6ba825bc9764ce',
+      0 => '39c9830bfed7a7792c0d9fc9dc3148896f03358413fe4588a9b05b485cd3d8ee',
       1 => 
       array (
         0 => 'nette\\utils\\imagecolor',
@@ -516,7 +517,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/ImageType.php' => 
     array (
-      0 => '232956753be663512342868d4c9881669dc5ef94799d84d10408558ce0885ac1',
+      0 => '8865748bef6515c1c14b407ef88ccef05873d14275eaab11e062b69b4124cf01',
       1 => 
       array (
         0 => 'nette\\utils\\',
@@ -532,7 +533,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Iterables.php' => 
     array (
-      0 => '990d4321a00a8e365950862c29e03c2849b789d4a1871b9bcb56afb0bcd0cd94',
+      0 => '2e554632bc79c3a5fd3b3448c2328064ef3b35243537fa87f1cf327e4562324f',
       1 => 
       array (
         0 => 'nette\\utils\\iterables',
@@ -562,7 +563,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Json.php' => 
     array (
-      0 => '3b61610f5eb85696c08c9637cb203ab6665fb918024e5f87312ea30f11157492',
+      0 => 'efed986c11bf0cfca0da2fa55bd57007013016c3ee0c74c127f58a76435c88f5',
       1 => 
       array (
         0 => 'nette\\utils\\',
@@ -580,7 +581,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/ObjectHelpers.php' => 
     array (
-      0 => '6e12887fec639512f06a5b7ed9f07f1de1bf1cb768dc40a8fac98574b23f3e49',
+      0 => '50bcbec9a7f93f5a4c47b4bcac3dae3d61a8135e5f1ef8e94ed431b650bd9e87',
       1 => 
       array (
         0 => 'nette\\utils\\objecthelpers',
@@ -602,7 +603,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Paginator.php' => 
     array (
-      0 => 'f0fc154c6072a79ba0ea83721b3b09df8e4d24a759edebda1a3d9c39123501b0',
+      0 => '572c893e9945a5ace506fed68a1e73c2e33ae46195abfcf33344bcccd7da5b40',
       1 => 
       array (
         0 => 'nette\\utils\\paginator',
@@ -633,9 +634,52 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
       ),
     ),
+    '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Process.php' => 
+    array (
+      0 => '7f98f509a9f596d1f780a0232b7f3bcdc9711886bbf2014d8e1d27b4d9475d8b',
+      1 => 
+      array (
+        0 => 'nette\\utils\\process',
+      ),
+      2 => 
+      array (
+        0 => 'nette\\utils\\runexecutable',
+        1 => 'nette\\utils\\runcommand',
+        2 => 'nette\\utils\\__construct',
+        3 => 'nette\\utils\\__destruct',
+        4 => 'nette\\utils\\isrunning',
+        5 => 'nette\\utils\\wait',
+        6 => 'nette\\utils\\drainpipes',
+        7 => 'nette\\utils\\terminate',
+        8 => 'nette\\utils\\getexitcode',
+        9 => 'nette\\utils\\issuccess',
+        10 => 'nette\\utils\\ensuresuccess',
+        11 => 'nette\\utils\\getpid',
+        12 => 'nette\\utils\\getstdoutput',
+        13 => 'nette\\utils\\getstderror',
+        14 => 'nette\\utils\\consumestdoutput',
+        15 => 'nette\\utils\\consumestderror',
+        16 => 'nette\\utils\\consumebuffer',
+        17 => 'nette\\utils\\extractnewdata',
+        18 => 'nette\\utils\\writestdinput',
+        19 => 'nette\\utils\\writetopipe',
+        20 => 'nette\\utils\\closestdinput',
+        21 => 'nette\\utils\\dispatchcallback',
+        22 => 'nette\\utils\\enforcetimeout',
+        23 => 'nette\\utils\\readfrompipe',
+        24 => 'nette\\utils\\writeinitialinput',
+        25 => 'nette\\utils\\createinputdescriptor',
+        26 => 'nette\\utils\\createoutputdescriptor',
+        27 => 'nette\\utils\\close',
+        28 => 'nette\\utils\\closeoutputpipes',
+      ),
+      3 => 
+      array (
+      ),
+    ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Random.php' => 
     array (
-      0 => 'a8f125ab344222666d52a7821745543d71e22d51e1dcc81e25ad7be34f053622',
+      0 => '7a4e82919427483f1b3f8b7b0ea729539e19c54233ff67aec9e42b8a0776a464',
       1 => 
       array (
         0 => 'nette\\utils\\random',
@@ -650,7 +694,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Reflection.php' => 
     array (
-      0 => '72b373b055cf2fb4434ddf2f5ab975814dbbbbea7ca027280ae4498444e96593',
+      0 => '2b6b9ce4d6675854723a960643eb57964dd21aeb4a14caa8de538ba36ef0099c',
       1 => 
       array (
         0 => 'nette\\utils\\',
@@ -677,7 +721,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/ReflectionMethod.php' => 
     array (
-      0 => '143da57d1e35bba3a81c008ba8ca389813d9f051a903025bdb633eab01879196',
+      0 => '00f09b09ad4fa5a4e804efeb0f18f4c5db058a68a1858148128498c2d7cf75cf',
       1 => 
       array (
         0 => 'nette\\utils\\reflectionmethod',
@@ -693,7 +737,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Strings.php' => 
     array (
-      0 => '3c229e198e0b3c478bb7ae41de157bdcce0fd55a193809e60594dcda9d64bc7f',
+      0 => '14ec0872f34601c0cc18435fdcfebcece5861d1a190401106541acd6f754eac7',
       1 => 
       array (
         0 => 'nette\\utils\\strings',
@@ -745,7 +789,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Type.php' => 
     array (
-      0 => '88cb60903450a03a9e950cd3f47f014bfd9c7b94ea9bab8dd80a1f80e76ec3a1',
+      0 => 'cc1c5b97bdc3c35a589f12480e4478250db3241aff20437637a34065cc4c0a85',
       1 => 
       array (
         0 => 'nette\\utils\\type',
@@ -780,7 +824,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/Validators.php' => 
     array (
-      0 => '46787320b56e7fb5fe56819d3640072dc312b6103fdb6fc56779938ed3fe64a5',
+      0 => '35ec4205e43dfa532606dc1137fb4d003b089c35a6d878f34b4095082d8137df',
       1 => 
       array (
         0 => 'nette\\utils\\validators',
@@ -815,7 +859,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/Utils/exceptions.php' => 
     array (
-      0 => '5f5f75cecbf64caf340b6ed316a69bab305ccf286f12758b9d44afec3e073a3f',
+      0 => 'd6d449fe16b9ab6c9e748f10c0246167e9b5821305217d852420e3124a946c8a',
       1 => 
       array (
         0 => 'nette\\utils\\imageexception',
@@ -823,6 +867,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         2 => 'nette\\utils\\jsonexception',
         3 => 'nette\\utils\\regexpexception',
         4 => 'nette\\utils\\assertionexception',
+        5 => 'nette\\utils\\processfailedexception',
+        6 => 'nette\\utils\\processtimeoutexception',
       ),
       2 => 
       array (
@@ -833,7 +879,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/compatibility.php' => 
     array (
-      0 => '310fda9913e15fa2e9e7db8baef087852c3fc74b114a0c5c89f31bc0739185ba',
+      0 => 'd827320d9357f01fe72cbdaef7420d1a14b4aeb932c02878181c77b91d8902ef',
       1 => 
       array (
         0 => 'nette\\utils\\ihtmlstring',
@@ -848,7 +894,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/KrosmozJdr/vendor/nette/utils/src/exceptions.php' => 
     array (
-      0 => '34027337829ff78cbbc5fb9a07f8b7cfb4849a404044954a1f523ad8b6e11944',
+      0 => '002dbc02b1276991e40555803f20e2392d717bebd817c63b830cccbb6263440e',
       1 => 
       array (
         0 => 'nette\\argumentoutofrangeexception',

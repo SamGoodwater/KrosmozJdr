@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Http/Requests/StoreSectionRequest.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Http\Requests\StoreSectionRequest
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-6ca365e5e9529f56a042cac4fb1ff04b7aa0b1e1769a6f4ab40a04586069f806-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-ae55ce5ee5266e93788a8b9e3bb6cdcb451908b23eb3beb1a6b3abec28d50c1f-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -30,8 +30,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 19,
-    'endLine' => 228,
+    'startLine' => 21,
+    'endLine' => 230,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Foundation\\Http\\FormRequest',
@@ -71,8 +71,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Determine if the user is authorized to make this request.
  */',
-        'startLine' => 24,
-        'endLine' => 45,
+        'startLine' => 26,
+        'endLine' => 47,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -108,10 +108,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the validation rules that apply to the request.
  *
- * @return array<string, \\Illuminate\\Contracts\\Validation\\ValidationRule|array<mixed>|string>
+ * @return array<string, ValidationRule|array<mixed>|string>
  */',
-        'startLine' => 52,
-        'endLine' => 84,
+        'startLine' => 54,
+        'endLine' => 86,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -149,8 +149,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 92,
-            'endLine' => 92,
+            'startLine' => 94,
+            'endLine' => 94,
             'startColumn' => 51,
             'endColumn' => 71,
             'parameterIndex' => 0,
@@ -172,12 +172,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         ),
         'docComment' => '/**
  * Retourne les règles de validation pour les settings et data selon le template de section.
- * 
- * @param SectionType $template Template de section
+ *
+ * @param  SectionType  $template  Template de section
  * @return array<string, mixed> Règles de validation
  */',
-        'startLine' => 92,
-        'endLine' => 95,
+        'startLine' => 94,
+        'endLine' => 97,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -215,8 +215,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Normalise les payloads legacy {type, params} vers le format moderne {template, data},
  * tout en conservant les clés legacy pour des messages d\'erreur cohérents.
  */',
-        'startLine' => 102,
-        'endLine' => 115,
+        'startLine' => 104,
+        'endLine' => 117,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -254,8 +254,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 117,
-            'endLine' => 117,
+            'startLine' => 119,
+            'endLine' => 119,
             'startColumn' => 35,
             'endColumn' => 54,
             'parameterIndex' => 0,
@@ -276,8 +276,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 117,
-        'endLine' => 176,
+        'startLine' => 119,
+        'endLine' => 178,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -303,8 +303,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 178,
-        'endLine' => 227,
+        'startLine' => 180,
+        'endLine' => 229,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

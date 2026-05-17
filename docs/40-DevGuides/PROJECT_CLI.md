@@ -337,6 +337,9 @@ Dès qu’une de ces options est présente, **l’argument profil est ignoré** 
 | `--test-back` | PHPUnit uniquement |
 | `--test-front` | Vitest uniquement (`pnpm run test:run`) |
 | `--pint` | Laravel Pint en `--test` ; avec **`--fix-pint`**, application Pint (écriture) après la section Pint |
+| `--pint-dirty` | Limite Pint aux fichiers modifiés Git (`pint --dirty`) : recommandé pendant une branche de fonctionnalité |
+| `--pint-timeout=300` | Timeout Pint en secondes ; en cas de timeout, fallback automatique par lots de dossiers |
+| `--no-pint-batches` | Désactive le fallback Pint par lots si le run global dépasse le timeout |
 | `--phpstan` | Larastan / PHPStan |
 | `--eslint` | `pnpm run lint` |
 | `--security` | `composer audit` |
@@ -344,11 +347,33 @@ Dès qu’une de ces options est présente, **l’argument profil est ignoré** 
 
 **Sans argument de profil et sans aucune de ces options d’action** : comportement identique au profil **`all`** (équivalent pratique à `--all`).
 
-Options inchangées : `--report-path`, `--no-cursor-prompts`, `--fix-pint`, `--cursor-agent`.
+Options générales : `--report-path`, `--no-cursor-prompts`, `--fix-pint`, `--cursor-agent`.
+
+### Workflow recommandé pour une nouvelle fonctionnalité
+
+1. **Pendant le développement** : lancer une review ciblée sur les fichiers modifiés pour éviter que la dette historique Pint masque les vrais problèmes de la branche.
+
+```bash
+php artisan project:review --pint --pint-dirty --test-front --eslint
+```
+
+2. **Avant de demander une review complète** : lancer le périmètre large. Si Pint est trop long, le fallback par lots produit un rapport exploitable au lieu d’un simple timeout.
+
+```bash
+php artisan project:review --all --pint-timeout=900
+```
+
+3. **Pour corriger le style PHP de la branche uniquement** : appliquer Pint en mode dirty, puis relancer `--pint --pint-dirty`.
+
+```bash
+php artisan project:review --pint --pint-dirty --fix-pint
+```
 
 ```bash
 php artisan project:review
 php artisan project:review --pint
+php artisan project:review --pint --pint-dirty
+php artisan project:review --pint --pint-timeout=900
 php artisan project:review --test-back --phpstan
 php artisan project:review --tests
 php artisan project:review --all

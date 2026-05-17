@@ -29,7 +29,7 @@ describe("TableColumnConfig", () => {
   it("lance une erreur si key est manquant", () => {
     expect(() => {
       new TableColumnConfig({ label: "Nom", type: "text" });
-    }).toThrow("key est obligatoire");
+    }).toThrow("TableColumnConfig: 'key' est obligatoire");
   });
 
   it("lance une erreur si type est invalide", () => {
@@ -109,7 +109,7 @@ describe("TableConfig", () => {
   it("lance une erreur si id est manquant", () => {
     expect(() => {
       new TableConfig({ entityType: "test" });
-    }).toThrow("id est obligatoire");
+    }).toThrow("TableConfig: 'id' est obligatoire");
   });
 
   it("configure quickEdit", () => {

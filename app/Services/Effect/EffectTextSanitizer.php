@@ -18,7 +18,7 @@ final class EffectTextSanitizer
      * - Supprime toutes les balises HTML et le contenu dangereux (script, event handlers).
      * - Préserve les variables [nom] et la notation ndX (ex. 2d6).
      *
-     * @param string $text Texte brut (saisie ou import).
+     * @param  string  $text  Texte brut (saisie ou import).
      * @return string Texte sûr pour stockage.
      *
      * @example

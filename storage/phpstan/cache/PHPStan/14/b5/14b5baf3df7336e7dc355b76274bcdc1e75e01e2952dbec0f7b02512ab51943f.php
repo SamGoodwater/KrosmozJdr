@@ -12,9 +12,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Policies',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\SectionPolicy',
          'functionName' => NULL,
@@ -37,9 +37,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Policies',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\SectionPolicy',
          'functionName' => 'viewAny',
@@ -51,9 +51,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Policies',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\SectionPolicy',
            'functionName' => NULL,
@@ -86,9 +86,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Policies',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\SectionPolicy',
          'functionName' => 'view',
@@ -100,9 +100,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Policies',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\SectionPolicy',
            'functionName' => NULL,
@@ -135,9 +135,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Policies',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\SectionPolicy',
          'functionName' => 'create',
@@ -149,9 +149,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Policies',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\SectionPolicy',
            'functionName' => NULL,
@@ -184,9 +184,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Policies',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\SectionPolicy',
          'functionName' => 'update',
@@ -198,9 +198,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Policies',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\SectionPolicy',
            'functionName' => NULL,
@@ -233,9 +233,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Policies',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\SectionPolicy',
          'functionName' => 'delete',
@@ -247,9 +247,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Policies',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\SectionPolicy',
            'functionName' => NULL,
@@ -282,9 +282,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Policies',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\SectionPolicy',
          'functionName' => 'restore',
@@ -296,9 +296,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Policies',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\SectionPolicy',
            'functionName' => NULL,
@@ -331,9 +331,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Policies',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
-          'response' => 'Illuminate\\Auth\\Access\\Response',
         ),
          'className' => 'App\\Policies\\SectionPolicy',
          'functionName' => 'forceDelete',
@@ -345,9 +345,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Policies',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
-            'response' => 'Illuminate\\Auth\\Access\\Response',
           ),
            'className' => 'App\\Policies\\SectionPolicy',
            'functionName' => NULL,
@@ -378,7 +378,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Policies/SectionPolicy.php' => '3fbf3d47b3e57a08d769eeea89a1794e401c367802c1ba573bc8645a37b73b38',
+      '/var/www/KrosmozJdr/app/Policies/SectionPolicy.php' => 'a6fe03388f9c535bacf7f549a7cafe75e975681123d4f5381acf2d29e949d099',
     ),
   ),
 ));

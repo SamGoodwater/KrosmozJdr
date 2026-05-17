@@ -4,6 +4,7 @@ namespace Tests\Unit\Scrapping\Core;
 
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -40,6 +41,7 @@ class CollectServiceTest extends TestCase
                     'skip' => 2,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -85,6 +87,7 @@ class CollectServiceTest extends TestCase
                     'skip' => 2,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -109,6 +112,7 @@ class CollectServiceTest extends TestCase
                     'skip' => 1,
                 ], 200);
             }
+
             return Http::response([], 404);
         });
 
@@ -144,6 +148,7 @@ class CollectServiceTest extends TestCase
         $seenUrl = null;
         Http::fake(function ($request) use (&$seenUrl) {
             $seenUrl = $request->url();
+
             return Http::response([
                 'data' => [],
                 'total' => 0,
@@ -198,6 +203,7 @@ class CollectServiceTest extends TestCase
         $seenUrl = null;
         Http::fake(function ($request) use (&$seenUrl) {
             $seenUrl = $request->url();
+
             return Http::response([
                 'data' => [['id' => 1]],
                 'total' => 1,
@@ -241,8 +247,8 @@ class CollectServiceTest extends TestCase
         $ids = $this->service->fetchSpellIdsByBreedId('dofusdb', 1, ['skip_cache' => true]);
 
         $this->assertSame([101, 102, 103], $ids);
-        Http::assertSent(function (\Illuminate\Http\Client\Request $request): bool {
-            if (!str_contains($request->url(), '/spell-levels')) {
+        Http::assertSent(function (Request $request): bool {
+            if (! str_contains($request->url(), '/spell-levels')) {
                 return false;
             }
 

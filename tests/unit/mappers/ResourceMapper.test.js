@@ -313,8 +313,8 @@ describe('ResourceMapper', () => {
 
       expect(result).toEqual({
         id: 1,
-        dofusdb_id: undefined,
-        official_id: undefined,
+        dofusdb_id: null,
+        official_id: null,
         name: 'Test Resource',
         description: 'Description',
         level: 50,

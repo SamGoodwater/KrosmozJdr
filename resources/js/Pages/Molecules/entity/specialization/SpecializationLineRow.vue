@@ -2,8 +2,10 @@
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
-import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
+import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
+import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 
 const props = defineProps({
@@ -14,9 +16,9 @@ const props = defineProps({
     uiColor: { type: String, default: "primary" },
 });
 
-const emit = defineEmits(["row-click", "toggle-select", "action"]);
+const emit = defineEmits(["row-click", "row-dblclick", "toggle-select", "action"]);
 
-const entity = computed(() => props.row?.rowParams?.entity ?? props.row);
+const entity = computed(() => getRowEntity(props.row));
 const imageUrl = computed(() => entity.value?.image || null);
 const name = computed(() => entity.value?.name || "—");
 const shortDescription = computed(() => entity.value?.short_description || entity.value?.description || "");
@@ -27,7 +29,8 @@ const traits = computed(() => Array.isArray(entity.value?.creatureTraits) ? enti
     <div
         class="group relative rounded-box border border-base-300 bg-glass-2xl p-3 flex gap-3 transition-colors hover:bg-glass-3xl"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
-        @click="emit('row-click', row, $event)"
+        @click="(e) => emitLineRowClick(emit, row, e)"
+        @dblclick="(e) => emitLineRowDblClick(emit, row, e)"
     >
         <div class="w-16 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center">
             <Image v-if="imageUrl" :source="imageUrl" :alt="name" fit="contain" class="h-full w-full" />
@@ -44,15 +47,12 @@ const traits = computed(() => Array.isArray(entity.value?.creatureTraits) ? enti
             <CreatureTraitBadges v-if="traits.length" :traits="traits" show-level size="xs" />
         </div>
 
-        <div v-if="showActions" class="entity-row-actions-hover-reveal" @click.stop>
-            <EntityActions
-                entity-type="specializations"
-                :entity="entity || row"
-                format="dropdown"
-                :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                @action="(k, e) => emit('action', k, e, row)"
-            />
-        </div>
+        <EntityLineRowActions
+            v-if="showActions"
+            entity-type="specializations"
+            :entity="entity"
+            @action="(k, e) => emit('action', k, e, row)"
+        />
 
         <div v-if="showSelection" class="flex items-center" @click.stop>
             <CheckboxCore

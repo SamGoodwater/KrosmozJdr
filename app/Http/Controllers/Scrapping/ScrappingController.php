@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Contrôleur principal pour le système de scrapping.
@@ -524,7 +525,7 @@ class ScrappingController extends Controller
                 'run_id' => $runId,
                 'debug' => $this->debugPayload($runId),
             ], $statusCode);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur de validation',
@@ -592,7 +593,7 @@ class ScrappingController extends Controller
                 'run_id' => $runId,
                 'timestamp' => now()->toISOString(),
             ], 202);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur de validation',
@@ -757,7 +758,7 @@ class ScrappingController extends Controller
             $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $dofusdbId, $options);
 
             return $this->resultToJson($result, 201, $runId);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 422);
         } catch (\Throwable $e) {
             Log::error('Erreur import avec fusion', ['error' => $e->getMessage(), 'run_id' => $runId]);
@@ -1089,7 +1090,7 @@ class ScrappingController extends Controller
                 'run_id' => $runId,
                 'debug' => $this->debugPayload($runId),
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur de validation',

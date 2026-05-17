@@ -3,16 +3,18 @@
 namespace App\Notifications;
 
 use App\Mail\NotificationMail;
+use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
  * Notification pour la modification du profil utilisateur.
  *
- * @property \App\Models\User $modifiedUser
- * @property \App\Models\User $modifier
+ * @property User $modifiedUser
+ * @property User $modifier
  * @property array $channels
  */
 class ProfileModifiedNotification extends Notification implements ShouldQueue
@@ -28,8 +30,8 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
     public $changes;
 
     /**
-     * @param  \App\Models\User  $modifiedUser
-     * @param  \App\Models\User  $modifier
+     * @param  User  $modifiedUser
+     * @param  User  $modifier
      * @param  array  $channels
      */
     public function __construct($modifiedUser, $modifier, $channels = ['database', 'mail'], $changes = [])
@@ -55,7 +57,7 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return MailMessage
      */
     public function toMail($notifiable)
     {

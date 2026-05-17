@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\DataSubjectRequest;
 use App\Models\PrivacyAuditLog;
-use App\Models\User;
 use App\Services\Privacy\UserErasureService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -43,6 +42,7 @@ class ExecuteUserErasureJob implements ShouldQueue
         $user = $request->user;
         if (! $user) {
             $request->update(['status' => DataSubjectRequest::STATUS_FAILED, 'processed_at' => now()]);
+
             return;
         }
 

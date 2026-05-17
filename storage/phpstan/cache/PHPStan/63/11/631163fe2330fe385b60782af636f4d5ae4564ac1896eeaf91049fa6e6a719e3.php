@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Enums/Visibility.php-presentSymbols
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-6dc6d08764fd735f7a90e9c88ed9981f1c5f8ef878329746cafae855dc442920-8.4.17',
+   'variableKey' => 'v2-22d4f8abb9b2d66911e2a6328b52219bfe09aaa0ba5cecda9572e48fca55e579-8.4.17',
    'data' => 
   array (
     'classes' => 

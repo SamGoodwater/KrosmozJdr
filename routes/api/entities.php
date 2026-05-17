@@ -1,5 +1,23 @@
 <?php
 
+use App\Http\Controllers\Api\BreedBulkController;
+use App\Http\Controllers\Api\CampaignBulkController;
+use App\Http\Controllers\Api\CapabilityBulkController;
+use App\Http\Controllers\Api\ConditionBulkController;
+use App\Http\Controllers\Api\ConsumableBulkController;
+use App\Http\Controllers\Api\CreatureBulkController;
+use App\Http\Controllers\Api\CreatureTraitBulkController;
+use App\Http\Controllers\Api\EntityStateController;
+use App\Http\Controllers\Api\ItemBulkController;
+use App\Http\Controllers\Api\MonsterBulkController;
+use App\Http\Controllers\Api\NpcBulkController;
+use App\Http\Controllers\Api\PanoplyBulkController;
+use App\Http\Controllers\Api\ResourceBulkController;
+use App\Http\Controllers\Api\ResourceImageUploadController;
+use App\Http\Controllers\Api\ScenarioBulkController;
+use App\Http\Controllers\Api\ShopBulkController;
+use App\Http\Controllers\Api\SpecializationBulkController;
+use App\Http\Controllers\Api\SpellBulkController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,42 +30,42 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
-    Route::post('/resources/upload-image', [App\Http\Controllers\Api\ResourceImageUploadController::class, 'upload'])
+    Route::post('/resources/upload-image', [ResourceImageUploadController::class, 'upload'])
         ->name('api.entities.resources.upload-image');
-    Route::patch('/{entityType}/{id}/state', [App\Http\Controllers\Api\EntityStateController::class, 'update'])
+    Route::patch('/{entityType}/{id}/state', [EntityStateController::class, 'update'])
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')
         ->name('api.entities.state.update');
-    Route::patch('/resources/bulk', [App\Http\Controllers\Api\ResourceBulkController::class, 'bulkUpdate'])
+    Route::patch('/resources/bulk', [ResourceBulkController::class, 'bulkUpdate'])
         ->name('api.entities.resources.bulk');
-    Route::patch('/items/bulk', [App\Http\Controllers\Api\ItemBulkController::class, 'bulkUpdate'])
+    Route::patch('/items/bulk', [ItemBulkController::class, 'bulkUpdate'])
         ->name('api.entities.items.bulk');
-    Route::patch('/spells/bulk', [App\Http\Controllers\Api\SpellBulkController::class, 'bulkUpdate'])
+    Route::patch('/spells/bulk', [SpellBulkController::class, 'bulkUpdate'])
         ->name('api.entities.spells.bulk');
-    Route::patch('/monsters/bulk', [App\Http\Controllers\Api\MonsterBulkController::class, 'bulkUpdate'])
+    Route::patch('/monsters/bulk', [MonsterBulkController::class, 'bulkUpdate'])
         ->name('api.entities.monsters.bulk');
-    Route::patch('/campaigns/bulk', [App\Http\Controllers\Api\CampaignBulkController::class, 'bulkUpdate'])
+    Route::patch('/campaigns/bulk', [CampaignBulkController::class, 'bulkUpdate'])
         ->name('api.entities.campaigns.bulk');
-    Route::patch('/scenarios/bulk', [App\Http\Controllers\Api\ScenarioBulkController::class, 'bulkUpdate'])
+    Route::patch('/scenarios/bulk', [ScenarioBulkController::class, 'bulkUpdate'])
         ->name('api.entities.scenarios.bulk');
-    Route::patch('/conditions/bulk', [App\Http\Controllers\Api\ConditionBulkController::class, 'bulkUpdate'])
+    Route::patch('/conditions/bulk', [ConditionBulkController::class, 'bulkUpdate'])
         ->name('api.entities.conditions.bulk');
-    Route::patch('/panoplies/bulk', [App\Http\Controllers\Api\PanoplyBulkController::class, 'bulkUpdate'])
+    Route::patch('/panoplies/bulk', [PanoplyBulkController::class, 'bulkUpdate'])
         ->name('api.entities.panoplies.bulk');
-    Route::patch('/capabilities/bulk', [App\Http\Controllers\Api\CapabilityBulkController::class, 'bulkUpdate'])
+    Route::patch('/capabilities/bulk', [CapabilityBulkController::class, 'bulkUpdate'])
         ->name('api.entities.capabilities.bulk');
-    Route::patch('/specializations/bulk', [App\Http\Controllers\Api\SpecializationBulkController::class, 'bulkUpdate'])
+    Route::patch('/specializations/bulk', [SpecializationBulkController::class, 'bulkUpdate'])
         ->name('api.entities.specializations.bulk');
-    Route::patch('/shops/bulk', [App\Http\Controllers\Api\ShopBulkController::class, 'bulkUpdate'])
+    Route::patch('/shops/bulk', [ShopBulkController::class, 'bulkUpdate'])
         ->name('api.entities.shops.bulk');
-    Route::patch('/creatures/bulk', [App\Http\Controllers\Api\CreatureBulkController::class, 'bulkUpdate'])
+    Route::patch('/creatures/bulk', [CreatureBulkController::class, 'bulkUpdate'])
         ->name('api.entities.creatures.bulk');
-    Route::patch('/npcs/bulk', [App\Http\Controllers\Api\NpcBulkController::class, 'bulkUpdate'])
+    Route::patch('/npcs/bulk', [NpcBulkController::class, 'bulkUpdate'])
         ->name('api.entities.npcs.bulk');
-    Route::patch('/breeds/bulk', [App\Http\Controllers\Api\BreedBulkController::class, 'bulkUpdate'])
+    Route::patch('/breeds/bulk', [BreedBulkController::class, 'bulkUpdate'])
         ->name('api.entities.breeds.bulk');
-    Route::patch('/creature-traits/bulk', [App\Http\Controllers\Api\CreatureTraitBulkController::class, 'bulkUpdate'])
+    Route::patch('/creature-traits/bulk', [CreatureTraitBulkController::class, 'bulkUpdate'])
         ->name('api.entities.creature-traits.bulk');
-    Route::patch('/consumables/bulk', [App\Http\Controllers\Api\ConsumableBulkController::class, 'bulkUpdate'])
+    Route::patch('/consumables/bulk', [ConsumableBulkController::class, 'bulkUpdate'])
         ->name('api.entities.consumables.bulk');
 });

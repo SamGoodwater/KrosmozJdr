@@ -72,7 +72,15 @@ function getDescriptorForm(descriptor) {
  * @returns {any}
  */
 function getDescriptorBulk(descriptor) {
-  return descriptor?.edit?.bulk || descriptor?.edition?.bulk || null;
+  const form = getDescriptorForm(descriptor);
+  return (
+    form?.bulk ??
+    descriptor?.edit?.form?.bulk ??
+    descriptor?.edition?.form?.bulk ??
+    descriptor?.edit?.bulk ??
+    descriptor?.edition?.bulk ??
+    null
+  );
 }
 
 /**
@@ -90,12 +98,13 @@ export function createFieldsConfigFromDescriptors(descriptors, ctx = {}) {
     const options = resolveDescriptorOptions(form, ctx);
     out[key] = {
       type: form.type,
-      label: form?.label || d?.general?.label || key,
+      label: form?.label || d?.general?.label || d?.label || key,
       group: form?.group || "",
       help: form?.help ? String(form.help) : "",
       placeholder: form?.placeholder ? String(form.placeholder) : "",
       required: Boolean(form.required),
       defaultValue: form?.defaultValue,
+      ...(typeof form.showInCompact === "boolean" ? { showInCompact: form.showInCompact } : {}),
       // Support du select avec recherche
       ...(form.type === 'select' && form.searchable ? { searchable: true } : {}),
       // Validation
@@ -148,7 +157,18 @@ export function createDefaultEntityFromDescriptors(descriptors) {
   for (const [key, d] of Object.entries(descriptors || {})) {
     const form = getDescriptorForm(d);
     if (!form) continue;
-    if (typeof form.defaultValue !== "undefined") out[key] = form.defaultValue;
+    if (typeof form.defaultValue !== "undefined") {
+      out[key] = form.defaultValue;
+      continue;
+    }
+    const t = form.type;
+    if (t === "checkbox") {
+      out[key] = false;
+    } else if (t === "number") {
+      out[key] = null;
+    } else {
+      out[key] = "";
+    }
   }
   return out;
 }
@@ -168,7 +188,7 @@ export function createBulkFieldMetaFromDescriptors(descriptors, ctx = {}) {
     // ⚠️ IMPORTANT : bulk.build est déprécié. Les transformations sont maintenant gérées par les mappers.
     // On crée quand même le fieldMeta pour permettre l'agrégation des valeurs, même sans build.
     out[key] = {
-      label: d?.general?.label || key,
+      label: d?.general?.label || d?.label || form?.label || key,
       nullable: Boolean(bulk.nullable),
       // Si bulk.build existe encore (rétrocompatibilité), on le garde, sinon on laisse undefined
       // Le mapper sera utilisé à la place dans useBulkEditPanel

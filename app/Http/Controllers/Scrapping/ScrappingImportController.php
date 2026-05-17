@@ -31,8 +31,8 @@ class ScrappingImportController extends Controller
     /**
      * Import d'un seul objet via le pipeline.
      *
-     * @param string $entity monster, breed, spell, item ou alias (class → breed)
-     * @param int $id ID DofusDB
+     * @param  string  $entity  monster, breed, spell, item ou alias (class → breed)
+     * @param  int  $id  ID DofusDB
      */
     public function importOne(Request $request, string $entity, int $id): JsonResponse
     {
@@ -42,10 +42,10 @@ class ScrappingImportController extends Controller
 
         try {
             $entities = $this->configLoader->listEntities($source);
-            if (!in_array($entityKey, $entities, true)) {
+            if (! in_array($entityKey, $entities, true)) {
                 return response()->json([
                     'success' => false,
-                    'message' => "Entité inconnue : {$entity}. Valeurs : " . implode(', ', $this->aliasResolver->listAliases()),
+                    'message' => "Entité inconnue : {$entity}. Valeurs : ".implode(', ', $this->aliasResolver->listAliases()),
                     'timestamp' => now()->toISOString(),
                 ], 422);
             }
@@ -91,7 +91,7 @@ class ScrappingImportController extends Controller
         $replaceMode = is_string($replaceMode) && in_array($replaceMode, ['never', 'draft_raw_only', 'always'], true) ? $replaceMode : null;
 
         $excludeFromUpdate = $request->input('exclude_from_update');
-        if (!is_array($excludeFromUpdate)) {
+        if (! is_array($excludeFromUpdate)) {
             $excludeFromUpdate = [];
         }
         $excludeFromUpdate = array_values(array_filter(array_map('strval', $excludeFromUpdate)));
@@ -115,7 +115,7 @@ class ScrappingImportController extends Controller
         return [
             'convert' => true,
             'validate' => $request->boolean('validate', true),
-            'integrate' => !$request->boolean('validate_only', false) && !$request->boolean('dry_run', false),
+            'integrate' => ! $request->boolean('validate_only', false) && ! $request->boolean('dry_run', false),
             'dry_run' => $request->boolean('dry_run', false),
             'force_update' => $forceUpdate,
             'replace_mode' => $replaceMode,

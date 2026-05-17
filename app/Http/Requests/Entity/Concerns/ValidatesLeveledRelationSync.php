@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests\Entity\Concerns;
 
+use Illuminate\Foundation\Http\FormRequest;
+
 /**
  * Validation/normalisation pour synchroniser une relation many-to-many avec pivot `level`.
  *
- * @mixin \Illuminate\Foundation\Http\FormRequest
+ * @mixin FormRequest
  */
 trait ValidatesLeveledRelationSync
 {

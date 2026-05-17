@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Effect;
 
+use App\Models\Effect;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -30,7 +31,7 @@ class EffectResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
-            'target_type' => $this->target_type ?? \App\Models\Effect::TARGET_DIRECT,
+            'target_type' => $this->target_type ?? Effect::TARGET_DIRECT,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
             'degrees' => $degrees,

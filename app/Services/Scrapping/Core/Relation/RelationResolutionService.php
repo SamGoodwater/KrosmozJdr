@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services\Scrapping\Core\Relation;
 
+use App\Models\Entity\Breed;
+use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
-use App\Models\Entity\Consumable;
 use App\Models\Entity\Spell;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
-use App\Services\Scrapping\Core\Orchestrator\OrchestratorResult;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -28,8 +28,7 @@ final class RelationResolutionService
     public function __construct(
         private Orchestrator $orchestrator,
         private ?CollectService $collectService = null
-    ) {
-    }
+    ) {}
 
     private function getCollectService(): CollectService
     {
@@ -43,8 +42,8 @@ final class RelationResolutionService
     /**
      * Résout les relations monster (spells, drops) : enregistre sur la pile ou importe en inline.
      *
-     * @param array<string, mixed> $rawData Données brutes du monstre (avec spells, drops)
-     * @param array{convert?: bool, validate?: bool, integrate?: bool, dry_run?: bool, force_update?: bool} $options
+     * @param  array<string, mixed>  $rawData  Données brutes du monstre (avec spells, drops)
+     * @param  array{convert?: bool, validate?: bool, integrate?: bool, dry_run?: bool, force_update?: bool}  $options
      * @return array{spell_ids?: list<int>, resource_ids?: list<int>, related_results?: list<array{type: string, id: int, success: bool, krosmoz_id: int|null}>, pending_added?: list<array{entity: string, dofusdb_id: string}>}
      */
     public function resolveAndSyncMonsterRelations(
@@ -67,8 +66,8 @@ final class RelationResolutionService
     /**
      * Comportement historique : import inline des sorts et drops puis sync.
      *
-     * @param array<string, mixed> $rawData
-     * @param array{convert?: bool, validate?: bool, integrate?: bool, dry_run?: bool, force_update?: bool} $options
+     * @param  array<string, mixed>  $rawData
+     * @param  array{convert?: bool, validate?: bool, integrate?: bool, dry_run?: bool, force_update?: bool}  $options
      * @return array{spell_ids: list<int>, resource_ids: list<int>, related_results: list<array{type: string, id: int, success: bool, krosmoz_id: int|null}>}
      */
     private function resolveAndSyncMonsterRelationsInline(array $rawData, int $creatureId, array $options): array
@@ -79,7 +78,7 @@ final class RelationResolutionService
         $v2Options = [
             'convert' => true,
             'validate' => true,
-            'integrate' => $integrate && !$dryRun,
+            'integrate' => $integrate && ! $dryRun,
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
             'spell_category_hint' => Spell::CATEGORY_CREATURE,
@@ -171,7 +170,7 @@ final class RelationResolutionService
         }
 
         $creature = Creature::find($creatureId);
-        if ($creature !== null && !$dryRun) {
+        if ($creature !== null && ! $dryRun) {
             $validSpellIds = array_values(array_unique(array_filter($importedSpellIds)));
             if ($validSpellIds !== []) {
                 $creature->spells()->sync($validSpellIds);
@@ -202,8 +201,8 @@ final class RelationResolutionService
      * Résout les sorts d'une classe (breed) : utilise breedSpellsId de l'API si disponible
      * (inclut les 2 variantes par niveau), sinon fallback sur spell-levels.
      *
-     * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool} $options
-     * @param array<string, mixed>|null $rawBreed Données brutes du breed (breedSpellsId prioritaire)
+     * @param  array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool}  $options
+     * @param  array<string, mixed>|null  $rawBreed  Données brutes du breed (breedSpellsId prioritaire)
      * @return array{synced: bool, pending_added?: list<string>}
      */
     public function resolveAndSyncBreedSpells(
@@ -238,7 +237,7 @@ final class RelationResolutionService
         $v2Options = [
             'convert' => true,
             'validate' => ($options['validate'] ?? true) !== false,
-            'integrate' => ($options['integrate'] ?? true) && !$dryRun,
+            'integrate' => ($options['integrate'] ?? true) && ! $dryRun,
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
             'spell_category_hint' => Spell::CATEGORY_CLASS,
@@ -255,8 +254,8 @@ final class RelationResolutionService
                 }
             }
         }
-        $breed = \App\Models\Entity\Breed::find($breedId);
-        if ($breed !== null && !$dryRun && $importedSpellIds !== []) {
+        $breed = Breed::find($breedId);
+        if ($breed !== null && ! $dryRun && $importedSpellIds !== []) {
             $breed->spells()->sync(array_values(array_unique($importedSpellIds)));
             Spell::query()
                 ->whereIn('id', array_values(array_unique($importedSpellIds)))
@@ -269,12 +268,12 @@ final class RelationResolutionService
     /**
      * Extrait les IDs de sorts depuis les données brutes d'un breed (breedSpellsId).
      *
-     * @param array<string, mixed>|null $raw
+     * @param  array<string, mixed>|null  $raw
      * @return list<int>
      */
     private function extractBreedSpellIds(?array $raw): array
     {
-        if ($raw === null || !isset($raw['breedSpellsId']) || !is_array($raw['breedSpellsId'])) {
+        if ($raw === null || ! isset($raw['breedSpellsId']) || ! is_array($raw['breedSpellsId'])) {
             return [];
         }
         $ids = [];
@@ -294,7 +293,7 @@ final class RelationResolutionService
     /**
      * Résout le monstre invoqué par un sort : enregistre sur la pile ou importe en inline.
      *
-     * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool} $options
+     * @param  array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool}  $options
      * @return array{synced: bool, pending_added?: bool}
      */
     public function resolveAndSyncSpellInvocation(
@@ -317,7 +316,7 @@ final class RelationResolutionService
         $v2Options = [
             'convert' => true,
             'validate' => ($options['validate'] ?? true) !== false,
-            'integrate' => ($options['integrate'] ?? true) && !$dryRun,
+            'integrate' => ($options['integrate'] ?? true) && ! $dryRun,
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
             'include_relations' => true,
@@ -328,8 +327,8 @@ final class RelationResolutionService
         if ($result->isSuccess()) {
             $monsterId = $result->getIntegrationResult()?->getMonsterId();
         }
-        if ($monsterId !== null && !$dryRun) {
-            $spell = \App\Models\Entity\Spell::find($spellId);
+        if ($monsterId !== null && ! $dryRun) {
+            $spell = Spell::find($spellId);
             if ($spell !== null) {
                 $current = $spell->monsters()->pluck('id')->all();
                 $spell->monsters()->sync(array_values(array_unique(array_merge($current, [$monsterId]))));
@@ -342,8 +341,8 @@ final class RelationResolutionService
     /**
      * Résout les items d'une panoplie : enregistre les dépendances sur la pile ou importe en inline.
      *
-     * @param list<int> $itemDofusdbIds
-     * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool, skip_cache?: bool} $options
+     * @param  list<int>  $itemDofusdbIds
+     * @param  array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool, skip_cache?: bool}  $options
      * @return array{synced: bool, pending_added?: list<string>}
      */
     public function resolveAndSyncPanoplyItems(
@@ -365,7 +364,7 @@ final class RelationResolutionService
         $v2Options = [
             'convert' => true,
             'validate' => ($options['validate'] ?? true) !== false,
-            'integrate' => ($options['integrate'] ?? true) && !$dryRun,
+            'integrate' => ($options['integrate'] ?? true) && ! $dryRun,
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
             'include_relations' => true,
@@ -388,7 +387,7 @@ final class RelationResolutionService
             }
         }
         $panoply = Panoply::find($panoplyId);
-        if ($panoply !== null && !$dryRun && $importedItemIds !== []) {
+        if ($panoply !== null && ! $dryRun && $importedItemIds !== []) {
             $panoply->items()->sync(array_values(array_unique($importedItemIds)));
         }
 
@@ -398,8 +397,8 @@ final class RelationResolutionService
     /**
      * Résout les ingrédients de recette d'un équipement (item).
      *
-     * @param list<array{ingredient_dofusdb_id?: string, quantity?: int}> $recipeIngredients
-     * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool, skip_cache?: bool} $options
+     * @param  list<array{ingredient_dofusdb_id?: string, quantity?: int}>  $recipeIngredients
+     * @param  array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool, skip_cache?: bool}  $options
      * @return array{imported: list<int>, synced: bool}
      */
     public function resolveAndSyncItemRecipe(array $recipeIngredients, int $itemId, array $options = []): array
@@ -409,7 +408,7 @@ final class RelationResolutionService
             return ['imported' => [], 'synced' => false];
         }
         if ($recipeIngredients === []) {
-            if (!(bool) ($options['dry_run'] ?? false)) {
+            if (! (bool) ($options['dry_run'] ?? false)) {
                 $item->resources()->sync([]);
             }
 
@@ -420,7 +419,7 @@ final class RelationResolutionService
         $runOptions = [
             'convert' => true,
             'validate' => ($options['validate'] ?? true) !== false,
-            'integrate' => ($options['integrate'] ?? true) && !$dryRun,
+            'integrate' => ($options['integrate'] ?? true) && ! $dryRun,
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
             'include_relations' => false,
@@ -476,7 +475,7 @@ final class RelationResolutionService
             }
         }
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             $item->resources()->sync($sync);
         }
 
@@ -486,8 +485,8 @@ final class RelationResolutionService
     /**
      * Résout les ingrédients de recette d'un consommable.
      *
-     * @param list<array{ingredient_dofusdb_id?: string, quantity?: int}> $recipeIngredients
-     * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool, skip_cache?: bool} $options
+     * @param  list<array{ingredient_dofusdb_id?: string, quantity?: int}>  $recipeIngredients
+     * @param  array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool, skip_cache?: bool}  $options
      * @return array{imported: list<int>, synced: bool}
      */
     public function resolveAndSyncConsumableRecipe(array $recipeIngredients, int $consumableId, array $options = []): array
@@ -497,7 +496,7 @@ final class RelationResolutionService
             return ['imported' => [], 'synced' => false];
         }
         if ($recipeIngredients === []) {
-            if (!(bool) ($options['dry_run'] ?? false)) {
+            if (! (bool) ($options['dry_run'] ?? false)) {
                 $consumable->resources()->sync([]);
             }
 
@@ -508,7 +507,7 @@ final class RelationResolutionService
         $runOptions = [
             'convert' => true,
             'validate' => ($options['validate'] ?? true) !== false,
-            'integrate' => ($options['integrate'] ?? true) && !$dryRun,
+            'integrate' => ($options['integrate'] ?? true) && ! $dryRun,
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
             'include_relations' => false,
@@ -564,7 +563,7 @@ final class RelationResolutionService
             }
         }
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             $consumable->resources()->sync($sync);
         }
 
@@ -577,8 +576,8 @@ final class RelationResolutionService
      * Si une RelationImportStack est fournie : enregistre les dépendances et ajoute les ingrédients
      * manquants à la pile (l'orchestrateur drainera la pile ensuite). Sinon : import inline comme avant.
      *
-     * @param list<array{ingredient_dofusdb_id?: string, quantity?: int}> $recipeIngredients
-     * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool} $options
+     * @param  list<array{ingredient_dofusdb_id?: string, quantity?: int}>  $recipeIngredients
+     * @param  array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool}  $options
      * @return array{imported: list<int>, synced: bool, pending_added?: list<string>}
      */
     public function resolveAndSyncResourceRecipe(
@@ -592,7 +591,7 @@ final class RelationResolutionService
             return ['imported' => [], 'synced' => false];
         }
         if ($recipeIngredients === []) {
-            if (!(bool) ($options['dry_run'] ?? false)) {
+            if (! (bool) ($options['dry_run'] ?? false)) {
                 $resource->recipeIngredients()->sync([]);
             }
 
@@ -613,8 +612,8 @@ final class RelationResolutionService
     /**
      * Comportement historique : import inline de chaque ingrédient manquant puis sync.
      *
-     * @param list<array{ingredient_dofusdb_id?: string, quantity?: int}> $recipeIngredients
-     * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool} $options
+     * @param  list<array{ingredient_dofusdb_id?: string, quantity?: int}>  $recipeIngredients
+     * @param  array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool}  $options
      * @return array{imported: list<int>, synced: bool}
      */
     private function resolveAndSyncResourceRecipeInline(array $recipeIngredients, int $resourceId, array $options): array
@@ -628,7 +627,7 @@ final class RelationResolutionService
         $runOptions = [
             'convert' => true,
             'validate' => ($options['validate'] ?? true) !== false,
-            'integrate' => ($options['integrate'] ?? true) && !$dryRun,
+            'integrate' => ($options['integrate'] ?? true) && ! $dryRun,
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
             'include_relations' => false,
@@ -684,7 +683,7 @@ final class RelationResolutionService
             }
         }
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             $resource->recipeIngredients()->sync($sync);
         }
 

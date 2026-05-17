@@ -2,16 +2,16 @@
 
 namespace Tests\Feature\Policies;
 
-use App\Models\User;
 use App\Models\Page;
 use App\Models\Section;
-use App\Enums\SectionType;
+use App\Models\User;
+use App\Policies\SectionPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests de la SectionPolicy (Autorisation)
- * 
+ *
  * Vérifie que les règles d'accès aux sections sont correctement appliquées :
  * - Création : nécessite droit 'update' sur la page parente
  * - Modification : respecte write_level de la section ET de la page
@@ -33,7 +33,7 @@ class SectionPolicyTest extends TestCase
         ]);
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\SectionPolicy::class)
+            $this->app->make(SectionPolicy::class)
                 ->create($user, $page)
         );
     }
@@ -45,14 +45,14 @@ class SectionPolicyTest extends TestCase
     {
         $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $user = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
-        
+
         $page = Page::factory()->create([
             'created_by' => $author->id,
             'write_level' => User::ROLE_ADMIN, // Nécessite admin
         ]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\SectionPolicy::class)
+            $this->app->make(SectionPolicy::class)
                 ->create($user, $page)
         );
     }
@@ -68,7 +68,7 @@ class SectionPolicyTest extends TestCase
         ]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\SectionPolicy::class)
+            $this->app->make(SectionPolicy::class)
                 ->create($user, $page)
         );
     }
@@ -79,12 +79,12 @@ class SectionPolicyTest extends TestCase
     public function test_author_can_update_own_section(): void
     {
         $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
-        
+
         $page = Page::factory()->create([
             'created_by' => $author->id,
             'write_level' => User::ROLE_GAME_MASTER,
         ]);
-        
+
         $section = Section::factory()->create([
             'page_id' => $page->id,
             'created_by' => $author->id,
@@ -92,7 +92,7 @@ class SectionPolicyTest extends TestCase
         ]);
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\SectionPolicy::class)
+            $this->app->make(SectionPolicy::class)
                 ->update($author, $section)
         );
     }
@@ -104,12 +104,12 @@ class SectionPolicyTest extends TestCase
     {
         $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $user = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
-        
+
         $page = Page::factory()->create([
             'created_by' => $author->id,
             'write_level' => User::ROLE_ADMIN, // Nécessite admin
         ]);
-        
+
         $section = Section::factory()->create([
             'page_id' => $page->id,
             'created_by' => $author->id,
@@ -117,7 +117,7 @@ class SectionPolicyTest extends TestCase
         ]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\SectionPolicy::class)
+            $this->app->make(SectionPolicy::class)
                 ->update($user, $section)
         );
     }
@@ -128,19 +128,19 @@ class SectionPolicyTest extends TestCase
     public function test_delete_section_requires_page_update_permission(): void
     {
         $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
-        
+
         $page = Page::factory()->create([
             'created_by' => $author->id,
             'write_level' => User::ROLE_GAME_MASTER,
         ]);
-        
+
         $section = Section::factory()->create([
             'page_id' => $page->id,
             'created_by' => $author->id,
         ]);
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\SectionPolicy::class)
+            $this->app->make(SectionPolicy::class)
                 ->delete($author, $section)
         );
     }
@@ -152,19 +152,19 @@ class SectionPolicyTest extends TestCase
     {
         $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $user = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
-        
+
         $page = Page::factory()->create([
             'created_by' => $author->id,
             'write_level' => User::ROLE_ADMIN,
         ]);
-        
+
         $section = Section::factory()->create([
             'page_id' => $page->id,
             'created_by' => $author->id,
         ]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\SectionPolicy::class)
+            $this->app->make(SectionPolicy::class)
                 ->delete($user, $section)
         );
     }
@@ -176,12 +176,12 @@ class SectionPolicyTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
-        
+
         $page = Page::factory()->create([
             'created_by' => $author->id,
             'write_level' => User::ROLE_ADMIN,
         ]);
-        
+
         $section = Section::factory()->create([
             'page_id' => $page->id,
             'created_by' => $author->id,
@@ -189,7 +189,7 @@ class SectionPolicyTest extends TestCase
         ]);
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\SectionPolicy::class)
+            $this->app->make(SectionPolicy::class)
                 ->update($admin, $section)
         );
     }
@@ -201,19 +201,18 @@ class SectionPolicyTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $user = User::factory()->create(['role' => User::ROLE_USER]);
-        
+
         $page = Page::factory()->create();
         $section = Section::factory()->create(['page_id' => $page->id]);
 
         $this->assertFalse(
-            $this->app->make(\App\Policies\SectionPolicy::class)
+            $this->app->make(SectionPolicy::class)
                 ->forceDelete($user, $section)
         );
 
         $this->assertTrue(
-            $this->app->make(\App\Policies\SectionPolicy::class)
+            $this->app->make(SectionPolicy::class)
                 ->forceDelete($admin, $section)
         );
     }
 }
-

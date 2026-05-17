@@ -12,6 +12,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Resources',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
           'request' => 'Illuminate\\Http\\Request',
           'jsonresource' => 'Illuminate\\Http\\Resources\\Json\\JsonResource',
         ),
@@ -36,6 +37,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Http\\Resources',
          'uses' => 
         array (
+          'page' => 'App\\Models\\Page',
           'request' => 'Illuminate\\Http\\Request',
           'jsonresource' => 'Illuminate\\Http\\Resources\\Json\\JsonResource',
         ),
@@ -49,6 +51,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Http\\Resources',
            'uses' => 
           array (
+            'page' => 'App\\Models\\Page',
             'request' => 'Illuminate\\Http\\Request',
             'jsonresource' => 'Illuminate\\Http\\Resources\\Json\\JsonResource',
           ),
@@ -81,7 +84,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Http/Resources/PageResource.php' => 'b0361c7bba1eeeddee1a3e484d3f0b15806bed80a29d104cd35f693dcf1c6272',
+      '/var/www/KrosmozJdr/app/Http/Resources/PageResource.php' => '6e6827ce4ea36c40b142ef50e90d826689486a035bb4101fedf4e7f99e4b780b',
     ),
   ),
 ));

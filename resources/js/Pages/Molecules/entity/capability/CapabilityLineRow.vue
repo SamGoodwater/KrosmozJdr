@@ -10,14 +10,16 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
-import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
+import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import CapabilityMinimalUsageMetaRow from "@/Pages/Molecules/entity/capability/CapabilityMinimalUsageMetaRow.vue";
 import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
+import { getRowEntity } from "@/Utils/Entity/rowEntity";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -60,9 +62,9 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-const emit = defineEmits(["row-click", "toggle-select", "action"]);
+const emit = defineEmits(["row-click", "row-dblclick", "toggle-select", "action"]);
 
-const entity = computed(() => props.row?.rowParams?.entity ?? props.row);
+const entity = computed(() => getRowEntity(props.row));
 
 const getCell = (fieldKey) => {
     const col = props.columns.find((c) => (c.cellId || c.id) === fieldKey);
@@ -115,7 +117,6 @@ const effectItems = computed(() => {
     return cell?.type === "chips" ? cell.params?.items || [] : [];
 });
 
-const handleRowClick = (e) => emit("row-click", props.row, e);
 </script>
 
 <template>
@@ -124,7 +125,8 @@ const handleRowClick = (e) => emit("row-click", props.row, e);
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         style="--bg-color: var(--color-base-100)"
         data-row-contextmenu-target
-        @click="handleRowClick"
+        @click="(e) => emitLineRowClick(emit, row, e)"
+        @dblclick="(e) => emitLineRowDblClick(emit, row, e)"
     >
         <div class="flex gap-3">
             <div
@@ -147,19 +149,12 @@ const handleRowClick = (e) => emit("row-click", props.row, e);
                             <span class="font-semibold truncate block">{{ nameCell?.value || "—" }}</span>
                         </div>
                     </div>
-                    <div
+                    <EntityLineRowActions
                         v-if="showActions"
-                        class="entity-row-actions-hover-reveal"
-                        @click.stop
-                    >
-                        <EntityActions
-                            entity-type="capabilities"
-                            :entity="entity || row"
-                            format="dropdown"
-                            :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                            @action="(k, e) => emit('action', k, e, row)"
-                        />
-                    </div>
+                        entity-type="capabilities"
+                        :entity="entity"
+                        @action="(k, e) => emit('action', k, e, row)"
+                    />
                     <div
                         v-if="showSelection"
                         class="flex shrink-0 items-center transition-[max-width,opacity] duration-150 ease-out"

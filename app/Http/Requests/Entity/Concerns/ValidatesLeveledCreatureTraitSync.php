@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests\Entity\Concerns;
 
+use Illuminate\Foundation\Http\FormRequest;
+
 /**
  * Règles et normalisation pour synchroniser des traits avec niveau (pivot breed / specialization).
  *
- * @mixin \Illuminate\Foundation\Http\FormRequest
+ * @mixin FormRequest
  */
 trait ValidatesLeveledCreatureTraitSync
 {

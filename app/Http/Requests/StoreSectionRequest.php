@@ -2,13 +2,15 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\SectionType;
 use App\Models\Page;
 use App\Models\Section;
-use Illuminate\Validation\Rule;
-use App\Enums\SectionType;
-use App\Support\SectionTemplateValidationRules;
+use App\Models\User;
 use App\Support\SectionTemplatePayloadValidator;
+use App\Support\SectionTemplateValidationRules;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 /**
@@ -24,7 +26,7 @@ class StoreSectionRequest extends FormRequest
     public function authorize(): bool
     {
         $user = $this->user();
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
@@ -32,27 +34,27 @@ class StoreSectionRequest extends FormRequest
         // JSON tests (postJson) attendent un 403 si page_id est manquant/invalide (authorize stoppe).
         // Form/web tests attendent une erreur de validation (422/redirect avec errors).
         $isJson = $this->expectsJson();
-        if (!$pageId) {
+        if (! $pageId) {
             return $isJson ? false : true;
         }
 
         $page = Page::find($pageId);
-        if (!$page) {
+        if (! $page) {
             return $isJson ? false : true;
         }
 
-        return $user->can('create', [\App\Models\Section::class, $page]);
+        return $user->can('create', [Section::class, $page]);
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         $template = $this->input('template') ?? $this->input('type');
-        
+
         $rules = [
             'page_id' => ['required', 'exists:pages,id'],
             'title' => ['sometimes', 'nullable', 'string', 'max:255'],
@@ -75,7 +77,7 @@ class StoreSectionRequest extends FormRequest
         // Validation dynamique des settings et data selon le template
         if ($template && $sectionType = SectionType::tryFrom($template)) {
             $validationRules = $this->getTemplateValidationRules($sectionType);
-            if (!empty($validationRules)) {
+            if (! empty($validationRules)) {
                 $rules = array_merge($rules, $validationRules);
             }
         }
@@ -85,8 +87,8 @@ class StoreSectionRequest extends FormRequest
 
     /**
      * Retourne les règles de validation pour les settings et data selon le template de section.
-     * 
-     * @param SectionType $template Template de section
+     *
+     * @param  SectionType  $template  Template de section
      * @return array<string, mixed> Règles de validation
      */
     protected function getTemplateValidationRules(SectionType $template): array
@@ -123,14 +125,14 @@ class StoreSectionRequest extends FormRequest
             }
 
             $template = is_string($templateRaw) ? SectionType::tryFrom($templateRaw) : null;
-            if (!$template) {
+            if (! $template) {
                 return;
             }
 
             if ($template === SectionType::IMAGE) {
                 foreach (['data.src', 'params.src'] as $key) {
                     $value = $this->input($key);
-                    if (!is_string($value) || trim($value) === '') {
+                    if (! is_string($value) || trim($value) === '') {
                         continue;
                     }
                     $error = SectionTemplatePayloadValidator::validateImageSource($value);
@@ -163,7 +165,7 @@ class StoreSectionRequest extends FormRequest
             if ($template === SectionType::LEGAL_MARKDOWN) {
                 foreach (['data.sourceUrl', 'params.sourceUrl'] as $key) {
                     $value = $this->input($key);
-                    if (!is_string($value) || trim($value) === '') {
+                    if (! is_string($value) || trim($value) === '') {
                         continue;
                     }
                     $error = SectionTemplatePayloadValidator::validateLegalMarkdownSourceUrl($value);
@@ -188,22 +190,22 @@ class StoreSectionRequest extends FormRequest
         $params = $data['params'] ?? null;
 
         $merged = [];
-        if (!isset($data['template']) && isset($data['type'])) {
+        if (! isset($data['template']) && isset($data['type'])) {
             $merged['template'] = $type;
         }
-        if (!isset($data['type']) && isset($data['template'])) {
+        if (! isset($data['type']) && isset($data['template'])) {
             $merged['type'] = $template;
         }
-        if (!isset($data['data']) && isset($data['params'])) {
+        if (! isset($data['data']) && isset($data['params'])) {
             $merged['data'] = $params;
         }
-        if (!isset($data['params']) && isset($data['data'])) {
+        if (! isset($data['params']) && isset($data['data'])) {
             $merged['params'] = $payloadData;
         }
-        if (!empty($merged)) {
+        if (! empty($merged)) {
             $this->merge($merged);
         }
-        
+
         // Ne pas définir params à un tableau vide si il n'est pas présent
         // Cela permet à la validation de détecter si params est manquant
         // if (!isset($data['params'])) {
@@ -211,18 +213,18 @@ class StoreSectionRequest extends FormRequest
         //         'params' => [],
         //     ]);
         // }
-        
-        if (!isset($data['state'])) {
+
+        if (! isset($data['state'])) {
             $this->merge([
                 'state' => Section::STATE_DRAFT,
             ]);
         }
 
-        if (!isset($data['read_level'])) {
-            $this->merge(['read_level' => \App\Models\User::ROLE_GUEST]);
+        if (! isset($data['read_level'])) {
+            $this->merge(['read_level' => User::ROLE_GUEST]);
         }
-        if (!isset($data['write_level'])) {
-            $this->merge(['write_level' => \App\Models\User::ROLE_ADMIN]);
+        if (! isset($data['write_level'])) {
+            $this->merge(['write_level' => User::ROLE_ADMIN]);
         }
     }
 }

@@ -12,6 +12,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Enums',
          'uses' => 
         array (
+          'user' => 'App\\Models\\User',
         ),
          'className' => 'App\\Enums\\Visibility',
          'functionName' => NULL,
@@ -34,6 +35,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Enums',
          'uses' => 
         array (
+          'user' => 'App\\Models\\User',
         ),
          'className' => 'App\\Enums\\Visibility',
          'functionName' => 'label',
@@ -45,6 +47,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Enums',
            'uses' => 
           array (
+            'user' => 'App\\Models\\User',
           ),
            'className' => 'App\\Enums\\Visibility',
            'functionName' => NULL,
@@ -77,6 +80,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Enums',
          'uses' => 
         array (
+          'user' => 'App\\Models\\User',
         ),
          'className' => 'App\\Enums\\Visibility',
          'functionName' => 'isAccessibleBy',
@@ -88,6 +92,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Enums',
            'uses' => 
           array (
+            'user' => 'App\\Models\\User',
           ),
            'className' => 'App\\Enums\\Visibility',
            'functionName' => NULL,
@@ -120,6 +125,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Enums',
          'uses' => 
         array (
+          'user' => 'App\\Models\\User',
         ),
          'className' => 'App\\Enums\\Visibility',
          'functionName' => 'toArray',
@@ -131,6 +137,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Enums',
            'uses' => 
           array (
+            'user' => 'App\\Models\\User',
           ),
            'className' => 'App\\Enums\\Visibility',
            'functionName' => NULL,
@@ -163,6 +170,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Enums',
          'uses' => 
         array (
+          'user' => 'App\\Models\\User',
         ),
          'className' => 'App\\Enums\\Visibility',
          'functionName' => 'toArrayWithLabels',
@@ -174,6 +182,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Enums',
            'uses' => 
           array (
+            'user' => 'App\\Models\\User',
           ),
            'className' => 'App\\Enums\\Visibility',
            'functionName' => NULL,
@@ -204,7 +213,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Enums/Visibility.php' => '6dc6d08764fd735f7a90e9c88ed9981f1c5f8ef878329746cafae855dc442920',
+      '/var/www/KrosmozJdr/app/Enums/Visibility.php' => '22d4f8abb9b2d66911e2a6328b52219bfe09aaa0ba5cecda9572e48fca55e579',
     ),
   ),
 ));

@@ -23,8 +23,8 @@ use Illuminate\Support\Facades\DB;
 class TypeRegistryBatchTouchService
 {
     /**
-     * @param class-string<Model> $registry
-     * @param array<int,int> $typeIds
+     * @param  class-string<Model>  $registry
+     * @param  array<int,int>  $typeIds
      */
     public function touchMany(string $registry, array $typeIds): void
     {
@@ -35,7 +35,7 @@ class TypeRegistryBatchTouchService
         }
 
         /** @var Model $tmp */
-        $tmp = new $registry();
+        $tmp = new $registry;
         $table = $tmp->getTable();
 
         // Déjà présents
@@ -50,7 +50,7 @@ class TypeRegistryBatchTouchService
         $now = now();
         $systemUserId = User::getSystemUser()?->id;
 
-        if (!empty($missing)) {
+        if (! empty($missing)) {
             $rows = [];
             foreach ($missing as $typeId) {
                 $placeholderName = "DofusDB type #{$typeId}";
@@ -93,4 +93,3 @@ class TypeRegistryBatchTouchService
             ]);
     }
 }
-

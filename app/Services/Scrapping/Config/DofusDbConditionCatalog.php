@@ -14,9 +14,7 @@ class DofusDbConditionCatalog
     /** @var array<string, array<int, array<string,mixed>>> */
     private array $byLang = [];
 
-    public function __construct(private DofusDbClient $client)
-    {
-    }
+    public function __construct(private DofusDbClient $client) {}
 
     /**
      * @return array<string,mixed>
@@ -32,7 +30,7 @@ class DofusDbConditionCatalog
 
         $url = "https://api.dofusdb.fr/spell-states/{$stateId}?lang={$lang}";
         $data = $this->client->getJson($url, $options);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             $data = [];
         }
 
@@ -41,4 +39,3 @@ class DofusDbConditionCatalog
         return $data;
     }
 }
-

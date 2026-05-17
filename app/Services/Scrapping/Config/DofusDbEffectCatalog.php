@@ -19,9 +19,7 @@ class DofusDbEffectCatalog
     /** @var array<string, array<int, array<string,mixed>>> */
     private array $byLang = [];
 
-    public function __construct(private DofusDbClient $client)
-    {
-    }
+    public function __construct(private DofusDbClient $client) {}
 
     /**
      * @return array<string,mixed>
@@ -35,12 +33,12 @@ class DofusDbEffectCatalog
         $url = "https://api.dofusdb.fr/effects/{$effectId}?lang={$lang}";
         $data = $this->client->getJson($url, $options);
 
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             $data = [];
         }
 
         $this->byLang[$lang][$effectId] = $data;
+
         return $data;
     }
 }
-

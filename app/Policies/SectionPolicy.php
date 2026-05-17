@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
+use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 /**
  * Policy d'autorisation pour l'entité Section.
@@ -25,10 +25,9 @@ class SectionPolicy
 
     /**
      * Determine whether the user can view the model.
-     * 
-     * @param \App\Models\User|null $user L'utilisateur (null pour les invités)
-     * @param \App\Models\Section $section La section à vérifier
-     * @return bool
+     *
+     * @param  User|null  $user  L'utilisateur (null pour les invités)
+     * @param  Section  $section  La section à vérifier
      */
     public function view(?User $user, Section $section): bool
     {
@@ -36,7 +35,7 @@ class SectionPolicy
         if ($user && $user->isAdmin()) {
             return true;
         }
-        
+
         // Utiliser la méthode du modèle qui gère correctement les invités et la visibilité
         return $section->canBeViewedBy($user);
     }
@@ -44,11 +43,11 @@ class SectionPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, ?\App\Models\Page $page = null): bool
+    public function create(User $user, ?Page $page = null): bool
     {
         // Par défaut, la création d'une section nécessite un contexte de page.
         // (On autorise explicitement via `authorize('create', [Section::class, $page])`.)
-        if (!$page) {
+        if (! $page) {
             return false;
         }
 

@@ -27,4 +27,3 @@ class ConsumableTypeController extends Controller
         ]);
     }
 }
-

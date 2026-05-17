@@ -20,7 +20,7 @@ final class EffectTextResolver
     /**
      * Remplace les variables [key] par les valeurs du contexte.
      *
-     * @param array<string, int|float|string> $context Map nom => valeur (ex. agi => 15, value => 10)
+     * @param  array<string, int|float|string>  $context  Map nom => valeur (ex. agi => 15, value => 10)
      * @return string Template avec [key] remplacés (les non fournis restent [key])
      */
     public function resolveEffectText(string $template, array $context): string
@@ -28,7 +28,7 @@ final class EffectTextResolver
         $result = $template;
         foreach ($context as $key => $val) {
             if (is_scalar($val)) {
-                $result = str_replace('[' . $key . ']', (string) $val, $result);
+                $result = str_replace('['.$key.']', (string) $val, $result);
             }
         }
 
@@ -38,11 +38,11 @@ final class EffectTextResolver
     /**
      * Formate la notation ndX dans un texte.
      *
-     * @param bool $human_readable Si true : "2d6" → "2 dés à 6 faces"
+     * @param  bool  $human_readable  Si true : "2d6" → "2 dés à 6 faces"
      */
     public function formatDiceInText(string $text, bool $human_readable = false): string
     {
-        if (!$human_readable) {
+        if (! $human_readable) {
             return $text;
         }
 
@@ -56,12 +56,12 @@ final class EffectTextResolver
     /**
      * Formate une notation ndX isolée.
      *
-     * @param string $notation Ex. "2d6"
-     * @param bool $human_readable Si true : "2 dés à 6 faces"
+     * @param  string  $notation  Ex. "2d6"
+     * @param  bool  $human_readable  Si true : "2 dés à 6 faces"
      */
     public function formatDice(string $notation, bool $human_readable = false): string
     {
-        if (!$human_readable || !preg_match(self::DICE_PATTERN, $notation, $m)) {
+        if (! $human_readable || ! preg_match(self::DICE_PATTERN, $notation, $m)) {
             return $notation;
         }
 
@@ -69,6 +69,6 @@ final class EffectTextResolver
         $faces = (int) $m[2];
         $de = $n === 1 ? 'dé' : 'dés';
 
-        return $n . ' ' . $de . ' à ' . $faces . ' face' . ($faces > 1 ? 's' : '');
+        return $n.' '.$de.' à '.$faces.' face'.($faces > 1 ? 's' : '');
     }
 }

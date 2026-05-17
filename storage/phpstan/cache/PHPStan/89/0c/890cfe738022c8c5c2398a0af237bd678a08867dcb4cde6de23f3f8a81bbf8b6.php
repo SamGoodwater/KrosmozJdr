@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Concerns/HasEntityImageMedia.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Concerns\HasEntityImageMedia
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-b5b633f6bcb54e2ca03cda21ef004f49d21e57737f3fcb3c153870e38dc9c2e7-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-196c739f0e2eb6979751c413127d9c756f9cad8e9c8ac8e0810468f2d1e5274d-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -30,8 +30,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 14,
-    'endLine' => 43,
+    'startLine' => 13,
+    'endLine' => 42,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -40,8 +40,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     'traitClassNames' => 
     array (
-      0 => 'Spatie\\MediaLibrary\\InteractsWithMedia',
-      1 => 'App\\Models\\Concerns\\HasMediaCustomNaming',
+      0 => 'App\\Models\\Concerns\\HasMediaCustomNaming',
+      1 => 'Spatie\\MediaLibrary\\InteractsWithMedia',
     ),
     'immediateConstants' => 
     array (
@@ -71,8 +71,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 19,
-        'endLine' => 22,
+        'startLine' => 18,
+        'endLine' => 21,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -99,12 +99,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 24,
-                'endLine' => 24,
-                'startTokenPos' => 80,
-                'startFilePos' => 726,
-                'endTokenPos' => 80,
-                'endFilePos' => 729,
+                'startLine' => 23,
+                'endLine' => 23,
+                'startTokenPos' => 75,
+                'startFilePos' => 692,
+                'endTokenPos' => 75,
+                'endFilePos' => 695,
               ),
             ),
             'type' => 
@@ -141,8 +141,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 24,
-            'endLine' => 24,
+            'startLine' => 23,
+            'endLine' => 23,
             'startColumn' => 46,
             'endColumn' => 65,
             'parameterIndex' => 0,
@@ -163,8 +163,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 24,
-        'endLine' => 27,
+        'startLine' => 23,
+        'endLine' => 26,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -191,12 +191,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 29,
-                'endLine' => 29,
-                'startTokenPos' => 111,
-                'startFilePos' => 886,
-                'endTokenPos' => 111,
-                'endFilePos' => 889,
+                'startLine' => 28,
+                'endLine' => 28,
+                'startTokenPos' => 106,
+                'startFilePos' => 852,
+                'endTokenPos' => 106,
+                'endFilePos' => 855,
               ),
             ),
             'type' => 
@@ -233,8 +233,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 29,
-            'endLine' => 29,
+            'startLine' => 28,
+            'endLine' => 28,
             'startColumn' => 60,
             'endColumn' => 79,
             'parameterIndex' => 0,
@@ -255,8 +255,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 29,
-        'endLine' => 42,
+        'startLine' => 28,
+        'endLine' => 41,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

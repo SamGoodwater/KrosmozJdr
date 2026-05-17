@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Page;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 /**
  * FormRequest pour la mise à jour d'une page dynamique.
@@ -19,20 +21,22 @@ class UpdatePageRequest extends FormRequest
     public function authorize(): bool
     {
         $page = $this->route('page');
+
         return $this->user()?->can('update', $page) ?? false;
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         $pageId = $this->route('page')?->id;
+
         return [
             'title' => ['sometimes', 'string', 'max:255'],
-            'slug' => ['sometimes', 'string', 'max:255', 'unique:pages,slug,' . $pageId, 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
+            'slug' => ['sometimes', 'string', 'max:255', 'unique:pages,slug,'.$pageId, 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'in_menu' => ['sometimes', 'boolean'],
             'state' => ['sometimes', 'string', Rule::in([Page::STATE_RAW, Page::STATE_DRAFT, Page::STATE_PLAYABLE, Page::STATE_ARCHIVED])],
             'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
@@ -50,19 +54,19 @@ class UpdatePageRequest extends FormRequest
         ];
     }
 
-    public function withValidator(\Illuminate\Validation\Validator $validator): void
+    public function withValidator(Validator $validator): void
     {
-        $validator->after(function (\Illuminate\Validation\Validator $validator): void {
+        $validator->after(function (Validator $validator): void {
             $page = $this->route('page');
-            if (!$page instanceof Page) {
+            if (! $page instanceof Page) {
                 return;
             }
 
-            if (!$page->isCriticalPage()) {
+            if (! $page->isCriticalPage()) {
                 return;
             }
 
-            if (!$this->has('slug')) {
+            if (! $this->has('slug')) {
                 return;
             }
 
@@ -76,7 +80,7 @@ class UpdatePageRequest extends FormRequest
     protected function prepareForValidation()
     {
         $data = $this->all();
-        if (isset($data['title']) && !isset($data['slug'])) {
+        if (isset($data['title']) && ! isset($data['slug'])) {
             $this->merge([
                 'slug' => \Str::slug($data['title']),
             ]);

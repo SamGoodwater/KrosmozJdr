@@ -46,7 +46,7 @@ final class SafeExpressionEvaluator
 
         $errors = [];
 
-        if (!preg_match(self::PATTERN_ALLOWED, $expr)) {
+        if (! preg_match(self::PATTERN_ALLOWED, $expr)) {
             $errors[] = 'Caractères non autorisés (chiffres, + - * / ( ) , et noms de fonctions uniquement)';
         }
 
@@ -70,7 +70,7 @@ final class SafeExpressionEvaluator
 
         if (preg_match_all('/\b([a-zA-Z]+)\s*\(/', $expr, $matches)) {
             foreach ($matches[1] as $name) {
-                if (!in_array(strtolower($name), self::ALLOWED_FUNCTIONS, true)) {
+                if (! in_array(strtolower($name), self::ALLOWED_FUNCTIONS, true)) {
                     $errors[] = sprintf('Fonction "%s" non autorisée. Autorisées : %s.', $name, implode(', ', self::ALLOWED_FUNCTIONS));
                     break;
                 }
@@ -83,7 +83,7 @@ final class SafeExpressionEvaluator
     /**
      * Évalue l'expression (sans eval).
      *
-     * @param string $expression Expression après remplacement des variables (ex. "floor(3.7)+2*10")
+     * @param  string  $expression  Expression après remplacement des variables (ex. "floor(3.7)+2*10")
      * @return float|null Résultat ou null si invalide
      */
     public function evaluate(string $expression): ?float
@@ -108,6 +108,7 @@ final class SafeExpressionEvaluator
         if ($result === null || $pos < strlen($expr)) {
             return null;
         }
+
         return $result;
     }
 
@@ -142,6 +143,7 @@ final class SafeExpressionEvaluator
                 break;
             }
         }
+
         return $left;
     }
 
@@ -185,6 +187,7 @@ final class SafeExpressionEvaluator
                 break;
             }
         }
+
         return $left;
     }
 
@@ -199,6 +202,7 @@ final class SafeExpressionEvaluator
         if ($expr[$pos] === '-') {
             $pos++;
             $f = $this->parseFactor($expr, $pos);
+
             return $f !== null ? -$f : null;
         }
 
@@ -210,6 +214,7 @@ final class SafeExpressionEvaluator
                 return null;
             }
             $pos++;
+
             return $v;
         }
 
@@ -241,6 +246,7 @@ final class SafeExpressionEvaluator
                 if ($v === null) {
                     return null;
                 }
+
                 return match ($prefix) {
                     '__floor(' => (float) floor($v),
                     '__ceil(' => (float) ceil($v),
@@ -264,7 +270,7 @@ final class SafeExpressionEvaluator
         $twoArgFuncs = ['pow', 'min', 'max'];
         foreach ($twoArgFuncs as $fn) {
             $fnLen = strlen($fn);
-            if ($pos + $fnLen + 1 <= $len && substr($expr, $pos, $fnLen + 1) === $fn . '(') {
+            if ($pos + $fnLen + 1 <= $len && substr($expr, $pos, $fnLen + 1) === $fn.'(') {
                 $pos += $fnLen + 1;
                 $a = $this->parseExpr($expr, $pos);
                 if ($a === null) {
@@ -284,6 +290,7 @@ final class SafeExpressionEvaluator
                     return null;
                 }
                 $pos++;
+
                 return match ($fn) {
                     'pow' => (float) pow($a, $b),
                     'min' => (float) min($a, $b),
@@ -304,8 +311,10 @@ final class SafeExpressionEvaluator
                 if ($x === null) {
                     return null; // "Nd" sans nombre après d = invalide
                 }
+
                 return (float) $this->rollDice((int) max(1, $n), (int) max(1, $x));
             }
+
             return $n;
         }
 
@@ -356,8 +365,10 @@ final class SafeExpressionEvaluator
             }
             $s = substr($expr, $start, $pos - $start);
             $n = is_numeric($s) ? (float) $s : null;
+
             return $n;
         }
+
         return null;
     }
 

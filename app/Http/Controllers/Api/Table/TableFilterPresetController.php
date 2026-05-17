@@ -15,7 +15,7 @@ class TableFilterPresetController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
@@ -56,7 +56,7 @@ class TableFilterPresetController extends Controller
     public function store(Request $request): JsonResponse
     {
         $user = $request->user();
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
@@ -94,7 +94,7 @@ class TableFilterPresetController extends Controller
     public function update(Request $request, TableFilterPreset $tablePreset): JsonResponse
     {
         $user = $request->user();
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
         if ((int) $tablePreset->user_id !== (int) $user->id) {
@@ -137,7 +137,7 @@ class TableFilterPresetController extends Controller
     public function destroy(Request $request, TableFilterPreset $tablePreset): JsonResponse
     {
         $user = $request->user();
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
         if ((int) $tablePreset->user_id !== (int) $user->id) {
@@ -184,4 +184,3 @@ class TableFilterPresetController extends Controller
         ];
     }
 }
-

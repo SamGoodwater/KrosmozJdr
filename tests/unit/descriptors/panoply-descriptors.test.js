@@ -11,6 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { getPanoplyFieldDescriptors } from '@/Entities/panoply/panoply-descriptors';
+import { getDescriptorForm, getDescriptorFormOptions, resolveDescriptorOptions } from './descriptor-test-helpers.js';
 
 describe('panoply-descriptors', () => {
     describe('Structure des descriptors', () => {
@@ -39,16 +40,11 @@ describe('panoply-descriptors', () => {
     });
 
     describe('visibleIf / editableIf', () => {
-        it('created_by est visible seulement si canCreateAny', () => {
-            const descriptors = getPanoplyFieldDescriptors({
-                capabilities: { createAny: true },
-            });
-
-            const createdByDesc = descriptors.created_by;
-            if (createdByDesc?.visibleIf) {
-                expect(createdByDesc.visibleIf({ capabilities: { createAny: true } })).toBe(true);
-                expect(createdByDesc.visibleIf({ capabilities: { createAny: false } })).toBe(false);
-            }
+        it('created_by est piloté par canCreateAny sur le factory (fermeture)', () => {
+            const on = getPanoplyFieldDescriptors({ capabilities: { createAny: true } });
+            const off = getPanoplyFieldDescriptors({ capabilities: { createAny: false } });
+            expect(on.created_by.visibleIf?.()).toBe(true);
+            expect(off.created_by.visibleIf?.()).toBe(false);
         });
     });
 
@@ -95,9 +91,11 @@ describe('panoply-descriptors', () => {
         it('read_level a les bonnes options', () => {
             const descriptors = getPanoplyFieldDescriptors();
             const isVisibleDesc = descriptors.read_level;
+            const form = getDescriptorForm(isVisibleDesc);
 
-            if (isVisibleDesc?.edit?.form?.type === 'select') {
-                const options = isVisibleDesc.edit.form.options;
+            if (form?.type === 'select') {
+                const options = resolveDescriptorOptions(getDescriptorFormOptions(isVisibleDesc), {});
+                expect(Array.isArray(options)).toBe(true);
                 const values = options.map((opt) => opt.value);
                 expect(values).toContain(0);
                 expect(values).toContain(1);

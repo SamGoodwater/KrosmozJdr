@@ -76,4 +76,3 @@ class ScrappingEffectsMissingCharacteristicsReportCommandTest extends TestCase
         $this->assertNotEmpty($decoded['groups']);
     }
 }
-

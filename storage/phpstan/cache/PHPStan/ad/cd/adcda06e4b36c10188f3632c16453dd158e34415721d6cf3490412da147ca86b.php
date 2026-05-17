@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Services/NotificationService.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Services\NotificationService
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-42144e6214b2d16183ec50411c8dd09a767f0c7b0c2a8c36ebfedfe2a20ae993-8.4.17-6.70.0.0',
+   'variableKey' => 'v2-07dcb7e3a7582b930334f42404bc03102560bfd0253f1f9ada26206ae7139ae2-8.4.17-6.70.0.0',
    'data' => 
   array (
     'locatedSource' => 
@@ -32,8 +32,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 24,
-    'endLine' => 586,
+    'startLine' => 25,
+    'endLine' => 596,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -57,20 +57,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'daily\', \'weekly\', \'monthly\']',
           'attributes' => 
           array (
-            'startLine' => 27,
-            'endLine' => 27,
-            'startTokenPos' => 80,
-            'startFilePos' => 968,
-            'endTokenPos' => 88,
-            'endFilePos' => 997,
+            'startLine' => 28,
+            'endLine' => 28,
+            'startTokenPos' => 85,
+            'startFilePos' => 996,
+            'endTokenPos' => 93,
+            'endFilePos' => 1025,
           ),
         ),
         'docComment' => '/** Fréquences digest supportées (hors "instant" = envoi immédiat). */',
         'attributes' => 
         array (
         ),
-        'startLine' => 27,
-        'endLine' => 27,
+        'startLine' => 28,
+        'endLine' => 28,
         'startColumn' => 5,
         'endColumn' => 70,
       ),
@@ -207,10 +207,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Enfile une notification pour envoi en digest (quotidien, hebdo, mensuel).
  * Le payload est normalisé pour être stocké en JSON (scalaires, tableaux, pas d\'objets).
  *
- * @param int $userId
- * @param string $notificationType Clé du type (config notifications.types)
- * @param string $frequency daily|weekly|monthly
- * @param array<string, mixed> $payload Données à inclure dans le digest (seront sérialisées en JSON)
+ * @param  string  $notificationType  Clé du type (config notifications.types)
+ * @param  string  $frequency  daily|weekly|monthly
+ * @param  array<string, mixed>  $payload  Données à inclure dans le digest (seront sérialisées en JSON)
  */',
         'startLine' => 38,
         'endLine' => 49,
@@ -260,11 +259,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Rend un tableau sérialisable en JSON (Carbon → chaîne ISO, Enum → value, objets → tableau).
  * Évite les erreurs lors de l\'écriture en colonne JSON.
  *
- * @param mixed $data
+ * @param  mixed  $data
  * @return mixed
  */',
         'startLine' => 58,
-        'endLine' => 77,
+        'endLine' => 78,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -294,8 +293,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 88,
-            'endLine' => 88,
+            'startLine' => 89,
+            'endLine' => 89,
             'startColumn' => 49,
             'endColumn' => 55,
             'parameterIndex' => 0,
@@ -320,8 +319,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 88,
-            'endLine' => 88,
+            'startLine' => 89,
+            'endLine' => 89,
             'startColumn' => 58,
             'endColumn' => 71,
             'parameterIndex' => 1,
@@ -335,12 +334,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 88,
-                'endLine' => 88,
-                'startTokenPos' => 378,
-                'startFilePos' => 3440,
-                'endTokenPos' => 378,
-                'endFilePos' => 3443,
+                'startLine' => 89,
+                'endLine' => 89,
+                'startTokenPos' => 383,
+                'startFilePos' => 3458,
+                'endTokenPos' => 383,
+                'endFilePos' => 3461,
               ),
             ),
             'type' => NULL,
@@ -350,8 +349,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 88,
-            'endLine' => 88,
+            'startLine' => 89,
+            'endLine' => 89,
             'startColumn' => 74,
             'endColumn' => 90,
             'parameterIndex' => 2,
@@ -365,12 +364,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => '[]',
               'attributes' => 
               array (
-                'startLine' => 88,
-                'endLine' => 88,
-                'startTokenPos' => 387,
-                'startFilePos' => 3463,
-                'endTokenPos' => 388,
-                'endFilePos' => 3464,
+                'startLine' => 89,
+                'endLine' => 89,
+                'startTokenPos' => 392,
+                'startFilePos' => 3481,
+                'endTokenPos' => 393,
+                'endFilePos' => 3482,
               ),
             ),
             'type' => 
@@ -388,8 +387,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 88,
-            'endLine' => 88,
+            'startLine' => 89,
+            'endLine' => 89,
             'startColumn' => 93,
             'endColumn' => 111,
             'parameterIndex' => 3,
@@ -405,13 +404,13 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Notifie le créateur (hors self), les users avec droits (page/section), et les admins lors de la modification.
  * Pour Page/Section : types page_section_modified / page_section_modified_admin et destinataires étendus.
  *
- * @param object $entity Entité modifiée (doit avoir created_by, id, name ou title)
- * @param User $modifier Utilisateur ayant fait la modification
- * @param object|null $entityOld Ancienne entité (avant update, optionnel)
- * @param array $changes Tableau des changements (optionnel, surcharge le calcul automatique)
+ * @param  object  $entity  Entité modifiée (doit avoir created_by, id, name ou title)
+ * @param  User  $modifier  Utilisateur ayant fait la modification
+ * @param  object|null  $entityOld  Ancienne entité (avant update, optionnel)
+ * @param  array  $changes  Tableau des changements (optionnel, surcharge le calcul automatique)
  */',
-        'startLine' => 88,
-        'endLine' => 157,
+        'startLine' => 89,
+        'endLine' => 159,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -449,8 +448,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 166,
-            'endLine' => 166,
+            'startLine' => 168,
+            'endLine' => 168,
             'startColumn' => 50,
             'endColumn' => 59,
             'parameterIndex' => 0,
@@ -475,8 +474,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 166,
-            'endLine' => 166,
+            'startLine' => 168,
+            'endLine' => 168,
             'startColumn' => 62,
             'endColumn' => 75,
             'parameterIndex' => 1,
@@ -490,12 +489,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 166,
-                'endLine' => 166,
-                'startTokenPos' => 1037,
-                'startFilePos' => 6751,
-                'endTokenPos' => 1037,
-                'endFilePos' => 6754,
+                'startLine' => 168,
+                'endLine' => 168,
+                'startTokenPos' => 1042,
+                'startFilePos' => 6779,
+                'endTokenPos' => 1042,
+                'endFilePos' => 6782,
               ),
             ),
             'type' => 
@@ -532,10 +531,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 166,
-            'endLine' => 166,
+            'startLine' => 168,
+            'endLine' => 168,
             'startColumn' => 78,
-            'endColumn' => 93,
+            'endColumn' => 94,
             'parameterIndex' => 2,
             'isOptional' => true,
           ),
@@ -548,12 +547,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Notifie l\'utilisateur dont le profil a été modifié (respecte fréquence instant / digest).
  *
- * @param User $user Utilisateur modifié
- * @param User $modifier Utilisateur ayant fait la modification
- * @param User|null $old Ancien utilisateur (avant update, optionnel)
+ * @param  User  $user  Utilisateur modifié
+ * @param  User  $modifier  Utilisateur ayant fait la modification
+ * @param  User|null  $old  Ancien utilisateur (avant update, optionnel)
  */',
-        'startLine' => 166,
-        'endLine' => 186,
+        'startLine' => 168,
+        'endLine' => 189,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -583,8 +582,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 196,
-            'endLine' => 196,
+            'startLine' => 199,
+            'endLine' => 199,
             'startColumn' => 43,
             'endColumn' => 46,
             'parameterIndex' => 0,
@@ -601,8 +600,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 196,
-            'endLine' => 196,
+            'startLine' => 199,
+            'endLine' => 199,
             'startColumn' => 49,
             'endColumn' => 52,
             'parameterIndex' => 1,
@@ -616,12 +615,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => '[\'updated_at\']',
               'attributes' => 
               array (
-                'startLine' => 196,
-                'endLine' => 196,
-                'startTokenPos' => 1251,
-                'startFilePos' => 8050,
-                'endTokenPos' => 1253,
-                'endFilePos' => 8063,
+                'startLine' => 199,
+                'endLine' => 199,
+                'startTokenPos' => 1254,
+                'startFilePos' => 8086,
+                'endTokenPos' => 1256,
+                'endFilePos' => 8099,
               ),
             ),
             'type' => NULL,
@@ -631,8 +630,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 196,
-            'endLine' => 196,
+            'startLine' => 199,
+            'endLine' => 199,
             'startColumn' => 55,
             'endColumn' => 78,
             'parameterIndex' => 2,
@@ -647,13 +646,13 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Calcule les changements entre deux entités Eloquent (avant/après update).
  *
- * @param object $old Ancienne entité (avant update)
- * @param object $new Nouvelle entité (après update)
- * @param array $ignore Champs à ignorer (par défaut [\'updated_at\'])
+ * @param  object  $old  Ancienne entité (avant update)
+ * @param  object  $new  Nouvelle entité (après update)
+ * @param  array  $ignore  Champs à ignorer (par défaut [\'updated_at\'])
  * @return array Tableau des changements (clé => [old, new, is_image, image_url])
  */',
-        'startLine' => 196,
-        'endLine' => 229,
+        'startLine' => 199,
+        'endLine' => 235,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -683,8 +682,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 238,
-            'endLine' => 238,
+            'startLine' => 244,
+            'endLine' => 244,
             'startColumn' => 48,
             'endColumn' => 54,
             'parameterIndex' => 0,
@@ -709,8 +708,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 238,
-            'endLine' => 238,
+            'startLine' => 244,
+            'endLine' => 244,
             'startColumn' => 57,
             'endColumn' => 69,
             'parameterIndex' => 1,
@@ -726,11 +725,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Notifie tous les admins lors de la création d\'une entité.
  * Envoi immédiat uniquement (pas de digest pour ce type).
  *
- * @param object $entity Entité créée
- * @param User $creator Utilisateur ayant créé l\'entité
+ * @param  object  $entity  Entité créée
+ * @param  User  $creator  Utilisateur ayant créé l\'entité
  */',
-        'startLine' => 238,
-        'endLine' => 263,
+        'startLine' => 244,
+        'endLine' => 269,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -760,8 +759,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 268,
-            'endLine' => 268,
+            'startLine' => 274,
+            'endLine' => 274,
             'startColumn' => 48,
             'endColumn' => 54,
             'parameterIndex' => 0,
@@ -786,8 +785,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 268,
-            'endLine' => 268,
+            'startLine' => 274,
+            'endLine' => 274,
             'startColumn' => 57,
             'endColumn' => 69,
             'parameterIndex' => 1,
@@ -802,8 +801,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Notifie le créateur (hors self), les users avec droits (page/section), et les admins lors de la suppression.
  */',
-        'startLine' => 268,
-        'endLine' => 334,
+        'startLine' => 274,
+        'endLine' => 341,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -833,8 +832,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 343,
-            'endLine' => 343,
+            'startLine' => 350,
+            'endLine' => 350,
             'startColumn' => 49,
             'endColumn' => 55,
             'parameterIndex' => 0,
@@ -859,8 +858,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 343,
-            'endLine' => 343,
+            'startLine' => 350,
+            'endLine' => 350,
             'startColumn' => 58,
             'endColumn' => 71,
             'parameterIndex' => 1,
@@ -876,11 +875,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Notifie le créateur (hors self) et les admins lors de la restauration d\'une entité.
  * Envoi immédiat uniquement (pas de digest).
  *
- * @param object $entity Entité restaurée
- * @param User $restorer Utilisateur ayant restauré l\'entité
+ * @param  object  $entity  Entité restaurée
+ * @param  User  $restorer  Utilisateur ayant restauré l\'entité
  */',
-        'startLine' => 343,
-        'endLine' => 383,
+        'startLine' => 350,
+        'endLine' => 390,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -910,8 +909,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 392,
-            'endLine' => 392,
+            'startLine' => 399,
+            'endLine' => 399,
             'startColumn' => 53,
             'endColumn' => 59,
             'parameterIndex' => 0,
@@ -936,8 +935,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 392,
-            'endLine' => 392,
+            'startLine' => 399,
+            'endLine' => 399,
             'startColumn' => 62,
             'endColumn' => 73,
             'parameterIndex' => 1,
@@ -953,11 +952,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Notifie le créateur (hors self) et les admins lors de la suppression définitive d\'une entité.
  * Envoi immédiat uniquement (pas de digest).
  *
- * @param object $entity Entité supprimée définitivement
- * @param User $forcer Utilisateur ayant supprimé définitivement l\'entité
+ * @param  object  $entity  Entité supprimée définitivement
+ * @param  User  $forcer  Utilisateur ayant supprimé définitivement l\'entité
  */',
-        'startLine' => 392,
-        'endLine' => 432,
+        'startLine' => 399,
+        'endLine' => 439,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -987,8 +986,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 441,
-            'endLine' => 441,
+            'startLine' => 448,
+            'endLine' => 448,
             'startColumn' => 38,
             'endColumn' => 44,
             'parameterIndex' => 0,
@@ -1012,11 +1011,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Construit l\'URL d\'accès à l\'entité (pour le lien dans la notification).
  * Pour Section : utilise la relation page si chargée, sinon une requête est exécutée.
  *
- * @param object $entity Page, Section ou autre modèle avec id (et optionnellement slug, page_id)
+ * @param  object  $entity  Page, Section ou autre modèle avec id (et optionnellement slug, page_id)
  * @return string URL absolue
  */',
-        'startLine' => 441,
-        'endLine' => 452,
+        'startLine' => 448,
+        'endLine' => 461,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1054,8 +1053,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 457,
-            'endLine' => 457,
+            'startLine' => 466,
+            'endLine' => 466,
             'startColumn' => 49,
             'endColumn' => 61,
             'parameterIndex' => 0,
@@ -1078,8 +1077,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Notifie les admins de la création d\'un nouveau compte (inscription).
  */',
-        'startLine' => 457,
-        'endLine' => 477,
+        'startLine' => 466,
+        'endLine' => 487,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1117,8 +1116,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 482,
-            'endLine' => 482,
+            'startLine' => 492,
+            'endLine' => 492,
             'startColumn' => 46,
             'endColumn' => 62,
             'parameterIndex' => 0,
@@ -1143,8 +1142,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 482,
-            'endLine' => 482,
+            'startLine' => 492,
+            'endLine' => 492,
             'startColumn' => 65,
             'endColumn' => 77,
             'parameterIndex' => 1,
@@ -1167,8 +1166,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Notifie les admins de la suppression d\'un utilisateur (appeler avant le delete).
  */',
-        'startLine' => 482,
-        'endLine' => 510,
+        'startLine' => 492,
+        'endLine' => 521,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1206,8 +1205,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 515,
-            'endLine' => 515,
+            'startLine' => 526,
+            'endLine' => 526,
             'startColumn' => 49,
             'endColumn' => 58,
             'parameterIndex' => 0,
@@ -1230,8 +1229,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Notifie l\'utilisateur de sa dernière connexion (enregistrée).
  */',
-        'startLine' => 515,
-        'endLine' => 532,
+        'startLine' => 526,
+        'endLine' => 544,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1269,8 +1268,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 544,
-            'endLine' => 544,
+            'startLine' => 554,
+            'endLine' => 554,
             'startColumn' => 9,
             'endColumn' => 23,
             'parameterIndex' => 0,
@@ -1295,8 +1294,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 545,
-            'endLine' => 545,
+            'startLine' => 555,
+            'endLine' => 555,
             'startColumn' => 9,
             'endColumn' => 21,
             'parameterIndex' => 1,
@@ -1321,8 +1320,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 546,
-            'endLine' => 546,
+            'startLine' => 556,
+            'endLine' => 556,
             'startColumn' => 9,
             'endColumn' => 30,
             'parameterIndex' => 2,
@@ -1347,8 +1346,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 547,
-            'endLine' => 547,
+            'startLine' => 557,
+            'endLine' => 557,
             'startColumn' => 9,
             'endColumn' => 26,
             'parameterIndex' => 3,
@@ -1362,12 +1361,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 548,
-                'endLine' => 548,
-                'startTokenPos' => 3963,
-                'startFilePos' => 22655,
-                'endTokenPos' => 3963,
-                'endFilePos' => 22658,
+                'startLine' => 558,
+                'endLine' => 558,
+                'startTokenPos' => 3951,
+                'startFilePos' => 22640,
+                'endTokenPos' => 3951,
+                'endFilePos' => 22643,
               ),
             ),
             'type' => 
@@ -1404,8 +1403,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 548,
-            'endLine' => 548,
+            'startLine' => 558,
+            'endLine' => 558,
             'startColumn' => 9,
             'endColumn' => 31,
             'parameterIndex' => 4,
@@ -1428,14 +1427,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Notifie tous les admin/super_admin du résultat de project:init ou project:update.
  *
- * @param string $command \'init\'|\'update\'
- * @param bool $success
- * @param float $durationSeconds
- * @param string $finishedAt Date/heure de fin formatée
- * @param string|null $message Optionnel (ex: nombre d\'erreurs)
+ * @param  string  $command  \'init\'|\'update\'
+ * @param  string  $finishedAt  Date/heure de fin formatée
+ * @param  string|null  $message  Optionnel (ex: nombre d\'erreurs)
  */',
-        'startLine' => 543,
-        'endLine' => 565,
+        'startLine' => 553,
+        'endLine' => 575,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -1465,8 +1462,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 574,
-            'endLine' => 574,
+            'startLine' => 583,
+            'endLine' => 583,
             'startColumn' => 48,
             'endColumn' => 53,
             'parameterIndex' => 0,
@@ -1490,11 +1487,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * Tronque et nettoie une valeur potentiellement longue ou HTML.
  * Supprime les balises et leur contenu dangereux (script, style, etc.).
  *
- * @param mixed $value
- * @return string
+ * @param  mixed  $value
  */',
-        'startLine' => 574,
-        'endLine' => 585,
+        'startLine' => 583,
+        'endLine' => 595,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

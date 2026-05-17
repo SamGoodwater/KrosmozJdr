@@ -28,8 +28,9 @@ class DofusdbCharacteristicIdSeeder extends Seeder
         $path = base_path(self::JSON_PATH);
         if (! is_file($path)) {
             if ($this->command) {
-                $this->command->warn('DofusdbCharacteristicIdSeeder : fichier ' . self::JSON_PATH . ' absent, skip.');
+                $this->command->warn('DofusdbCharacteristicIdSeeder : fichier '.self::JSON_PATH.' absent, skip.');
             }
+
             return;
         }
 
@@ -39,6 +40,7 @@ class DofusdbCharacteristicIdSeeder extends Seeder
             if ($this->command) {
                 $this->command->warn('DofusdbCharacteristicIdSeeder : clé "mapping" absente ou invalide, skip.');
             }
+
             return;
         }
 
@@ -61,7 +63,7 @@ class DofusdbCharacteristicIdSeeder extends Seeder
         }
 
         if ($this->command) {
-            $this->command->info('DofusdbCharacteristicIdSeeder : ' . count($data['mapping']) . ' entrée(s) mapping, ' . $updated . ' ligne(s) characteristic_object mises à jour.');
+            $this->command->info('DofusdbCharacteristicIdSeeder : '.count($data['mapping']).' entrée(s) mapping, '.$updated.' ligne(s) characteristic_object mises à jour.');
         }
 
         app(CharacteristicGetterService::class)->clearCache();

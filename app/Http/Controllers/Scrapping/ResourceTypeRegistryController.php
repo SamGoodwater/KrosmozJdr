@@ -6,18 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
-use App\Models\User;
 use App\Models\Scrapping\PendingResourceTypeItem;
 use App\Models\Type\ResourceType;
+use App\Models\User;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
-use App\Services\Scrapping\Http\DofusDbClient;
-use App\Services\Scrapping\Registry\ItemTypeCategoryMoveService;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
-use Illuminate\Support\Facades\DB;
+use App\Services\Scrapping\Http\DofusDbClient;
+use App\Services\Scrapping\Registry\ItemTypeCategoryMoveService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 /**
@@ -86,14 +85,17 @@ class ResourceTypeRegistryController extends Controller
         // Améliorer les placeholders "DofusDB type #X" en allant chercher le vrai nom côté DofusDB.
         foreach ($rows as $model) {
             $typeId = is_numeric($model->dofusdb_type_id) ? (int) $model->dofusdb_type_id : 0;
-            if ($typeId <= 0) continue;
+            if ($typeId <= 0) {
+                continue;
+            }
 
             $currentName = $this->stripDofusdbSuffix(is_string($model->name) ? $model->name : null);
             $isPlaceholder = $currentName === null || $currentName === '' || str_starts_with($currentName, 'DofusDB type #');
 
-            if (!$isPlaceholder) {
+            if (! $isPlaceholder) {
                 // On nettoie juste un éventuel suffixe (DofusDB) en sortie sans écraser le nom en base
                 $model->name = $currentName;
+
                 continue;
             }
 
@@ -123,6 +125,7 @@ class ResourceTypeRegistryController extends Controller
     public function pending(Request $request): JsonResponse
     {
         $request->merge(['decision' => 'pending']);
+
         return $this->index($request);
     }
 
@@ -145,12 +148,12 @@ class ResourceTypeRegistryController extends Controller
             'ids.*' => ['integer', 'min:1'],
             'decision' => ['nullable', 'string', 'in:pending,allowed,blocked,used,unused'],
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
-            'read_level' => ['nullable', 'integer', 'min:' . User::ROLE_GUEST, 'max:' . User::ROLE_SUPER_ADMIN],
+            'read_level' => ['nullable', 'integer', 'min:'.User::ROLE_GUEST, 'max:'.User::ROLE_SUPER_ADMIN],
             'write_level' => [
                 'nullable',
                 'integer',
-                'min:' . User::ROLE_GUEST,
-                'max:' . User::ROLE_SUPER_ADMIN,
+                'min:'.User::ROLE_GUEST,
+                'max:'.User::ROLE_SUPER_ADMIN,
                 Rule::when($request->input('read_level') !== null, ['gte:read_level']),
             ],
         ]);
@@ -193,8 +196,9 @@ class ResourceTypeRegistryController extends Controller
 
             foreach ($ids as $id) {
                 $model = $models->firstWhere('id', $id);
-                if (!$model) {
+                if (! $model) {
                     $errors[] = ['id' => $id, 'error' => 'Not found'];
+
                     continue;
                 }
 
@@ -216,6 +220,7 @@ class ResourceTypeRegistryController extends Controller
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour en masse.',
@@ -292,7 +297,7 @@ class ResourceTypeRegistryController extends Controller
 
         $result = $this->typeCategoryMove->move('resource', $resourceType->id, $validated['target']);
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return response()->json([
                 'success' => false,
                 'message' => $result['message'],
@@ -479,8 +484,6 @@ class ResourceTypeRegistryController extends Controller
     /**
      * Effectue le replay des PendingResourceTypeItem pour un ResourceType autorisé.
      *
-     * @param ResourceType $resourceType
-     * @param int $limit
      * @return array{summary: array<string,int>, results: array<int, mixed>}
      */
     private function doReplayPending(ResourceType $resourceType, int $limit): array
@@ -509,7 +512,7 @@ class ResourceTypeRegistryController extends Controller
         foreach ($pendingRows as $row) {
             $itemId = (int) $row->dofusdb_item_id;
 
-            if (!isset($importCache[$itemId])) {
+            if (! isset($importCache[$itemId])) {
                 $result = $this->orchestrator->runOne('dofusdb', 'item', $itemId, [
                     'integrate' => true,
                     'dry_run' => false,
@@ -532,7 +535,7 @@ class ResourceTypeRegistryController extends Controller
 
             $importInfo = $importCache[$itemId];
 
-            if (!$importInfo['ok'] || !$importInfo['resource_id']) {
+            if (! $importInfo['ok'] || ! $importInfo['resource_id']) {
                 $stats['errors']++;
                 $results[] = [
                     'pending_id' => $row->id,
@@ -541,6 +544,7 @@ class ResourceTypeRegistryController extends Controller
                     'success' => false,
                     'error' => $importInfo['error'] ?? 'Import ressource échoué',
                 ];
+
                 continue;
             }
 
@@ -622,5 +626,3 @@ class ResourceTypeRegistryController extends Controller
         ];
     }
 }
-
-

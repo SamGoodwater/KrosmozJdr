@@ -29,8 +29,8 @@ class LoginRequestTest extends TestCase
     {
         foreach (['test@example.com', 'testuser', 'TEST@EXAMPLE.COM'] as $identifier) {
             $base = Str::transliterate(Str::lower($identifier));
-            RateLimiter::clear($base . '|127.0.0.1');
-            RateLimiter::clear($base . '|');
+            RateLimiter::clear($base.'|127.0.0.1');
+            RateLimiter::clear($base.'|');
         }
     }
 
@@ -39,7 +39,7 @@ class LoginRequestTest extends TestCase
      */
     public function test_validation_passes_with_valid_data(): void
     {
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'test@example.com',
             'password' => 'password123',
@@ -56,7 +56,7 @@ class LoginRequestTest extends TestCase
      */
     public function test_validation_fails_without_identifier(): void
     {
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'password' => 'password123',
         ]);
@@ -73,7 +73,7 @@ class LoginRequestTest extends TestCase
      */
     public function test_validation_fails_without_password(): void
     {
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'test@example.com',
         ]);
@@ -92,7 +92,7 @@ class LoginRequestTest extends TestCase
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
 
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'test@example.com',
             'password' => 'password',
@@ -111,7 +111,7 @@ class LoginRequestTest extends TestCase
     {
         $user = User::factory()->create(['name' => 'testuser']);
 
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'testuser',
             'password' => 'password',
@@ -130,7 +130,7 @@ class LoginRequestTest extends TestCase
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
 
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'test@example.com',
             'password' => 'wrong-password',
@@ -145,7 +145,7 @@ class LoginRequestTest extends TestCase
      */
     public function test_authenticate_fails_with_nonexistent_email(): void
     {
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'nonexistent@example.com',
             'password' => 'password',
@@ -160,7 +160,7 @@ class LoginRequestTest extends TestCase
      */
     public function test_authenticate_fails_with_nonexistent_username(): void
     {
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'nonexistent_user',
             'password' => 'password',
@@ -177,7 +177,7 @@ class LoginRequestTest extends TestCase
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
 
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'test@example.com',
             'password' => 'password',
@@ -198,7 +198,7 @@ class LoginRequestTest extends TestCase
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
 
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'test@example.com',
             'password' => 'password',
@@ -218,7 +218,7 @@ class LoginRequestTest extends TestCase
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
 
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'test@example.com',
             'password' => 'wrong-password',
@@ -252,7 +252,7 @@ class LoginRequestTest extends TestCase
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
 
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'test@example.com',
             'password' => 'wrong-password',
@@ -283,14 +283,14 @@ class LoginRequestTest extends TestCase
      */
     public function test_throttle_key_generation(): void
     {
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge(['identifier' => 'test@example.com']);
-        
+
         // Simuler une IP en modifiant directement la requête
         $request->server->set('REMOTE_ADDR', '127.0.0.1');
 
         $key = $request->throttleKey();
-        $expectedKey = \Illuminate\Support\Str::transliterate(\Illuminate\Support\Str::lower('test@example.com').'|127.0.0.1');
+        $expectedKey = Str::transliterate(Str::lower('test@example.com').'|127.0.0.1');
 
         $this->assertEquals($expectedKey, $key);
     }
@@ -303,7 +303,7 @@ class LoginRequestTest extends TestCase
         $user = User::factory()->create(['email' => 'test@example.com']);
         $user->delete();
 
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'test@example.com',
             'password' => 'password',
@@ -320,7 +320,7 @@ class LoginRequestTest extends TestCase
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
 
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'TEST@EXAMPLE.COM',
             'password' => 'password',
@@ -339,11 +339,11 @@ class LoginRequestTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'test@example.com',
-            'name' => 'testuser'
+            'name' => 'testuser',
         ]);
 
         // Test avec email
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'test@example.com',
             'password' => 'password',
@@ -355,7 +355,7 @@ class LoginRequestTest extends TestCase
         Auth::logout();
 
         // Test avec nom d'utilisateur
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $request->merge([
             'identifier' => 'testuser',
             'password' => 'password',
@@ -370,7 +370,7 @@ class LoginRequestTest extends TestCase
      */
     public function test_authorize_method_returns_true(): void
     {
-        $request = new LoginRequest();
+        $request = new LoginRequest;
         $this->assertTrue($request->authorize());
     }
-} 
+}

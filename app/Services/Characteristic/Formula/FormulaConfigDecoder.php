@@ -64,7 +64,7 @@ final class FormulaConfigDecoder
     }
 
     /**
-     * @param array{type: 'formula', expression: string}|array{type: 'table', characteristic: string, entries: list<array{from: int, value: int|float|string}>} $decoded
+     * @param  array{type: 'formula', expression: string}|array{type: 'table', characteristic: string, entries: list<array{from: int, value: int|float|string}>}  $decoded
      */
     public static function encode(array $decoded): string
     {
@@ -85,12 +85,14 @@ final class FormulaConfigDecoder
         }
 
         $json = json_encode($obj, JSON_UNESCAPED_UNICODE);
+
         return $json !== false ? $json : '';
     }
 
     public static function isTable(?string $formula): bool
     {
         $decoded = self::decode($formula);
+
         return $decoded['type'] === 'table';
     }
 }

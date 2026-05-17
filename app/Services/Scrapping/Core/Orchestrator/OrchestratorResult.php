@@ -10,11 +10,11 @@ use App\Services\Scrapping\Core\Integration\IntegrationResult;
 final class OrchestratorResult
 {
     /**
-     * @param array<string, mixed>|null $raw Données brutes (fetchOne)
-     * @param array<string, array<string, mixed>>|array<int, array<string, array<string, mixed>>>|null $converted Données converties (une structure ou liste)
-     * @param list<array{path: string, message: string}> $validationErrors
-     * @param array<string, mixed>|null $meta Meta fetchMany (total, pages, etc.)
-     * @param list<IntegrationResult>|null $integrationResults Résultats d’intégration (liste en runMany)
+     * @param  array<string, mixed>|null  $raw  Données brutes (fetchOne)
+     * @param  array<string, array<string, mixed>>|array<int, array<string, array<string, mixed>>>|null  $converted  Données converties (une structure ou liste)
+     * @param  list<array{path: string, message: string}>  $validationErrors
+     * @param  array<string, mixed>|null  $meta  Meta fetchMany (total, pages, etc.)
+     * @param  list<IntegrationResult>|null  $integrationResults  Résultats d’intégration (liste en runMany)
      */
     public function __construct(
         private bool $success,
@@ -26,8 +26,7 @@ final class OrchestratorResult
         private ?array $integrationResults = null,
         private ?array $meta = null,
         private ?array $relations = null
-    ) {
-    }
+    ) {}
 
     public function isSuccess(): bool
     {

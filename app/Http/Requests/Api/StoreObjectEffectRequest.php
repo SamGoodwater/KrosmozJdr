@@ -7,6 +7,7 @@ namespace App\Http\Requests\Api;
 use App\Enums\ObjectEffectAction;
 use App\Http\Requests\Api\Concerns\ValidatesObjectEffectSemantics;
 use App\Models\ObjectEffect;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -21,7 +22,7 @@ class StoreObjectEffectRequest extends FormRequest
     }
 
     /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {

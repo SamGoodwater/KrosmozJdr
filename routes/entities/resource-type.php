@@ -12,5 +12,3 @@ Route::prefix('entities/resource-types')->name('entities.resource-types.')->midd
     Route::patch('/{resourceType}', [ResourceTypeController::class, 'update'])->name('update');
     Route::delete('/{resourceType}', [ResourceTypeController::class, 'delete'])->name('delete');
 });
-
-

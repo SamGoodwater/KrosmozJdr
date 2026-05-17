@@ -81,8 +81,9 @@ class ScenarioBulkController extends Controller
 
             foreach ($ids as $id) {
                 $model = $models->firstWhere('id', $id);
-                if (!$model) {
+                if (! $model) {
                     $errors[] = ['id' => $id, 'error' => 'Not found'];
+
                     continue;
                 }
 
@@ -120,4 +121,3 @@ class ScenarioBulkController extends Controller
         ]);
     }
 }
-

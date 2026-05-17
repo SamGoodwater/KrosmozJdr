@@ -631,7 +631,6 @@ export function getItemFieldDescriptors(ctx = {}) {
     // Configuration globale du quickedit
     _quickeditConfig: {
       fields: [
-        "item_type_id",
         "rarity",
         "level",
         "state",

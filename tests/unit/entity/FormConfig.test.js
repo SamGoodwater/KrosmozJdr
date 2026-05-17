@@ -29,13 +29,13 @@ describe("FormFieldConfig", () => {
   it("lance une erreur si key est manquant", () => {
     expect(() => {
       new FormFieldConfig({ type: "text", label: "Nom" });
-    }).toThrow("key est obligatoire");
+    }).toThrow("FormFieldConfig: 'key' est obligatoire");
   });
 
   it("lance une erreur si type est manquant", () => {
     expect(() => {
       new FormFieldConfig({ key: "name", label: "Nom" });
-    }).toThrow("type est obligatoire");
+    }).toThrow("FormFieldConfig: 'type' est obligatoire");
   });
 
   it("lance une erreur si type est invalide", () => {
@@ -110,7 +110,7 @@ describe("FormConfig", () => {
   it("lance une erreur si entityType est manquant", () => {
     expect(() => {
       new FormConfig({});
-    }).toThrow("entityType est obligatoire");
+    }).toThrow("FormConfig: 'entityType' est obligatoire");
   });
 
   it("ajoute un champ", () => {

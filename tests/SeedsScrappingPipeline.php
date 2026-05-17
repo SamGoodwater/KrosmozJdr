@@ -4,6 +4,16 @@ namespace Tests;
 
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\Scrapping\ScrappingEntityMappingTarget;
+use Database\Seeders\CharacteristicSeeder;
+use Database\Seeders\CreatureCharacteristicSeeder;
+use Database\Seeders\DofusdbCharacteristicIdSeeder;
+use Database\Seeders\DofusdbEffectMappingSeeder;
+use Database\Seeders\ObjectCharacteristicSeeder;
+use Database\Seeders\ScrappingEntityMappingCharacteristicSeeder;
+use Database\Seeders\ScrappingEntityMappingSeeder;
+use Database\Seeders\SpellCharacteristicSeeder;
+use Database\Seeders\SpellEffectTypeSeeder;
+use Database\Seeders\Type\TypeSeeder;
 
 /**
  * Seeders minimaux pour exécuter le pipeline scrapping en tests.
@@ -13,16 +23,16 @@ trait SeedsScrappingPipeline
     protected function seedScrappingPipeline(): void
     {
         $this->seed([
-            \Database\Seeders\Type\TypeSeeder::class,
-            \Database\Seeders\CharacteristicSeeder::class,
-            \Database\Seeders\CreatureCharacteristicSeeder::class,
-            \Database\Seeders\ObjectCharacteristicSeeder::class,
-            \Database\Seeders\DofusdbCharacteristicIdSeeder::class,
-            \Database\Seeders\SpellCharacteristicSeeder::class,
-            \Database\Seeders\SpellEffectTypeSeeder::class,
-            \Database\Seeders\DofusdbEffectMappingSeeder::class,
-            \Database\Seeders\ScrappingEntityMappingSeeder::class,
-            \Database\Seeders\ScrappingEntityMappingCharacteristicSeeder::class,
+            TypeSeeder::class,
+            CharacteristicSeeder::class,
+            CreatureCharacteristicSeeder::class,
+            ObjectCharacteristicSeeder::class,
+            DofusdbCharacteristicIdSeeder::class,
+            SpellCharacteristicSeeder::class,
+            SpellEffectTypeSeeder::class,
+            DofusdbEffectMappingSeeder::class,
+            ScrappingEntityMappingSeeder::class,
+            ScrappingEntityMappingCharacteristicSeeder::class,
         ]);
 
         $this->ensurePanoplyMapping();
@@ -99,4 +109,3 @@ trait SeedsScrappingPipeline
         }
     }
 }
-

@@ -49,7 +49,7 @@ class ScrappingSearchController extends Controller
         }
         sort($available);
 
-        if (!in_array($entity, $available, true)) {
+        if (! in_array($entity, $available, true)) {
             return response()->json([
                 'success' => false,
                 'message' => "Entité '{$entity}' non supportée.",
@@ -176,10 +176,11 @@ class ScrappingSearchController extends Controller
     private function extractRaceMode(Request $request): string
     {
         $m = $request->query('race_mode');
-        if (!is_string($m) || $m === '') {
+        if (! is_string($m) || $m === '') {
             return MonsterRaceFilterService::RACE_MODE_ALLOWED;
         }
         $m = strtolower(trim($m));
+
         return in_array($m, [
             MonsterRaceFilterService::RACE_MODE_ALL,
             MonsterRaceFilterService::RACE_MODE_ALLOWED,
@@ -216,14 +217,14 @@ class ScrappingSearchController extends Controller
             $perPage = $pagePagination['per_page'];
             $page = $pagePagination['page'];
 
-            if (!$request->has('start_skip')) {
+            if (! $request->has('start_skip')) {
                 $options['start_skip'] = max(0, ($page - 1) * $perPage);
             }
-            if (!$request->has('limit')) {
+            if (! $request->has('limit')) {
                 $options['limit'] = $perPage;
             }
             // Important: un "bloc" = per_page items, même si DofusDB cappe à 50.
-            if (!$request->has('max_items')) {
+            if (! $request->has('max_items')) {
                 $options['max_items'] = $perPage;
             }
         }
@@ -245,7 +246,7 @@ class ScrappingSearchController extends Controller
 
         // Si max_items n'est pas fourni, on veut quand même pouvoir dépasser le cap DofusDB=50
         // pour atteindre le "limit" demandé (ex: limit=100 => 2 pages).
-        if (!$hasMaxItems) {
+        if (! $hasMaxItems) {
             $want = isset($options['limit']) ? (int) $options['limit'] : 50;
             $want = max(1, min($cap, $want));
             $options['max_items'] = $want;
@@ -265,18 +266,19 @@ class ScrappingSearchController extends Controller
             if ($derivedMaxItems && $maxPages === 1) {
                 // Ignorer "1 page" implicite et calculer plus bas.
             } else {
-            if ($maxPages <= 0) {
-                if ($hasMaxItems && isset($options['max_items'])) {
-                    $assumedPageSize = 50;
-                    $calc = (int) ceil(((int) $options['max_items']) / $assumedPageSize) + 2;
-                    $options['max_pages'] = max(1, min(2000, $calc));
+                if ($maxPages <= 0) {
+                    if ($hasMaxItems && isset($options['max_items'])) {
+                        $assumedPageSize = 50;
+                        $calc = (int) ceil(((int) $options['max_items']) / $assumedPageSize) + 2;
+                        $options['max_pages'] = max(1, min(2000, $calc));
+                    } else {
+                        // illimité (mais le collector garde de toute façon un max_items par défaut)
+                        $options['max_pages'] = 0;
+                    }
                 } else {
-                    // illimité (mais le collector garde de toute façon un max_items par défaut)
-                    $options['max_pages'] = 0;
+                    $options['max_pages'] = max(1, min(2000, $maxPages));
                 }
-            } else {
-                $options['max_pages'] = max(1, min(2000, $maxPages));
-            }
+
                 return $options;
             }
         }
@@ -298,7 +300,9 @@ class ScrappingSearchController extends Controller
     private function extractPagePagination(Request $request): ?array
     {
         $has = $request->has('page') || $request->has('per_page');
-        if (!$has) return null;
+        if (! $has) {
+            return null;
+        }
 
         $page = max(1, $request->integer('page', 1));
         // On garde 100 comme valeur par défaut (UX) et on borne à 200 (cap historique côté API).
@@ -314,7 +318,7 @@ class ScrappingSearchController extends Controller
     /**
      * Injecte des filtres implicites pour certaines entités "alias" de /items.
      *
-     * @param array<string,mixed> $filters
+     * @param  array<string,mixed>  $filters
      * @return array<string,mixed>
      */
     private function applyEntityDefaults(string $entity, array $filters): array
@@ -323,7 +327,7 @@ class ScrappingSearchController extends Controller
     }
 
     /**
-     * @param array<string,mixed> $filters
+     * @param  array<string,mixed>  $filters
      * @return array<string,mixed>
      */
     private function applyEntityDefaultsWithMode(string $entity, array $filters, string $typeMode): array
@@ -334,6 +338,7 @@ class ScrappingSearchController extends Controller
     private function extractTypeMode(Request $request): string
     {
         $v = $request->query('type_mode', ItemEntityTypeFilterService::TYPE_MODE_ALLOWED);
+
         return is_string($v) ? $v : ItemEntityTypeFilterService::TYPE_MODE_ALLOWED;
     }
 
@@ -342,7 +347,7 @@ class ScrappingSearchController extends Controller
      * L'API DofusDB ne supporte pas superTypeGroup → sans cette résolution,
      * l'API retourne tous les items et SearchResultEnricher pollue les registres.
      *
-     * @param array<string,mixed> $filters
+     * @param  array<string,mixed>  $filters
      * @return array<string,mixed>
      */
     private function resolveSuperTypeGroupToTypeIds(string $collectEntity, array $filters): array
@@ -351,11 +356,11 @@ class ScrappingSearchController extends Controller
             return $filters;
         }
         $group = $filters['superTypeGroup'] ?? null;
-        if (!is_string($group) || $group === '') {
+        if (! is_string($group) || $group === '') {
             return $filters;
         }
         $existingTypeIds = $filters['typeIds'] ?? [];
-        if (!empty($existingTypeIds)) {
+        if (! empty($existingTypeIds)) {
             return $filters;
         }
         $typeIds = $this->itemEntityTypeFilters->getTypeIdsForGroup($group);
@@ -366,4 +371,3 @@ class ScrappingSearchController extends Controller
         return $filters;
     }
 }
-

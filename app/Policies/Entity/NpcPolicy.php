@@ -4,7 +4,6 @@ namespace App\Policies\Entity;
 
 use App\Models\Entity\Npc;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class NpcPolicy
 {

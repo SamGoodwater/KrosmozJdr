@@ -7,6 +7,7 @@ namespace App\Services\Creature\Runtime;
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\Entity\Creature;
+use Illuminate\Support\Collection;
 
 /**
  * Construit la carte de variables [id] => valeur à partir des colonnes créature (+ métadonnées characteristic_creature).
@@ -51,7 +52,7 @@ final class CreatureVariableMapBuilder
             ->groupBy('characteristic_id');
 
         foreach ($rows as $group) {
-            /** @var \Illuminate\Support\Collection<int, CharacteristicCreature> $group */
+            /** @var Collection<int, CharacteristicCreature> $group */
             $base = $group->firstWhere('entity', CharacteristicCreature::ENTITY_ALL);
             $overlay = $group->firstWhere('entity', $entity);
             $row = $overlay ?? $base;

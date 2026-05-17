@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Scrapping;
 
+use App\Http\Middleware\RequirePasswordWithInactivity;
 use App\Jobs\ProcessScrappingJob;
 use App\Models\ScrappingJob;
 use App\Models\User;
@@ -19,7 +20,7 @@ class ScrappingJobsApiTest extends TestCase
     {
         parent::setUp();
         $this->admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $this->withoutMiddleware(\App\Http\Middleware\RequirePasswordWithInactivity::class);
+        $this->withoutMiddleware(RequirePasswordWithInactivity::class);
     }
 
     public function test_create_scrapping_job_dispatches_queue_job(): void
