@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreSpecializationRequest;
 use App\Http\Requests\Entity\UpdateSpecializationCapabilitiesRequest;
@@ -35,6 +36,7 @@ use Inertia\Response;
 
 class SpecializationController extends Controller
 {
+    use RedirectsAfterEntityCreate;
     /**
      * Display a listing of the resource.
      */
@@ -101,8 +103,13 @@ class SpecializationController extends Controller
 
         $specialization = Specialization::create($validated);
 
-        return redirect()->route('entities.specializations.edit', $specialization)
-            ->with('success', 'Spécialisation créée avec succès.');
+        return $this->redirectAfterEntityStore(
+            $request,
+            $specialization,
+            'entities.specializations.edit',
+            'entities.specializations.index',
+            'Spécialisation créée avec succès.',
+        );
     }
 
     /**

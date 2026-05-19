@@ -1,7 +1,7 @@
 # Plan — Tableaux et affichage des entités (alignement Monster / Resource)
 
 **Date** : 2026-03  
-**Contexte** : Seuls **Monster** et **Resource** ont un affichage tableau + modal + vues (Large, Compact, Minimal) pleinement aligné. Ce document propose un plan pour étendre le même niveau d’UI/UX à toutes les autres entités.
+**Contexte** : Seuls **Monster** et **Resource** ont un affichage tableau + modal + vues (**full**, **minimal**, **line**, **texte**) pleinement aligné. Ce document propose un plan pour étendre le même niveau d’UI/UX à toutes les autres entités.
 
 ---
 
@@ -13,7 +13,7 @@
 |--------|--------|
 | **Page Index** | `EntityTanStackTable` + `serverUrl` (format=entities) + `@loaded` → stockage `tableMeta` |
 | **Modal** | `EntityModal` reçoit `:table-meta="tableMeta"` et le transmet aux vues |
-| **Vues** | Large, Compact, Minimal : prop `tableMeta`, section « Caractéristiques » avec `CharacteristicsCard` (dense en Compact/Minimal, étendu en Large) |
+| **Vues** | Full, Minimal, Line : prop `tableMeta`, section « Caractéristiques » avec `CharacteristicsCard` (dense en line/minimal, étendu en full) |
 | **Modèle** | `Monster.toCell()` avec cas dédiés (creature_*, colonnes résumé, `_toSummaryGroupCell` → `CharacteristicsCard`) |
 | **Descriptors** | Colonnes résumé (Combat, Résistances, Stats, Dommages, Contrôle) visibles par défaut ; propriétés unitaires masquées |
 | **Caractéristiques** | Chargées au démarrage via Inertia share ; `useCharacteristicsStore` pour la résolution (libellés/icônes/couleurs) |
@@ -23,7 +23,7 @@
 | Élément | Détail |
 |--------|--------|
 | **Page Index** | Tableau serveur, modal, pas de `tableMeta` (pas de carte caractéristiques dans le modal) |
-| **Vues** | Large, Compact, Minimal, Text présents et utilisent descriptors + `toCell()` |
+| **Vues** | Full, Minimal, Line, Texte présents et utilisent descriptors + `toCell()` |
 | **Modèle** | `Resource.toCell()` avec formatters (level, rarity, etc.) |
 | **Descriptors** | Table + édition + bulk cohérents |
 
@@ -38,7 +38,7 @@
 
 ## 2. Inventaire des entités
 
-| Entité | Table API | Descriptors | View L/C/M/Text | Index (table + modal) | Carte caractéristiques prévue |
+| Entité | Table API | Descriptors | Vues full / minimal / line / texte | Index (table + modal) | Carte caractéristiques prévue |
 |--------|-----------|-------------|-----------------|------------------------|-------------------------------|
 | **resources** | ✅ | ✅ | ✅ ✅ ✅ ✅ | ✅ (pas tableMeta) | Optionnel (resource = objet avec level, etc.) |
 | **resource-types** | ✅ | ✅ | ✅ ✅ ✅ ✅ | ✅ | Non |
@@ -187,7 +187,7 @@
 ## 5. Fichiers à toucher (rappel)
 
 - **Pages Index** : `resources/js/Pages/Pages/entity/<entity>/Index.vue` (tableMeta, handleTableLoaded, EntityModal).
-- **Vues** : `resources/js/Pages/Molecules/entity/<entity>/{Entity}ViewLarge.vue`, `ViewCompact.vue`, `ViewMinimal.vue`.
+- **Vues** : `resources/js/Pages/Molecules/entity/<entity>/{Entity}ViewFull.vue`, `ViewMinimal.vue`, `{Entity}LineRow.vue` (si ligne dédiée).
 - **Modèles** : `resources/js/Models/Entity/<Entity>.js` (toCell, colonnes résumé si Phase 5).
 - **Descriptors** : `resources/js/Entities/<entity>/<entity>-descriptors.js`.
 - **Builders** : `resources/js/Utils/Entity/buildCreatureCharacteristicGroups.js` (existant) ; à dupliquer/adapter pour item, spell, consumable (ex. `buildItemCharacteristicGroups.js`).
@@ -199,7 +199,7 @@
 
 - [ARCHITECTURE_ENTITES_FRONTEND.md](./ARCHITECTURE_ENTITES_FRONTEND.md) — Architecture globale.
 - [CHARACTERISTICS_CARD_SCHEMA.md](../30-UI/CHARACTERISTICS_CARD_SCHEMA.md) — Schéma de la carte caractéristiques (atomes, groupe, carte).
-- Monster : `MonsterViewLarge.vue`, `Monster.js` (`_toSummaryGroupCell`), `monster-descriptors.js`, `MonsterTableController.php`.
+- Monster : `MonsterViewFull.vue`, `Monster.js` (`_toSummaryGroupCell`), `monster-descriptors.js`, `MonsterTableController.php`.
 
 ---
 

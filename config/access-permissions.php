@@ -44,4 +44,11 @@ return [
     'pagesManager' => [
         ['entity' => 'pages', 'ability' => 'updateAny'],
     ],
+
+    /**
+     * Menu « Gestion du contenu » (game_master et au-dessus).
+     */
+    'contentManagement' => [
+        ['entity' => 'spells', 'ability' => 'updateAny'],
+    ],
 ];

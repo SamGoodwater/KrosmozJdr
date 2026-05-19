@@ -1,84 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies\Entity;
 
 use App\Models\Entity\Spell;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
-class SpellPolicy
+/**
+ * Sorts : lecture selon états / niveaux ; édition par l’auteur ou un admin.
+ */
+class SpellPolicy extends BaseEntityPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(?User $user): bool
+    public function update(User $user, Model $model): bool
     {
-        // Accessible à tous, même sans authentification
-        return true;
+        if (! $model instanceof Spell) {
+            return false;
+        }
+
+        return (int) $user->id === (int) $model->created_by || $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(?User $user, Spell $spell): bool
-    {
-        // Accessible à tous, même sans authentification
-        return true;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
-        return $user->isAdmin();
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Spell $spell): bool
-    {
-        // Un utilisateur peut modifier son propre sort, ou un admin peut modifier n'importe quel sort
-        return $user->id === $spell->created_by || $user->isAdmin();
-    }
-
-    /**
-     * Determine whether the user can update models in bulk / via édition multiple.
-     */
     public function updateAny(User $user): bool
     {
         return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Spell $spell): bool
+    public function delete(User $user, Model $model): bool
     {
+        if (! $model instanceof Spell) {
+            return false;
+        }
+
         return $user->isAdmin();
     }
 
-    /**
-     * Suppression depuis l’UI liste / fiche (exposition {@link EntityPermissionService} → deleteAny).
-     */
     public function deleteAny(User $user): bool
     {
         return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Spell $spell): bool
+    public function manageAny(User $user): bool
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Spell $spell): bool
-    {
-        return false;
+        return $user->isAdmin();
     }
 }

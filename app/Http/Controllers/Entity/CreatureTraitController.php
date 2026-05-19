@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreCreatureTraitRequest;
 use App\Http\Requests\Entity\UpdateCreatureTraitRequest;
 use App\Http\Resources\Entity\CreatureTraitResource;
 use App\Models\Entity\CreatureTrait;
 use App\Services\PdfService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class CreatureTraitController extends Controller
 {
+    use RedirectsAfterEntityCreate;
     /**
      * Display a listing of the resource.
      */
@@ -65,16 +68,20 @@ class CreatureTraitController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCreatureTraitRequest $request)
+    public function store(StoreCreatureTraitRequest $request): RedirectResponse|Response
     {
         $data = $request->validated();
         $data['created_by'] = $request->user()->id;
         $creatureTrait = CreatureTrait::create($data);
 
         if ($request->header('X-Inertia')) {
-            return redirect()
-                ->route('entities.creature-traits.index')
-                ->with('success', 'Trait créé avec succès.');
+            return $this->redirectAfterEntityStore(
+                $request,
+                $creatureTrait,
+                'entities.creature-traits.edit',
+                'entities.creature-traits.index',
+                'Trait créé avec succès.',
+            );
         }
 
         return response()->json($creatureTrait, 201);

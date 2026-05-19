@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreCampaignRequest;
 use App\Http\Requests\Entity\UpdateCampaignRequest;
@@ -15,12 +16,14 @@ use App\Models\Entity\Scenario;
 use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Services\PdfService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class CampaignController extends Controller
 {
+    use RedirectsAfterEntityCreate;
     /**
      * Display a listing of the resource.
      */
@@ -78,11 +81,23 @@ class CampaignController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCampaignRequest $request)
+    public function store(StoreCampaignRequest $request): RedirectResponse|Response
     {
+        $this->authorize('create', Campaign::class);
+
         $data = $request->validated();
         $data['created_by'] = $request->user()->id;
         $campaign = Campaign::create($data);
+
+        if ($request->header('X-Inertia')) {
+            return $this->redirectAfterEntityStore(
+                $request,
+                $campaign,
+                'entities.campaigns.edit',
+                'entities.campaigns.index',
+                'Campagne créée avec succès.',
+            );
+        }
 
         return response()->json($campaign, 201);
     }

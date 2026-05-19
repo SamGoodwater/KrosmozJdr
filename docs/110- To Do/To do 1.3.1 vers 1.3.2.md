@@ -1,153 +1,209 @@
-Voici la liste des choses à faire pour passer de la 1.3.1 (actuel) à la 1.3.2 qui sera publié pour la première fois.
-Comme le projet n'est pas en prod, il n'est pas nécessaire de créer des alias ou garder du code obsolète pour la compatibilité.
+# Feuille de route 1.3.1 → 1.3.2 (première mise en prod)
 
-**Avant développement** : trancher les ambiguïtés dans **[`DECISIONS-OUVERTES-release-1.3.2.md`](./DECISIONS-OUVERTES-release-1.3.2.md)** puis suivre **[`PLAN-EXECUTION-release-1.3.2.md`](./PLAN-EXECUTION-release-1.3.2.md)**.
+**Décisions validées** : [`DECISIONS-OUVERTES-release-1.3.2.md`](./DECISIONS-OUVERTES-release-1.3.2.md) · **Plan d’exécution** : [`PLAN-EXECUTION-release-1.3.2.md`](./PLAN-EXECUTION-release-1.3.2.md) · **Suivi à cocher** : [`CHECKLIST-release-1.3.2.md`](./CHECKLIST-release-1.3.2.md)
 
-# Interfaces 
-## Accueil
-Il faut rédiger une page d'accueil pour parler à la fois du projet et du jeu (cf rule)
-## Admin
-La page admin est composé de plusieurs liens vers des pages de gestion. 
-J'aimerai dans un premier temps séparé les différentes liens en deux partie : administration et gestion du contenu
-Dans gestion du contenu (disponible au game master): 
-- Vue d'ensemble (à modifier)
-- Caractéristiques (protégé via le redemande du mor de passe)
-- Langues
-- Effect
-- Sous-effect
-Dans Espace administration (rour les pages même Récapitulatif protégé via le redemande du mor de passe)
-- Récapitulatif (à créer)
-- Gestion des utilisateurice
-- Scrapping
-- mapping : scrapping 
-- Mapping effets DofusDb
-- Sauvegarde
-- Sync Donnée
-- Mise à jour de la stack
-- Gérer l'affichage
-Ajouter dans le menu dropdown du compte : Gestion du contenu et Espace administration
+Comme le projet n’est pas en prod, **pas d’aliases** ni code obsolète forcé pour rétrocompatibilité.
 
-Modification de Vue d'ensemble : j'aimerai que dans cette vue on mette des graphiques camenbert pour chaque entité avec les différentes status (brut, brouillon, actif / jouable / Archivé)
-L'idée est d'avoir une interface pour voir ce qui est fait et ce qui est à faire rapidement.
-Il serai bien aussi d'avoir le nombre de pages et de sections.
+---
 
-Création de la vue Récapitulatif de la partie admin : pour l'instant à part mettre un historique du nombre d'utlisateur sous forme de graph et un camenbert permettant de voir le nombre de user par role.
-## Page "mon compte"
-Cette page Mon compte que l'on voit après la connexion, n'est pas à jour. Elle doit contenir des raccourcis vers les entités (ne pas oublier de mettre les icones des entités et leurs couleurs) et les règles. Elle doit aussi mettre en avant les entités que le user a créé si il en a créé.
-Il y a aussi une page paramètre qui permet d'ajuster les notifications, il faut s'assurer que cette page est fonctionnelle et à jour.
-La page d'édition du compte n'est pas très belle. Il faut la mettre à jour par rapport à notre design système. 
-Il faut également vérifier que la page sur les données personnels soit fonctionnelle (export, et supression) car c'est important en terme de droit. Depuis cette page j'aimerai un raccourcis vers les pages [Conditions Générales d'Utilisation](http://127.0.0.1:8000/pages/cgu)et [Politique de confidentialité et cookies](http://127.0.0.1:8000/pages/politique-donnees)
-## Pages de confidentialité, de gestion des cookies et de CGU, changelog
-Ces pages doivent avoir une section "affichage de markdown" et être lier aux fichiers markdown dans /storage/app/public/legal/\*.md
-Il en est de même pour le changelog. Une fois qu'on aura terminé toutes fonctionnalités / bogue et ajout, il faudra commencer à rédiger le changelog. On devrait écrire dans la doc comment doit être rédiger le changelog. Je souhaite qu'il soit simple et qu'il y ait à chaque fois une partie contenu (le plus important) et technique (Il ne faut pas aller dans le détail, ce qui interesse les user c'est de savoir quelles fonctionnalités existent).
-## Droits
-Le projet n'est pas construit pour afficher le contenu seulement pour des users qui serai connecté et qui aurai créé un compte. La plus part des informations (pages, de règles, entités, l'essentiel, les informations diverses) doivent être visible même par les guest. Après il est possible d'afficher des pages ou des sections qu'à partir d'un certain rôle et pour le user qui a créé la page ou la section. Concernant les entités, on peut les cacher en lecture et interdir l'écriture si on a pas le bon role mais par défaut elles doivent être visible.
-Dans l'espace admin, j'aimerai avoir la possibilité de choisir si on laisse la possibilité de choisir qui a le droit de voir les entités en fonction de son état (brut, brouillon, jouable ou archive). J'aimerai restreindre l'affichage des entités (entité par entité) qu'à certain rôle. Il faut que je puisse changer ça dans les paramètres (page : gérer l'affichage). 
-## Entités
-Je pense que la vue compact n'est plus utile, je voulais en faire une vue pour les modals mais finalement la vue Large est très bien. Je pense qu'il faille enlever la vue compact et mettre la vue large à la place. Cette vue fusionné doit s'apeller vue full car c'est là qu'on met toutes les informations d'une entité.
-Que ça soit dans une page ou dans un modal, on affiche la vue full. La seul chose qui change ces les actions accessibles entre une page et un modal.
-### Tooltips / popover
-Les tooltips ou les popover ne sont pas harmonisé, il y a quelques différences (des box dans le tooltips qui change la couleur de fon, cela fait bizarre). Exemple : la propriété nature physic ou warku
+## Sommaire
 
-## Sections
-Les sections sont la base de l'affichage du contenu dans KrosmozJDR.
-Il en existe diverse répondant à différent besoin.
-Une fonctionnalité a commencé à être implanter mais ne fonctionne pas actuellement.
-Dans une section texte éditer avec tiptap il est possible d'insérer des liens vers des caractéristiques, des entités ou  d'autres sections. Cela permet un aperçu rapide via la vue Texte des entités ou des caractéristiques. Cette vue permet d'avoir un popover (ou un tooltips) avec une vue plus complète (minimal pour les entités).
-Pour l'affichage des sections, je souhaite qu'au popover on charge la section demandé. La section sera donc restreinte dans une card, c'est pourquoi on va afficher que le début de la section (si elle est trop longue) et ajouter des scrollbar si nécessaire. On va éviter les scrolllbar horizontal sauf si la section le demande explicitement comme pour l'affichage d'un pdf. Sinon pour le texte, on passe à la ligne pour prendre toute la largeur de la card.
-Cette partie de cette fonctionnalité n'est pas bien opérationnel. Il faudra analyser la pipeline puis la corriger.
+1. [Résumé des décisions (Q1–Q27)](#1-résumé-des-décisions-q1q27)
+2. [Vues entité & édition](#2-vues-entité--édition)
+3. [Droits, invités & page « Gérer l’affichage »](#3-droits-invités--page-gérer-laffichage)
+4. [Sécurité zone sensible (mot de passe, 1 h, cadenas)](#4-sécurité-zone-sensible-mot-de-passe-1-h-cadenas)
+5. [Interfaces : accueil, admin, compte](#5-interfaces--accueil-admin-compte)
+6. [Légal, cookies, RGPD, changelog (fichiers)](#6-légal-cookies-rgpd-changelog-fichiers)
+7. [Recherche globale — bloquante 1.3.2](#7-recherche-globale--bloquante-132)
+8. [Sections TipTap & mention `@`](#8-sections-tiptap--mention-)
+9. [Entités — exigences par type](#9-entités--exigences-par-type)
+10. [Commandes projet & note `project:refresh`](#10-commandes-projet--note-projectrefresh)
+11. [Fonctionnalités transverses & polish (renvoi)](#11-fonctionnalités-transverses--polish-renvoi)
+12. [Caractéristiques (calibrage détaillé)](#caractéristiques)
 
-Concernant l'insertion de ce type de lien dans l'édition d'une section via tiptap, il est possible de l'insérer via un @ suivi des mots clés pour la recherche, ou utiliser l'outil insertion de contenu (qui écrit un @). 
-Lorsqu'on écrit l'@, derrière on écrit les mots clés pour la recherche. J'aimerai que la liste des résultats soient trier entre caractéristiques, sections et entités. La liste doit se mettre en survol en dessous de la ligne @. Il faut limiter le nombre de résultats et mettre un scroll si la hauteur est trop importante.
-# Entités
-- L'édition des entités doit être la même entre une page et un modal. Cela doit charger la même vue que ça soit en page ou en modal
-- De même pour l'affichage simple, il faut que ça soit la même vue (full) pour une page  ou un modal
-## Tableau de densité et généralité
-- La partie densité compacr, noemal, dene n'est pas utilise et prende la place, enlufe le surtout les taableaux
-- Revoir les modals de création pour mettre que les propriétés simple et obligatoire avex write et read. L'idée est de mettre nom, race / type description et niveau, rarement plus. Une fois qu'on appuie sur créer, c"est le modal d'édition qui s'ouvre avec l'ensemble des propriétés.
-- Les raccourcis ne fonctionnent pas bien, noramelement : 
-	- clique simple : sélection
-	- double clique : ouvre l'affichage modal
-	- ctrl + clique : ouvre l'affichage page 
-	- alt + clique : ouvre la vue édition dans un modal
-	- clique droit : ouvre le menu des actions
-## Spécialisation
-### UI / UX
-Le contenu d'une spécialisation est important (plusieurs sections affichées) avec peu de spécialisation, cela change donc l'approche qu'on va avoir par rapport aux autres entités.
-Globalement, on peut avoir une spécilisation comme une page qui met en avant une image et quelques propriétés et actions au début puis enchaine avec des sections (souvent texte). C'est bcp plus adapté à un format page qu'un format modal, line ou minimal.
-C'est pourquoi dans le menu créé par le seeder, on va préférer utiliser une page mettre Spécialisations dans le groupe Bibliothèque avec des sous-pages pour chaque spécialisation.
+---
 
-Concernant l'affichage dans les specialisations : 
-- minimal et line : image, nom, description_fast, voix élémentairess, et au hover, description 
-- vue full : On affiche l'image, nom, description description_fast,,
-  Ensuite on affiche une forme de section (peut être créer une vrai section) avec une sorte de tableau et à chaque niveau on affiche les sorts, les capacités, les ressources, les équipements, les équipements, les panoplies. A la fin on affiche les capacités, équipements, panoplies, consommable, ressources qui n'ont pas de niveau associé.
-  En suite on affiche les sections dans l'ordre que l'on souhaite.
+## 1. Résumé des décisions (Q1–Q27)
 
-Il faut mettre à jour la page d'édition pour prendre en compte tout cela.
-### Contenu
-Le contenu est créé via les documents html récupérer sur l'ancien projet. Ce contenu contient des liens vers des capacités : il faut utiliser la notation d'import d'entité dans les textes.
-## Classe (Breed)
-Le contenu d'une classe est important (plusieurs sections affichées) avec peu de spécialisation, cela change donc l'approche qu'on va avoir par rapport aux autres entités.
-Globalement, on peut avoir une classe comme une page qui met en avant une image et quelques propriétés et actions au début puis enchaine avec des sections (souvent texte). C'est bcp plus adapté à un format page qu'un format modal, line ou minimal.
-C'est pourquoi, en s'inspirant de ce qu'il existe pour l'entité specialization, il faut intégrer la possibilité d'insérer des sections, mais aussi des capacités, des ressources, des consommables et des items. Ces capacités, ressources, consommables et items sont lié à une classe avec un niveau et même une quantité pour les objects (consommable, item, ressource). Les sorts sont intégrés un peu différemment car il y a besoin d'avoir des variantes qui propose de 2 à 4 sorts. C'est pour sa que lorsqu'on insére un sort en pouvant l'associer à une variante. Cette variante a aussi un niveaux. Il peut également y avoir des sorts globaux non référencés dans des variantes.
-Avec l'utilisation de section, on a plus besoin des propriétés : evolution, specifity, life.
+Table de synthèse — **référence complète et réponses longues** : [`DECISIONS-OUVERTES-release-1.3.2.md`](./DECISIONS-OUVERTES-release-1.3.2.md).
 
-Dans le menu créé par le seeder, on va préférer utiliser une page mettre Classes dans le groupe Bibliothèque avec des sous-pages pour chaque classes.
+| Thème | Décision |
+| --- | --- |
+| **Q1 Menus** | **Gestion du contenu** : **game_master** et au-dessus (admin, super_admin). **Espace administration** : **admin** et **super_admin**. Ajouter le **planning / cron** dans l’admin. |
+| **Q2 Zone sensible** | Déblocage **1 h** après mot de passe ; **cadenas vert** près de l’avatar ; re-verrouillage si **aucune** modification sur pages sensibles pendant 1 h ; exigence **sécurité prod**. |
+| **Q3 Dashboards** | **Vue d’ensemble** : camemberts entités × statuts + **pages** + **sections**. **Récap admin** : courbe **utilisateurs** + camembert **par rôle**. (*Confirmé.*) |
+| **Q4 Guests** | Par défaut **états stables** si pas d’autre configuration. |
+| **Q5 Affichage** | Intégré aux **Policies** ; matrice **état × rôle** par entité. |
+| **Q6 Pages/sections** | Par défaut : admin, super_admin, créateur, MJ — sauf réglage spécifique page/section. |
+| **Q7 Vues** | **minimal**, **line**, **texte**, **full**, **edit** ; doc et code alignés sur ce modèle. |
+| **Q8 Raccourcis** | macOS : **Ctrl** et **⌘** pour ouvrir en page ; sans droit édition → **notification** sans ouvrir de vue. |
+| **Q9 Création** | Champs **simples obligatoires** (nom, type/race, description, niveau typiquement) ; **liste exacte par type d’entité** fixée à l’implémentation. |
+| **Q10 Variantes** | 1 à 4 sorts « normaux » ; pas de contrainte stricte DB ; UX ≤ 4 ; même sort dans **plusieurs** variantes possible. |
+| **Q11 Champs classe** | Pas de migration legacy : contenu **reconstruit** avec **sections** à l’init. |
+| **Q12 Biblio** | Aligné **existant** : page + **sous-pages** par classe et par spécialisation. |
+| **Q13–Q14 TipTap** | Chargement **léger** ; aperçu **~10 lignes**, fin de paragraphe ; limite **`@` : globale**. |
+| **Q15–Q16 Sorts** | IDs = **exemples** ; mapper ou texte + **icône dans le HTML** ; éléments : doc **`400- Jeu`**. |
+| **Q17–Q19 Recherche** | Technique libre, perf ; périmètre **entités + pages + sections** ; résultats **titre + extrait** uniquement. |
+| **Q20–Q21 Fichiers** | Légal **mono-langue**, noms **clairs** ; changelog sous **`storage/app/public/changelog/{version}.md`**, pas dans `docs/`. |
+| **Q22–Q24 Commandes** | **Refresh** : fresh + seed puis **`project:init`** — **aligner le code** (état au 2026-05-17 : voir Décisions). Seed / cron : **revérifier le dépôt**. |
+| **Q25 Accueil** | Ton / cadre : [`docs/400- Jeu/420- Règles`](../../400-%20Jeu/420-%20Règles). |
+| **Q26 Panoplies** | Liste **équipements** + effets bonus ; minimal quasi final : **effet par défaut** + équipements en **vue Texte** au **hover**. |
+| **Q27** | Recherche **bloquante** pour **1.3.2**. |
 
-Concernant l'affichage dans les classes : 
-- minimal et line : icone, nom, description_fast, voix élémentairess, et au hover, description, dé de vie, 
-- vue full : On affiche l'image et l'icone en plus petit, nom, description description_fast, voix élémentairess, et au hover, description, dé de vie, Puis on affiche les variantes des sorts en mettant les vues minimals des sorts. En dessous on affiche les sorts qui ne sont pas dans les variantes mais associés à la classe.
-  Ensuite on affiche une forme de section (peut être créer une vrai section) avec une sorte de tableau et à chaque niveau on affiche les capacités, les ressources, les équipements, les équipements, les panoplies. A la fin on affiche les capacités, équipements, panoplies, consommable, ressources qui n'ont pas de niveau associé.
-  En suite on affiche les sections dans l'ordre que l'on souhaite
+---
 
-Il faut mettre à jour la page d'édition pour prendre en compte tout cela.
-## Items / Ressources / Consumables
-- Il serai bien d'afficher les statistiques que peuvent donner ces objets (surtout pour items), dans des box en réutilisant le système de box des créatures. Cela permet de trier les caractéeistiques par thème et donc de faciliter la lecture.*
-- Imposible de modifier l'état rapidement via les actions
-- Pour mes sorts attribués à un objet, je souhaite qu'on l'ouvre en popover et non tn tooltips, pour gagner en performance. Il y a déjà ce système mis en place à différent endroits comme dans les classes.
-- Imposible d'ouvre la vue full ou la vue edit que ce soit dans un modal ou d'une page.
-- Dans les vues minimal, line (mode étendu) et full, il faut mettre dans les propriétés si l'équipement est dans une panoplie en mettant la vue Texte de la panopli.
-- En mode full, il faut afficher la recette avec pour chaque ressources : la quantité suivi de la vue Texte de la ressource.
-## Monstres
-- Dans la vue minimal des monstres, les langues sont affichés avec leurs descriptions en bas alors que je souhaite un affichage badge avec un tooltips pour la description comme ce qu'on a en vue full.
-- Concernant les box d'affichage des cacaractéristiques (généralité, protection, stats, controle, resistance, controle) : je préferai qu'on mette sur une ligne .Si il n'y a pas de place. Cela correspond à width 100% dans la box (c'est surement gérer avec flex). Si il n'y a pas la place d'afficher l'ensemble des propriétés d'un bloc sur une même ligne alors on fait un retour à la ligne.
-- Dans la vue édition d'un monstre, il manwue bcp de propriété notamment celle lié aux caractéristiques. l'idée ici est de retrouver un peu près le même placement qu'en affichage mais de mettre des inputs à la place du texte / badge, etc. Il faut esssayer de garder une certaine hamonie entre l'édition et l'affichage.
-- Dans la page d'édition il y a de nombre beaucoup de bouton enregistrer (après chaque relation notament). Je souhaiteai le bouton classique qui est fixe en bas et lors du hover avec le bouton reset et annuler (il y a un composant permettant de mettre ça en place).
-### Caractéristiques
-- Les caractéristiques des monstres sont à peaufiner, en utilisant les règles de la partie # Caractéristiques
-## Sorts
-L'UI est vraiment pour les sorts.
-Cependant il y a bcp de sous-effet qui ne sont pas converti / rendu :
-12352.|
-18558.|
-24680.|
-Est ce que c'est corrigeable ou au moins mettre une description pour comprendre ce que fait le sort ?
+## 2. Vues entité & édition
 
-Il y a toujours le problème de conversion des éléments : normalement quand on établie les sous-effets d'un sort, on lui ajoute les éléments qui rmonte des sous-effets. Il peut ne pas avoir d'élément ou plusieurs mais la pluspart du temps il y en a qu'un. Là je ne comprend pas comme ils sont fait, ils ne correspondent à rien.
+| Vue | Rôle |
+| --- | --- |
+| **minimal** | Listes, cartes |
+| **line** | Dérivée de **minimal** (ligne enrichie) |
+| **texte** | Dans un paragraphe ; détail via **popover** |
+| **full** | Remplace **compact** et **large** — tout le contenu, **page ou modal** |
+| **edit** | Édition **page ou modal**, même gabarit |
 
-Lorsque je change l'état d'un sort depuis la vue minimal, je n'ai pas de réponse vie les notifs et ça ne fonctionne pas.
-Je n'ai pas d'erreur console et je ne vois pas de requête se faire. J'imagine que j'ai le même problème avec les autres entités. ça fonctionne si je fais le changement depuis les autres vues.
-## Capacités 
-- l'action d'épingler sur les minimals des capacités ne fonctionne pas. Pour rappel cette action a pour but de laisser la vue minimal en extended mais si le focus n'est pas dessus.*
-- Impossible d'ouvrir une capacité en modal ou en page (que ce soit de l'affichage ou de l'édition ) :
-  
-```js
-chunk-VKIT6ZJY.js?v=b743e4bb:2441 Uncaught Error: Ziggy error: 'capability' parameter is required for route 'entities.capabilities.show'.
-    at VM26 monsters:1:69063
-    at String.replace (<anonymous>)
-    at n.compile (VM26 monsters:1:68970)
-    at f.toString (VM26 monsters:1:71041)
-    at VM26 monsters:1:77201
-    at handleRowDoubleClick (SectionEntityTableRead.vue:142:18)
-```
+Harmoniser **tooltips / popovers** (ex. nature Physique / Wakfu).
 
-## Etats / Traits
-Les pages dans bibliothèque devant afficher une section avec les traits et une autre page pour état, ne fonctionne pas.
-## Panoplies
-- Rien n'est vraiment fait ici. Les panoplies sont simples 'image, bonus, description, nom, relations avec des équipements".
-- Minimal affichage important Image avec nom et axtions, puis bonus et en extended description et équiements en mode Text avec ouverture par popover.d
-- Dans le bonus on va passer le texte dans le render caracteristics car il peut y en avoir.
-Je ne suis pas sur que le scrapping prennent bien les panoplies en compte. 
+---
+
+## 3. Droits, invités & page « Gérer l’affichage »
+
+- La majorité du contenu (pages, règles, entités, etc.) reste lisible par les **invités** ; exceptions par **rôle** et **auteur**.
+- **Invités** : par défaut, visibilité des entités en **états stables** (ex. jouable), tant qu’il n’existe pas de règle contraire dans **Gérer l’affichage**.
+- Cette page permet de définir, **par type d’entité et état**, **quels rôles** peuvent **lire** — implémenté dans les **Policies Laravel** (pas de surcouche parallèle sans justification sécurité).
+
+---
+
+## 4. Sécurité zone sensible (mot de passe, 1 h, cadenas)
+
+- Les zones **Gestion du contenu** et **Espace administration** (y compris Récapitulatif) passent par une **confirmation du mot de passe** qui **débloque** l’accès **1 h**.
+- Indicateur : **cadenas vert** à côté de l’**avatar** lorsque le mode débloqué est actif.
+- Après **1 h sans modification** sur les **pages sensibles**, retour au mode verrouillé.
+- Traiter comme partie **critique** de la sécurité : fiabilité, tests, robustesse.
+
+---
+
+## 5. Interfaces — accueil, admin, compte
+
+### Accueil
+
+- Présenter le **projet** et le **jeu** ; caler le **ton** sur le corpus des règles : [`docs/400- Jeu/420- Règles`](../../400-%20Jeu/420-%20Règles).
+
+### Gestion du contenu (game_master, admin, super_admin)
+
+- **Vue d’ensemble** — camemberts **par type d’entité** avec statuts (brut, brouillon, actif / jouable, archivé) ; **nombre de pages** et **sections**.
+- **Caractéristiques** — derrière **zone sensible** (§4).
+- **Langues**, **Effect**, **Sous-effet**.
+
+### Espace administration (admin, super_admin)
+
+Toutes les entrées ci-dessous derrière **zone sensible** (§4) :
+
+- **Récapitulatif** — historique **nombre d’utilisateurs** ; camembert **par rôle**.
+- Gestion des **utilisateur·ices**.
+- **Scrapping** ; mapping scrapping ; **mapping effets DofusDB**.
+- **Sauvegarde** ; **sync données** ; **mise à jour stack**.
+- **Gérer l’affichage** (§3).
+- **Planning / cron** — planification des tâches (**ne pas oublier** dans l’UI).
+
+**Menu compte** : entrées **Gestion du contenu** et **Espace administration** selon les droits.
+
+### Mon compte
+
+- Raccourcis **entités** (icônes + couleurs) + **règles** ; blocs **« mes créations »**.
+- **Paramètres notifications** à valider fonctionnellement.
+- **Édition profil** : design system.
+- **Données personnelles** : **export** + **suppression** ; liens vers **CGU** et **confidentialité / cookies** (routes nommées).
+
+---
+
+## 6. Légal, cookies, RGPD, changelog (fichiers)
+
+- Rendu **markdown** pour CGU, confidentialité, cookies depuis **`storage/app/public/legal/*.md`** — **une langue**, noms de fichiers **alignés** sur les routes du site.
+- **Changelog utilisateur** : **`storage/app/public/changelog/`** — **un fichier par version** (ex. `1.3.2.md`), **section par version**, intro, navigation entre versions ; contenu pas dans `/docs/` pour la publication versionnée.
+- Après stabilisation des fonctionnalités : rédiger le changelog ; structure **Contenu** (prioritaire) + **Technique** (bref).
+
+---
+
+## 7. Recherche globale — bloquante 1.3.2
+
+- UI header (focus, agrandissement, **overlay**, filtres type **Filter** DaisyUI : entités, couleurs, **pages**, **sections**).
+- Filtres d’**état** cohérents **entités + CMS** (pages, sections).
+- Résultats : **titre + extrait** ; groupement ; **droits lecture** respectés.
+- **Livraison obligatoire** avec la 1.3.2.
+
+---
+
+## 8. Sections TipTap & mention `@`
+
+- Chaîne complète liens **caractéristiques / entités / sections** à fiabiliser : popover **section** (card, début de contenu, **~10 lignes**, fin de paragraphe), scroll vertical, pas de scroll horizontal sauf PDF, etc.
+- Suggestion `@` : ordre **caractéristiques → sections → entités** ; liste sous la ligne ; **plafond global** + scroll si hauteur.
+
+---
+
+## 9. Entités — exigences par type
+
+### Tableaux (général)
+
+- Retirer la ligne de **densité** tableau inutilisée (compact / normal / dense).
+- **Création** : modal **champs minimal obligatoires** → puis **édition complète** (§1 Q9).
+- **Raccourcis** : sélection ; double-clic affichage modal ; **Ctrl ou ⌘** → page ; **Alt** → édition modal ; clic droit → menu ; Alt **sans** droit → **notification** uniquement (§1 Q8).
+
+### Spécialisations
+
+- Page **Bibliothèque** + sous-pages ; mise en page **page** ; blocs par niveau (sorts, capacités, ressources, équipements, panoplies) puis **sans niveau** puis **sections** ; édition alignée ; legacy HTML → **imports d’entité**.
+
+### Classes (Breed)
+
+- Même logique bibliothèque ; **variantes de sorts** (§1 Q10) ; sorts hors variantes ; suppression future des champs **evolution, specifity, life** une fois sections en place (**pas** de migration manuelle du vieux HTML — §1 Q11).
+
+### Items / Ressources / Consommables
+
+- Stats en **box** (comme créatures) ; **état** depuis actions ; sorts objet en **popover** ; **panoplie** en vue Texte ; **recette** full ; corriger navigation full/edit et bugs état.
+
+### Monstres
+
+- Langues : **badges** + tooltip ; box stats **flex** ; édition **alignée** à l’affichage ; **barre d’actions fixe** (sauvegarder + hover reset/annuler).
+
+### Sorts
+
+- Sous-effets / éléments (§1 Q15–Q16) ; bug **changement d’état depuis vue minimal**.
+
+### Capacités
+
+- Épinglage **extended** ; corriger route **Ziggy** `capability`.
+
+### États / Traits
+
+- Réparer les pages bibliothèque prévues.
+
+### Panoplies (§1 Q26)
+
+- Données : liste d’**équipements** + un ou plusieurs **bonus** (effets / sous-effets).
+- **Minimal** : **effet par défaut** + liste équipements en **vue Texte** au **hover** ; extended : description, équipements en popover ; bonus via **render caractéristiques** ; vérifier **scrapping**.
+
+---
+
+## 10. Commandes projet & note `project:refresh`
+
+**Décision produit** : enchaîner **`migrate:fresh`** et le **pipeline `project:init`** pour données complètes (`DatabaseSeeder` Laravel optionnel en théorie ; en pratique **`project:init`** remplace et étend ce socle).
+
+**Implémentation** : `project:refresh` exécute le ménage local puis **`project:init --fresh`** puis les clears (voir [`DECISIONS-OUVERTES-release-1.3.2.md`](./DECISIONS-OUVERTES-release-1.3.2.md) § Q22). Options utiles : `--without-seed` → `--skip-seeders`, `--skip-scrapping`, `--noimage`, `--skip-types`, `--force`.
+
+Ensemencement « tout sauf scrapping » : **`project:init`** avec **`--skip-scrapping`** (aucune commande `project:seed` dédiée repérée au dernier audit).
+
+**`project:cron`** : comportement **sans action par défaut** si aucun flag — acceptable pour un cron vide ; vérifier les besoins prod (clear, backup, etc.).
+
+*Le détail des phases (`project:init`, `project:update`, `project:clear`, …) figure dans la suite du document (sections **Optimisation**, **Commandes**).*
+
+---
+
+## 11. Fonctionnalités transverses & polish (renvoi)
+
+Améliorations listées plus bas dans ce fichier : **caractéristiques** (aide MJ), **scrapping**, **conversion**, **retour utilisateur** (mail récap optionnel connectés), **optimisation** (dossiers, doc, commandes), **UI/UX** (responsive, accessibilité, bandeaux, notifications).
+
+---
+
 # Caractéristiques
 
 Ce bloc sert de **cadre** pour calibrer conversion DofusDB → Krosmoz et les **normes** (grilles + conditions). Source de vérité applicative : les JSON sous [`database/seeders/data/characteristic-definitions/`](../../database/seeders/data/characteristic-definitions/) (`entities["*"]` sauf overrides futurs par entité).
@@ -760,4 +816,3 @@ Pour l'accessibilité, il est peut être interessant d'utiliser un plugin pour f
 Les bandeaux Alert qui permettent de mettre des informations ont un contraste déplorable. Il faut les mettre avec intensité de couleur foncé et un look glass (peu d'arrondi, flou avec un background pas tout à faire opaque, etc), et la font doit être claire (c'est le cas actuellement).
 ## Notifications
 Les notifications temporaires ont un délai avant de se fermer. Pendant une partie du temps elles sont déplié puis elle se repli pour prendre moins de place. Il faudrai allonger leur durée de vie car aujourd'hui c'est trop court.
-De plus il faut que lorsqu'on est le focus, la notification arrète son temps pour qu'on puisse prendre tout le temps que l'on souhaite pour la lire.

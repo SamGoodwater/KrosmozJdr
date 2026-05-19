@@ -44,6 +44,8 @@ let activeAnchor = null;
 let abortFetch = null;
 
 const POPOVER_WIDTH = 320;
+/** ~10 lignes prose-sm pour l’aperçu section (Phase D). */
+const POPOVER_BODY_MAX_PX = 220;
 const HOVER_DELAY_MS = 380;
 const HIDE_DELAY_MS = 220;
 
@@ -74,7 +76,7 @@ function positionNear(anchor) {
     left = Math.min(left, vw - POPOVER_WIDTH - pad);
     left = Math.max(pad, left);
     let top = rect.bottom + 6;
-    const maxH = 240;
+    const maxH = POPOVER_BODY_MAX_PX + 48;
     if (top + maxH > vh - pad) {
         top = Math.max(pad, rect.top - maxH - 6);
     }
@@ -318,7 +320,7 @@ function onPopoverLeave() {
                 top: `${popoverTop}px`,
                 left: `${popoverLeft}px`,
                 maxWidth: `${popoverMaxWidth}px`,
-                maxHeight: 'min(48vh, 320px)',
+                maxHeight: `min(48vh, ${POPOVER_BODY_MAX_PX + 56}px)`,
             }"
             role="tooltip"
             @mouseenter="onPopoverEnter"
@@ -333,7 +335,7 @@ function onPopoverLeave() {
             <!-- eslint-disable vue/no-v-html -- HTML issu de l’API + second passage sanitizeHtml() -->
             <div
                 v-else-if="popoverHtml"
-                class="kref-preview-popover__body prose prose-sm max-w-none overflow-y-auto px-3 py-2 text-base-content"
+                class="kref-preview-popover__body kref-rich-preview-panel prose prose-sm max-w-none overflow-x-hidden overflow-y-auto break-words px-3 py-2 text-base-content"
                 v-html="popoverHtml"
             />
             <!-- eslint-enable vue/no-v-html -->
@@ -350,11 +352,32 @@ function onPopoverLeave() {
     padding-left: 0.65rem;
 }
 
+.kref-preview-popover__body {
+    max-height: 13.75rem;
+}
+
 .kref-preview-popover__body :deep(p) {
     margin-bottom: 0.35rem;
 }
 .kref-preview-popover__body :deep(p:last-child) {
     margin-bottom: 0;
+}
+
+.kref-preview-popover__body :deep(img),
+.kref-preview-popover__body :deep(table),
+.kref-preview-popover__body :deep(pre) {
+    max-width: 100%;
+}
+
+.kref-rich-preview-panel :deep(table) {
+    display: block;
+    overflow-x: auto;
+}
+
+/* Panneaux d’aperçu kref (tooltips carac./entité + popover section) */
+.kref-rich-preview-panel {
+    text-align: left;
+    line-height: 1.45;
 }
 </style>
 

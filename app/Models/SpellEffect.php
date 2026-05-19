@@ -32,7 +32,6 @@ use Illuminate\Support\Carbon;
  * @property-read Monster|null $summonMonster
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect query()
@@ -52,7 +51,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereValueMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereValueMin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereZoneShape($value)
- *
  * @mixin \Eloquent
  */
 class SpellEffect extends Model

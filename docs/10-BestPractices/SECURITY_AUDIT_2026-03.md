@@ -55,7 +55,7 @@ Ce document recense les points de sécurité vérifiés et les recommandations i
 
 **Risque** : Le champ `sourceUrl` du template `legal_markdown` acceptait toute chaîne (max 2048). Le frontend restreint au same-origin, mais le backend ne validait pas, permettant de stocker des URLs externes ou `file://`.
 
-**Correction** : Validation backend via `SectionTemplatePayloadValidator::validateLegalMarkdownSourceUrl()` — uniquement chemins relatifs same-origin (`/...`), caractères sûrs, rejet de `..` (path traversal) et des protocoles dangereux (`javascript:`, `data:`, `file:`).
+**Correction** : Validation backend via `SectionTemplatePayloadValidator::validateLegalMarkdownSourceUrl()` — uniquement une **whitelist explicite** (`/legal/cgu`, `/legal/politique-donnees`, `/legal/cookies`, `/changelog/feed/X.Y.Z` et le legacy **`/storage/legal/{même trio}.md`**, caractères sûrs, rejet de `..` et des protocoles dangereux (`javascript:`, `data:`, `file:`).
 
 ---
 

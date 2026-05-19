@@ -4,7 +4,7 @@
  *
  * @description
  * Même structure que ResourceLineRow : State • Image • Level • Nom • Type • Rareté • Prix • Description • Effets
- * Pas de poids (équipements). Prix : `EntityPropertyDisplay` (aligné sur ItemViewCompact).
+ * Pas de poids (équipements). Prix : `EntityPropertyDisplay` (aligné sur ItemViewFull).
  */
 import { computed } from "vue";
 import { Link } from "@inertiajs/vue3";

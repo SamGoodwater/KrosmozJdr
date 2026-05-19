@@ -51,7 +51,7 @@ const props = defineProps({
     actions: { type: [Array, null], default: null },
     onClose: { type: Function, default: null },
     placement: { type: String, default: '' },
-    duration: { type: Number, default: 12000 },
+    duration: { type: Number, default: 14000 },
     createdAt: { type: Number, default: 0 },
     fullDisplayTime: { type: Number, default: 0 },
     contractedDisplayTime: { type: Number, default: 0 },
@@ -59,7 +59,7 @@ const props = defineProps({
     dismissible: { type: Boolean, default: true },
 });
 
-const { getProgressPercentage, getNotificationState } = useNotificationStore();
+const { getProgressPercentage, getNotificationState, pauseNotification, resumeNotification } = useNotificationStore();
 
 // État local
 const isHovered = ref(false);
@@ -135,16 +135,28 @@ function handleClick() {
     }
 }
 
-function handleMouseEnter() {
+function handlePointerEnter() {
     isHovered.value = true;
+    pauseNotification(props.id);
     if (notificationState.value === 'contracted') {
         isExpanded.value = true;
     }
 }
 
-function handleMouseLeave() {
+function handlePointerLeave(event) {
+    if (event?.currentTarget?.contains(event?.relatedTarget)) {
+        return;
+    }
     isHovered.value = false;
     isExpanded.value = false;
+    resumeNotification(props.id);
+}
+
+function handleFocusOut(event) {
+    if (event?.currentTarget?.contains(event?.relatedTarget)) {
+        return;
+    }
+    handlePointerLeave(event);
 }
 
 function handleClose(e) {
@@ -188,9 +200,13 @@ onUnmounted(() => {
     <div 
         :class="notificationClasses"
         @click="handleClick"
-        @mouseenter="handleMouseEnter"
-        @mouseleave="handleMouseLeave"
+        tabindex="0"
+        @mouseenter="handlePointerEnter"
+        @mouseleave="handlePointerLeave"
+        @focusin="handlePointerEnter"
+        @focusout="handleFocusOut"
         role="alert"
+        aria-live="polite"
         :aria-label="`Notification ${type}: ${message}`"
     >
         <Toast :vertical="placement?.includes('top') ? 'top' : 'bottom'"

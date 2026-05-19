@@ -180,11 +180,11 @@ onUnmounted(() => {
         </AppSidebarShell>
 
         <!-- Main content (z-index sous la sidebar pour que le drawer reste au-dessus) -->
-        <main :class="mainClasses" class="main-animated z-20">
-            <div class="min-h-full flex flex-col">
+        <main id="main-content" :class="mainClasses" class="main-animated z-20" tabindex="-1">
+            <div class="min-h-full flex min-w-0 flex-col">
                 <!-- Contenu principal centré dans un cadre large -->
-                <div class="flex-1 w-full p-4">
-                    <div class="main-content-frame">
+                <div class="flex-1 w-full min-w-0 p-4 max-sm:p-2">
+                    <div class="main-content-frame w-full max-w-full min-w-0">
                         <Container fluid>
                             <PendingErasureBanner />
                             <slot />

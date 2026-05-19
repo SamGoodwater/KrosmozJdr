@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\User;
 use App\Policies\UserPolicy;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class UserTest extends TestCase
@@ -52,10 +53,25 @@ class UserTest extends TestCase
         $this->assertTrue($user->notifications_enabled);
     }
 
-    public function test_it_casts_notification_channels_to_array()
+    public function test_human_super_admin_unicity_enforced_on_save(): void
     {
-        $user = User::factory()->create(['notification_channels' => ['database', 'email']]);
-        $this->assertIsArray($user->notification_channels);
+        User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->expectException(ValidationException::class);
+        User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+    }
+
+    public function test_human_super_allowed_alongside_system_super_account(): void
+    {
+        User::factory()->create([
+            'role' => User::ROLE_SUPER_ADMIN,
+            'is_system' => true,
+        ]);
+        $humanSuper = User::factory()->create([
+            'role' => User::ROLE_SUPER_ADMIN,
+            'is_system' => false,
+        ]);
+        $this->assertTrue($humanSuper->isInteractiveSuperAdmin());
     }
 
     public function test_user_policy_basic_functionality()

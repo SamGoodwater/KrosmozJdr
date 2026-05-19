@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFeedbackRequest;
 use App\Mail\FeedbackMail;
+use App\Mail\FeedbackRecapMail;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Mail;
@@ -67,6 +68,20 @@ class FeedbackController extends Controller
             );
 
             Mail::to($recipients)->send($mailable);
+
+            $user = $request->user();
+            if (
+                $user !== null
+                && $request->boolean('email_recap')
+                && is_string($user->email)
+                && trim($user->email) !== ''
+            ) {
+                Mail::to($user->email)->send(new FeedbackRecapMail(
+                    typeLabel: $typeLabel,
+                    feedbackMessage: (string) $validated['message'],
+                    url: $validated['url'] ?? null,
+                ));
+            }
         } catch (\Throwable $e) {
             report($e);
 

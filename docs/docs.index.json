@@ -55,6 +55,11 @@
     "description": "Le projet utilise les dernières recommandations en matière de sécurité, de qualité de code et d'organisation. Le code est en anglais, les commentaires en français. L'architecture suit le principe Atomic Design pour le frontend."
   },
   {
+    "path": "10-BestPractices/ADMIN_ACCOUNT_PHASE_H.md",
+    "title": "Admin & compte — Phase H (release 1.3.2)",
+    "description": "**Objectif** : scinder gestion du contenu et espace administration, tableaux de bord, zone sensible, compte utilisateur."
+  },
+  {
     "path": "10-BestPractices/CHARACTERISTIC_PROPERTY_NAMING_REFERENCE.md",
     "title": "Characteristic and property naming reference (English, no abbreviations)",
     "description": "**Rule** : All characteristic keys, property names, and related identifiers use **English** and **full words** (no abbreviations). This applies everywhere: seeders, migrations, config files, function/method names, characteristic keys, and mapping configs."
@@ -63,6 +68,36 @@
     "path": "10-BestPractices/CODE_DOCUMENTATION.md",
     "title": "Documentation du code (docbloc) — KrosmozJDR",
     "description": "- Toujours documenter les composants, fonctions, classes, méthodes publiques."
+  },
+  {
+    "path": "10-BestPractices/ENTITY_BUGS_PHASE_F.md",
+    "title": "Bugs entités — Phase F (release 1.3.2)",
+    "description": "**Objectif** : corriger les régressions UX sur capacités, sorts, items, monstres, bibliothèques états/traits et panoplies."
+  },
+  {
+    "path": "10-BestPractices/ENTITY_CHARACTERISTICS_PHASE_E.md",
+    "title": "Caractéristiques — Phase E (release 1.3.2)",
+    "description": "**Objectif** : fiabiliser l’édition MJ (normes / graphique), les effets de sorts sans chips structurés, l’audit des définitions JSON et la recette scrapping panoplies."
+  },
+  {
+    "path": "10-BestPractices/ENTITY_GLOBAL_SEARCH_PHASE_I.md",
+    "title": "Phase I — Recherche globale (header)",
+    "description": "- **Route** : `GET /api/global-search` (`api.global-search`)"
+  },
+  {
+    "path": "10-BestPractices/ENTITY_SPECIALIZATIONS_PHASE_G.md",
+    "title": "Spécialisations & classes — Phase G (release 1.3.2)",
+    "description": "**Objectif** : bibliothèque CMS avec sous-pages par fiche, variantes de sorts classe, affichage spécialisation par niveau, retrait des champs legacy."
+  },
+  {
+    "path": "10-BestPractices/ENTITY_VIEWS_PHASE_C.md",
+    "title": "Vues entité — référence release 1.3.2",
+    "description": "Modèle officiel : **minimal**, **line**, **texte**, **full**, **edit**."
+  },
+  {
+    "path": "10-BestPractices/ENTITY_VISIBILITY_PHASE_A.md",
+    "title": "Visibilité des entités — Phase A (release 1.3.2)",
+    "description": "**Objectif** : aligner la lecture **invité / rôles** avec la matrice admin **« Gérer l’affichage »** (type d’entité × état workflow × rôle minimal), **sans** dupliquer ces règles en dehors des **Policies**."
   },
   {
     "path": "10-BestPractices/FORMULAS_PRACTICES.md",
@@ -85,6 +120,11 @@
     "description": "- Fichiers de langue organisés par locale (ex : `lang/fr.json`, `lang/en.json`, etc.)."
   },
   {
+    "path": "10-BestPractices/LEGAL_CHANGELOG_PHASE_B.md",
+    "title": "Légal, RGPD & changelog — Phase B (release 1.3.2)",
+    "description": "**Objectif** : exposer CGU / confidentialité / cookies et le journal de versions **sans URL absolues de développement**, avec Markdown versionné sous `storage/app/public` et navigation semver pour le changelog."
+  },
+  {
     "path": "10-BestPractices/NAMING_CONVENTIONS.md",
     "title": "",
     "description": "Conventions de nommage"
@@ -100,14 +140,29 @@
     "description": "- **Backend = vérité** : toutes les décisions d’autorisation (lecture/écriture) sont prises via **Policies/Gates** Laravel."
   },
   {
+    "path": "10-BestPractices/PROJECT_COMMANDS_PHASE_J.md",
+    "title": "Phase J — Commandes projet & organisation CLI",
+    "description": "Ensemencement **sans DofusDB** : délègue à `project:init` avec `--skip-scrapping` et `--skip-types` (migrations, seeders, règles, capacités, pages bibliothèque)."
+  },
+  {
     "path": "10-BestPractices/PROJECT_STRUCTURE.md",
     "title": "Structure du projet",
     "description": "- Respect strict des conventions Laravel 12 (backend) et Vue 3 + Atomic Design (frontend)."
   },
   {
+    "path": "10-BestPractices/PROJECT_UX_PHASE_K.md",
+    "title": "Phase K — Polish UI/UX (release 1.3.2)",
+    "description": "- Atome `Alert.vue` : prop **`glass`** (défaut `true`) — fond sombre semi-opaque, `backdrop-blur-md`, coins `rounded-sm`, texte clair par couleur (`*-100` sur `*-950/85`)."
+  },
+  {
     "path": "10-BestPractices/README.md",
     "title": "Bonnes pratiques — KrosmozJDR",
     "description": "- DRY, factorisation, atomic design, accessibilité, sécurité."
+  },
+  {
+    "path": "10-BestPractices/RELEASE_1.3.2_VERIFICATION.md",
+    "title": "Release 1.3.2 — Vérification transverse",
+    "description": "- Case **« Recevoir un email récapitulatif »** dans `FeedbackFab.vue` (défaut décoché)."
   },
   {
     "path": "10-BestPractices/ROUTES_ARCHITECTURE.md",
@@ -175,24 +230,24 @@
     "description": "**Date**: 2026-03-04"
   },
   {
-    "path": "110- To Do/To do 1.3.1 vers 1.3.2.md",
-    "title": "",
-    "description": "Voici la liste des choses à faire pour passer de la 1.3.1 (actuel) à la 1.3.2 qui sera publié pour la première fois."
+    "path": "110- To Do/CHECKLIST-release-1.3.2.md",
+    "title": "Checklist release 1.3.2 — suivi d’avancement",
+    "description": "Cocher les cases au fil de l’implémentation (`[ ]` → `[x]`)."
+  },
+  {
+    "path": "110- To Do/DECISIONS-OUVERTES-release-1.3.2.md",
+    "title": "Décisions — release 1.3.2",
+    "description": "**Statut : validé** (réponses du produit en date du 2026-05-17)."
   },
   {
     "path": "110- To Do/PLAN-EXECUTION-release-1.3.2.md",
     "title": "Plan d'exécution — release 1.3.2 (prod)",
-    "description": "Ordre de travail agrégé, dépendances, critères prod ; renvoie vers la liste détaillée 1.3.1→1.3.2."
+    "description": "Document de synthèse pour ordonner le travail avant la **première mise en production**."
   },
   {
-    "path": "110- To Do/DECISIONS-OUVERTES-release-1.3.2.md",
-    "title": "Décisions ouvertes — release 1.3.2",
-    "description": "Questions métier à trancher avant code ; réponses puis sync avec PLAN et la spec todo."
-  },
-  {
-    "path": "110- To Do/PLAN-EXECUTION-release-1.3.2.md",
-    "title": "Plan d’exécution — release 1.3.2 (prod)",
-    "description": "Ordre de travail agrégé, dépendances, critères prod ; renvoie vers la liste détaillée 1.3.1→1.3.2."
+    "path": "110- To Do/To do 1.3.1 vers 1.3.2.md",
+    "title": "Feuille de route 1.3.1 → 1.3.2 (première mise en prod)",
+    "description": "**Décisions validées** : [`DECISIONS-OUVERTES-release-1.3.2.md`](./DECISIONS-OUVERTES-release-1.3.2.md) · **Plan d’exécution** : [`PLAN-EXECUTION-release-1.3.2.md`](./PLAN-EXECUTION-release-1.3.2.md) · **Suivi à cocher** : [`CHECKLIST-release-1.3.2.md`](./CHECKLIST-release-1.3.2.md)"
   },
   {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
@@ -442,7 +497,7 @@
   {
     "path": "30-UI/ENTITY SYSTEM/VIEWS.md",
     "title": "Guide des Vues",
-    "description": "**Version** : 2.0"
+    "description": "**Version** : 2.1 — release 1.3.2"
   },
   {
     "path": "30-UI/ENTITY_ACTIONS_GUIDE.md",
@@ -456,8 +511,8 @@
   },
   {
     "path": "30-UI/ENTITY_VIEWS.md",
-    "title": "Vues d’entités (Large / Compact / Minimal / Texte)",
-    "description": "Standardiser l’affichage des entités (ressources, items, monstres, sorts, etc.) afin d’obtenir des “cards” cohérentes dans les modales et les listes, et limiter la duplication de logique."
+    "title": "Vues d’entités (minimal / line / texte / full / edit)",
+    "description": "> Référence opérationnelle release 1.3.2 : [ENTITY_VIEWS_PHASE_C.md](../10-BestPractices/ENTITY_VIEWS_PHASE_C.md) (contrat `ViewFull`, raccourcis, création)."
   },
   {
     "path": "30-UI/FRONTEND_MODELS.md",
@@ -1255,16 +1310,6 @@
     "description": "Cette table des matières présente la structure complète du livre de règles KrosmozJDR."
   },
   {
-    "path": "410- Ressources/AUDIT_CARACTERISTIQUES_SEEDERS.md",
-    "title": "Audit caractéristiques — Seeders objet et créature",
-    "description": "Audit réalisé pour aligner les seeders avec les règles KrosmozJDR (2.2.2, 2.6.1, 4.2.2). Les caractéristiques non utilisées dans le JDR mais envoyées par l'API DofusDB doivent être retirées."
-  },
-  {
-    "path": "410- Ressources/VERIFICATION_CARACTERISTIQUES_PDF.md",
-    "title": "Vérification caractéristiques — Conformité aux PDF",
-    "description": "Audit réalisé en comparant les seeders `characteristic_creature` et `characteristic_object` avec les PDF de référence."
-  },
-  {
     "path": "50-Fonctionnalités/ARCHITECTURE_SCRAPPING_MAPPING_CARACTERISTIQUES.md",
     "title": "Architecture cible : Scrapping → Mapping → Conversion → Caractéristiques",
     "description": "Ce document résume **comment les services doivent être composés et architecturés** (Scrapping, Mappings, Conversion, Caractéristiques, UI admin), puis **compare avec l’existant**."
@@ -1370,11 +1415,6 @@
     "description": "Ce document définit les **types de valeurs** qu’une caractéristique peut prendre dans les entités (Boolean, Liste, String), les **propriétés associées à chaque type**, et le **format JSON** utilisé pour stocker les champs qui peuvent être une valeur fixe, une formule ou une table par caractéristique. C’est la base du service de caractéristiques pour définir correctement les valeurs possibles côté entités."
   },
   {
-    "path": "50-Fonctionnalités/ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md",
-    "title": "Estimation : renommage de l'entité « classe » en « breed »",
-    "description": "**Objectif** : utiliser `breed` dans le code et la documentation technique, tout en conservant **« Classe »** pour l’affichage utilisateur (menu, titres, libellés, règles du jeu)."
-  },
-  {
     "path": "50-Fonctionnalités/Elements/PLAN_ELEMENTS_MULTIPLES.md",
     "title": "Plan d'adaptation — Éléments multiples (Spell & Capability)",
     "description": "> **Statut** : Implémenté (2026-03-08)"
@@ -1433,11 +1473,6 @@
     "path": "50-Fonctionnalités/Notifications/README.md",
     "title": "Notifications — KrosmozJDR",
     "description": "Documentation du système de notifications (toasts, centre de notifications, préférences)."
-  },
-  {
-    "path": "50-Fonctionnalités/PLAN_REALISATION_RENOMMAGE_CLASSE_EN_BREED.md",
-    "title": "Plan de réalisation : renommage classe → breed",
-    "description": "Plan exécutable, phase par phase. Chaque phase se termine par un point de contrôle (tests / vérifications). Référence : [ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md](./ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md)."
   },
   {
     "path": "50-Fonctionnalités/Privacy-RGPD/README.md",
@@ -1803,6 +1838,16 @@
     "path": "50-Fonctionnalités/VISION_UI_ADMIN_MAPPING_ET_CARACTERISTIQUES.md",
     "title": "Vision : UI admin Mapping DofusDB → KrosmozJDR et caractéristiques",
     "description": "Ce document fixe l’**objectif global** et la **spécification de l’interface admin** pour gérer le flux **Scrapping (récupération) → Mapping → Conversion / validation** entièrement depuis la base de données et l’UI."
+  },
+  {
+    "path": "500- Ressources/AUDIT_CARACTERISTIQUES_SEEDERS.md",
+    "title": "Audit caractéristiques — Seeders objet et créature",
+    "description": "Audit réalisé pour aligner les seeders avec les règles KrosmozJDR (2.2.2, 2.6.1, 4.2.2). Les caractéristiques non utilisées dans le JDR mais envoyées par l'API DofusDB doivent être retirées."
+  },
+  {
+    "path": "500- Ressources/VERIFICATION_CARACTERISTIQUES_PDF.md",
+    "title": "Vérification caractéristiques — Conformité aux PDF",
+    "description": "Audit réalisé en comparant les seeders `characteristic_creature` et `characteristic_object` avec les PDF de référence."
   },
   {
     "path": "DOCUMENTATION_GUIDE.md",

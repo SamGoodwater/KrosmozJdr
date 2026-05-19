@@ -5,7 +5,7 @@
  * @description
  * Même structure que ResourceLineRow mais condensée : State • Image • Level • Nom • Type • Rareté • Prix • Poids • Description • Effets (icône + valeur).
  * Affiche uniquement les propriétés métier (pas read_level, write_level, id, created_by, etc.).
- * Prix / poids : `EntityPropertyDisplay` (aligné sur ResourceViewCompact).
+ * Prix / poids : `EntityPropertyDisplay` (aligné sur ResourceViewFull).
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";

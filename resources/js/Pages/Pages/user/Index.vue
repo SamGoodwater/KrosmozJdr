@@ -10,7 +10,7 @@ import Avatar from '@/Pages/Atoms/data-display/Avatar.vue';
 import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
 import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
-import { getRoleTranslation } from '@/Utils/user/RoleManager';
+import { getRoleTranslation, ROLES } from '@/Utils/user/RoleManager';
 
 defineOptions({ layout: AdminArea });
 
@@ -35,10 +35,12 @@ const archivedUsersCount = computed(() => usersData.value.filter((u) => Boolean(
 
 const roleOptions = computed(() => {
     const base = [{ value: '', label: 'Tous les rôles' }];
-    const entries = Object.entries(props.roles || {}).map(([value, name]) => ({
-        value: Number(value),
-        label: getRoleTranslation(name),
-    }));
+    const entries = Object.entries(props.roles || {})
+        .map(([value, name]) => ({
+            value: Number(value),
+            label: getRoleTranslation(name),
+        }))
+        .filter((opt) => opt.value !== ROLES.SUPER_ADMIN);
     return [...base, ...entries];
 });
 

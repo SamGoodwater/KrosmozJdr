@@ -2,19 +2,34 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminRecapController;
 use App\Http\Controllers\Admin\ProjectBackupWebController;
 use App\Http\Controllers\Admin\ProjectDepsWebController;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Espace administration : tableau de bord, sauvegarde et mise à jour stack (super admin pour actions sensibles).
+ * Espace administration : récapitulatif (admin+), sauvegarde et mise à jour stack (super admin).
  */
 Route::prefix('admin')
     ->name('admin.')
-    ->middleware(['auth', 'admin.area'])
+    ->middleware(['auth'])
     ->group(function () {
-        Route::get('/', AdminDashboardController::class)->name('dashboard.index');
+        Route::get('/', function (): RedirectResponse {
+            $user = auth()->user();
+            if ($user && $user->isAdmin()) {
+                return redirect()->route('admin.recap.index');
+            }
+            if ($user && $user->isGameMaster()) {
+                return redirect()->route('admin.content.dashboard.index');
+            }
+
+            abort(403);
+        })->name('dashboard.index');
+
+        Route::get('/recap', AdminRecapController::class)
+            ->middleware(['admin.area', 'password.confirm'])
+            ->name('recap.index');
     });
 
 Route::prefix('admin/backup')

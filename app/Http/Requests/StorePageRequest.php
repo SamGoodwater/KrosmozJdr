@@ -72,7 +72,8 @@ class StorePageRequest extends FormRequest
             $this->merge(['read_level' => User::ROLE_GUEST]);
         }
         if (! isset($data['write_level'])) {
-            $this->merge(['write_level' => User::ROLE_ADMIN]);
+            // MJ et au-dessus alignés décision Q6 (réglages fins par page possibles ensuite).
+            $this->merge(['write_level' => User::ROLE_GAME_MASTER]);
         }
         if (array_key_exists('menu_group', $data)) {
             $group = trim((string) $data['menu_group']);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
+use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
 use App\Console\Concerns\PromptsPrimarySuperAdmin;
 use App\Services\NotificationService;
@@ -13,6 +14,7 @@ use Database\Seeders\CriticalPagesSeeder;
 use Database\Seeders\Entity\ConditionSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
+use Database\Seeders\BibliothequeEntityPagesSeeder;
 use Database\Seeders\Entity\SpecializationSeeder;
 use Database\Seeders\NavMenuSeeder;
 use Database\Seeders\PageSeeder;
@@ -48,6 +50,7 @@ use Throwable;
  */
 class ProjectInitCommand extends Command
 {
+    use GuardsProductionEnvironment;
     use NormalizesProjectSyncEntities;
     use PromptsPrimarySuperAdmin;
 
@@ -89,6 +92,13 @@ class ProjectInitCommand extends Command
 
     public function handle(): int
     {
+        if (! $this->guardNotProduction(
+            'project:init est interdit en production (migrations/seeders/scrapping massifs). '
+            .'Utilisez des pipelines de déploiement et des migrations ciblées.'
+        )) {
+            return ArtisanExitCode::FAILURE;
+        }
+
         set_time_limit(0);
         $startedAt = microtime(true);
         $phaseStatuses = [
@@ -99,6 +109,7 @@ class ProjectInitCommand extends Command
             'capabilities' => 'pending',
             'types' => 'pending',
             'scrapping' => 'pending',
+            'bibliotheque_pages' => 'pending',
             'scheduler' => 'pending',
         ];
 
@@ -169,6 +180,9 @@ class ProjectInitCommand extends Command
             }
             $this->newLine();
 
+            $phaseStatuses['bibliotheque_pages'] = $this->runBibliothequeEntityPagesSync() ? 'ok' : 'warn';
+            $this->newLine();
+
             if ((bool) $this->option('init-scheduler')) {
                 $this->runInitScheduler();
                 $phaseStatuses['scheduler'] = 'ok';
@@ -229,6 +243,7 @@ class ProjectInitCommand extends Command
             'capabilities' => 'Capabilities (fichier local)',
             'types' => 'Types DofusDB (API)',
             'scrapping' => 'Scrapping entités (API)',
+            'bibliotheque_pages' => 'Sous-pages bibliothèque (classes / spé.)',
             'scheduler' => 'Scheduler',
         ];
 
@@ -518,6 +533,16 @@ class ProjectInitCommand extends Command
         }
 
         return true;
+    }
+
+    private function runBibliothequeEntityPagesSync(): bool
+    {
+        $this->info('Phase 5b : Sous-pages bibliothèque (classes et spécialisations)');
+        $this->line('  → '.BibliothequeEntityPagesSeeder::class);
+        $code = Artisan::call('db:seed', ['--class' => BibliothequeEntityPagesSeeder::class, '--force' => true]);
+        $this->output->write(Artisan::output());
+
+        return $code === 0;
     }
 
     private function runInitScheduler(): void

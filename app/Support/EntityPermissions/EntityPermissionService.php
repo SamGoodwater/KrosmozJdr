@@ -15,11 +15,18 @@ use Illuminate\Support\Facades\Gate;
  * Exemple: permissions['entities']['resources']['updateAny'] = true.
  *
  * Cache:
- * - en cache applicatif par user pour éviter les recalculs inutiles
+ * - en cache applicatif par utilisateur pour éviter les recalculs inutiles
+ * - suffixe **`r{révision}`** : incrémenté après un changement global (ex. matrice « Gérer l’affichage »)
+ * pour que les anciennes entrées TTL-out sans avoir à tout vider ni lister tous les utilisateurs.
  * - la source de vérité reste les Policies (Gate::can)
  */
 class EntityPermissionService
 {
+    /**
+     * Clé de révision globale : quand elle change, une nouvelle clé de cache par utilisateur est utilisée.
+     */
+    public const PERMISSIONS_CACHE_REVISION_KEY = 'permissions.entities.cache_revision';
+
     /**
      * @var string
      */
@@ -85,9 +92,9 @@ class EntityPermissionService
             ];
         }
 
-        $cacheKey = self::CACHE_PREFIX.$user->id;
+        $revision = self::currentCacheRevision();
 
-        return Cache::remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($user) {
+        return Cache::remember(self::cacheKeyForUserId($user->id, $revision), self::CACHE_TTL_SECONDS, function () use ($user) {
             /** @var array<string, class-string> $registry */
             $registry = (array) Config::get('entity-permissions', []);
             /** @var array<string, array<int, array{entity?: string, ability?: string}>> $accessRegistry */
@@ -141,9 +148,35 @@ class EntityPermissionService
 
     /**
      * Invalide le cache de permissions d'un utilisateur.
+     *
+     * @description
+     * Efface les entrées suffixées révision pour les valeurs \[révision − 50 ; révision courante\] (boucle courte).
      */
     public function forgetForUser(User $user): void
     {
-        Cache::forget(self::CACHE_PREFIX.$user->id);
+        $rev = self::currentCacheRevision();
+        $min = max(0, $rev - 50);
+        for ($r = $min; $r <= $rev; $r++) {
+            Cache::forget(self::cacheKeyForUserId($user->id, $r));
+        }
+    }
+
+    /**
+     * Après modification de la révision globale, les anciennes clés TTL-out (10 min max).
+     */
+    public static function bumpPermissionsCacheRevision(): void
+    {
+        $v = (int) Cache::get(self::PERMISSIONS_CACHE_REVISION_KEY, 0);
+        Cache::forever(self::PERMISSIONS_CACHE_REVISION_KEY, $v + 1);
+    }
+
+    private static function currentCacheRevision(): int
+    {
+        return max(0, (int) Cache::get(self::PERMISSIONS_CACHE_REVISION_KEY, 0));
+    }
+
+    private static function cacheKeyForUserId(int $userId, int $revision): string
+    {
+        return self::CACHE_PREFIX.$userId.'.r'.$revision;
     }
 }

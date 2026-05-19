@@ -26,9 +26,11 @@ const {
       <p class="text-sm leading-snug text-base-content/85">
         Ce site utilise des cookies techniques necessaires (session, securite), sans ciblage publicitaire.
         Les cookies tiers ne s'activent que pour les contenus externes (YouTube/Vimeo), avec ton accord.
-        <a class="link link-primary ml-1" href="/pages/cgu">CGU</a>
+        <a class="link link-primary ml-1" :href="route('pages.show', { page: 'cgu' })">CGU</a>
         <span aria-hidden="true">·</span>
-        <a class="link link-primary ml-1" href="/pages/politique-donnees">Politique de donnees</a>
+        <a class="link link-primary ml-1" :href="route('pages.show', { page: 'politique-donnees' })">Politique de confidentialité</a>
+        <span aria-hidden="true">·</span>
+        <a class="link link-primary ml-1" :href="route('pages.show', { page: 'cookies' })">Cookies</a>
       </p>
 
       <p

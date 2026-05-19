@@ -506,20 +506,19 @@ describe('useEntityActions', () => {
       expect(stateAction.showStateLabel).toBe(false);
     });
 
-    it('affiche le label état dans les contextes compact, large, modal et page', () => {
+    it('affiche le label état dans les contextes full, modal et page', () => {
       const TestComponent = defineComponent({
         setup() {
-          const compact = useEntityActions('spells', { id: 1, state: 'draft' }, { context: { viewMode: 'compact' } }).availableActions;
-          const large = useEntityActions('spells', { id: 1, state: 'draft' }, { context: { viewMode: 'large' } }).availableActions;
+          const full = useEntityActions('spells', { id: 1, state: 'draft' }, { context: { viewMode: 'full' } }).availableActions;
           const modal = useEntityActions('spells', { id: 1, state: 'draft' }, { context: { inModal: true } }).availableActions;
           const page = useEntityActions('spells', { id: 1, state: 'draft' }, { context: { inPage: true } }).availableActions;
-          return { compact, large, modal, page };
+          return { full, modal, page };
         },
         template: '<div></div>',
       });
 
       const wrapper = mount(TestComponent);
-      for (const key of ['compact', 'large', 'modal', 'page']) {
+      for (const key of ['full', 'modal', 'page']) {
         const actions = wrapper.vm[key]?.value ?? wrapper.vm[key];
         expect(actions.find((a) => a.key === 'state')?.showStateLabel).toBe(true);
       }

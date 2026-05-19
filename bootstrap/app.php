@@ -4,8 +4,10 @@ use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\EnsureAdminAreaAccess;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RequirePasswordWithInactivity;
+use App\Support\ProjectSchedule\ProjectScheduleRegistrar;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -22,6 +24,9 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withSchedule(function (Schedule $schedule) {
+        ProjectScheduleRegistrar::register($schedule);
+    })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
             HandleInertiaRequests::class,
@@ -40,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'password.confirm' => RequirePasswordWithInactivity::class,
             'verified' => EnsureEmailIsVerified::class,
             'admin.area' => EnsureAdminAreaAccess::class,
+            'content.area' => \App\Http\Middleware\EnsureContentManagementAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

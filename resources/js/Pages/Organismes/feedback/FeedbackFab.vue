@@ -25,6 +25,7 @@ const attachmentInputRef = ref(null);
 const form = ref({
     url: '',
     includePseudo: false,
+    emailRecap: false,
     type: 'bug',
     message: '',
     attachment: null,
@@ -50,6 +51,7 @@ watch(modalOpen, async (open) => {
     if (open) {
         form.value.url = currentUrl.value;
         form.value.includePseudo = false;
+        form.value.emailRecap = false;
         form.value.type = 'bug';
         form.value.message = '';
         form.value.attachment = null;
@@ -94,6 +96,9 @@ function submit() {
     if (form.value.url) formData.append('url', form.value.url);
     if (form.value.includePseudo && authUser.value?.name) {
         formData.append('pseudo', authUser.value.name);
+    }
+    if (authUser.value && form.value.emailRecap) {
+        formData.append('email_recap', '1');
     }
     if (form.value.attachment) formData.append('attachment', form.value.attachment);
 
@@ -146,17 +151,31 @@ function submit() {
             </template>
 
             <form @submit.prevent="submit" class="space-y-4">
-                <!-- Inclure mon pseudo (si connecté) -->
-                <div v-if="authUser" class="form-control">
-                    <label class="label cursor-pointer justify-start gap-2">
-                        <input
-                            v-model="form.includePseudo"
-                            type="checkbox"
-                            class="checkbox checkbox-primary checkbox-sm"
-                        />
-                        <span class="label-text">Inclure mon pseudo</span>
-                    </label>
-                </div>
+                <template v-if="authUser">
+                    <!-- Inclure mon pseudo -->
+                    <div class="form-control">
+                        <label class="label cursor-pointer justify-start gap-2">
+                            <input
+                                v-model="form.includePseudo"
+                                type="checkbox"
+                                class="checkbox checkbox-primary checkbox-sm"
+                            />
+                            <span class="label-text">Inclure mon pseudo</span>
+                        </label>
+                    </div>
+
+                    <!-- Récap par email -->
+                    <div class="form-control">
+                        <label class="label cursor-pointer justify-start gap-2">
+                            <input
+                                v-model="form.emailRecap"
+                                type="checkbox"
+                                class="checkbox checkbox-primary checkbox-sm"
+                            />
+                            <span class="label-text">Recevoir un email récapitulatif de ce retour</span>
+                        </label>
+                    </div>
+                </template>
 
                 <!-- Type -->
                 <div class="form-control">

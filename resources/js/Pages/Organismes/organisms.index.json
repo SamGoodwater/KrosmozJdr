@@ -698,7 +698,7 @@
       {
         "name": "view",
         "type": "String",
-        "desc": "- Vue à afficher ('large', 'compact', 'minimal', 'text'), défaut 'large'"
+        "desc": "- Vue à afficher ('full', 'minimal', 'text'), défaut 'full'"
       },
       {
         "name": "open",
@@ -842,7 +842,7 @@
   },
   {
     "name": "SearchInput",
-    "description": "SearchInput Molecule (Atomic Design, DaisyUI)",
+    "description": "SearchInput — Recherche globale header (overlay modal, filtres, résultats groupés).",
     "props": [
       {
         "name": "placeholder",

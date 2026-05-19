@@ -24,6 +24,7 @@ import {
     isBreedExtraSpellPivot,
 } from "@/Utils/entity/breedSpellExtra";
 import { warnDev } from "@/Utils/dev-logger";
+import { BREED_MAX_SPELLS_PER_VARIANT_SLOT } from "@/Utils/entity/breedSpellVariantLimits";
 
 const props = defineProps({
     relations: {
@@ -174,8 +175,17 @@ const filteredForSlot = (def) => {
     });
 };
 
+const canAddToSlot = (def) => spellsInSlot(def).length < BREED_MAX_SPELLS_PER_VARIANT_SLOT;
+
 const addToSlot = (spell, def) => {
     if (isSpellInSlot(spell.id, def)) return;
+    if (!canAddToSlot(def)) {
+        notificationStore.warning(
+            `Maximum ${BREED_MAX_SPELLS_PER_VARIANT_SLOT} sorts par emplacement (variantes).`,
+            { duration: 3500, placement: "top-right" }
+        );
+        return;
+    }
     const existing = localRelations.value.find((r) => r.id === spell.id);
     if (existing) {
         pivotValues.value[spell.id] = {

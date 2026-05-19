@@ -5,7 +5,7 @@
  * @description
  * Même structure que ItemLineRow mais condensée : State • Image • Level • Nom • Type • Rareté • Prix • Description • Effets (icône + valeur).
  * Affiche uniquement les propriétés métier (pas read_level, write_level, auto_update, id, created_by, etc.).
- * Prix : `EntityPropertyDisplay` (aligné sur ItemViewCompact).
+ * Prix : `EntityPropertyDisplay` (aligné sur ItemViewFull).
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";

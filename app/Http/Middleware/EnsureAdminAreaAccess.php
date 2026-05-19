@@ -10,9 +10,9 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Accès à l’espace administration (tableau de bord, navigation latérale commune).
+ * Accès à l’espace administration (récap, utilisateurs, scrapping, maintenance).
  *
- * Réservé aux meneurs de jeu et rôles supérieurs (game_master, admin, super_admin).
+ * Réservé aux administrateurs (admin, super_admin).
  */
 class EnsureAdminAreaAccess
 {
@@ -23,8 +23,8 @@ class EnsureAdminAreaAccess
     {
         /** @var User|null $user */
         $user = $request->user();
-        if ($user === null || ! $user->isGameMaster()) {
-            abort(403, 'Accès réservé à l’équipe d’administration.');
+        if ($user === null || ! $user->isAdmin()) {
+            abort(403, 'Accès réservé aux administrateurs.');
         }
 
         return $next($request);

@@ -12,6 +12,9 @@
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin/dashboard.php';
+require __DIR__.'/admin/content-dashboard.php';
+require __DIR__.'/admin/entity-display-visibility.php';
+require __DIR__.'/web/legal-and-changelog.php';
 require __DIR__.'/web/statics.php';
 require __DIR__.'/web/notifications.php';
 require __DIR__.'/web/user.php';
@@ -26,6 +29,7 @@ require __DIR__.'/admin/scrapping-mappings.php';
 require __DIR__.'/admin/dofusdb-effect-mappings.php';
 require __DIR__.'/admin/effects.php';
 require __DIR__.'/admin/project-maintenance.php';
+require __DIR__.'/admin/project-super-console.php';
 
 require __DIR__.'/entities/condition.php';
 require __DIR__.'/entities/creature-trait.php';

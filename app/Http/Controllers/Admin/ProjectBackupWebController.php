@@ -25,7 +25,7 @@ class ProjectBackupWebController extends Controller
     public function store(StoreProjectBackupWebRequest $request): RedirectResponse
     {
         $user = $request->user();
-        if ($user === null || ! $user->isSuperAdmin()) {
+        if ($user === null || ! $user->isInteractiveSuperAdmin()) {
             abort(403);
         }
 

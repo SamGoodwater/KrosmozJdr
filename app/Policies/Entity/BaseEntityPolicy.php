@@ -3,6 +3,7 @@
 namespace App\Policies\Entity;
 
 use App\Models\User;
+use App\Services\EntityDisplay\EntityDisplayVisibilityService;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,6 +14,21 @@ use Illuminate\Database\Eloquent\Model;
  */
 abstract class BaseEntityPolicy
 {
+    /**
+     * Matrice « Gérer l’affichage » : rôle minimal pour voir un état donné (avant read_level / write_level).
+     */
+    protected function passesDisplayVisibilityGate(?User $user, Model $model): bool
+    {
+        $key = app(EntityDisplayVisibilityService::class)->permissionKeyForModel($model);
+        if ($key === null) {
+            return true;
+        }
+
+        $state = (string) ($model->state ?? 'draft');
+
+        return app(EntityDisplayVisibilityService::class)->viewerMeetsMinimumRole($user, $key, $state);
+    }
+
     private function userLevel(?User $user): int
     {
         // Invité = 0
@@ -56,12 +72,16 @@ abstract class BaseEntityPolicy
             return true;
         }
 
+        if (! $this->passesDisplayVisibilityGate($user, $model)) {
+            return false;
+        }
+
         $state = $this->state($model);
         $level = $this->userLevel($user);
 
-        // Archivé: réservé aux admins (simplification)
+        // Archivé : matrice + read_level (comme playable, sans réservation implicite « admin only »).
         if ($state === 'archived') {
-            return false;
+            return $level >= $this->readLevel($model);
         }
 
         // Jouable: lisible si niveau >= read_level

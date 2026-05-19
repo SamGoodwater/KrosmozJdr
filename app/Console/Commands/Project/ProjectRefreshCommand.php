@@ -9,7 +9,10 @@ use App\Services\Project\ProjectRunService;
 use Illuminate\Console\Command;
 
 /**
- * Réinstallation locale lourde : grand ménage disque puis optionnellement `setup --refresh`, `migrate:fresh`, puis clears alignés avec `project:cron --clear`.
+ * Réinstallation locale lourde : grand ménage disque puis optionnellement `setup --refresh`,
+ * puis **pipeline complet** {@see ProjectInitCommand} (`project:init --fresh`) pour aligner la base
+ * avec l’init standard (seeders, règles, capacités, types, scrapping selon options).
+ * Termine par les clears alignés sur `project:cron --clear`.
  * Interdit en production.
  */
 class ProjectRefreshCommand extends Command
@@ -21,11 +24,15 @@ class ProjectRefreshCommand extends Command
     }
 
     protected $signature = 'project:refresh
-        {--hard : Exécuter setup --refresh (vendor + node_modules) avant migrate:fresh}
-        {--without-seed : Ne pas passer --seed à migrate:fresh}
-        {--force : Ne pas demander confirmation (scripts/CI)}';
+        {--hard : Exécuter setup --refresh (vendor + node_modules) avant le pipeline d’init}
+        {--without-seed : Transmet --skip-seeders à project:init (schéma migré, sans données seedées)}
+        {--skip-scrapping : Transmet à project:init — accélère fortement la réinit}
+        {--fast : Raccourci : --skip-scrapping et --skip-types (données locales sans DofusDB)}
+        {--noimage : Transmet à project:init — pas de téléchargement d’images}
+        {--skip-types : Transmet à project:init — pas de types DofusDB (API)}
+        {--force : Ne pas demander confirmation (scripts/CI) ; transmet aussi --skip-super-admin-prompt à project:init}';
 
-    protected $description = 'Réinit locale : après confirmation — grand ménage (clear:deep), setup --hard optionnel, migrate:fresh, puis clears équivalent `project:cron --clear`';
+    protected $description = 'Réinit locale : grand ménage, setup --hard optionnel, project:init --fresh (pipeline complet), puis clears type project:cron --clear';
 
     public function handle(): int
     {
@@ -35,7 +42,7 @@ class ProjectRefreshCommand extends Command
             return ArtisanExitCode::FAILURE;
         }
 
-        if (! $this->option('force') && ! $this->confirm('⚠️  migrate:fresh détruira toutes les tables. Continuer ?')) {
+        if (! $this->option('force') && ! $this->confirm('⚠️  Cette commande exécute migrate:fresh via project:init et détruira toutes les tables. Continuer ?')) {
             $this->info('Annulé.');
 
             return ArtisanExitCode::FAILURE;
@@ -56,15 +63,9 @@ class ProjectRefreshCommand extends Command
             }
         }
 
-        $this->info('→ migrate:fresh');
-        $seed = ! $this->option('without-seed');
+        $this->info('→ project:init --fresh (pipeline complet : migrations, seeders, règles, capacités, types, scrapping selon options)');
 
-        $migrateParams = ['--force' => true];
-        if ($seed) {
-            $migrateParams['--seed'] = true;
-        }
-
-        $code = $this->call('migrate:fresh', $migrateParams);
+        $code = $this->call('project:init', $this->buildProjectInitArguments());
         if ($code !== 0) {
             return $code;
         }
@@ -82,5 +83,36 @@ class ProjectRefreshCommand extends Command
         $this->info('✅ project:refresh terminé.');
 
         return ArtisanExitCode::SUCCESS;
+    }
+
+    /**
+     * @return array<string, bool|string>
+     */
+    private function buildProjectInitArguments(): array
+    {
+        $arguments = [
+            '--fresh' => true,
+        ];
+
+        if ($this->option('force') || ! $this->input->isInteractive()) {
+            $arguments['--skip-super-admin-prompt'] = true;
+        }
+
+        if ($this->option('without-seed')) {
+            $arguments['--skip-seeders'] = true;
+        }
+
+        if ($this->option('fast')) {
+            $arguments['--skip-scrapping'] = true;
+            $arguments['--skip-types'] = true;
+        }
+
+        foreach (['skip-scrapping', 'noimage', 'skip-types'] as $name) {
+            if ($this->option($name)) {
+                $arguments['--'.$name] = true;
+            }
+        }
+
+        return $arguments;
     }
 }

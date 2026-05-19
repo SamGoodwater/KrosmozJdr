@@ -21,7 +21,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read DataSubjectRequest|null $dataSubjectRequest
  * @property-read User $user
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport query()
@@ -36,7 +35,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyExport whereUserId($value)
- *
  * @mixin \Eloquent
  */
 class PrivacyExport extends Model

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreCapabilityRequest;
 use App\Http\Requests\Entity\UpdateCapabilityConditionsRequest;
@@ -17,6 +18,8 @@ use Inertia\Inertia;
 
 class CapabilityController extends Controller
 {
+    use RedirectsAfterEntityCreate;
+
     /**
      * Display a listing of the resource.
      */
@@ -82,8 +85,13 @@ class CapabilityController extends Controller
 
         $capability = Capability::create($data);
 
-        return redirect()->route('entities.capabilities.index')
-            ->with('success', 'Capacité créée avec succès.');
+        return $this->redirectAfterEntityStore(
+            $request,
+            $capability,
+            'entities.capabilities.edit',
+            'entities.capabilities.index',
+            'Capacité créée avec succès.',
+        );
     }
 
     /**

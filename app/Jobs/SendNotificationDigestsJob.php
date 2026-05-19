@@ -5,6 +5,8 @@ namespace App\Jobs;
 use App\Models\NotificationDigestQueue;
 use App\Models\User;
 use App\Notifications\DigestNotification;
+use App\Support\ProjectSchedule\ProjectScheduleCatalog;
+use App\Support\ProjectSchedule\ProjectScheduleRegistrar;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 /**
  * Envoie les notifications en mode digest pour une fréquence donnée (daily, weekly, monthly).
  *
- * Planifié dans App\Console\Kernel : daily 00:05, weekly lundi 00:10, monthly 1er à 00:15.
+ * Planifié via {@see ProjectScheduleRegistrar} / {@see ProjectScheduleCatalog} (digests daily / weekly / monthly — horaires modifiables par le super-admin dans `project_schedule_tasks`).
  * En cas d'échec d'envoi, les entrées ne sont pas supprimées et seront retentées au prochain run.
  */
 class SendNotificationDigestsJob implements ShouldQueue

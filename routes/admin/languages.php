@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
  */
 Route::prefix('admin/languages')
     ->name('admin.languages.')
-    ->middleware(['auth', 'role:admin'])
+    ->middleware(['auth', 'role:game_master', 'content.area'])
     ->group(function () {
         Route::get('/', [LanguageController::class, 'index'])->name('index');
         Route::post('/', [LanguageController::class, 'store'])->name('store');

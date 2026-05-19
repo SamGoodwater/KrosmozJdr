@@ -224,7 +224,7 @@ const wrapEntityTooltip = computed(
             class="inline-flex max-w-full min-w-0 align-baseline"
         >
             <template #content>
-                <div class="max-w-sm whitespace-pre-wrap text-sm leading-snug text-base-content">
+                <div class="kref-rich-preview-panel max-w-sm whitespace-pre-wrap text-sm leading-snug text-base-content">
                     <p v-if="charTooltipText">{{ charTooltipText }}</p>
                     <div
                         v-if="charTooltipMeta.length"

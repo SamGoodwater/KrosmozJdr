@@ -14,6 +14,8 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Monster } from "@/Models/Entity/Monster";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
+import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
+import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
@@ -64,7 +66,7 @@ const { refreshEntity } = useScrapping();
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
-const modalView = ref('large');
+const modalView = ref('full');
 const createModalOpen = ref(false);
 const quickEditModalOpen = ref(false);
 const quickEditEntity = ref(null);
@@ -151,7 +153,7 @@ const handleTableLoaded = ({ rows, meta }) => {
 
 const openModal = (entity) => {
     selectedEntity.value = entity;
-    modalView.value = 'large';
+    modalView.value = 'full';
     modalOpen.value = true;
 };
 
@@ -180,6 +182,23 @@ const closeModal = () => {
     modalOpen.value = false;
     selectedEntity.value = null;
 };
+
+
+const { handleKeyboardIntent } = useEntityIndexTableIntents({
+    ModelClass: Monster,
+    routeShowName: "entities.monsters.show",
+    routeShowParam: "monster",
+    canModify: () => canModify.value,
+    openFullModal: (model) => {
+        selectedEntity.value = model;
+        modalView.value = "full";
+        modalOpen.value = true;
+    },
+    openEdit: (model) => {
+        quickEditEntity.value = model;
+        quickEditModalOpen.value = true;
+    },
+});
 
 // Handler pour les actions du tableau
 const handleTableAction = async (actionKey, entity, row) => {
@@ -324,6 +343,7 @@ const handleQuickEditSubmit = () => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @keyboard-intent="handleKeyboardIntent"
                     @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
@@ -350,6 +370,7 @@ const handleQuickEditSubmit = () => {
             entity-type="monster"
             :fields-config="fieldsConfig"
             :default-entity="defaultEntity"
+            :create-allow-field-keys="getEntityCreateAllowFieldKeys('monsters')"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />

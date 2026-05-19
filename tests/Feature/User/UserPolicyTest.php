@@ -5,6 +5,7 @@ namespace Tests\Feature\User;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
 /**
@@ -125,22 +126,29 @@ class UserPolicyTest extends TestCase
         $targetUser = User::factory()->create(['role' => User::ROLE_USER]);
         $policy = new UserPolicy;
 
-        // Le super_admin a tous les droits via before()
-        $this->assertTrue($policy->updateRole($superAdmin, $targetUser));
+        // La gate applique bien `before(...)` avec `isInteractiveSuperAdmin()`.
+        $this->assertTrue(Gate::forUser($superAdmin)->allows('updateRole', $targetUser));
     }
 
     /**
-     * Test : Un super_admin ne peut pas modifier le rôle d'un autre super_admin
+     * Compte système (is_system) : jamais super-admin interactif dans les policies métier HTTP.
      */
-    public function test_super_admin_cannot_update_other_super_admin_role(): void
+    public function test_system_super_admin_actor_has_no_privileged_super_policy(): void
     {
-        $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
-        $targetSuperAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        $systemActor = User::factory()->create([
+            'role' => User::ROLE_SUPER_ADMIN,
+            'is_system' => true,
+        ]);
+        $target = User::factory()->create(['role' => User::ROLE_USER]);
+        $anotherSuperHuman = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
         $policy = new UserPolicy;
 
-        // Même si le super_admin a tous les droits, la logique métier dans le contrôleur empêche la promotion en super_admin
-        // Ici on teste juste la policy, qui autorise (mais le contrôleur bloquera)
-        $this->assertTrue($policy->updateRole($superAdmin, $targetSuperAdmin));
+        $this->assertNull($policy->before($systemActor));
+        $this->assertFalse($policy->resetPassword($systemActor, $target));
+        $this->assertFalse($policy->forceDelete($systemActor, $target));
+
+        // Un super humain existe déjà ; l'acteur système ne court-circuite pas updateRole().
+        $this->assertFalse(Gate::forUser($systemActor)->allows('updateRole', $anotherSuperHuman));
     }
 
     /**

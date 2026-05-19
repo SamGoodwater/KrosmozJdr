@@ -203,8 +203,7 @@ Composants génériques qui utilisent les configs pour rendre les interfaces.
 ## 🎨 Couche 7 : Vues (Composants Vue spécifiques)
 
 ### Fichiers clés
-- `Pages/Molecules/entity/{entity}/{Entity}ViewLarge.vue` — Vue Large
-- `Pages/Molecules/entity/{entity}/{Entity}ViewCompact.vue` — Vue Compact
+- `Pages/Molecules/entity/{entity}/{Entity}ViewFull.vue` — Vue détail (page ou modal)
 - `Pages/Molecules/entity/{entity}/{Entity}ViewMinimal.vue` — Vue Minimal
 - `Pages/Molecules/entity/{entity}/{Entity}ViewText.vue` — Vue Text
 - `Pages/Molecules/entity/{entity}/{Entity}EditLarge.vue` — Édition Large
@@ -216,7 +215,7 @@ Composants génériques qui utilisent les configs pour rendre les interfaces.
 ### Rôle
 Composants Vue **manuels** qui définissent le layout et utilisent les méthodes du modèle.
 
-**Vues d'affichage (Large, Compact, Minimal, Text) :**
+**Vues d'affichage (full, minimal, line, texte) :**
 - Reçoivent l'entité en prop
 - Utilisent `entity.toCell(fieldKey)` pour obtenir les cellules formatées
 - Utilisent `getFieldDescriptors()` pour obtenir les métadonnées (label, icon, tooltip)
@@ -287,14 +286,14 @@ Composants Vue **manuels** qui définissent le layout et utilisent les méthodes
 
 ---
 
-## 🔄 Flux détaillé : Affichage d'une vue Large
+## 🔄 Flux détaillé : Affichage d'une vue Full
 
 ```
 1. EntityModal appelle :
-   const component = await resolveEntityViewComponent('resource', 'large');
-   // → ResourceViewLarge.vue
+   const component = await resolveEntityViewComponent('resource', 'full');
+   // → ResourceViewFull.vue
 
-2. ResourceViewLarge.vue :
+2. ResourceViewFull.vue :
    - Reçoit resource en prop
    - Crée instance : const entity = new Resource(resource)
    - Récupère descriptors : const descriptors = getResourceFieldDescriptors(ctx)
@@ -400,8 +399,7 @@ resources/js/
     │   ├── EntityQuickEdit.vue          # QuickEdit générique
     │   ├── EntityFormField.vue          # Champ formulaire générique
     │   └── {entity}/
-    │       ├── {Entity}ViewLarge.vue
-    │       ├── {Entity}ViewCompact.vue
+    │       ├── {Entity}ViewFull.vue
     │       ├── {Entity}ViewMinimal.vue
     │       ├── {Entity}ViewText.vue
     │       ├── {Entity}EditLarge.vue

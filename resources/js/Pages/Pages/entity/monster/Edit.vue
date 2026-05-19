@@ -113,6 +113,7 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
             entity-type="monster"
             :fields-config="fieldsConfig"
             :is-updating="true"
+            :fixed-footer-actions="true"
         />
         
         <!-- Gestion des scénarios du monstre -->

@@ -6,15 +6,15 @@
  * Page Inertia utilisée par `entities.conditions.show` pour l'ouverture en page complète.
  *
  * @example
- * <ConditionViewLarge :condition="condition" />
+ * <ConditionViewFull :condition="condition" />
  */
 import { computed } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { Condition } from "@/Models/Entity/Condition";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
-import EntityViewLargeWrapper from "@/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue";
-import ConditionViewLarge from "@/Pages/Molecules/entity/condition/ConditionViewLarge.vue";
+import EntityViewFullWrapper from "@/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue";
+import ConditionViewFull from "@/Pages/Molecules/entity/condition/ConditionViewFull.vue";
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -38,11 +38,11 @@ setPageTitle(`État : ${condition.value.name || "-"}`);
     <Head :title="`État : ${condition?.name || '-'}`" />
 
     <Container class="space-y-6 pb-8">
-        <EntityViewLargeWrapper :show-back-button="true" back-route="entities.conditions.index">
-            <ConditionViewLarge
+        <EntityViewFullWrapper :show-back-button="true" back-route="entities.conditions.index">
+            <ConditionViewFull
                 :condition="condition"
                 :show-actions="true"
             />
-        </EntityViewLargeWrapper>
+        </EntityViewFullWrapper>
     </Container>
 </template>

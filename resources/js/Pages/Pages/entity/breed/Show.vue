@@ -10,8 +10,8 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { Breed } from "@/Models/Entity/Breed";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import EntityViewLargeWrapper from "@/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue";
-import BreedViewLarge from "@/Pages/Molecules/entity/breed/BreedViewLarge.vue";
+import EntityViewFullWrapper from "@/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue";
+import BreedViewFull from "@/Pages/Molecules/entity/breed/BreedViewFull.vue";
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -42,7 +42,7 @@ const goEdit = () => {
     <Head :title="`Classe : ${breed?.name || '-'}`" />
 
     <Container class="space-y-6 pb-8">
-        <EntityViewLargeWrapper :show-back-button="true" back-route="entities.breeds.index">
+        <EntityViewFullWrapper :show-back-button="true" back-route="entities.breeds.index">
             <div class="space-y-6">
                 <div class="flex justify-end gap-2">
                     <Btn v-if="breed?.can?.update" color="primary" @click="goEdit">
@@ -51,12 +51,12 @@ const goEdit = () => {
                     </Btn>
                 </div>
 
-                <BreedViewLarge
+                <BreedViewFull
                     :breed="breed"
                     :show-actions="true"
                     :characteristic-runtime="characteristicRuntime"
                 />
             </div>
-        </EntityViewLargeWrapper>
+        </EntityViewFullWrapper>
     </Container>
 </template>

@@ -2,7 +2,7 @@
  * useEntityTableRowPointer
  *
  * @description
- * Clics sur ligne de tableau : Ctrl/Meta = affichage modal, Alt = édition modale, sinon sélection.
+ * Clics sur ligne de tableau : Ctrl/Meta = page Show, Alt = édition, sinon sélection.
  */
 
 /** @param {MouseEvent} event */
@@ -18,11 +18,11 @@ export function isRowInteractiveTarget(event) {
 
 /**
  * @param {MouseEvent} event
- * @returns {'default'|'view'|'edit'}
+ * @returns {'default'|'page'|'edit'}
  */
 export function classifyRowPointerModifiers(event) {
     if (!event) return "default";
-    if (event.ctrlKey || event.metaKey) return "view";
+    if (event.ctrlKey || event.metaKey) return "page";
     if (event.altKey) return "edit";
     return "default";
 }

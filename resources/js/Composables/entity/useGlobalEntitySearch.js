@@ -1,58 +1,105 @@
 /**
- * useGlobalEntitySearch — Recherche globale multi‑entités pour le header
+ * useGlobalEntitySearch — endpoint unique `/api/global-search` (entités + pages + sections), Gate `view`.
  *
  * @description
- * Lance en parallèle des recherches sur plusieurs endpoints `api.tables.{entityType}`
- * (format=entities) et agrège les résultats dans une liste plate, prête à afficher
- * dans un dropdown sous le champ de recherche du header.
+ * Requête GET avec session web ; filtres optionnels `types[]` et `states[]` ; pagination via `limit` croissant.
  *
- * Pensé pour un usage léger (User / invité) :
- * - Requête déclenchée après un minimum de caractères
- * - Debounce configurable
- * - Pas de pagination : petit nombre de résultats par entité
+ * @example
+ * const { query, groupedResults, loadMore, hasMore } = useGlobalEntitySearch();
  */
 
 import { ref, computed, watch } from "vue";
-import { resolveEntityRouteHref } from "@/Composables/entity/entityRouteRegistry";
-import { KREF_ENTITY_CONFIGS } from "@/Composables/richText/krefEntityRegistry";
+import { globalSearchEntityLabelKey } from "@/Utils/entity/globalSearchEntityLabel";
 
-const DEFAULT_GLOBAL_ENTITIES = KREF_ENTITY_CONFIGS.map((cfg) => ({
-    entityType: cfg.entityType,
-    label: cfg.label,
-    icon: cfg.icon,
-    iconUrl: cfg.iconUrl,
-    limit: 5,
-}));
+/** Filtres « catégories » proposés dans le header (valeurs = GlobalSearchService::ALLOWED_TYPES). */
+export const GLOBAL_SEARCH_TYPE_FILTERS = Object.freeze([
+    { value: "pages", label: "Pages" },
+    { value: "sections", label: "Sections" },
+    { value: "spells", label: "Sorts" },
+    { value: "monsters", label: "Monstres" },
+    { value: "items", label: "Objets" },
+    { value: "resources", label: "Ressources" },
+    { value: "consumables", label: "Consommables" },
+    { value: "breeds", label: "Classes" },
+    { value: "campaigns", label: "Campagnes" },
+    { value: "scenarios", label: "Scénarios" },
+    { value: "npcs", label: "PNJ" },
+    { value: "shops", label: "Boutiques" },
+    { value: "conditions", label: "Conditions" },
+    { value: "capabilities", label: "Capacités" },
+    { value: "specializations", label: "Spécialisations" },
+    { value: "panoplies", label: "Panoplies" },
+    { value: "creature-traits", label: "Traits de créature" },
+    { value: "creatures", label: "Créatures" },
+    { value: "resource-types", label: "Types de ressource" },
+]);
+
+/** Filtres d’état de publication (valeurs = GlobalSearchService::ALLOWED_STATES). */
+export const GLOBAL_SEARCH_STATE_FILTERS = Object.freeze([
+    { value: "playable", label: "Jouable" },
+    { value: "draft", label: "Brouillon" },
+    { value: "raw", label: "Brut" },
+    { value: "archived", label: "Archivé" },
+]);
 
 /**
  * @param {Object} [options]
- * @param {Array<{entityType:string,label:string,icon?:string,limit?:number}>} [options.entities]
  * @param {number} [options.minQueryLength=2]
  * @param {number} [options.debounce=250]
+ * @param {number} [options.pageSize=40]
+ * @param {import('vue').Ref<string[]>} [options.selectedTypes]
+ * @param {import('vue').Ref<string[]>} [options.selectedStates]
  */
 export function useGlobalEntitySearch(options = {}) {
     const {
-        entities = DEFAULT_GLOBAL_ENTITIES,
         minQueryLength = 2,
         debounce = 250,
+        pageSize = 40,
+        selectedTypes = ref([]),
+        selectedStates = ref([]),
     } = options;
 
     const query = ref("");
     const loading = ref(false);
+    const loadingMore = ref(false);
     const error = ref(null);
     const isOpen = ref(false);
+    const fetchLimit = ref(pageSize);
+    const hasMore = ref(false);
 
-    /** @type {import('vue').Ref<Array<{ id:number|string, entityType:string, group:string, title:string, subtitle?:string, href:string, icon?:string }>>} */
+    /** @type {import('vue').Ref<Array<{ id:number|string, entityType:string, group:string, title:string, subtitle?:string, href:string, icon?:string, iconUrl?:string }>>} */
     const flatResults = ref([]);
 
     let debounceTimer = null;
     let abortController = null;
+    let lastSearchKey = "";
 
     const hasResults = computed(() => flatResults.value.length > 0);
+
+    const groupedResults = computed(() => {
+        /** @type {Map<string, { entityType: string, group: string, labelKey: string, items: typeof flatResults.value }>} */
+        const map = new Map();
+
+        for (const row of flatResults.value) {
+            const key = row.entityType || "unknown";
+            if (!map.has(key)) {
+                map.set(key, {
+                    entityType: key,
+                    group: row.group || key,
+                    labelKey: globalSearchEntityLabelKey(key),
+                    items: [],
+                });
+            }
+            map.get(key).items.push(row);
+        }
+
+        return [...map.values()];
+    });
 
     const clearResults = () => {
         flatResults.value = [];
         error.value = null;
+        hasMore.value = false;
     };
 
     const setQuery = (value) => {
@@ -63,64 +110,46 @@ export function useGlobalEntitySearch(options = {}) {
         isOpen.value = false;
     };
 
-    const open = () => {
-        if (hasResults.value) {
-            isOpen.value = true;
-        }
+    const resetPagination = () => {
+        fetchLimit.value = pageSize;
+        hasMore.value = false;
     };
 
-    const buildUrl = (entityType, searchText, limit) => {
-        const params = {
-            format: "entities",
-            search: searchText,
-            limit,
-        };
-        // Ziggy `route` global — la route peut ne pas exister pour certains entityType
+    const buildSearchUrl = (searchText) => {
+        const params = new URLSearchParams();
+        params.set("q", searchText);
+        params.set("limit", String(fetchLimit.value));
+
+        const types = Array.isArray(selectedTypes?.value) ? selectedTypes.value : [];
+        const states = Array.isArray(selectedStates?.value) ? selectedStates.value : [];
+
+        for (const t of types) {
+            if (t) {
+                params.append("types[]", t);
+            }
+        }
+        for (const s of states) {
+            if (s) {
+                params.append("states[]", s);
+            }
+        }
+
         try {
-            // eslint-disable-next-line no-undef
-            return route(`api.tables.${entityType}`, params);
+            const base = route("api.global-search");
+
+            return `${base}?${params.toString()}`;
         } catch (e) {
             // eslint-disable-next-line no-console
-            console.warn(
-                "[useGlobalEntitySearch] Route Ziggy manquante pour",
-                `api.tables.${entityType}`
-            );
+            console.warn("[useGlobalEntitySearch] Route Ziggy manquante : api.global-search");
             return null;
         }
     };
 
-    const normalizeEntity = (entityType, cfg, raw) => {
-        const id = raw.id;
-        const title = raw.name || raw.creature?.name || raw.title || raw.slug || `#${id}`;
-        const subtitle =
-            raw.description ||
-            raw.keyword ||
-            raw.slug ||
-            raw.creature?.name ||
-            "";
-
-        let href = "";
-        try {
-            // Certaines entités (campagnes, scénarios) utilisent le slug pour la route show
-            const slugOrId = raw.slug || id;
-            href = resolveEntityRouteHref(entityType, "show", slugOrId);
-        } catch (e) {
-            href = "";
-        }
-
-        return {
-            id,
-            entityType,
-            group: cfg.label || entityType,
-            title: String(title),
-            subtitle: subtitle ? String(subtitle) : "",
-            href,
-            icon: cfg.icon || "",
-            iconUrl: cfg.iconUrl || "",
-        };
-    };
-
-    const searchNow = async () => {
+    /**
+     * @param {{ append?: boolean }} [opts]
+     */
+    const searchNow = async (opts = {}) => {
+        const append = Boolean(opts.append);
         const q = (query.value || "").trim();
 
         if (q.length < minQueryLength) {
@@ -129,57 +158,86 @@ export function useGlobalEntitySearch(options = {}) {
                 abortController = null;
             }
             loading.value = false;
+            loadingMore.value = false;
             clearResults();
             isOpen.value = false;
+            lastSearchKey = "";
             return;
         }
+
+        const searchKey = JSON.stringify({
+            q,
+            types: selectedTypes?.value ?? [],
+            states: selectedStates?.value ?? [],
+        });
+
+        if (!append && searchKey !== lastSearchKey) {
+            resetPagination();
+        }
+        lastSearchKey = searchKey;
 
         if (abortController) {
             abortController.abort();
         }
         abortController = typeof AbortController !== "undefined" ? new AbortController() : null;
 
-        loading.value = true;
+        if (append) {
+            loadingMore.value = true;
+        } else {
+            loading.value = true;
+        }
         error.value = null;
         isOpen.value = true;
 
         try {
             const controller = abortController;
-            const promises = entities.map(async (cfg) => {
-                const { entityType, limit = 5 } = cfg;
-                if (!entityType) return [];
-
-                const url = buildUrl(entityType, q, limit);
-                if (!url) return [];
-                const res = await fetch(url, {
-                    headers: { Accept: "application/json" },
-                    signal: controller?.signal,
-                });
-                if (!res.ok) {
-                    // 403/404/etc. => on ignore silencieusement pour cette entité
-                    return [];
+            const url = buildSearchUrl(q);
+            if (!url) {
+                if (!append) {
+                    flatResults.value = [];
                 }
-                const data = await res.json();
-                const list = Array.isArray(data?.entities) ? data.entities : [];
-                return list.map((raw) => normalizeEntity(entityType, cfg, raw));
-            });
-
-            const perEntityResults = await Promise.all(promises);
-            const merged = perEntityResults.flat();
-
-            flatResults.value = merged;
-        } catch (e) {
-            if (e?.name === "AbortError") {
-                // Nouvelle recherche a été lancée
                 return;
             }
-            // Pour ne pas spammer l'utilisateur, on loggue en console et on affiche un message générique
+
+            const res = await fetch(url, {
+                headers: { Accept: "application/json" },
+                credentials: "same-origin",
+                signal: controller?.signal,
+            });
+
+            if (!res.ok) {
+                if (!append) {
+                    flatResults.value = [];
+                }
+                error.value = "Recherche indisponible pour le moment.";
+                return;
+            }
+
+            const data = await res.json();
+            const list = Array.isArray(data?.results) ? data.results : [];
+            const filtered = list.filter((row) => row && row.href);
+
+            flatResults.value = filtered;
+            hasMore.value = Boolean(data?.meta?.hasMore);
+        } catch (e) {
+            if (e?.name === "AbortError") {
+                return;
+            }
             // eslint-disable-next-line no-console
-            console.error("[useGlobalEntitySearch] Erreur lors de la recherche globale :", e);
+            console.error("[useGlobalEntitySearch]", e);
             error.value = e?.message || "Erreur lors de la recherche.";
         } finally {
             loading.value = false;
+            loadingMore.value = false;
         }
+    };
+
+    const loadMore = () => {
+        if (!hasMore.value || loading.value || loadingMore.value) {
+            return;
+        }
+        fetchLimit.value += pageSize;
+        return searchNow({ append: true });
     };
 
     const debouncedSearch = () => {
@@ -198,17 +256,27 @@ export function useGlobalEntitySearch(options = {}) {
         }
     );
 
+    watch(
+        () => [selectedTypes?.value, selectedStates?.value],
+        () => {
+            debouncedSearch();
+        },
+        { deep: true }
+    );
+
     return {
         query,
         results: flatResults,
+        groupedResults,
         loading,
+        loadingMore,
         error,
         isOpen,
         hasResults,
+        hasMore,
         setQuery,
         searchNow,
-        open,
+        loadMore,
         close,
     };
 }
-

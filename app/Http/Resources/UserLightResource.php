@@ -36,7 +36,7 @@ class UserLightResource extends JsonResource
             'role' => $user->role,
             'role_name' => $user->role_name,
             'is_admin' => $user->isAdmin(),
-            'is_super_admin' => $user->isSuperAdmin(),
+            'is_super_admin' => $user->isInteractiveSuperAdmin(),
             'is_game_master' => $user->isGameMaster(),
             'avatar' => $user->avatarPath(),
             'notifications_enabled' => $user->notifications_enabled,

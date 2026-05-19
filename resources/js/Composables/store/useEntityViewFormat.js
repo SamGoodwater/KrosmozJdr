@@ -1,21 +1,29 @@
 /**
  * useEntityViewFormat Composable
- * 
+ *
  * @description
- * Gère les préférences de format d'affichage des entités (large, compact, minimal, text)
- * Sauvegarde les préférences dans localStorage
- * 
+ * Gère les préférences de format d'affichage des entités (full, minimal, text) en modal.
+ * Sauvegarde les préférences dans localStorage.
+ *
  * @example
  * const { viewFormat, setViewFormat } = useEntityViewFormat('item');
- * viewFormat.value = 'compact';
+ * viewFormat.value = 'minimal';
  */
 import { ref, watch } from 'vue';
 
-const DEFAULT_FORMAT = 'large';
+const DEFAULT_FORMAT = 'full';
 const STORAGE_PREFIX = 'entity_view_format_';
 const DEFAULT_MINIMAL_DISPLAY_MODE = 'hover';
 const STORAGE_MINIMAL_MODE_PREFIX = 'entity_view_minimal_display_mode_';
 const GLOBAL_ENTITY_KEY = 'global';
+
+/** @param {string|null|undefined} stored */
+function normalizeStoredViewFormat(stored) {
+    if (!stored) return null;
+    if (stored === 'large' || stored === 'compact') return 'full';
+    if (stored === 'full' || stored === 'minimal' || stored === 'text') return stored;
+    return null;
+}
 
 /**
  * @param {string} entityType - Le type d'entité (optionnel, pour des préférences par type)
@@ -26,19 +34,19 @@ export function useEntityViewFormat(entityType = 'default') {
     const minimalModeStorageKey = `${STORAGE_MINIMAL_MODE_PREFIX}${entityType}`;
     const globalStorageKey = `${STORAGE_PREFIX}${GLOBAL_ENTITY_KEY}`;
     const globalMinimalModeStorageKey = `${STORAGE_MINIMAL_MODE_PREFIX}${GLOBAL_ENTITY_KEY}`;
-    
-    // Charger d'abord la préférence spécifique entité, puis fallback global, puis défaut.
-    const storedFormat = localStorage.getItem(storageKey) || localStorage.getItem(globalStorageKey);
+
+    const storedFormat = normalizeStoredViewFormat(
+        localStorage.getItem(storageKey) || localStorage.getItem(globalStorageKey),
+    );
     const viewFormat = ref(storedFormat || DEFAULT_FORMAT);
 
     const storedMinimalMode = localStorage.getItem(minimalModeStorageKey) || localStorage.getItem(globalMinimalModeStorageKey);
     const minimalDisplayMode = ref(storedMinimalMode || DEFAULT_MINIMAL_DISPLAY_MODE);
-    
+
     const availableFormats = [
-        { value: 'large', label: 'Complet', icon: 'fa-solid fa-window-maximize' },
-        { value: 'compact', label: 'Compact', icon: 'fa-solid fa-compress' },
+        { value: 'full', label: 'Complet', icon: 'fa-solid fa-window-maximize' },
         { value: 'minimal', label: 'Minimal', icon: 'fa-solid fa-minus' },
-        { value: 'text', label: 'Texte', icon: 'fa-solid fa-align-left' }
+        { value: 'text', label: 'Texte', icon: 'fa-solid fa-align-left' },
     ];
 
     const availableMinimalDisplayModes = [
@@ -46,10 +54,9 @@ export function useEntityViewFormat(entityType = 'default') {
         { value: 'extended', label: 'Toujours étendu' },
         { value: 'compact', label: 'Toujours compact' },
     ];
-    
+
     /**
-     * Définit le format d'affichage
-     * @param {string} format - Le format ('large', 'compact', 'minimal', 'text')
+     * @param {string} format - 'full' | 'minimal' | 'text'
      */
     const setViewFormat = (format) => {
         if (availableFormats.some(f => f.value === format)) {
@@ -60,7 +67,6 @@ export function useEntityViewFormat(entityType = 'default') {
     };
 
     /**
-     * Définit le mode d’affichage de la vue Minimal
      * @param {'compact'|'hover'|'extended'} mode
      */
     const setMinimalDisplayMode = (mode) => {
@@ -70,8 +76,7 @@ export function useEntityViewFormat(entityType = 'default') {
             localStorage.setItem(globalMinimalModeStorageKey, mode);
         }
     };
-    
-    // Sauvegarder automatiquement les changements
+
     watch(viewFormat, (newFormat) => {
         localStorage.setItem(storageKey, newFormat);
         localStorage.setItem(globalStorageKey, newFormat);
@@ -81,7 +86,7 @@ export function useEntityViewFormat(entityType = 'default') {
         localStorage.setItem(minimalModeStorageKey, newMode);
         localStorage.setItem(globalMinimalModeStorageKey, newMode);
     });
-    
+
     return {
         viewFormat,
         setViewFormat,
@@ -91,6 +96,3 @@ export function useEntityViewFormat(entityType = 'default') {
         availableMinimalDisplayModes,
     };
 }
-
-export default useEntityViewFormat;
-

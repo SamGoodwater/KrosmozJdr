@@ -46,7 +46,10 @@ class PanoplyTableController extends Controller
         }
 
         $query = Panoply::query()
-            ->with(['createdBy'])
+            ->with([
+                'createdBy',
+                'items' => static fn ($q) => $q->select(['items.id', 'items.name', 'items.level']),
+            ])
             ->withCount(['items', 'npcs', 'campaigns', 'scenarios', 'shops']);
 
         if ($search !== '') {

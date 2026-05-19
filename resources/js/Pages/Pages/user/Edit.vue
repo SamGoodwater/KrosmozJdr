@@ -70,7 +70,10 @@ const initializeForms = (userData) => {
         formProfile.email = data.email;
     }
     if (data.role !== undefined) {
-        formRole.role = data.role;
+        formRole.role =
+            data.role === ROLES.SUPER_ADMIN
+                ? ROLES.ADMIN
+                : data.role;
     }
     const types = page.props.notificationTypes || {};
     const prefs = data.notification_preferences || {};
@@ -335,6 +338,16 @@ const roleValidation = computed(() => {
         showNotification: false
     };
 });
+
+/** Niveaux d'accès assignables depuis l’UI (sans super_admin : réservé à project:init / CLI). */
+const adminRoleSelectOptions = computed(() =>
+    Object.values(ROLES)
+        .filter((r) => r !== ROLES.SUPER_ADMIN && r !== ROLES.GUEST)
+        .map((role) => ({
+            value: role,
+            label: getRoleTranslation(role),
+        }))
+);
 
 const showForceDeleteModal = ref(false);
 
@@ -643,10 +656,7 @@ const confirmForceDelete = () => {
                             variant="glass"
                             color="primary"
                             label="Niveau d'accès"
-                            :options="Object.values(ROLES).map(role => ({ 
-                                value: role, 
-                                label: getRoleTranslation(role) 
-                            }))"
+                            :options="adminRoleSelectOptions"
                             :validation="roleValidation"
                             :searchable="false"
                         />

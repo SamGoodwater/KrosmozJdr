@@ -260,7 +260,7 @@ function resolveActionIntent(actionKey, context) {
 function shouldShowStateLabel(context) {
   const viewMode = String(context?.viewMode || "").trim();
   if (context?.inMinimal || context?.inLine || viewMode === "minimal" || viewMode === "line") return false;
-  if (viewMode === "compact" || viewMode === "large") return true;
+  if (viewMode === "full") return true;
   if (context?.inModal || context?.inPage) return true;
   return false;
 }

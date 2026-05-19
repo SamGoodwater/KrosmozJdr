@@ -27,10 +27,16 @@ Le bouton `@` de la toolbar propose :
 - ouverture du sélecteur complet,
 - insertion directe d’un déclencheur (`@`, `@carac:`, `@section:`, `@monstre:`, etc.).
 
-Règles UX de la recherche inline :
+Règles UX de la recherche inline (release 1.3.2 — Phase D) :
 - seuil minimum : 2 caractères après le déclencheur,
 - debounce + annulation des requêtes en vol (`AbortController`),
-- liste limitée à 12 résultats.
+- liste limitée à **12 résultats** (plafond global),
+- ordre : **caractéristiques → sections → pages → entités** (fusion puis `slice(12)` — si plus de 12 caractéristiques correspondent, elles remplissent le quota en priorité),
+- menu `@` : scroll vertical (`overflow-y-auto`), pas de scroll horizontal sur la liste.
+
+Aperçu section au survol :
+- **~10 blocs** HTML (paragraphes, titres, items de liste) — troncature en fin de bloc côté API (`CmsSectionPreviewController`),
+- popover : scroll vertical, `overflow-x-hidden` (tableaux larges scrollables localement si besoin).
 
 ## Format de données
 

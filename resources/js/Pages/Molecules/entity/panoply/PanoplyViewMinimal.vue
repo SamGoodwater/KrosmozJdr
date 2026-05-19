@@ -16,6 +16,7 @@ import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import PanoplyEquipmentTextList from "@/Pages/Molecules/entity/panoply/PanoplyEquipmentTextList.vue";
 
 const props = defineProps({
     panoply: {
@@ -46,6 +47,15 @@ const cellOpts = () => ({ size: "xs", context: "minimal" });
 const itemsCountCell = computed(() => entity.value?.toCell?.("items_count", cellOpts()) ?? null);
 const bonusCell = computed(() => entity.value?.toCell?.("bonus", cellOpts()) ?? null);
 const relationsCell = computed(() => entity.value?.toCell?.("panoply_summary_relations", cellOpts()) ?? null);
+
+const linkedItems = computed(() => {
+    const raw = entity.value?.items ?? entity.value?._data?.items;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedItems = computed(() => linkedItems.value.length > 0);
+
+const showEquipmentOnHover = computed(() => props.displayMode !== "extended");
 
 const descriptionFull = computed(() => {
     const d = entity.value?.description ?? entity.value?._data?.description;
@@ -118,22 +128,34 @@ const handleAction = async (actionKey) => {
                                 />
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Tooltip
-                                v-if="itemsCountCell?.value && itemsCountCell.value !== '-' && itemsCountCell.value !== '—'"
-                                :content="`Nb objets : ${itemsCountCell.value}`"
-                                placement="top"
-                            >
-                                <span class="text-base-content/80">
-                                    <span class="font-medium">Objets</span>
-                                    {{ itemsCountCell.value }}
-                                </span>
-                            </Tooltip>
-                            <CellRenderer
+                        <div class="flex flex-col gap-1 text-xs">
+                            <div
                                 v-if="bonusCell?.type === 'chips' && (bonusCell?.params?.items?.length ?? 0) > 0"
-                                :cell="bonusCell"
-                                class="inline-flex items-center max-w-full"
-                            />
+                                class="min-w-0"
+                            >
+                                <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
+                                    Effet
+                                </span>
+                                <CellRenderer :cell="bonusCell" class="inline-flex items-center max-w-full mt-0.5" />
+                            </div>
+                            <div
+                                v-if="hasLinkedItems && showEquipmentOnHover"
+                                class="max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover:max-h-48 group-hover:opacity-100 group-focus-within:max-h-48 group-focus-within:opacity-100"
+                            >
+                                <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
+                                    Équipements
+                                </span>
+                                <PanoplyEquipmentTextList :items="linkedItems" class="mt-0.5" />
+                            </div>
+                            <div v-else-if="hasLinkedItems" class="min-w-0">
+                                <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
+                                    Équipements
+                                </span>
+                                <PanoplyEquipmentTextList :items="linkedItems" class="mt-0.5" />
+                            </div>
+                            <div v-else-if="itemsCountCell?.value && itemsCountCell.value !== '-' && itemsCountCell.value !== '—'" class="text-base-content/70">
+                                <span class="font-medium">Objets</span> {{ itemsCountCell.value }}
+                            </div>
                             <CellRenderer
                                 v-if="
                                     relationsCell?.type === 'chips' &&
@@ -185,22 +207,34 @@ const handleAction = async (actionKey) => {
                                 />
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Tooltip
-                                v-if="itemsCountCell?.value && itemsCountCell.value !== '-' && itemsCountCell.value !== '—'"
-                                :content="`Nb objets : ${itemsCountCell.value}`"
-                                placement="top"
-                            >
-                                <span class="text-base-content/80">
-                                    <span class="font-medium">Objets</span>
-                                    {{ itemsCountCell.value }}
-                                </span>
-                            </Tooltip>
-                            <CellRenderer
+                        <div class="flex flex-col gap-1 text-xs">
+                            <div
                                 v-if="bonusCell?.type === 'chips' && (bonusCell?.params?.items?.length ?? 0) > 0"
-                                :cell="bonusCell"
-                                class="inline-flex items-center max-w-full"
-                            />
+                                class="min-w-0"
+                            >
+                                <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
+                                    Effet
+                                </span>
+                                <CellRenderer :cell="bonusCell" class="inline-flex items-center max-w-full mt-0.5" />
+                            </div>
+                            <div
+                                v-if="hasLinkedItems && showEquipmentOnHover"
+                                class="max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover:max-h-48 group-hover:opacity-100 group-focus-within:max-h-48 group-focus-within:opacity-100"
+                            >
+                                <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
+                                    Équipements
+                                </span>
+                                <PanoplyEquipmentTextList :items="linkedItems" class="mt-0.5" />
+                            </div>
+                            <div v-else-if="hasLinkedItems" class="min-w-0">
+                                <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
+                                    Équipements
+                                </span>
+                                <PanoplyEquipmentTextList :items="linkedItems" class="mt-0.5" />
+                            </div>
+                            <div v-else-if="itemsCountCell?.value && itemsCountCell.value !== '-' && itemsCountCell.value !== '—'" class="text-base-content/70">
+                                <span class="font-medium">Objets</span> {{ itemsCountCell.value }}
+                            </div>
                             <CellRenderer
                                 v-if="
                                     relationsCell?.type === 'chips' &&

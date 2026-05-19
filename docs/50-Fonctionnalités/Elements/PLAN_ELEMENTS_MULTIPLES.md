@@ -38,8 +38,8 @@ L'utilisateur souhaite :
 | `capability-descriptors.js` | Options string: neutral, fire, water, earth, air |
 | `spell-descriptors.js` | Options via `getSpellElementOptions` (0-29) |
 | `spell/Edit.vue` | Select limité à 0-4 (5 éléments de base) — incomplet |
-| `SpellViewLarge/Compact/Minimal` | `element` dans metaFields, Badge générique |
-| `CapabilityViewLarge` | `element` dans extendedFields |
+| `SpellViewFull` / `SpellViewMinimal` | `element` dans metaFields, `ElementDisplay` |
+| `CapabilityViewFull` | `element` dans extendedFields, `ElementDisplay` |
 | `Capability.js` ( modèle ) | `_toElementCell` délègue à ElementFormatter |
 | `Spell.js` ( modèle ) | Icône `fa-fire` fixe dans chips, pas d’icône par élément |
 
@@ -169,7 +169,7 @@ L'utilisateur souhaite :
 
 4. **Intégration**
    - Utilisé par `CellRenderer` pour les cellules `element` (via `cell.component`).
-   - Utilisé par `SpellViewLarge`, `CapabilityViewLarge`, etc. à la place du Badge générique pour le champ `element`.
+   - Utilisé par `SpellViewFull`, `CapabilityViewFull`, etc. pour le champ `element`.
 
 5. **Index**
    - Ajouter dans `atoms.index.json` (ou `molecules.index.json`).

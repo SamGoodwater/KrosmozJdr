@@ -147,6 +147,81 @@ class CmsSectionPreviewApiTest extends TestCase
         $this->assertStringContainsString('Extrait slug', (string) $res->json('html'));
     }
 
+    public function test_preview_snippet_truncates_after_ten_blocks(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $page = Page::factory()->create([
+            'created_by' => $admin->id,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $paragraphs = '';
+        for ($i = 1; $i <= 15; $i++) {
+            $paragraphs .= '<p>Paragraphe '.$i.'</p>';
+        }
+
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $admin->id,
+            'template' => SectionType::TEXT->value,
+            'data' => ['content' => $paragraphs],
+            'settings' => [],
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $html = (string) $this->getJson(route('api.cms.sections.preview-snippet', ['section' => $section->id]))
+            ->assertOk()
+            ->json('html');
+
+        $this->assertStringContainsString('Paragraphe 1', $html);
+        $this->assertStringContainsString('Paragraphe 10', $html);
+        $this->assertStringNotContainsString('Paragraphe 11', $html);
+        $this->assertStringContainsString('…', $html);
+    }
+
+    public function test_preview_snippet_truncates_list_items_in_order(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $page = Page::factory()->create([
+            'created_by' => $admin->id,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $items = '';
+        for ($i = 1; $i <= 12; $i++) {
+            $items .= '<li>Item '.$i.'</li>';
+        }
+        $content = '<ul>'.$items.'</ul>';
+
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $admin->id,
+            'template' => SectionType::TEXT->value,
+            'data' => ['content' => $content],
+            'settings' => [],
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $html = (string) $this->getJson(route('api.cms.sections.preview-snippet', ['section' => $section->id]))
+            ->assertOk()
+            ->json('html');
+
+        $this->assertStringContainsString('Item 1', $html);
+        $this->assertStringContainsString('Item 10', $html);
+        $this->assertStringNotContainsString('Item 11', $html);
+        $this->assertStringContainsString('…', $html);
+    }
+
     public function test_preview_snippet_by_slug_returns_empty_html_for_non_text_template(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

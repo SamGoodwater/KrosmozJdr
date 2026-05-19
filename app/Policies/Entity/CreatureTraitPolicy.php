@@ -1,79 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies\Entity;
 
 use App\Models\Entity\CreatureTrait;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
-class CreatureTraitPolicy
+/**
+ * Traits créature : visibilité via {@see BaseEntityPolicy}.
+ */
+class CreatureTraitPolicy extends BaseEntityPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(?User $user): bool
+    public function update(User $user, Model $model): bool
     {
-        // Accessible à tous, même sans authentification
-        return true;
-    }
+        if (! $model instanceof CreatureTrait) {
+            return false;
+        }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(?User $user, CreatureTrait $creatureTrait): bool
-    {
-        // Accessible à tous, même sans authentification
-        return true;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
         return $user->isAdmin();
     }
 
-    public function createAny(User $user): bool
-    {
-        return $this->create($user);
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, CreatureTrait $creatureTrait): bool
-    {
-        return $user->isAdmin();
-    }
-
-    /**
-     * Determine whether the user can update models in bulk / via édition multiple.
-     */
     public function updateAny(User $user): bool
     {
         return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, CreatureTrait $creatureTrait): bool
+    public function delete(User $user, Model $model): bool
+    {
+        if (! $model instanceof CreatureTrait) {
+            return false;
+        }
+
+        return $user->isAdmin();
+    }
+
+    public function deleteAny(User $user): bool
     {
         return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, CreatureTrait $creatureTrait): bool
-    {
-        return $user->isAdmin();
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, CreatureTrait $creatureTrait): bool
+    public function manageAny(User $user): bool
     {
         return $user->isAdmin();
     }

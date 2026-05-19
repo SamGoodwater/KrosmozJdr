@@ -90,7 +90,7 @@ class SectionTemplateValidationRules
                 'params.columns' => ['sometimes', 'array'],
             ],
             SectionType::LEGAL_MARKDOWN => [
-                // Accepte les chemins relatifs same-origin (ex: /storage/legal/cgu.md).
+                // Chemins relatifs same-origin (/legal/*, legacy /storage/legal/*.md, /changelog/feed semver).
                 'data.sourceUrl' => ['sometimes', 'nullable', 'string', 'max:2048'],
                 'params.sourceUrl' => ['sometimes', 'nullable', 'string', 'max:2048'],
                 'data.title' => ['sometimes', 'nullable', 'string', 'max:255'],

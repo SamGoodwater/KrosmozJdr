@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreResourceRequest;
 use App\Http\Requests\Entity\UpdateResourceRecipeRequest;
@@ -25,6 +26,8 @@ use Inertia\Inertia;
 
 class ResourceController extends Controller
 {
+    use RedirectsAfterEntityCreate;
+
     /**
      * Display a listing of the resource.
      */
@@ -141,9 +144,13 @@ class ResourceController extends Controller
 
         $resource = Resource::create($data);
 
-        return redirect()
-            ->route('entities.resources.index')
-            ->with('success', 'Ressource créée avec succès.');
+        return $this->redirectAfterEntityStore(
+            $request,
+            $resource,
+            'entities.resources.edit',
+            'entities.resources.index',
+            'Ressource créée avec succès.',
+        );
     }
 
     /**

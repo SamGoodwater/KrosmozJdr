@@ -13,8 +13,8 @@ export default {
       key: 'sourceUrl',
       type: 'text',
       label: 'URL du markdown',
-      description: 'URL du document .md (ex: /storage/legal/cgu.md)',
-      default: '/storage/legal/cgu.md',
+      description: 'URL flux Markdown légal (/legal/…) ou changelog (/changelog/feed/X.Y.Z)',
+      default: '/legal/cgu',
     },
     {
       key: 'title',
@@ -25,7 +25,7 @@ export default {
     },
   ],
   defaultData: {
-    sourceUrl: '/storage/legal/cgu.md',
+    sourceUrl: '/legal/cgu',
     title: null,
   },
 };

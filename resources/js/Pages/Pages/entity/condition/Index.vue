@@ -11,6 +11,8 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Condition } from "@/Models/Entity/Condition";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
+import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
+import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
@@ -119,14 +121,14 @@ const handleRowDoubleClick = (row) => {
     const model = raw instanceof Condition ? raw : Condition.fromArray([raw])[0] || null;
     if (!model) return;
     selectedEntity.value = model;
-    modalView.value = "large";
+    modalView.value = "full";
     modalOpen.value = true;
 };
 
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
-const modalView = ref('large');
+const modalView = ref('full');
 const createModalOpen = ref(false);
 const quickEditModalOpen = ref(false);
 const quickEditEntity = ref(null);
@@ -150,6 +152,23 @@ const closeModal = () => {
     selectedEntity.value = null;
 };
 
+
+const { handleKeyboardIntent } = useEntityIndexTableIntents({
+    ModelClass: Condition,
+    routeShowName: "entities.conditions.show",
+    routeShowParam: "condition",
+    canModify: () => canModify.value,
+    openFullModal: (model) => {
+        selectedEntity.value = model;
+        modalView.value = "full";
+        modalOpen.value = true;
+    },
+    openEdit: (model) => {
+        quickEditEntity.value = model;
+        quickEditModalOpen.value = true;
+    },
+});
+
 // Handler pour les actions du tableau
 const handleTableAction = async (actionKey, entity, row) => {
     const targetEntity = entity || row?.rowParams?.entity;
@@ -169,7 +188,7 @@ const handleTableAction = async (actionKey, entity, row) => {
 
         case 'quick-view':
             selectedEntity.value = model;
-            modalView.value = 'large';
+            modalView.value = 'full';
             modalOpen.value = true;
             break;
 
@@ -289,6 +308,7 @@ const handleQuickEditSubmit = async (payload) => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @keyboard-intent="handleKeyboardIntent"
                     @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
@@ -312,6 +332,7 @@ const handleQuickEditSubmit = async (payload) => {
         <CreateEntityModal
             :open="createModalOpen"
             entity-type="condition"
+            :create-allow-field-keys="getEntityCreateAllowFieldKeys('conditions')"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />

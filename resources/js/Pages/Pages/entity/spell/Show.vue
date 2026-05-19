@@ -10,8 +10,8 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Spell } from '@/Models/Entity/Spell';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EntityViewLargeWrapper from '@/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue';
-import SpellViewLarge from '@/Pages/Molecules/entity/spell/SpellViewLarge.vue';
+import EntityViewFullWrapper from '@/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue';
+import SpellViewFull from '@/Pages/Molecules/entity/spell/SpellViewFull.vue';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -43,7 +43,7 @@ const goEdit = () => {
     <Head :title="`Sort : ${spell?.name || '-'}`" />
 
     <Container class="space-y-6 pb-8">
-        <EntityViewLargeWrapper :show-back-button="true" back-route="entities.spells.index">
+        <EntityViewFullWrapper :show-back-button="true" back-route="entities.spells.index">
             <div class="space-y-6">
                 <div class="flex justify-end gap-2">
                     <Btn v-if="spell?.can?.update" color="primary" @click="goEdit">
@@ -52,13 +52,13 @@ const goEdit = () => {
                     </Btn>
                 </div>
 
-                <SpellViewLarge
+                <SpellViewFull
                     :spell="spell"
                     title-tag="h1"
                     :show-actions="true"
                     :characteristic-runtime="characteristicRuntime"
                 />
             </div>
-        </EntityViewLargeWrapper>
+        </EntityViewFullWrapper>
     </Container>
 </template>

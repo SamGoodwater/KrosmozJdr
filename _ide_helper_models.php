@@ -13,6 +13,28 @@
 
 namespace App\Models{
 /**
+ * Paramètres applicatifs clé → JSON (ex. matrice « Gérer l’affichage »).
+ *
+ * @property int $id
+ * @property string $key
+ * @property array<string, mixed> $value
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting whereValue($value)
+ * @mixin \Eloquent
+ */
+	class ApplicationSetting extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * Caractéristique générale : propriétés communes et id unique.
  *
  * Une ligne = une caractéristique (ex. PA créature, PA sort, PA objet = 3 lignes).
@@ -2083,6 +2105,32 @@ namespace App\Models{
  * @mixin \Eloquent
  */
 	class PrivacyExport extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Tâche planifiée Laravel (cron + activation) configurable en base.
+ *
+ * @property string $task_key Identifiant stable (voir {@see ProjectScheduleCatalog})
+ * @property bool $enabled Exécuter via `schedule:run`
+ * @property string $cron_expression Expression cron (5 segments)
+ * @property bool $without_overlapping Empêcher les ré-entrées
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask whereCronExpression($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask whereEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask whereTaskKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask whereWithoutOverlapping($value)
+ * @mixin \Eloquent
+ */
+	class ProjectScheduleTask extends \Eloquent {}
 }
 
 namespace App\Models{

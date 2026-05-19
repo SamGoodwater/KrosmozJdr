@@ -1,4 +1,16 @@
-## Vues d’entités (Large / Compact / Minimal / Texte)
+## Vues d’entités (minimal / line / texte / full / edit)
+
+> Référence opérationnelle release 1.3.2 : [ENTITY_VIEWS_PHASE_C.md](../10-BestPractices/ENTITY_VIEWS_PHASE_C.md) (contrat `ViewFull`, raccourcis, création).
+
+### Modèle officiel
+
+| Vue | Rôle |
+| --- | --- |
+| **minimal** | Cartes, grille |
+| **line** | Ligne dense (tableau) |
+| **texte** | Inline + overlay Minimal extended |
+| **full** | Fiche complète (page ou modal) |
+| **edit** | Édition (page ou modal) |
 
 ### Objectif
 
@@ -61,7 +73,7 @@ flowchart TB
 
 | Section | Rôle | Layout (guideline) | Responsive | Permissions | Notes |
 |---|---|---|---|---|---|
-| **Main container** | Card globale | `flex-col`, `gap`, `w-full` | Large/Compact prennent la place max ; Minimal peut être `auto` ou largeur fixée | n/a | Certaines propriétés peuvent influencer la couleur (ex: élément/type → ombre/contour) |
+| **Main container** | Card globale | `flex-col`, `gap`, `w-full` | **Full** prend la place max ; Minimal peut être `auto` ou largeur fixée | n/a | Certaines propriétés peuvent influencer la couleur (ex: élément/type → ombre/contour) |
 | **Header** | Identité | `flex`, `items-start`, `justify-between`, `gap` | si largeur > ~200px : image ≈ 1/3 ; sinon elle se réduit | n/a | L’état (`state`) est rendu dans la **barre d’action**, pas en surimpression sur l’image |
 | **Header/Image** | Image carrée | conteneur carré, centré, fond transparent | s’adapte à la place | n/a | Interactions image (zoom/crop/rotate) : futur (admin vs non-admin) |
 | **Header/Barre d’action** | Actions contextuelles | icônes + tooltip, align top-right | si manque de place : bascule en menu (jusqu’à “tout sauf fermer”) | selon permissions + contexte | “Fermer” reste l’action toujours dispo en modal |
@@ -78,17 +90,16 @@ flowchart TB
 | **Footer/Footer infos** | Feedback live | inline | n/a | n/a | ex: dirty, erreurs, etc |
 | **Footer/Footer actions** | Boutons formulaire | boutons (annuler/enregistrer) | n/a | `canEdit` | pas applicable hors édition |
 
-### Règles “Large / Compact / Minimal” (affichage des propriétés)
+### Règles d’affichage des propriétés (full / line / minimal)
 
-#### Large
+#### Full (fiche page ou modal)
 
-- Afficher **Icône (si dispo) + Nom de propriété + Valeur**.
-- Le helper peut être affiché **en dur** (discret, style commentaire) si vraiment nécessaire, sinon tooltip.
+- Afficher **Icône (si dispo) + Nom de propriété + Valeur** (page) ; en modal, densité header réduite via `EntityViewHeader mode="compact"`.
+- Le helper peut être affiché **en dur** (discret) si vraiment nécessaire, sinon tooltip.
 
-#### Compact
+#### Line
 
-- Afficher **juste la valeur** si le reste n’est pas nécessaire.
-- Sinon : **icône** et/ou **abréviation** (label court).
+- Abrégés via `PROPERTY_DISPLAY_MODES.compact` sur les chips (libellés courts), nom complet en tooltip.
 
 #### Minimal
 
@@ -132,7 +143,7 @@ La **Vue Texte** est un format très compact, destiné aux listes d’entités l
 
 ### Vue Line (5ᵉ format officiel)
 
-La **Vue Line** est un affichage **liste dense verticale** : une ligne par entité, **tout le contenu visible directement** (sans hover). Elle se situe entre Compact et Minimal en densité. d’entités.
+La **Vue Line** est un affichage **liste dense verticale** : une ligne par entité, **tout le contenu visible directement** (sans hover).
 
 - **Usage** : mode « Ligne » des tableaux (TanStackTable `displayMode: "line"`).
 - **Comportement** : ressemble à Minimal mais sans partie masquée — description, effets, ingrédients affichés par défaut.
@@ -144,7 +155,7 @@ La **Vue Line** est un affichage **liste dense verticale** : une ligne par entit
 |------|-----------|-------------|
 | **Resource, Item, Consumable** | `ResourceLineRow`, `ItemLineRow`, `ConsumableLineRow` | Ligne dédiée : image 80px, titre, metas, description, effets, ingrédients. Layout horizontal dense. |
 | **Autres types** (Spell, Monster, etc.) | `*ViewMinimal` en fallback | `displayMode: "extended"` pour afficher tout le contenu (équivalent « tout visible »). |
-- **Toggle** : boutons « Ligne » | « Minimal » | « Colonne » à côté de la densité.
+- **Toggle** : boutons « Ligne » | « Minimal » | « Colonne » sur les tableaux d’entités.
 - **Tri** : dropdown « Trier par » (indispensable en vue Line, pas d’en-têtes cliquables).
 
 
@@ -155,8 +166,8 @@ La **Vue Line** est un affichage **liste dense verticale** : une ligne par entit
 | **Texte** | Représentation “inline” (ex: entités liées, listes compactes) | Très faible | Click-first | **Click → Minimal** |
 | **Minimal** | Aperçu rapide / cartes petites / overlay card | Faible | Hover (si compacted) | Peut servir de détail pour **Texte** |
 | **Line** | Liste dense verticale (tableau) | Moyenne–haute | Tri dropdown + clic | Avec **Minimal** (grille) et **Colonne** |
-| **Compact** | Card standard quand on a un peu de place | Moyenne | Actions + lecture rapide | Souvent “par défaut” en modal |
-| **Large** | Lecture détaillée / contexte confortable (modal/page) | Élevée | Actions + détails | Référence la plus explicite (labels) |
+| **Full** | Fiche complète (page Show ou modal) | Élevée | Actions + détails | Référence explicite (labels, sections) |
+| **Edit** | Édition (page ou modal) | Variable | Formulaire | Après création (Q9) ou action « Éditer » |
 
 ### Où placer un champ ? (decision tree)
 
@@ -187,9 +198,9 @@ Utilise ces règles dans l’ordre :
 
 ### Tailles & responsive (contrats)
 
-- **Large / Compact**
-  - Prennent la place maximale disponible.
-  - On peut calculer une taille de référence commune (`xs/sm/md/lg/xl`) pour dimensionner les sous-éléments.
+- **Full**
+  - Prend la place maximale disponible (page ou modal).
+  - En modal : header dense via `EntityViewHeader mode="compact"`.
 
 - **Minimal**
   - Peut être `auto` (prend la place max) ou **largeur fixée** (`xs/sm/md/lg/xl`).
@@ -205,38 +216,33 @@ Utilise ces règles dans l’ordre :
 
 ### Bouton « Retour » sur les pages Show
 
-Quand une vue **Large** ou **Compact** est affichée sur une **page entière** (ex. `resource/Show.vue`), la page doit inclure un bouton « Retour à la liste » en cohérence avec les pages Edit.
+Quand une vue **Full** est affichée sur une **page entière** (ex. `resource/Show.vue`), la page doit inclure un bouton « Retour à la liste » en cohérence avec les pages Edit.
 
-**Composants dédiés** : `EntityViewLargeWrapper` et `EntityViewCompactWrapper` encapsulent ce comportement :
+**Composant dédié** : `EntityViewFullWrapper` encapsule ce comportement :
 
 ```vue
-<EntityViewLargeWrapper :show-back-button="true" back-route="entities.resources.index">
+<EntityViewFullWrapper :show-back-button="true" back-route="entities.resources.index">
   <div class="space-y-6">
-    <div class="flex items-center justify-between gap-3">
-      <h1>{{ resource.name }}</h1>
-      <Btn @click="goEdit">Modifier</Btn>
-    </div>
-    <ResourceViewLarge :resource="resource" :show-actions="true" />
+    <ResourceViewFull :resource="resource" :show-actions="true" title-tag="h1" />
   </div>
-</EntityViewLargeWrapper>
+</EntityViewFullWrapper>
 ```
 
-- **EntityViewLargeWrapper** : `resources/js/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue`
-- **EntityViewCompactWrapper** : `resources/js/Pages/Molecules/entity/shared/EntityViewCompactWrapper.vue`
+- **EntityViewFullWrapper** : `resources/js/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue`
 - **Props** : `showBackButton`, `backRoute`, `backLabel`
-- **EntityModal** : n'utilise pas ces wrappers (affichage en modal, pas de bouton retour).
+- **EntityModal** : n'utilise pas ce wrapper ; passe `in-modal` et `title-tag="h2"` au `*ViewFull`.
 
 ### Liens entre vues (navigation UI)
 
 - **Texte → Minimal (click-first)** : la Vue Texte n’essaie pas d’être exhaustive ; elle “délègue” les détails à la Vue Minimal au clic.
-- **Minimal → Compact/Large** : la Vue Minimal doit rester cohérente avec les champs mis en avant en Compact/Large (mêmes “Main infos”, simplement plus condensés).
-- **Large comme référence** : quand un doute existe sur un champ (label/helper), on se cale sur la Large qui est la plus explicite.
+- **Minimal → Full** : la Vue Minimal doit rester cohérente avec les champs mis en avant en Full (mêmes “Main infos”, simplement plus condensés).
+- **Full comme référence** : quand un doute existe sur un champ (label/helper), on se cale sur la Full qui est la plus explicite.
 
 ### Entités liées (relations) : règles d’affichage
 
 Dans **Body/Entités liées** :
-- Si on a de la place : afficher les entités liées en **Minimal** (ou Compact si très pertinent).
-- Si on manque de place (minimal/compact petit) : afficher les entités liées en **Vue Texte**.
+- Si on a de la place : afficher les entités liées en **Minimal**.
+- Si on manque de place : afficher les entités liées en **Vue Texte**.
 - Le layout (liste verticale, horizontale, mixte) dépend :
   - du **nombre** d’entités liées,
   - de la **diversité** (types différents),
@@ -244,11 +250,12 @@ Dans **Body/Entités liées** :
 
 ### FAQ (référence pour créer les vues)
 
-- **Quelle vue choisir (Texte / Minimal / Compact / Large) ?**
+- **Quelle vue choisir (Texte / Minimal / Line / Full / Edit) ?**
   - **Texte** : inline (entités liées, listes compactes), détail via **click → Minimal**
   - **Minimal** : aperçu rapide / overlay card (faible densité)
-  - **Compact** : vue “standard” quand on a un peu de place (bonne densité)
-  - **Large** : lecture détaillée (labels explicites, helpers)
+  - **Line** : liste dense dans un tableau
+  - **Full** : fiche complète (page ou modal)
+  - **Edit** : formulaire d’édition
 
 - **Quelle structure respecter ?**
   - Toujours **Main container → Header / Body / Footer** (mêmes sections pour toutes les entités).
@@ -267,13 +274,13 @@ Dans **Body/Entités liées** :
   - `Body` visible au hover uniquement ; `Footer` masqué (même extended).
 
 - **Comment afficher la même info selon la vue ?**
-  - **Large** : **Icône + Nom + Valeur** (helper possible, sinon tooltip)
-  - **Compact** : valeur seule si possible ; sinon **icône + abrégé + valeur**
+  - **Full** : **Icône + Nom + Valeur** (helper possible, sinon tooltip)
+  - **Line** : abrégé via `PROPERTY_DISPLAY_MODES.compact` sur les chips ; nom complet en tooltip
   - **Minimal** : valeur seule si possible ; sinon **icône** (abrégé seulement si nécessaire)
 
 - **Dois-je répéter le nom de la propriété “type” ?**
-  - **Compact/Minimal** : généralement non (la valeur suffit).  
-  - **Large** : oui si utile (explicite).
+  - **Minimal / Line** : généralement non (la valeur suffit).  
+  - **Full** : oui si utile (explicite).
 
 - **Comment afficher `state` ?**
   - Plutôt un **dot discret** (raw/draft/playable/archived) + tooltip (pas une colonne bruyante).
@@ -282,7 +289,7 @@ Dans **Body/Entités liées** :
   - Filtrer via `desc.permissions.visibleIf(ctx)` **avant** d’afficher/placer le champ.
 
 - **Comment afficher les entités liées ?**
-  - Si place suffisante : afficher en **Minimal** (ou Compact si très pertinent).  
+  - Si place suffisante : afficher en **Minimal**.  
   - Si place faible : afficher en **Vue Texte** (click → Minimal).
 
 - **Si une propriété peut aller dans plusieurs sections, je fais quoi ?**
@@ -297,8 +304,8 @@ Dans **Body/Entités liées** :
   - Sinon, l’image se **réduit** et laisse la priorité au titre + actions + main infos.
 
 - **Badge vs texte vs icône-only : comment décider ?**
-  - Large : **icône + label + valeur**, badge si ça apporte de la lisibilité.
-  - Compact : badge/texte selon lisibilité, mais éviter la verbosité.
+  - Full : **icône + label + valeur**, badge si ça apporte de la lisibilité.
+  - Line : badge/texte selon lisibilité, éviter la verbosité.
   - Minimal : **icône-only** dès que possible (valeur en tooltip).
 
 - **Champs admin-only : je laisse un placeholder si l’utilisateur n’a pas accès ?**
@@ -311,7 +318,7 @@ Ce tableau sert de **source de vérité** pour guider le placement des propriét
 
 **Légende “Priorité” (indicative)** : \(0\) = technique/admin, \(6\) = essentiel (à garder visible en `Header/Main infos` quand c’est applicable).  
 
-| Propriété                                                                                      | Section préférable                  | Priorité | Icone | Nom                                                     | Abrégé                                | Vue Minimal | Vue Compact | Vue Large | Condition | Permission |
+| Propriété                                                                                      | Section préférable                  | Priorité | Icone | Nom                                                     | Abrégé                                | Vue Minimal | Vue Line | Vue Full | Condition | Permission |
 | ---------------------------------------------------------------------------------------------- | ----------------------------------- | -------- | ----- | ------------------------------------------------------- | ------------------------------------- | ----------- | ----------- | --------- | --------- | ---------- |
 | state                                                                                          | Sous forme de dot en haut à gauche  | 5        | v     | État                                                    |                                       | V           | V           | N + V     | all        |
 | read_level                                                                                     | info_user_can_edit                  | 3        | -     | Lecture min.                                            | -                                     | -           | N + V       | N + V     |           | all        |
@@ -373,7 +380,7 @@ Ex : N + V = nom + valeur
 - **Valeur affichée** : provient de `entity.toCell(fieldKey, …)` (pas de logique métier “au hasard” dans la vue).
 - **Libellé / icône / tooltip** : proviennent des **descriptors** (`general.label`, `general.icon`, `general.tooltip`, …).
 - **Visibilité** : vient de `desc.permissions.visibleIf(ctx)` ; si false, le champ ne doit pas réserver d’espace.
-- **Choix de rendu (Large/Compact/Minimal)** : suit le contrat de cette doc (icône/label/abrégé), et non des règles ad-hoc par entité.
+- **Choix de rendu (Full / Line / Minimal)** : suit le contrat de cette doc (icône/label/abrégé), et non des règles ad-hoc par entité.
 
 ### Kit commun (Atoms / Molecules) pour implémenter les vues
 
@@ -386,8 +393,8 @@ Ces composants sont à privilégier pour éviter la duplication et aider la gén
 
 - **Molecule — Header commun**
   - `resources/js/Pages/Molecules/entity/shared/EntityViewHeader.vue`
-  - Rôle : standardise le **Header** (image + title + actions + main infos) selon le mode `large/compact/minimal`.
-  - Usage : les `*ViewLarge.vue` et `*ViewCompact.vue` doivent l’utiliser pour éviter la duplication de structure.
+  - Rôle : standardise le **Header** (image + title + actions + main infos) selon le mode `full` / `compact` (header modal) / `minimal`.
+  - Usage : les `*ViewFull.vue` doivent l’utiliser pour éviter la duplication de structure.
   - Slots utiles :
     - `dot` : indicateur discret en **haut-gauche** (ex : `EntityUsableDot`).
     - `mainInfosRight` : pour les metas en **minimal** (icônes à droite du titre).
@@ -405,7 +412,7 @@ Ces composants sont à privilégier pour éviter la duplication et aider la gén
 
 - **Résolution dynamique des vues**
   - `resources/js/Utils/entity/resolveEntityViewComponent.js`
-  - Rôle : charger dynamiquement la vue d’entité (large/compact/minimal/text).
+  - Rôle : charger dynamiquement la vue d’entité (full/minimal/text/line).
 
 ### Principes
 
@@ -430,8 +437,8 @@ Ces composants sont à privilégier pour éviter la duplication et aider la gén
     - Les infos “techniques” (IDs, dates, audit) doivent être plutôt en **texte** (phrase / liste), pas en badges.
 
 - **Libellés**
-  - On explicite le nom de la propriété surtout en **Large**.
-  - En **Compact/Minimal**, on évite les labels si la valeur est compréhensible (ex: `type`).
+  - On explicite le nom de la propriété surtout en **Full** (page).
+  - En **header compact** (modal) ou **Minimal**, on évite les labels si la valeur est compréhensible (ex: `type`).
 - Abréviations recommandées (ex: `level` → **nvx**).
 
 - **Helpers / tooltips**
@@ -467,10 +474,10 @@ Cet exemple sert de **modèle** pour implémenter les autres entités.
 
 - **Descriptors** : `resources/js/Entities/resource/resource-descriptors.js`
 - **Vues** :
-  - `resources/js/Pages/Molecules/entity/resource/ResourceViewLarge.vue`
-  - `resources/js/Pages/Molecules/entity/resource/ResourceViewCompact.vue`
+  - `resources/js/Pages/Molecules/entity/resource/ResourceViewFull.vue`
   - `resources/js/Pages/Molecules/entity/resource/ResourceViewMinimal.vue`
   - `resources/js/Pages/Molecules/entity/resource/ResourceViewText.vue`
+  - `resources/js/Pages/Molecules/entity/resource/ResourceLineRow.vue`
 
 #### Mapping “sections → champs”
 
@@ -503,11 +510,10 @@ Cet exemple sert de **modèle** pour implémenter les autres entités.
 
 #### Structure attendue par vue
 
-- **Large**
+- **Full (page)**
   - Header : image à gauche, nom à droite, actions en haut à droite, metas en badges sous le titre, description en dessous.
   - Infos techniques : badges “outline” séparés (zone secondaire).
-- **Compact**
-  - Header : image + nom + actions, metas en badges sous le titre.
+- **Full (modal)** : `in-modal` → header `EntityViewHeader mode="compact"`, titre en `h2`.
 - **Minimal**
   - Header : image + titre, metas **en icônes** à droite (slot `mainInfosRight`), actions en menu.
   - Body : visible uniquement au hover (extended).
@@ -522,8 +528,8 @@ Même logique que Resource : **descriptors** + **`resolveEntityBadgeUi`** pour l
 
 - **Descriptors** : `resources/js/Entities/spell/spell-descriptors.js`
 - **Vues** :
-  - `SpellViewLarge.vue` / `SpellViewCompact.vue` : `EntityActions` avec **`entity-type="spells"`** (pluriel, aligné `entity-actions-config` et `EntityTanStackTable`).
-  - **Compact** : métas du header (`spell_types`, `level`, `pa`, `po`, `area`, `element`, `category`) via **`CellRenderer`** + `getCell()` (même rendu que le tableau : élément, badges, etc.).
+  - `SpellViewFull.vue` : `EntityActions` avec **`entity-type="spells"`** (pluriel, aligné `entity-actions-config` et `EntityTanStackTable`).
+  - Métas du header (`spell_types`, `level`, `pa`, `po`, `area`, `element`, `category`) via **`CellRenderer`** + `getCell()` (même rendu que le tableau : élément, badges, etc.).
   - `SpellViewMinimal.vue` : `EntityMinimalCard` (comme Resource) ; effets via **`resolveSpellEffectsDisplayCell`** (`effect_summary` → `SpellEffectChips` + degrés, sinon `effect`).
   - `SpellLineRow.vue` : vue **Line** ; mêmes effets que la Minimal (composable partagé, `CellRenderer`).
   - **Sous-effets (forme des actions)** : voir [SPELL_SUB_EFFECTS_DISPLAY.md](./SPELL_SUB_EFFECTS_DISPLAY.md) (préfixes scope / critique, libellés par slug, journal vs chips API).
@@ -539,8 +545,8 @@ Même logique que Resource : **descriptors** + **`resolveEntityBadgeUi`** pour l
 
 - **Descriptors** : `resources/js/Entities/breed/breed-descriptors.js`
 - **Vues** :
-  - `BreedViewLarge.vue` : `EntityViewHeader` (comme Spell), `EntityActions` avec **`entity-type="breeds"`** ; `EntityPropertyDisplay` avec **`entity-type="breed"`** (singulier).
-  - `BreedViewCompact.vue` / `BreedViewMinimal.vue` : actions **`breeds`**, Minimal sur **`EntityMinimalCard`**.
+  - `BreedViewFull.vue` : `EntityViewHeader` (comme Spell), `EntityActions` avec **`entity-type="breeds"`** ; `EntityPropertyDisplay` avec **`entity-type="breed"`** (singulier).
+  - `BreedViewMinimal.vue` : actions **`breeds`**, Minimal sur **`EntityMinimalCard`**.
   - `BreedLineRow.vue` : vue **Line** (`EntityTanStackTable`, `entity-type="breeds"`).
 - **Index** : `breed/Index.vue` — modals génériques avec **`entity-type="breeds"`** (comme les sorts).
 
@@ -548,8 +554,8 @@ Même logique que Resource : **descriptors** + **`resolveEntityBadgeUi`** pour l
 
 - **Descriptors** : `resources/js/Entities/panoply/panoply-descriptors.js`
 - **Vues** :
-  - `PanoplyViewLarge.vue` : `EntityViewHeader` (picto `fa-layer-group`), **`EntityActions`** avec **`entity-type="panoplies"`**, **`EntityPropertyDisplay`** avec **`entity-type="panoply"`**.
-  - `PanoplyViewCompact.vue` / `PanoplyViewMinimal.vue` : actions **`panoplies`**, Minimal sur **`EntityMinimalCard`**.
+  - `PanoplyViewFull.vue` : `EntityViewHeader` (picto `fa-layer-group`), **`EntityActions`** avec **`entity-type="panoplies"`**, **`EntityPropertyDisplay`** avec **`entity-type="panoply"`**.
+  - `PanoplyViewMinimal.vue` : actions **`panoplies`**, Minimal sur **`EntityMinimalCard`**.
   - `PanoplyLineRow.vue` : vue **Line** (`EntityTanStackTable`, `entity-type="panoplies"`).
 - **Index** : `panoply/Index.vue` — modals avec **`entity-type="panoplies"`**.
 - **Actions** : entrée **`panoplies`** dans `entity-actions-config.js` pour l’action **Rafraîchir** (V2), comme les autres entités DofusDB.
@@ -558,8 +564,8 @@ Même logique que Resource : **descriptors** + **`resolveEntityBadgeUi`** pour l
 
 - **Descriptors** : `resources/js/Entities/capability/capability-descriptors.js`
 - **Vues** :
-  - `CapabilityViewLarge.vue` : `EntityViewHeader` (aligné Spell), **`EntityActions`** avec **`entity-type="capabilities"`**, métas via **`EntityPropertyDisplay`** / grille d’effets.
-  - `CapabilityViewCompact.vue` / `CapabilityViewMinimal.vue` : liste compacte avec **`CellRenderer`** + descriptors ; actions **`capabilities`**, Minimal sur **`EntityMinimalCard`**.
+  - `CapabilityViewFull.vue` : `EntityViewHeader` (aligné Spell), **`EntityActions`** avec **`entity-type="capabilities"`**, métas via **`EntityPropertyDisplay`** / grille d’effets.
+  - `CapabilityViewMinimal.vue` : liste compacte avec **`CellRenderer`** + descriptors ; actions **`capabilities`**, Minimal sur **`EntityMinimalCard`**.
   - `CapabilityLineRow.vue` : vue **Line** (`EntityTanStackTable`, `entity-type="capabilities"`).
 - **Index** : `capability/Index.vue` — **`CreateEntityModal`** + modals avec **`entity-type="capabilities"`** (comme panoplies / sorts).
 - **Actions** : entrée **`capabilities`** dans `entity-actions-config.js` pour l’action **Rafraîchir** (V2).

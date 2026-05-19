@@ -2,6 +2,13 @@
 
 ```mermaid
 erDiagram
+  APPLICATION_SETTINGS {
+    id : bigint(20) unsigned
+    key : varchar(255)
+    value : longtext
+    created_at : timestamp
+    updated_at : timestamp
+  }
   BREED_CAPABILITY {
     id : bigint(20) unsigned
     breed_id : bigint(20) unsigned
@@ -933,6 +940,15 @@ erDiagram
     expires_at : timestamp
     downloaded_at : timestamp
     meta : longtext
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  PROJECT_SCHEDULE_TASKS {
+    id : bigint(20) unsigned
+    task_key : varchar(80)
+    enabled : tinyint(1)
+    cron_expression : varchar(120)
+    without_overlapping : tinyint(1)
     created_at : timestamp
     updated_at : timestamp
   }

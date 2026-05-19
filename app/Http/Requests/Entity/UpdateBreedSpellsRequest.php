@@ -17,6 +17,9 @@ use Illuminate\Validation\Validator;
  */
 class UpdateBreedSpellsRequest extends FormRequest
 {
+    /** Maximum de sorts par emplacement de variante (décision Q10, release 1.3.2). */
+    private const MAX_SPELLS_PER_VARIANT_SLOT = 4;
+
     public function authorize(): bool
     {
         $breed = $this->route('breed');
@@ -58,6 +61,27 @@ class UpdateBreedSpellsRequest extends FormRequest
                 }
                 if (! Spell::query()->whereKey((int) $spellId)->exists()) {
                     $validator->errors()->add('spells', "Le sort #{$spellId} n'existe pas.");
+                }
+            }
+
+            $perSlot = [];
+            foreach ($spells as $spellId => $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $level = (int) ($row['character_level'] ?? 0);
+                $slot = (int) ($row['slot_index'] ?? 0);
+                $key = "{$level}|{$slot}";
+                $perSlot[$key] = ($perSlot[$key] ?? 0) + 1;
+            }
+            foreach ($perSlot as $key => $count) {
+                if ($count > self::MAX_SPELLS_PER_VARIANT_SLOT) {
+                    $validator->errors()->add(
+                        'spells',
+                        'Maximum '.self::MAX_SPELLS_PER_VARIANT_SLOT.' sorts par emplacement (niveau/slot '.$key.').'
+                    );
+
+                    return;
                 }
             }
         });

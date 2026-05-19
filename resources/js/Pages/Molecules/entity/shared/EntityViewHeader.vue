@@ -4,13 +4,11 @@
  *
  * @description
  * Implémente la structure du header selon la doc ENTITY_VIEWS :
- * - Large: image à gauche, title + main infos + (subtitle) à droite, actions en haut à droite.
- * - Compact: image à gauche, title + actions sur la même ligne, main infos sous le titre.
- * - Minimal: title + actions sur la même ligne, main infos à droite du titre (icône-only), subtitle optionnelle.
+ * - full: image à gauche, title + main infos + (subtitle) à droite, actions en haut à droite (fiche page).
+ * - compact: layout header dense (modal full) — pas la vue entité ViewCompact supprimée.
+ * - minimal: title + actions sur la même ligne, main infos à droite du titre (icône-only).
  *
- * Les contenus sont fournis via slots pour rester "descriptors-driven".
- *
- * @props {'large'|'compact'|'minimal'} mode - Mode de rendu du header.
+ * @props {'full'|'compact'|'minimal'} mode - Mode de rendu du header.
  *
  * @slot dot - Indicateur optionnel positionné en absolute par le parent.
  * @slot media - Image/icone (à gauche)
@@ -21,7 +19,7 @@
  * @slot actions - Barre d'actions (EntityActions)
  *
  * @example
- * <EntityViewHeader mode="large">
+ * <EntityViewHeader mode="full">
  *   <template #media>...</template>
  *   <template #title>...</template>
  *   <template #mainInfos>...</template>
@@ -33,8 +31,8 @@ import { computed } from "vue";
 const props = defineProps({
   mode: {
     type: String,
-    default: "large",
-    validator: (v) => ["large", "compact", "minimal"].includes(v),
+    default: "full",
+    validator: (v) => ["full", "compact", "minimal"].includes(v),
   },
 });
 

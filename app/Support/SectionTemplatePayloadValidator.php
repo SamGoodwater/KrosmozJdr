@@ -100,14 +100,20 @@ class SectionTemplatePayloadValidator
             return 'La source du document utilise un protocole non autorisé.';
         }
 
-        if (! preg_match('/^\/[a-zA-Z0-9\/_.-]+$/', $value)) {
-            return 'La source doit être un chemin relatif same-origin (ex: /storage/legal/cgu.md).';
-        }
-
         if (str_contains($value, '..')) {
             return 'Le chemin ne doit pas contenir de séquence "..".';
         }
 
-        return null;
+        $recommended = '#^/legal/(?:cgu|politique-donnees|cookies)$#';
+        $legacyStorage = '#^/storage/legal/(?:cgu|politique-donnees|cookies)\.md$#';
+        $changelogFeed = '#^/changelog/feed/\d+\.\d+\.\d+$#';
+
+        foreach ([$recommended, $legacyStorage, $changelogFeed] as $pattern) {
+            if (preg_match($pattern, $value)) {
+                return null;
+            }
+        }
+
+        return 'La source doit cibler un document légal (`/legal/…`), un export changelog semver (`/changelog/feed/X.Y.Z`), ou l\'historique `/storage/legal/*.md`.';
     }
 }

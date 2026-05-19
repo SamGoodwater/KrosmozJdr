@@ -16,6 +16,9 @@
 
 import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
 
+/** Champs legacy masqués (évolution / spécificité / dé de vie → sections CMS, Phase G 1.3.2). */
+const hideLegacyBreedProgressionFields = () => false;
+
 /**
  * @typedef {Object} BreedFieldDescriptor
  * @property {string} key - Clé unique du champ
@@ -160,6 +163,7 @@ export function getBreedFieldDescriptors(ctx = {}) {
       key: "evolution",
       label: "Évolution",
       icon: "",
+      visibleIf: hideLegacyBreedProgressionFields,
       table: {
         searchable: true,
         filterable: { id: "evolution", type: "text", defaultVisible: false },
@@ -221,6 +225,7 @@ export function getBreedFieldDescriptors(ctx = {}) {
       key: "life_dice",
       label: "Dé de vie",
       icon: "fa-solid fa-dice",
+      visibleIf: hideLegacyBreedProgressionFields,
       table: {
         sortable: true,
         filterable: { id: "life_dice", type: "text", defaultVisible: true },
@@ -251,6 +256,7 @@ export function getBreedFieldDescriptors(ctx = {}) {
       key: "specificity",
       label: "Spécificité",
       icon: "fa-solid fa-star",
+      visibleIf: hideLegacyBreedProgressionFields,
       table: {
         searchable: true,
         filterable: { id: "specificity", type: "text", defaultVisible: false },

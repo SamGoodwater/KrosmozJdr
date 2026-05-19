@@ -3,7 +3,7 @@
  * Affichage des variantes de sorts (choix exclusifs) et des sorts toujours disponibles.
  *
  * @props {Object} breed - Breed ou payload (_data, spells, spell_slots)
- * @props {'text'|'compact'|'large'} density - text = Minimal/Line, compact = modal, large = fiche
+ * @props {'text'|'compact'|'full'} density - text = Minimal/Line, compact = modal, full = fiche
  */
 import { computed } from "vue";
 import SpellViewText from "@/Pages/Molecules/entity/spell/SpellViewText.vue";
@@ -21,8 +21,8 @@ const props = defineProps({
     },
     density: {
         type: String,
-        default: "large",
-        validator: (v) => ["text", "compact", "large"].includes(v),
+        default: "full",
+        validator: (v) => ["text", "compact", "full"].includes(v),
     },
     characteristicRuntime: {
         type: Object,
@@ -86,7 +86,7 @@ const variantTitle = (g) => {
 
 <template>
     <div v-if="hasAny" class="breed-variants-display space-y-4" :data-density="density">
-        <template v-if="density === 'large'">
+        <template v-if="density === 'full'">
             <div v-if="hasVariants" class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-3">
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Variantes de sorts</h3>

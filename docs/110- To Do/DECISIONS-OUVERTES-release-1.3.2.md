@@ -1,191 +1,258 @@
-# Décisions ouvertes — release 1.3.2
+# Décisions — release 1.3.2
 
-Ce fichier recense les **questions à trancher** avant développement, issues de [`To do 1.3.1 vers 1.3.2.md`](./To%20do%201.3.1%20vers%201.3.2.md) et du [`PLAN-EXECUTION-release-1.3.2.md`](./PLAN-EXECUTION-release-1.3.2.md).  
-**À compléter** : remplacer chaque `*(à répondre)*` ci-dessous par la décision définitive (une phrase ou liste courte suffit).
+**Statut : validé** (réponses du produit en date du 2026-05-17).  
+Fichiers liés : [`To do 1.3.1 vers 1.3.2.md`](./To%20do%201.3.1%20vers%201.3.2.md) (spec exhaustive), [`PLAN-EXECUTION-release-1.3.2.md`](./PLAN-EXECUTION-release-1.3.2.md) (phases).
 
 | ID | Statut |
 | --- | --- |
-| Q1–Q… | *(à répondre)* |
+| Q1–Q27 | Validé |
 
 ---
 
 ## A — Administration, rôles, ré-authentification
 
-### Q1 — Qui voit quoi dans le menu compte ?
-- Entrées **« Gestion du contenu »** et **« Espace administration »** : quels **rôles** exactement (slug Laravel / noms métier) pour chaque entrée ? Un même utilisateur peut-il avoir les deux ?
-- **Réponse décision :** *(à répondre)*
+### Q1 — Menu compte : qui voit quoi ?
 
-### Q2 — Ré-authentification (« redemande du mot de passe »)
-- Mécanisme souhaité : middleware type `password.confirm` Laravel, modal custom, durée du « confirmez votre mot de passe » (minutes) ?
-- S’applique **à chaque sous-page** concernée ou **une fois par session** pour la zone tout entière (contenu vs admin) ?
-- **Réponse décision :** *(à répondre)*
+**Réponse :**
 
-### Q3 — « Vue d’ensemble » vs « Récapitulatif » (admin)
-- **Vue d’ensemble** (game master / contenu) : confirmé = camemberts **par type d’entité** avec statuts brut / brouillon / jouable / archivé **+** compteurs pages & sections uniquement ?
-- **Récapitulatif** (admin) : confirmé = courbe **évolution nombre d’utilisateurs dans le temps** + camembert **répartition par rôle** uniquement ?
-- Granularité temporelle du graph utilisateurs : **jour / semaine / mois** depuis quand ?
-- RGPD / affichage : uniquement **totaux agrégés** pour les admins (sans liste nominative dans ce graph), ok ?
-- **Réponse décision :** *(à répondre)*
+- **Gestion du contenu** : à partir du rôle **game_master** et au-dessus (**admin**, **super_admin** inclus).
+- **Espace administration** : à partir du rôle **admin** (**super_admin** inclus).
+- À prévoir dans l’espace administration : **planning / cron** (ne pas oublier dans le menu ou la page dédiée).
+- Un utilisateur peut cumuler les droits (ex. super_admin voit les deux zones).
 
 ---
 
-## B — Droits, invités et page « Gérer l’affichage »
+### Q2 — Zone sensible et mot de passe
 
-### Q4 — Visibilité par défaut pour les **invités** (sans compte)
-- Pour les **entités** : doit-on considérer que seules les entités en état « **jouable** » (ou « actif », selon nomenclature) sont visibles pour les guests, **sauf** règle explicite dans « Gérer l’affichage » ?
-- Ou au contraire : **tous les états** visibles tant qu’aucune restriction n’a été configurée ?
-- **Réponse décision :** *(à répondre)*
+**Réponse :**
 
-### Q5 — Modèle de configuration dans « Gérer l’affichage »
-- Souhaites-tu une **matrice** (type d’entité × état workflow × groupe de rôles / rôle lisible), ou des **réglages plus simples** (ex. trois profils pré-définis : public / MJ / rédacteur) ?
-- Les réglages s’appliquent-ils **en plus** des Policies Laravel existantes ou **remplacent-ils partiellement** la logique actuelle ?
-- **Réponse décision :** *(à répondre)*
-
-### Q6 — Pages / sections privées (« auteur seulement »)
-- Une page ou section réservée à un rôle + **auteur** : les **MJ** peuvent-ils toujours tout voir, ou doit-on avoir un niveau au-dessus (ex. super_admin uniquement pour outrepasser « auteur seulement ») ?
-- **Réponse décision :** *(à répondre)*
+- Le système **débloque** l’accès aux parties sensibles pendant **1 heure** après confirmation du mot de passe.
+- **Indicateur UI** : petit **cadenas vert** à côté de l’avatar lorsque le compte est en mode débloqué.
+- **Re-blocage automatique** : après **1 h** sans modification sur les **pages sensibles**, le compte repasse verrouillé pour ces zones.
+- Exigence non négociable : **fiabilité** et **robustesse** (sécurité de production).
 
 ---
 
-## C — Entités : vues, tableaux, clavier
+### Q3 — Vue d’ensemble (contenu) vs Récapitulatif (admin)
 
-### Q7 — Abandon du mode « compact »
-- Confirmation : après fusion, **`full`** = ancienne vue **large** renommée, utilisée dans **modal + page**.
-- **`minimal`** et **`line`** restent bien pour les **listes / tableaux / cartes**, avec **popover** où spécifié ?
-- Confirme-t-on qu’**il n’y a plus aucun fallback** ou route nommée « compact » dans l’interface ?
-- **Réponse décision :** *(à répondre)*
+**Réponse :** **Oui**, les deux vues sont distinctes comme prévu dans la spec initiale :
 
-### Q8 — Raccourcis souris/clavier dans les tableaux
-- **`Ctrl + clic`** (= ouverture dans la **page** pleine) : sur macOS utilise-t-on **`Ctrl`** (comme décrit), **`⌘`** (Cmd), ou **les deux** ?
-- **`Alt + clic`** (édition en modal) : sur macOS, **`Alt`** = **`Option`** — ok ; conflits éventuels avec agrandissement léger clic — on garde ainsi ?
-- Si l’utilisateur n’a pas le droit d’éditer : clic Alt ignore-t-il l’action, affiche-t-il un toast « interdit », ou désactive-t-on le raccourci visuellement ?
-- **Réponse décision :** *(à répondre)*
+- **Vue d’ensemble** : camemberts par **type d’entité** × statuts (brut, brouillon, actif/jouable, archivé) + **nombre de pages** et de **sections**.
+- **Récapitulatif** : historique / graph du **nombre d’utilisateurs** + camembert **utilisateurs par rôle**. (Granularité temporelle et détail RGPD à affiner à l’implémentation si besoin — données agrégées pour les graphiques.)
 
-### Q9 — Création d’entité (modal léger puis édition complète)
-- Champs minimaux après création sont-ils bien **toujours** : nom + type/race si applicable + description + niveau, ou bien **liste par type d’entité** (monster vs item vs spell …) différente ?
-- **Réponse décision :** *(à répondre)*
+---
+
+## B — Droits, invités et « Gérer l’affichage »
+
+### Q4 — Invités (sans compte)
+
+**Réponse :** Par défaut, pour les **guests**, n’exposer que les états **stables** (ex. **jouable** / équivalent « publiable ») pour autant qu’**aucune autre configuration** n’impose autre chose dans « Gérer l’affichage ».
+
+---
+
+### Q5 — Intégration des règles de visibilité
+
+**Réponse :**
+
+- Intégrer dans les **Policies Laravel existantes** : **pas de surcouche parallèle**, sauf si une analyse de sécurité montre qu’un complément est nécessaire (à documenter alors).
+- Besoin métier exprimé : par **entité**, savoir **quel état** du workflow est **visible par quel rôle**.
+
+---
+
+### Q6 — Lecteurs par défaut des pages / sections (hors réglage fin)
+
+**Réponse :** Sauf configuration spécifique d’une page ou section : **admin**, **super_admin**, **créateur**, **MJ** conservent les accès attendus ; les détails par page/section peuvent restreindre autrement si paramétré.
+
+---
+
+## C — Entités : vues, tableaux, création
+
+### Q7 — Remplacement de `compact` et `large`
+
+**Réponse :**
+
+- Supprimer **compact** et **large** au profit d’une seule vue détail **`full`**.
+- Mettre à jour la **documentation** et **toutes les entités** du projet pour réduire la surface de maintenance.
+- **Modèle de vues officiel** :
+
+  | Vue | Usage |
+  | --- | --- |
+  | **minimal** | Listes, cartes compactes |
+  | **line** | Dérivée de minimal (ligne enrichie) |
+  | **texte** | Intégration dans un paragraphe, avec accès plus poussé via **popover** |
+  | **full** | Contenu complet en **page** ou **modal** |
+  | **edit** | Édition en **page** ou **modal** |
+
+---
+
+### Q8 — Raccourcis dans les tableaux (dont macOS)
+
+**Réponse :**
+
+- Pour **ouvrir en page pleine** : **Ctrl + clic** et **⌘ + clic** (les deux).
+- Si l’utilisateur **n’a pas** le droit d’**édition** et déclenche l’action d’édition (ex. Alt + clic) : **notification uniquement**, **sans** ouvrir de vue.
+
+---
+
+### Q9 — Champs minimaux à la création (modal avant édition complète)
+
+**Réponse initiale :** la question n’était pas claire côté produit.
+
+**Décision retenue pour l’implémentation :**
+
+- Principe inchangé du spec : modal avec **uniquement des propriétés simples**, **obligatoires**, avec droits **read + write** ; typiquement **nom**, **race/type**, **description**, **niveau** — ou **peu plus** selon l’entité.
+- Le **détail exact des champs** peut **varier par type d’entité** (monstre, sort, objet…). Il sera aligné sur les **modèles**, **validations** et **seeders** existants pour chaque type (décision de développement par entité, cohérente avec cette règle).
 
 ---
 
 ## D — Spécialisations & classes (Breed)
 
-### Q10 — Variantes de sorts (classes)
-- **De 2 à 4 sorts par variante** : est-ce une **contrainte stricte** en base (`min`/`max`) ou uniquement UX ?
-- Un sort peut-il figurer dans **plus d’une** variante de la même classe ?
-- **Réponse décision :** *(à répondre)*
+### Q10 — Variantes de sorts
 
-### Q11 — Suppression des champs classe `evolution`, `specifity`, `life`
-- Migration du contenu **obligatoire avant suppression** ou **migration progressive** (champs ignorés puis retirés en 1.3.3) ?
-- Qui garantit que le HTML legacy a bien été repris dans **sections / liens d’import d’entité** ?
-- **Réponse décision :** *(à répondre)*
+**Réponse :**
 
-### Q12 — Contenu Bibliothèque (menu seeder)
-- **Une sous-page par spécialisation / par classe** : URL pattern souhaité (slug unique, arborescence `bibliotheque/classes/{slug}`, etc.) conforme aux conventions déjà utilisées dans le projet ?
-- **Réponse décision :** *(à répondre)*
+- Nombre « normal » **1 à 4** sorts par variante ; **pas d’obligation** de contrainte stricte en base.
+- L’**UX** doit rester prévue pour **ne pas dépasser 4** sorts dans l’affichage standard.
+- Le **même sort** peut apparaître dans **plusieurs** variantes (acceptable même si rare en usage).
 
 ---
 
-## E — TipTap / sections / filtres recherche inserts
+### Q11 — Champs `evolution`, `specifity`, `life` (classes)
 
-### Q13 — Prévu « charge la section » dans le popover
-- Charger **toujours** le HTML/markdown rendu côté **API**, ou permettre du **lazy** après ouverture du popover uniquement ?
-- Longueur d’« aperçu » : nombre de **caractères** ou de **titres jusqu’à** un premier titre `h2` ?
-- **Réponse décision :** *(à répondre)*
-
-### Q14 — Limite résultats @-mention
-- Nombre **max de résultats** par groupe (caractéristiques / sections / entités), ex. **5 + 5 + 5**, ou budget global ?
-- **Réponse décision :** *(à répondre)*
+**Réponse :** **Pas de migration manuelle du contenu** — le contenu sera **reconstruit** avec le système de **sections** lors de l’**init** (initiation / pipeline projet).
 
 ---
 
-## F — Sorts / sous-effets / éléments
+### Q12 — Navigation Bibliothèque
 
-### Q15 — Effets ou IDs non mappés (ex. sous-effets `12352`, `18558`, `24680`)
-- Priorité : **mapper** ces effets comme les autres avec conversion, **`fallback** texte DofusDB brut ou libellé générique (« effet technique — réf … »), ou **les deux** (mapping quand possible, sinon fallback) ?
-- Les IDs listés sont-ils une **liste exhaustive connue pour 1.3.2** ou des **exemples** ?
-- **Réponse décision :** *(à répondre)*
-
-### Q16 — Agrégation des « éléments » sur les sorts
-- Référence métier où documenter **la liste des valeurs légitimes** (feu air, neutre…) pour valider après conversion depuis sous-effets ?
-- **Réponse décision :** *(à répondre)*
+**Réponse :** Aligné sur **l’existant** : une **page Classes** avec **sous-pages par classe** ; idem pour **Spécialisations** (sous-pages par spécialisation).
 
 ---
 
-## G — Recherche globale (nouveauté)
+## E — Sections, TipTap, mention `@`
 
-### Q17 — Moteur et périmètre technique
-- V1 préférée : **requêtes SQL / Eloquent avec `LIKE`**, **indexes full-text MySQL**, **Laravel Scout** (Meilisearch, Algolia…) ou autre ?
-- Contrainte : **temps réel** vs **pagination** forte (performance sur gros corpus) ?
-- **Réponse décision :** *(à répondre)*
+### Q13 — Chargement des sections dans le popover
 
-### Q18 — Filtre « état » dans la recherche
-- États inclus : **exactement les mêmes** que workflow entités brut / brouillon / jouable / archivé + pages/sections équivalent ou **liste distincte** pour le CMS ?
-- **Réponse décision :** *(à répondre)*
+**Réponse :** Suivre les **bonnes pratiques** perf : parcours **léger et fluide** ; ce flux peut être lourd donc privilégier chargement **paresseux** / **optimiste** selon ce qui est le plus stable dans le stack (décision d’implémentation documentée dans le code).
 
-### Q19 — Recherche sur contenu très long des sections (TipTap HTML)
-- Faut-il indexer / afficher uniquement les **titres et extraits**, ou recherche dans **full body** même si résultats lourd ?
-- **Réponse décision :** *(à répondre)*
+**Troncature d’aperçu :** environ **dix lignes**, en essayant de **terminer à la fin d’un paragraphe**.
 
 ---
 
-## H — Légal, markdown, changelog
+### Q14 — Limite des résultats `@`
 
-### Q20 — Convention des fichiers `storage/app/public/legal/*.md`
-- Liste **exacte des slugs/pages** qui pointent vers quels fichiers (ex. `cgu.md`, `politique-donnees.md`, `changelog.md`) ?
-- Gestion multi-langues : **un fichier par locale** ou un seul FR pour la 1.3.2 ?
-- **Réponse décision :** *(à répondre)*
-
-### Q21 — Directive « changelog » dans la doc
-- Emplacement cible définitif (`docs/00-Project/CHANGELOG_GUIDE.md` ou équivalent), **approuvé** avant rédaction ?
-- **Réponse décision :** *(à répondre)*
+**Réponse :** **Budget global** (une limite totale pour la liste), pas une quota séparée par type.
 
 ---
 
-## I — Commandes Artisan (`project:*`)
+## F — Sorts
 
-### Q22 — Comportement unique de `project:refresh`
-- Option **A** : `migrate:fresh` + **`DatabaseSeeder`** uniquement (rapide, sans API DofusDB).  
-- Option **B** : **pipeline complet équivalent à `project:init`** après fresh.  
-- Option **C** : **les deux**, exposés sous options (`--minimal` vs `--full`) avec une valeur **par défaut** documentée.  
-→ Quelle est la **décision** ?
-- **Réponse décision :** *(à répondre)*
+### Q15 — Sous-effets non mappés (exemples d’IDs)
 
-### Q23 — `project:seed` nouveau
-- Inclusion : **exactement quelles classes** Seeders/commandes hors scrapping (`capabilities:import-legacy`, règles TOC, specialization HTML, etc.) ? Aligné sur liste Phase 2 de `project:init` **sans** Phase 5 scrapping uniquement ?
-- **Réponse décision :** *(à répondre)*
+**Réponse :**
 
-### `project:clear` (sans numérotation Q supplémentaire si couvert ci-dessous)
-- Cf. PLAN § Phase J ; confirme ce qui doit être **exclusivement vidé sans danger** pour un cron régulier (caches Laravel, fichier review, dossiers précis…) — sera complété après **Réponse utilisateur**.
+- Les IDs cités sont des **exemples**, pas une liste exhaustive.
+- **Priorité** : **mapper** quand c’est possible ; sinon texte **compréhensible pour un humain**.
+- **Fallback** : peut inclure une **icône dans le texte** rendu pour signaler succès / échec de résolution (**pas** de stockage séparé pour cette icône).
+
+---
+
+### Q16 — Éléments (airs, etc.) sur les sorts
+
+**Réponse :** **Oui** — s’appuyer sur la **documentation de référence** (`docs/400-…`) pour la liste des valeurs légitimes et valider la conversion depuis les sous-effets.
+
+---
+
+## G — Recherche globale
+
+### Q17 — Technique et performance
+
+**Réponse :** Performance acceptable notamment via **nombre de résultats** et pagination. **Technique libre** : bonnes pratiques et outils performants (choix d’implémentation).
+
+---
+
+### Q18 — Périmètre du filtre « état » et du contenu
+
+**Réponse :** Filtre et résultats tenant compte des **entités** **et** du **CMS** (**pages** et **sections**), avec cohérence sur les états selon le modèle choisi pour chaque type de ressource.
+
+---
+
+### Q19 — Contenu des sections dans l’index de recherche
+
+**Réponse :** **Titre** + **extrait** uniquement (pas le corps HTML complet dans les résultats).
+
+---
+
+## H — Légal et changelog (fichiers)
+
+### Q20 — Fichiers markdown légaux
+
+**Réponse :** **Mono-langue** ; **noms de fichiers précis** alignés sur les pages du site (détail des noms dans l’implémentation, cohérent avec les routes CMS).
+
+---
+
+### Q21 — Où rédiger la « doc changelog utilisateur »
+
+**Réponse :** **Pas** dans `/docs/` pour le contenu publié version par version.
+
+- **Emplacement** : `storage/app/public/changelog/` — **un fichier par version** (ex. `1.3.2.md`).
+- Structure : **section d’introduction** ; **une section par version** ; navigation possible **d’une version à l’autre** sans fichiers trop lourds.
+
+---
+
+## I — Commandes Artisan
+
+### Q22 — `project:refresh`
+
+**Réponse (produit) :** Enchaînement : **`migrate:fresh` + `DatabaseSeeder`**, puis **pipeline équivalent à `project:init`** (données complètes après réinit).
+
+**Implémentation (2026-05-17)** : `project:refresh` appelle désormais **`project:init --fresh`** après le ménage local. `project:init --fresh` exécute **`migrate:fresh`** puis le pipeline complet (seeders Krosmoz, règles, capacités…). L’étape **`DatabaseSeeder`** Laravel (`migrate:fresh --seed`) n’est **pas** dupliquée : les seeders de `project:init` couvrent et **étendent** le socle. Options transmis depuis `project:refresh` : `--without-seed` → `--skip-seeders`, `--skip-scrapping`, `--noimage`, `--skip-types` ; avec `--force` ou mode non interactif : `--skip-super-admin-prompt`.
+
+---
+
+### Q23 — Commande d’ensemencement type `project:seed`
+
+**Réponse :** Le produit considère que la commande a été **refaite** ; **vérifier le dépôt** avant de modifier à nouveau.
+
+**Note code (audit 2026-05-17)** : aucune signature `project:seed` trouvée dans le codebase. L’équivalent attendu reste typiquement **`project:init`** avec options pour **sauter le scrapping** (`--skip-scrapping`, etc.). À valider lors de l’implémentation.
+
+---
 
 ### Q24 — `project:cron`
-- Une seule entrée `php artisan project:cron` avec **quelles sous-actions par défaut** (ex. aucune, `--update` uniquement…) pour éviter un cron trop agressif en prod ?
-- **Réponse décision :** *(à répondre)*
+
+**Réponse :** Idem — **vérifier** que le comportement est satisfaisant ; **a priori pas de changement**.
+
+**Note code (audit 2026-05-17)** : `project:cron` **n’exécute rien** si aucune option (`--clear`, `--backup`, …) : message d’avertissement et code d’échec — comportement **sûr** pour un cron « vide ».
 
 ---
 
-## J — Divers projet / périmètre 1.3.2 vs report
+## J — Priorités release
 
-### Q25 — Accueil : « cf rule »
-- De quelle **règle Cursor / doc projet** précise s’agit-il pour le ton et le périmètre de la page d’accueil (lien vers fichier) ?
-- **Réponse décision :** *(à répondre)*
+### Q25 — Page d’accueil : référence « cf rule »
 
-### Q26 — Panoplies avant la 1.3.2
-- **Blocage release** ou **livraison fonctionnel minimale en 1.3.3** avec message « incomplet » côté admin ?
-- Si minimal en 1.3.2 : quelles lignes fonctionnelles **obligatoires** ?
-- **Réponse décision :** *(à répondre)*
+**Réponse :** Contenu / ton à caler sur les **règles de jeu** documentées sous [`docs/400- Jeu/420- Règles`](../../400-%20Jeu/420-%20Règles) (notamment ton & intentions dans l’introduction).
 
-### Q27 — Recherche globale vs autres chantiers pour la première prod
-- Classer selon votre date : recherche globale fait-elle partie **obligatoire** de 1.3.2 ou **version suivante** si la fenêtre date est courte ?
-- **Réponse décision :** *(à répondre)*
+---
+
+### Q26 — Panoplies (périmètre 1.3.2)
+
+**Réponse :**
+
+- Entité **simple** : liste d’**équipements** + un ou plusieurs **effets** en bonus (effets / sous-effets de sorts).
+- **Vue minimal** : afficher l’**effet par défaut** + liste des équipements en **vue Texte** au **hover**.
+- Le minimal est **presque** la version finale pour cette entité.
+
+---
+
+### Q27 — Recherche globale
+
+**Réponse :** **Bloquante** pour la **1.3.2** — doit sortir avec cette version.
 
 ---
 
 ## Historique des mises à jour de ce fichier
 
-| Date | Auteur | Changement |
-| --- | --- | --- |
-| 2026-05-17 | — | Création : première liste de questions depuis plan + spec. |
-
----
-
-*Après remplissage des réponses, mettre à jour le statut tableau en tête (`Validé`), puis synchroniser §2 ou § référence dans [`PLAN-EXECUTION-release-1.3.2.md`](./PLAN-EXECUTION-release-1.3.2.md).* 
+| Date | Changement |
+| --- | --- |
+| 2026-05-17 | Création : questions Q1–Q27. |
+| 2026-05-17 | Validation : réponses produit intégrées + notes d’audit code (`project:refresh`, `project:cron`, absence `project:seed`). |

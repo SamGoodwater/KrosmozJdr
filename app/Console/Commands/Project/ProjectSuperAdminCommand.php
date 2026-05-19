@@ -21,12 +21,6 @@ class ProjectSuperAdminCommand extends Command
 
     public function handle(): int
     {
-        if (app()->environment('production')) {
-            $this->error('Cette commande ne doit pas être utilisée en production sans processus contrôlé.');
-
-            return ArtisanExitCode::FAILURE;
-        }
-
         try {
             $this->runPrimarySuperAdminPrompt();
         } catch (\RuntimeException $e) {

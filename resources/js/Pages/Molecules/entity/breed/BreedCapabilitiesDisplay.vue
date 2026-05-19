@@ -3,7 +3,7 @@
  * Capacités liées à une classe : passifs en premier, autres capacités ensuite.
  *
  * @props {object[]} capabilities - Liste brute (CapabilityResource)
- * @props {'text'|'compact'|'large'} density
+ * @props {'text'|'compact'|'full'} density
  */
 import { computed } from "vue";
 import CapabilityViewText from "@/Pages/Molecules/entity/capability/CapabilityViewText.vue";
@@ -20,8 +20,8 @@ const props = defineProps({
     },
     density: {
         type: String,
-        default: "large",
-        validator: (v) => ["text", "compact", "large"].includes(v),
+        default: "full",
+        validator: (v) => ["text", "compact", "full"].includes(v),
     },
     characteristicRuntime: {
         type: Object,

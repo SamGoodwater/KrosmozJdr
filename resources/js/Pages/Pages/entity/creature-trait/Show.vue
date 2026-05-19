@@ -6,15 +6,15 @@
  * Rend la vue large avec les actions en contexte page.
  *
  * @example
- * <CreatureTraitViewLarge :creature-trait="creatureTrait" />
+ * <CreatureTraitViewFull :creature-trait="creatureTrait" />
  */
 import { computed } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { CreatureTrait } from "@/Models/Entity/CreatureTrait";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
-import EntityViewLargeWrapper from "@/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue";
-import CreatureTraitViewLarge from "@/Pages/Molecules/entity/creature-trait/CreatureTraitViewLarge.vue";
+import EntityViewFullWrapper from "@/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue";
+import CreatureTraitViewFull from "@/Pages/Molecules/entity/creature-trait/CreatureTraitViewFull.vue";
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -38,8 +38,8 @@ setPageTitle(`Trait : ${creatureTrait.value.name || "-"}`);
     <Head :title="`Trait : ${creatureTrait?.name || '-'}`" />
 
     <Container class="space-y-6 pb-8">
-        <EntityViewLargeWrapper :show-back-button="true" back-route="entities.creature-traits.index">
-            <CreatureTraitViewLarge :creature-trait="creatureTrait" :show-actions="true" />
-        </EntityViewLargeWrapper>
+        <EntityViewFullWrapper :show-back-button="true" back-route="entities.creature-traits.index">
+            <CreatureTraitViewFull :creature-trait="creatureTrait" :show-actions="true" />
+        </EntityViewFullWrapper>
     </Container>
 </template>

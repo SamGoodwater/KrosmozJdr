@@ -10,12 +10,13 @@
  *
  * @props {Spell} spell - Instance du modèle Spell
  */
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
+import EntityStateBadge from "@/Pages/Atoms/data-display/EntityStateBadge.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import {
@@ -121,6 +122,18 @@ const showHref = computed(() =>
     entity.value?.id ? route("entities.spells.show", { spell: entity.value.id }) : null
 );
 
+/** Force le rafraîchissement de la pastille après PATCH état (mutation in-place sur l’instance). */
+const stateTick = ref(0);
+const entityState = computed(() => {
+    void stateTick.value;
+    return entity.value?.state ?? entity.value?._data?.state ?? null;
+});
+
+const entityActionsContext = computed(() => ({
+    viewMode: props.displayMode === "compact" ? "compact" : "minimal",
+    inMinimal: true,
+}));
+
 const handleAction = async (actionKey) => {
     const spellId = entity.value?.id;
     if (!spellId) return;
@@ -139,6 +152,10 @@ const handleAction = async (actionKey) => {
             break;
         case "delete":
             emit("delete", props.spell);
+            break;
+        case "state":
+            stateTick.value += 1;
+            emit("action", actionKey, props.spell);
             break;
         default:
             emit("action", actionKey, props.spell);
@@ -175,6 +192,13 @@ const handleAction = async (actionKey) => {
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <EntityStateBadge
+                                v-if="entityState"
+                                :state="entityState"
+                                size="xs"
+                                :show-label="false"
+                                class="shrink-0"
+                            />
                             <div class="min-w-0 flex-1">
                                 <Route
                                     v-if="showHref"
@@ -192,6 +216,7 @@ const handleAction = async (actionKey) => {
                                 <EntityActions
                                     entity-type="spells"
                                     :entity="entity"
+                                    :context="entityActionsContext"
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
@@ -257,6 +282,13 @@ const handleAction = async (actionKey) => {
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <EntityStateBadge
+                                v-if="entityState"
+                                :state="entityState"
+                                size="xs"
+                                :show-label="false"
+                                class="shrink-0"
+                            />
                             <div class="min-w-0 flex-1">
                                 <Route
                                     v-if="showHref"
@@ -274,6 +306,7 @@ const handleAction = async (actionKey) => {
                                 <EntityActions
                                     entity-type="spells"
                                     :entity="entity"
+                                    :context="entityActionsContext"
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"

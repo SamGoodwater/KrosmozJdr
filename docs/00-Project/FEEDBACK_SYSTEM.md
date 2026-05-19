@@ -16,6 +16,7 @@ Documentation du système permettant aux visiteurs et utilisateurs de remonter a
   - Récupère l'URL courante (`window.location.href`)
   - Pré-remplit le pseudo avec `auth.user.name` si l'utilisateur est connecté
   - Champs : type (bogue, erreur, suggestion, autre), message (requis), pièce jointe (optionnel)
+  - Utilisateur connecté : case **Recevoir un email récapitulatif** (`email_recap`, défaut `false`) — envoi de `FeedbackRecapMail` à l’email du compte uniquement si coché
 - **Emplacement** : Intégré dans [Main.vue](../resources/js/Pages/Layouts/Main.vue)
 
 ### 2.2 Backend
@@ -38,6 +39,7 @@ Fichier `config/feedback.php` :
 - **type** : requis, in:bug,error,suggestion,other
 - **url** : nullable, string, max 500
 - **pseudo** : nullable, string, max 100
+- **email_recap** : boolean optionnel — ignoré pour les invités ; pour un compte connecté, déclenche `FeedbackRecapMail` vers l’email du compte
 - **attachment** : nullable, file, max 2 Mo, mimes:jpg,jpeg,png,gif,pdf,txt
 
 ## 5. Destinataires

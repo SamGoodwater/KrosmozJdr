@@ -22,8 +22,8 @@ const path = computed(() => {
  */
 function isItemActive(item) {
     const p = path.value;
-    if (item.path === '/admin') {
-        return p === '/admin' || p === '/admin/';
+    if (item.path === '/admin/recap') {
+        return p === '/admin/recap' || p === '/admin/recap/';
     }
     return p === item.path || p.startsWith(`${item.path}/`);
 }
@@ -32,15 +32,29 @@ const adminNavItems = computed(() => {
     const items = [];
 
     items.push({
-        title: 'Vue d’ensemble',
-        href: 'admin.dashboard.index',
-        path: '/admin',
-        icon: 'fa-gauge-high',
+        title: 'Récapitulatif',
+        href: 'admin.recap.index',
+        path: '/admin/recap',
+        icon: 'fa-chart-pie',
         show: true,
     });
 
     if (isSuperAdmin.value) {
         items.push(
+            {
+                title: 'Planning cron',
+                href: 'admin.project-schedule.index',
+                path: '/admin/project-schedule',
+                icon: 'fa-clock',
+                show: true,
+            },
+            {
+                title: 'Reviews dev',
+                href: 'admin.project-review.index',
+                path: '/admin/project-review',
+                icon: 'fa-file-lines',
+                show: true,
+            },
             {
                 title: 'Sync données',
                 href: 'admin.project-maintenance.index',
@@ -82,17 +96,10 @@ const adminNavItems = computed(() => {
                 show: canAccess('scrapping'),
             },
             {
-                title: 'Caractéristiques',
-                href: 'admin.characteristics.index',
-                path: '/admin/characteristics',
-                icon: 'fa-sliders',
-                show: true,
-            },
-            {
-                title: 'Langues',
-                href: 'admin.languages.index',
-                path: '/admin/languages',
-                icon: 'fa-language',
+                title: 'Affichage entités',
+                href: 'admin.entity-display-visibility.index',
+                path: '/admin/entity-display-visibility',
+                icon: 'fa-eye',
                 show: true,
             },
             {
@@ -107,25 +114,6 @@ const adminNavItems = computed(() => {
                 href: 'admin.dofusdb-effect-mappings.index',
                 path: '/admin/dofusdb-effect-mappings',
                 icon: 'fa-link',
-                show: true,
-            }
-        );
-    }
-
-    if (canAccess('effectsAdmin')) {
-        items.push(
-            {
-                title: 'Effets',
-                href: 'admin.effects.index',
-                path: '/admin/effects',
-                icon: 'fa-bolt',
-                show: true,
-            },
-            {
-                title: 'Sous-effets',
-                href: 'admin.sub-effects.index',
-                path: '/admin/sub-effects',
-                icon: 'fa-wand-magic-sparkles',
                 show: true,
             }
         );

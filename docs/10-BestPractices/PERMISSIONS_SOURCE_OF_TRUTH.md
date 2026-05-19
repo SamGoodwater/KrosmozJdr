@@ -4,6 +4,7 @@
 
 - **Backend = vérité** : toutes les décisions d’autorisation (lecture/écriture) sont prises via **Policies/Gates** Laravel.
 - **Frontend = affichage/UX** : l’UI se base sur des flags `can.*` fournis par le backend (Inertia props / Resources) pour afficher/masquer des actions, mais **ne remplace jamais** l’autorisation backend.
+- **Cas particulier (Phase A)** : la lecture des **entités** du registre passe aussi par la matrice **« Gérer l’affichage »** (`EntityDisplayVisibilityService`) depuis les policies **`BaseEntityPolicy`** — voir [**ENTITY_VISIBILITY_PHASE_A**](ENTITY_VISIBILITY_PHASE_A.md).
 
 ---
 

@@ -525,12 +525,27 @@ export class Spell extends BaseModel {
     _toEffectSummaryCell(format, size, options) {
         const chips = this.effectUsagesChips;
         if (chips.length === 0) {
+            const summary = String(this.effectUsagesSummary || '').trim();
+            if (summary !== '') {
+                return {
+                    type: 'text',
+                    value: summary,
+                    params: {
+                        sortValue: summary,
+                        searchValue: summary,
+                    },
+                };
+            }
+            const effectRaw = this.effect;
+            if (effectRaw !== null && effectRaw !== undefined && String(effectRaw).trim() !== '') {
+                return this._toEffectCell(format, size, options);
+            }
             return {
                 type: 'text',
                 value: '—',
                 params: {
                     sortValue: '',
-                    searchValue: this.effectUsagesSummary || '',
+                    searchValue: '',
                 },
             };
         }

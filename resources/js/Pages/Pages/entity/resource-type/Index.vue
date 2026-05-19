@@ -27,6 +27,8 @@ import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resour
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 import { ResourceType } from "@/Models/Entity/ResourceType";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
+import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
+import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 
 const props = defineProps({
     resourceTypes: { type: Object, required: true },
@@ -109,6 +111,21 @@ const closeEdit = () => {
     editOpen.value = false;
     selectedEntity.value = null;
 };
+
+const { handleKeyboardIntent } = useEntityIndexTableIntents({
+    ModelClass: ResourceType,
+    routeShowName: "entities.resource-types.show",
+    routeShowParam: "resourceType",
+    canModify: () => canModifyResolved.value,
+    openFullModal: (model) => {
+        selectedEntity.value = model;
+        editOpen.value = true;
+    },
+    openEdit: (model) => {
+        quickEditEntity.value = model;
+        quickEditModalOpen.value = true;
+    },
+});
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
@@ -228,6 +245,7 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @keyboard-intent="handleKeyboardIntent"
                     @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
@@ -253,6 +271,7 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
             :default-entity="defaultEntity"
             route-name-base="entities.resource-types"
             route-param-key="resourceType"
+            :create-allow-field-keys="getEntityCreateAllowFieldKeys('resource-types')"
             @close="createOpen = false"
             @created="handleEntityCreated"
         />

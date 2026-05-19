@@ -162,9 +162,9 @@ export async function searchRichReferenceItems(query, opts = {}) {
         previewUrl: null,
     }));
 
-    const charHits = filterByQuery(charSuggestions, q).slice(0, maxResults);
+    const charFiltered = filterByQuery(charSuggestions, q);
     if (mode === "characteristic") {
-        return charHits;
+        return charFiltered.slice(0, maxResults);
     }
 
     if (mode === "entityType" && entityType) {
@@ -179,10 +179,14 @@ export async function searchRichReferenceItems(query, opts = {}) {
 
     const [entities, cms] = await Promise.all([
         fetchEntityHits(q, perTypeEntityLimit, { signal }),
-        fetchCmsHits(q, { signal, maxResults: Math.max(20, maxResults) }),
+        fetchCmsHits(q, { signal, maxResults: Math.max(24, maxResults * 2) }),
     ]);
 
-    const entityHits = filterByQuery(entities, q).slice(0, maxResults);
-    const cmsHits = filterByQuery(cms, q).slice(0, maxResults);
-    return [...charHits, ...entityHits, ...cmsHits].slice(0, maxResults);
+    const cmsHits = filterByQuery(cms, q);
+    const sectionHits = cmsHits.filter((item) => item.kind === "pageSection");
+    const pageHits = cmsHits.filter((item) => item.kind === "page");
+    const entityHits = filterByQuery(entities, q);
+
+    /** Décision Q13–Q14 / Phase D : caractéristiques → sections → pages → entités (plafond global en dernier). */
+    return [...charFiltered, ...sectionHits, ...pageHits, ...entityHits].slice(0, maxResults);
 }

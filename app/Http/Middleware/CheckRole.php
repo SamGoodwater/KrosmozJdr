@@ -19,8 +19,8 @@ class CheckRole
             return redirect()->route('login');
         }
 
-        // Si l'utilisateur est super_admin, on le laisse passer
-        if ($request->user()->verifyRole('super_admin')) {
+        // Super-admin humain : dépasse les contrôles de rôle (comme anciennement tout super_admin hors compte système)
+        if ($request->user()->isInteractiveSuperAdmin()) {
             return $next($request);
         }
 

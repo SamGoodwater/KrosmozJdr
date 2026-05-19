@@ -1,77 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies\Entity;
 
 use App\Models\Entity\Panoply;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
-class PanoplyPolicy
+/**
+ * Panoplies : visibilité via {@see BaseEntityPolicy}.
+ */
+class PanoplyPolicy extends BaseEntityPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(?User $user): bool
+    public function update(User $user, Model $model): bool
     {
-        // Accessible à tous, même sans authentification
-        return true;
-    }
+        if (! $model instanceof Panoply) {
+            return false;
+        }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(?User $user, Panoply $panoply): bool
-    {
-        // Accessible à tous, même sans authentification
-        return true;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
         return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Panoply $panoply): bool
-    {
-        // Un utilisateur peut modifier sa propre panoplie, ou un admin peut modifier n'importe quelle panoplie
-        return $panoply->created_by === $user->id || $user->isAdmin();
-    }
-
-    /**
-     * Determine whether the user can update models in bulk / via édition multiple.
-     */
     public function updateAny(User $user): bool
     {
         return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Panoply $panoply): bool
+    public function delete(User $user, Model $model): bool
     {
-        // Un utilisateur peut supprimer sa propre panoplie, ou un admin peut supprimer n'importe quelle panoplie
-        return $panoply->created_by === $user->id || $user->isAdmin();
+        if (! $model instanceof Panoply) {
+            return false;
+        }
+
+        return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Panoply $panoply): bool
+    public function deleteAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Panoply $panoply): bool
+    public function manageAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 }

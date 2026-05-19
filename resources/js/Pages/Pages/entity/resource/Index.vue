@@ -13,6 +13,8 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Resource } from "@/Models/Entity/Resource";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
+import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
+import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
@@ -68,7 +70,7 @@ const canModify = computed(() => Boolean(props.can?.updateAny ?? canUpdateAny('r
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
-const modalView = ref('large');
+const modalView = ref('full');
 const createModalOpen = ref(false);
 const quickEditModalOpen = ref(false);
 const quickEditEntity = ref(null);
@@ -113,7 +115,7 @@ const filteredIds = computed(() => selectedIds.value || []);
 // Handlers
 const openModal = (entity) => {
     selectedEntity.value = entity;
-    modalView.value = 'large';
+    modalView.value = 'full';
     modalOpen.value = true;
 };
 
@@ -167,6 +169,18 @@ const closeModal = () => {
     modalOpen.value = false;
     selectedEntity.value = null;
 };
+
+const { handleKeyboardIntent } = useEntityIndexTableIntents({
+    ModelClass: Resource,
+    routeShowName: "entities.resources.show",
+    routeShowParam: "resource",
+    canModify: () => canModify.value,
+    openFullModal: openModal,
+    openEdit: (model) => {
+        quickEditEntity.value = model;
+        quickEditModalOpen.value = true;
+    },
+});
 
 const handleRefreshAll = () => {
     refreshToken.value++;
@@ -320,6 +334,7 @@ const handleQuickEditSubmit = () => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @keyboard-intent="handleKeyboardIntent"
                     @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
@@ -345,6 +360,7 @@ const handleQuickEditSubmit = () => {
             entity-type="resource"
             :fields-config="fieldsConfig"
             :default-entity="defaultEntity"
+            :create-allow-field-keys="getEntityCreateAllowFieldKeys('resources')"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />

@@ -7,7 +7,7 @@
  * 
  * @props {Object} entity - Données de l'entité
  * @props {String} entityType - Type d'entité
- * @props {String} view - Vue à afficher ('large', 'compact', 'minimal', 'text'), défaut 'large'
+ * @props {String} view - Vue à afficher ('full', 'minimal', 'text'), défaut 'full'
  * @props {Boolean} open - Contrôle l'ouverture du modal
  * @props {Boolean} useStoredFormat - Utiliser le format stocké dans localStorage (défaut: true)
  * @emit close - Événement émis lors de la fermeture
@@ -36,7 +36,7 @@ const props = defineProps({
     view: {
         type: String,
         default: null,
-        validator: (v) => !v || ['large', 'compact', 'minimal', 'text'].includes(v)
+        validator: (v) => !v || ['full', 'minimal', 'text'].includes(v)
     },
     open: {
         type: Boolean,
@@ -67,15 +67,14 @@ const currentView = computed(() => {
     if (props.useStoredFormat) {
         return viewFormat.value;
     }
-    return 'large';
+    return 'full';
 });
 
 const modalSize = computed(() => {
     const sizes = {
-        large: 'xl',
-        compact: 'lg',
+        full: 'xl',
         minimal: 'md',
-        text: 'sm'
+        text: 'sm',
     };
     return sizes[currentView.value] || 'xl';
 });
@@ -139,14 +138,6 @@ const ENTITY_COMPONENT_MAP = {
     'shops': 'Shop',
 };
 
-// Mapper les vues vers leurs noms de composants
-const VIEW_COMPONENT_MAP = {
-    'large': 'ViewLarge',
-    'compact': 'ViewCompact',
-    'minimal': 'ViewMinimal',
-    'text': 'ViewText',
-};
-
 // Fonction pour charger le composant de vue
 const loadViewComponent = async () => {
     try {
@@ -194,6 +185,14 @@ const componentProps = computed(() => {
         return {
             ...common,
             displayMode: minimalDisplayMode.value,
+        };
+    }
+
+    if (currentView.value === 'full') {
+        return {
+            ...common,
+            inModal: true,
+            titleTag: 'h2',
         };
     }
 

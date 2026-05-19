@@ -224,7 +224,7 @@ class StoreSectionRequest extends FormRequest
             $this->merge(['read_level' => User::ROLE_GUEST]);
         }
         if (! isset($data['write_level'])) {
-            $this->merge(['write_level' => User::ROLE_ADMIN]);
+            $this->merge(['write_level' => User::ROLE_GAME_MASTER]);
         }
     }
 }

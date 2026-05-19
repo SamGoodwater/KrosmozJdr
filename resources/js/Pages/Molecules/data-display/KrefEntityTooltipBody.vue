@@ -74,7 +74,7 @@ watch(
 </script>
 
 <template>
-    <div class="kref-entity-tooltip max-w-xs text-left text-sm">
+    <div class="kref-entity-tooltip kref-rich-preview-panel max-w-xs text-left text-sm">
         <div v-if="loading" class="text-base-content/60 italic">Chargement…</div>
         <p v-else-if="error" class="text-error text-xs">{{ error }}</p>
         <div v-else-if="payload" class="flex gap-2">

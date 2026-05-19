@@ -273,6 +273,27 @@ onMounted(() => {
             </div>
 
             <div class="rounded-(--radius-box) border border-base-300 bg-base-200/30 p-4 space-y-3">
+                <h3 class="text-lg font-bold text-primary-100">Règles &amp; légal</h3>
+                <div class="flex flex-wrap gap-2">
+                    <Route :href="route('pages.show', 'accueil')">
+                        <Btn color="neutral" variant="outline" size="sm">Accueil</Btn>
+                    </Route>
+                    <Route route="legal.cgu">
+                        <Btn color="neutral" variant="outline" size="sm">CGU</Btn>
+                    </Route>
+                    <Route route="legal.privacy">
+                        <Btn color="neutral" variant="outline" size="sm">Confidentialité</Btn>
+                    </Route>
+                    <Route route="legal.cookies">
+                        <Btn color="neutral" variant="outline" size="sm">Cookies</Btn>
+                    </Route>
+                    <Route :href="route('changelog.feed', { version: '1.3.2' })">
+                        <Btn color="neutral" variant="outline" size="sm">Changelog</Btn>
+                    </Route>
+                </div>
+            </div>
+
+            <div class="rounded-(--radius-box) border border-base-300 bg-base-200/30 p-4 space-y-3">
                 <h3 class="text-lg font-bold text-primary-100">Raccourcis de gestion</h3>
                 <p class="text-sm text-primary-200">
                     Accès rapide aux contenus principaux du jeu.

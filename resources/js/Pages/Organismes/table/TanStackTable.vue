@@ -154,25 +154,8 @@ const configUiSize = computed(() => String(props.config?.ui?.size || "md"));
 const uiColor = computed(() => String(props.config?.ui?.color || "primary"));
 
 const tablePrefsNamespace = computed(() => String(props.config?.id || props.entityType || "table"));
-const densityStorageKey = computed(() => `tanstack_table_density_${tablePrefsNamespace.value}`);
 
-const densityOptions = [
-    { value: "comfortable", label: "Confort", uiSize: "md" },
-    { value: "compact", label: "Compact", uiSize: "sm" },
-    { value: "dense", label: "Dense", uiSize: "xs" },
-];
-const densityMode = ref("comfortable");
-const uiSize = computed(() => {
-    const selected = densityOptions.find((opt) => opt.value === densityMode.value);
-    if (selected?.uiSize) return selected.uiSize;
-    return configUiSize.value;
-});
-const setDensityMode = (mode) => {
-    if (!densityOptions.some((opt) => opt.value === mode)) return;
-    densityMode.value = mode;
-};
-
-
+const uiSize = computed(() => configUiSize.value);
 
 // Table variant (stripes)
 const uiTableVariant = computed(() => {
@@ -1011,18 +994,6 @@ const updateScreenSize = (forcedWidth = null) => {
 
 onMounted(() => {
     if (typeof document !== "undefined") document.addEventListener("click", closeMinimalContextMenu);
-    try {
-        const storedDensity = localStorage.getItem(densityStorageKey.value);
-        if (storedDensity && densityOptions.some((opt) => opt.value === storedDensity)) {
-            densityMode.value = storedDensity;
-        } else {
-            const byUiSize = densityOptions.find((opt) => opt.uiSize === configUiSize.value);
-            densityMode.value = byUiSize?.value || "comfortable";
-        }
-    } catch {
-        densityMode.value = "comfortable";
-    }
-
     reloadPresetsFromApi();
 
     if (typeof window !== "undefined") {
@@ -1049,18 +1020,6 @@ watch(
     () => {
         reloadPresetsFromApi();
     },
-);
-
-watch(
-    () => densityMode.value,
-    (mode) => {
-        try {
-            localStorage.setItem(densityStorageKey.value, String(mode));
-        } catch {
-            // ignore localStorage errors
-        }
-    },
-    { immediate: false },
 );
 
 onUnmounted(() => {
@@ -1729,9 +1688,9 @@ const handleRowClick = (row) => {
 const handleRowPointer = (row, event) => {
     if (event && isPointerOnInteractiveEl(event)) return;
     const mod = classifyRowPointerModifiers(event);
-    if (mod === "view") {
+    if (mod === "page") {
         event?.preventDefault?.();
-        emit("keyboard-intent", { type: "open-view", row });
+        emit("keyboard-intent", { type: "open-show-page", row });
         return;
     }
     if (mod === "edit") {
@@ -2127,19 +2086,6 @@ const handleExport = () => {
                         aria-label="Activer l’édition rapide au clic sur une ligne"
                         @change="setQuickEditEnabledPref($event.target.checked)"
                     />
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-base-content/70">Densité</span>
-                    <Btn
-                        v-for="option in densityOptions"
-                        :key="option.value"
-                        size="xs"
-                        :variant="densityMode === option.value ? 'glass' : 'ghost'"
-                        :color="uiColor"
-                        @click="setDensityMode(option.value)"
-                    >
-                        {{ option.label }}
-                    </Btn>
                 </div>
                 <Btn
                     size="xs"

@@ -1536,7 +1536,7 @@ const sanitizedPreviewHtml = computed(() => {
               {{ atHintText }}
             </div>
             <div v-else-if="!atItems.length" class="text-xs text-base-content/60 py-1">Aucun résultat</div>
-            <div v-else class="flex flex-col gap-0.5 max-h-56 overflow-auto">
+            <div v-else class="flex flex-col gap-0.5 max-h-[min(52vh,16rem)] overflow-x-hidden overflow-y-auto">
               <button
                 v-for="(item, idx) in atItems"
                 :key="item.key"
@@ -1806,7 +1806,7 @@ const sanitizedPreviewHtml = computed(() => {
         <div class="modal-box max-w-lg">
           <h3 class="font-bold text-lg mb-2">Insérer une référence</h3>
           <p class="text-sm text-base-content/70 mb-3">
-            Recherche (min. 2 caractères) : caractéristiques, entités, pages et sections.
+            Recherche (min. 2 caractères), ordre : caractéristiques, sections, pages, entités (12 résultats max.).
           </p>
           <input
             v-model="refPickerQuery"
@@ -1820,7 +1820,7 @@ const sanitizedPreviewHtml = computed(() => {
             Saisissez au moins 2 caractères.
           </div>
           <div v-else-if="!refPickerItems.length" class="text-sm text-base-content/60 py-2">Aucun résultat</div>
-          <ul v-else class="menu menu-sm rounded-box border border-base-300 bg-base-200/40 max-h-64 overflow-y-auto p-0">
+          <ul v-else class="menu menu-sm rounded-box border border-base-300 bg-base-200/40 max-h-64 overflow-x-hidden overflow-y-auto p-0">
             <li v-for="item in refPickerItems" :key="item.key">
               <button type="button" class="flex w-full items-start gap-2 text-left" @click="runRefPickerItem(item)">
                 <img

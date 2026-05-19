@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Effect\UpdateSpellEffectGroupRequest;
 use App\Http\Requests\Entity\StoreSpellRequest;
@@ -22,6 +23,8 @@ use Inertia\Inertia;
 
 class SpellController extends Controller
 {
+    use RedirectsAfterEntityCreate;
+
     /**
      * Display a listing of the resource.
      */
@@ -109,8 +112,13 @@ class SpellController extends Controller
             $spell->spellTypes()->sync($spellTypes);
         }
 
-        return redirect()->route('entities.spells.index')
-            ->with('success', 'Sort créé avec succès.');
+        return $this->redirectAfterEntityStore(
+            $request,
+            $spell,
+            'entities.spells.edit',
+            'entities.spells.index',
+            'Sort créé avec succès.',
+        );
     }
 
     /**

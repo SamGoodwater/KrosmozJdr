@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreConditionRequest;
 use App\Http\Requests\Entity\UpdateConditionRequest;
 use App\Http\Resources\Entity\ConditionResource;
 use App\Models\Entity\Condition;
 use App\Services\PdfService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class ConditionController extends Controller
 {
+    use RedirectsAfterEntityCreate;
     /**
      * Display a listing of the resource.
      */
@@ -65,16 +68,20 @@ class ConditionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreConditionRequest $request)
+    public function store(StoreConditionRequest $request): RedirectResponse|Response
     {
         $data = $request->validated();
         $data['created_by'] = $request->user()->id;
         $condition = Condition::create($data);
 
         if ($request->header('X-Inertia')) {
-            return redirect()
-                ->route('entities.conditions.index')
-                ->with('success', 'État créé avec succès.');
+            return $this->redirectAfterEntityStore(
+                $request,
+                $condition,
+                'entities.conditions.edit',
+                'entities.conditions.index',
+                'État créé avec succès.',
+            );
         }
 
         return response()->json($condition, 201);

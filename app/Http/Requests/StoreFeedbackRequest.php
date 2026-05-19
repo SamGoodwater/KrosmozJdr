@@ -34,6 +34,8 @@ class StoreFeedbackRequest extends FormRequest
                 'max:2048',
                 'mimes:jpg,jpeg,png,gif,pdf,txt',
             ],
+            /** Uniquement pris en compte pour un utilisateur authentifié (voir FeedbackController). */
+            'email_recap' => 'sometimes|boolean',
         ];
     }
 

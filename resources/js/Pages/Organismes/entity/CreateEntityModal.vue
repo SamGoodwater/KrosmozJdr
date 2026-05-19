@@ -241,37 +241,10 @@ const handleClose = () => {
     emit('close');
 };
 
-// Gestion de la soumission
+// Gestion de la soumission (store + redirect edit gérés par EntityEditForm + backend Q9)
 const handleSubmit = () => {
-    // Recharger la page pour afficher la nouvelle entité
-    const reloadPropByNormalizedType = {
-        resources: 'resources',
-        'resource-types': 'resourceTypes',
-        items: 'items',
-        spells: 'spells',
-        monsters: 'monsters',
-        npcs: 'npcs',
-        breeds: 'breeds',
-        consumables: 'consumables',
-        campaigns: 'campaigns',
-        scenarios: 'scenarios',
-        conditions: 'conditions',
-        'creature-traits': 'creature-traits',
-        panoplies: 'panoplies',
-        capabilities: 'capabilities',
-        specializations: 'specializations',
-        shops: 'shops',
-    };
-    const reloadProp = reloadPropByNormalizedType[normalizedEntityType.value] || `${props.entityType}s`;
-    router.reload({
-        only: [reloadProp],
-        preserveState: true,
-        preserveScroll: true,
-        onSuccess: () => {
-            emit('created');
-            handleClose();
-        }
-    });
+    emit('created');
+    handleClose();
 };
 
 // Gestion de l'annulation
@@ -330,6 +303,7 @@ const handleCancel = () => {
                     :show-access-levels-in-footer="showAccessLevelsInFooter"
                     :characteristics-group="characteristicsGroup"
                     embedded-in-modal
+                    redirect-after-create
                     :shortcuts-active="open"
                     @submit="handleSubmit"
                     @cancel="handleCancel"

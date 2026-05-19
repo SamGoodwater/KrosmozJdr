@@ -33,7 +33,7 @@ class ProjectDepsWebController extends Controller
         }
 
         $user = $request->user();
-        if ($user === null || ! $user->isSuperAdmin()) {
+        if ($user === null || ! $user->isInteractiveSuperAdmin()) {
             abort(403);
         }
 

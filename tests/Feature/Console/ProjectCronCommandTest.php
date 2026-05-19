@@ -55,4 +55,25 @@ class ProjectCronCommandTest extends TestCase
 
         $this->assertNotSame(0, $code);
     }
+
+    public function test_project_cron_rejects_orphan_update_flags(): void
+    {
+        $code = Artisan::call('project:cron', [
+            '--update-entity' => 'monster',
+        ]);
+
+        $this->assertNotSame(0, $code);
+    }
+
+    public function test_project_cron_accepts_update_flag(): void
+    {
+        $code = Artisan::call('project:cron', [
+            '--update' => true,
+            '--update-skip-clear-queue' => true,
+            '--update-skip-notify' => true,
+            '--update-dry-run' => true,
+        ]);
+
+        $this->assertSame(0, $code);
+    }
 }

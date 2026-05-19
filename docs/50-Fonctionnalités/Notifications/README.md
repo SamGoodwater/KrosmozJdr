@@ -63,7 +63,7 @@ Lorsqu’un utilisateur a activé le canal **mail** pour un type de notification
 
 - **File** : `notification_digest_queue` (user_id, notification_type, frequency, payload, created_at).
 - **Job** : `App\Jobs\SendNotificationDigestsJob` (paramètre `frequency` : daily / weekly / monthly). Agrège par (user, type), envoie une `DigestNotification` puis supprime les lignes.
-- **Planification** : `Kernel::schedule` — daily à 00:05, weekly lundi 00:10, monthly le 1er à 00:15.
+- **Planification** : `bootstrap/app.php` → `withSchedule` → `ProjectScheduleRegistrar` ; lignes digest dans `project_schedule_tasks` (fréquences par défaut : daily 00:05, weekly lundi 00:10, monthly le 1er à 00:15 — modifiables par le super-admin).
 
 ## Fichiers
 

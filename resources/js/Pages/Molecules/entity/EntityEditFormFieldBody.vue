@@ -15,7 +15,8 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import RichTextEditorField from '@/Pages/Molecules/data-input/RichTextEditorField.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
-import { getByDbColumn } from '@/Composables/store/useCharacteristicsStore';
+import { getByDbColumn, getMonsterFieldMeta } from '@/Composables/store/useCharacteristicsStore';
+import CharacteristicNormsHelpButton from '@/Pages/Molecules/data-display/CharacteristicNormsHelpButton.vue';
 import { getCharacteristicColorStyle, getCharacteristicContainerStyle } from '@/Utils/color/Color';
 import { resolveSpellUsageCharacteristicVisual } from '@/Utils/Entity/spellUsageCharacteristicVisual';
 
@@ -50,10 +51,31 @@ const props = defineProps({
 });
 
 const charMeta = computed(() => {
-    if (!props.characteristicsGroup || !props.field?.key) {
+    const fieldKey = props.field?.key;
+    if (!fieldKey) {
         return null;
     }
-    return getByDbColumn(props.characteristicsGroup, props.field.key);
+    if (props.characteristicsGroup) {
+        return getByDbColumn(props.characteristicsGroup, fieldKey);
+    }
+    return getMonsterFieldMeta()[fieldKey] ?? null;
+});
+
+/** Clé caractéristique pour l’API normes (ex. `monster_size`). */
+const characteristicNormsKey = computed(() => charMeta.value?.key ?? null);
+
+/** Contexte entité API (`creature`, `spell`, `monster`, …). */
+const characteristicNormsEntity = computed(() => {
+    if (!characteristicNormsKey.value) {
+        return null;
+    }
+    if (props.characteristicsGroup) {
+        return props.characteristicsGroup;
+    }
+    if (getMonsterFieldMeta()[props.field?.key]) {
+        return 'monster';
+    }
+    return '*';
 });
 
 /** Couleur hex caractéristique (BDD ou override formulaire). */
@@ -271,6 +293,12 @@ const resolvedSelectOptions = computed(() => {
                         </p>
                     </div>
                     <div class="flex shrink-0 flex-wrap items-center gap-2">
+                        <CharacteristicNormsHelpButton
+                            v-if="characteristicNormsKey"
+                            :characteristic-key="characteristicNormsKey"
+                            :entity="characteristicNormsEntity"
+                            :label="fieldLabelText"
+                        />
                         <div class="join join-horizontal">
                             <button
                                 type="button"
@@ -342,6 +370,12 @@ const resolvedSelectOptions = computed(() => {
                         {{ fieldLabelText }}
                     </div>
                     <div class="flex shrink-0 items-center gap-2 pt-0.5 sm:gap-2.5">
+                        <CharacteristicNormsHelpButton
+                            v-if="characteristicNormsKey"
+                            :characteristic-key="characteristicNormsKey"
+                            :entity="characteristicNormsEntity"
+                            :label="fieldLabelText"
+                        />
                         <ToggleCore
                             variant="glass"
                             size="sm"
@@ -472,10 +506,17 @@ const resolvedSelectOptions = computed(() => {
                 :placeholder="getFieldPlaceholder(field.key, field.config)"
             >
                 <template
-                    v-if="isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key]"
+                    v-if="characteristicNormsKey || (isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key])"
                     #overEnd
                 >
+                    <CharacteristicNormsHelpButton
+                        v-if="characteristicNormsKey"
+                        :characteristic-key="characteristicNormsKey"
+                        :entity="characteristicNormsEntity"
+                        :label="fieldLabelText"
+                    />
                     <Btn
+                        v-if="isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key]"
                         size="xs"
                         variant="ghost"
                         title="Annuler la modification (ne pas modifier ce champ)"
@@ -590,10 +631,17 @@ const resolvedSelectOptions = computed(() => {
                 :placeholder="getFieldPlaceholder(field.key, field.config)"
             >
                 <template
-                    v-if="isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key]"
+                    v-if="characteristicNormsKey || (isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key])"
                     #overEnd
                 >
+                    <CharacteristicNormsHelpButton
+                        v-if="characteristicNormsKey"
+                        :characteristic-key="characteristicNormsKey"
+                        :entity="characteristicNormsEntity"
+                        :label="fieldLabelText"
+                    />
                     <Btn
+                        v-if="isMultiEdit && differentFields.includes(field.key) && fieldDirty?.[field.key]"
                         size="xs"
                         variant="ghost"
                         title="Annuler la modification (ne pas modifier ce champ)"

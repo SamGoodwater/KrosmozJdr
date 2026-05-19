@@ -36,6 +36,8 @@ import {
 } from "@/Entities/spell/spell-form-config";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { clearKrefEntityPreviewCache } from "@/Composables/richText/krefEntityPreviewCache";
+import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
+import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 
 const props = defineProps({
     spells: {
@@ -68,7 +70,7 @@ const { refreshEntity } = useScrapping();
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
-const modalView = ref('large');
+const modalView = ref('full');
 const createModalOpen = ref(false);
 const selectedIds = ref([]);
 const { tableQuickEditEnabled, onUpdateTableQuickEdit } = useEntityIndexQuickEditTable(Spell);
@@ -167,7 +169,7 @@ const handleRowDoubleClick = (row) => {
     const model = Spell.fromArray([raw])[0] || null;
     if (!model) return;
     selectedEntity.value = model;
-    modalView.value = "large";
+    modalView.value = "full";
     modalOpen.value = true;
 };
 
@@ -190,29 +192,18 @@ const closeModal = () => {
     selectedEntity.value = null;
 };
 
-// Handler pour les actions du tableau
-const handleKeyboardIntent = (payload) => {
-    const { type, row } = payload || {};
-    const raw = row?.rowParams?.entity;
-    if (!raw) return;
-    const model = raw instanceof Spell ? raw : Spell.fromArray([raw])?.[0];
-    if (!model?.id) return;
-    switch (type) {
-        case "open-show-page":
-            router.visit(route("entities.spells.show", { spell: model.id }));
-            break;
-        case "open-edit":
-            openSpellEditModal(model.id);
-            break;
-        case "open-view":
-            selectedEntity.value = model;
-            modalView.value = "large";
-            modalOpen.value = true;
-            break;
-        default:
-            break;
-    }
-};
+const { handleKeyboardIntent } = useEntityIndexTableIntents({
+    ModelClass: Spell,
+    routeShowName: "entities.spells.show",
+    routeShowParam: "spell",
+    canModify: () => canModify.value,
+    openFullModal: (model) => {
+        selectedEntity.value = model;
+        modalView.value = "full";
+        modalOpen.value = true;
+    },
+    openEdit: (model) => openSpellEditModal(model.id),
+});
 
 const handleCreateRequest = () => {
     if (canCreate.value) {
@@ -238,7 +229,7 @@ const handleTableAction = async (actionKey, entity, row) => {
 
         case 'quick-view':
             selectedEntity.value = model;
-            modalView.value = 'large';
+            modalView.value = 'full';
             modalOpen.value = true;
             break;
 
@@ -383,7 +374,7 @@ const handleModalDelete = (_entity) => {
             :hidden-field-keys="['dofus_version']"
             :show-state-toolbar="false"
             :show-access-levels-in-footer="false"
-            :create-allow-field-keys="['dofusdb_id', 'auto_update']"
+            :create-allow-field-keys="getEntityCreateAllowFieldKeys('spells')"
             characteristics-group="spell"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"

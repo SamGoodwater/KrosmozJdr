@@ -8,8 +8,8 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { Monster } from "@/Models/Entity/Monster";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import EntityViewLargeWrapper from "@/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue";
-import MonsterViewLarge from "@/Pages/Molecules/entity/monster/MonsterViewLarge.vue";
+import EntityViewFullWrapper from "@/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue";
+import MonsterViewFull from "@/Pages/Molecules/entity/monster/MonsterViewFull.vue";
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -43,7 +43,7 @@ const goEdit = () => {
     <Head :title="`Monstre : ${creatureName}`" />
 
     <Container class="space-y-6 pb-8">
-        <EntityViewLargeWrapper :show-back-button="true" back-route="entities.monsters.index">
+        <EntityViewFullWrapper :show-back-button="true" back-route="entities.monsters.index">
             <div class="space-y-6">
                 <div class="flex justify-end gap-2">
                     <Btn v-if="monster?.can?.update" color="primary" @click="goEdit">
@@ -52,12 +52,12 @@ const goEdit = () => {
                     </Btn>
                 </div>
 
-                <MonsterViewLarge
+                <MonsterViewFull
                     :monster="monster"
                     :show-actions="true"
                     :characteristic-runtime="characteristicRuntime"
                 />
             </div>
-        </EntityViewLargeWrapper>
+        </EntityViewFullWrapper>
     </Container>
 </template>

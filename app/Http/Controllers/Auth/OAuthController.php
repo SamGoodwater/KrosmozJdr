@@ -96,6 +96,9 @@ class OAuthController extends Controller
                     ->with('success', 'Ce compte '.$provider.' est déjà lié.');
             }
             $this->updateOAuthAccount($oauthAccount, $providerEmail, $providerName, $avatarUrl);
+            if ($redirect = $this->rejectNonInteractiveLogin($user)) {
+                return $redirect;
+            }
             Auth::login($user, true);
             $user->update(['last_login_at' => now()]);
             try {
@@ -152,6 +155,9 @@ class OAuthController extends Controller
             'provider_name' => $providerName,
             'avatar_url' => $avatarUrl,
         ]);
+        if ($redirect = $this->rejectNonInteractiveLogin($user)) {
+            return $redirect;
+        }
         Auth::login($user, true);
         $user->update(['last_login_at' => now()]);
         try {
@@ -161,6 +167,24 @@ class OAuthController extends Controller
         }
 
         return redirect()->intended(route('user.show', absolute: false));
+    }
+
+    /**
+     * Comptes système (`is_system`) : pas de connexion interactive (OAuth inclus).
+     *
+     * @return RedirectResponse|null Redirection erreur ou null pour poursuivre
+     */
+    private function rejectNonInteractiveLogin(User $user): ?RedirectResponse
+    {
+        if ($user->canLogin()) {
+            return null;
+        }
+
+        Auth::logout();
+
+        return redirect()
+            ->route('login')
+            ->with('error', 'Ce compte ne permet pas la connexion (compte technique).');
     }
 
     private function updateOAuthAccount(OAuthAccount $account, ?string $email, ?string $name, ?string $avatarUrl): void
@@ -259,6 +283,10 @@ class OAuthController extends Controller
         $user = User::query()->find($pending['existing_user_id']);
         if (! $user) {
             return redirect()->route('login')->with('error', 'Compte introuvable.');
+        }
+
+        if ($redirect = $this->rejectNonInteractiveLogin($user)) {
+            return $redirect;
         }
 
         OAuthAccount::create([

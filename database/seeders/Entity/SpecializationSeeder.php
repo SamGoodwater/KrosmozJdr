@@ -8,6 +8,7 @@ use App\Models\Entity\Specialization;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use App\Services\BibliothequeEntityPageService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -77,6 +78,13 @@ class SpecializationSeeder extends Seeder
             sectionSlugPrefix: 'import-explorateur-rice',
             shortDescription: 'Spécialisation orientée découverte, terrain et autonomie.'
         );
+
+        $stats = app(BibliothequeEntityPageService::class)->syncAll();
+        $this->command?->info(sprintf(
+            'Sous-pages bibliothèque : %d classes, %d spécialisations synchronisées.',
+            $stats['breeds'],
+            $stats['specializations']
+        ));
     }
 
     /**

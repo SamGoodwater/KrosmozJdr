@@ -4,8 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
+use App\Http\Resources\Entity\BreedResource;
+use App\Http\Resources\Entity\SpecializationResource;
 use App\Http\Resources\PageResource;
+use App\Models\Entity\Breed;
+use App\Models\Entity\Specialization;
 use App\Models\Page;
+use App\Models\User;
+use App\Services\BibliothequeEntityPageService;
 use App\Services\NotificationService;
 use App\Services\PageService;
 use App\Services\SectionService;
@@ -117,6 +123,11 @@ class PageController extends Controller
 
         $user = auth()->user();
 
+        $linked = $page->settings['linked_entity'] ?? null;
+        if (is_array($linked) && ! empty($linked['type']) && ! empty($linked['id'])) {
+            return $this->renderLinkedEntityPage($page, $linked, $user);
+        }
+
         // OPTIMISATION : Charger toutes les relations en une seule requête
         $page->load([
             'users',
@@ -174,6 +185,70 @@ class PageController extends Controller
             'page' => new PageResource($page),
             'pages' => $pagesFiltered,
         ]);
+    }
+
+    /**
+     * Affiche une page CMS liée à une fiche classe ou spécialisation (sous-page bibliothèque).
+     *
+     * @param  array{type?: string, id?: int}  $linked
+     */
+    private function renderLinkedEntityPage(Page $page, array $linked, ?User $user): Response
+    {
+        $entity = app(BibliothequeEntityPageService::class)->resolveLinkedEntity($linked);
+        if ($entity === null) {
+            abort(404);
+        }
+
+        $this->authorize('view', $entity);
+
+        $page->load(['users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
+        $sections = SectionService::getSectionsForPage($page, $user);
+        $sections->each(fn ($section) => $section->setRelation('page', $page));
+        $page->setRelation('sections', $sections);
+
+        $pages = Cache::remember('pages_select_list', 3600, function () {
+            return Page::select('id', 'title', 'slug')->orderBy('title')->get();
+        });
+        $pagesFiltered = $pages->where('id', '!=', $page->id)->values();
+
+        $linkedType = (string) ($linked['type'] ?? '');
+        $payload = [
+            'page' => new PageResource($page),
+            'pages' => $pagesFiltered,
+            'linkedEntityType' => $linkedType,
+        ];
+
+        if ($entity instanceof Breed) {
+            $entity->load([
+                'createdBy',
+                'elementOrientations',
+                'spells' => fn ($q) => $q->orderBy('breed_spell.character_level')
+                    ->orderBy('breed_spell.slot_index')
+                    ->orderBy('breed_spell.choice_order')
+                    ->orderBy('spells.name'),
+                'npcs' => fn ($q) => $q->limit(100),
+                'capabilities' => fn ($q) => $q->orderBy('name'),
+                'creatureTraits' => fn ($q) => $q->orderBy('name'),
+                'languages',
+            ]);
+            $payload['linkedEntity'] = new BreedResource($entity);
+        } else {
+            /** @var Specialization $entity */
+            $entity->load([
+                'createdBy',
+                'npcs' => fn ($q) => $q->limit(100),
+                'capabilities' => fn ($q) => $q->orderBy('name'),
+                'spells' => fn ($q) => $q->orderBy('name'),
+                'creatureTraits' => fn ($q) => $q->orderBy('name'),
+                'consumables' => fn ($q) => $q->orderBy('name'),
+                'resources' => fn ($q) => $q->orderBy('name'),
+                'items' => fn ($q) => $q->orderBy('name'),
+                'sections' => fn ($q) => $q->orderByPivot('level')->orderBy('title'),
+            ]);
+            $payload['linkedEntity'] = new SpecializationResource($entity);
+        }
+
+        return Inertia::render('Pages/page/LinkedEntityShow', $payload);
     }
 
     /**

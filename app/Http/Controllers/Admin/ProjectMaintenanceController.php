@@ -35,7 +35,7 @@ class ProjectMaintenanceController extends Controller
     public function store(StoreProjectDataSyncRequest $request): RedirectResponse
     {
         $user = $request->user();
-        if ($user === null || ! $user->isSuperAdmin()) {
+        if ($user === null || ! $user->isInteractiveSuperAdmin()) {
             abort(403);
         }
 

@@ -4,6 +4,7 @@ namespace App\Policies\Entity;
 
 use App\Models\Entity\Breed;
 use App\Models\User;
+use App\Services\EntityDisplay\EntityDisplayVisibilityService;
 
 /**
  * Lecture des classes : jouable selon {@see Breed::$read_level}, brouillon réservé à l’auteur ou au niveau {@see Breed::$write_level}.
@@ -27,11 +28,16 @@ class BreedPolicy
             return true;
         }
 
+        $entityKey = app(EntityDisplayVisibilityService::class)->permissionKeyForModel($breed);
+        if ($entityKey !== null && ! app(EntityDisplayVisibilityService::class)->viewerMeetsMinimumRole($user, $entityKey, (string) $breed->state)) {
+            return false;
+        }
+
         $state = (string) $breed->state;
         $level = $user !== null ? (int) ($user->role ?? 0) : 0;
 
         if ($state === Breed::STATE_ARCHIVED) {
-            return false;
+            return $level >= (int) $breed->read_level;
         }
 
         if ($state === Breed::STATE_PLAYABLE) {

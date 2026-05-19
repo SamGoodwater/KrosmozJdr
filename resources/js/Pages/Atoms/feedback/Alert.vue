@@ -67,6 +67,11 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    /** Style glass sombre à fort contraste (recommandé pour les bandeaux informatifs). */
+    glass: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const atomClasses = computed(() =>
@@ -79,7 +84,17 @@ const atomClasses = computed(() =>
             props.color === 'error' && 'alert-error',
             props.variant === 'outline' && 'alert-outline',
             props.variant === 'dash' && 'alert-dash',
-            props.variant === 'soft' && 'alert-soft',
+            props.variant === 'soft' && !props.glass && 'alert-soft',
+            props.glass && 'k-alert-glass',
+            props.glass && 'backdrop-blur-md',
+            props.glass && 'rounded-sm',
+            props.glass && 'border',
+            props.glass && 'shadow-lg',
+            props.glass && props.color === 'info' && 'bg-info-950/85 text-info-100 border-info-600/50',
+            props.glass && props.color === 'success' && 'bg-success-950/85 text-success-100 border-success-600/50',
+            props.glass && props.color === 'warning' && 'bg-warning-950/85 text-warning-100 border-warning-700/55',
+            props.glass && props.color === 'error' && 'bg-error-950/85 text-error-100 border-error-600/50',
+            props.glass && !props.color && 'bg-base-300/40 text-base-content border-base-content/25',
             props.direction === 'vertical' && 'alert-vertical',
             props.direction === 'horizontal' && 'alert-horizontal',
             !props.direction && 'alert-vertical',
@@ -102,28 +117,28 @@ const attrs = computed(() => getCommonAttrs(props));
             </span>
             <span v-else-if="color === 'info' && show_icon" class="shrink-0">
                 <!-- Icône info par défaut DaisyUI -->
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info h-6 w-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </span>
             <span v-else-if="color === 'success' && show_icon" class="shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    class="stroke-success h-6 w-6">
+                    class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </span>
             <span v-else-if="color === 'warning' && show_icon" class="shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    class="stroke-warning h-6 w-6">
+                    class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </span>
             <span v-else-if="color === 'error' && show_icon" class="shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    class="stroke-error h-6 w-6">
+                    class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M6 18L18 6M6 6l12 12" />
                 </svg>

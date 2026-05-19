@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
+use App\Console\Concerns\GuardsProductionEnvironment;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use PDO;
@@ -26,6 +27,8 @@ use PDOException;
  */
 class SetupCommand extends Command
 {
+    use GuardsProductionEnvironment;
+
     protected $signature = 'setup
                             {--install : Vérifier/installer les paquets apt et les dépendances (composer, pnpm)}
                             {--update : Mettre à jour apt, pnpm et composer}
@@ -68,6 +71,13 @@ class SetupCommand extends Command
             $this->line('Exemple : php artisan setup --install --db');
 
             return ArtisanExitCode::SUCCESS;
+        }
+
+        if (! $this->guardNotProduction(
+            'setup : interdit en production (apt/clean/refresh/install/update/db). '
+            .'Utilisez des migrations et déploiements contrôlés.'
+        )) {
+            return ArtisanExitCode::FAILURE;
         }
 
         if ($clean) {

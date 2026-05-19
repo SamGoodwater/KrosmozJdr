@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreConsumableRequest;
 use App\Http\Requests\Entity\UpdateConsumableRequest;
@@ -9,13 +10,16 @@ use App\Http\Resources\Entity\ConsumableResource;
 use App\Models\Effect;
 use App\Models\Entity\Consumable;
 use App\Models\Type\ConsumableType;
+use App\Models\User;
 use App\Services\PdfService;
 use App\Support\Entity\ObjectEffectEditOptions;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 
 class ConsumableController extends Controller
 {
+    use RedirectsAfterEntityCreate;
     /**
      * Display a listing of the resource.
      */
@@ -72,9 +76,35 @@ class ConsumableController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreConsumableRequest $request)
+    public function store(StoreConsumableRequest $request): RedirectResponse
     {
-        //
+        $this->authorize('create', Consumable::class);
+
+        $data = $request->validated();
+        $data['created_by'] = $request->user()?->id;
+        $data['state'] = $data['state'] ?? Consumable::STATE_DRAFT;
+        $data['read_level'] = array_key_exists('read_level', $data) && $data['read_level'] !== null
+            ? (int) $data['read_level'] : User::ROLE_GUEST;
+        $data['write_level'] = array_key_exists('write_level', $data) && $data['write_level'] !== null
+            ? (int) $data['write_level'] : User::ROLE_GAME_MASTER;
+        if ((int) $data['write_level'] < (int) $data['read_level']) {
+            $data['write_level'] = (int) $data['read_level'];
+        }
+        $data['auto_update'] = array_key_exists('auto_update', $data) ? (bool) $data['auto_update'] : false;
+
+        if (! array_key_exists('description', $data) || $data['description'] === null) {
+            $data['description'] = '';
+        }
+
+        $consumable = Consumable::create($data);
+
+        return $this->redirectAfterEntityStore(
+            $request,
+            $consumable,
+            'entities.consumables.edit',
+            'entities.consumables.index',
+            'Consommable créé avec succès.',
+        );
     }
 
     /**

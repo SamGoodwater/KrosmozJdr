@@ -3,7 +3,7 @@
  * Resource Show Page
  *
  * @description
- * Page de lecture d'une ressource. ResourceViewLarge gère l'affichage complet :
+ * Page de lecture d'une ressource. ResourceViewFull gère l'affichage complet :
  * image + propriétés, ingrédients, relations, bloc admin.
  */
 import { computed } from 'vue';
@@ -12,8 +12,8 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Resource } from '@/Models/Entity/Resource';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EntityViewLargeWrapper from '@/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue';
-import ResourceViewLarge from '@/Pages/Molecules/entity/resource/ResourceViewLarge.vue';
+import EntityViewFullWrapper from '@/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue';
+import ResourceViewFull from '@/Pages/Molecules/entity/resource/ResourceViewFull.vue';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -41,7 +41,7 @@ const goEdit = () => {
     <Head :title="`Ressource : ${resource?.name || '-'}`" />
 
     <Container class="space-y-6 pb-8">
-        <EntityViewLargeWrapper
+        <EntityViewFullWrapper
             :show-back-button="true"
             back-route="entities.resources.index"
         >
@@ -59,12 +59,12 @@ const goEdit = () => {
                     </Btn>
                 </div>
 
-                <ResourceViewLarge
+                <ResourceViewFull
                     :resource="resource"
                     :show-actions="true"
                     :characteristic-runtime="characteristicRuntime"
                 />
             </div>
-        </EntityViewLargeWrapper>
+        </EntityViewFullWrapper>
     </Container>
 </template>

@@ -1,0 +1,228 @@
+<script setup>
+/**
+ * NpcViewFull — Vue Full pour NPC
+ * 
+ * @description
+ * Vue complète d'un NPC avec toutes les informations affichées.
+ * Utilisée dans les grandes modals ou directement dans le main.
+ * 
+ * @props {Npc} npc - Instance du modèle NPC
+ * @props {Boolean} showActions - Afficher les actions (défaut: true)
+ */
+import { computed } from 'vue';
+import { router } from '@inertiajs/vue3';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
+import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
+import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
+import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
+import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
+
+const props = defineProps({
+    npc: {
+        type: Object,
+        required: true
+    },
+    showActions: {
+        type: Boolean,
+        default: true
+    },
+
+    inModal: {
+        type: Boolean,
+        default: false,
+    },
+    titleTag: {
+        type: String,
+        default: 'h2',
+        validator: (v) => ['h1', 'h2', 'h3'].includes(v),
+    },
+    tableMeta: {
+        type: Object,
+        default: () => ({})
+    }
+});
+
+const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+
+const { copyToClipboard } = useCopyToClipboard();
+const { downloadPdf } = useDownloadPdf('npc');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('npc', 'viewAny'),
+        createAny: permissions.can('npc', 'createAny'),
+        updateAny: permissions.can('npc', 'updateAny'),
+        deleteAny: permissions.can('npc', 'deleteAny'),
+        manageAny: permissions.can('npc', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getNpcFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[NpcViewFull] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
+
+// Champs à afficher dans la vue large
+const extendedFields = computed(() => {
+    const fields = [
+        'creature_name',
+        'breed',
+        'specialization',
+        'story',
+        'historical',
+        'age',
+        'size',
+    ];
+    ['created_at', 'updated_at'].forEach((k) => fields.push(k));
+    return fields.filter(canShowField);
+});
+
+const getFieldUi = (fieldKey) =>
+    resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'npc',
+    });
+
+const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
+
+const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
+
+const getCell = (fieldKey) => {
+    return props.npc.toCell(fieldKey, {
+        size: 'lg',
+        context: 'extended',
+    });
+};
+
+const handleAction = async (actionKey) => {
+    const npcId = props.npc.id;
+    if (!npcId) return;
+
+    switch (actionKey) {
+        case 'view':
+            router.visit(route('entities.npcs.show', { npc: npcId }));
+            emit('view', props.npc);
+            break;
+        case 'edit':
+            router.visit(route('entities.npcs.edit', { npc: npcId }));
+            emit('edit', props.npc);
+            break;
+        case 'quick-edit':
+            emit('quick-edit', props.npc);
+            break;
+        case 'copy-link': {
+            const cfg = getEntityRouteConfig('npc');
+            const url = resolveEntityRouteUrl('npc', 'show', npcId, cfg);
+            if (url) {
+                await copyToClipboard(`${window.location.origin}${url}`, "Lien du NPC copié !");
+            }
+            emit('copy-link', props.npc);
+            break;
+        }
+        case 'download-pdf':
+            await downloadPdf(npcId);
+            emit('download-pdf', props.npc);
+            break;
+        case 'refresh':
+            router.reload({ only: ['npcs'] });
+            emit('refresh', props.npc);
+            break;
+        case 'delete':
+            emit('delete', props.npc);
+            break;
+    }
+};
+</script>
+
+<template>
+    <div class="space-y-6">
+        <!-- En-tête avec nom et actions -->
+        <div class="flex flex-col md:flex-row gap-4 items-start">
+            <!-- Informations principales -->
+            <div class="flex-1 w-full">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-2xl font-bold text-primary-100 break-words">
+                            <CellRenderer
+                                :cell="getCell('creature_name')"
+                                ui-color="primary"
+                            />
+                        </h2>
+                        <p v-if="npc.creature?.description" class="text-primary-300 mt-2 break-words">
+                            {{ npc.creature.description }}
+                        </p>
+                    </div>
+                    
+                    <!-- Actions en haut à droite -->
+                    <div v-if="showActions" class="flex-shrink-0">
+                        <EntityActions
+                            entity-type="npc"
+                            :entity="npc"
+                            format="buttons"
+                            display="icon-only"
+                            size="sm"
+                            color="primary"
+                            :context="{ inPanel: false, inPage: true }"
+                            @action="handleAction"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations principales -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+                v-for="fieldKey in extendedFields"
+                :key="fieldKey"
+                class="p-3 bg-base-200 entity-radius-box"
+            >
+                <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-2">
+                        <Icon
+                            :source="getFieldIcon(fieldKey)"
+                            :alt="getFieldLabel(fieldKey)"
+                            size="xs"
+                            class="text-primary-400"
+                        />
+                        <span class="text-xs text-primary-400 uppercase font-semibold">
+                            {{ getFieldLabel(fieldKey) }}
+                        </span>
+                    </div>
+                    <div class="text-primary-100 break-words">
+                        <CellRenderer
+                            :cell="getCell(fieldKey)"
+                            ui-color="primary"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+.entity-radius-box {
+    border-radius: var(--radius-box, 0.1rem);
+}
+</style>

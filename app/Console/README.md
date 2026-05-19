@@ -1,6 +1,8 @@
 # Commandes Artisan — Krosmoz-JDR
 
-Les commandes sont chargées **récursivement** depuis `app/Console/Commands/` (`App\Console\Kernel::commands()`). Chaque sous-dossier correspond à une **thématique** ; le namespace PHP est `App\Console\Commands\{Thématique}`.
+Les commandes sont chargées **récursivement** depuis `app/Console/Commands/` (découverte Laravel via `Application::configure()` → `withCommands()`). Chaque sous-dossier correspond à une **thématique** ; le namespace PHP est `App\Console\Commands\{Thématique}`.
+
+Closures Artisan : `routes/console.php`.
 
 - **Liste à jour :** `php artisan list`
 - **Aide d’une commande :** `php artisan <nom> --help`
@@ -11,6 +13,7 @@ Les commandes sont chargées **récursivement** depuis `app/Console/Commands/` (
 
 | Zone | Fichiers |
 |------|----------|
+| Sécurité compte système & super-admin (web, policies…), console super-admin (planning, reviews) | `tests/Feature/Security/SystemAccountAndSuperAdminWebTest.php`, `tests/Feature/Admin/ProjectSuperConsoleTest.php`, `tests/Feature/User/UserPolicyTest.php`, … |
 | `ProjectRunService` (carte d’options) | `tests/Unit/Services/Project/ProjectRunServiceTest.php` |
 | Sauvegarde (purge fichiers) | `tests/Unit/Services/Project/ProjectBackupServiceTest.php` |
 | UI admin sync / backup / `project:deps` web | `tests/Feature/Admin/ProjectMaintenanceControllerTest.php`, `ProjectBackupWebControllerTest.php`, `ProjectDepsWebControllerTest.php`, `AdminDashboardControllerTest.php` |
@@ -26,7 +29,7 @@ Les tests **Feature** avec `RefreshDatabase` attendent une base MySQL dédiée (
 
 C’est l’**interface principale** du projet : dépendances, dev local, nettoyages, données DofusDB, sauvegardes, bootstrap. La logique partagée vit dans **`App\Services\Project\ProjectRunService`** ; plusieurs commandes `project:*` y délèguent.
 
-**Garde-fous :** beaucoup de commandes ci-dessous sont **interdites en production** (`GuardsProductionEnvironment`) ou réservées au **développement local** — voir la colonne « Environnement » ou `php artisan <cmd> -h`.
+**Garde-fous :** beaucoup de commandes ci-dessous sont **interdites en production** (`GuardsProductionEnvironment`) ou réservées au **développement local** — voir la colonne « Environnement » ou `php artisan <cmd> -h`. En prod, **`setup`** et **`project:init`** sont bloqués tant que `APP_ENV=production`. Le scrapping **`--batch`** n’accepte que des fichiers sous la **racine projet** (`base_path`).
 
 ### 1.1 `project:deps` — dépendances Composer & pnpm
 
@@ -213,7 +216,15 @@ php artisan review tests --report-path=storage/app/dev-reports/rapport.md
 
 Création interactive du premier compte **super_admin** si aucun n’existe (hors flux `init`). Partage la logique avec `project:init`.
 
-### 1.17 `project:backup` — sauvegardes locales
+### 1.17 `project:schedule:sync`
+
+Ajoute en base les entrées du **catalogue de planification** lorsqu’elles manquent (sans écraser vos réglages cron). Utile après mise à jour déployant de nouvelles clés de tâche.
+
+```bash
+php artisan project:schedule:sync
+```
+
+### 1.18 `project:backup` — sauvegardes locales
 
 Dump BDD (gzip) + archive `storage/app` (tar.gz ou ZIP), rotation selon rétention. Configuration : `config/project-backup.php`, variables `PROJECT_BACKUP_*`.
 
@@ -225,7 +236,7 @@ php artisan project:backup --prune-only --dry-run
 
 Voir [PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md) (section backup) pour les options complètes.
 
-### 1.18 Flux dev courant
+### 1.19 Flux dev courant
 
 - **`project:dev`** (prepare + optimize + serveurs), **`project:clear`**, **`project:optimize`** pour le quotidien.
 - **`server:load`** : alias de **`project:dev`** (section [Development](#9-development--outils-locaux)).
@@ -233,18 +244,25 @@ Voir [PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md) (section backup) p
 
 ---
 
-## 2. Planificateur (`Kernel::schedule`)
+## 2. Planificateur Laravel (`schedule:run`)
 
-| Commande / job | Fréquence |
-|----------------|-----------|
-| `media:clean-thumbnails` | Quotidien |
-| `privacy:process-deletion-requests` | Quotidien 02:00 |
-| `SendNotificationDigestsJob` | Voir horaires dans `App\Console\Kernel` |
-| `project:data:sync` | Si `PROJECT_UPDATE_AUTO_ENABLED=true` (`PROJECT_UPDATE_CRON`) |
-| `project:backup` | Si `PROJECT_BACKUP_ENABLED=true` (`PROJECT_BACKUP_CRON`, défaut 4h) |
-| `scrapping` (alias `scrapping:run`) | Si `SCRAPPING_RESOURCES_AUTO_SYNC=true` |
+| Source | Rôle |
+|--------|------|
+| Table **`project_schedule_tasks`** (migrate + lignes seed) | Fréquences et activation **modifiables par le super-admin** (`/admin/project-schedule`). Les commandes exécutées restent whitelistées dans `App\Support\ProjectSchedule\ProjectScheduleCatalog`. |
+| `bootstrap/app.php` (`withSchedule`) | Laravel 12+ : enregistrement du planner (`ProjectScheduleRegistrar::register($schedule)`). |
+| Secours `.env` | Si la table n’existe pas encore (**migrate** non fait), ancien comportement : mêmes tâches qu’auparavant selon les variables (`PROJECT_*`, `SCRAPPING_*`). Un log `NOTICE` invite à migrer. |
+| Une ligne crontab | `* * * * * php artisan schedule:run` (répertoire projet + PHP corrects). |
 
----
+| Commande / job type | Défaut (voir also BDD) |
+|---------------------|-------------------------|
+| `media:clean-thumbnails` | `0 0 * * *` |
+| `privacy:process-deletion-requests` | `0 2 * * *` |
+| `SendNotificationDigestsJob` (daily / weekly / monthly) | `5 0 * * *`, `10 0 * * 1`, `15 0 1 * *` |
+| `project:data:sync` | désactivée sauf environnement où la ligne existe activée dans la BDD (ex. anciennement via `PROJECT_UPDATE_AUTO_ENABLED`). |
+| `project:backup` | désactivée par défaut (activer ligne + même logique `.env`). |
+| `scrapping … resource …` | désactivée par défaut. |
+
+Voir aussi : **`php artisan project:schedule:sync`**, **`php artisan schedule:list`**.
 
 ## 3. Scrapping — DofusDB & catalogue
 
@@ -258,6 +276,7 @@ Voir [PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md) (section backup) p
 | `scrapping:types:migrate-items` | Migration `item_type_id` (superTypes) |
 | `scrapping:races:seed` | Races monstres DofusDB |
 | `scrapping:items:repair-routing` | Rattrapage items mal classés |
+| `scrapping:effects:*` | Commandes dans `Commands/Scrapping/Effects/` (namespace `Scrapping\Effects`) |
 | `scrapping:effects:map` | Propositions de mapping effets → seeder |
 | `scrapping:effects:pipeline` | Import sorts + quality gate effets |
 | `scrapping:effects:audit-quality` | Audit qualité pipeline / conversions |

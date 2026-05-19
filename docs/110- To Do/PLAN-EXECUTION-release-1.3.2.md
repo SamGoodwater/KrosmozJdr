@@ -3,7 +3,7 @@
 Document de synthèse pour ordonner le travail avant la **première mise en production**.  
 **Référence détaillée** : [`To do 1.3.1 vers 1.3.2.md`](./To%20do%201.3.1%20vers%201.3.2.md) (liste complète, grilles caractéristiques, pipelines commandes).
 
-**Décisions métier avant code** — Toute réponse officielle doit figurer dans [`DECISIONS-OUVERTES-release-1.3.2.md`](./DECISIONS-OUVERTES-release-1.3.2.md) (**27 questions**, statut tableau en en-tête de ce fichier). Le §2 ci-dessous reste une **traduction plausible** jusqu'à validation.
+**Décisions métier validées** — voir [`DECISIONS-OUVERTES-release-1.3.2.md`](./DECISIONS-OUVERTES-release-1.3.2.md) (réponses **Q1–Q27**). Le §2 ci-dessous reste une **mémo synthétique** ; en cas de doute, le fichier **Décisions** fait foi.
 
 **Contexte** : pas d'obligation de rétrocompatibilité ni d'aliases pour code obsolète — on peut simplifier.
 
@@ -30,7 +30,7 @@ Interprétation explicite de passages flous ou typo dans la spec d'origine :
 2. **Deux menus compte** : entrées dropdown **« Gestion du contenu »** et **« Espace administration »** réservées aux rôles concernés (ex. game master vs admin).
 3. **Récap admin vs données contenu** : le fichier demande aussi un **Récap utilisateurs** (graph évolution + camembert par rôle), distinct des camemberts « entités par statut » de la vue d'ensemble contenu.
 4. **Liens légaux** : éviter URLs `127.0.0.1` en prod → liens **Ziggy** ou routes nommées vers pages CGU / politique cookies & données.
-5. **Vue entité** : *« supprimer compact, garder large, renommer en full »* → une seule présentation détaillée **`full`** utilisée **page ET modal** (seules les actions diffèrent).
+5. **Vue entité** : *« supprimer compact et large au profit de full »* ; modèle de vues **minimal**, **line** (dérivé minimal), **texte** (paragraphe + popover), **full** (détail page/modal), **edit** (édition page/modal). Doc + entités à aligner partout.
 6. **`entities.capabilities.show` / paramètre `capability`** : bug Ziggy décrit dans le fichier source — à traiter comme **priorité corrective** navigation capacités (routes + appels depuis tableaux/modals).
 7. **`:knln` (ligne parasite)** dans le fichier source : ignoré comme bruit ; aucune exigence fonctionnelle dérivée.
 8. **`Project:refresh` / `Projeck`** : typo dans la spec → viser **`project:refresh`** comme commande Laravel documentée dans le projet.
@@ -65,7 +65,7 @@ Les phases suivent une logique **dépendances d'abord** : permissions et modèle
 
 ### Phase C — Architecture entités commune (patterns UI)
 
-- **Une seule vue `full`** (ex-page « large ») pour affichage + **même gabarit d'édition** page / modal.
+- **Vues affichage / édition** : **minimal**, **line**, **texte**, **full**, **edit** — même logique page/modal pour **full** et **edit** ; actions seules peuvent différer.
 - **Création** : modal léger (champs obligatoires simples) → après création, ouverture **édition complète**.
 - Supprimer densité tableau **compact / normal / dense** inutilisée (alléger surtout les tableaux).
 - **Raccourcis tableau** : simple = sélection, double = modal affichage, Ctrl+clic = page, Alt+clic = édition modal, clic droit = menu actions — auditer et corriger partout.
@@ -191,4 +191,5 @@ Pour chaque phase : créer tickets (ou lignes checklist) reliées aux **titres �
 | --- | --- |
 | [`To do 1.3.1 vers 1.3.2.md`](./To%20do%201.3.1%20vers%201.3.2.md) | Spec détaillée + tableaux caractéristiques |
 | **Ce fichier** | Ordre d'exécution des phases |
-| [`DECISIONS-OUVERTES-release-1.3.2.md`](./DECISIONS-OUVERTES-release-1.3.2.md) | Questions ouvertes puis réponses tranchées |
+| [`DECISIONS-OUVERTES-release-1.3.2.md`](./DECISIONS-OUVERTES-release-1.3.2.md) | Décisions Q1–Q27 validées |
+| [`CHECKLIST-release-1.3.2.md`](./CHECKLIST-release-1.3.2.md) | Cases à cocher par phase (suivi avant prod) |

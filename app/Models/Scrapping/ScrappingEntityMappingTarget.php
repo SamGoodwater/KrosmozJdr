@@ -21,7 +21,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read ScrappingEntityMapping $scrappingEntityMapping
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget query()
@@ -32,7 +31,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereTargetField($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereTargetModel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class ScrappingEntityMappingTarget extends Model

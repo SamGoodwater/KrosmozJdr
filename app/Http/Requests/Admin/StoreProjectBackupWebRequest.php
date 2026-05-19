@@ -15,7 +15,7 @@ class StoreProjectBackupWebRequest extends FormRequest
     {
         $user = $this->user();
 
-        return $user !== null && $user->isSuperAdmin();
+        return $user !== null && $user->isInteractiveSuperAdmin();
     }
 
     /**

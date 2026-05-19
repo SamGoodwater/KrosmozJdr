@@ -797,25 +797,52 @@ class ScrappingRunCommand extends Command
         return mb_strlen($err) > 120 ? mb_substr($err, 0, 117).'…' : $err;
     }
 
+    /**
+     * Limite `--batch` aux fichiers sous {@see base_path()} (réduction du risque de lecture arbitraire de fichiers).
+     *
+     * @return non-empty-string|null Chemin absolu canonique
+     */
+    private function resolveBatchFileUnderProjectRoot(string $path): ?string
+    {
+        if ($path === '' || str_contains($path, "\0")) {
+            return null;
+        }
+
+        if (! is_file($path) || ! is_readable($path)) {
+            return null;
+        }
+
+        $resolved = realpath($path);
+        $root = realpath(base_path());
+        if ($resolved === false || $root === false) {
+            return null;
+        }
+
+        $rootPrefix = rtrim($root, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+
+        return str_starts_with($resolved, $rootPrefix) ? $resolved : null;
+    }
+
     private function handleBatchImport(Orchestrator $orchestrator): int
     {
         $path = (string) $this->option('batch');
-        if ($path === '' || ! is_file($path)) {
-            $this->error("Fichier batch introuvable: {$path}");
+        $resolved = $this->resolveBatchFileUnderProjectRoot($path);
+        if ($resolved === null) {
+            $this->error('Fichier batch introuvable, illisible ou hors du répertoire du projet (utilise un chemin sous '.base_path().').');
 
             return Command::FAILURE;
         }
 
-        $raw = file_get_contents($path);
+        $raw = file_get_contents($resolved);
         if ($raw === false) {
-            $this->error("Impossible de lire le fichier: {$path}");
+            $this->error("Impossible de lire le fichier: {$resolved}");
 
             return Command::FAILURE;
         }
 
         $decoded = json_decode($raw, true);
         if (! is_array($decoded)) {
-            $this->error("JSON invalide: {$path}");
+            $this->error("JSON invalide: {$resolved}");
 
             return Command::FAILURE;
         }

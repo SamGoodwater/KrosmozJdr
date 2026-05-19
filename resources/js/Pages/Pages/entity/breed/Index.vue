@@ -11,6 +11,8 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Breed } from "@/Models/Entity/Breed";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
+import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
+import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
@@ -116,7 +118,7 @@ const handleTableLoaded = ({ rows, meta }) => {
 const openPreviewModal = (model) => {
     if (!model) return;
     selectedEntity.value = model;
-    modalView.value = "large";
+    modalView.value = "full";
     modalOpen.value = true;
 };
 
@@ -128,32 +130,17 @@ const handleRowDoubleClick = (row) => {
     openPreviewModal(model);
 };
 
-/**
- * Raccourcis clavier du tableau (Entrée, Ctrl+Entrée, Alt+Entrée) — aligné sur les autres listes d’entités.
- *
- * @param {{ type: string, row: object }} payload
- */
-const handleKeyboardIntent = (payload) => {
-    const { type, row } = payload || {};
-    const raw = row?.rowParams?.entity;
-    if (!raw) return;
-    const model = raw instanceof Breed ? raw : Breed.fromArray([raw])?.[0];
-    if (!model?.id) return;
-    switch (type) {
-        case "open-show-page":
-            router.visit(route("entities.breeds.show", { breed: model.id }));
-            break;
-        case "open-edit":
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
-            break;
-        case "open-view":
-            openPreviewModal(model);
-            break;
-        default:
-            break;
-    }
-};
+const { handleKeyboardIntent } = useEntityIndexTableIntents({
+    ModelClass: Breed,
+    routeShowName: "entities.breeds.show",
+    routeShowParam: "breed",
+    canModify: () => canModify.value,
+    openFullModal: openPreviewModal,
+    openEdit: (model) => {
+        quickEditEntity.value = model;
+        quickEditModalOpen.value = true;
+    },
+});
 
 const handleCreateRequest = () => {
     if (canCreate.value) {
@@ -163,7 +150,7 @@ const handleCreateRequest = () => {
 
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
-const modalView = ref('large');
+const modalView = ref('full');
 const createModalOpen = ref(false);
 const handleCreate = () => {
     createModalOpen.value = true;
@@ -200,7 +187,7 @@ const handleTableAction = async (actionKey, entity, row) => {
 
         case 'quick-view':
             selectedEntity.value = model;
-            modalView.value = 'large';
+            modalView.value = 'full';
             modalOpen.value = true;
             break;
 
@@ -330,6 +317,7 @@ const handleQuickEditSubmit = () => {
         <CreateEntityModal
             :open="createModalOpen"
             entity-type="breeds"
+            :create-allow-field-keys="getEntityCreateAllowFieldKeys('breeds')"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />

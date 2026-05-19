@@ -47,7 +47,7 @@ defineProps({
     <Navbar :class="['header-animated', { 'header-open': isOpen  }]">
         <template #start>
             <Transition name="title" class="ml-14" mode="out-in">
-                <h2 :key="pageTitle" id="pageTitle" class="items-center text-2xl font-semibold">
+                <h2 :key="pageTitle" id="pageTitle" class="items-center truncate text-lg font-semibold sm:text-2xl max-w-[min(100%,28rem)]">
                     {{ pageTitle }}
                 </h2>
             </Transition>

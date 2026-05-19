@@ -48,7 +48,7 @@ Constantes : `resources/js/Utils/Entity/Constants.js`
 | **extended** | icône + label complet + valeur + unité | `labelMode="full"` |
 | **detailed** | extended + détails (formules, valeurs par niveau) ; partie visible + partie au hover | CharacteristicFormula (`displayMode="detailed"`) |
 
-**Mapping vue entité → mode propriété** : Minimal/Line → minimal ; Compact → compact ; Large → extended ou detailed (si formule).
+**Mapping vue entité → mode propriété** : Minimal → minimal ; Line → compact (libellés courts) ; Full → extended ou detailed (si formule).
 
 ## Composants
 
@@ -63,8 +63,8 @@ Affichage unifié des propriétés d'entité selon le mode (`minimal`, `compact`
 **Fournir le runtime sans le répéter sur chaque composant**
 
 1. **Prop explicite** : `:runtime="payload"` sur un `EntityPropertyDisplay` (prioritaire).
-2. **Contexte Vue** : la vue large (`SpellViewLarge`, `ResourceViewLarge`, etc.) accepte **`characteristicRuntime`** et appelle **`provideCharacteristicRuntime(computed(() => props.characteristicRuntime))`** — tous les `EntityPropertyDisplay` descendants reçoivent le payload si la prop `runtime` n’est pas passée.
-3. **Pages Inertia** : les fiches `spell/Show.vue` et `resource/Show.vue` lisent **`page.props.characteristicRuntime`** et la passent à la vue large — dès qu’un contrôleur ajoutera cette clé au render, les tooltips s’enrichiront sans autre changement front.
+2. **Contexte Vue** : la vue **full** (`SpellViewFull`, `ResourceViewFull`, etc.) accepte **`characteristicRuntime`** et appelle **`provideCharacteristicRuntime(computed(() => props.characteristicRuntime))`** — tous les `EntityPropertyDisplay` descendants reçoivent le payload si la prop `runtime` n’est pas passée.
+3. **Pages Inertia** : les fiches `spell/Show.vue` et `resource/Show.vue` lisent **`page.props.characteristicRuntime`** et la passent à la vue full — dès qu’un contrôleur ajoutera cette clé au render, les tooltips s’enrichiront sans autre changement front.
 4. **Fetch générique** : [`useCharacteristicRuntimeFetch.js`](../../resources/js/Composables/entity/useCharacteristicRuntimeFetch.js) pour tout `GET` renvoyant le même JSON ; les créatures utilisent [`useCreatureResolvedStats.js`](../../resources/js/Composables/entity/useCreatureResolvedStats.js) (URL Ziggy + query `entity`).
 
 ### PropertyDisplay (Atom)
@@ -134,7 +134,7 @@ Caractéristique à formule (valeur + unité). Aligné sur `PROPERTY_DISPLAY_MOD
 
 Les vues suivantes utilisent **EntityPropertyDisplay** pour les champs de propriétés :
 
-- **Large** : Spell, Resource, Attribute (migration complète)
+- **Full** : Spell, Resource, Attribute (migration complète)
 - **À migrer** : Monster, Item, Consumable, Capability, Npc, Panoply (utilisent encore PropertyDisplay + resolveEntityFieldUi manuel)
 
 ### PropertyDisplay (legacy)
@@ -149,4 +149,4 @@ Les vues suivantes utilisent **EntityPropertyDisplay** pour les champs de propri
 - **CellRenderer** : type `chips` → `CharacteristicInlineGroup` → **CharacteristicChip** (icône + valeur + tooltip, couleurs hex ou token Tailwind).
 - **Models** : `toCell()` et `buildCharacteristicEffectCell` lisent le store `useCharacteristicsStore` pour enrichir les chips (icon, color, tooltip).
 
-Voir `SpellViewLarge.vue` et `CapabilityViewLarge.vue` pour l'intégration.
+Voir `SpellViewFull.vue` et `CapabilityViewFull.vue` pour l'intégration.

@@ -5,8 +5,9 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { Specialization } from "@/Models/Entity/Specialization";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import EntityViewLargeWrapper from "@/Pages/Molecules/entity/shared/EntityViewLargeWrapper.vue";
-import SpecializationViewLarge from "@/Pages/Molecules/entity/specialization/SpecializationViewLarge.vue";
+import EntityViewFullWrapper from "@/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue";
+import SpecializationViewFull from "@/Pages/Molecules/entity/specialization/SpecializationViewFull.vue";
+import SpecializationRelationsByLevel from "@/Pages/Molecules/entity/specialization/SpecializationRelationsByLevel.vue";
 import SpecializationWriteMetaPanel from "@/Pages/Molecules/entity/specialization/SpecializationWriteMetaPanel.vue";
 import EntitySectionsRenderer from "@/Pages/Organismes/entity/EntitySectionsRenderer.vue";
 
@@ -37,7 +38,7 @@ const goEdit = () => {
     <Head :title="`Spécialisation : ${specialization?.name || '-'}`" />
 
     <Container class="space-y-6 pb-8">
-        <EntityViewLargeWrapper :show-back-button="true" back-route="entities.specializations.index">
+        <EntityViewFullWrapper :show-back-button="true" back-route="entities.specializations.index">
             <div class="space-y-6">
                 <div class="flex justify-end gap-2">
                     <Btn v-if="specialization?.can?.update" color="primary" @click="goEdit">
@@ -46,7 +47,9 @@ const goEdit = () => {
                     </Btn>
                 </div>
 
-                <SpecializationViewLarge :specialization="specialization" :show-actions="true" />
+                <SpecializationViewFull :specialization="specialization" :show-actions="true" />
+
+                <SpecializationRelationsByLevel :specialization="specialization" />
 
                 <section class="space-y-3">
                     <h2 class="text-lg font-semibold">Sections</h2>
@@ -58,6 +61,6 @@ const goEdit = () => {
 
                 <SpecializationWriteMetaPanel :specialization="specialization" />
             </div>
-        </EntityViewLargeWrapper>
+        </EntityViewFullWrapper>
     </Container>
 </template>

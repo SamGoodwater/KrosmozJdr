@@ -8,7 +8,7 @@ use App\Models\User;
  * Policy de gestion des droits sur l'entité User.
  *
  * Règles principales :
- * - Le super_admin a tous les droits (méthode before)
+ * - Le super_admin interactif (`! is_system`) a tous les droits (méthode before)
  * - Un utilisateur peut voir/créer n'importe quel utilisateur
  * - Un utilisateur peut modifier/supprimer son propre compte, ou un admin peut le faire
  * - Seul un admin peut restaurer
@@ -17,14 +17,14 @@ use App\Models\User;
 class UserPolicy
 {
     /**
-     * Donne tous les droits au super_admin avant toute vérification spécifique.
+     * Donne tous les droits au super_admin humain avant toute vérification spécifique.
      *
      * @param  User  $user  Utilisateur courant
      * @return bool|null true pour tout autoriser, null sinon
      */
     public function before(User $user): ?bool
     {
-        if ($user->role === User::ROLE_SUPER_ADMIN) { // super_admin = 5
+        if ($user->isInteractiveSuperAdmin()) {
             return true;
         }
 
@@ -143,7 +143,7 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model): bool
     {
-        return $user->verifyRole(User::ROLE_SUPER_ADMIN); // super_admin = 5
+        return $user->isInteractiveSuperAdmin();
     }
 
     /**
@@ -152,7 +152,7 @@ class UserPolicy
      */
     public function resetPassword(User $user, User $target): bool
     {
-        return $user->isSuperAdmin() && $user->id !== $target->id;
+        return $user->isInteractiveSuperAdmin() && $user->id !== $target->id;
     }
 
     /**
@@ -164,10 +164,7 @@ class UserPolicy
      */
     public function updateRole(User $user, User $target): bool
     {
-        // Le super_admin peut tout faire (déjà géré par before)
-        if ($user->role === User::ROLE_SUPER_ADMIN) { // super_admin = 5
-            return true;
-        }
+        // Le super_admin interactif est géré par before().
 
         // Un admin peut modifier le rôle de tout le monde sauf des admins et super_admins
         if ($user->role === User::ROLE_ADMIN) { // admin = 4

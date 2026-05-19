@@ -30,11 +30,15 @@ import { ref, computed } from "vue";
  */
 
 const MAX_NOTIFICATIONS = 20;
-const DEFAULT_DURATION = 8000; // 8 secondes
-const FULL_DISPLAY_RATIO = 0.4; // 40% du temps en mode full
-const CONTRACTED_DISPLAY_RATIO = 0.6; // 60% du temps en mode contracted
+/** Durée par défaut avant fermeture auto (ms). */
+const DEFAULT_DURATION = 14000;
+/** Part du temps affiché en mode déplié (message lisible). */
+const FULL_DISPLAY_RATIO = 0.5;
+const CONTRACTED_DISPLAY_RATIO = 0.5;
 
 const notifications = ref([]);
+/** @type {Map<number, ReturnType<typeof setTimeout>>} */
+const dismissTimers = new Map();
 
 /** Historique des toasts affichés depuis le chargement de la page (pour l’onglet « Notifications temporaires »). */
 const temporaryHistory = ref([]);
@@ -86,12 +90,71 @@ function addNotification({
     // Limiter le nombre de notifications par placement
     limitNotificationsByPlacement(placement);
     
-    // Auto-dismiss après la durée spécifiée (sauf si duration = 0)
     if (duration > 0) {
-        setTimeout(() => removeNotification(id), duration);
+        scheduleDismiss(id, duration);
     }
-    
+
     return id;
+}
+
+/**
+ * @param {number} id
+ * @param {number} delayMs
+ */
+function scheduleDismiss(id, delayMs) {
+    clearDismissTimer(id);
+    if (delayMs <= 0) {
+        return;
+    }
+    dismissTimers.set(
+        id,
+        setTimeout(() => removeNotification(id), delayMs)
+    );
+}
+
+/**
+ * @param {number} id
+ */
+function clearDismissTimer(id) {
+    const timer = dismissTimers.get(id);
+    if (timer) {
+        clearTimeout(timer);
+        dismissTimers.delete(id);
+    }
+}
+
+/**
+ * Met en pause le compte à rebours (survol ou focus clavier).
+ *
+ * @param {number|string} id
+ */
+function pauseNotification(id) {
+    const notif = notifications.value.find((n) => n.id === id);
+    if (!notif || notif.duration === 0 || notif.paused) {
+        return;
+    }
+    clearDismissTimer(id);
+    notif.paused = true;
+    notif.pauseStartedAt = Date.now();
+    notif.elapsedAtPause = Date.now() - notif.createdAt;
+}
+
+/**
+ * Reprend le compte à rebours après pause.
+ *
+ * @param {number|string} id
+ */
+function resumeNotification(id) {
+    const notif = notifications.value.find((n) => n.id === id);
+    if (!notif || !notif.paused) {
+        return;
+    }
+    const pausedFor = Date.now() - (notif.pauseStartedAt ?? Date.now());
+    notif.createdAt += pausedFor;
+    notif.paused = false;
+    notif.pauseStartedAt = undefined;
+    notif.elapsedAtPause = undefined;
+    scheduleDismiss(id, getRemainingTime(notif));
 }
 
 function limitNotificationsByPlacement(placement) {
@@ -110,6 +173,7 @@ function limitNotificationsByPlacement(placement) {
 }
 
 function removeNotification(id) {
+    clearDismissTimer(id);
     notifications.value = notifications.value.filter((n) => n.id !== id);
 }
 
@@ -215,14 +279,20 @@ const notificationsByPlacement = computed(() => {
  * @param {Object} notification - L'objet notification
  * @returns {number} Temps restant en millisecondes (0 si duration = 0)
  */
+function getElapsedMs(notification) {
+    if (notification.paused && notification.elapsedAtPause != null) {
+        return notification.elapsedAtPause;
+    }
+
+    return Date.now() - notification.createdAt;
+}
+
 function getRemainingTime(notification) {
-    // Si duration = 0, la notification est permanente
     if (notification.duration === 0) {
         return 0;
     }
-    
-    const elapsed = Date.now() - notification.createdAt;
-    return Math.max(0, notification.duration - elapsed);
+
+    return Math.max(0, notification.duration - getElapsedMs(notification));
 }
 
 /**
@@ -253,7 +323,8 @@ function getNotificationState(notification) {
         return 'full';
     }
     
-    const elapsed = Date.now() - notification.createdAt;
+    const elapsed = getElapsedMs(notification);
+
     return elapsed < notification.fullDisplayTime ? 'full' : 'contracted';
 }
 
@@ -270,6 +341,10 @@ export function useNotificationStore() {
         getRemainingTime,
         getProgressPercentage,
         getNotificationState,
+        getElapsedMs,
+        pauseNotification,
+        resumeNotification,
+        scheduleDismiss,
         success,
         error,
         info,

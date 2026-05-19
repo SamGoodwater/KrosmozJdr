@@ -5,7 +5,7 @@
  * @description
  * Affichage dense : State • Image • Level • Nom • Type • Rareté • Prix • Poids • Description • Effets
  * Structure conforme au schéma ENTITY_VIEWS_LINE.
- * Prix / poids : `EntityPropertyDisplay` (aligné sur ResourceViewCompact).
+ * Prix / poids : `EntityPropertyDisplay` (aligné sur ResourceViewFull).
  */
 import { computed } from "vue";
 import { Link } from "@inertiajs/vue3";

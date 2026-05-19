@@ -32,7 +32,6 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
- *
  * @method static \Database\Factories\Entity\PanoplyFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply newQuery()
@@ -51,11 +50,8 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withoutTrashed()
- *
  * @property string|null $dofusdb_id
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereDofusdbId($value)
- *
  * @mixin \Eloquent
  */
 class Panoply extends Model

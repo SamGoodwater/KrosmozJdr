@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace App\Console\Commands\Media;
 
 use App\Console\ArtisanExitCode;
-use App\Console\Kernel;
 use App\Services\ImageService;
+use App\Support\ProjectSchedule\ProjectScheduleCatalog;
+use App\Support\ProjectSchedule\ProjectScheduleRegistrar;
 use Illuminate\Console\Command;
 
 /**
  * Nettoie les fichiers du répertoire « thumbnails » géré par {@see ImageService} (hors conversions Spatie).
  *
- * Planifié quotidiennement dans {@see Kernel::schedule} : doit pouvoir s’exécuter en production.
+ * En production : planifié par {@see ProjectScheduleRegistrar} (clé `media_clean_thumbnails` dans {@see ProjectScheduleCatalog}) ; branchement Laravel 12 dans `bootstrap/app.php` (`withSchedule`).
  */
 class CleanThumbnailsCommand extends Command
 {

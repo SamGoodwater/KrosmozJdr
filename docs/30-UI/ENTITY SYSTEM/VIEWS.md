@@ -1,6 +1,8 @@
 # Guide des Vues
 
-**Version** : 2.0
+**Version** : 2.1 — release 1.3.2
+
+Références : [ENTITY_VIEWS.md](../ENTITY_VIEWS.md) · [ENTITY_VIEWS_PHASE_C.md](../../10-BestPractices/ENTITY_VIEWS_PHASE_C.md).
 
 ---
 
@@ -13,11 +15,11 @@ Les **vues** sont des composants Vue **manuels** qui définissent le layout et u
 ## 📁 Emplacement
 
 ```
-Pages/Molecules/entity/{entity}/{Entity}ViewLarge.vue
-Pages/Molecules/entity/{entity}/{Entity}ViewCompact.vue
+Pages/Molecules/entity/{entity}/{Entity}ViewFull.vue      # détail page ou modal
 Pages/Molecules/entity/{entity}/{Entity}ViewMinimal.vue
 Pages/Molecules/entity/{entity}/{Entity}ViewText.vue
-Pages/Molecules/entity/{entity}/{Entity}EditLarge.vue
+Pages/Molecules/entity/{entity}/{Entity}LineRow.vue       # ligne tableau (si applicable)
+Pages/Molecules/entity/{entity}/{Entity}EditLarge.vue     # édition (layout large — distinct de ViewFull)
 Pages/Molecules/entity/{entity}/{Entity}EditCompact.vue
 Pages/Molecules/entity/{entity}/{Entity}QuickEdit.vue (optionnel)
 Pages/Molecules/entity/EntityQuickEdit.vue (générique, fallback)
@@ -25,7 +27,7 @@ Pages/Molecules/entity/EntityQuickEdit.vue (générique, fallback)
 
 ---
 
-## 🖼️ Vues d'affichage (Large, Compact, Minimal, Text)
+## 🖼️ Vues d'affichage (full, minimal, line, texte)
 
 ### Structure
 ```vue

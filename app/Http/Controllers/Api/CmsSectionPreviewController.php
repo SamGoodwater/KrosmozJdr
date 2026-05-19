@@ -6,6 +6,9 @@ use App\Enums\SectionType;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\Section;
+use DOMDocument;
+use DOMElement;
+use DOMNode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -18,8 +21,14 @@ class CmsSectionPreviewController extends Controller
 {
     private const MAX_HTML_LENGTH = 4000;
 
-    /** Longueur max. de l’extrait affiché dans le popover (style aperçu Wikipédia). */
-    private const EXCERPT_MAX_LEN = 1200;
+    /** Nombre max. de blocs (paragraphes, items de liste, titres…) dans l’aperçu popover (Phase D, ~10 lignes). */
+    private const EXCERPT_MAX_BLOCKS = 10;
+
+    /** Filet de sécurité si le HTML ne se découpe pas proprement. */
+    private const EXCERPT_MAX_LEN = 2400;
+
+    /** Tags comptés comme une « ligne » d’aperçu. */
+    private const BLOCK_TAGS = ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'pre'];
 
     public function show(Section $section): JsonResponse
     {
@@ -115,11 +124,126 @@ class CmsSectionPreviewController extends Controller
             );
         }
 
-        if (strlen($clean) > self::EXCERPT_MAX_LEN) {
-            return Str::limit($clean, self::EXCERPT_MAX_LEN, '…');
+        return $this->truncateHtmlAfterBlocks($clean, self::EXCERPT_MAX_BLOCKS);
+    }
+
+    /**
+     * Tronque le HTML après N blocs en ordre document, sans couper au milieu d’un bloc.
+     */
+    private function truncateHtmlAfterBlocks(string $html, int $maxBlocks): string
+    {
+        $html = trim($html);
+        if ($html === '' || $maxBlocks < 1) {
+            return '';
         }
 
-        return $clean;
+        $wrapped = '<div id="_kref_excerpt_root">'.$html.'</div>';
+
+        $previous = libxml_use_internal_errors(true);
+        $doc = new DOMDocument('1.0', 'UTF-8');
+        $loaded = $doc->loadHTML(
+            '<?xml encoding="UTF-8"?>'.$wrapped,
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+        );
+        libxml_clear_errors();
+        libxml_use_internal_errors($previous);
+
+        if (! $loaded) {
+            return Str::limit($html, self::EXCERPT_MAX_LEN, '…');
+        }
+
+        $root = $doc->getElementById('_kref_excerpt_root');
+        if ($root === null) {
+            return Str::limit($html, self::EXCERPT_MAX_LEN, '…');
+        }
+
+        $blocks = [];
+        $this->collectBlockNodesInOrder($root, $blocks);
+
+        if (count($blocks) <= $maxBlocks) {
+            $out = $this->innerHtmlFromNode($root, $doc);
+
+            return $this->finalizeExcerpt($out, $html, false);
+        }
+
+        for ($i = $maxBlocks; $i < count($blocks); $i++) {
+            $node = $blocks[$i];
+            $node->parentNode?->removeChild($node);
+        }
+
+        $this->removeEmptyListContainers($root);
+
+        $out = $this->innerHtmlFromNode($root, $doc);
+
+        return $this->finalizeExcerpt($out, $html, true);
+    }
+
+    /**
+     * @param  list<DOMElement>  $blocks
+     */
+    private function collectBlockNodesInOrder(DOMNode $node, array &$blocks): void
+    {
+        if ($node->nodeType !== XML_ELEMENT_NODE) {
+            return;
+        }
+
+        /** @var DOMElement $node */
+        $tag = strtolower($node->nodeName);
+        if (in_array($tag, self::BLOCK_TAGS, true)) {
+            $blocks[] = $node;
+
+            return;
+        }
+
+        foreach (iterator_to_array($node->childNodes) as $child) {
+            $this->collectBlockNodesInOrder($child, $blocks);
+        }
+    }
+
+    private function removeEmptyListContainers(DOMElement $root): void
+    {
+        foreach (['ul', 'ol'] as $listTag) {
+            $lists = $root->getElementsByTagName($listTag);
+            for ($i = $lists->length - 1; $i >= 0; $i--) {
+                $list = $lists->item($i);
+                if (! ($list instanceof DOMElement)) {
+                    continue;
+                }
+                $hasLi = false;
+                foreach ($list->childNodes as $child) {
+                    if ($child->nodeType === XML_ELEMENT_NODE && strtolower($child->nodeName) === 'li') {
+                        $hasLi = true;
+                        break;
+                    }
+                }
+                if (! $hasLi) {
+                    $list->parentNode?->removeChild($list);
+                }
+            }
+        }
+    }
+
+    private function innerHtmlFromNode(DOMElement $root, DOMDocument $doc): string
+    {
+        $out = '';
+        foreach ($root->childNodes as $child) {
+            $out .= $doc->saveHTML($child);
+        }
+
+        return trim($out);
+    }
+
+    private function finalizeExcerpt(string $out, string $fallbackHtml, bool $truncated): string
+    {
+        if ($truncated && $out !== '') {
+            $out = rtrim($out).'…';
+        }
+
+        if ($out === '' || strlen($out) > self::EXCERPT_MAX_LEN) {
+            return Str::limit($out !== '' ? $out : strip_tags($fallbackHtml), self::EXCERPT_MAX_LEN, '…');
+        }
+
+        return $out;
     }
 
     private function sectionTypeValue(mixed $type): string

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreBreedRequest;
 use App\Http\Requests\Entity\UpdateBreedCapabilitiesRequest;
@@ -28,6 +29,7 @@ use Inertia\Response;
 
 class BreedController extends Controller
 {
+    use RedirectsAfterEntityCreate;
     public function index()
     {
         $this->authorize('viewAny', Breed::class);
@@ -92,8 +94,13 @@ class BreedController extends Controller
 
         app(SyncBreedElementOrientations::class)->sync($breed, $orientations);
 
-        return redirect()->route('entities.breeds.edit', $breed)
-            ->with('success', 'Classe créée avec succès.');
+        return $this->redirectAfterEntityStore(
+            $request,
+            $breed,
+            'entities.breeds.edit',
+            'entities.breeds.index',
+            'Classe créée avec succès.',
+        );
     }
 
     public function show(Breed $breed): Response

@@ -40,7 +40,7 @@ const setSaveState = (state) => {
 };
 
 const localData = ref({
-  sourceUrl: props.data?.sourceUrl || '/storage/legal/cgu.md',
+  sourceUrl: props.data?.sourceUrl || '/legal/cgu',
   title: props.data?.title || '',
 });
 
@@ -48,7 +48,7 @@ watch(() => props.data, (newData) => {
   if (!newData) return;
   syncFromProps.value = true;
   localData.value = {
-    sourceUrl: newData.sourceUrl || '/storage/legal/cgu.md',
+    sourceUrl: newData.sourceUrl || '/legal/cgu',
     title: newData.title || '',
   };
   lastSavedSignature.value = JSON.stringify({
@@ -65,7 +65,7 @@ watch(localData, (newVal) => {
     ...newVal,
   };
   const signature = JSON.stringify({
-    sourceUrl: String(newData?.sourceUrl || '/storage/legal/cgu.md'),
+    sourceUrl: String(newData?.sourceUrl || '/legal/cgu'),
     title: String(newData?.title || ''),
   });
   if (signature === lastSavedSignature.value) return;
@@ -143,8 +143,8 @@ const handleFileUpload = async (event) => {
       v-model="localData.sourceUrl"
       label="URL du markdown"
       type="text"
-      placeholder="/storage/legal/cgu.md"
-      helper="Utilise une URL same-origin vers un fichier .md (ex: /storage/legal/politique-donnees.md)"
+      placeholder="/legal/cgu"
+      helper="Utilise une URL same-origin préfixée `/legal/` (CGU, politique, cookies) ou `/changelog/feed/X.Y.Z` pour le journal semver ; le legacy `/storage/legal/*.md` reste toléré pour les anciennes données."
     />
 
     <div class="space-y-2">

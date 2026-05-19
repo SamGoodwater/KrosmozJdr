@@ -1,75 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies\Entity;
 
 use App\Models\Entity\Npc;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
-class NpcPolicy
+/**
+ * PNJ : visibilité via {@see BaseEntityPolicy}.
+ */
+class NpcPolicy extends BaseEntityPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(?User $user): bool
+    public function update(User $user, Model $model): bool
     {
-        // Accessible à tous, même sans authentification
-        return true;
-    }
+        if (! $model instanceof Npc) {
+            return false;
+        }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(?User $user, Npc $npc): bool
-    {
-        // Accessible à tous, même sans authentification
-        return true;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
         return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Npc $npc): bool
-    {
-        return $user->isAdmin();
-    }
-
-    /**
-     * Determine whether the user can update models in bulk / via édition multiple.
-     */
     public function updateAny(User $user): bool
     {
         return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Npc $npc): bool
+    public function delete(User $user, Model $model): bool
+    {
+        if (! $model instanceof Npc) {
+            return false;
+        }
+
+        return $user->isAdmin();
+    }
+
+    public function deleteAny(User $user): bool
     {
         return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Npc $npc): bool
+    public function manageAny(User $user): bool
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Npc $npc): bool
-    {
-        return false;
+        return $user->isAdmin();
     }
 }

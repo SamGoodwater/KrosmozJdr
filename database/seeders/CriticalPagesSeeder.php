@@ -33,14 +33,7 @@ class CriticalPagesSeeder extends Seeder
             'created_by' => $defaultCreatorId,
         ], 'Page Accueil');
 
-        $this->ensureTextSection(
-            $homePage,
-            'hero-accueil',
-            'Bienvenue',
-            '<p>Bienvenue sur Krosmoz JDR.</p>',
-            1,
-            $defaultCreatorId
-        );
+        $this->seedAccueilSections($homePage, $defaultCreatorId);
 
         $conditionsPage = $this->createOrRestoreBySlug([
             'title' => 'États',
@@ -146,7 +139,7 @@ class CriticalPagesSeeder extends Seeder
             $cguPage,
             'legal-cgu',
             'Conditions Générales d\'Utilisation',
-            Storage::disk('public')->url('legal/cgu.md'),
+            '/legal/cgu',
             1,
             $defaultCreatorId
         );
@@ -169,7 +162,30 @@ class CriticalPagesSeeder extends Seeder
             $policyPage,
             'legal-politique-donnees',
             'Politique de confidentialité et cookies',
-            Storage::disk('public')->url('legal/politique-donnees.md'),
+            '/legal/politique-donnees',
+            1,
+            $defaultCreatorId
+        );
+
+        $cookiesPage = $this->createOrRestoreBySlug([
+            'title' => 'Politique cookies (synthèse)',
+            'slug' => 'cookies',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'menu_order' => 2,
+            'menu_group' => 'Informations',
+            'parent_id' => $legalesPage->id,
+            'created_by' => $defaultCreatorId,
+            'menu_item_css_classes' => 'color-neutral-500 box-shadow-glass',
+        ], 'Page Cookies légales');
+
+        $this->ensureLegalMarkdownSection(
+            $cookiesPage,
+            'legal-cookies',
+            'Cookies — synthèse',
+            '/legal/cookies',
             1,
             $defaultCreatorId
         );
@@ -192,7 +208,7 @@ class CriticalPagesSeeder extends Seeder
             $changelogPage,
             'legal-changelog',
             'Changelog du site',
-            Storage::disk('public')->url('legal/changelog.md'),
+            '/changelog/feed/'.$this->publicChangelogSemver(),
             1,
             $defaultCreatorId
         );
@@ -239,6 +255,95 @@ class CriticalPagesSeeder extends Seeder
         $firstUser = User::query()->orderBy('id', 'asc')->first();
 
         return $firstUser ? (int) $firstUser->id : null;
+    }
+
+    /**
+     * Sections de la page d’accueil (ton joueur, aligné sur la présentation des règles).
+     */
+    private function seedAccueilSections(Page $homePage, ?int $creatorId): void
+    {
+        $this->ensureTextSection(
+            $homePage,
+            'hero-accueil',
+            'Bienvenue sur Krosmoz JDR',
+            '<p>Tu es au bon endroit : ici vivent les <strong>règles</strong>, les <strong>bibliothèques de jeu</strong> et les outils pour préparer (ou improviser) ta prochaine aventure.</p>'
+            .'<p>Que tu découvres le projet ou que tu reviennes après une pause, prends le temps de parcourir cette page — elle te donne la carte avant d’ouvrir le grimoire.</p>',
+            1,
+            $creatorId
+        );
+
+        $this->ensureTextSection(
+            $homePage,
+            'quest-ce-que-krosmoz-jdr',
+            'Qu’est-ce que Krosmoz JDR ?',
+            '<p><strong>Krosmoz JDR</strong> est un jeu de rôle sur table qui croise la structure et la profondeur tactique des grands JDR classiques avec l’univers coloré, drôle et familier de <em>Dofus</em> / <em>Wakfu</em>.</p>'
+            .'<p>Les personnages évoluent, les combats se jouent au tour par tour avec des choix qui comptent, et les scènes laissent de la place à l’improvisation et au récit collectif. Pas besoin d’avoir tout lu pour commencer une table : l’essentiel est expliqué au fil des chapitres des règles.</p>',
+            2,
+            $creatorId
+        );
+
+        $this->ensureTextSection(
+            $homePage,
+            'ce-site',
+            'Ce site, à quoi ça sert ?',
+            '<p>Ce site officiel est le point d’entrée pour jouer et préparer des parties :</p>'
+            .'<ul>'
+            .'<li><strong>Règles</strong> — le corpus complet, structuré par chapitres (création de personnage, combat, magie, progression…).</li>'
+            .'<li><strong>Bibliothèques</strong> — classes, sorts, monstres, équipements, états et autres entrées consultables et filtrables.</li>'
+            .'<li><strong>Recherche rapide</strong> — raccourci <kbd>Alt</kbd> + <kbd>K</kbd> pour retrouver une page ou une entité sans fouiller les menus.</li>'
+            .'<li><strong>Compte</strong> — inscription optionnelle pour suivre tes favoris, recevoir des notifications et, selon ton rôle, contribuer au contenu.</li>'
+            .'</ul>'
+            .'<p>Le site grandit avec le jeu : de nouvelles entrées et de nouveaux outils arrivent au fil des versions.</p>',
+            3,
+            $creatorId
+        );
+
+        $this->ensureTextSection(
+            $homePage,
+            'esprit-du-jeu',
+            'L’esprit du jeu',
+            '<p>Les textes officiels (règles comme pages d’accueil) visent un ton <strong>clair et précis</strong>, sans jargon inutile. On assume une part d’<strong>humour léger</strong> héritée de l’univers Krosmoz, sans que la mécanique devienne une blague : quand un sort ou une règle s’applique, elle s’applique.</p>'
+            .'<p>En table, on privilégie :</p>'
+            .'<ul>'
+            .'<li>des <strong>choix tactiques</strong> lisibles (position, ressources, timing) ;</li>'
+            .'<li>une <strong>narration partagée</strong> (les joueuses et joueurs font avancer l’histoire, le MJ arbitre et anime) ;</li>'
+            .'<li>des <strong>personnages attachants</strong>, pas des fiches optimisées au détriment du fun.</li>'
+            .'</ul>'
+            .'<p>L’aventure avant tout — le reste est dans le menu <em>Règles</em>.</p>',
+            4,
+            $creatorId
+        );
+
+        $this->ensureTextSection(
+            $homePage,
+            'premiers-pas',
+            'Par où commencer ?',
+            '<p><strong>Si tu es joueuse ou joueur</strong></p>'
+            .'<ul>'
+            .'<li>Ouvre le menu <em>Règles</em> et lis la présentation du jeu, puis la création de personnage quand tu es prêt·e.</li>'
+            .'<li>Parcours les <em>Bibliothèques</em> pour te faire une idée des classes, sorts et équipements disponibles.</li>'
+            .'<li>Crée un compte si tu veux enregistrer des favoris ou rester informé·e des mises à jour.</li>'
+            .'</ul>'
+            .'<p><strong>Si tu es meneuse ou meneur de jeu</strong></p>'
+            .'<ul>'
+            .'<li>Les mêmes ressources t’aident à préparer : règles de référence, bestiaire, objets, états.</li>'
+            .'<li>Avec un compte et les droits adaptés, tu peux proposer ou modifier du contenu (pages, sections, entités) selon la politique du site.</li>'
+            .'<li>Utilise la recherche <kbd>Alt</kbd> + <kbd>K</kbd> en session pour retrouver une règle ou une fiche en quelques secondes.</li>'
+            .'</ul>'
+            .'<p>Une question sur les données personnelles ou les conditions d’utilisation ? Consulte les pages <em>Légales</em> et [[kref:page:cgu|Conditions générales d’utilisation]] dans le menu.</p>',
+            5,
+            $creatorId
+        );
+
+        $this->ensureTextSection(
+            $homePage,
+            'nouveautes-version',
+            'Nouveautés de la version 1.3.2',
+            '<p>La version <strong>1.3.2</strong> apporte notamment : une recherche globale plus fluide, des fiches entités plus lisibles, des réglages de visibilité pour les contenus, des améliorations d’accessibilité (navigation clavier, contrastes) et un formulaire de retour enrichi pour nous aider à corriger le site.</p>'
+            .'<p>Le détail pour les joueuses, joueurs et MJ est dans le [[kref:page:changelog|journal des mises à jour]].</p>',
+            6,
+            $creatorId
+        );
     }
 
     private function ensureTextSection(
@@ -347,6 +452,13 @@ class CriticalPagesSeeder extends Seeder
         return $section;
     }
 
+    private function publicChangelogSemver(): string
+    {
+        $v = trim((string) config('releases.public_changelog_semver'));
+
+        return $v !== '' ? $v : '1.3.2';
+    }
+
     private function ensureLegalMarkdownSection(
         Page $page,
         string $slug,
@@ -405,7 +517,7 @@ class CriticalPagesSeeder extends Seeder
         $documents = [
             'legal/cgu.md' => $this->defaultCguMarkdown(),
             'legal/politique-donnees.md' => $this->defaultPrivacyMarkdown(),
-            'legal/changelog.md' => $this->defaultChangelogMarkdown(),
+            'legal/cookies.md' => $this->defaultCookiesMarkdown(),
         ];
 
         foreach ($documents as $path => $content) {
@@ -414,6 +526,54 @@ class CriticalPagesSeeder extends Seeder
             }
             $disk->put($path, $content);
             $this->command?->info("✅ Document legal cree: {$path}");
+        }
+
+        $changelog = [
+            'changelog/intro.md' => $this->defaultChangelogIntroMarkdown(),
+            'changelog/'.$this->publicChangelogSemver().'.md' => $this->defaultChangelogVersionMarkdown(),
+        ];
+
+        foreach ($changelog as $path => $content) {
+            if ($disk->exists($path)) {
+                continue;
+            }
+            $disk->put($path, $content);
+            $this->command?->info("✅ Fichier changelog cree: {$path}");
+        }
+
+        $prior = $this->defaultChangelogPriorVersionPath();
+        if ($prior !== null && ! $disk->exists($prior)) {
+            $disk->put($prior, $this->defaultChangelogPriorVersionMarkdown());
+            $this->command?->info("✅ Fichier changelog cree: {$prior}");
+        }
+    }
+
+    /**
+     * @return non-empty-string|null
+     */
+    private function defaultChangelogPriorVersionPath(): ?string
+    {
+        $current = trim((string) config('releases.public_changelog_semver'), " \t\n\r\x0\v");
+        if ($current === '') {
+            return null;
+        }
+        try {
+            $parts = explode('.', $current);
+            if (count($parts) !== 3) {
+                return null;
+            }
+            [$major, $minor, $patch] = $parts;
+            if (! ctype_digit((string) $major) || ! ctype_digit((string) $minor) || ! ctype_digit((string) $patch)) {
+                return null;
+            }
+            $prevPatch = ((int) $patch) - 1;
+            if ($prevPatch < 0) {
+                return null;
+            }
+
+            return 'changelog/'.$major.'.'.$minor.'.'.$prevPatch.'.md';
+        } catch (\Throwable) {
+            return null;
         }
     }
 
@@ -499,25 +659,71 @@ Pour exercer tes droits ou poser une question : contact@krosmoz-jdr.fr
 MD;
     }
 
-    private function defaultChangelogMarkdown(): string
+    private function defaultCookiesMarkdown(): string
     {
         return <<<'MD'
-# Changelog du site KrosmozJDR
+# Cookies (synthèse)
 
-Derniere mise a jour : 2026-03-19
+Dernière mise à jour : 2026-05-19
 
-## 2026-03-19
+## Nécessaires
 
-- Page Changelog creee automatiquement via le seeder
-- Menu : retrait du bouton Accueil (acces via le logo)
-- Menu : retrait du groupe Outils (non utilise)
-- Menu : affichage des groupes uniquement s'ils contiennent des pages
-- Lanceur de des : modal accessible via le dropdown Outils du footer Aside
+- Cookies de session et de sécurité (CSRF) fournis par l’application.
+- Réglages fonctionnels indispensables sans publicité comportementale.
 
-## 2026-03-06
+## Tiers (contenus externes)
 
-- Conditions generales d'utilisation (CGU)
-- Politique de confidentialite et cookies
+- Les médias externes (YouTube, Vimeo…) ne déposent des cookies tiers **qu’après** consentement depuis la bannière.
+
+## Détail légal complet
+
+Voir la **[Politique de confidentialité et cookies](/pages/politique-donnees)** (page CMS) qui reprend données personnelles et cookies ensemble.
+MD;
+    }
+
+    private function defaultChangelogIntroMarkdown(): string
+    {
+        return <<<'MD'
+# À propos de ce changelog
+
+Les versions suivent le schéma **X.Y.Z** (semver courte). Pour chaque version : **contenu / produit** en premier, puis un volet **technique** succinct lorsque c’est utile.
+
+Utilise la navigation injectée automatiquement en tête pour passer d’un fichier changelog à un autre.
+MD;
+    }
+
+    private function defaultChangelogPriorVersionMarkdown(): string
+    {
+        return <<<'MD'
+# Changelog — 1.3.1
+
+Version archivée pour la navigation semver (précède habituellement le gel fonctionnel suivant).
+
+## Technique
+
+- Travaux préparatoires avant la ligne directrice semver publique actuelle dans `config/releases.php`.
+MD;
+    }
+
+    private function defaultChangelogVersionMarkdown(): string
+    {
+        return <<<'MD'
+# KrosmozJDR — notes de version (semver publique)
+
+> Si ce fichier existe déjà depuis le dépôt, le seeder ne l’écrase pas ; ce bloc sert uniquement de repli après déploiement.
+
+## Contenu / produit
+
+- Matrice « Gérer l’affichage » (visibilité par type d’entité × état workflow × rôle minimal).
+- Recherche globale (API + en-tête / filtres).
+- Documents Markdown légaux servis depuis `storage/app/public/legal/` via routes **`/legal/…`** ou le legacy **`/storage/legal/*.md`**.
+- Changelog versionné sous **`storage/app/public/changelog/{X.Y.Z}.md`**, exposition agrégée par **`GET /changelog/feed/{version}`**.
+
+## Technique (court)
+
+- Policies (`BaseEntityPolicy`, Breed…) + gardes **`Model` / `instanceof`** contre régressions LSP.
+- Défauts CMS page/section (lecture invité, écriture MJ si niveaux omis ; décision **Q6**).
+- Bump cache permissions après sauvegarde matrice (**`EntityPermissionService`**).
 MD;
     }
 

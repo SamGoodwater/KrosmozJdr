@@ -33,6 +33,8 @@ import {
     getCapabilityCreateDefaultEntity,
 } from "@/Entities/capability/capability-form-config";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
+import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
+import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 
 defineProps({
     capabilities: {
@@ -127,14 +129,14 @@ const handleRowDoubleClick = (row) => {
     const model = raw instanceof Capability ? raw : Capability.fromArray([raw])[0] || null;
     if (!model) return;
     selectedEntity.value = model;
-    modalView.value = "large";
+    modalView.value = "full";
     modalOpen.value = true;
 };
 
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
-const modalView = ref('large');
+const modalView = ref('full');
 const createModalOpen = ref(false);
 
 /** Éditeur complet en modal (même corps que la page Edit). */
@@ -175,6 +177,23 @@ const closeModal = () => {
     selectedEntity.value = null;
 };
 
+
+const { handleKeyboardIntent } = useEntityIndexTableIntents({
+    ModelClass: Capability,
+    routeShowName: "entities.capabilities.show",
+    routeShowParam: "capability",
+    canModify: () => canModify.value,
+    openFullModal: (model) => {
+        selectedEntity.value = model;
+        modalView.value = "full";
+        modalOpen.value = true;
+    },
+    openEdit: (model) => {
+        quickEditEntity.value = model;
+        quickEditModalOpen.value = true;
+    },
+});
+
 // Handler pour les actions du tableau
 const handleTableAction = async (actionKey, entity, row) => {
     const targetEntity = entity || row?.rowParams?.entity;
@@ -194,7 +213,7 @@ const handleTableAction = async (actionKey, entity, row) => {
 
         case 'quick-view':
             selectedEntity.value = model;
-            modalView.value = 'large';
+            modalView.value = 'full';
             modalOpen.value = true;
             break;
 
@@ -308,6 +327,7 @@ const handleModalDelete = (_entity) => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @keyboard-intent="handleKeyboardIntent"
                     @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
@@ -335,6 +355,7 @@ const handleModalDelete = (_entity) => {
             :default-entity="capabilityCreateDefaultEntity"
             :field-sections="CAPABILITY_FORM_FIELD_SECTIONS_CREATE"
             characteristics-group="capability"
+            :create-allow-field-keys="getEntityCreateAllowFieldKeys('capabilities')"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />

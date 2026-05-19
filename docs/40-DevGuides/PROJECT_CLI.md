@@ -17,6 +17,7 @@ L’ancienne commande **`php artisan run`** a été **retirée**. Tout passe par
 | `project:data` | Données DofusDB (sync, init catalogue, guide fill). |
 | `project:data:sync` | Mise à jour des entités déjà en base avec `auto_update=true`. |
 | `project:init` | Pipeline complet d’installation (migrations, seeders, types, scrapping, capacités). |
+| `project:seed` | Seeders et données locales **sans** DofusDB (`project:init` + `--skip-scrapping` + `--skip-types`). |
 | `project:super-admin` | Création interactive du premier super_admin (hors `init`). |
 | `project:backup` | Dump BDD (gzip) + archive `storage/app` (tar.gz, ZIP si besoin), purge > N jours. |
 
@@ -124,10 +125,12 @@ php artisan project:dev --prepare --clear
 | Option | Effet |
 |--------|--------|
 | `--hard` | `setup --refresh` (reinstall vendor + node après clean). |
-| `--without-seed` | `migrate:fresh` **sans** `--seed`. |
+| `--without-seed` | Transmet `--skip-seeders` à `project:init`. |
+| `--fast` | Raccourci `--skip-scrapping` + `--skip-types` (réinit locale sans appels DofusDB). |
+| `--skip-scrapping` / `--skip-types` / `--noimage` | Transmis à `project:init`. |
 | `--force` | Pas de confirmation (CI). |
 
-Enchaîne ensuite un nettoyage complet des caches (équiv. `project:clear --all`).
+Enchaîne `project:init --fresh` puis les clears type `project:cron --clear`.
 
 **Attention :** destructif sur la base (sauf si vous annulez la confirmation).
 
@@ -313,6 +316,47 @@ Pour un `db:seed` classique global, voir aussi {@see \Database\Seeders\DatabaseS
 
 ---
 
+## `project:seed` — données locales sans DofusDB
+
+Équivalent à **`project:init --skip-scrapping --skip-types`** : migrations, `scrapping:setup`, seeders pages/référentiels, import TOC règles, capacités legacy, sync pages bibliothèque — **sans** `scrapping:types:seed`, `scrapping:races:seed` ni `scrapping:run`.
+
+| Option | Effet |
+|--------|--------|
+| `--fresh` | `migrate:fresh` avant seed |
+| `--skip-migrate` | Ne pas migrer |
+| `--skip-capabilities` | Pas d’import `capability.json` |
+| `--skip-specializations` | Pas de `SpecializationSeeder` |
+| `--init-scheduler` | Affiche la ligne cron (comme `project:init`) |
+
+```bash
+php artisan project:seed
+php artisan project:seed --fresh
+php artisan project:refresh --fast --force   # réinit locale rapide (migrate:fresh + seed local)
+```
+
+---
+
+## `project:cron` — tâches planifiées
+
+Point d’entrée pour le scheduler ou un cron système. **Sans option** : échec explicite (cron « vide » sûr).
+
+| Option | Effet |
+|--------|--------|
+| `--clear` | Caches légers + rapports review + cache PHPStan |
+| `--backup` | `project:backup` (voir options `backup-*`) |
+| `--backup-prune-only` | Purge des anciennes sauvegardes |
+| `--update` | `project:data:sync` (entités `auto_update`) |
+| `--update-entity=` | Limite le sync (virgules) |
+| `--update-dry-run` | Simulation sans écriture |
+
+```bash
+php artisan project:cron --clear
+php artisan project:cron --backup
+php artisan project:cron --clear --update --update-entity=monster
+```
+
+---
+
 ## `project:review` / `review` — rapport Markdown pour agent
 
 Alias de **`dev:review`**. Le rapport est écrit en Markdown sous `storage/app/dev-reports/` par défaut.
@@ -344,6 +388,10 @@ Dès qu’une de ces options est présente, **l’argument profil est ignoré** 
 | `--eslint` | `pnpm run lint` |
 | `--security` | `composer audit` |
 | `--docs` | Contrôles sur `docs/` (index JSON, fichiers d’entrée) |
+
+**Interface super-admin (planification & reviews)** : après connexion en **super-admin interactif**, `/admin/project-schedule` pilote l’activation et les expressions cron (table `project_schedule_tasks`) ; `/admin/project-review` liste les rapports Markdown et enfile un job `RunProjectReviewJob` (worker requis). Commande `php artisan project:schedule:sync` pour injecter de nouvelles clés de tâches sans écraser les réglages existants.
+
+`--test-back`, `--tests` et le profil **`tests`** lancent PHPUnit via **`php artisan test`** (suite entière si backend seul). Pour le périmètre *compte système (`is_system`) / super-admin interactif*, les fichiers à connaître sont regroupés dans le tableau *Tests PHPUnit* de [`app/Console/README.md`](../../app/Console/README.md). Ciblage rapide : `php artisan test --group=security`.
 
 **Sans argument de profil et sans aucune de ces options d’action** : comportement identique au profil **`all`** (équivalent pratique à `--all`).
 

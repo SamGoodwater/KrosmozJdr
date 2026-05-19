@@ -59,15 +59,19 @@ export const ENTITY_ROUTE_CONFIG = {
     edit: { name: "entities.capabilities.edit", paramsMode: "object", paramKey: "capability" },
   },
   condition: {
-    show: { name: "entities.conditions.show", paramsMode: "scalar" },
+    show: { name: "entities.conditions.show", paramsMode: "object", paramKey: "condition" },
+    edit: { name: "entities.conditions.edit", paramsMode: "object", paramKey: "condition" },
+  },
+  conditions: {
+    show: { name: "entities.conditions.show", paramsMode: "object", paramKey: "condition" },
     edit: { name: "entities.conditions.edit", paramsMode: "object", paramKey: "condition" },
   },
   scenario: {
     show: { name: "entities.scenarios.show", paramsMode: "scalar" },
   },
   creatureTrait: {
-    show: { name: "entities.creature-traits.show", paramsMode: "scalar" },
-    edit: { name: "entities.creature-traits.edit", paramsMode: "scalar" },
+    show: { name: "entities.creature-traits.show", paramsMode: "object", paramKey: "creatureTrait" },
+    edit: { name: "entities.creature-traits.edit", paramsMode: "object", paramKey: "creatureTrait" },
   },
   "creature-traits": {
     show: { name: "entities.creature-traits.show", paramsMode: "object", paramKey: "creatureTrait" },
@@ -124,6 +128,7 @@ export function getEntitySingularRouteKey(normalizedPlural) {
   const n = String(normalizedPlural || "");
   if (n === "resource-types") return "resourceType";
   if (n === "creature-traits") return "creatureTrait";
+  if (n === "capabilities") return "capability";
   if (n === "panoplies") return "panoply";
   if (n.endsWith("s") && n.length > 1) return n.slice(0, -1);
   return n;

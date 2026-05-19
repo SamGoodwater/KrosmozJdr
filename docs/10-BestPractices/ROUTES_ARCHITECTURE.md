@@ -13,6 +13,7 @@ Les routes sont découpées par thème pour éviter des fichiers monolithiques. 
 | `routes/web/user.php` | Profil utilisateur, gestion admin users |
 | `routes/web/notifications.php` | Notifications |
 | `routes/web/file.php` | Médias (images, thumbnails) |
+| `routes/web/legal-and-changelog.php` | Légal Markdown (`/legal/…`), agrégateur changelog semver (`changelog/feed`) |
 | `routes/web/page.php` | Pages et sections (contenu éditable) |
 | `routes/admin/*.php` | Admin (caractéristiques, formules, mappings, types d'effets) |
 | `routes/entities/*.php` | CRUD web par entité (resource, spell, monster, etc.) |

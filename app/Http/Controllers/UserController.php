@@ -387,7 +387,7 @@ class UserController extends Controller
         }
 
         // Seul le super_admin peut promouvoir en admin
-        if ($roleValue === User::ROLE_ADMIN && $request->user()->role !== User::ROLE_SUPER_ADMIN) { // admin = 4, super_admin = 5
+        if ($roleValue === User::ROLE_ADMIN && ! $request->user()->isInteractiveSuperAdmin()) { // admin = 4
             return back()->withErrors(['role' => 'Seul le super_admin peut promouvoir un utilisateur en admin.']);
         }
 

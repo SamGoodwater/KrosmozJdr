@@ -5,7 +5,7 @@
  * @description
  * Même structure que ConsumableLineRow mais condensée : State • Image • Level • Nom • Type • Rareté • Prix • Description • Effets (icône + valeur).
  * Affiche uniquement les propriétés métier (pas read_level, write_level, id, created_by, etc.).
- * Prix : `EntityPropertyDisplay` (aligné sur ConsumableViewCompact).
+ * Prix : `EntityPropertyDisplay` (aligné sur ConsumableViewFull).
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";

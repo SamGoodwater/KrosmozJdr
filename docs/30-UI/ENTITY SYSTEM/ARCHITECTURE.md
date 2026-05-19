@@ -344,8 +344,7 @@ Composants génériques qui utilisent les configs pour rendre les interfaces.
 Composants Vue **manuels** qui définissent le layout et utilisent les méthodes du modèle.
 
 ### Fichiers clés
-- `Pages/Molecules/entity/{entity}/{Entity}ViewLarge.vue`
-- `Pages/Molecules/entity/{entity}/{Entity}ViewCompact.vue`
+- `Pages/Molecules/entity/{entity}/{Entity}ViewFull.vue`
 - `Pages/Molecules/entity/{entity}/{Entity}ViewMinimal.vue`
 - `Pages/Molecules/entity/{entity}/{Entity}ViewText.vue`
 - `Pages/Molecules/entity/{entity}/{Entity}EditLarge.vue`
@@ -354,7 +353,7 @@ Composants Vue **manuels** qui définissent le layout et utilisent les méthodes
 - `Pages/Molecules/entity/EntityQuickEdit.vue` (générique, fallback)
 - `Utils/entity/resolveEntityViewComponent.js` — Résolution dynamique
 
-### Vues d'affichage (Large, Compact, Minimal, Text)
+### Vues d'affichage (full, minimal, line, texte)
 
 **Structure :**
 ```vue
@@ -455,7 +454,7 @@ ResourceTableConfig
 ```
 EntityModal
   → resolveEntityViewComponent('resource', 'large')
-    → ResourceViewLarge.vue
+    → ResourceViewFull.vue
       → new Resource(entity)
       → getResourceFieldDescriptors(ctx)
       → entity.toCell('rarity')

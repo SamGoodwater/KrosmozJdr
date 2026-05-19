@@ -28,6 +28,8 @@ import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
+import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
+import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 
 // Props Inertia (gardées à titre documentaire, même si non utilisées directement ici)
 const props = defineProps({
@@ -85,7 +87,7 @@ const handleTableLoaded = ({ rows, meta }) => {
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
-const modalView = ref('large');
+const modalView = ref('full');
 const createModalOpen = ref(false);
 const {
     tableQuickEditEnabled,
@@ -121,7 +123,7 @@ const tableConfig = computed(() => {
 // Handlers
 const openModal = (entity) => {
     selectedEntity.value = entity;
-    modalView.value = 'large';
+    modalView.value = 'full';
     modalOpen.value = true;
 };
 
@@ -133,27 +135,17 @@ const handleRowDoubleClick = (row) => {
     openModal(model);
 };
 
-const handleKeyboardIntent = (payload) => {
-    const { type, row } = payload || {};
-    const raw = row?.rowParams?.entity;
-    if (!raw) return;
-    const model = raw instanceof Item ? raw : Item.fromArray([raw])?.[0];
-    if (!model?.id) return;
-    switch (type) {
-        case "open-show-page":
-            router.visit(route("entities.items.show", { item: model.id }));
-            break;
-        case "open-edit":
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
-            break;
-        case "open-view":
-            openModal(model);
-            break;
-        default:
-            break;
-    }
-};
+const { handleKeyboardIntent } = useEntityIndexTableIntents({
+    ModelClass: Item,
+    routeShowName: "entities.items.show",
+    routeShowParam: "item",
+    canModify: () => canModify.value,
+    openFullModal: openModal,
+    openEdit: (model) => {
+        quickEditEntity.value = model;
+        quickEditModalOpen.value = true;
+    },
+});
 
 const handleCreateRequest = () => {
     if (canCreate.value) {
@@ -356,6 +348,7 @@ const clearSelection = () => {
             entity-type="item"
             :fields-config="fieldsConfig"
             :default-entity="defaultEntity"
+            :create-allow-field-keys="getEntityCreateAllowFieldKeys('items')"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />

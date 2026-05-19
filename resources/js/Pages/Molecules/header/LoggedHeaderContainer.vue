@@ -599,10 +599,19 @@ const logout = () => {
                             </GlassMenuItem>
                         </div>
                         <GlassMenuDivider />
-                        <template v-if="canAccess('adminPanel') || canAccess('effectsAdmin') || isSuperAdmin">
+                        <template v-if="canAccess('contentManagement') || canAccess('effectsAdmin')">
+                            <div class="flex flex-col gap-0.5">
+                                <GlassMenuSectionTitle>Gestion du contenu</GlassMenuSectionTitle>
+                                <GlassMenuItem route="admin.content.dashboard.index" icon="fa-book-open" icon-alt="Gestion du contenu" hover3d>
+                                    Gestion du contenu
+                                </GlassMenuItem>
+                            </div>
+                            <GlassMenuDivider />
+                        </template>
+                        <template v-if="canAccess('adminPanel') || isSuperAdmin">
                             <div class="flex flex-col gap-0.5">
                                 <GlassMenuSectionTitle>Administration</GlassMenuSectionTitle>
-                                <GlassMenuItem route="admin.dashboard.index" icon="fa-screwdriver-wrench" icon-alt="Espace administration" hover3d>
+                                <GlassMenuItem route="admin.recap.index" icon="fa-screwdriver-wrench" icon-alt="Espace administration" hover3d>
                                     Espace administration
                                 </GlassMenuItem>
                             </div>

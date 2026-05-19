@@ -40,7 +40,7 @@ Base de données
 
 ---
 
-## 🖼️ Flux 2 : Vue Large
+## 🖼️ Flux 2 : Vue Full (détail)
 
 ### Chemin complet
 
@@ -49,8 +49,8 @@ Base de données
   → API Laravel (GET /api/resources/{id})
     → Resource instance
       → EntityModal
-        → resolveEntityViewComponent('resource', 'large')
-          → ResourceViewLarge.vue
+        → resolveEntityViewComponent('resource', 'full')
+          → ResourceViewFull.vue
             → new Resource(entity)
             → getResourceFieldDescriptors(ctx)
             → Pour chaque champ :
@@ -67,7 +67,7 @@ Base de données
 - **Model** : `Models/Entity/Resource.js`
 - **Descriptor** : `Entities/resource/resource-descriptors.js`
 - **Resolver** : `Utils/entity/resolveEntityViewComponent.js`
-- **Vue** : `Pages/Molecules/entity/resource/ResourceViewLarge.vue`
+- **Vue** : `Pages/Molecules/entity/resource/ResourceViewFull.vue`
 
 ---
 
@@ -158,7 +158,7 @@ Base de données
 | Descriptor | `descriptors.rarity.general.label` | `"Rareté"` |
 | Config | `TableColumnConfig` | Config object |
 | Renderer | `EntityTanStackTable` | Vue component |
-| Vue | `ResourceViewLarge.vue` | Vue component |
+| Vue | `ResourceViewFull.vue` | Vue component |
 
 ---
 
@@ -171,7 +171,7 @@ Base de données
 
 ### 2. Vue Large
 - **Modal** : `EntityModal`
-- **Vue** : `ResourceViewLarge.vue`
+- **Vue** : `ResourceViewFull.vue`
 - **Résolution** : `resolveEntityViewComponent('resource', 'large')`
 
 ### 3. Édition Large

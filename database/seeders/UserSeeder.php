@@ -41,6 +41,14 @@ class UserSeeder extends Seeder
     }
 
     /**
+     * Ne pas peupler les comptes de démo hors environnements de développement.
+     */
+    private function cannotSeedTestHumans(): bool
+    {
+        return app()->environment('production');
+    }
+
+    /**
      * Run the database seeds.
      */
     public function run(): void
@@ -59,10 +67,13 @@ class UserSeeder extends Seeder
         ], 'Utilisateur système (ne peut pas se connecter)');
         $this->command->info('ℹ️  Utilisateur système ID: '.$systemUser->id);
 
-        // Compte super_admin humain : créé de façon interactive par `php artisan project:init` (ou `init`).
-        // Les comptes ci-dessous restent pour les tests en local (à retirer plus tard si besoin).
+        if ($this->cannotSeedTestHumans()) {
+            $this->command->info('🎯 Environnement production : aucun compte utilisateur de test créé.');
 
-        // Test User
+            return;
+        }
+
+        // Compte super_admin humain : créé de façon interactive par `php artisan project:init` (ou `init`).
         $this->createOrRestoreByEmail([
             'name' => 'Test User',
             'email' => 'test-user@test.fr',

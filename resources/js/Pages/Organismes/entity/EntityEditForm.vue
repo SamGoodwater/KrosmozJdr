@@ -118,6 +118,11 @@ const props = defineProps({
         type: String,
         default: null,
     },
+    /** Création via CreateEntityModal : redirige vers la fiche édition après store (Q9). */
+    redirectAfterCreate: {
+        type: Boolean,
+        default: false,
+    },
     /**
      * Mise en page dense multi-colonnes (`spell` : 1 col mobile, 2×2 tablette, 3+pleine largeur laptop, 4 cols xl).
      */
@@ -996,6 +1001,10 @@ const submit = async () => {
 
     if (props.redirectAfterUpdate && method === 'patch') {
         form.redirect_after_update = props.redirectAfterUpdate;
+    }
+
+    if (props.redirectAfterCreate && method === 'post') {
+        form.redirect_after_create = 'edit';
     }
 
     form[method](route(routeName, routeParams), {

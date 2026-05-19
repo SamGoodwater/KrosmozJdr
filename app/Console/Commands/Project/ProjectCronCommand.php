@@ -17,6 +17,7 @@ use Illuminate\Console\Command;
  * @example php artisan project:cron --clear
  * @example php artisan project:cron --backup
  * @example php artisan project:cron --clear --backup
+ * @example php artisan project:cron --update --update-entity=monster
  */
 class ProjectCronCommand extends Command
 {
@@ -33,19 +34,31 @@ class ProjectCronCommand extends Command
         {--backup-no-database : (avec --backup) —no-database pour project:backup}
         {--backup-no-storage : (avec --backup) —no-storage pour project:backup}
         {--backup-no-prune : (avec --backup) —no-prune pour project:backup}
-        {--backup-dry-run : (--backup ou --backup-prune-only) —dry-run}';
+        {--backup-dry-run : (--backup ou --backup-prune-only) —dry-run}
+        {--update : Lance project:data:sync (entités auto_update en base)}
+        {--update-entity= : (avec --update) Entités virgules : breed|class, spell, monster, …}
+        {--update-dry-run : (avec --update) Simule sans écrire}
+        {--update-noimage : (avec --update) Pas de téléchargement d’images}
+        {--update-skip-cache : (avec --update) Ignorer le cache HTTP scrapping}
+        {--update-skip-clear-queue : (avec --update) Ne pas vider la queue avant sync}
+        {--update-skip-notify : (avec --update) Pas de notification admin}';
 
-    protected $description = 'Tâches planifiables : clear léger, backups, prune — à brancher sur le Scheduler';
+    protected $description = 'Tâches planifiables : clear léger, backups, sync auto_update — à brancher sur le Scheduler';
 
     public function handle(): int
     {
         $wantClear = (bool) $this->option('clear');
         $wantBackup = (bool) $this->option('backup');
         $wantPruneOnly = (bool) $this->option('backup-prune-only');
+        $wantUpdate = (bool) $this->option('update');
 
-        if (! $wantClear && ! $wantBackup && ! $wantPruneOnly) {
-            $this->warn('Aucune tâche : utilisez au moins --clear, --backup ou --backup-prune-only.');
+        if (! $wantClear && ! $wantBackup && ! $wantPruneOnly && ! $wantUpdate) {
+            $this->warn('Aucune tâche : utilisez au moins --clear, --backup, --backup-prune-only ou --update.');
 
+            return ArtisanExitCode::FAILURE;
+        }
+
+        if ($this->hasOrphanUpdateFlags()) {
             return ArtisanExitCode::FAILURE;
         }
 
@@ -122,6 +135,57 @@ class ProjectCronCommand extends Command
             $this->newLine();
         }
 
+        if ($wantUpdate) {
+            $this->info('=== project:cron — sync données (project:data:sync) ===');
+            $syncArgs = [];
+            $entity = $this->option('update-entity');
+            if (is_string($entity) && trim($entity) !== '') {
+                $syncArgs['--entity'] = $entity;
+            }
+            foreach ([
+                'update-dry-run' => '--dry-run',
+                'update-noimage' => '--noimage',
+                'update-skip-cache' => '--skip-cache',
+                'update-skip-clear-queue' => '--skip-clear-queue',
+                'update-skip-notify' => '--skip-notify',
+            ] as $cronKey => $syncKey) {
+                if ($this->option($cronKey)) {
+                    $syncArgs[$syncKey] = true;
+                }
+            }
+            if ($this->call('project:data:sync', $syncArgs) !== ArtisanExitCode::SUCCESS) {
+                $errors++;
+            }
+            $this->newLine();
+        }
+
         return $errors > 0 ? ArtisanExitCode::FAILURE : ArtisanExitCode::SUCCESS;
+    }
+
+    private function hasOrphanUpdateFlags(): bool
+    {
+        $updateFlags = [
+            'update-entity',
+            'update-dry-run',
+            'update-noimage',
+            'update-skip-cache',
+            'update-skip-clear-queue',
+            'update-skip-notify',
+        ];
+
+        if ($this->option('update')) {
+            return false;
+        }
+
+        foreach ($updateFlags as $key) {
+            $value = $this->option($key);
+            if ($value === true || (is_string($value) && trim($value) !== '')) {
+                $this->error("L’option --{$key} doit accompagner --update.");
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

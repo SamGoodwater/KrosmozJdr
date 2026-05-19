@@ -787,8 +787,8 @@
     "file": "entity/spell/SpellViewMinimal.vue"
   },
   {
-    "name": "SpellViewLarge",
-    "description": "SpellViewLarge — Vue Large pour Spell",
+    "name": "SpellViewFull",
+    "description": "SpellViewFull — Vue Full pour Spell",
     "props": [
       {
         "name": "spell",
@@ -802,35 +802,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/spell/SpellViewLarge.vue"
-  },
-  {
-    "name": "SpellViewCompact",
-    "description": "SpellViewCompact — Vue Compact pour Spell",
-    "props": [
-      {
-        "name": "spell",
-        "type": "Spell",
-        "desc": "- Instance du modèle Spell"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      },
-      {
-        "name": "tableMeta",
-        "type": "Object",
-        "desc": "- Meta caractéristiques"
-      },
-      {
-        "name": "characteristicRuntime",
-        "type": "Object|null",
-        "desc": "- Payload runtime (tooltips formules)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/spell/SpellViewCompact.vue"
+    "file": "entity/spell/SpellViewFull.vue"
   },
   {
     "name": "SpellUsageCharacteristicTooltipPanel",
@@ -1083,8 +1055,8 @@
     "file": "entity/specialization/SpecializationViewMinimal.vue"
   },
   {
-    "name": "SpecializationViewLarge",
-    "description": "SpecializationViewLarge — Vue Large pour Specialization",
+    "name": "SpecializationViewFull",
+    "description": "SpecializationViewFull — Vue Full pour Specialization",
     "props": [
       {
         "name": "specialization",
@@ -1098,25 +1070,14 @@
       }
     ],
     "slots": [],
-    "file": "entity/specialization/SpecializationViewLarge.vue"
+    "file": "entity/specialization/SpecializationViewFull.vue"
   },
   {
-    "name": "SpecializationViewCompact",
-    "description": "SpecializationViewCompact — Vue Compact pour Specialization",
-    "props": [
-      {
-        "name": "specialization",
-        "type": "Specialization",
-        "desc": "- Instance du modèle Specialization"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "name": "SpecializationRelationsByLevel",
+    "description": "Blocs par niveau pour une spécialisation (sorts, capacités, équipements, etc.).",
+    "props": [],
     "slots": [],
-    "file": "entity/specialization/SpecializationViewCompact.vue"
+    "file": "entity/specialization/SpecializationRelationsByLevel.vue"
   },
   {
     "name": "ShopViewText",
@@ -1150,8 +1111,8 @@
     "file": "entity/shop/ShopViewMinimal.vue"
   },
   {
-    "name": "ShopViewLarge",
-    "description": "ShopViewLarge — Vue Large pour Shop",
+    "name": "ShopViewFull",
+    "description": "ShopViewFull — Vue Full pour Shop",
     "props": [
       {
         "name": "shop",
@@ -1165,25 +1126,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/shop/ShopViewLarge.vue"
-  },
-  {
-    "name": "ShopViewCompact",
-    "description": "ShopViewCompact — Vue Compact pour Shop",
-    "props": [
-      {
-        "name": "shop",
-        "type": "Shop",
-        "desc": "- Instance du modèle Shop"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/shop/ShopViewCompact.vue"
+    "file": "entity/shop/ShopViewFull.vue"
   },
   {
     "name": "EntityViewTextLink",
@@ -1193,40 +1136,12 @@
     "file": "entity/shared/EntityViewTextLink.vue"
   },
   {
-    "name": "EntityViewLargeWrapper",
-    "description": "EntityViewLargeWrapper — Wrapper pour les vues Large affichées en page",
-    "props": [
-      {
-        "name": "showBackButton",
-        "type": "boolean",
-        "desc": "- Afficher le bouton « Retour à la liste »"
-      },
-      {
-        "name": "backRoute",
-        "type": "string",
-        "desc": "- Nom de la route Laravel pour le retour (ex: entities.resources.index)"
-      },
-      {
-        "name": "backLabel",
-        "type": "string",
-        "desc": "- Libellé du bouton (défaut: « Retour à la liste »)"
-      }
-    ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "- Contenu (ex: ResourceViewLarge)"
-      }
-    ],
-    "file": "entity/shared/EntityViewLargeWrapper.vue"
-  },
-  {
     "name": "EntityViewHeader",
     "description": "EntityViewHeader — Header commun pour les vues d'entités",
     "props": [
       {
         "name": "mode",
-        "type": "'large'|'compact'|'minimal'",
+        "type": "'full'|'compact'|'minimal'",
         "desc": "- Mode de rendu du header."
       }
     ],
@@ -1263,32 +1178,11 @@
     "file": "entity/shared/EntityViewHeader.vue"
   },
   {
-    "name": "EntityViewCompactWrapper",
-    "description": "EntityViewCompactWrapper — Wrapper pour les vues Compact affichées en page",
-    "props": [
-      {
-        "name": "showBackButton",
-        "type": "boolean",
-        "desc": "- Afficher le bouton « Retour à la liste »"
-      },
-      {
-        "name": "backRoute",
-        "type": "string",
-        "desc": "- Nom de la route Laravel pour le retour"
-      },
-      {
-        "name": "backLabel",
-        "type": "string",
-        "desc": "- Libellé du bouton (défaut: « Retour à la liste »)"
-      }
-    ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "- Contenu (ex: ResourceViewCompact)"
-      }
-    ],
-    "file": "entity/shared/EntityViewCompactWrapper.vue"
+    "name": "EntityViewFullWrapper",
+    "description": "EntityViewFullWrapper — Wrapper pour les vues Full affichées en page",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityViewFullWrapper.vue"
   },
   {
     "name": "EntityPropertyDisplay",
@@ -1454,8 +1348,8 @@
     "file": "entity/scenario/ScenarioViewMinimal.vue"
   },
   {
-    "name": "ScenarioViewLarge",
-    "description": "ScenarioViewLarge — Vue Large pour Scenario",
+    "name": "ScenarioViewFull",
+    "description": "ScenarioViewFull — Vue Full pour Scenario",
     "props": [
       {
         "name": "scenario",
@@ -1469,25 +1363,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/scenario/ScenarioViewLarge.vue"
-  },
-  {
-    "name": "ScenarioViewCompact",
-    "description": "ScenarioViewCompact — Vue Compact pour Scenario",
-    "props": [
-      {
-        "name": "scenario",
-        "type": "Scenario",
-        "desc": "- Instance du modèle Scenario"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/scenario/ScenarioViewCompact.vue"
+    "file": "entity/scenario/ScenarioViewFull.vue"
   },
   {
     "name": "ResourceTypeViewText",
@@ -1521,8 +1397,8 @@
     "file": "entity/resource-type/ResourceTypeViewMinimal.vue"
   },
   {
-    "name": "ResourceTypeViewLarge",
-    "description": "ResourceTypeViewLarge — Vue Large pour ResourceType",
+    "name": "ResourceTypeViewFull",
+    "description": "ResourceTypeViewFull — Vue Full pour ResourceType",
     "props": [
       {
         "name": "resourceType",
@@ -1536,25 +1412,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/resource-type/ResourceTypeViewLarge.vue"
-  },
-  {
-    "name": "ResourceTypeViewCompact",
-    "description": "ResourceTypeViewCompact — Vue Compact pour ResourceType",
-    "props": [
-      {
-        "name": "resourceType",
-        "type": "ResourceType",
-        "desc": "- Instance du modèle ResourceType"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/resource-type/ResourceTypeViewCompact.vue"
+    "file": "entity/resource-type/ResourceTypeViewFull.vue"
   },
   {
     "name": "ResourceViewText",
@@ -1577,8 +1435,8 @@
     "file": "entity/resource/ResourceViewMinimal.vue"
   },
   {
-    "name": "ResourceViewLarge",
-    "description": "ResourceViewLarge — Vue Large pour Resource",
+    "name": "ResourceViewFull",
+    "description": "ResourceViewFull — Vue Full pour Resource",
     "props": [
       {
         "name": "resource",
@@ -1592,35 +1450,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/resource/ResourceViewLarge.vue"
-  },
-  {
-    "name": "ResourceViewCompact",
-    "description": "ResourceViewCompact — Vue Compact pour Resource",
-    "props": [
-      {
-        "name": "resource",
-        "type": "Resource",
-        "desc": "- Instance du modèle Resource"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      },
-      {
-        "name": "tableMeta",
-        "type": "Object",
-        "desc": "- Meta caractéristiques (tableau / Inertia)"
-      },
-      {
-        "name": "characteristicRuntime",
-        "type": "Object|null",
-        "desc": "- Payload runtime optionnel (même schéma que resolved-stats)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/resource/ResourceViewCompact.vue"
+    "file": "entity/resource/ResourceViewFull.vue"
   },
   {
     "name": "ResourceLineRow",
@@ -1717,8 +1547,8 @@
     "file": "entity/panoply/PanoplyViewMinimal.vue"
   },
   {
-    "name": "PanoplyViewLarge",
-    "description": "PanoplyViewLarge — Vue Large pour Panoply",
+    "name": "PanoplyViewFull",
+    "description": "PanoplyViewFull — Vue Full pour Panoply",
     "props": [
       {
         "name": "panoply",
@@ -1732,25 +1562,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/panoply/PanoplyViewLarge.vue"
-  },
-  {
-    "name": "PanoplyViewCompact",
-    "description": "PanoplyViewCompact — Vue Compact pour Panoply",
-    "props": [
-      {
-        "name": "panoply",
-        "type": "Panoply",
-        "desc": "- Instance du modèle Panoply"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/panoply/PanoplyViewCompact.vue"
+    "file": "entity/panoply/PanoplyViewFull.vue"
   },
   {
     "name": "PanoplyLineRow",
@@ -1758,6 +1570,19 @@
     "props": [],
     "slots": [],
     "file": "entity/panoply/PanoplyLineRow.vue"
+  },
+  {
+    "name": "PanoplyEquipmentTextList",
+    "description": "Liste d’équipements en vue Texte (popover minimal au survol).",
+    "props": [
+      {
+        "name": "items",
+        "type": "Array<{id: number, name?: string}>",
+        "desc": ""
+      }
+    ],
+    "slots": [],
+    "file": "entity/panoply/PanoplyEquipmentTextList.vue"
   },
   {
     "name": "NpcViewText",
@@ -1791,8 +1616,8 @@
     "file": "entity/npc/NpcViewMinimal.vue"
   },
   {
-    "name": "NpcViewLarge",
-    "description": "NpcViewLarge — Vue Large pour NPC",
+    "name": "NpcViewFull",
+    "description": "NpcViewFull — Vue Full pour NPC",
     "props": [
       {
         "name": "npc",
@@ -1806,25 +1631,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/npc/NpcViewLarge.vue"
-  },
-  {
-    "name": "NpcViewCompact",
-    "description": "NpcViewCompact — Vue Compact pour NPC",
-    "props": [
-      {
-        "name": "npc",
-        "type": "Npc",
-        "desc": "- Instance du modèle NPC"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/npc/NpcViewCompact.vue"
+    "file": "entity/npc/NpcViewFull.vue"
   },
   {
     "name": "MonsterViewText",
@@ -1853,8 +1660,8 @@
     "file": "entity/monster/MonsterViewMinimal.vue"
   },
   {
-    "name": "MonsterViewLarge",
-    "description": "MonsterViewLarge — Vue Large pour Monster",
+    "name": "MonsterViewFull",
+    "description": "MonsterViewFull — Vue Full pour Monster",
     "props": [
       {
         "name": "monster",
@@ -1868,25 +1675,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/monster/MonsterViewLarge.vue"
-  },
-  {
-    "name": "MonsterViewCompact",
-    "description": "MonsterViewCompact — Vue Compact pour Monster",
-    "props": [
-      {
-        "name": "monster",
-        "type": "Monster",
-        "desc": "- Instance du modèle Monster"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/monster/MonsterViewCompact.vue"
+    "file": "entity/monster/MonsterViewFull.vue"
   },
   {
     "name": "MonsterLineRow",
@@ -1988,8 +1777,8 @@
     "file": "entity/item/ItemViewMinimal.vue"
   },
   {
-    "name": "ItemViewLarge",
-    "description": "ItemViewLarge — Vue Large pour Item (équipement)",
+    "name": "ItemViewFull",
+    "description": "ItemViewFull — Vue Full pour Item (équipement)",
     "props": [
       {
         "name": "item",
@@ -2003,35 +1792,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/item/ItemViewLarge.vue"
-  },
-  {
-    "name": "ItemViewCompact",
-    "description": "ItemViewCompact — Vue Compact pour Item (équipement)",
-    "props": [
-      {
-        "name": "item",
-        "type": "Item",
-        "desc": "- Instance du modèle Item"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      },
-      {
-        "name": "tableMeta",
-        "type": "Object",
-        "desc": "- Meta caractéristiques"
-      },
-      {
-        "name": "characteristicRuntime",
-        "type": "Object|null",
-        "desc": "- Payload runtime optionnel"
-      }
-    ],
-    "slots": [],
-    "file": "entity/item/ItemViewCompact.vue"
+    "file": "entity/item/ItemViewFull.vue"
   },
   {
     "name": "ItemPriceEditSection",
@@ -2095,8 +1856,8 @@
     "file": "entity/creature-trait/CreatureTraitViewMinimal.vue"
   },
   {
-    "name": "CreatureTraitViewLarge",
-    "description": "CreatureTraitViewLarge — Vue Large pour CreatureTrait",
+    "name": "CreatureTraitViewFull",
+    "description": "CreatureTraitViewFull — Vue Full pour CreatureTrait",
     "props": [
       {
         "name": "creatureTrait",
@@ -2110,25 +1871,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/creature-trait/CreatureTraitViewLarge.vue"
-  },
-  {
-    "name": "CreatureTraitViewCompact",
-    "description": "CreatureTraitViewCompact — Vue Compact pour CreatureTrait",
-    "props": [
-      {
-        "name": "creatureTrait",
-        "type": "CreatureTrait",
-        "desc": "- Instance du modèle CreatureTrait"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/creature-trait/CreatureTraitViewCompact.vue"
+    "file": "entity/creature-trait/CreatureTraitViewFull.vue"
   },
   {
     "name": "CreatureTraitLineRow",
@@ -2158,8 +1901,8 @@
     "file": "entity/consumable/ConsumableViewMinimal.vue"
   },
   {
-    "name": "ConsumableViewLarge",
-    "description": "ConsumableViewLarge — Vue Large pour Consumable",
+    "name": "ConsumableViewFull",
+    "description": "ConsumableViewFull — Vue Full pour Consumable",
     "props": [
       {
         "name": "consumable",
@@ -2173,35 +1916,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/consumable/ConsumableViewLarge.vue"
-  },
-  {
-    "name": "ConsumableViewCompact",
-    "description": "ConsumableViewCompact — Vue Compact pour Consumable",
-    "props": [
-      {
-        "name": "consumable",
-        "type": "Consumable",
-        "desc": "- Instance du modèle Consumable"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      },
-      {
-        "name": "tableMeta",
-        "type": "Object",
-        "desc": "- Meta caractéristiques"
-      },
-      {
-        "name": "characteristicRuntime",
-        "type": "Object|null",
-        "desc": "- Payload runtime optionnel"
-      }
-    ],
-    "slots": [],
-    "file": "entity/consumable/ConsumableViewCompact.vue"
+    "file": "entity/consumable/ConsumableViewFull.vue"
   },
   {
     "name": "ConsumableLineRow",
@@ -2242,8 +1957,8 @@
     "file": "entity/condition/ConditionViewMinimal.vue"
   },
   {
-    "name": "ConditionViewLarge",
-    "description": "ConditionViewLarge — Vue Large pour Condition",
+    "name": "ConditionViewFull",
+    "description": "ConditionViewFull — Vue Full pour Condition",
     "props": [
       {
         "name": "condition",
@@ -2257,25 +1972,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/condition/ConditionViewLarge.vue"
-  },
-  {
-    "name": "ConditionViewCompact",
-    "description": "ConditionViewCompact — Vue Compact pour Condition",
-    "props": [
-      {
-        "name": "condition",
-        "type": "Condition",
-        "desc": "- Instance du modèle Condition"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/condition/ConditionViewCompact.vue"
+    "file": "entity/condition/ConditionViewFull.vue"
   },
   {
     "name": "ConditionLineRow",
@@ -2352,8 +2049,8 @@
     "file": "entity/capability/CapabilityViewMinimal.vue"
   },
   {
-    "name": "CapabilityViewLarge",
-    "description": "CapabilityViewLarge — Vue Large pour Capability",
+    "name": "CapabilityViewFull",
+    "description": "CapabilityViewFull — Vue Full pour Capability",
     "props": [
       {
         "name": "capability",
@@ -2367,25 +2064,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/capability/CapabilityViewLarge.vue"
-  },
-  {
-    "name": "CapabilityViewCompact",
-    "description": "CapabilityViewCompact — Vue Compact pour Capability",
-    "props": [
-      {
-        "name": "capability",
-        "type": "Capability",
-        "desc": "- Instance du modèle Capability"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/capability/CapabilityViewCompact.vue"
+    "file": "entity/capability/CapabilityViewFull.vue"
   },
   {
     "name": "CapabilityMinimalUsageMetaRow",
@@ -2433,8 +2112,8 @@
     "file": "entity/campaign/CampaignViewMinimal.vue"
   },
   {
-    "name": "CampaignViewLarge",
-    "description": "CampaignViewLarge — Vue Large pour Campaign",
+    "name": "CampaignViewFull",
+    "description": "CampaignViewFull — Vue Full pour Campaign",
     "props": [
       {
         "name": "campaign",
@@ -2448,25 +2127,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/campaign/CampaignViewLarge.vue"
-  },
-  {
-    "name": "CampaignViewCompact",
-    "description": "CampaignViewCompact — Vue Compact pour Campaign",
-    "props": [
-      {
-        "name": "campaign",
-        "type": "Campaign",
-        "desc": "- Instance du modèle Campaign"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/campaign/CampaignViewCompact.vue"
+    "file": "entity/campaign/CampaignViewFull.vue"
   },
   {
     "name": "BreedViewText",
@@ -2500,8 +2161,8 @@
     "file": "entity/breed/BreedViewMinimal.vue"
   },
   {
-    "name": "BreedViewLarge",
-    "description": "BreedViewLarge — Vue Large pour Breed",
+    "name": "BreedViewFull",
+    "description": "BreedViewFull — Vue Full pour Breed",
     "props": [
       {
         "name": "breed",
@@ -2515,25 +2176,7 @@
       }
     ],
     "slots": [],
-    "file": "entity/breed/BreedViewLarge.vue"
-  },
-  {
-    "name": "BreedViewCompact",
-    "description": "BreedViewCompact — Vue Compact pour Breed",
-    "props": [
-      {
-        "name": "breed",
-        "type": "Breed",
-        "desc": "- Instance du modèle Breed"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/breed/BreedViewCompact.vue"
+    "file": "entity/breed/BreedViewFull.vue"
   },
   {
     "name": "BreedVariantsDisplay",
@@ -2546,8 +2189,8 @@
       },
       {
         "name": "density",
-        "type": "'text'|'compact'|'large'",
-        "desc": "- text = Minimal/Line, compact = modal, large = fiche"
+        "type": "'text'|'compact'|'full'",
+        "desc": "- text = Minimal/Line, compact = modal, full = fiche"
       }
     ],
     "slots": [],
@@ -2602,7 +2245,7 @@
       },
       {
         "name": "density",
-        "type": "'text'|'compact'|'large'",
+        "type": "'text'|'compact'|'full'",
         "desc": ""
       }
     ],
@@ -2895,6 +2538,29 @@
     "file": "data-display/CharacteristicPropertyTooltip.vue"
   },
   {
+    "name": "CharacteristicNormsHelpButton",
+    "description": "Bouton d’aide : ouvre les normes (grille + graphique) d’une caractéristique via l’API publique.",
+    "props": [
+      {
+        "name": "characteristicKey",
+        "type": "string",
+        "desc": "- Clé BDD (ex. `vitality_creature`)"
+      },
+      {
+        "name": "entity",
+        "type": "string",
+        "desc": "- Contexte entité (`creature`, `object`, `spell`, `*`)"
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "desc": "- Libellé du bouton (accessibilité)"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/CharacteristicNormsHelpButton.vue"
+  },
+  {
     "name": "CharacteristicInlineGroup",
     "description": "CharacteristicInlineGroup — molécule d'affichage inline de caractéristiques.",
     "props": [
@@ -3001,6 +2667,13 @@
       }
     ],
     "file": "data-display/AvatarGroup.vue"
+  },
+  {
+    "name": "AdminDoughnutChart",
+    "description": "Graphique en anneau (Chart.js) pour les tableaux de bord admin.",
+    "props": [],
+    "slots": [],
+    "file": "data-display/AdminDoughnutChart.vue"
   },
   {
     "name": "ThemeController",

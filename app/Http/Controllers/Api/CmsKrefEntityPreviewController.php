@@ -59,6 +59,16 @@ class CmsKrefEntityPreviewController extends Controller
             if ($pa !== null && $pa !== '') {
                 $meta[] = (string) $pa.' PA';
             }
+            if ($model->getAttribute('is_magic') !== null) {
+                $meta[] = filter_var($model->getAttribute('is_magic'), FILTER_VALIDATE_BOOLEAN)
+                    ? 'Magie (Wakfu)'
+                    : 'Physique';
+            }
+        }
+        if ($entityType === 'capabilities' && $model->getAttribute('is_magic') !== null) {
+            $meta[] = filter_var($model->getAttribute('is_magic'), FILTER_VALIDATE_BOOLEAN)
+                ? 'Magie (Wakfu)'
+                : 'Physique';
         }
         if (in_array($entityType, ['items', 'consumables', 'resources', 'panoplies'], true)) {
             $level = $model->getAttribute('level');
