@@ -24,6 +24,7 @@ use Inertia\Inertia;
 class CampaignController extends Controller
 {
     use RedirectsAfterEntityCreate;
+
     /**
      * Display a listing of the resource.
      */

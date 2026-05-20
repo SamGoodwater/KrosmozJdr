@@ -24,6 +24,7 @@ class CmsKrefEntityPreviewApiTest extends TestCase
             'name' => 'Boule de feu test',
             'level' => '5',
             'pa' => '4',
+            'state' => Spell::STATE_PLAYABLE,
             'read_level' => User::ROLE_GUEST,
         ]);
 

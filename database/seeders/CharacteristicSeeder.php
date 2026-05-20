@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Characteristic;
 use App\Services\Characteristics\CharacteristicDefinitionReader;
 use App\Support\Characteristics\CharacteristicDefinitionNaming;
+use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Schema;
  */
 class CharacteristicSeeder extends Seeder
 {
+    use RetriesWhenMysqlSchemaChanged;
+
     /**
      * Clés `*_spell` → `*_creature` quand le nommage ne suit pas la règle suffixe `_spell` → `_creature`.
      * Les autres sorts alignés sur une caractéristique créature sont résolus automatiquement.
@@ -125,10 +128,10 @@ class CharacteristicSeeder extends Seeder
             if ($hasHideWhenFalse) {
                 $payload['hide_when_false'] = (bool) ($row['hide_when_false'] ?? false);
             }
-            Characteristic::updateOrCreate(
+            $this->retryOnMysqlSchemaChanged(static fn () => Characteristic::updateOrCreate(
                 ['key' => $key],
                 $payload
-            );
+            ));
         }
 
         // 2) Deuxième passage : rattacher les caractéristiques liées à leur maître via linked_to_key

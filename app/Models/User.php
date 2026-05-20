@@ -264,6 +264,10 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
      */
     public function getChannelsForNotificationType(string $type): array
     {
+        if (! $this->notifications_enabled) {
+            return [];
+        }
+
         $prefs = $this->notification_preferences ?? [];
         if (array_key_exists($type, $prefs)) {
             $ch = $prefs[$type];

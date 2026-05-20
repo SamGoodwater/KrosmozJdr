@@ -7,6 +7,7 @@ namespace Database\Seeders\Type;
 use App\Models\Type\ItemType;
 use App\Models\User;
 use Database\Seeders\Concerns\LoadsSeederDataFile;
+use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Seeder;
 
 /**
@@ -20,6 +21,7 @@ use Illuminate\Database\Seeder;
 class ItemTypeSeeder extends Seeder
 {
     use LoadsSeederDataFile;
+    use RetriesWhenMysqlSchemaChanged;
 
     private const DATA_FILE = 'database/seeders/data/item_types.php';
 
@@ -43,16 +45,18 @@ class ItemTypeSeeder extends Seeder
             if ($typeId <= 0) {
                 continue;
             }
-            ItemType::updateOrCreate(
-                ['dofusdb_type_id' => $typeId],
-                [
-                    'name' => (string) ($row['name'] ?? ''),
-                    'decision' => (string) ($row['decision'] ?? 'pending'),
-                    'state' => (string) ($row['state'] ?? 'draft'),
-                    'read_level' => (int) ($row['read_level'] ?? User::ROLE_GUEST),
-                    'write_level' => (int) ($row['write_level'] ?? User::ROLE_ADMIN),
-                    'created_by' => $row['created_by'] ?? $createdBy,
-                ]
+            $this->retryOnMysqlSchemaChanged(
+                static fn () => ItemType::updateOrCreate(
+                    ['dofusdb_type_id' => $typeId],
+                    [
+                        'name' => (string) ($row['name'] ?? ''),
+                        'decision' => (string) ($row['decision'] ?? 'pending'),
+                        'state' => (string) ($row['state'] ?? 'draft'),
+                        'read_level' => (int) ($row['read_level'] ?? User::ROLE_GUEST),
+                        'write_level' => (int) ($row['write_level'] ?? User::ROLE_ADMIN),
+                        'created_by' => $row['created_by'] ?? $createdBy,
+                    ]
+                )
             );
         }
 

@@ -20,6 +20,7 @@ use Inertia\Inertia;
 class ConsumableController extends Controller
 {
     use RedirectsAfterEntityCreate;
+
     /**
      * Display a listing of the resource.
      */

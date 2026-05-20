@@ -17,6 +17,7 @@ L’ancienne commande **`php artisan run`** a été **retirée**. Tout passe par
 | `project:data` | Données DofusDB (sync, init catalogue, guide fill). |
 | `project:data:sync` | Mise à jour des entités déjà en base avec `auto_update=true`. |
 | `project:init` | Pipeline complet d’installation (migrations, seeders, types, scrapping, capacités). |
+| `project:init:verify` | Contrôle post-init (pages critiques, types, caractéristiques, mappings) — option `--verify` sur `project:init`. |
 | `project:seed` | Seeders et données locales **sans** DofusDB (`project:init` + `--skip-scrapping` + `--skip-types`). |
 | `project:super-admin` | Création interactive du premier super_admin (hors `init`). |
 | `project:backup` | Dump BDD (gzip) + archive `storage/app` (tar.gz, ZIP si besoin), purge > N jours. |
@@ -313,6 +314,42 @@ Super admin : toujours via le flux seed + prompt (logique partagée avec `projec
 | Scrapping entités | classes, sorts, monstres, ressources, consommables, items, panoplies (`scrapping:run`) — **en dernier** avant le scheduler |
 
 Pour un `db:seed` classique global, voir aussi {@see \Database\Seeders\DatabaseSeeder} : il reprend une partie des mêmes seeders ; `project:init` ajoute scrapping, types API, import legacy spécialisations et TOC.
+
+| Option | Effet |
+|--------|--------|
+| `--verify` | En fin de pipeline : `project:init:verify` (code 1 si socle incomplet). |
+| `--verify-with-rules` | Comme `--verify` + contrôle des pages CMS `regles-*`. |
+
+---
+
+## `project:init:verify` — contrôle du socle seedé
+
+Vérifie qu’une base initialisée (ou `project:seed`) est **utilisable sans scrapping complet**. Les **avertissements** (super_admin, breeds, sorts sous seuil) n’échouent pas la commande ; les **échecs** renvoient le code 1.
+
+| Contrôle | Échec si… |
+|----------|-----------|
+| Tables `pages`, `users`, `item_types`, `characteristics`, `dofusdb_effect_mappings` | table absente |
+| Pages `accueil`, `legales`, `cgu`, `changelog` | slug manquant |
+| Page accueil | sans section, `in_menu=false`, ou non `playable` |
+| Menu | `config/nav_menu.php` → `bibliotheques` vide ou entrée sans `route` / `entity_key` |
+| Types équipement | &lt; 5 lignes `item_types` |
+| Caractéristiques | &lt; 50 maîtres ou &lt; 50 pivots par groupe (creature / object / spell) |
+| Mappings effets | table `dofusdb_effect_mappings` vide → `DofusdbEffectMappingSeeder` |
+| `--with-rules` | &lt; 5 pages slug `regles-%` (import TOC) |
+| `--min-spells=N` | (avertissement) sorts &lt; N |
+| super_admin / breeds | (avertissement) optionnel selon scrapping |
+
+| Option | Effet |
+|--------|--------|
+| `--with-rules` | Exige au moins 5 pages `regles-*` (import TOC). |
+| `--min-spells=N` | Avertit si moins de N sorts en base. |
+| `--json` | Sortie JSON (CI). |
+
+```bash
+php artisan project:init:verify
+php artisan project:init:verify --with-rules --json
+php artisan project:init --skip-scrapping --skip-types --verify
+```
 
 ---
 

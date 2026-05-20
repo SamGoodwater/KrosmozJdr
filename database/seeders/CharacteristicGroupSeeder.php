@@ -9,6 +9,7 @@ use App\Models\CharacteristicObject;
 use App\Models\Type\ItemType;
 use App\Services\Characteristics\CharacteristicDefinitionReader;
 use App\Support\Characteristics\CharacteristicDefinitionNaming;
+use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 
@@ -18,6 +19,8 @@ use Illuminate\Database\Seeder;
  */
 abstract class CharacteristicGroupSeeder extends Seeder
 {
+    use RetriesWhenMysqlSchemaChanged;
+
     /**
      * @return class-string<Model>
      */
@@ -216,17 +219,22 @@ abstract class CharacteristicGroupSeeder extends Seeder
                     'characteristic_key' => $key,
                     'entity' => $entity,
                 ]);
-                $model = $modelClass::updateOrCreate(
-                    [
-                        'characteristic_id' => $characteristicId,
-                        'entity' => $entity,
-                    ],
-                    $this->mapRowToAttributes($row)
+                $attributes = $this->mapRowToAttributes($row);
+                $model = $this->retryOnMysqlSchemaChanged(
+                    fn () => $modelClass::updateOrCreate(
+                        [
+                            'characteristic_id' => $characteristicId,
+                            'entity' => $entity,
+                        ],
+                        $attributes
+                    )
                 );
                 if ($model instanceof CharacteristicObject) {
                     $itemTypeIds = $this->resolveCharacteristicObjectItemTypeIdsForSync($row);
                     if ($itemTypeIds !== []) {
-                        $model->allowedItemTypes()->sync($itemTypeIds);
+                        $this->retryOnMysqlSchemaChanged(
+                            static fn () => $model->allowedItemTypes()->sync($itemTypeIds)
+                        );
                     }
                 }
                 $n++;

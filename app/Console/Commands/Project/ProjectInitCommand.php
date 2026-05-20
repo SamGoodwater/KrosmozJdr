@@ -9,12 +9,12 @@ use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
 use App\Console\Concerns\PromptsPrimarySuperAdmin;
 use App\Services\NotificationService;
+use Database\Seeders\BibliothequeEntityPagesSeeder;
 use Database\Seeders\CreationPagesSeeder;
 use Database\Seeders\CriticalPagesSeeder;
 use Database\Seeders\Entity\ConditionSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
-use Database\Seeders\BibliothequeEntityPagesSeeder;
 use Database\Seeders\Entity\SpecializationSeeder;
 use Database\Seeders\NavMenuSeeder;
 use Database\Seeders\PageSeeder;
@@ -72,7 +72,9 @@ class ProjectInitCommand extends Command
         {--init-scheduler : Afficher la ligne cron pour le scheduler Laravel}
         {--skip-clear-queue : Ne pas vider la queue avant le scrapping}
         {--skip-notify : Ne pas notifier les admin à la fin}
-        {--skip-super-admin-prompt : Ne pas demander la création du super_admin (CI / scripts)}';
+        {--skip-super-admin-prompt : Ne pas demander la création du super_admin (CI / scripts)}
+        {--verify : Exécuter project:init:verify à la fin (échec si socle incomplet)}
+        {--verify-with-rules : Comme --verify avec contrôle des pages règles CMS}';
 
     protected $description = 'Initialise le projet (migrations, seeders, capacités locales, puis types/scrapping DofusDB)';
 
@@ -192,6 +194,18 @@ class ProjectInitCommand extends Command
             $this->newLine();
 
             $success = true;
+
+            if ((bool) $this->option('verify') || (bool) $this->option('verify-with-rules')) {
+                $verifyArgs = [];
+                if ((bool) $this->option('verify-with-rules')) {
+                    $verifyArgs['--with-rules'] = true;
+                }
+                $verifyCode = $this->call('project:init:verify', $verifyArgs);
+                if ($verifyCode !== 0) {
+                    $success = false;
+                    $lastError = 'project:init:verify a échoué.';
+                }
+            }
         } catch (Throwable $e) {
             foreach ($phaseStatuses as $phase => $status) {
                 if ($status === 'pending') {

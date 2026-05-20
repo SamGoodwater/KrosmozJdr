@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\EnsureAdminAreaAccess;
+use App\Http\Middleware\EnsureContentManagementAccess;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RequirePasswordWithInactivity;
 use App\Support\ProjectSchedule\ProjectScheduleRegistrar;
@@ -45,7 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'password.confirm' => RequirePasswordWithInactivity::class,
             'verified' => EnsureEmailIsVerified::class,
             'admin.area' => EnsureAdminAreaAccess::class,
-            'content.area' => \App\Http\Middleware\EnsureContentManagementAccess::class,
+            'content.area' => EnsureContentManagementAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

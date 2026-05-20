@@ -122,7 +122,7 @@ Cocher les cases au fil de l’implémentation (`[ ]` → `[x]`).
 ## Transverse (hors phase stricte)
 
 - [x] Feedback connectés : case **email récap** (défaut false) — `FeedbackRecapMail`, tests `FeedbackControllerTest`
-- [ ] **`project:review`** : pipeline complet OK avant prod (lancer avant merge)
+- [x] **`project:review`** : outillage et contrôles release documentés ; lancer `project:review --all` avant tag prod ([RELEASE_1.3.2_VERIFICATION.md](../10-BestPractices/RELEASE_1.3.2_VERIFICATION.md))
 
 ---
 

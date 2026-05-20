@@ -30,6 +30,21 @@ class NotificationServiceTest extends TestCase
         Notification::fake();
     }
 
+    public function test_notify_profile_modified_does_not_notify_when_notifications_globally_disabled(): void
+    {
+        $user = User::factory()->create([
+            'notifications_enabled' => false,
+            'notification_preferences' => [
+                'profile_modified' => ['channels' => ['mail', 'database'], 'frequency' => 'instant'],
+            ],
+        ]);
+        $modifier = User::factory()->create();
+
+        NotificationService::notifyProfileModified($user, $modifier);
+
+        Notification::assertNothingSent();
+    }
+
     public function test_notify_profile_modified_does_not_notify_when_channels_empty(): void
     {
         $user = User::factory()->create([

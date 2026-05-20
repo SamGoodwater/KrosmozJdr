@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Web;
 
+use App\Http\Controllers\FeedbackController;
 use App\Mail\FeedbackMail;
 use App\Mail\FeedbackRecapMail;
 use App\Models\User;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 /**
- * @see \App\Http\Controllers\FeedbackController
+ * @see FeedbackController
  */
 class FeedbackControllerTest extends TestCase
 {

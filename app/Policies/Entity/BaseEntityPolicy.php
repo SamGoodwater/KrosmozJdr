@@ -15,6 +15,18 @@ use Illuminate\Database\Eloquent\Model;
 abstract class BaseEntityPolicy
 {
     /**
+     * L’auteur de la fiche peut toujours la consulter et la modifier (hors admin).
+     */
+    protected function isAuthor(?User $user, Model $model): bool
+    {
+        if ($user === null || ! isset($model->created_by) || $model->created_by === null) {
+            return false;
+        }
+
+        return (int) $user->id === (int) $model->created_by;
+    }
+
+    /**
      * Matrice « Gérer l’affichage » : rôle minimal pour voir un état donné (avant read_level / write_level).
      */
     protected function passesDisplayVisibilityGate(?User $user, Model $model): bool
@@ -29,23 +41,23 @@ abstract class BaseEntityPolicy
         return app(EntityDisplayVisibilityService::class)->viewerMeetsMinimumRole($user, $key, $state);
     }
 
-    private function userLevel(?User $user): int
+    protected function userLevel(?User $user): int
     {
         // Invité = 0
         return $user ? (int) ($user->role ?? 0) : 0;
     }
 
-    private function state(Model $model): string
+    protected function state(Model $model): string
     {
         return (string) ($model->state ?? 'draft');
     }
 
-    private function readLevel(Model $model): int
+    protected function readLevel(Model $model): int
     {
         return (int) ($model->read_level ?? 0);
     }
 
-    private function writeLevel(Model $model): int
+    protected function writeLevel(Model $model): int
     {
         // Par défaut, un niveau "éditeur" (MJ).
         return (int) ($model->write_level ?? 3);
@@ -69,6 +81,10 @@ abstract class BaseEntityPolicy
     public function view(?User $user, Model $model): bool
     {
         if ($user && $user->isAdmin()) {
+            return true;
+        }
+
+        if ($this->isAuthor($user, $model)) {
             return true;
         }
 
@@ -123,6 +139,10 @@ abstract class BaseEntityPolicy
     public function update(User $user, Model $model): bool
     {
         if ($user->isAdmin()) {
+            return true;
+        }
+
+        if ($this->isAuthor($user, $model)) {
             return true;
         }
 

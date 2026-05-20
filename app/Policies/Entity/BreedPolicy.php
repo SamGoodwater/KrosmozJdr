@@ -28,6 +28,10 @@ class BreedPolicy
             return true;
         }
 
+        if ($user !== null && $breed->created_by !== null && (int) $user->id === (int) $breed->created_by) {
+            return true;
+        }
+
         $entityKey = app(EntityDisplayVisibilityService::class)->permissionKeyForModel($breed);
         if ($entityKey !== null && ! app(EntityDisplayVisibilityService::class)->viewerMeetsMinimumRole($user, $entityKey, (string) $breed->state)) {
             return false;
@@ -44,12 +48,9 @@ class BreedPolicy
             return $level >= (int) $breed->read_level;
         }
 
-        // Brouillon / brut : pas d’invité ; auteur ; ou rôle suffisant pour l’édition de la fiche.
+        // Brouillon / brut : pas d’invité ; rôle suffisant pour l’édition de la fiche.
         if ($user === null) {
             return false;
-        }
-        if ($breed->created_by !== null && (int) $user->id === (int) $breed->created_by) {
-            return true;
         }
 
         return $level >= (int) $breed->write_level;

@@ -21,6 +21,7 @@ use Inertia\Inertia;
 class ItemController extends Controller
 {
     use RedirectsAfterEntityCreate;
+
     /**
      * Display a listing of the resource.
      */

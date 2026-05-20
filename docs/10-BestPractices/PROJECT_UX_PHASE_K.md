@@ -22,6 +22,17 @@
 - `Main.vue` : `min-w-0`, padding réduit mobile (`max-sm:p-2`).
 - `Header.vue` : titre tronqué, taille adaptive (`text-lg` → `sm:text-2xl`).
 
+## Tests accessibilité automatisés
+
+```bash
+pnpm run test:a11y
+```
+
+- Cible initiale : `Alert.vue` (vitest-axe).
+- Ne remplace pas un audit manuel des contrastes ni un parcours clavier complet.
+- E2E optionnel : `pnpm exec playwright test tests/e2e/release-1.3.2.spec.ts` (avec `php artisan serve`).
+
 ## Documentation
 
-Le nettoyage exhaustif de `/docs/` (reclassement, suppression historiques) reste une passe dédiée post-1.3.2 ; cette phase couvre le **comportement produit** et les composants UI critiques.
+- Script audit : `pnpm run audit:docs` (`docs/scripts/audit-docs-quality.cjs`).
+- Index calibration 282 clés : `docs/50-Fonctionnalités/Characteristics-DB/CALIBRATION_282_INDEX.md`.

@@ -16,6 +16,7 @@ use Inertia\Inertia;
 class ConditionController extends Controller
 {
     use RedirectsAfterEntityCreate;
+
     /**
      * Display a listing of the resource.
      */

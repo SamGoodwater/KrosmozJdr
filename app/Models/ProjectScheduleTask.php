@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Support\ProjectSchedule\ProjectScheduleCatalog;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Tâche planifiée Laravel (cron + activation) configurable en base.
@@ -15,8 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $cron_expression Expression cron (5 segments)
  * @property bool $without_overlapping Empêcher les ré-entrées
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask query()

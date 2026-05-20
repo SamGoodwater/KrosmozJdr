@@ -1,283 +1,283 @@
-group,seed_file,characteristic_key,name_fr,type,db_column,min,max,conversion_function,conversion_formula_trunc,has_norms_grid,dofus_source,dofus_field,dofus_global_min,dofus_global_max,dofus_anchors,dofus_spread_pct_1_200,krosmoz_anchors,dofus_extracted_at
-spell,spell/action_points-spell-definition.json,action_points_spell,Coût en PA,int,pa,1,12,,"round(min(12,max(1,[d])))",1,,,,,,,,
-spell,spell/action_points_variation-spell-definition.json,action_points_variation_spell,Variation de PA,int,,0,3,,"round(min(3,max(0,[d])))",1,,,,,,,,
+group,seed_file,characteristic_key,name_fr,type,db_column,min,max,conversion_function,conversion_formula_trunc,has_norms_grid,dofus_source,dofus_field,dofus_global_min,dofus_global_max,dofus_anchors,dofus_spread_pct_1_200,krosmoz_anchors,dofus_extracted_at,statut_editorial
+spell,spell/action_points-spell-definition.json,action_points_spell,"Coût en PA",int,pa,1,12,,"round(min(12,max(1,[d])))",1,,,,,,,,
+spell,spell/action_points_variation-spell-definition.json,action_points_variation_spell,"Variation de PA",int,,0,3,,"round(min(3,max(0,[d])))",1,,,,,,,,
 spell,spell/agi-spell-definition.json,agi_spell,Agilité,int,agi,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
-spell,spell/allows_reaction-spell-definition.json,allows_reaction_spell,Utilisable en réaction,bool,allows_reaction,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
+spell,spell/allows_reaction-spell-definition.json,allows_reaction_spell,"Utilisable en réaction",bool,allows_reaction,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
 spell,spell/area-spell-definition.json,area_spell,Zone,int,area,0,10,,[d],1,,,,,,,,
 spell,spell/armor_class-spell-definition.json,armor_class_spell,CA,int,ca,0,5,,"round(min(5,max(0,0.45*pow(max(1,abs([d])),0.78))))",1,,,,,,,,
-spell,spell/attack_characteristic_key-spell-definition.json,attack_characteristic_key_spell,Caractéristique d’attaque,string,attack_characteristic_key,,,,,0,,,,,,,,
-spell,spell/auto_success_if_willing_target-spell-definition.json,auto_success_if_willing_target_spell,Réussite auto si cible consentante,bool,auto_success_if_willing_target,0,1,,,0,,,,,,,,
+spell,spell/attack_characteristic_key-spell-definition.json,attack_characteristic_key_spell,"Caractéristique d’attaque",string,attack_characteristic_key,,,,,0,,,,,,,,
+spell,spell/auto_success_if_willing_target-spell-definition.json,auto_success_if_willing_target_spell,"Réussite auto si cible consentante",bool,auto_success_if_willing_target,0,1,,,0,,,,,,,,
 spell,spell/bouclier-spell-definition.json,bouclier_spell,Bouclier,int,,0,32,convertToDice,"round(min(32, max(1, 1.00 * pow(max(1,[d]), 0.475))))",1,,,,,,,,
-spell,spell/cast_per_target-spell-definition.json,cast_per_target_spell,Lancers par cible,int,cast_per_target,0,99,,[d],1,,,,,,,,
-spell,spell/cast_per_turn-spell-definition.json,cast_per_turn_spell,Lancers par tour,int,cast_per_turn,0,99,,[d],1,,,,,,,,
-spell,spell/casting_time-spell-definition.json,casting_time_spell,Temps d'incantation,string,casting_time,,,,[d],1,,,,,,,,
+spell,spell/cast_per_target-spell-definition.json,cast_per_target_spell,"Lancers par cible",int,cast_per_target,0,99,,[d],1,,,,,,,,
+spell,spell/cast_per_turn-spell-definition.json,cast_per_turn_spell,"Lancers par tour",int,cast_per_turn,0,99,,[d],1,,,,,,,,
+spell,spell/casting_time-spell-definition.json,casting_time_spell,"Temps d'incantation",string,casting_time,,,,[d],1,,,,,,,,
 spell,spell/category-spell-definition.json,category_spell,Catégorie,int,category,0,3,,,0,,,,,,,,
 spell,spell/chance-spell-definition.json,chance_spell,Chance,int,chance,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
 spell,spell/critical-spell-definition.json,critical_spell,Critiques,int,critical,0,2,,"{""characteristic"":""level"",""1"":0,""7"":1,""14"":2}",1,,,,,,,,
-spell,spell/critical_damage_reduction-spell-definition.json,critical_damage_reduction_spell,Résistance critiques,int,res_crit,0,20,,"round(min(20,max(0,0.65*pow(max(1,[d]),0.48))))",1,,,,,,,,
-spell,spell/do_fixe_multiple-spell-definition.json,do_fixe_multiple_spell,Dommages fixes multi,int,do_fixe_multiple,0,20,,"round(min(20,max(0,0.58*pow(max(1,[d]),0.48))))",1,,,,,,,,
+spell,spell/critical_damage_reduction-spell-definition.json,critical_damage_reduction_spell,"Résistance critiques",int,res_crit,0,20,,"round(min(20,max(0,0.65*pow(max(1,[d]),0.48))))",1,,,,,,,,
+spell,spell/do_fixe_multiple-spell-definition.json,do_fixe_multiple_spell,"Dommages fixes multi",int,do_fixe_multiple,0,20,,"round(min(20,max(0,0.58*pow(max(1,[d]),0.48))))",1,,,,,,,,
 spell,spell/dodge-spell-definition.json,dodge_spell,Fuite,int,fuite,0,10,,"round(min(10,max(0,0.55*pow(max(1,[d]),0.45))))",1,,,,,,,,
-spell,spell/dodge_action_points-spell-definition.json,dodge_action_points_spell,Esquive PA,int,esquive_pa,0,20,,"round(min(20,max(0,0.65*pow(max(1,[d]),0.48))))",1,,,,,,,,
-spell,spell/dodge_movement_points-spell-definition.json,dodge_movement_points_spell,Esquive PM,int,esquive_pm,0,20,,"round(min(20,max(0,0.65*pow(max(1,[d]),0.48))))",1,,,,,,,,
+spell,spell/dodge_action_points-spell-definition.json,dodge_action_points_spell,"Esquive PA",int,esquive_pa,0,20,,"round(min(20,max(0,0.65*pow(max(1,[d]),0.48))))",1,,,,,,,,
+spell,spell/dodge_movement_points-spell-definition.json,dodge_movement_points_spell,"Esquive PM",int,esquive_pm,0,20,,"round(min(20,max(0,0.65*pow(max(1,[d]),0.48))))",1,,,,,,,,
 spell,spell/dommages-spell-definition.json,dommages_spell,Dommages,int,,0,45,convertToDice,"round(min(45, max(1, 1.12 * pow(max(1,[d]), 0.475))))",1,,,,,,,,
 spell,spell/duration-spell-definition.json,duration_spell,Durée,string,duration,,,,[d],1,,,,,,,,
 spell,spell/element-spell-definition.json,element_spell,Élément,int,element,0,127,,,0,,,,,,,,
-spell,spell/fixed_damage_air-spell-definition.json,fixed_damage_air_spell,Dégâts fixe Air,int,do_air,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
-spell,spell/fixed_damage_earth-spell-definition.json,fixed_damage_earth_spell,Dégâts fixe Terre,int,do_terre,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
-spell,spell/fixed_damage_fire-spell-definition.json,fixed_damage_fire_spell,Dégâts fixe Feu,int,do_feu,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
-spell,spell/fixed_damage_neutral-spell-definition.json,fixed_damage_neutral_spell,Dégâts fixe Neutre,int,do_neutre,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
-spell,spell/fixed_damage_sagesse-spell-definition.json,fixed_damage_sagesse_spell,Dégâts fixes Sagesse (sort),int,do_sagesse,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
-spell,spell/fixed_damage_vitalite-spell-definition.json,fixed_damage_vitalite_spell,Dégâts fixes Vitalité (sort),int,do_vitalite,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
-spell,spell/fixed_damage_water-spell-definition.json,fixed_damage_water_spell,Dégâts fixe Eau,int,do_eau,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
-spell,spell/fixed_resistance_air-spell-definition.json,fixed_resistance_air_spell,Résistance fixe Air,int,res_fixe_air,0,20,,"round(min(20,max(0,0.72*pow(max(1,[d]),0.48))))",1,,,,,,,,
-spell,spell/fixed_resistance_eau-spell-definition.json,fixed_resistance_eau_spell,Résistance fixe Eau,int,res_fixe_eau,0,20,,"round(min(20,max(0,0.72*pow(max(1,[d]),0.48))))",1,,,,,,,,
-spell,spell/fixed_resistance_feu-spell-definition.json,fixed_resistance_feu_spell,Résistance fixe Feu,int,res_fixe_feu,0,20,,"round(min(20,max(0,0.72*pow(max(1,[d]),0.48))))",1,,,,,,,,
-spell,spell/fixed_resistance_neutre-spell-definition.json,fixed_resistance_neutre_spell,Résistance fixe Neutre,int,res_fixe_neutre,0,20,,"round(min(20,max(0,0.72*pow(max(1,[d]),0.48))))",1,,,,,,,,
-spell,spell/fixed_resistance_terre-spell-definition.json,fixed_resistance_terre_spell,Résistance fixe Terre,int,res_fixe_terre,0,20,,"round(min(20,max(0,0.72*pow(max(1,[d]),0.48))))",1,,,,,,,,
-spell,spell/heal_bonus-spell-definition.json,heal_bonus_spell,Bonus de soin,int,heal_bonus,0,7,,"round(min(7,max(0,0.5*pow(max(1,[d]),0.82))))",1,,,,,,,,
-spell,spell/hit_bonus-spell-definition.json,hit_bonus_spell,Bonus de touche,int,touch,0,5,,"round(min(5,max(0,0.45*pow(max(1,abs([d])),0.78))))",1,,,,,,,,
+spell,spell/fixed_damage_air-spell-definition.json,fixed_damage_air_spell,"Dégâts fixe Air",int,do_air,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
+spell,spell/fixed_damage_earth-spell-definition.json,fixed_damage_earth_spell,"Dégâts fixe Terre",int,do_terre,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
+spell,spell/fixed_damage_fire-spell-definition.json,fixed_damage_fire_spell,"Dégâts fixe Feu",int,do_feu,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
+spell,spell/fixed_damage_neutral-spell-definition.json,fixed_damage_neutral_spell,"Dégâts fixe Neutre",int,do_neutre,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
+spell,spell/fixed_damage_sagesse-spell-definition.json,fixed_damage_sagesse_spell,"Dégâts fixes Sagesse (sort)",int,do_sagesse,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
+spell,spell/fixed_damage_vitalite-spell-definition.json,fixed_damage_vitalite_spell,"Dégâts fixes Vitalité (sort)",int,do_vitalite,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
+spell,spell/fixed_damage_water-spell-definition.json,fixed_damage_water_spell,"Dégâts fixe Eau",int,do_eau,0,5,,"round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",1,,,,,,,,
+spell,spell/fixed_resistance_air-spell-definition.json,fixed_resistance_air_spell,"Résistance fixe Air",int,res_fixe_air,0,20,,"round(min(20,max(0,0.72*pow(max(1,[d]),0.48))))",1,,,,,,,,
+spell,spell/fixed_resistance_eau-spell-definition.json,fixed_resistance_eau_spell,"Résistance fixe Eau",int,res_fixe_eau,0,20,,"round(min(20,max(0,0.72*pow(max(1,[d]),0.48))))",1,,,,,,,,
+spell,spell/fixed_resistance_feu-spell-definition.json,fixed_resistance_feu_spell,"Résistance fixe Feu",int,res_fixe_feu,0,20,,"round(min(20,max(0,0.72*pow(max(1,[d]),0.48))))",1,,,,,,,,
+spell,spell/fixed_resistance_neutre-spell-definition.json,fixed_resistance_neutre_spell,"Résistance fixe Neutre",int,res_fixe_neutre,0,20,,"round(min(20,max(0,0.72*pow(max(1,[d]),0.48))))",1,,,,,,,,
+spell,spell/fixed_resistance_terre-spell-definition.json,fixed_resistance_terre_spell,"Résistance fixe Terre",int,res_fixe_terre,0,20,,"round(min(20,max(0,0.72*pow(max(1,[d]),0.48))))",1,,,,,,,,
+spell,spell/heal_bonus-spell-definition.json,heal_bonus_spell,"Bonus de soin",int,heal_bonus,0,7,,"round(min(7,max(0,0.5*pow(max(1,[d]),0.82))))",1,,,,,,,,
+spell,spell/hit_bonus-spell-definition.json,hit_bonus_spell,"Bonus de touche",int,touch,0,5,,"round(min(5,max(0,0.45*pow(max(1,abs([d])),0.78))))",1,,,,,,,,
 spell,spell/initiative-spell-definition.json,initiative_spell,Initiative,int,ini,0,5,,"round(min(5,max(0,0.38*pow(max(1,[d]),0.92))))",1,,,,,,,,
 spell,spell/intel-spell-definition.json,intel_spell,Intelligence,int,intel,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
-spell,spell/is_magic-spell-definition.json,is_magic_spell,Physique ou Wakfu,bool,is_magic,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
+spell,spell/is_magic-spell-definition.json,is_magic_spell,"Physique ou Wakfu",bool,is_magic,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
 spell,spell/is_passive-spell-definition.json,is_passive_spell,Passif,bool,is_passive,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
-spell,spell/jump_distance-spell-definition.json,jump_distance_spell,Distance de saut,int,,0,8,,"round(min(8,max(0,[d])))",1,,,,,,,,
-spell,spell/level-spell-definition.json,level_spell,Niveau du sort,int,level,1,200,,"{""1"":""floor([d]/10)"",""characteristic"":""d""}",0,,,,,,,,
-spell,spell/mastery_bonus-spell-definition.json,mastery_bonus_spell,Bonus maîtrise,int,mastery_bonus,0,6,,[d],1,,,,,,,,
-spell,spell/movement_distance-spell-definition.json,movement_distance_spell,Distance de déplacement,int,,0,8,,"round(min(8,max(0,[d])))",1,,,,,,,,
+spell,spell/jump_distance-spell-definition.json,jump_distance_spell,"Distance de saut",int,,0,8,,"round(min(8,max(0,[d])))",1,,,,,,,,
+spell,spell/level-spell-definition.json,level_spell,"Niveau du sort",int,level,1,200,,"{""1"":""floor([d]/10)"",""characteristic"":""d""}",0,,,,,,,,
+spell,spell/mastery_bonus-spell-definition.json,mastery_bonus_spell,"Bonus maîtrise",int,mastery_bonus,0,6,,[d],1,,,,,,,,
+spell,spell/movement_distance-spell-definition.json,movement_distance_spell,"Distance de déplacement",int,,0,8,,"round(min(8,max(0,[d])))",1,,,,,,,,
 spell,spell/movement_points-spell-definition.json,movement_points_spell,PM,int,pm,0,4,,"round(min(4,max(0,[d])))",1,,,,,,,,
-spell,spell/number_between_two_cast-spell-definition.json,number_between_two_cast_spell,Délai entre deux lancers,int,number_between_two_cast,0,63,,[d],1,,,,,,,,
+spell,spell/number_between_two_cast-spell-definition.json,number_between_two_cast_spell,"Délai entre deux lancers",int,number_between_two_cast,0,63,,[d],1,,,,,,,,
 spell,spell/power-spell-definition.json,power_spell,Puissance,int,powerful,0,30,,"round(min(30, max(1, 2 + 14 * pow(max(1,[d])/250, 0.5))))",1,,,,,,,,
-spell,spell/pull_distance-spell-definition.json,pull_distance_spell,Distance d’attirance,int,,0,5,,"round(min(5,max(0,[d])))",1,,,,,,,,
-spell,spell/push_damage_reduction-spell-definition.json,push_damage_reduction_spell,Résistance poussée,int,res_push,0,20,,"round(min(20,max(0,0.65*pow(max(1,[d]),0.48))))",1,,,,,,,,
-spell,spell/push_distance-spell-definition.json,push_distance_spell,Distance de repousse,int,,0,5,,"round(min(5,max(0,[d])))",1,,,,,,,,
+spell,spell/pull_distance-spell-definition.json,pull_distance_spell,"Distance d’attirance",int,,0,5,,"round(min(5,max(0,[d])))",1,,,,,,,,
+spell,spell/push_damage_reduction-spell-definition.json,push_damage_reduction_spell,"Résistance poussée",int,res_push,0,20,,"round(min(20,max(0,0.65*pow(max(1,[d]),0.48))))",1,,,,,,,,
+spell,spell/push_distance-spell-definition.json,push_distance_spell,"Distance de repousse",int,,0,5,,"round(min(5,max(0,[d])))",1,,,,,,,,
 spell,spell/range-spell-definition.json,range_spell,Portée,int,po,0,8,,"round(min(8,max(0,[d])))",1,,,,,,,,
-spell,spell/range_editable-spell-definition.json,range_editable_spell,Portée modifiable,bool,po_editable,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
-spell,spell/res_air-spell-definition.json,res_air_spell,Résistance Air,int,res_air,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
-spell,spell/res_eau-spell-definition.json,res_eau_spell,Résistance Eau,int,res_eau,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
-spell,spell/res_feu-spell-definition.json,res_feu_spell,Résistance Feu,int,res_feu,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
-spell,spell/res_neutre-spell-definition.json,res_neutre_spell,Résistance Neutre,int,res_neutre,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
-spell,spell/res_sagesse-spell-definition.json,res_sagesse_spell,Résistance Sagesse (élément),int,res_sagesse,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
-spell,spell/res_terre-spell-definition.json,res_terre_spell,Résistance Terre,int,res_terre,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
-spell,spell/res_vitalite-spell-definition.json,res_vitalite_spell,Résistance Vitalité (élément),int,res_vitalite,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
-spell,spell/resolution_mode-spell-definition.json,resolution_mode_spell,Mode de résolution,string,resolution_mode,,,,,0,,,,,,,,
-spell,spell/ritual_available-spell-definition.json,ritual_available_spell,Rituel disponible,bool,ritual_available,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
+spell,spell/range_editable-spell-definition.json,range_editable_spell,"Portée modifiable",bool,po_editable,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
+spell,spell/res_air-spell-definition.json,res_air_spell,"Résistance Air",int,res_air,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
+spell,spell/res_eau-spell-definition.json,res_eau_spell,"Résistance Eau",int,res_eau,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
+spell,spell/res_feu-spell-definition.json,res_feu_spell,"Résistance Feu",int,res_feu,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
+spell,spell/res_neutre-spell-definition.json,res_neutre_spell,"Résistance Neutre",int,res_neutre,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
+spell,spell/res_sagesse-spell-definition.json,res_sagesse_spell,"Résistance Sagesse (élément)",int,res_sagesse,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
+spell,spell/res_terre-spell-definition.json,res_terre_spell,"Résistance Terre",int,res_terre,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
+spell,spell/res_vitalite-spell-definition.json,res_vitalite_spell,"Résistance Vitalité (élément)",int,res_vitalite,0,50,,"round(min(50,max(0,0.55*pow(max(1,[d]),0.52))))",1,,,,,,,,
+spell,spell/resolution_mode-spell-definition.json,resolution_mode_spell,"Mode de résolution",string,resolution_mode,,,,,0,,,,,,,,
+spell,spell/ritual_available-spell-definition.json,ritual_available_spell,"Rituel disponible",bool,ritual_available,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
 spell,spell/sagesse-spell-definition.json,sagesse_spell,Sagesse,int,sagesse,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
-spell,spell/save_agility-spell-definition.json,save_agility_spell,Sauvegarde Agilité,int,save_agility,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
-spell,spell/save_chance-spell-definition.json,save_chance_spell,Sauvegarde Chance,int,save_chance,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
-spell,spell/save_characteristic_key-spell-definition.json,save_characteristic_key_spell,Caractéristique de sauvegarde,string,save_characteristic_key,,,,,0,,,,,,,,
-spell,spell/save_dc_formula-spell-definition.json,save_dc_formula_spell,Formule du DD,string,save_dc_formula,,,,,0,,,,,,,,
-spell,spell/save_intelligence-spell-definition.json,save_intelligence_spell,Sauvegarde Intelligence,int,save_intelligence,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
-spell,spell/save_strength-spell-definition.json,save_strength_spell,Sauvegarde Force,int,save_strength,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
-spell,spell/save_success_note-spell-definition.json,save_success_note_spell,Effet si sauvegarde réussie,string,save_success_note,,,,,0,,,,,,,,
-spell,spell/save_vitality-spell-definition.json,save_vitality_spell,Sauvegarde Vitalité,int,save_vitality,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
-spell,spell/save_wisdom-spell-definition.json,save_wisdom_spell,Sauvegarde Sagesse,int,save_wisdom,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
-spell,spell/sight_line-spell-definition.json,sight_line_spell,Ligne de vue,bool,sight_line,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
+spell,spell/save_agility-spell-definition.json,save_agility_spell,"Sauvegarde Agilité",int,save_agility,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
+spell,spell/save_chance-spell-definition.json,save_chance_spell,"Sauvegarde Chance",int,save_chance,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
+spell,spell/save_characteristic_key-spell-definition.json,save_characteristic_key_spell,"Caractéristique de sauvegarde",string,save_characteristic_key,,,,,0,,,,,,,,
+spell,spell/save_dc_formula-spell-definition.json,save_dc_formula_spell,"Formule du DD",string,save_dc_formula,,,,,0,,,,,,,,
+spell,spell/save_intelligence-spell-definition.json,save_intelligence_spell,"Sauvegarde Intelligence",int,save_intelligence,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
+spell,spell/save_strength-spell-definition.json,save_strength_spell,"Sauvegarde Force",int,save_strength,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
+spell,spell/save_success_note-spell-definition.json,save_success_note_spell,"Effet si sauvegarde réussie",string,save_success_note,,,,,0,,,,,,,,
+spell,spell/save_vitality-spell-definition.json,save_vitality_spell,"Sauvegarde Vitalité",int,save_vitality,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
+spell,spell/save_wisdom-spell-definition.json,save_wisdom_spell,"Sauvegarde Sagesse",int,save_wisdom,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
+spell,spell/sight_line-spell-definition.json,sight_line_spell,"Ligne de vue",bool,sight_line,0,1,,"min(1,max(0,round([d])))",0,,,,,,,,
 spell,spell/soin-spell-definition.json,soin_spell,Soin,int,,0,32,convertToDice,"round(min(32, max(1, 0.95 * pow(max(1,[d]), 0.475))))",1,,,,,,,,
-spell,spell/spell_range_max-spell-definition.json,spell_range_max_spell,Portée max,int,po_max,0,63,,[d],1,,,,,,,,
-spell,spell/spell_range_min-spell-definition.json,spell_range_min_spell,Portée min,int,po_min,0,63,,[d],1,,,,,,,,
-spell,spell/spell_type-spell-definition.json,spell_type_spell,Type de sort,string,spell_type,,,,,0,,,,,,,,
+spell,spell/spell_range_max-spell-definition.json,spell_range_max_spell,"Portée max",int,po_max,0,63,,[d],1,,,,,,,,
+spell,spell/spell_range_min-spell-definition.json,spell_range_min_spell,"Portée min",int,po_min,0,63,,[d],1,,,,,,,,
+spell,spell/spell_type-spell-definition.json,spell_type_spell,"Type de sort",string,spell_type,,,,,0,,,,,,,,
 spell,spell/strong-spell-definition.json,strong_spell,Force,int,strong,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
 spell,spell/summoning-spell-definition.json,summoning_spell,Invocations,int,invocation,0,3,,"round(min(3,max(0,0.55*pow(max(1,[d]),0.78))))",1,,,,,,,,
 spell,spell/tackle-spell-definition.json,tackle_spell,Tacle,int,tacle,0,10,,"round(min(10,max(0,0.55*pow(max(1,[d]),0.45))))",1,,,,,,,,
-spell,spell/teleport_distance-spell-definition.json,teleport_distance_spell,Distance de téléportation,int,,0,12,,"round(min(12,max(0,[d])))",1,,,,,,,,
+spell,spell/teleport_distance-spell-definition.json,teleport_distance_spell,"Distance de téléportation",int,,0,12,,"round(min(12,max(0,[d])))",1,,,,,,,,
 spell,spell/vitality-spell-definition.json,vitality_spell,Vitalité,int,vitality,0,8,,"round(min(8,max(0,0.55*pow(max(1,[d]),0.42))))",1,,,,,,,,
-spell,spell/vol_vie-spell-definition.json,vol_vie_spell,Vol de vie,int,,0,24,convertToDice,"round(min(24, max(1, 0.75 * pow(max(1,[d]), 0.475))))",1,,,,,,,,
-spell,spell/wakfu_reserve-spell-definition.json,wakfu_reserve_spell,Réserve Wakfu,int,wakfu_reserve,0,6,,[d],1,,,,,,,,
-object,object/acrobatics-object-definition.json,acrobatics_object,Bonus d'Acrobaties,int,,0,5,,,1,,,,,,,,
-object,object/acrobatics_passive-object-definition.json,acrobatics_passive_object,Bonus passif (Acrobaties),int,,0,2,,[d],1,,,,,,,,
-object,object/action_points-object-definition.json,action_points_object,Bonus de points d'action,int,,0,5,,[d],1,object_equipment_effects,characteristic_id=1,0,1,"1→1, 40→1, 80→1, 120→1, 160→1, 200→1",0.0,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/agility-object-definition.json,agility_object,Bonus d'agilité,int,,0,8,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=14,8,46,"1→8, 40→15, 80→30, 120→36, 160→42, 200→46",475.0,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/animal_handling-object-definition.json,animal_handling_object,Bonus de Dressage,int,,0,5,,,1,,,,,,,,
-object,object/animal_handling_passive-object-definition.json,animal_handling_passive_object,Bonus passif (Dressage),int,,0,2,,[d],1,,,,,,,,
-object,object/arcana-object-definition.json,arcana_object,Bonus d'Arcanes,int,,0,5,,,1,,,,,,,,
-object,object/arcana_passive-object-definition.json,arcana_passive_object,Bonus passif (Arcanes),int,,0,2,,[d],1,,,,,,,,
-object,object/armor_class-object-definition.json,armor_class_object,Bonus de classe d'armure,int,,0,5,,[d],1,,,,,,,,
-object,object/athletics-object-definition.json,athletics_object,Bonus d'Athlétisme,int,,0,5,,,1,,,,,,,,
-object,object/athletics_passive-object-definition.json,athletics_passive_object,Bonus passif (Athlétisme),int,,0,2,,[d],1,,,,,,,,
-object,object/chance-object-definition.json,chance_object,Bonus de chance,int,,0,8,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=13,7,50,"1→7, 40→15, 80→29, 120→38, 160→43, 200→50",614.3,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/critical_hit-object-definition.json,critical_hit_object,Bonus de coup critique,int,,0,3,,floor(0.0802 * [d] + 0.0445),1,,,,,,,,
-object,object/deception-object-definition.json,deception_object,Bonus de Supercherie,int,,0,5,,,1,,,,,,,,
-object,object/deception_passive-object-definition.json,deception_passive_object,Bonus passif (Supercherie),int,,0,2,,[d],1,,,,,,,,
+spell,spell/vol_vie-spell-definition.json,vol_vie_spell,"Vol de vie",int,,0,24,convertToDice,"round(min(24, max(1, 0.75 * pow(max(1,[d]), 0.475))))",1,,,,,,,,
+spell,spell/wakfu_reserve-spell-definition.json,wakfu_reserve_spell,"Réserve Wakfu",int,wakfu_reserve,0,6,,[d],1,,,,,,,,
+object,object/acrobatics-object-definition.json,acrobatics_object,"Bonus d'Acrobaties",int,,0,5,,,1,,,,,,,,
+object,object/acrobatics_passive-object-definition.json,acrobatics_passive_object,"Bonus passif (Acrobaties)",int,,0,2,,[d],1,,,,,,,,
+object,object/action_points-object-definition.json,action_points_object,"Bonus de points d'action",int,,0,5,,[d],1,object_equipment_effects,characteristic_id=1,0,1,"1→1, 40→1, 80→1, 120→1, 160→1, 200→1",0.0,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/agility-object-definition.json,agility_object,"Bonus d'agilité",int,,0,8,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=14,8,46,"1→8, 40→15, 80→30, 120→36, 160→42, 200→46",475.0,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/animal_handling-object-definition.json,animal_handling_object,"Bonus de Dressage",int,,0,5,,,1,,,,,,,,
+object,object/animal_handling_passive-object-definition.json,animal_handling_passive_object,"Bonus passif (Dressage)",int,,0,2,,[d],1,,,,,,,,
+object,object/arcana-object-definition.json,arcana_object,"Bonus d'Arcanes",int,,0,5,,,1,,,,,,,,
+object,object/arcana_passive-object-definition.json,arcana_passive_object,"Bonus passif (Arcanes)",int,,0,2,,[d],1,,,,,,,,
+object,object/armor_class-object-definition.json,armor_class_object,"Bonus de classe d'armure",int,,0,5,,[d],1,,,,,,,,
+object,object/athletics-object-definition.json,athletics_object,"Bonus d'Athlétisme",int,,0,5,,,1,,,,,,,,
+object,object/athletics_passive-object-definition.json,athletics_passive_object,"Bonus passif (Athlétisme)",int,,0,2,,[d],1,,,,,,,,
+object,object/chance-object-definition.json,chance_object,"Bonus de chance",int,,0,8,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=13,7,50,"1→7, 40→15, 80→29, 120→38, 160→43, 200→50",614.3,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/critical_hit-object-definition.json,critical_hit_object,"Bonus de coup critique",int,,0,3,,"floor(0.0802 * [d] + 0.0445)",1,,,,,,,,
+object,object/deception-object-definition.json,deception_object,"Bonus de Supercherie",int,,0,5,,,1,,,,,,,,
+object,object/deception_passive-object-definition.json,deception_passive_object,"Bonus passif (Supercherie)",int,,0,2,,[d],1,,,,,,,,
 object,object/description-object-definition.json,description_object,Description,string,description,,,,,0,,,,,,,,
-object,object/dodge-object-definition.json,dodge_object,Bonus de fuite,int,,0,10,,"floor(1.1 + 2* pow(([d]-1)/12, 0.6))",1,,,,,,,,
-object,object/dodge_action_points-object-definition.json,dodge_action_points_object,Bonus d'esquive aux points d'action,int,,0,3,,floor(0.1202 * [d] + 0.5109),1,object_equipment_effects,characteristic_id=27,-2,23,"1→23, 40→3, 80→4, 120→2, 160→7, 200→7",-69.6,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/dodge_movement_points-object-definition.json,dodge_movement_points_object,Bonus d'esquive aux points de mouvement,int,,0,3,,floor(0.1202 * [d] + 0.5109),1,object_equipment_effects,characteristic_id=28,-5,24,"1→2, 40→4, 80→4, 120→6, 160→5, 200→1",-50.0,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/failure_hit-object-definition.json,failure_hit_object,Bonus d'échec critique,int,,0,3,,floor(0.1244 * [d] + 0.4425),1,,,,,,,,
-object,object/fixed_damage_air-object-definition.json,fixed_damage_air_object,Bonus de dégâts fixes (Air),int,,0,10,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
-object,object/fixed_damage_earth-object-definition.json,fixed_damage_earth_object,Bonus de dégâts fixes (Terre),int,,0,10,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
-object,object/fixed_damage_fire-object-definition.json,fixed_damage_fire_object,Bonus de dégâts fixes (Feu),int,,0,10,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
-object,object/fixed_damage_multiple-object-definition.json,fixed_damage_multiple_object,Bonus de dégâts fixes (multi-éléments),int,,0,5,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
-object,object/fixed_damage_neutral-object-definition.json,fixed_damage_neutral_object,Bonus de dégâts fixes (Neutre),int,,0,10,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
-object,object/fixed_damage_water-object-definition.json,fixed_damage_water_object,Bonus de dégâts fixes (Eau),int,,0,10,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
-object,object/fixed_resistance_air-object-definition.json,fixed_resistance_air_object,Bonus de résistance fixe (Air),int,,0,10,,"floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",1,object_equipment_effects,characteristic_id=57,3,26,"1→26, 40→3, 80→5, 120→10, 160→9, 200→15",-42.3,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/fixed_resistance_earth-object-definition.json,fixed_resistance_earth_object,Bonus de résistance fixe (Terre),int,,0,10,,"floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",1,object_equipment_effects,characteristic_id=54,3,26,"1→26, 40→3, 80→5, 120→10, 160→8, 200→14",-46.2,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/fixed_resistance_fire-object-definition.json,fixed_resistance_fire_object,Bonus de résistance fixe (Feu),int,,0,10,,"floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",1,object_equipment_effects,characteristic_id=55,3,26,"1→26, 40→3, 80→5, 120→11, 160→8, 200→15",-42.3,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/fixed_resistance_neutral-object-definition.json,fixed_resistance_neutral_object,Bonus de résistance fixe (Neutre),int,,0,10,,"floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",1,,,,,,,,
-object,object/fixed_resistance_water-object-definition.json,fixed_resistance_water_object,Bonus de résistance fixe (Eau),int,,0,10,,"floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",1,object_equipment_effects,characteristic_id=56,3,26,"1→26, 40→3, 80→5, 120→10, 160→8, 200→16",-38.5,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/heal_bonus-object-definition.json,heal_bonus_object,Bonus de soins,int,,0,5,,floor(0.2 * [d]),1,,,,,,,,
-object,object/history-object-definition.json,history_object,Bonus d'Histoire,int,,0,5,,,1,,,,,,,,
-object,object/history_passive-object-definition.json,history_passive_object,Bonus passif (Histoire),int,,0,2,,[d],1,,,,,,,,
-object,object/hit_bonus-object-definition.json,hit_bonus_object,Bonus de touche,int,,0,5,,[d],1,,,,,,,,
-object,object/initiative-object-definition.json,initiative_object,Bonus d'initiative,int,,0,∞,,"floor(0.1643 * pow([d], 0.5457))",1,object_equipment_effects,characteristic_id=44,12,386,"1→12, 40→88, 80→107, 120→240, 160→232, 200→198",1550.0,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/insight-object-definition.json,insight_object,Bonus de Perspicacité,int,,0,5,,,1,,,,,,,,
-object,object/insight_passive-object-definition.json,insight_passive_object,Bonus passif (Perspicacité),int,,0,2,,[d],1,,,,,,,,
-object,object/intelligence-object-definition.json,intelligence_object,Bonus d'intelligence,int,,0,8,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=15,7,44,"1→7, 40→15, 80→29, 120→38, 160→40, 200→44",528.6,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/intimidation-object-definition.json,intimidation_object,Bonus d'Intimidation,int,,0,5,,,1,,,,,,,,
-object,object/intimidation_passive-object-definition.json,intimidation_passive_object,Bonus passif (Intimidation),int,,0,2,,[d],1,,,,,,,,
-object,object/investigation-object-definition.json,investigation_object,Bonus d'Investigation,int,,0,5,,,1,,,,,,,,
-object,object/investigation_passive-object-definition.json,investigation_passive_object,Bonus passif (Investigation),int,,0,2,,[d],1,,,,,,,,
-object,object/level-object-definition.json,level_object,Niveau,string,level,1,20,,floor([d]/10),0,object_equipment_effects,characteristic_id=5,3,200,"1→3, 40→43, 80→83, 120→125, 160→164, 200→200",6566.7,K: 1→1,2026-02-12T13:37:59+00:00
-object,object/life_points_max-object-definition.json,life_points_max_object,Bonus de points de vie maximum,int,,0,30,,"floor(-0.4+ 13.8587 * pow(([d]-10)/340, 0.8))",1,object_equipment_effects,characteristic_id=0,-75,7680,"1→3, 40→7108, 80→7626, 120→15, 160→15, 200→47",1466.7,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/medicine-object-definition.json,medicine_object,Bonus de Médecine,int,,0,5,,,1,,,,,,,,
-object,object/medicine_passive-object-definition.json,medicine_passive_object,Bonus passif (Médecine),int,,0,2,,[d],1,,,,,,,,
-object,object/movement_points-object-definition.json,movement_points_object,Bonus de points de mouvement,int,,0,3,,[d],1,object_equipment_effects,characteristic_id=23,0,1,"1→0, 40→1, 80→1, 120→1, 160→1, 200→1",,K: 1→0,2026-02-12T13:37:59+00:00
+object,object/dodge-object-definition.json,dodge_object,"Bonus de fuite",int,,0,10,,"floor(1.1 + 2* pow(([d]-1)/12, 0.6))",1,,,,,,,,
+object,object/dodge_action_points-object-definition.json,dodge_action_points_object,"Bonus d'esquive aux points d'action",int,,0,3,,"floor(0.1202 * [d] + 0.5109)",1,object_equipment_effects,characteristic_id=27,-2,23,"1→23, 40→3, 80→4, 120→2, 160→7, 200→7",-69.6,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/dodge_movement_points-object-definition.json,dodge_movement_points_object,"Bonus d'esquive aux points de mouvement",int,,0,3,,"floor(0.1202 * [d] + 0.5109)",1,object_equipment_effects,characteristic_id=28,-5,24,"1→2, 40→4, 80→4, 120→6, 160→5, 200→1",-50.0,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/failure_hit-object-definition.json,failure_hit_object,"Bonus d'échec critique",int,,0,3,,"floor(0.1244 * [d] + 0.4425)",1,,,,,,,,
+object,object/fixed_damage_air-object-definition.json,fixed_damage_air_object,"Bonus de dégâts fixes (Air)",int,,0,10,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
+object,object/fixed_damage_earth-object-definition.json,fixed_damage_earth_object,"Bonus de dégâts fixes (Terre)",int,,0,10,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
+object,object/fixed_damage_fire-object-definition.json,fixed_damage_fire_object,"Bonus de dégâts fixes (Feu)",int,,0,10,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
+object,object/fixed_damage_multiple-object-definition.json,fixed_damage_multiple_object,"Bonus de dégâts fixes (multi-éléments)",int,,0,5,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
+object,object/fixed_damage_neutral-object-definition.json,fixed_damage_neutral_object,"Bonus de dégâts fixes (Neutre)",int,,0,10,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
+object,object/fixed_damage_water-object-definition.json,fixed_damage_water_object,"Bonus de dégâts fixes (Eau)",int,,0,10,,"floor(-0.1 + 1.78* pow(([d]-1)/4, 0.7))",1,,,,,,,,
+object,object/fixed_resistance_air-object-definition.json,fixed_resistance_air_object,"Bonus de résistance fixe (Air)",int,,0,10,,"floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",1,object_equipment_effects,characteristic_id=57,3,26,"1→26, 40→3, 80→5, 120→10, 160→9, 200→15",-42.3,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/fixed_resistance_earth-object-definition.json,fixed_resistance_earth_object,"Bonus de résistance fixe (Terre)",int,,0,10,,"floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",1,object_equipment_effects,characteristic_id=54,3,26,"1→26, 40→3, 80→5, 120→10, 160→8, 200→14",-46.2,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/fixed_resistance_fire-object-definition.json,fixed_resistance_fire_object,"Bonus de résistance fixe (Feu)",int,,0,10,,"floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",1,object_equipment_effects,characteristic_id=55,3,26,"1→26, 40→3, 80→5, 120→11, 160→8, 200→15",-42.3,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/fixed_resistance_neutral-object-definition.json,fixed_resistance_neutral_object,"Bonus de résistance fixe (Neutre)",int,,0,10,,"floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",1,,,,,,,,
+object,object/fixed_resistance_water-object-definition.json,fixed_resistance_water_object,"Bonus de résistance fixe (Eau)",int,,0,10,,"floor(1.1361 + 3.5* pow(([d]-1)/9, 0.6))",1,object_equipment_effects,characteristic_id=56,3,26,"1→26, 40→3, 80→5, 120→10, 160→8, 200→16",-38.5,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/heal_bonus-object-definition.json,heal_bonus_object,"Bonus de soins",int,,0,5,,"floor(0.2 * [d])",1,,,,,,,,
+object,object/history-object-definition.json,history_object,"Bonus d'Histoire",int,,0,5,,,1,,,,,,,,
+object,object/history_passive-object-definition.json,history_passive_object,"Bonus passif (Histoire)",int,,0,2,,[d],1,,,,,,,,
+object,object/hit_bonus-object-definition.json,hit_bonus_object,"Bonus de touche",int,,0,5,,[d],1,,,,,,,,
+object,object/initiative-object-definition.json,initiative_object,"Bonus d'initiative",int,,0,∞,,"floor(0.1643 * pow([d], 0.5457))",1,object_equipment_effects,characteristic_id=44,12,386,"1→12, 40→88, 80→107, 120→240, 160→232, 200→198",1550.0,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/insight-object-definition.json,insight_object,"Bonus de Perspicacité",int,,0,5,,,1,,,,,,,,
+object,object/insight_passive-object-definition.json,insight_passive_object,"Bonus passif (Perspicacité)",int,,0,2,,[d],1,,,,,,,,
+object,object/intelligence-object-definition.json,intelligence_object,"Bonus d'intelligence",int,,0,8,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=15,7,44,"1→7, 40→15, 80→29, 120→38, 160→40, 200→44",528.6,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/intimidation-object-definition.json,intimidation_object,"Bonus d'Intimidation",int,,0,5,,,1,,,,,,,,
+object,object/intimidation_passive-object-definition.json,intimidation_passive_object,"Bonus passif (Intimidation)",int,,0,2,,[d],1,,,,,,,,
+object,object/investigation-object-definition.json,investigation_object,"Bonus d'Investigation",int,,0,5,,,1,,,,,,,,
+object,object/investigation_passive-object-definition.json,investigation_passive_object,"Bonus passif (Investigation)",int,,0,2,,[d],1,,,,,,,,
+object,object/level-object-definition.json,level_object,Niveau,string,level,1,20,,floor([d]/10),0,object_equipment_effects,characteristic_id=5,3,200,"1→3, 40→43, 80→83, 120→125, 160→164, 200→200",6566.7,"K: 1→1",2026-02-12T13:37:59+00:00
+object,object/life_points_max-object-definition.json,life_points_max_object,"Bonus de points de vie maximum",int,,0,30,,"floor(-0.4+ 13.8587 * pow(([d]-10)/340, 0.8))",1,object_equipment_effects,characteristic_id=0,-75,7680,"1→3, 40→7108, 80→7626, 120→15, 160→15, 200→47",1466.7,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/medicine-object-definition.json,medicine_object,"Bonus de Médecine",int,,0,5,,,1,,,,,,,,
+object,object/medicine_passive-object-definition.json,medicine_passive_object,"Bonus passif (Médecine)",int,,0,2,,[d],1,,,,,,,,
+object,object/movement_points-object-definition.json,movement_points_object,"Bonus de points de mouvement",int,,0,3,,[d],1,object_equipment_effects,characteristic_id=23,0,1,"1→0, 40→1, 80→1, 120→1, 160→1, 200→1",,"K: 1→0",2026-02-12T13:37:59+00:00
 object,object/name-object-definition.json,name_object,Nom,string,name,,,,,0,,,,,,,,
-object,object/nature-object-definition.json,nature_object,Bonus de Nature,int,,0,5,,,1,,,,,,,,
-object,object/nature_passive-object-definition.json,nature_passive_object,Bonus passif (Nature),int,,0,2,,[d],1,,,,,,,,
-object,object/perception-object-definition.json,perception_object,Bonus de Perception,int,,0,5,,,1,,,,,,,,
-object,object/perception_passive-object-definition.json,perception_passive_object,Bonus passif (Perception),int,,0,2,,[d],1,,,,,,,,
-object,object/performance-object-definition.json,performance_object,Bonus de Représentation,int,,0,5,,,1,,,,,,,,
-object,object/performance_passive-object-definition.json,performance_passive_object,Bonus passif (Représentation),int,,0,2,,[d],1,,,,,,,,
-object,object/persuasion-object-definition.json,persuasion_object,Bonus de Persuasion,int,,0,5,,,1,,,,,,,,
-object,object/persuasion_passive-object-definition.json,persuasion_passive_object,Bonus passif (Persuasion),int,,0,2,,[d],1,,,,,,,,
+object,object/nature-object-definition.json,nature_object,"Bonus de Nature",int,,0,5,,,1,,,,,,,,
+object,object/nature_passive-object-definition.json,nature_passive_object,"Bonus passif (Nature)",int,,0,2,,[d],1,,,,,,,,
+object,object/perception-object-definition.json,perception_object,"Bonus de Perception",int,,0,5,,,1,,,,,,,,
+object,object/perception_passive-object-definition.json,perception_passive_object,"Bonus passif (Perception)",int,,0,2,,[d],1,,,,,,,,
+object,object/performance-object-definition.json,performance_object,"Bonus de Représentation",int,,0,5,,,1,,,,,,,,
+object,object/performance_passive-object-definition.json,performance_passive_object,"Bonus passif (Représentation)",int,,0,2,,[d],1,,,,,,,,
+object,object/persuasion-object-definition.json,persuasion_object,"Bonus de Persuasion",int,,0,5,,,1,,,,,,,,
+object,object/persuasion_passive-object-definition.json,persuasion_passive_object,"Bonus passif (Persuasion)",int,,0,2,,[d],1,,,,,,,,
 object,object/price-object-definition.json,price_object,Prix,string,price,0,,,[d],0,,,,,,,,
-object,object/range-object-definition.json,range_object,Bonus de portée,int,,0,6,,[d],1,,,,,,,,
+object,object/range-object-definition.json,range_object,"Bonus de portée",int,,0,6,,[d],1,,,,,,,,
 object,object/rarity-object-definition.json,rarity_object,Rareté,int,rarity,0,5,,"{""0"":""0"",""2"":""0"",""7"":""1"",""15"":""2"",""20"":""3"",""characteristic"":""level""}",0,,,,,,,,
-object,object/religion-object-definition.json,religion_object,Bonus de Religion,int,,0,5,,,1,,,,,,,,
-object,object/religion_passive-object-definition.json,religion_passive_object,Bonus passif (Religion),int,,0,2,,[d],1,,,,,,,,
+object,object/religion-object-definition.json,religion_object,"Bonus de Religion",int,,0,5,,,1,,,,,,,,
+object,object/religion_passive-object-definition.json,religion_passive_object,"Bonus passif (Religion)",int,,0,2,,[d],1,,,,,,,,
 object,object/resistance_percent_tier_air-object-definition.json,resistance_percent_tier_air_object,"Bonus de résistance en % (Air, palier)",int,,0,2,,"{""characteristic"":""d"",""0"":0,""80"":1,""95"":2}",1,,,,,,,,
 object,object/resistance_percent_tier_earth-object-definition.json,resistance_percent_tier_earth_object,"Bonus de résistance en % (Terre, palier)",int,,0,2,,"{""characteristic"":""d"",""0"":0,""80"":1,""95"":2}",1,,,,,,,,
 object,object/resistance_percent_tier_fire-object-definition.json,resistance_percent_tier_fire_object,"Bonus de résistance en % (Feu, palier)",int,,0,2,,"{""characteristic"":""d"",""0"":0,""80"":1,""95"":2}",1,,,,,,,,
 object,object/resistance_percent_tier_neutral-object-definition.json,resistance_percent_tier_neutral_object,"Bonus de résistance en % (Neutre, palier)",int,,0,2,,"{""characteristic"":""d"",""0"":0,""80"":1,""95"":2}",1,,,,,,,,
 object,object/resistance_percent_tier_water-object-definition.json,resistance_percent_tier_water_object,"Bonus de résistance en % (Eau, palier)",int,,0,2,,"{""characteristic"":""d"",""0"":0,""80"":1,""95"":2}",1,,,,,,,,
-object,object/save_agility-object-definition.json,save_agility_object,Bonus de sauvegarde (Agilité),int,,0,3,,[d],1,,,,,,,,
-object,object/save_chance-object-definition.json,save_chance_object,Bonus de sauvegarde (Chance),int,,0,3,,[d],1,,,,,,,,
-object,object/save_intelligence-object-definition.json,save_intelligence_object,Bonus de sauvegarde (Intelligence),int,,0,3,,[d],1,,,,,,,,
-object,object/save_strength-object-definition.json,save_strength_object,Bonus de sauvegarde (Force),int,,0,3,,[d],1,,,,,,,,
-object,object/save_vitality-object-definition.json,save_vitality_object,Bonus de sauvegarde (Vitalité),int,,0,3,,[d],1,,,,,,,,
-object,object/save_wisdom-object-definition.json,save_wisdom_object,Bonus de sauvegarde (Sagesse),int,,0,3,,[d],1,,,,,,,,
-object,object/sleight_of_hand-object-definition.json,sleight_of_hand_object,Bonus d'Escamotage,int,,0,5,,,1,,,,,,,,
-object,object/sleight_of_hand_passive-object-definition.json,sleight_of_hand_passive_object,Bonus passif (Escamotage),int,,0,2,,[d],1,,,,,,,,
-object,object/stealth-object-definition.json,stealth_object,Bonus de Discrétion,int,,0,5,,,1,,,,,,,,
-object,object/stealth_passive-object-definition.json,stealth_passive_object,Bonus passif (Discrétion),int,,0,2,,[d],1,,,,,,,,
-object,object/strength-object-definition.json,strength_object,Bonus de force,int,,0,8,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=10,7,48,"1→7, 40→16, 80→24, 120→38, 160→42, 200→48",585.7,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/summoning-object-definition.json,summoning_object,Bonus au nombre d'invocations,int,,0,5,,[d],1,object_equipment_effects,characteristic_id=26,1,2,"1→1, 40→1, 80→1, 120→1, 160→1, 200→1",0.0,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/survival-object-definition.json,survival_object,Bonus de Survie,int,,0,5,,,1,,,,,,,,
-object,object/survival_passive-object-definition.json,survival_passive_object,Bonus passif (Survie),int,,0,2,,[d],1,,,,,,,,
-object,object/tackle-object-definition.json,tackle_object,Bonus de tacle,int,,0,10,,"floor(1.1 + 2* pow(([d]-1)/12, 0.6))",1,,,,,,,,
-object,object/vitality-object-definition.json,vitality_object,Bonus de vitalité,int,,0,6,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=11,16,307,"1→16, 40→31, 80→61, 120→136, 160→200, 200→307",1818.8,K: 1→0,2026-02-12T13:37:59+00:00
-object,object/wakfu_recharge-object-definition.json,wakfu_recharge_object,Bonus de recharge de réserve Wakfu,int,,0,3,,[d],1,,,,,,,,
-object,object/weight-object-definition.json,weight_object,Poids,int,weight,0,,,floor([d] / 2),0,object_equipment_effects,characteristic_id=40,114,698,"1→114, 40→151, 80→233, 120→389, 160→500, 200→500",338.6,,2026-02-12T13:37:59+00:00
-object,object/wisdom-object-definition.json,wisdom_object,Bonus de sagesse,int,,0,6,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=12,5,36,"1→21, 40→11, 80→19, 120→27, 160→33, 200→35",66.7,K: 1→0,2026-02-12T13:37:59+00:00
+object,object/save_agility-object-definition.json,save_agility_object,"Bonus de sauvegarde (Agilité)",int,,0,3,,[d],1,,,,,,,,
+object,object/save_chance-object-definition.json,save_chance_object,"Bonus de sauvegarde (Chance)",int,,0,3,,[d],1,,,,,,,,
+object,object/save_intelligence-object-definition.json,save_intelligence_object,"Bonus de sauvegarde (Intelligence)",int,,0,3,,[d],1,,,,,,,,
+object,object/save_strength-object-definition.json,save_strength_object,"Bonus de sauvegarde (Force)",int,,0,3,,[d],1,,,,,,,,
+object,object/save_vitality-object-definition.json,save_vitality_object,"Bonus de sauvegarde (Vitalité)",int,,0,3,,[d],1,,,,,,,,
+object,object/save_wisdom-object-definition.json,save_wisdom_object,"Bonus de sauvegarde (Sagesse)",int,,0,3,,[d],1,,,,,,,,
+object,object/sleight_of_hand-object-definition.json,sleight_of_hand_object,"Bonus d'Escamotage",int,,0,5,,,1,,,,,,,,
+object,object/sleight_of_hand_passive-object-definition.json,sleight_of_hand_passive_object,"Bonus passif (Escamotage)",int,,0,2,,[d],1,,,,,,,,
+object,object/stealth-object-definition.json,stealth_object,"Bonus de Discrétion",int,,0,5,,,1,,,,,,,,
+object,object/stealth_passive-object-definition.json,stealth_passive_object,"Bonus passif (Discrétion)",int,,0,2,,[d],1,,,,,,,,
+object,object/strength-object-definition.json,strength_object,"Bonus de force",int,,0,8,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=10,7,48,"1→7, 40→16, 80→24, 120→38, 160→42, 200→48",585.7,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/summoning-object-definition.json,summoning_object,"Bonus au nombre d'invocations",int,,0,5,,[d],1,object_equipment_effects,characteristic_id=26,1,2,"1→1, 40→1, 80→1, 120→1, 160→1, 200→1",0.0,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/survival-object-definition.json,survival_object,"Bonus de Survie",int,,0,5,,,1,,,,,,,,
+object,object/survival_passive-object-definition.json,survival_passive_object,"Bonus passif (Survie)",int,,0,2,,[d],1,,,,,,,,
+object,object/tackle-object-definition.json,tackle_object,"Bonus de tacle",int,,0,10,,"floor(1.1 + 2* pow(([d]-1)/12, 0.6))",1,,,,,,,,
+object,object/vitality-object-definition.json,vitality_object,"Bonus de vitalité",int,,0,6,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=11,16,307,"1→16, 40→31, 80→61, 120→136, 160→200, 200→307",1818.8,"K: 1→0",2026-02-12T13:37:59+00:00
+object,object/wakfu_recharge-object-definition.json,wakfu_recharge_object,"Bonus de recharge de réserve Wakfu",int,,0,3,,[d],1,,,,,,,,
+object,object/weight-object-definition.json,weight_object,Poids,int,weight,0,,,"floor([d] / 2)",0,object_equipment_effects,characteristic_id=40,114,698,"1→114, 40→151, 80→233, 120→389, 160→500, 200→500",338.6,,2026-02-12T13:37:59+00:00
+object,object/wisdom-object-definition.json,wisdom_object,"Bonus de sagesse",int,,0,6,,"floor(0.0408 * pow([d], 0.9412))",1,object_equipment_effects,characteristic_id=12,5,36,"1→21, 40→11, 80→19, 120→27, 160→33, 200→35",66.7,"K: 1→0",2026-02-12T13:37:59+00:00
 creature,creature/acrobatics-creature-definition.json,acrobatics_creature,Acrobaties,int,,-2,24,,,0,,,,,,,,
-creature,creature/acrobatics_mastery-creature-definition.json,acrobatics_mastery_creature,Acrobaties (palier maîtrise),int,acrobatie_mastery,0,2,,,1,,,,,,,,
-creature,creature/acrobatics_passive-creature-definition.json,acrobatics_passive_creature,Acrobaties (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/action_points-creature-definition.json,action_points_creature,Points d'action,int,pa,6,12,,[d],1,creature_monster_grades,actionPoints,3,12,"1→3, 40→7, 80→8, 120→9, 160→11, 200→11",266.7,K: 1→6,2026-02-12T13:38:29+00:00
-creature,creature/agility-creature-definition.json,agility_creature,Agilité,int,agi,6,24,,[d],1,creature_monster_grades,agility,44,641,"1→44, 40→231, 80→260, 120→449, 160→641, 200→622",1313.6,K: 1→8,2026-02-12T13:38:29+00:00
+creature,creature/acrobatics_mastery-creature-definition.json,acrobatics_mastery_creature,"Acrobaties (palier maîtrise)",int,acrobatie_mastery,0,2,,,1,,,,,,,,
+creature,creature/acrobatics_passive-creature-definition.json,acrobatics_passive_creature,"Acrobaties (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/action_points-creature-definition.json,action_points_creature,"Points d'action",int,pa,6,12,,[d],1,creature_monster_grades,actionPoints,3,12,"1→3, 40→7, 80→8, 120→9, 160→11, 200→11",266.7,"K: 1→6",2026-02-12T13:38:29+00:00
+creature,creature/agility-creature-definition.json,agility_creature,Agilité,int,agi,6,24,,[d],1,creature_monster_grades,agility,44,641,"1→44, 40→231, 80→260, 120→449, 160→641, 200→622",1313.6,"K: 1→8",2026-02-12T13:38:29+00:00
 creature,creature/animal_handling-creature-definition.json,animal_handling_creature,Dressage,int,,-2,24,,,0,,,,,,,,
-creature,creature/animal_handling_mastery-creature-definition.json,animal_handling_mastery_creature,Dressage (palier maîtrise),int,dressage_mastery,0,2,,,1,,,,,,,,
-creature,creature/animal_handling_passive-creature-definition.json,animal_handling_passive_creature,Dressage (passif),int,,8,34,,,0,,,,,,,,
+creature,creature/animal_handling_mastery-creature-definition.json,animal_handling_mastery_creature,"Dressage (palier maîtrise)",int,dressage_mastery,0,2,,,1,,,,,,,,
+creature,creature/animal_handling_passive-creature-definition.json,animal_handling_passive_creature,"Dressage (passif)",int,,8,34,,,0,,,,,,,,
 creature,creature/arcana-creature-definition.json,arcana_creature,Arcanes,int,,-2,24,,,0,,,,,,,,
-creature,creature/arcana_mastery-creature-definition.json,arcana_mastery_creature,Arcanes (palier maîtrise),int,arcane_mastery,0,2,,,1,,,,,,,,
-creature,creature/arcana_passive-creature-definition.json,arcana_passive_creature,Arcanes (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/armor_class-creature-definition.json,armor_class_creature,Classe d'armure,int,ca,0,22,,10+floor(([d]-10)/2),1,creature_monster_grades,ca_creature,,,,,K: 1→10,2026-02-12T13:38:29+00:00
+creature,creature/arcana_mastery-creature-definition.json,arcana_mastery_creature,"Arcanes (palier maîtrise)",int,arcane_mastery,0,2,,,1,,,,,,,,
+creature,creature/arcana_passive-creature-definition.json,arcana_passive_creature,"Arcanes (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/armor_class-creature-definition.json,armor_class_creature,"Classe d'armure",int,ca,0,22,,10+floor(([d]-10)/2),1,creature_monster_grades,ca_creature,,,,,"K: 1→10",2026-02-12T13:38:29+00:00
 creature,creature/athletics-creature-definition.json,athletics_creature,Athlétisme,int,,-2,24,,,0,,,,,,,,
-creature,creature/athletics_mastery-creature-definition.json,athletics_mastery_creature,Athlétisme (palier maîtrise),int,athletisme_mastery,0,2,,,1,,,,,,,,
-creature,creature/athletics_passive-creature-definition.json,athletics_passive_creature,Athlétisme (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/chance-creature-definition.json,chance_creature,Chance,int,chance,6,24,,[d],1,creature_monster_grades,chance,34,717,"1→34, 40→222, 80→192, 120→361, 160→717, 200→607",1685.3,K: 1→8,2026-02-12T13:38:29+00:00
-creature,creature/critical_hit-creature-definition.json,critical_hit_creature,Bonus de critique,int,critical_hit,0,3,,[d],1,,,,,,,,
+creature,creature/athletics_mastery-creature-definition.json,athletics_mastery_creature,"Athlétisme (palier maîtrise)",int,athletisme_mastery,0,2,,,1,,,,,,,,
+creature,creature/athletics_passive-creature-definition.json,athletics_passive_creature,"Athlétisme (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/chance-creature-definition.json,chance_creature,Chance,int,chance,6,24,,[d],1,creature_monster_grades,chance,34,717,"1→34, 40→222, 80→192, 120→361, 160→717, 200→607",1685.3,"K: 1→8",2026-02-12T13:38:29+00:00
+creature,creature/critical_hit-creature-definition.json,critical_hit_creature,"Bonus de critique",int,critical_hit,0,3,,[d],1,,,,,,,,
 creature,creature/deception-creature-definition.json,deception_creature,Supercherie,int,,-2,24,,,0,,,,,,,,
-creature,creature/deception_mastery-creature-definition.json,deception_mastery_creature,Supercherie (palier maîtrise),int,supercherie_mastery,0,2,,,1,,,,,,,,
-creature,creature/deception_passive-creature-definition.json,deception_passive_creature,Supercherie (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/dodge-creature-definition.json,dodge_creature,Fuite,int,fuite,0,17,,[d],1,creature_monster_grades,bonusCharacteristics.tackleEvade,0,0,"1→0, 40→0, 80→0, 120→0, 160→0, 200→0",,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/dodge_action_points-creature-definition.json,dodge_action_points_creature,Esquive PA,int,dodge_pa,0,20,,[d],1,creature_monster_grades,paDodge,0,15,"1→9, 40→4, 80→5, 120→4, 160→2, 200→15",66.7,K: 1→7,2026-02-12T13:38:29+00:00
-creature,creature/dodge_movement_points-creature-definition.json,dodge_movement_points_creature,Esquive PM,int,dodge_pm,0,20,,[d],1,creature_monster_grades,pmDodge,2,9,"1→5, 40→5, 80→6, 120→5, 160→4, 200→9",80.0,K: 1→7,2026-02-12T13:38:29+00:00
-creature,creature/fixed_damage_air-creature-definition.json,fixed_damage_air_creature,Dommage fixe Air,int,do_fixe_air,0,10,,[d],1,creature_monster_grades,bonusCharacteristics.bonusAirDamage,0,4,"1→4, 40→0, 80→0, 120→0, 160→0, 200→0",,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/fixed_damage_earth-creature-definition.json,fixed_damage_earth_creature,Dommage fixe Terre,int,do_fixe_terre,0,10,,[d],1,creature_monster_grades,bonusCharacteristics.bonusEarthDamage,0,4,"1→4, 40→0, 80→0, 120→0, 160→0, 200→0",,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/fixed_damage_fire-creature-definition.json,fixed_damage_fire_creature,Dommage fixe Feu,int,do_fixe_feu,0,10,,[d],1,creature_monster_grades,bonusCharacteristics.bonusFireDamage,0,4,"1→4, 40→0, 80→0, 120→0, 160→0, 200→0",,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/fixed_damage_multiple-creature-definition.json,fixed_damage_multiple_creature,Dommage fixe Multiples,int,,0,10,,[d],1,,,,,,,,
-creature,creature/fixed_damage_neutral-creature-definition.json,fixed_damage_neutral_creature,Dommage fixe Neutre,int,do_fixe_neutre,0,10,,"-0.1704 + 8.418 * pow(([d]-0)/40, 1.3)",1,creature_monster_grades,do_fixe_neutre_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/fixed_damage_sagesse-creature-definition.json,fixed_damage_sagesse_creature,Dégâts fixes Sagesse,int,do_sagesse,0,10,,[d],1,,,,,,,,
-creature,creature/fixed_damage_vitalite-creature-definition.json,fixed_damage_vitalite_creature,Dégâts fixes Vitalité,int,do_vitalite,0,10,,[d],1,,,,,,,,
-creature,creature/fixed_damage_water-creature-definition.json,fixed_damage_water_creature,Dommage fixe Eau,int,do_fixe_eau,0,10,,[d],1,creature_monster_grades,bonusCharacteristics.bonusWaterDamage,0,4,"1→4, 40→0, 80→0, 120→0, 160→0, 200→0",,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/fixed_resistance_air-creature-definition.json,fixed_resistance_air_creature,Résistance fixe Air,int,res_fixe_air,0,10,,[d],1,creature_monster_grades,airResistance,5,16,"1→5, 40→12, 80→14, 120→13, 160→16, 200→16",220.0,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/fixed_resistance_earth-creature-definition.json,fixed_resistance_earth_creature,Résistance fixe Terre,int,res_fixe_terre,0,10,,[d],1,creature_monster_grades,earthResistance,6,19,"1→6, 40→12, 80→15, 120→15, 160→17, 200→15",150.0,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/fixed_resistance_fire-creature-definition.json,fixed_resistance_fire_creature,Résistance fixe Feu,int,res_fixe_feu,0,10,,[d],1,creature_monster_grades,fireResistance,5,19,"1→5, 40→11, 80→14, 120→15, 160→19, 200→16",220.0,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/fixed_resistance_neutral-creature-definition.json,fixed_resistance_neutral_creature,Résistance fixe Neutre,int,res_fixe_neutre,0,10,,[d],1,creature_monster_grades,neutralResistance,10,25,"1→10, 40→20, 80→20, 120→21, 160→25, 200→19",90.0,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/fixed_resistance_water-creature-definition.json,fixed_resistance_water_creature,Résistance fixe Eau,int,res_fixe_eau,0,10,,[d],1,creature_monster_grades,waterResistance,6,20,"1→6, 40→13, 80→10, 120→13, 160→20, 200→16",166.7,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/heal_bonus-creature-definition.json,heal_bonus_creature,Bonus de soin,int,heal_bonus,0,7,,[d],1,,,,,,,,
+creature,creature/deception_mastery-creature-definition.json,deception_mastery_creature,"Supercherie (palier maîtrise)",int,supercherie_mastery,0,2,,,1,,,,,,,,
+creature,creature/deception_passive-creature-definition.json,deception_passive_creature,"Supercherie (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/dodge-creature-definition.json,dodge_creature,Fuite,int,fuite,0,17,,[d],1,creature_monster_grades,bonusCharacteristics.tackleEvade,0,0,"1→0, 40→0, 80→0, 120→0, 160→0, 200→0",,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/dodge_action_points-creature-definition.json,dodge_action_points_creature,"Esquive PA",int,dodge_pa,0,20,,[d],1,creature_monster_grades,paDodge,0,15,"1→9, 40→4, 80→5, 120→4, 160→2, 200→15",66.7,"K: 1→7",2026-02-12T13:38:29+00:00
+creature,creature/dodge_movement_points-creature-definition.json,dodge_movement_points_creature,"Esquive PM",int,dodge_pm,0,20,,[d],1,creature_monster_grades,pmDodge,2,9,"1→5, 40→5, 80→6, 120→5, 160→4, 200→9",80.0,"K: 1→7",2026-02-12T13:38:29+00:00
+creature,creature/fixed_damage_air-creature-definition.json,fixed_damage_air_creature,"Dommage fixe Air",int,do_fixe_air,0,10,,[d],1,creature_monster_grades,bonusCharacteristics.bonusAirDamage,0,4,"1→4, 40→0, 80→0, 120→0, 160→0, 200→0",,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/fixed_damage_earth-creature-definition.json,fixed_damage_earth_creature,"Dommage fixe Terre",int,do_fixe_terre,0,10,,[d],1,creature_monster_grades,bonusCharacteristics.bonusEarthDamage,0,4,"1→4, 40→0, 80→0, 120→0, 160→0, 200→0",,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/fixed_damage_fire-creature-definition.json,fixed_damage_fire_creature,"Dommage fixe Feu",int,do_fixe_feu,0,10,,[d],1,creature_monster_grades,bonusCharacteristics.bonusFireDamage,0,4,"1→4, 40→0, 80→0, 120→0, 160→0, 200→0",,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/fixed_damage_multiple-creature-definition.json,fixed_damage_multiple_creature,"Dommage fixe Multiples",int,,0,10,,[d],1,,,,,,,,
+creature,creature/fixed_damage_neutral-creature-definition.json,fixed_damage_neutral_creature,"Dommage fixe Neutre",int,do_fixe_neutre,0,10,,"-0.1704 + 8.418 * pow(([d]-0)/40, 1.3)",1,creature_monster_grades,do_fixe_neutre_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/fixed_damage_sagesse-creature-definition.json,fixed_damage_sagesse_creature,"Dégâts fixes Sagesse",int,do_sagesse,0,10,,[d],1,,,,,,,,
+creature,creature/fixed_damage_vitalite-creature-definition.json,fixed_damage_vitalite_creature,"Dégâts fixes Vitalité",int,do_vitalite,0,10,,[d],1,,,,,,,,
+creature,creature/fixed_damage_water-creature-definition.json,fixed_damage_water_creature,"Dommage fixe Eau",int,do_fixe_eau,0,10,,[d],1,creature_monster_grades,bonusCharacteristics.bonusWaterDamage,0,4,"1→4, 40→0, 80→0, 120→0, 160→0, 200→0",,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/fixed_resistance_air-creature-definition.json,fixed_resistance_air_creature,"Résistance fixe Air",int,res_fixe_air,0,10,,[d],1,creature_monster_grades,airResistance,5,16,"1→5, 40→12, 80→14, 120→13, 160→16, 200→16",220.0,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/fixed_resistance_earth-creature-definition.json,fixed_resistance_earth_creature,"Résistance fixe Terre",int,res_fixe_terre,0,10,,[d],1,creature_monster_grades,earthResistance,6,19,"1→6, 40→12, 80→15, 120→15, 160→17, 200→15",150.0,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/fixed_resistance_fire-creature-definition.json,fixed_resistance_fire_creature,"Résistance fixe Feu",int,res_fixe_feu,0,10,,[d],1,creature_monster_grades,fireResistance,5,19,"1→5, 40→11, 80→14, 120→15, 160→19, 200→16",220.0,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/fixed_resistance_neutral-creature-definition.json,fixed_resistance_neutral_creature,"Résistance fixe Neutre",int,res_fixe_neutre,0,10,,[d],1,creature_monster_grades,neutralResistance,10,25,"1→10, 40→20, 80→20, 120→21, 160→25, 200→19",90.0,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/fixed_resistance_water-creature-definition.json,fixed_resistance_water_creature,"Résistance fixe Eau",int,res_fixe_eau,0,10,,[d],1,creature_monster_grades,waterResistance,6,20,"1→6, 40→13, 80→10, 120→13, 160→20, 200→16",166.7,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/heal_bonus-creature-definition.json,heal_bonus_creature,"Bonus de soin",int,heal_bonus,0,7,,[d],1,,,,,,,,
 creature,creature/history-creature-definition.json,history_creature,Histoire,int,,-2,24,,,0,,,,,,,,
-creature,creature/history_mastery-creature-definition.json,history_mastery_creature,Histoire (palier maîtrise),int,histoire_mastery,0,2,,,1,,,,,,,,
-creature,creature/history_passive-creature-definition.json,history_passive_creature,Histoire (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/hit_bonus-creature-definition.json,hit_bonus_creature,Bonus de touche,int,touch,0,12,,[d],1,creature_monster_grades,touch_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/hit_dice-creature-definition.json,hit_dice_creature,Dés de vie,int,,0,10,,,1,,,,,,,,
+creature,creature/history_mastery-creature-definition.json,history_mastery_creature,"Histoire (palier maîtrise)",int,histoire_mastery,0,2,,,1,,,,,,,,
+creature,creature/history_passive-creature-definition.json,history_passive_creature,"Histoire (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/hit_bonus-creature-definition.json,hit_bonus_creature,"Bonus de touche",int,touch,0,12,,[d],1,creature_monster_grades,touch_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/hit_dice-creature-definition.json,hit_dice_creature,"Dés de vie",int,,0,10,,,1,,,,,,,,
 creature,creature/hostility-creature-definition.json,hostility_creature,Hostilité,int,hostility,0,4,,,0,,,,,,,,
-creature,creature/initiative-creature-definition.json,initiative_creature,Initiative,int,ini,0,,,[d],1,creature_monster_grades,ini_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
+creature,creature/initiative-creature-definition.json,initiative_creature,Initiative,int,ini,0,,,[d],1,creature_monster_grades,ini_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
 creature,creature/insight-creature-definition.json,insight_creature,Perspicacité,int,,-2,24,,,0,,,,,,,,
-creature,creature/insight_mastery-creature-definition.json,insight_mastery_creature,Perspicacité (palier maîtrise),int,perspicacite_mastery,0,2,,,1,,,,,,,,
-creature,creature/insight_passive-creature-definition.json,insight_passive_creature,Perspicacité (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/intelligence-creature-definition.json,intelligence_creature,Intelligence,int,intel,6,24,,[d],1,creature_monster_grades,intelligence,38,610,"1→38, 40→227, 80→219, 120→417, 160→610, 200→605",1492.1,K: 1→8,2026-02-12T13:38:29+00:00
+creature,creature/insight_mastery-creature-definition.json,insight_mastery_creature,"Perspicacité (palier maîtrise)",int,perspicacite_mastery,0,2,,,1,,,,,,,,
+creature,creature/insight_passive-creature-definition.json,insight_passive_creature,"Perspicacité (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/intelligence-creature-definition.json,intelligence_creature,Intelligence,int,intel,6,24,,[d],1,creature_monster_grades,intelligence,38,610,"1→38, 40→227, 80→219, 120→417, 160→610, 200→605",1492.1,"K: 1→8",2026-02-12T13:38:29+00:00
 creature,creature/intimidation-creature-definition.json,intimidation_creature,Intimidation,int,,-2,24,,,0,,,,,,,,
-creature,creature/intimidation_mastery-creature-definition.json,intimidation_mastery_creature,Intimidation (palier maîtrise),int,intimidation_mastery,0,2,,,1,,,,,,,,
-creature,creature/intimidation_passive-creature-definition.json,intimidation_passive_creature,Intimidation (passif),int,,8,34,,,0,,,,,,,,
+creature,creature/intimidation_mastery-creature-definition.json,intimidation_mastery_creature,"Intimidation (palier maîtrise)",int,intimidation_mastery,0,2,,,1,,,,,,,,
+creature,creature/intimidation_passive-creature-definition.json,intimidation_passive_creature,"Intimidation (passif)",int,,8,34,,,0,,,,,,,,
 creature,creature/investigation-creature-definition.json,investigation_creature,Investigation,int,,-2,24,,,0,,,,,,,,
-creature,creature/investigation_mastery-creature-definition.json,investigation_mastery_creature,Investigation (palier maîtrise),int,investigation_mastery,0,2,,,1,,,,,,,,
-creature,creature/investigation_passive-creature-definition.json,investigation_passive_creature,Investigation (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/level-creature-definition.json,level_creature,Niveau,int,level,1,20,,"{""1"":""floor([d]/10)"",""characteristic"":""d""}",0,creature_monster_grades,level,3,247,"1→3, 40→44, 80→83, 120→122, 160→162, 200→247",8133.3,K: 1→1,2026-02-12T13:38:29+00:00
-creature,creature/life_dice-creature-definition.json,life_dice_creature,Dé de vie,string,life_dice,,,,,0,creature_monster_grades,de_vie_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/life_points-creature-definition.json,life_points_creature,Points de vie,int,life,[hit_dice_creature],∞,,floor([d]/200)+[level]*5,1,creature_monster_grades,lifePoints,137,9528,"1→255, 40→681, 80→1906, 120→3533, 160→5542, 200→9528",3636.5,K: 1→20,2026-02-12T13:38:29+00:00
-creature,creature/mastery_bonus-creature-definition.json,mastery_bonus_creature,Bonus de maîtrise,int,,0,6,,[d],1,,,,,,,,
+creature,creature/investigation_mastery-creature-definition.json,investigation_mastery_creature,"Investigation (palier maîtrise)",int,investigation_mastery,0,2,,,1,,,,,,,,
+creature,creature/investigation_passive-creature-definition.json,investigation_passive_creature,"Investigation (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/level-creature-definition.json,level_creature,Niveau,int,level,1,20,,"{""1"":""floor([d]/10)"",""characteristic"":""d""}",0,creature_monster_grades,level,3,247,"1→3, 40→44, 80→83, 120→122, 160→162, 200→247",8133.3,"K: 1→1",2026-02-12T13:38:29+00:00
+creature,creature/life_dice-creature-definition.json,life_dice_creature,"Dé de vie",string,life_dice,,,,,0,creature_monster_grades,de_vie_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/life_points-creature-definition.json,life_points_creature,"Points de vie",int,life,[hit_dice_creature],∞,,floor([d]/200)+[level]*5,1,creature_monster_grades,lifePoints,137,9528,"1→255, 40→681, 80→1906, 120→3533, 160→5542, 200→9528",3636.5,"K: 1→20",2026-02-12T13:38:29+00:00
+creature,creature/mastery_bonus-creature-definition.json,mastery_bonus_creature,"Bonus de maîtrise",int,,0,6,,[d],1,,,,,,,,
 creature,creature/medicine-creature-definition.json,medicine_creature,Médecine,int,,-2,24,,,0,,,,,,,,
-creature,creature/medicine_mastery-creature-definition.json,medicine_mastery_creature,Médecine (palier maîtrise),int,medecine_mastery,0,2,,,1,,,,,,,,
-creature,creature/medicine_passive-creature-definition.json,medicine_passive_creature,Médecine (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/modifier_agility-creature-definition.json,modifier_agility_creature,Modificateur d'Agilité,int,,-2,7,,[d],1,creature_monster_grades,modificateur_agi_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/modifier_chance-creature-definition.json,modifier_chance_creature,Modificateur de Chance,int,,-2,7,,[d],1,creature_monster_grades,modificateur_chance_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/modifier_intelligence-creature-definition.json,modifier_intelligence_creature,Modificateur d'Intelligence,int,,-2,7,,[d],1,creature_monster_grades,modificateur_intel_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/modifier_strength-creature-definition.json,modifier_strength_creature,Modificateur de Force,int,,-2,7,,[d],1,creature_monster_grades,modificateur_force_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/modifier_vitality-creature-definition.json,modifier_vitality_creature,Modificateur de Vitalité,int,,-2,7,,[d],1,creature_monster_grades,modificateur_vitality_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/modifier_wisdom-creature-definition.json,modifier_wisdom_creature,Modificateur de Sagesse,int,,-2,7,,[d],1,creature_monster_grades,modificateur_sagesse_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/movement_points-creature-definition.json,movement_points_creature,Points de mouvement,int,pm,3,6,,[d],1,creature_monster_grades,movementPoints,2,6,"1→2, 40→5, 80→4, 120→5, 160→5, 200→5",150.0,K: 1→3,2026-02-12T13:38:29+00:00
+creature,creature/medicine_mastery-creature-definition.json,medicine_mastery_creature,"Médecine (palier maîtrise)",int,medecine_mastery,0,2,,,1,,,,,,,,
+creature,creature/medicine_passive-creature-definition.json,medicine_passive_creature,"Médecine (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/modifier_agility-creature-definition.json,modifier_agility_creature,"Modificateur d'Agilité",int,,-2,7,,[d],1,creature_monster_grades,modificateur_agi_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/modifier_chance-creature-definition.json,modifier_chance_creature,"Modificateur de Chance",int,,-2,7,,[d],1,creature_monster_grades,modificateur_chance_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/modifier_intelligence-creature-definition.json,modifier_intelligence_creature,"Modificateur d'Intelligence",int,,-2,7,,[d],1,creature_monster_grades,modificateur_intel_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/modifier_strength-creature-definition.json,modifier_strength_creature,"Modificateur de Force",int,,-2,7,,[d],1,creature_monster_grades,modificateur_force_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/modifier_vitality-creature-definition.json,modifier_vitality_creature,"Modificateur de Vitalité",int,,-2,7,,[d],1,creature_monster_grades,modificateur_vitality_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/modifier_wisdom-creature-definition.json,modifier_wisdom_creature,"Modificateur de Sagesse",int,,-2,7,,[d],1,creature_monster_grades,modificateur_sagesse_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/movement_points-creature-definition.json,movement_points_creature,"Points de mouvement",int,pm,3,6,,[d],1,creature_monster_grades,movementPoints,2,6,"1→2, 40→5, 80→4, 120→5, 160→5, 200→5",150.0,"K: 1→3",2026-02-12T13:38:29+00:00
 creature,creature/nature-creature-definition.json,nature_creature,Nature,int,,-2,24,,,0,,,,,,,,
-creature,creature/nature_mastery-creature-definition.json,nature_mastery_creature,Nature (palier maîtrise),int,nature_mastery,0,2,,,1,,,,,,,,
-creature,creature/nature_passive-creature-definition.json,nature_passive_creature,Nature (passif),int,,8,34,,,0,,,,,,,,
+creature,creature/nature_mastery-creature-definition.json,nature_mastery_creature,"Nature (palier maîtrise)",int,nature_mastery,0,2,,,1,,,,,,,,
+creature,creature/nature_passive-creature-definition.json,nature_passive_creature,"Nature (passif)",int,,8,34,,,0,,,,,,,,
 creature,creature/perception-creature-definition.json,perception_creature,Perception,int,,-2,24,,,0,,,,,,,,
-creature,creature/perception_mastery-creature-definition.json,perception_mastery_creature,Perception (palier maîtrise),int,perception_mastery,0,2,,,1,,,,,,,,
-creature,creature/perception_passive-creature-definition.json,perception_passive_creature,Perception (passif),int,,8,34,,,0,,,,,,,,
+creature,creature/perception_mastery-creature-definition.json,perception_mastery_creature,"Perception (palier maîtrise)",int,perception_mastery,0,2,,,1,,,,,,,,
+creature,creature/perception_passive-creature-definition.json,perception_passive_creature,"Perception (passif)",int,,8,34,,,0,,,,,,,,
 creature,creature/performance-creature-definition.json,performance_creature,Représentation,int,,-2,24,,,0,,,,,,,,
-creature,creature/performance_mastery-creature-definition.json,performance_mastery_creature,Représentation (palier maîtrise),int,representation_mastery,0,2,,,1,,,,,,,,
-creature,creature/performance_passive-creature-definition.json,performance_passive_creature,Représentation (passif),int,,8,34,,,0,,,,,,,,
+creature,creature/performance_mastery-creature-definition.json,performance_mastery_creature,"Représentation (palier maîtrise)",int,representation_mastery,0,2,,,1,,,,,,,,
+creature,creature/performance_passive-creature-definition.json,performance_passive_creature,"Représentation (passif)",int,,8,34,,,0,,,,,,,,
 creature,creature/persuasion-creature-definition.json,persuasion_creature,Persuasion,int,,-2,24,,,0,,,,,,,,
-creature,creature/persuasion_mastery-creature-definition.json,persuasion_mastery_creature,Persuasion (palier maîtrise),int,persuasion_mastery,0,2,,,1,,,,,,,,
-creature,creature/persuasion_passive-creature-definition.json,persuasion_passive_creature,Persuasion (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/range-creature-definition.json,range_creature,Portée,int,po,0,6,,[d],1,creature_monster_grades,bonusRange,0,1,"1→0, 40→0, 80→0, 120→0, 160→1, 200→0",,K: 1→0,2026-02-12T13:38:29+00:00
+creature,creature/persuasion_mastery-creature-definition.json,persuasion_mastery_creature,"Persuasion (palier maîtrise)",int,persuasion_mastery,0,2,,,1,,,,,,,,
+creature,creature/persuasion_passive-creature-definition.json,persuasion_passive_creature,"Persuasion (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/range-creature-definition.json,range_creature,Portée,int,po,0,6,,[d],1,creature_monster_grades,bonusRange,0,1,"1→0, 40→0, 80→0, 120→0, 160→1, 200→0",,"K: 1→0",2026-02-12T13:38:29+00:00
 creature,creature/religion-creature-definition.json,religion_creature,Religion,int,,-2,24,,,0,,,,,,,,
-creature,creature/religion_mastery-creature-definition.json,religion_mastery_creature,Religion (palier maîtrise),int,religion_mastery,0,2,,,1,,,,,,,,
-creature,creature/religion_passive-creature-definition.json,religion_passive_creature,Religion (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/resistance_air-creature-definition.json,resistance_air_creature,Résistance Air %,int,res_air,0,100,,[d],1,,,,,,,,
-creature,creature/resistance_earth-creature-definition.json,resistance_earth_creature,Résistance Terre %,int,res_terre,0,100,,[d],1,,,,,,,,
-creature,creature/resistance_fire-creature-definition.json,resistance_fire_creature,Résistance Feu %,int,res_feu,0,100,,[d],1,,,,,,,,
-creature,creature/resistance_neutral-creature-definition.json,resistance_neutral_creature,Résistance Neutre %,int,res_neutre,0,100,,[d],1,,,,,,,,
-creature,creature/resistance_sagesse-creature-definition.json,resistance_sagesse_creature,Résistance Sagesse %,int,res_sagesse,0,100,,[d],1,,,,,,,,
-creature,creature/resistance_vitalite-creature-definition.json,resistance_vitalite_creature,Résistance Vitalité %,int,res_vitalite,0,100,,[d],1,,,,,,,,
-creature,creature/resistance_water-creature-definition.json,resistance_water_creature,Résistance Eau %,int,res_eau,0,100,,[d],1,,,,,,,,
-creature,creature/save_agility-creature-definition.json,save_agility_creature,Bonus jet de sauvegarde Agilité,int,,-1,16,,[d],1,creature_monster_grades,save_agi_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/save_chance-creature-definition.json,save_chance_creature,Bonus jet de sauvegarde Chance,int,,-1,16,,[d],1,creature_monster_grades,save_chance_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/save_intelligence-creature-definition.json,save_intelligence_creature,Bonus jet de sauvegarde Intelligence,int,,-1,16,,[d],1,creature_monster_grades,save_intel_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/save_strength-creature-definition.json,save_strength_creature,Bonus jet de sauvegarde Force,int,,-1,16,,[d],1,creature_monster_grades,save_force_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/save_vitality-creature-definition.json,save_vitality_creature,Bonus jet de sauvegarde Vitalité,int,,-1,16,,[d],1,creature_monster_grades,save_vitality_creature,,,,,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/save_wisdom-creature-definition.json,save_wisdom_creature,Bonus jet de sauvegarde Sagesse,int,,-1,16,,[d],1,,,,,,,,
+creature,creature/religion_mastery-creature-definition.json,religion_mastery_creature,"Religion (palier maîtrise)",int,religion_mastery,0,2,,,1,,,,,,,,
+creature,creature/religion_passive-creature-definition.json,religion_passive_creature,"Religion (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/resistance_air-creature-definition.json,resistance_air_creature,"Résistance Air %",int,res_air,0,100,,[d],1,,,,,,,,
+creature,creature/resistance_earth-creature-definition.json,resistance_earth_creature,"Résistance Terre %",int,res_terre,0,100,,[d],1,,,,,,,,
+creature,creature/resistance_fire-creature-definition.json,resistance_fire_creature,"Résistance Feu %",int,res_feu,0,100,,[d],1,,,,,,,,
+creature,creature/resistance_neutral-creature-definition.json,resistance_neutral_creature,"Résistance Neutre %",int,res_neutre,0,100,,[d],1,,,,,,,,
+creature,creature/resistance_sagesse-creature-definition.json,resistance_sagesse_creature,"Résistance Sagesse %",int,res_sagesse,0,100,,[d],1,,,,,,,,
+creature,creature/resistance_vitalite-creature-definition.json,resistance_vitalite_creature,"Résistance Vitalité %",int,res_vitalite,0,100,,[d],1,,,,,,,,
+creature,creature/resistance_water-creature-definition.json,resistance_water_creature,"Résistance Eau %",int,res_eau,0,100,,[d],1,,,,,,,,
+creature,creature/save_agility-creature-definition.json,save_agility_creature,"Bonus jet de sauvegarde Agilité",int,,-1,16,,[d],1,creature_monster_grades,save_agi_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/save_chance-creature-definition.json,save_chance_creature,"Bonus jet de sauvegarde Chance",int,,-1,16,,[d],1,creature_monster_grades,save_chance_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/save_intelligence-creature-definition.json,save_intelligence_creature,"Bonus jet de sauvegarde Intelligence",int,,-1,16,,[d],1,creature_monster_grades,save_intel_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/save_strength-creature-definition.json,save_strength_creature,"Bonus jet de sauvegarde Force",int,,-1,16,,[d],1,creature_monster_grades,save_force_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/save_vitality-creature-definition.json,save_vitality_creature,"Bonus jet de sauvegarde Vitalité",int,,-1,16,,[d],1,creature_monster_grades,save_vitality_creature,,,,,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/save_wisdom-creature-definition.json,save_wisdom_creature,"Bonus jet de sauvegarde Sagesse",int,,-1,16,,[d],1,,,,,,,,
 creature,creature/sleight_of_hand-creature-definition.json,sleight_of_hand_creature,Escamotage,int,,-2,24,,,0,,,,,,,,
-creature,creature/sleight_of_hand_mastery-creature-definition.json,sleight_of_hand_mastery_creature,Escamotage (palier maîtrise),int,escamotage_mastery,0,2,,,1,,,,,,,,
-creature,creature/sleight_of_hand_passive-creature-definition.json,sleight_of_hand_passive_creature,Escamotage (passif),int,,8,34,,,0,,,,,,,,
+creature,creature/sleight_of_hand_mastery-creature-definition.json,sleight_of_hand_mastery_creature,"Escamotage (palier maîtrise)",int,escamotage_mastery,0,2,,,1,,,,,,,,
+creature,creature/sleight_of_hand_passive-creature-definition.json,sleight_of_hand_passive_creature,"Escamotage (passif)",int,,8,34,,,0,,,,,,,,
 creature,creature/stealth-creature-definition.json,stealth_creature,Discrétion,int,,-2,24,,,0,,,,,,,,
-creature,creature/stealth_mastery-creature-definition.json,stealth_mastery_creature,Discrétion (palier maîtrise),int,discretion_mastery,0,2,,,1,,,,,,,,
-creature,creature/stealth_passive-creature-definition.json,stealth_passive_creature,Discrétion (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/strength-creature-definition.json,strength_creature,Force,int,strong,6,24,,[d],1,creature_monster_grades,strength,36,636,"1→36, 40→255, 80→235, 120→414, 160→636, 200→625",1636.1,K: 1→8,2026-02-12T13:38:29+00:00
-creature,creature/summoning-creature-definition.json,summoning_creature,Nombre d'invocations,int,invocation,1,6,,[d],1,creature_monster_grades,invocation_creature,,,,,K: 1→1,2026-02-12T13:38:29+00:00
+creature,creature/stealth_mastery-creature-definition.json,stealth_mastery_creature,"Discrétion (palier maîtrise)",int,discretion_mastery,0,2,,,1,,,,,,,,
+creature,creature/stealth_passive-creature-definition.json,stealth_passive_creature,"Discrétion (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/strength-creature-definition.json,strength_creature,Force,int,strong,6,24,,[d],1,creature_monster_grades,strength,36,636,"1→36, 40→255, 80→235, 120→414, 160→636, 200→625",1636.1,"K: 1→8",2026-02-12T13:38:29+00:00
+creature,creature/summoning-creature-definition.json,summoning_creature,"Nombre d'invocations",int,invocation,1,6,,[d],1,creature_monster_grades,invocation_creature,,,,,"K: 1→1",2026-02-12T13:38:29+00:00
 creature,creature/survival-creature-definition.json,survival_creature,Survie,int,,-2,24,,,0,,,,,,,,
-creature,creature/survival_mastery-creature-definition.json,survival_mastery_creature,Survie (palier maîtrise),int,survie_mastery,0,2,,,1,,,,,,,,
-creature,creature/survival_passive-creature-definition.json,survival_passive_creature,Survie (passif),int,,8,34,,,0,,,,,,,,
-creature,creature/tackle-creature-definition.json,tackle_creature,Tacle,int,tacle,0,17,,[d],1,creature_monster_grades,bonusCharacteristics.tackleBlock,0,0,"1→0, 40→0, 80→0, 120→0, 160→0, 200→0",,K: 1→0,2026-02-12T13:38:29+00:00
-creature,creature/vitality-creature-definition.json,vitality_creature,Vitalité,int,vitality,6,24,,[d],1,creature_monster_grades,vitality,0,19,"1→0, 40→2, 80→11, 120→11, 160→15, 200→19",,K: 1→8,2026-02-12T13:38:29+00:00
-creature,creature/wakfu_reserve-creature-definition.json,wakfu_reserve_creature,Réserve de Wakfu,int,,0,9,,[d],1,,,,,,,,
-creature,creature/wisdom-creature-definition.json,wisdom_creature,Sagesse,int,sagesse,6,24,,[d],1,creature_monster_grades,wisdom,59,654,"1→59, 40→146, 80→180, 120→330, 160→515, 200→654",1008.5,K: 1→8,2026-02-12T13:38:29+00:00
+creature,creature/survival_mastery-creature-definition.json,survival_mastery_creature,"Survie (palier maîtrise)",int,survie_mastery,0,2,,,1,,,,,,,,
+creature,creature/survival_passive-creature-definition.json,survival_passive_creature,"Survie (passif)",int,,8,34,,,0,,,,,,,,
+creature,creature/tackle-creature-definition.json,tackle_creature,Tacle,int,tacle,0,17,,[d],1,creature_monster_grades,bonusCharacteristics.tackleBlock,0,0,"1→0, 40→0, 80→0, 120→0, 160→0, 200→0",,"K: 1→0",2026-02-12T13:38:29+00:00
+creature,creature/vitality-creature-definition.json,vitality_creature,Vitalité,int,vitality,6,24,,[d],1,creature_monster_grades,vitality,0,19,"1→0, 40→2, 80→11, 120→11, 160→15, 200→19",,"K: 1→8",2026-02-12T13:38:29+00:00
+creature,creature/wakfu_reserve-creature-definition.json,wakfu_reserve_creature,"Réserve de Wakfu",int,,0,9,,[d],1,,,,,,,,
+creature,creature/wisdom-creature-definition.json,wisdom_creature,Sagesse,int,sagesse,6,24,,[d],1,creature_monster_grades,wisdom,59,654,"1→59, 40→146, 80→180, 120→330, 160→515, 200→654",1008.5,"K: 1→8",2026-02-12T13:38:29+00:00

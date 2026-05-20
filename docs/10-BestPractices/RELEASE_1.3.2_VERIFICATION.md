@@ -8,29 +8,34 @@
 - Backend : `email_recap` validé ; envoi `FeedbackRecapMail` **uniquement** si utilisateur authentifié et case cochée (email du compte, jamais depuis le formulaire invité).
 - Tests : `tests/Feature/Web/FeedbackControllerTest.php`.
 
-## Contrôles exécutés (2026-05-19)
+## Contrôles exécutés (2026-05-20)
 
 | Contrôle | Résultat |
 |----------|----------|
 | `composer audit` (via `project:review --security`) | OK |
-| `docs/docs.index.json` + guides | OK |
+| `docs/docs.index.json` + guides | OK (entrées recette 1.3.2 + calibration 282) |
 | PHPStan (`phpstan.neon`) | OK |
 | ESLint (`pnpm run lint`) | OK |
-| Tests Feature ciblés release (28 tests) | OK |
-| Vitest unit (search, notifications, routes) | OK |
-
-Tests Feature regroupés : feedback, global-search, project:cron/seed, admin dashboard/recap, CMS write levels.
+| `characteristics:definitions-progress` | 282/282 (100 %) |
+| `CharacteristicGetterServiceTest` (restrictions équipement) | OK |
+| `project:init:verify` + option `--verify` sur `project:init` | Livré |
+| Vitest `test:a11y` (Alert) | Livré |
+| Playwright smoke `tests/e2e/release-1.3.2.spec.ts` | Livré (exécution locale avec serveur) |
 
 ## À lancer avant merge prod
 
 ```bash
-php artisan project:review --all
+php artisan project:review --all --pint-timeout=900
 # ou au minimum :
-php artisan test
+php artisan project:review --test-back --test-front --phpstan --eslint --security --docs
+php artisan project:init:verify
 pnpm run test:run
+pnpm run test:a11y
 ```
 
 Le rapport `project:review` est écrit sous `storage/app/dev-reports/review-*.md`.
+
+Recette manuelle : [MANUAL_RECIPE_RELEASE_1.3.2.md](./MANUAL_RECIPE_RELEASE_1.3.2.md).
 
 ## Points de vigilance (revue code)
 

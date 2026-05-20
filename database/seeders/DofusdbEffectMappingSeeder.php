@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\DofusdbEffectMapping;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
+use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Seeder;
 
 /**
@@ -29,6 +30,8 @@ use Illuminate\Database\Seeder;
  */
 class DofusdbEffectMappingSeeder extends Seeder
 {
+    use RetriesWhenMysqlSchemaChanged;
+
     /** Fichier de mappings suggérés généré par scrapping:effects:map (optionnel). */
     private const DATA_FILE = __DIR__.'/data/dofusdb_effect_mappings_suggested.php';
 
@@ -51,14 +54,14 @@ class DofusdbEffectMappingSeeder extends Seeder
         foreach ($mappings as $dofusdbEffectId => $mapping) {
             [$subEffectSlug, $characteristicSource, $characteristicKey] = $mapping;
 
-            DofusdbEffectMapping::updateOrCreate(
+            $this->retryOnMysqlSchemaChanged(static fn () => DofusdbEffectMapping::updateOrCreate(
                 ['dofusdb_effect_id' => $dofusdbEffectId],
                 [
                     'sub_effect_slug' => $subEffectSlug,
                     'characteristic_source' => $characteristicSource,
                     'characteristic_key' => $characteristicKey,
                 ]
-            );
+            ));
         }
 
         // Le service de conversion met en cache les mappings : invalider après seed

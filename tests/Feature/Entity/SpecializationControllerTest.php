@@ -32,7 +32,10 @@ class SpecializationControllerTest extends TestCase
 
     public function test_guest_can_view_specialization_show(): void
     {
-        $spec = Specialization::factory()->create();
+        $spec = Specialization::factory()->create([
+            'state' => Specialization::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
 
         $this->get(route('entities.specializations.show', $spec))
             ->assertOk()

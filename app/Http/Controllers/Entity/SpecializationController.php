@@ -37,6 +37,7 @@ use Inertia\Response;
 class SpecializationController extends Controller
 {
     use RedirectsAfterEntityCreate;
+
     /**
      * Display a listing of the resource.
      */
@@ -109,6 +110,7 @@ class SpecializationController extends Controller
             'entities.specializations.edit',
             'entities.specializations.index',
             'Spécialisation créée avec succès.',
+            'edit',
         );
     }
 

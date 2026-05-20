@@ -19,7 +19,15 @@ class PanoplyPolicy extends BaseEntityPolicy
             return false;
         }
 
-        return $user->isAdmin();
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        if ($this->isAuthor($user, $model)) {
+            return true;
+        }
+
+        return $this->userLevel($user) >= $this->writeLevel($model);
     }
 
     public function updateAny(User $user): bool

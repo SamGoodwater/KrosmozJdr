@@ -30,6 +30,7 @@ use Inertia\Response;
 class BreedController extends Controller
 {
     use RedirectsAfterEntityCreate;
+
     public function index()
     {
         $this->authorize('viewAny', Breed::class);

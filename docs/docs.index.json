@@ -125,6 +125,11 @@
     "description": "**Objectif** : exposer CGU / confidentialité / cookies et le journal de versions **sans URL absolues de développement**, avec Markdown versionné sous `storage/app/public` et navigation semver pour le changelog."
   },
   {
+    "path": "10-BestPractices/MANUAL_RECIPE_RELEASE_1.3.2.md",
+    "title": "Recette manuelle — release 1.3.2",
+    "description": "Checklist pour valider le produit avant tag. Complément automatisé : `tests/e2e/release-1.3.2.spec.ts` (Playwright smoke)."
+  },
+  {
     "path": "10-BestPractices/NAMING_CONVENTIONS.md",
     "title": "",
     "description": "Conventions de nommage"
@@ -1363,6 +1368,11 @@
     "path": "50-Fonctionnalités/Characteristics-DB/CAHIER_DES_CHARGES_NORMES_ENTITES.md",
     "title": "Cahier des charges — Aide à la création d’entités (normes / chartes)",
     "description": "**Date** : 2026-04-15"
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/CALIBRATION_282_INDEX.md",
+    "title": "Index calibration — 282 caractéristiques (1.3.2)",
+    "description": "Les tableaux détaillés ligne par ligne ont été extraits du To do 1.3.1 → 1.3.2 pour alléger le suivi release."
   },
   {
     "path": "50-Fonctionnalités/Characteristics-DB/DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md",

@@ -102,6 +102,7 @@ const user = computed(() => {
 });
 
 const formNotifications = useForm({
+    notifications_enabled: true,
     notification_preferences: {},
 });
 
@@ -166,6 +167,7 @@ function initNotificationForm() {
         Object.keys(types).map((k) => [k, types[k].channels_default || ['database']])
     );
     const normalizedPrefs = normalizePrefsChannels(prefs);
+    formNotifications.notifications_enabled = data.notifications_enabled ?? true;
     formNotifications.notification_preferences = { ...defaultPrefs, ...normalizedPrefs };
 }
 
@@ -271,7 +273,25 @@ function goBackToProfile() {
                 <p class="mt-1 text-sm text-content-600">
                     Choisissez quelles notifications recevoir et comment (sur le site, par email, ou les deux).
                 </p>
-                <div v-if="notificationTypesFiltered.length > 0" class="mt-4 space-y-3">
+                <label class="mt-4 flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-base-300/60 bg-base-100/50 px-3 py-3">
+                    <span>
+                        <span class="block text-sm font-medium text-content-200">Activer les notifications</span>
+                        <span class="block text-xs text-content-600">
+                            Désactive l’envoi sur le site et par email, même si des canaux sont configurés ci-dessous.
+                        </span>
+                    </span>
+                    <input
+                        v-model="formNotifications.notifications_enabled"
+                        type="checkbox"
+                        class="toggle toggle-primary"
+                        :disabled="formNotifications.processing"
+                    />
+                </label>
+                <div
+                    v-if="notificationTypesFiltered.length > 0"
+                    class="mt-4 space-y-3"
+                    :class="{ 'opacity-50 pointer-events-none': !formNotifications.notifications_enabled }"
+                >
                     <div
                         v-for="[typeKey, config] in notificationTypesFiltered"
                         :key="typeKey"

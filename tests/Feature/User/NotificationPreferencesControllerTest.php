@@ -28,6 +28,24 @@ class NotificationPreferencesControllerTest extends TestCase
         $this->withoutMiddleware([VerifyCsrfToken::class]);
     }
 
+    public function test_user_can_disable_notifications_globally_from_settings(): void
+    {
+        $user = User::factory()->create([
+            'notifications_enabled' => true,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->patchJson(route('user.update').'?redirect=settings', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'notifications_enabled' => false,
+            ]);
+
+        $response->assertRedirect();
+        $user->refresh();
+        $this->assertFalse($user->notifications_enabled);
+    }
+
     public function test_user_can_update_notification_preferences_from_settings(): void
     {
         $user = User::factory()->create([
