@@ -1,39 +1,115 @@
+# --- Laravel / PHP ---
 /.phpunit.cache
+.phpunit.result.cache
+.phpactor.json
+auth.json
+Homestead.json
+Homestead.yaml
+docker-compose.override.yml
+
+# Cache & bootstrap compilés
 /bootstrap/ssr
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+
+# Dépendances
 /node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/pail
-/storage/app/seeders-data-backups
-/storage/app/dev-reports
-# Exports HTML legacy (spécialisations) — générés localement, non versionnés
-/database/seeders/data/legacy-specializations/*.html
 /vendor
+
+# Environnement
 .env
 .env.testing
 .env.backup
 .env.production
-.phpactor.json
-.phpunit.result.cache
-docker-compose.override.yml
-Homestead.json
-Homestead.yaml
-auth.json
-npm-debug.log
-yarn-error.log
+
+# Storage Laravel (clés, logs, cache applicatif)
+/storage/*.key
+/storage/pail
+/storage/app/seeders-data-backups
+/storage/app/dev-reports
+/storage/debugbar
+/storage/framework
+/storage/logs
+/torage/media-library
+/storage/app/private
+/storage/app/backups
+/storage/app/dev-reports
+/storage/app/seeders-data-backups
+/storage/app/private
+/storage/app/purified
+
+# Cache PHPStan (tmpDir dans phpstan.neon)
+/storage/phpstan/
+
+# Fichiers temporaires Spatie Media Library
+/storage/media-library/temp/
+
+# Disques fake PHPUnit / tests (artefacts générés en local)
+/storage/framework/testing/disks/
+
+# Vite HMR (équivalent de /public/hot)
+/storage/framework/vite.hot
+
+# Fichiers générés par laravel-ide-helper (régénérer en local : php artisan ide-helper:generate)
+/_ide_helper.php
+/_ide_helper_models.php
+/.phpstorm.meta.php
+
+# --- Frontend / build ---
+/public/build
+/public/hot
+/public/storage
+
+# Fichiers SCSS compilés (public)
+/public/css/*.css
+/public/css/*.css.map
+
+# Cache outils frontend
+.eslintcache
+*.tsbuildinfo
+node_modules/.vite
+
+# --- Tests & qualité ---
+/coverage/
+/test-results/
+/playwright-report/
+/blob-report/
+
+# Pint
+.pint.cache
+
+# Exports HTML legacy (spécialisations) — générés localement
+/database/seeders/data/legacy-specializations/*.html
+
+# Base SQLite locale
+/database/*.sqlite
+
+# --- IDE & éditeurs ---
 /.fleet
 /.idea
 /.nova
-/.vscodes
+/.vscode
 /.zed
-# MCP peut contenir des secrets (DSN, etc.)
-.cursor/mcp.json
-/database/*.sqlite
+/.pnpm-store
+/.obsidian
 desktop.ini
+
+# Cursor (secrets MCP ; les rules restent versionnées)
+.cursor/mcp.json
+
+# --- Divers ---
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
 /screenshots
 
-# Fichiers SCSS compilés
-/public/css/*.css
-/public/css/*.css.map
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs à la racine ou hors storage/logs/.gitignore
+*.log
+
+/test-results
+/playwright-report
+/blob-report
