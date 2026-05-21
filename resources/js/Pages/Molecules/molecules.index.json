@@ -2130,6 +2130,13 @@
     "file": "entity/campaign/CampaignViewFull.vue"
   },
   {
+    "name": "BreedWriteMetaPanel",
+    "description": "Bandeau métadonnées « Rédaction » pour une classe (Breed).",
+    "props": [],
+    "slots": [],
+    "file": "entity/breed/BreedWriteMetaPanel.vue"
+  },
+  {
     "name": "BreedViewText",
     "description": "BreedViewText — Vue Texte pour Breed",
     "props": [
@@ -2162,19 +2169,8 @@
   },
   {
     "name": "BreedViewFull",
-    "description": "BreedViewFull — Vue Full pour Breed",
-    "props": [
-      {
-        "name": "breed",
-        "type": "Breed",
-        "desc": "- Instance du modèle Breed"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "description": "BreedViewFull — Vue Full pour Breed En-tête + blocs gameplay structuraux (orientations, traits, langues, variantes sorts). Le contenu narratif (spécificité, dé de vie, évolution, capacités en prose) est dans les sections liées.",
+    "props": [],
     "slots": [],
     "file": "entity/breed/BreedViewFull.vue"
   },

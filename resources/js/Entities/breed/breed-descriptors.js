@@ -17,7 +17,7 @@
 import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
 
 /** Champs legacy masqués (évolution / spécificité / dé de vie → sections CMS, Phase G 1.3.2). */
-const hideLegacyBreedProgressionFields = () => false;
+const hideLegacyBreedProgressionFields = () => true;
 
 /**
  * @typedef {Object} BreedFieldDescriptor

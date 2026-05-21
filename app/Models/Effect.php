@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $effect_usages_count
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect query()
@@ -38,6 +39,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereTargetType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Effect extends Model

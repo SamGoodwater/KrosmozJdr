@@ -19,7 +19,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -50,12 +50,7 @@ class PageController extends Controller
             'createdBy:id,name,email',
         ])->paginate(20);
 
-        // OPTIMISATION : Utiliser le cache pour la liste des pages (utilisée dans plusieurs endroits)
-        $allPages = Cache::remember('pages_select_list', 3600, function () {
-            return Page::select('id', 'title', 'slug')
-                ->orderBy('title')
-                ->get();
-        });
+        $allPages = PageService::getPagesSelectList();
 
         return Inertia::render('Pages/page/Index', [
             'pages' => PageResource::collection($pages),
@@ -171,12 +166,7 @@ class PageController extends Controller
 
         $page->setRelation('sections', $sections);
 
-        // OPTIMISATION : Charger toutes les pages en cache (utilisé pour le menu ET le modal)
-        $pages = Cache::remember('pages_select_list', 3600, function () {
-            return Page::select('id', 'title', 'slug')
-                ->orderBy('title')
-                ->get();
-        });
+        $pages = collect(PageService::getPagesSelectList());
 
         // Filtrer la page courante côté PHP (plus rapide que requête SQL)
         $pagesFiltered = $pages->where('id', '!=', $page->id)->values();
@@ -206,9 +196,7 @@ class PageController extends Controller
         $sections->each(fn ($section) => $section->setRelation('page', $page));
         $page->setRelation('sections', $sections);
 
-        $pages = Cache::remember('pages_select_list', 3600, function () {
-            return Page::select('id', 'title', 'slug')->orderBy('title')->get();
-        });
+        $pages = collect(PageService::getPagesSelectList());
         $pagesFiltered = $pages->where('id', '!=', $page->id)->values();
 
         $linkedType = (string) ($linked['type'] ?? '');
@@ -306,7 +294,7 @@ class PageController extends Controller
     public function delete(Page $page): RedirectResponse
     {
         $this->authorize('delete', $page);
-        $user = request()->user();
+        $user = $this->authenticatedUser();
         $page->delete();
         NotificationService::notifyEntityDeleted($page, $user);
         PageService::clearMenuCache();
@@ -365,7 +353,7 @@ class PageController extends Controller
         $model = Page::withTrashed()->findOrFail($page);
         $this->authorize('restore', $model);
         $model->restore();
-        NotificationService::notifyEntityRestored($model, request()->user());
+        NotificationService::notifyEntityRestored($model, $this->authenticatedUser());
         PageService::clearMenuCache();
 
         return redirect()->route('pages.index')->with('success', 'Page restaurée.');
@@ -375,7 +363,7 @@ class PageController extends Controller
     {
         $this->authorize('forceDelete', $page);
         $page->forceDelete();
-        NotificationService::notifyEntityForceDeleted($page, request()->user());
+        NotificationService::notifyEntityForceDeleted($page, $this->authenticatedUser());
         PageService::clearMenuCache();
 
         return redirect()->route('pages.index')->with('success', 'Page supprimée définitivement.');
@@ -402,9 +390,7 @@ class PageController extends Controller
                 ->map(fn (array $item) => [
                     'id' => 'bibliotheque-'.($item['route'] ?? ($item['label'] ?? 'item')),
                     'title' => $item['label'],
-                    'url' => isset($item['url'])
-                        ? $item['url']
-                        : route($item['route'], $item['route_params'] ?? [], false),
+                    'url' => self::bibliothequeMenuItemUrl($item),
                     'entity_key' => $item['entity_key'] ?? null,
                     'order' => $item['order'] ?? 0,
                     'menu_item_css_classes' => $item['menu_item_css_classes']
@@ -494,6 +480,37 @@ class PageController extends Controller
         PageService::clearMenuCache();
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Utilisateur authentifié (méthodes derrière le middleware `auth`).
+     */
+    private function authenticatedUser(): User
+    {
+        $user = auth()->user();
+
+        if (! $user instanceof User) {
+            abort(403);
+        }
+
+        return $user;
+    }
+
+    /**
+     * URL d'une entrée menu « Bibliothèques » (config ou fallback).
+     */
+    private static function bibliothequeMenuItemUrl(array $item): string
+    {
+        if (isset($item['url'])) {
+            return (string) $item['url'];
+        }
+
+        $routeName = $item['route'] ?? null;
+        if (! is_string($routeName) || $routeName === '' || ! Route::has($routeName)) {
+            return '#';
+        }
+
+        return route($routeName, $item['route_params'] ?? [], false);
     }
 
     /**

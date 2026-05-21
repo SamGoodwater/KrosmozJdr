@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreMonsterRequest;
 use App\Http\Requests\Entity\UpdateMonsterCreatureTraitsRequest;
@@ -11,11 +12,13 @@ use App\Http\Resources\Entity\CreatureTraitResource;
 use App\Http\Resources\Entity\LanguageResource;
 use App\Http\Resources\Entity\MonsterResource;
 use App\Models\Entity\Campaign;
+use App\Models\Entity\Creature;
 use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Language;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Spell;
+use App\Models\User;
 use App\Services\PdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,6 +27,8 @@ use Inertia\Response;
 
 class MonsterController extends Controller
 {
+    use RedirectsAfterEntityCreate;
+
     /**
      * Display a listing of the resource.
      */
@@ -83,9 +88,48 @@ class MonsterController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMonsterRequest $request)
+    public function store(StoreMonsterRequest $request): RedirectResponse
     {
-        //
+        $this->authorize('create', Monster::class);
+
+        $data = $request->validated();
+        $creatureId = $data['creature_id'] ?? null;
+
+        if ($creatureId === null) {
+            $creature = Creature::factory()->create([
+                'name' => $data['name'],
+                'description' => $data['description'] ?? '',
+                'level' => (string) ($data['level'] ?? '1'),
+                'created_by' => $request->user()?->id,
+            ]);
+            $creatureId = $creature->id;
+        }
+
+        $monster = Monster::create([
+            'creature_id' => $creatureId,
+            'official_id' => $data['official_id'] ?? null,
+            'dofusdb_id' => $data['dofusdb_id'] ?? null,
+            'dofus_version' => $data['dofus_version'] ?? '3',
+            'auto_update' => array_key_exists('auto_update', $data) ? (bool) $data['auto_update'] : false,
+            'size' => array_key_exists('size', $data) && $data['size'] !== null ? (int) $data['size'] : 2,
+            'is_boss' => array_key_exists('is_boss', $data) ? (int) (bool) $data['is_boss'] : 0,
+            'boss_pa' => $data['boss_pa'] ?? '',
+            'monster_race_id' => $data['monster_race_id'] ?? null,
+            'state' => $data['state'] ?? 'draft',
+            'read_level' => array_key_exists('read_level', $data) && $data['read_level'] !== null
+                ? (int) $data['read_level'] : User::ROLE_GUEST,
+            'write_level' => array_key_exists('write_level', $data) && $data['write_level'] !== null
+                ? (int) $data['write_level'] : User::ROLE_GAME_MASTER,
+        ]);
+
+        return $this->redirectAfterEntityStore(
+            $request,
+            $monster,
+            'entities.monsters.edit',
+            'entities.monsters.index',
+            'Monstre créé avec succès.',
+            'edit',
+        );
     }
 
     /**

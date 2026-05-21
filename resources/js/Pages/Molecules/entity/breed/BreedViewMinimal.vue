@@ -14,7 +14,6 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
 import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
@@ -55,8 +54,6 @@ const imageUrl = computed(() => {
 
 const cellOpts = () => ({ size: "xs", context: "minimal" });
 
-const lifeDiceCell = computed(() => entity.value?.toCell?.("life_dice", cellOpts()) ?? null);
-const specificityCell = computed(() => entity.value?.toCell?.("specificity", cellOpts()) ?? null);
 const orientationMap = computed(() => {
     const raw = entity.value?._data ?? entity.value;
     return normalizeElementOrientationMap(raw?.element_orientations);
@@ -171,30 +168,11 @@ const handleLinkedQuickView = (linkedEntity) => {
                                 />
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Tooltip
-                                v-if="lifeDiceCell?.value && lifeDiceCell.value !== '-' && lifeDiceCell.value !== '—'"
-                                :content="`Dé de vie : ${lifeDiceCell.value}`"
-                                placement="top"
-                            >
-                                <span class="text-base-content/80">
-                                    <span class="font-medium">Dé de vie</span>
-                                    {{ lifeDiceCell.value }}
-                                </span>
-                            </Tooltip>
-                            <BreedElementOrientationsDisplay
-                                :orientation-map="orientationMap"
-                                size="xs"
-                                class="w-full"
-                            />
-                        </div>
-                        <p
-                            v-if="specificityCell?.value && specificityCell.value !== '-' && specificityCell.value !== '—'"
-                            class="text-xs text-base-content/70 line-clamp-2"
-                            :title="String(specificityCell.value)"
-                        >
-                            {{ specificityCell.value }}
-                        </p>
+                        <BreedElementOrientationsDisplay
+                            :orientation-map="orientationMap"
+                            size="xs"
+                            class="w-full"
+                        />
                         <BreedCapabilitiesDisplay
                             v-if="hasLinkedCapabilities"
                             :capabilities="linkedCapabilities"
@@ -272,30 +250,11 @@ const handleLinkedQuickView = (linkedEntity) => {
                                 />
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Tooltip
-                                v-if="lifeDiceCell?.value && lifeDiceCell.value !== '-' && lifeDiceCell.value !== '—'"
-                                :content="`Dé de vie : ${lifeDiceCell.value}`"
-                                placement="top"
-                            >
-                                <span class="text-base-content/80">
-                                    <span class="font-medium">Dé de vie</span>
-                                    {{ lifeDiceCell.value }}
-                                </span>
-                            </Tooltip>
-                            <BreedElementOrientationsDisplay
-                                :orientation-map="orientationMap"
-                                size="xs"
-                                class="w-full"
-                            />
-                        </div>
-                        <p
-                            v-if="specificityCell?.value && specificityCell.value !== '-' && specificityCell.value !== '—'"
-                            class="text-xs text-base-content/70 line-clamp-2"
-                            :title="String(specificityCell.value)"
-                        >
-                            {{ specificityCell.value }}
-                        </p>
+                        <BreedElementOrientationsDisplay
+                            :orientation-map="orientationMap"
+                            size="xs"
+                            class="w-full"
+                        />
                         <BreedCapabilitiesDisplay
                             v-if="hasLinkedCapabilities"
                             :capabilities="linkedCapabilities"

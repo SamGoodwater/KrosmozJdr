@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask query()
@@ -28,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask whereTaskKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectScheduleTask whereWithoutOverlapping($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectScheduleTask extends Model

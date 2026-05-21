@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read int|null $spell_effects_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType query()
@@ -43,6 +44,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereValueType($value)
+ *
  * @mixin \Eloquent
  */
 class SpellEffectType extends Model

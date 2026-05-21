@@ -4,11 +4,9 @@
  */
 import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
-import { resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     breed: {
@@ -68,15 +66,6 @@ const getCellCompact = (fieldKey) =>
         size: "xs",
         context: "extended",
     });
-
-const getBadgeAutoParams = (fieldKey) => {
-    const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
-        fieldKey,
-        cell: getCellCompact(fieldKey),
-        fieldUi: { color: null },
-    });
-    return { autoLabel, autoScheme, autoTone };
-};
 </script>
 
 <template>
@@ -107,12 +96,9 @@ const getBadgeAutoParams = (fieldKey) => {
                     <span v-else>—</span>
                 </template>
                 <template v-else>
-                    <Badge
-                        v-bind="getBadgeAutoParams(fieldKey)"
-                        size="xs"
-                    >
-                        <CellRenderer :cell="getCellCompact(fieldKey)" ui-color="primary" />
-                    </Badge>
+                    <span class="min-w-0 text-xs wrap-break-word">
+                        <CellRenderer :cell="getCellCompact(fieldKey)" ui-color="neutral" />
+                    </span>
                 </template>
             </div>
         </div>

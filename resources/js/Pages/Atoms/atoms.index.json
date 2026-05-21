@@ -340,6 +340,16 @@
         "name": "variant",
         "type": "('group'|'parent')",
         "desc": "- `group` : libellé de section (majuscules, gris, centré). `parent` : ligne comme une entrée de navigation (alignée à gauche, titre naturel)."
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Chemin icône entité (ex. icons/entities/specialization.webp) ou FA, affiché en variant parent"
+      },
+      {
+        "name": "iconAlt",
+        "type": "String",
+        "desc": "- Texte alternatif de l'icône"
       }
     ],
     "slots": [],
@@ -668,6 +678,11 @@
         "name": "content",
         "type": "String",
         "desc": "- Texte simple à afficher (optionnel, prioritaire sur slot #content)"
+      },
+      {
+        "name": "glass",
+        "type": "Boolean",
+        "desc": "- Style glassmorphism (box-glass-sm, paires color-X et bg-color-X, texte blanc, défaut true)"
       },
       {
         "name": "shadow",
@@ -1927,7 +1942,7 @@
     "slots": [
       {
         "name": "loader",
-        "desc": "- Skeleton personnalisé (overlay) pendant le chargement réseau"
+        "desc": "- Loader personnalisé (overlay) pendant le chargement réseau"
       },
       {
         "name": "fallback",

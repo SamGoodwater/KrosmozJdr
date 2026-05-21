@@ -6,7 +6,7 @@ use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\User;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,7 +20,7 @@ class EntityRedirectAfterCreateTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware([CheckRole::class, VerifyCsrfToken::class]);
+        $this->withoutMiddleware([CheckRole::class, PreventRequestForgery::class]);
     }
 
     public function test_resource_store_with_redirect_after_create_goes_to_edit(): void

@@ -188,6 +188,29 @@ class GlobalSearchControllerTest extends TestCase
     /**
      * `meta.hasMore` est vrai lorsque plus de lignes existent que la limite demandée.
      */
+    /**
+     * Invité : un sort en brouillon ne doit pas apparaître même si le nom correspond.
+     */
+    public function test_guest_does_not_see_draft_spell_in_results(): void
+    {
+        $token = 'GlSearchGuestDraftTok'.uniqid();
+
+        Spell::factory()->create([
+            'name' => 'Brouillon '.$token,
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->getJson('/api/global-search?'.http_build_query([
+            'q' => $token,
+            'types' => ['spells'],
+        ]));
+
+        $response->assertOk();
+        $this->assertSame([], $response->json('results'));
+    }
+
     public function test_meta_has_more_when_results_exceed_limit(): void
     {
         $token = 'GlSearchMoreTok'.uniqid();

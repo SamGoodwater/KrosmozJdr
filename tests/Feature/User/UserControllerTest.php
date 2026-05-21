@@ -4,7 +4,7 @@ namespace Tests\Feature\User;
 
 use App\Http\Middleware\CheckRole;
 use App\Models\User;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +33,7 @@ class UserControllerTest extends TestCase
 
         // Désactiver explicitement le CSRF pour les tests
         $this->withoutMiddleware([
-            VerifyCsrfToken::class,
+            PreventRequestForgery::class,
         ]);
     }
 

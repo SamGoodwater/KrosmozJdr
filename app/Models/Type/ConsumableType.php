@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User|null $createdBy
+ *
  * @method static \Database\Factories\Type\ConsumableTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType newQuery()
@@ -40,10 +41,12 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withoutTrashed()
+ *
  * @property int|null $dofusdb_type_id
  * @property string $decision
  * @property int $seen_count
  * @property Carbon|null $last_seen_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType allowed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType blocked()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType pending()
@@ -51,6 +54,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDofusdbTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereLastSeenAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereSeenCount($value)
+ *
  * @mixin \Eloquent
  */
 class ConsumableType extends Model

@@ -152,7 +152,7 @@
   {
     "path": "10-BestPractices/PROJECT_STRUCTURE.md",
     "title": "Structure du projet",
-    "description": "- Respect strict des conventions Laravel 12 (backend) et Vue 3 + Atomic Design (frontend)."
+    "description": "- Respect strict des conventions Laravel 13 (backend) et Vue 3 + Atomic Design (frontend)."
   },
   {
     "path": "10-BestPractices/PROJECT_UX_PHASE_K.md",
@@ -218,6 +218,11 @@
     "path": "100- Done/TESTS_SCRAPPING_COMMANDE_CHAINE_COMPLETE.md",
     "title": "Tests chaîne complète de la commande scrapping",
     "description": "**Livré** : réécriture et extension des tests de la commande `php artisan scrapping` pour couvrir toute la chaîne (API → conversion → validation → intégration BDD) pour toutes les entités et les principaux paramètres."
+  },
+  {
+    "path": "100- Done/UPGRADE_LARAVEL_13_PHPUNIT_PAO_INERTIA.md",
+    "title": "Montée de version Laravel 13, PHPUnit 12, PAO et Inertia",
+    "description": "**Date** : 2026-05-21"
   },
   {
     "path": "100- Done/VERIFICATION_CONFIDENTIALITE_GITHUB.md",

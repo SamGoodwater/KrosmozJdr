@@ -28,7 +28,10 @@ class StoreMonsterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'creature_id' => ['required', 'integer', 'exists:creatures,id'],
+            'creature_id' => ['nullable', 'integer', 'exists:creatures,id', 'required_without:name'],
+            'name' => ['required_without:creature_id', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'level' => ['nullable', 'string', 'max:255'],
             'official_id' => ['nullable', 'string', 'max:255'],
             'dofusdb_id' => ['nullable', 'string', 'max:255'],
             'dofus_version' => ['nullable', 'string', 'max:255'],

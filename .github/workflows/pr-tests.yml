@@ -82,4 +82,4 @@ jobs:
         run: php artisan migrate --force --no-interaction
 
       - name: Run PHPUnit
-        run: php artisan test --no-interaction
+        run: php artisan test

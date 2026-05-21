@@ -3,7 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -28,7 +28,7 @@ class RegistrationFlowTest extends TestCase
         parent::setUp();
         // Le CSRF est déjà désactivé dans TestCase::setUp()
         // Mais on s'assure qu'il est bien désactivé ici aussi
-        $this->withoutMiddleware(VerifyCsrfToken::class);
+        $this->withoutMiddleware(PreventRequestForgery::class);
     }
 
     /**

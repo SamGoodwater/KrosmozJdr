@@ -98,6 +98,10 @@ export class Breed extends BaseModel {
         return this._data.languages || [];
     }
 
+    get sections() {
+        return this._data.sections || [];
+    }
+
     /** @returns {Array<{ character_level: number, slot_index: number, spells: object[] }>} */
     get spellSlots() {
         return this._data.spell_slots || [];

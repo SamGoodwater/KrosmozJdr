@@ -6,7 +6,7 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
 
 ## Backend
 
-- **Laravel 12** : https://laravel.com/docs/12.x
+- **Laravel 13** : https://laravel.com/docs/13.x
 - **PHP 8.4**
 - **MySQL** (base par défaut). Exemple dev : `DB_DATABASE=krosmoz`, `DB_USERNAME=user`, `DB_PASSWORD=…`, `DB_CHARSET=utf8mb4`, `DB_COLLATION=utf8mb4_unicode_ci`
   - ⚠️ En production, utiliser des variables d'environnement et ne jamais versionner les secrets.
@@ -19,7 +19,8 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
 
 ## Frontend
 
-- **Vue.js** : https://fr.vuejs.org/guide/quick-start.html
+- **Vue.js 3** : https://fr.vuejs.org/guide/quick-start.html
+- **Inertia.js** : adapter Laravel `inertiajs/inertia-laravel` ^3, client `@inertiajs/vue3` ^2 — config `config/inertia.php` (`pages.paths` → `resources/js/Pages`)
 - **SCSS**
 - **Tailwind CSS** + **DaisyUI**
 - **Tiptap** (éditeur WYSIWYG) : https://next.tiptap.dev/docs/editor/getting-started/install/vue3
@@ -33,7 +34,8 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
 - **Composer** pour PHP
 - **pnpm** pour le frontend (spécifique ARM)
 - **Vitest** ou **Jest** pour les tests unitaires frontend (à préciser selon le choix du projet)
-- **PHPUnit** pour les tests backend Laravel
+- **PHPUnit 12** pour les tests backend Laravel
+- **Laravel PAO** (`laravel/pao`, dev) : sortie JSON compacte pour PHPUnit, PHPStan et Artisan dans les agents IA (Cursor)
 
 ## Intégration continue / Déploiement
 

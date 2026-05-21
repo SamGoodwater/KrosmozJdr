@@ -30,6 +30,11 @@ const breed = computed(() => {
     return raw instanceof Breed ? raw : new Breed(raw);
 });
 
+const breedSections = computed(() => {
+    const sections = breed.value?.sections;
+    return Array.isArray(sections) ? sections : [];
+});
+
 const characteristicRuntime = computed(() => page.props.characteristicRuntime ?? null);
 
 setPageTitle(`Classe : ${breed.value.name || "-"}`);
@@ -62,7 +67,7 @@ const goEdit = () => {
                 <section class="space-y-3">
                     <h2 class="text-lg font-semibold">Sections</h2>
                     <EntitySectionsRenderer
-                        :sections="breed.sections"
+                        :sections="breedSections"
                         empty-message="Aucune section liée à cette classe."
                     />
                 </section>

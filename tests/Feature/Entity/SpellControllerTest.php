@@ -7,7 +7,7 @@ use App\Models\Entity\Breed;
 use App\Models\Entity\Spell;
 use App\Models\Type\SpellType;
 use App\Models\User;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -32,7 +32,7 @@ class SpellControllerTest extends TestCase
         // Désactiver le middleware role pour les tests (on teste les policies directement)
         $this->withoutMiddleware(CheckRole::class);
         // Désactiver explicitement le CSRF pour ces tests
-        $this->withoutMiddleware(VerifyCsrfToken::class);
+        $this->withoutMiddleware(PreventRequestForgery::class);
     }
 
     /**

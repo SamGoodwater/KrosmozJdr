@@ -39,7 +39,7 @@ Ce document recense les points de sécurité vérifiés et les recommandations i
 
 ### 2.3 CSRF exclu sur API scrapping
 
-**Constat** : Les routes `api/scrapping/*` sont exclues de la vérification CSRF (`bootstrap/app.php`, `VerifyCsrfToken`). Le frontend envoie bien `X-CSRF-TOKEN`, mais le backend ne le valide pas pour ces routes.
+**Constat** : Les routes `api/scrapping/*` sont exclues de la vérification CSRF (`bootstrap/app.php`, `PreventRequestForgery`). Le frontend envoie bien `X-CSRF-TOKEN`, mais le backend ne le valide pas pour ces routes.
 
 **Justification actuelle** : Éviter les erreurs 419 en cas de session/token régénéré pendant les opérations longues (scrapping). Les routes sont protégées par `auth`, `role:admin` et `password.confirm`.
 

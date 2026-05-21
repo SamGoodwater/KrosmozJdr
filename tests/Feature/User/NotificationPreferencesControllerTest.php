@@ -4,7 +4,7 @@ namespace Tests\Feature\User;
 
 use App\Http\Middleware\CheckRole;
 use App\Models\User;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -25,7 +25,7 @@ class NotificationPreferencesControllerTest extends TestCase
     {
         parent::setUp();
         $this->withoutMiddleware(CheckRole::class);
-        $this->withoutMiddleware([VerifyCsrfToken::class]);
+        $this->withoutMiddleware([PreventRequestForgery::class]);
     }
 
     public function test_user_can_disable_notifications_globally_from_settings(): void

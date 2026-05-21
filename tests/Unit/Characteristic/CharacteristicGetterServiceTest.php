@@ -36,6 +36,8 @@ class CharacteristicGetterServiceTest extends TestCase
         $this->seed(SpellCharacteristicSeeder::class);
         $this->seedMinimalCharacteristicsIfEmpty();
         $this->getter = $this->app->make(CharacteristicGetterService::class);
+        // Singleton : vider le mémo entre tests (RefreshDatabase recrée les pivots item_types).
+        $this->getter->clearCache();
     }
 
     public function test_get_definition_returns_null_for_unknown_key(): void

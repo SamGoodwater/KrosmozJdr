@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
@@ -53,8 +53,8 @@ abstract class TestCase extends BaseTestCase
         // En Laravel 11, le middleware CSRF est automatiquement inclus dans le groupe 'web'
         // On doit le désactiver explicitement pour les tests
         $this->withoutMiddleware([
-            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
-            VerifyCsrfToken::class,
+            \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class,
+            PreventRequestForgery::class,
         ]);
 
         // Désactiver d'autres middlewares non essentiels pour l'auth

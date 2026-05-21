@@ -17,8 +17,6 @@ import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabi
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
-import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
-import { isRichHtmlVisuallyEmpty } from "@/Utils/richText/isRichHtmlVisuallyEmpty";
 import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
 
 const props = defineProps({
@@ -49,23 +47,9 @@ const imageUrl = computed(() => {
 });
 
 const nameCell = computed(() => getCell("name"));
-const lifeDiceCell = computed(() => getCell("life_dice"));
-const specificityCell = computed(() => getCell("specificity"));
 const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
 );
-
-const evolutionRaw = computed(
-    () => entity.value?.evolution ?? entity.value?._data?.evolution ?? ""
-);
-
-const evolutionHtmlSafe = computed(() => {
-    const raw = evolutionRaw.value;
-    if (raw == null || isRichHtmlVisuallyEmpty(String(raw))) {
-        return "";
-    }
-    return sanitizeHtml(String(raw));
-});
 
 const orientationMap = computed(() => {
     const raw = entity.value?._data ?? entity.value;
@@ -148,47 +132,14 @@ const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
                         />
                     </div>
                 </div>
-                <div
-                    v-if="lifeDiceCell?.value && lifeDiceCell.value !== '-' && lifeDiceCell.value !== '—'"
-                    class="flex flex-wrap items-center gap-2 text-sm"
-                >
-                    <span class="text-xs text-base-content/80">
-                        <span class="font-medium text-base-content">Dé de vie</span>
-                        {{ lifeDiceCell.value }}
-                    </span>
-                </div>
                 <div class="w-full mt-1">
                     <BreedElementOrientationsDisplay :orientation-map="orientationMap" size="xs" />
                 </div>
-                <p
-                    v-if="specificityCell?.value && specificityCell.value !== '-' && specificityCell.value !== '—'"
-                    class="text-xs text-base-content/70 line-clamp-2"
-                    :title="String(specificityCell.value)"
-                >
-                    {{ specificityCell.value }}
-                </p>
                 <BreedCapabilitiesDisplay
                     v-if="hasLinkedCapabilities"
                     :capabilities="linkedCapabilities"
                     density="text"
                 />
-                <div
-                    v-if="evolutionHtmlSafe"
-                    class="transition-[max-height,opacity] duration-200 ease-out max-h-0 opacity-0 overflow-hidden group-hover:max-h-[min(55vh,26rem)] group-hover:opacity-100 group-focus-within:max-h-[min(55vh,26rem)] group-focus-within:opacity-100"
-                    role="region"
-                    aria-label="Évolution"
-                >
-                    <div
-                        class="mt-1 max-h-[min(50vh,24rem)] overflow-y-auto overscroll-contain rounded-box border border-base-300/60 bg-base-200/25 px-2 py-1.5"
-                    >
-                        <!-- eslint-disable vue/no-v-html -- sanitizeHtml côté script -->
-                        <div
-                            class="rich-text-readonly prose prose-sm max-w-none text-xs text-base-content/85 **:my-1!"
-                            v-html="evolutionHtmlSafe"
-                        />
-                        <!-- eslint-enable vue/no-v-html -->
-                    </div>
-                </div>
                 <BreedVariantsDisplay
                     v-if="hasSpellSlots"
                     :breed="entity?._data ?? entity"

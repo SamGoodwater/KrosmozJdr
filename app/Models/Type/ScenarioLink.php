@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $condition
  * @property-read Scenario $nextScenario
  * @property-read Scenario $scenario
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink query()
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink whereNextScenarioId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScenarioLink whereScenarioId($value)
+ *
  * @mixin \Eloquent
  */
 class ScenarioLink extends Model

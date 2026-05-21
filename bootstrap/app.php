@@ -34,8 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        // Exclure les routes API scrapping de la vérification CSRF (appelées depuis l'UI, auth + role:admin).
-        $middleware->validateCsrfTokens([
+        $middleware->preventRequestForgery(except: [
             'api/scrapping',
             'api/scrapping/*',
         ]);

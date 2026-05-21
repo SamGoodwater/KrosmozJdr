@@ -59,6 +59,10 @@ final class GlobalSearchService
             return ['results' => [], 'hasMore' => false];
         }
 
+        if (mb_strlen($term) > 100) {
+            $term = mb_substr($term, 0, 100);
+        }
+
         $limit = max(1, min($limit, 80));
         $types = array_values(array_intersect(self::ALLOWED_TYPES, $types));
         if ($types === []) {

@@ -281,7 +281,7 @@ onMounted(() => {
                     <Route route="legal.cgu">
                         <Btn color="neutral" variant="outline" size="sm">CGU</Btn>
                     </Route>
-                    <Route route="legal.privacy">
+                    <Route route="legal.politique-donnees">
                         <Btn color="neutral" variant="outline" size="sm">Confidentialité</Btn>
                     </Route>
                     <Route route="legal.cookies">

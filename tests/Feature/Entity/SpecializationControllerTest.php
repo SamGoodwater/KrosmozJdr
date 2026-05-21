@@ -4,6 +4,8 @@ namespace Tests\Feature\Entity;
 
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
+use App\Models\Page;
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -140,6 +142,51 @@ class SpecializationControllerTest extends TestCase
             ->assertRedirect(route('entities.specializations.index'));
 
         $this->assertSoftDeleted('specializations', ['id' => $spec->id]);
+    }
+
+    public function test_game_master_cannot_sync_sections_on_specialization(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $spec = Specialization::factory()->create([
+            'state' => Specialization::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $page = Page::factory()->create(['created_by' => $gm->id]);
+        $section = Section::factory()->create(['page_id' => $page->id, 'created_by' => $gm->id]);
+
+        $this->actingAs($gm)
+            ->patch(route('entities.specializations.updateSections', $spec), [
+                'sections' => [
+                    ['id' => $section->id, 'level' => 1],
+                ],
+            ])
+            ->assertForbidden();
+    }
+
+    public function test_admin_can_sync_sections_on_specialization(): void
+    {
+        $admin = $this->adminUser();
+        $spec = Specialization::factory()->create([
+            'state' => Specialization::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $page = Page::factory()->create(['created_by' => $admin->id]);
+        $sectionA = Section::factory()->create(['page_id' => $page->id, 'created_by' => $admin->id]);
+        $sectionB = Section::factory()->create(['page_id' => $page->id, 'created_by' => $admin->id]);
+
+        $this->actingAs($admin)
+            ->patch(route('entities.specializations.updateSections', $spec), [
+                'sections' => [
+                    ['id' => $sectionA->id, 'level' => 2],
+                    ['id' => $sectionB->id, 'level' => 1],
+                ],
+            ])
+            ->assertRedirect();
+
+        $this->assertEqualsCanonicalizing(
+            [$sectionA->id, $sectionB->id],
+            $spec->fresh()->sections->pluck('id')->all(),
+        );
     }
 
     public function test_player_cannot_store_specialization(): void

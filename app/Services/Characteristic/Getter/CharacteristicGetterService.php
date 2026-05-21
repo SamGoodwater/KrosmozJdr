@@ -10,7 +10,6 @@ use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
 use App\Services\Characteristic\Formula\FormulaResolutionService;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
@@ -65,7 +64,9 @@ final class CharacteristicGetterService implements CharacteristicDefinitionLooku
             return $this->definitionMemo[$memoKey];
         }
 
-        $characteristic = Characteristic::where('key', $characteristicKey)->first();
+        $characteristic = Characteristic::query()
+            ->where('key', '=', $characteristicKey)
+            ->first();
         if ($characteristic === null) {
             return $this->definitionMemo[$memoKey] = null;
         }
@@ -216,22 +217,25 @@ final class CharacteristicGetterService implements CharacteristicDefinitionLooku
     {
         if (in_array($entity, self::GROUP_CREATURE, true)) {
             return $this->accumulateFieldAliases(
-                CharacteristicCreature::whereIn('entity', [$entity, self::ENTITY_ALL])
-                    ->with('characteristic')
+                CharacteristicCreature::query()
+                    ->whereIn('entity', [$entity, self::ENTITY_ALL], 'and', false)
+                    ->with(['characteristic'])
                     ->get()
             );
         }
         if (in_array($entity, self::GROUP_OBJECT, true)) {
             return $this->accumulateFieldAliases(
-                CharacteristicObject::whereIn('entity', [$entity, self::ENTITY_ALL])
-                    ->with('characteristic')
+                CharacteristicObject::query()
+                    ->whereIn('entity', [$entity, self::ENTITY_ALL], 'and', false)
+                    ->with(['characteristic'])
                     ->get()
             );
         }
         if (in_array($entity, self::GROUP_SPELL, true)) {
             return $this->accumulateFieldAliases(
-                CharacteristicSpell::whereIn('entity', [$entity, self::ENTITY_ALL])
-                    ->with('characteristic')
+                CharacteristicSpell::query()
+                    ->whereIn('entity', [$entity, self::ENTITY_ALL], 'and', false)
+                    ->with(['characteristic'])
                     ->get()
             );
         }
@@ -240,12 +244,12 @@ final class CharacteristicGetterService implements CharacteristicDefinitionLooku
     }
 
     /**
-     * @param  Collection<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>  $rows
+     * @param  iterable<int, CharacteristicCreature|CharacteristicObject|CharacteristicSpell>  $rows
      * @return array<string, string>
      */
-    private function accumulateFieldAliases($rows): array
+    private function accumulateFieldAliases(iterable $rows): array
     {
-        $sorted = $rows->sortBy(fn ($r) => $r->entity === self::ENTITY_ALL ? 0 : 1)->values();
+        $sorted = collect($rows)->sortBy(fn ($r) => $r->entity === self::ENTITY_ALL ? 0 : 1)->values();
         $map = [];
         foreach ($sorted as $row) {
             $char = $row->characteristic;
@@ -318,9 +322,15 @@ final class CharacteristicGetterService implements CharacteristicDefinitionLooku
 
         return Cache::remember($cacheKey, self::DOFUSDB_TO_KEY_CACHE_TTL, function () use ($group): array {
             $query = match ($group) {
-                'object' => CharacteristicObject::whereNotNull('dofusdb_characteristic_id')->with('characteristic'),
-                'creature' => CharacteristicCreature::whereNotNull('dofusdb_characteristic_id')->with('characteristic'),
-                'spell' => CharacteristicSpell::whereNotNull('dofusdb_characteristic_id')->with('characteristic'),
+                'object' => CharacteristicObject::query()
+                    ->whereNotNull('dofusdb_characteristic_id', 'and')
+                    ->with(['characteristic']),
+                'creature' => CharacteristicCreature::query()
+                    ->whereNotNull('dofusdb_characteristic_id', 'and')
+                    ->with(['characteristic']),
+                'spell' => CharacteristicSpell::query()
+                    ->whereNotNull('dofusdb_characteristic_id', 'and')
+                    ->with(['characteristic']),
                 default => null,
             };
             if ($query === null) {
@@ -373,35 +383,39 @@ final class CharacteristicGetterService implements CharacteristicDefinitionLooku
      */
     private function findGroupRows(int $characteristicId, string $entity): array
     {
-        $entities = $entity !== self::ENTITY_ALL ? [$entity, self::ENTITY_ALL] : [self::ENTITY_ALL];
-
         if (in_array($entity, self::GROUP_CREATURE, true)) {
-            $rows = CharacteristicCreature::where('characteristic_id', $characteristicId)
-                ->whereIn('entity', $entities)
+            $rows = CharacteristicCreature::query()
+                ->where('characteristic_id', '=', $characteristicId)
+                ->whereIn('entity', [$entity, self::ENTITY_ALL], 'and', false)
                 ->get();
-            $base = $rows->firstWhere('entity', self::ENTITY_ALL);
-            $overlay = $entity !== self::ENTITY_ALL ? $rows->firstWhere('entity', $entity) : null;
 
-            return [$base, $overlay];
+            return [
+                $rows->firstWhere('entity', self::ENTITY_ALL),
+                $rows->firstWhere('entity', $entity),
+            ];
         }
         if (in_array($entity, self::GROUP_OBJECT, true)) {
-            $rows = CharacteristicObject::where('characteristic_id', $characteristicId)
-                ->whereIn('entity', $entities)
-                ->with('allowedItemTypes')
+            $rows = CharacteristicObject::query()
+                ->where('characteristic_id', '=', $characteristicId)
+                ->whereIn('entity', [$entity, self::ENTITY_ALL], 'and', false)
+                ->with(['allowedItemTypes'])
                 ->get();
-            $base = $rows->firstWhere('entity', self::ENTITY_ALL);
-            $overlay = $entity !== self::ENTITY_ALL ? $rows->firstWhere('entity', $entity) : null;
 
-            return [$base, $overlay];
+            return [
+                $rows->firstWhere('entity', self::ENTITY_ALL),
+                $rows->firstWhere('entity', $entity),
+            ];
         }
         if (in_array($entity, self::GROUP_SPELL, true)) {
-            $rows = CharacteristicSpell::where('characteristic_id', $characteristicId)
-                ->whereIn('entity', $entities)
+            $rows = CharacteristicSpell::query()
+                ->where('characteristic_id', '=', $characteristicId)
+                ->whereIn('entity', [$entity, self::ENTITY_ALL], 'and', false)
                 ->get();
-            $base = $rows->firstWhere('entity', self::ENTITY_ALL);
-            $overlay = $entity !== self::ENTITY_ALL ? $rows->firstWhere('entity', $entity) : null;
 
-            return [$base, $overlay];
+            return [
+                $rows->firstWhere('entity', self::ENTITY_ALL),
+                $rows->firstWhere('entity', $entity),
+            ];
         }
 
         return [null, null];
@@ -498,9 +512,15 @@ final class CharacteristicGetterService implements CharacteristicDefinitionLooku
             $out['value_available'] = $this->pickGroupValue($base, $overlay, 'value_available') ?? $row->value_available;
             $overlayObj = $overlay instanceof CharacteristicObject ? $overlay : null;
             $baseObj = $base instanceof CharacteristicObject ? $base : null;
-            $effectiveItemTypes = ($overlayObj && $overlayObj->relationLoaded('allowedItemTypes') && $overlayObj->allowedItemTypes->isNotEmpty())
+            if ($baseObj !== null) {
+                $baseObj->loadMissing('allowedItemTypes');
+            }
+            if ($overlayObj !== null) {
+                $overlayObj->loadMissing('allowedItemTypes');
+            }
+            $effectiveItemTypes = ($overlayObj && $overlayObj->allowedItemTypes->isNotEmpty())
                 ? $overlayObj->allowedItemTypes
-                : ($baseObj && $baseObj->relationLoaded('allowedItemTypes') ? $baseObj->allowedItemTypes : collect());
+                : ($baseObj ? $baseObj->allowedItemTypes : collect());
             $restricted = $effectiveItemTypes->isNotEmpty();
             $out['allowed_item_type_restricted'] = $restricted;
             $out['allowed_item_type_ids'] = $restricted ? $effectiveItemTypes->pluck('id')->values()->all() : [];
@@ -530,38 +550,47 @@ final class CharacteristicGetterService implements CharacteristicDefinitionLooku
         $id = $characteristic->id;
 
         // On privilégie la ligne avec entity='*' si elle existe.
-        $row = CharacteristicCreature::where('characteristic_id', $id)
-            ->where('entity', self::ENTITY_ALL)
+        $row = CharacteristicCreature::query()
+            ->where('characteristic_id', '=', $id)
+            ->where('entity', '=', self::ENTITY_ALL)
             ->first();
         if ($row !== null) {
             return $row;
         }
 
-        $row = CharacteristicObject::where('characteristic_id', $id)
-            ->where('entity', self::ENTITY_ALL)
+        $row = CharacteristicObject::query()
+            ->where('characteristic_id', '=', $id)
+            ->where('entity', '=', self::ENTITY_ALL)
             ->first();
         if ($row !== null) {
             return $row;
         }
 
-        $row = CharacteristicSpell::where('characteristic_id', $id)
-            ->where('entity', self::ENTITY_ALL)
+        $row = CharacteristicSpell::query()
+            ->where('characteristic_id', '=', $id)
+            ->where('entity', '=', self::ENTITY_ALL)
             ->first();
         if ($row !== null) {
             return $row;
         }
 
         // Fallback : première ligne trouvée dans l'une des tables.
-        $row = CharacteristicCreature::where('characteristic_id', $id)->first();
+        $row = CharacteristicCreature::query()
+            ->where('characteristic_id', '=', $id)
+            ->first();
         if ($row !== null) {
             return $row;
         }
 
-        $row = CharacteristicObject::where('characteristic_id', $id)->first();
+        $row = CharacteristicObject::query()
+            ->where('characteristic_id', '=', $id)
+            ->first();
         if ($row !== null) {
             return $row;
         }
 
-        return CharacteristicSpell::where('characteristic_id', $id)->first();
+        return CharacteristicSpell::query()
+            ->where('characteristic_id', '=', $id)
+            ->first();
     }
 }

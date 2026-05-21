@@ -29,6 +29,42 @@ class PageService
      */
     private const CACHE_TTL = 3600; // 1 heure
 
+    private const CACHE_KEY_PAGES_SELECT = 'pages_select_list';
+
+    /**
+     * Liste légère des pages (id, title, slug) pour les selects — tableaux uniquement (L13 cache).
+     *
+     * @return array<int, array{id: int, title: string, slug: string}>
+     */
+    public static function getPagesSelectList(): array
+    {
+        $cached = Cache::get(self::CACHE_KEY_PAGES_SELECT);
+
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        if ($cached !== null) {
+            Cache::forget(self::CACHE_KEY_PAGES_SELECT);
+        }
+
+        $list = Page::query()
+            ->select('id', 'title', 'slug')
+            ->orderBy('title')
+            ->get()
+            ->map(fn (Page $page) => [
+                'id' => $page->id,
+                'title' => $page->title,
+                'slug' => $page->slug,
+            ])
+            ->values()
+            ->all();
+
+        Cache::put(self::CACHE_KEY_PAGES_SELECT, $list, self::CACHE_TTL);
+
+        return $list;
+    }
+
     /**
      * Récupère les pages à afficher dans le menu.
      *
@@ -44,12 +80,29 @@ class PageService
     public static function getMenuPages(?User $user = null): Collection
     {
         $cacheKey = 'menu_pages_'.($user?->id ?? 'guest');
+        $cached = Cache::get($cacheKey);
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($user) {
-            return Page::forMenu($user)
-                ->with(['parent', 'children'])
-                ->get();
-        });
+        if (is_array($cached)) {
+            $ids = $cached;
+        } else {
+            if ($cached !== null) {
+                Cache::forget($cacheKey);
+            }
+
+            $ids = Page::forMenu($user)->pluck('id')->all();
+            Cache::put($cacheKey, $ids, self::CACHE_TTL);
+        }
+
+        if ($ids === []) {
+            return new Collection;
+        }
+
+        return Page::query()
+            ->whereIn('id', $ids)
+            ->with(['parent', 'children'])
+            ->get()
+            ->sortBy(fn (Page $page) => array_search($page->id, $ids, true))
+            ->values();
     }
 
     /**

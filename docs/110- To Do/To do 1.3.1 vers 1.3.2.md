@@ -816,3 +816,51 @@ Pour l'accessibilité, il est peut être interessant d'utiliser un plugin pour f
 Les bandeaux Alert qui permettent de mettre des informations ont un contraste déplorable. Il faut les mettre avec intensité de couleur foncé et un look glass (peu d'arrondi, flou avec un background pas tout à faire opaque, etc), et la font doit être claire (c'est le cas actuellement).
 ## Notifications
 Les notifications temporaires ont un délai avant de se fermer. Pendant une partie du temps elles sont déplié puis elle se repli pour prendre moins de place. Il faudrai allonger leur durée de vie car aujourd'hui c'est trop court.
+
+# Questions : 
+A — Admin  
+(Q1) Gestion du contenu : à partir de game_master et plus (admin, super admin), espace admin : à partir d'admin (donc super admin aussi). J'ai ajouté planning cron à l'espace admin, à ne pas oublier.
+(Q2) : ce système est sensé débloquer les parties sensiblens pendant 1h. On peut voir un petit cadenas vert à coté de son avatar lors que le compte est en mode débloqué. 1h après si il n'y a pas eu de changement sur les pages sensibles, alors on rebloque le compte. Attention cela fait partie du système de sécurité : fiabilité et robustesse sont de mises.
+(Q3) Oui je confirme 
+
+B — Droits invités et « Gérer l’affichage »  
+(Q4)  Oui par défaut mettons pour les guests que les états stables si il n'y a pas de configuration autres.
+(Q5) J'aimerai qu'on l'intégre dans les policies existantes pour ne pas créer une surcouche inutile (sauf si tu me dis que c'est mieux niveau sécurité). Par contre je souhaite bien : entité : quel état est visible par quel role.
+(Q6) Admin, super admin, créateur, MJ sauf si on rèfle les détails de la page ou de la section différement.
+
+C — Vues / tableaux  
+(Q7)  C'est ça, j'aimerai remplacer compact et large par une seule vue : full. Il faut mettre la documentation et l'ensemble des entités à jour. L'idée est de diminuer les vues à maintenir. On a donc minimal, line (qui est dérive de minimal), texte (qui permet d'intégrer l'entité dans un paragraphe tout en ayant un accès plus poussé via popover), full (pour afficher l'ensemble du contenu que ça soit sur une page ou sur une modal), et edit (pour pouvoir éditer l'entité sur une page ou une modal).
+(Q8) Sur mac on peut utiliser les deux. Si sans droit d'édition, on émet une notification sans ouvrir quoi que ce soit.
+(Q9) Je ne comprend pas la question.
+
+D — Spécialisations & classes  
+(Q10)  La normal est de 1 à 4 sorts par variante mais rien nous oblige à la limiter cela strictement. L'UX cependant doit tenir compte qu'on ne dépassera pas 4 sorts dans son affichage. Le même sort peut être utiliser dans plusieurs variantes, même si ça ne sera pas le cas mais ce n'est pas grave de laisser cela possible.
+(Q11)  Non pas besoin de migration du contenu, il sera reconstruit avec le système de section à l'initiation.
+(Q12)  Aligné sur l'existant du projet. Une page classe avec des sous-pages pour chaque classe et de même pour les spécialisations.
+
+E — Sections / `@`  
+(Q13) Le système de chargement doit suivre les bonnes pratiques en prenant en compte que ce système peut être lourd donc on utilise le système classique le plus léger et fluide. Critère de troncature : une dizaine de ligne en essayant de finir sur la fin d'un paragraphe.
+(Q14) Global
+
+F — Sorts  
+(Q15) Les ids données sont des exemples. Je souhaite pouvoir les mappés si possible et sinon essayer d'avoir le texte pour que ça soit humainement compréhensible (intégrer une icone pour le fallback, pour savoir ce qui a échoué ou non). L'intégration de l'icone se fait dans le texte, pas besoin d'enregistrer cela autrement.
+(Q16) oui
+
+G — Recherche globale  
+(Q17) perf acceptable : nombre de résultat. La technique m'importe peu, utilisons les bonnes pratiques et des outils performant.
+(Q18) Filtre sur les entités en prenant en compte les pages et les sections (CMS)
+(Q19) Juste titre et extrait
+
+H — Légal / changelog  
+(Q20) mono-langue et noms précis
+(Q21) Non pas docs. /storage/app/public/changelog/1.3.2.md. Faisons un fichier par version et donc une section par version. Cela parait plus logique. Comme cela les fichiers ne seront pas lourds, on peut faire une section d'introduction et il sera possible d'avoir le menu automatique pour aller d'une version à une autre. 
+
+I — Commandes  
+(Q22)  `project:refresh` définitivement : fresh + `DatabaseSeeder` puis, pipeline = `project:init`,
+(Q23) La commande a été refaite, vérifie la mais il n'y a surement plus à changer cela.
+(Q24) La commande a été refaite. Verifie que tout est bon mais a priori il n'y a pas besoin de changement.
+
+J — Priorités release  
+(Q25) Les règles du jeu /docs/400-jeu/420-Règles
+(Q26) Cette entité n'est pas compliqué, le minimal est presque le final. Une panoplie est une liste d'équipement avec un ou des effets en plus (les effets peuvent être des effets / sous-effets des sorts). Pour la vue minimal, on montre l'effet par défaut et la liste des équipements sous vue Texte au hover.
+(Q27) Bloquante, elle doit sortir avec la 1.3.2

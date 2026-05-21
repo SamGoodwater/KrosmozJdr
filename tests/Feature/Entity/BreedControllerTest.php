@@ -220,6 +220,25 @@ class BreedControllerTest extends TestCase
         ]);
     }
 
+    public function test_game_master_cannot_sync_sections_on_breed(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $breed = Breed::factory()->create([
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $page = Page::factory()->create(['created_by' => $gm->id]);
+        $section = Section::factory()->create(['page_id' => $page->id, 'created_by' => $gm->id]);
+
+        $this->actingAs($gm)
+            ->patch(route('entities.breeds.updateSections', $breed), [
+                'sections' => [
+                    ['id' => $section->id, 'level' => 1],
+                ],
+            ])
+            ->assertForbidden();
+    }
+
     public function test_admin_can_sync_sections_on_breed(): void
     {
         $admin = $this->adminUser();

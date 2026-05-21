@@ -1120,6 +1120,13 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  SECTION_BREED {
+    breed_id : bigint(20) unsigned
+    section_id : bigint(20) unsigned
+    level : smallint(5) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   SECTION_SPECIALIZATION {
     specialization_id : bigint(20) unsigned
     section_id : bigint(20) unsigned
@@ -1491,6 +1498,8 @@ erDiagram
   SCRAPPING_ENTITY_MAPPING_TARGETS }o--|| SCRAPPING_ENTITY_MAPPINGS : "FK scrapping_entity_mapping_id"
   SCRAPPING_ENTITY_MAPPINGS }o--|| CHARACTERISTICS : "FK characteristic_id"
   SCRAPPING_JOBS }o--|| USERS : "FK requested_by"
+  SECTION_BREED }o--|| BREEDS : "FK breed_id"
+  SECTION_BREED }o--|| SECTIONS : "FK section_id"
   SECTION_SPECIALIZATION }o--|| SECTIONS : "FK section_id"
   SECTION_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
   SECTION_USER }o--|| SECTIONS : "FK section_id"
