@@ -22,21 +22,23 @@ docker-compose.override.yml
 .env.backup
 .env.production
 
-# Storage Laravel (clés, logs, cache applicatif)
+# --- Storage Laravel ---
+# Structure versionnée : .gitignore imbriqués sous storage/app, storage/framework, etc.
+# Contenu public versionné : storage/app/public/legal/*.md et changelog/*.md (voir storage/app/public/.gitignore)
+
 /storage/*.key
 /storage/pail
-/storage/app/seeders-data-backups
-/storage/app/dev-reports
-/storage/debugbar
-/storage/framework
-/storage/logs
-/torage/media-library
-/storage/app/private
+
+# Outils & exports locaux (storage/app/* sauf public/ et private/ — voir storage/app/.gitignore)
 /storage/app/backups
 /storage/app/dev-reports
-/storage/app/seeders-data-backups
-/storage/app/private
 /storage/app/purified
+/storage/app/seeders-data-backups
+/storage/app/characteristics_*_samples.json
+
+# Contenu privé utilisateur (structure .gitignore versionnée)
+/storage/app/private/*
+!/storage/app/private/.gitignore
 
 # Cache PHPStan (tmpDir dans phpstan.neon)
 /storage/phpstan/
@@ -44,13 +46,14 @@ docker-compose.override.yml
 # Fichiers temporaires Spatie Media Library
 /storage/media-library/temp/
 
-# Disques fake PHPUnit / tests (artefacts générés en local)
+# Disques fake PHPUnit (artefacts générés en local)
 /storage/framework/testing/disks/
 
 # Vite HMR (équivalent de /public/hot)
 /storage/framework/vite.hot
 
-# Fichiers générés par laravel-ide-helper (régénérer en local : php artisan ide-helper:generate)
+# Fichiers générés par laravel-ide-helper
+# Régénérer en local : php artisan ide-helper:generate && ide-helper:models && ide-helper:meta
 /_ide_helper.php
 /_ide_helper_models.php
 /.phpstorm.meta.php
@@ -107,7 +110,7 @@ pnpm-debug.log
 .DS_Store
 Thumbs.db
 
-# Logs à la racine ou hors storage/logs/.gitignore
+# Logs hors storage/logs/.gitignore
 *.log
 
 /test-results

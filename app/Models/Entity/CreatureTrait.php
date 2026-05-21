@@ -36,7 +36,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $media_count
  * @property-read Collection<int, Specialization> $specializations
  * @property-read int|null $specializations_count
- *
  * @method static \Database\Factories\Entity\CreatureTraitFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait newQuery()
@@ -55,7 +54,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait withoutTrashed()
- *
  * @mixin \Eloquent
  */
 class CreatureTrait extends Model implements HasMedia

@@ -14,7 +14,6 @@ use Illuminate\Support\Carbon;
  * Degré d’un effet : zone, slug, seuil de niveau requis, sous-effets.
  *
  * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
- *
  * @property int $id
  * @property int $effect_id
  * @property int $degree
@@ -29,7 +28,6 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $effect_sub_effects_count
  * @property-read Collection<int, EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree query()
@@ -42,7 +40,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereRequiredCreatureLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectDegree whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class EffectDegree extends Model

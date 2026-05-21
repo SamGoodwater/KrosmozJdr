@@ -19,7 +19,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property-read User|null $actor
  * @property-read User|null $subjectUser
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog query()
@@ -31,7 +30,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereIpAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereSubjectUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrivacyAuditLog whereUserAgent($value)
- *
  * @mixin \Eloquent
  */
 class PrivacyAuditLog extends Model

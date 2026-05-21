@@ -25,7 +25,6 @@ use Illuminate\Support\Carbon;
  * @property-read User|null $createdBy
  * @property-read Collection<int, resource> $resources
  * @property-read int|null $resources_count
- *
  * @method static \Database\Factories\Type\ResourceTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType newQuery()
@@ -42,12 +41,10 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withoutTrashed()
- *
  * @property int|null $dofusdb_type_id
  * @property string $decision
  * @property int $seen_count
  * @property Carbon|null $last_seen_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType allowed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType blocked()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType pending()
@@ -55,7 +52,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDofusdbTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereLastSeenAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereSeenCount($value)
- *
  * @mixin \Eloquent
  */
 class ResourceType extends Model

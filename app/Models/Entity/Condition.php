@@ -52,7 +52,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property bool $is_main_state
  * @property-read int|null $creatures_count
  * @property-read int|null $spells_count
- *
  * @method static \Database\Factories\Entity\ConditionFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition newQuery()
@@ -89,7 +88,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withoutTrashed()
- *
  * @mixin \Eloquent
  */
 class Condition extends Model implements HasMedia
