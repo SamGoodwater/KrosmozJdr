@@ -73,10 +73,23 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                manualChunks: {
-                    vendor: ['vue', '@inertiajs/vue3'],
-                    utils: ['axios']
-                }
+                manualChunks(id) {
+                    if (id.includes('node_modules/vue') || id.includes('node_modules/@vue') || id.includes('node_modules/@inertiajs')) {
+                        return 'vendor';
+                    }
+                    if (id.includes('resources/js/Pages/Layouts/Main.vue')) {
+                        return 'layout';
+                    }
+                    if (id.includes('resources/js/Utils/Formatters')) {
+                        return 'formatters';
+                    }
+                    if (id.includes('node_modules/cally')) {
+                        return 'cally';
+                    }
+                    if (id.includes('node_modules/axios')) {
+                        return 'utils';
+                    }
+                },
             }
         }
     }

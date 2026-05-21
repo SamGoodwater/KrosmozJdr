@@ -5,6 +5,16 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createSSRApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
+function resolveZiggyConfig(pageProps) {
+    const ziggy = pageProps?.ziggy;
+    const location = pageProps?.ziggy_location ?? ziggy?.location;
+    if (!ziggy) {
+        return undefined;
+    }
+
+    return { ...ziggy, location };
+}
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createServer((page) =>
@@ -20,10 +30,7 @@ createServer((page) =>
         setup({ App, props, plugin }) {
             return createSSRApp({ render: () => h(App, props) })
                 .use(plugin)
-                .use(ZiggyVue, {
-                    ...page.props.ziggy,
-                    location: new URL(page.props.ziggy.location),
-                });
+                .use(ZiggyVue, resolveZiggyConfig(page.props));
         },
     }),
 );

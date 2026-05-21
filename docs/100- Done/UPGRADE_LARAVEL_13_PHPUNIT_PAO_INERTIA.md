@@ -31,3 +31,13 @@ Migration du stack backend et client Inertia vers les versions courantes, avec a
 - PHPStan — OK
 - Build Vite — OK
 - Tests ciblés Inertia/auth — OK (MySQL requis pour la suite complète)
+
+## Patches mineurs (2026-05-21)
+
+| Composant | Avant | Après |
+|-----------|-------|-------|
+| laravel/breeze | 2.4.1 | **2.4.2** |
+| laravel/sail | 1.59.0 | **1.60.0** |
+| laravel-precognition-vue-inertia | 0.7.3 | **0.8.0** |
+
+Build Vite et smoke PHPUnit — OK.

@@ -645,6 +645,11 @@
     "description": "Ce document a été déplacé depuis `docs/50-Fonctionnalités/Scrapping/` car il ne concerne pas spécifiquement le scrapping."
   },
   {
+    "path": "40-DevGuides/PERFORMANCE_GLOBAL.md",
+    "title": "Performance globale — optimisations transversales",
+    "description": "Réduction du coût fixe Inertia (shareOnce, defer, cache), Ziggy, characteristics API, shell frontend et infra prod."
+  },
+  {
     "path": "40-DevGuides/PROJECT_CLI.md",
     "title": "Interface CLI unifiée du projet (`project:*`)",
     "description": "Objectif : **un vocabulaire stable** (dépendances, dev, données, bootstrap) via les commandes **`project:*`** et le service **`ProjectRunService`**, avec `setup` / `scrapping:*` pour les domaines concernés."

@@ -132,8 +132,8 @@ importers:
         specifier: ^1.10.27
         version: 1.10.27
       laravel-precognition-vue-inertia:
-        specifier: ^0.7.3
-        version: 0.7.3(@inertiajs/vue3@2.3.24(vue@3.5.34))(vue@3.5.34)
+        specifier: ^0.8.0
+        version: 0.8.0(@inertiajs/vue3@2.3.24(vue@3.5.34))(vue@3.5.34)
       marked:
         specifier: ^17.0.6
         version: 17.0.6
@@ -2541,19 +2541,19 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  laravel-precognition-vue-inertia@0.7.3:
-    resolution: {integrity: sha512-86+78+4PxtHhrDY59pAS7NqA7b/I+bn7tNfocjrkVmQyZ2b7R76ja3Xz1KFQL56IPrQqqrOkBQxewyzlVj7mTQ==}
+  laravel-precognition-vue-inertia@0.8.0:
+    resolution: {integrity: sha512-iivjbcCakwmGnImO4qJJaWKKvZz/Z/M/oiUl1K9l8i5YaYwikBUpjGBIoeFUTckIRiBdlZRNzYgR1OCmW3aNFA==}
     peerDependencies:
       '@inertiajs/vue3': ^1.0.0 || ^2.0.0
       vue: ^3.0.0
 
-  laravel-precognition-vue@0.7.3:
-    resolution: {integrity: sha512-ag4f5X0lsl9uKOh9B2Q505oU7gOQBZcPjeRabGT8u47kRX6jWrjkTQ/7lHgSA745BJMtYFornWHm4g/lU/LeZw==}
+  laravel-precognition-vue@0.8.0:
+    resolution: {integrity: sha512-o7njFzXvG+a3ue17az4yj2mP4Qf4RHfd2QtCwHwQ0X9B2CJcgZwSYPlhGjxa5+J5IWwNnZG02AAJGf+HMSmMHg==}
     peerDependencies:
       vue: ^3.0.0
 
-  laravel-precognition@0.7.3:
-    resolution: {integrity: sha512-Z97i35Q0wmsRC9WFUY2EmFS2W1F6FF/HakwZg6PqSaR9lHBgbdIs1YZpDlkChVkgcmmvbN19ujKss3ZqbjPM1g==}
+  laravel-precognition@0.8.0:
+    resolution: {integrity: sha512-wpnzUAGz43NM+vfu0WORUeGe/dWEFfhBTsH4MUA9QRcFNH8CVaB6lnmk5BU5DxfgEzk7QVwU6cCUYAEwsQLVsg==}
 
   laravel-precognition@1.0.2:
     resolution: {integrity: sha512-0H08JDdMWONrL/N314fvsO3FATJwGGlFKGkMF3nNmizVFJaWs17816iM+sX7Rp8d5hUjYCx6WLfsehSKfaTxjg==}
@@ -6080,26 +6080,26 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  laravel-precognition-vue-inertia@0.7.3(@inertiajs/vue3@2.3.24(vue@3.5.34))(vue@3.5.34):
+  laravel-precognition-vue-inertia@0.8.0(@inertiajs/vue3@2.3.24(vue@3.5.34))(vue@3.5.34):
     dependencies:
       '@inertiajs/vue3': 2.3.24(vue@3.5.34)
-      laravel-precognition: 0.7.3
-      laravel-precognition-vue: 0.7.3(vue@3.5.34)
+      laravel-precognition: 0.8.0
+      laravel-precognition-vue: 0.8.0(vue@3.5.34)
       vue: 3.5.34
     transitivePeerDependencies:
       - debug
       - supports-color
 
-  laravel-precognition-vue@0.7.3(vue@3.5.34):
+  laravel-precognition-vue@0.8.0(vue@3.5.34):
     dependencies:
-      laravel-precognition: 0.7.3
+      laravel-precognition: 0.8.0
       lodash-es: 4.18.1
       vue: 3.5.34
     transitivePeerDependencies:
       - debug
       - supports-color
 
-  laravel-precognition@0.7.3:
+  laravel-precognition@0.8.0:
     dependencies:
       axios: 1.16.1
       lodash-es: 4.18.1

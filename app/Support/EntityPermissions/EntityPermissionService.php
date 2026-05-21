@@ -32,6 +32,8 @@ class EntityPermissionService
      */
     private const CACHE_PREFIX = 'permissions.entities.user.';
 
+    private const CACHE_GUEST_PREFIX = 'permissions.entities.guest.';
+
     /**
      * @var int secondes (10 min)
      */
@@ -48,48 +50,7 @@ class EntityPermissionService
         // - on expose au minimum `viewAny` par entité (utile pour masquer/afficher des colonnes côté front)
         // - les autres permissions restent à false
         if (! $user) {
-            /** @var array<string, class-string> $registry */
-            $registry = (array) Config::get('entity-permissions', []);
-            /** @var array<string, array<int, array{entity?: string, ability?: string}>> $accessRegistry */
-            $accessRegistry = (array) Config::get('access-permissions', []);
-
-            $entities = [];
-            foreach ($registry as $entityType => $modelClass) {
-                $entities[$entityType] = [
-                    'viewAny' => Gate::allows('viewAny', $modelClass),
-                    'create' => false,
-                    'createAny' => false,
-                    'updateAny' => false,
-                    'deleteAny' => false,
-                    'manageAny' => false,
-                ];
-            }
-
-            $access = [];
-            foreach ($accessRegistry as $accessKey => $rules) {
-                $allowed = false;
-                foreach ((array) $rules as $rule) {
-                    $entityType = (string) ($rule['entity'] ?? '');
-                    $ability = (string) ($rule['ability'] ?? '');
-                    if (! $entityType || ! $ability) {
-                        continue;
-                    }
-                    $modelClass = $registry[$entityType] ?? null;
-                    if (! $modelClass) {
-                        continue;
-                    }
-                    if (Gate::allows($ability, $modelClass)) {
-                        $allowed = true;
-                        break;
-                    }
-                }
-                $access[$accessKey] = $allowed;
-            }
-
-            return [
-                'entities' => $entities,
-                'access' => $access,
-            ];
+            return $this->forGuest();
         }
 
         $revision = self::currentCacheRevision();
@@ -147,6 +108,65 @@ class EntityPermissionService
     }
 
     /**
+     * Permissions globales pour les visiteurs non connectés (cache TTL 10 min).
+     *
+     * @return array<string, mixed>
+     */
+    public function forGuest(): array
+    {
+        $revision = self::currentCacheRevision();
+
+        return Cache::remember(
+            self::cacheKeyForGuest($revision),
+            self::CACHE_TTL_SECONDS,
+            function () {
+                /** @var array<string, class-string> $registry */
+                $registry = (array) Config::get('entity-permissions', []);
+                /** @var array<string, array<int, array{entity?: string, ability?: string}>> $accessRegistry */
+                $accessRegistry = (array) Config::get('access-permissions', []);
+
+                $entities = [];
+                foreach ($registry as $entityType => $modelClass) {
+                    $entities[$entityType] = [
+                        'viewAny' => Gate::allows('viewAny', $modelClass),
+                        'create' => false,
+                        'createAny' => false,
+                        'updateAny' => false,
+                        'deleteAny' => false,
+                        'manageAny' => false,
+                    ];
+                }
+
+                $access = [];
+                foreach ($accessRegistry as $accessKey => $rules) {
+                    $allowed = false;
+                    foreach ((array) $rules as $rule) {
+                        $entityType = (string) ($rule['entity'] ?? '');
+                        $ability = (string) ($rule['ability'] ?? '');
+                        if (! $entityType || ! $ability) {
+                            continue;
+                        }
+                        $modelClass = $registry[$entityType] ?? null;
+                        if (! $modelClass) {
+                            continue;
+                        }
+                        if (Gate::allows($ability, $modelClass)) {
+                            $allowed = true;
+                            break;
+                        }
+                    }
+                    $access[$accessKey] = $allowed;
+                }
+
+                return [
+                    'entities' => $entities,
+                    'access' => $access,
+                ];
+            }
+        );
+    }
+
+    /**
      * Invalide le cache de permissions d'un utilisateur.
      *
      * @description
@@ -178,5 +198,10 @@ class EntityPermissionService
     private static function cacheKeyForUserId(int $userId, int $revision): string
     {
         return self::CACHE_PREFIX.$userId.'.r'.$revision;
+    }
+
+    private static function cacheKeyForGuest(int $revision): string
+    {
+        return self::CACHE_GUEST_PREFIX.'r'.$revision;
     }
 }

@@ -12,6 +12,7 @@ Pour la documentation technique et les bonnes pratiques, voir :
 
 ### Livraisons
 
+- **Performance globale (2026-05)** : Inertia `shareOnce` / `defer`, Ziggy dédupliqué, cache permissions invité, characteristics via API + Pinia, shell frontend allégé. Doc : [PERFORMANCE_GLOBAL_OPTIMISATIONS.md](./PERFORMANCE_GLOBAL_OPTIMISATIONS.md), guide [PERFORMANCE_GLOBAL.md](../40-DevGuides/PERFORMANCE_GLOBAL.md).
 - **Changelog 1.3.2 (2026-05)** : journal public joueur/MJ dans `storage/app/public/changelog/1.3.2.md` ; semver via `PUBLIC_CHANGELOG_SEMVER`.
 - **Transverse release 1.3.2 (2026-05)** : feedback email récap connectés ; contrôles audit/PHPStan/ESLint + tests Feature ciblés. Doc : [RELEASE_1.3.2_VERIFICATION.md](../10-BestPractices/RELEASE_1.3.2_VERIFICATION.md).
 - **Hors gel 1.3.2 — outillage & socle (2026-05)** : `project:init:verify` (+ `--verify` sur init) ; commandes `characteristics:definitions-progress`, `definitions-apply`, audit `--report` ; 282 JSON à 100 % (gate qualité) ; toggle global notifications dans Paramètres ; recette [MANUAL_RECIPE_RELEASE_1.3.2.md](../10-BestPractices/MANUAL_RECIPE_RELEASE_1.3.2.md) ; Playwright smoke + `pnpm run test:a11y` ; script `pnpm run audit:docs`. Index calibration : [CALIBRATION_282_INDEX.md](../50-Fonctionnalités/Characteristics-DB/CALIBRATION_282_INDEX.md).

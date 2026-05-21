@@ -4,17 +4,17 @@ namespace App\Http\Middleware;
 
 use App\Http\Resources\UserLightResource;
 use App\Models\DataSubjectRequest;
-use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use App\Support\EntityPermissions\EntityPermissionService;
 use App\Support\OAuthConfig;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
     public function __construct(
-        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
+        private readonly EntityPermissionService $permissionService
     ) {}
 
     /**
@@ -33,44 +33,26 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
-     * Define the props that are shared by default.
+     * Props recalculées à chaque requête Inertia (auth, flash, URL courante pour Ziggy).
      *
      * @return array<string, mixed>
      */
     public function share(Request $request): array
     {
-        $permissionService = new EntityPermissionService;
-
         return [
             ...parent::share($request),
-            'pending_erasure' => function () use ($request) {
-                $user = $request->user();
-                if (! $user) {
-                    return null;
-                }
-                $dsr = DataSubjectRequest::query()
-                    ->where('user_id', $user->id)
-                    ->where('type', DataSubjectRequest::TYPE_ERASURE)
-                    ->where('status', DataSubjectRequest::STATUS_PENDING)
-                    ->whereNotNull('expires_at')
-                    ->where('expires_at', '>', now())
-                    ->latest('id')
-                    ->first();
-                if (! $dsr) {
-                    return null;
-                }
-
-                return [
-                    'expires_at' => $dsr->expires_at->toIso8601String(),
-                ];
-            },
+            'ziggy_location' => fn () => $request->url(),
+            'pending_erasure' => Inertia::defer(fn () => $this->resolvePendingErasure($request)),
             'auth' => [
                 'user' => function () use ($request) {
-                    if (! $request->user()) {
+                    $user = $request->user();
+                    if (! $user) {
                         return null;
                     }
 
-                    return (new UserLightResource($request->user()))->toArray($request);
+                    $user->loadMissing('oauthAccounts');
+
+                    return (new UserLightResource($user))->toArray($request);
                 },
                 'isLogged' => fn () => $request->user() !== null,
                 'password_recently_confirmed' => function () use ($request) {
@@ -89,13 +71,10 @@ class HandleInertiaRequests extends Middleware
 
                     return (time() - $lastActivity) <= $timeout;
                 },
-                'notifications_unread_count' => function () use ($request) {
-                    if (! $request->user()) {
-                        return 0;
-                    }
-
-                    return $request->user()->unreadNotifications()->whereNull('archived_at')->count();
-                },
+                'notifications_unread_count' => Inertia::defer(
+                    fn () => $this->resolveNotificationsUnreadCount($request),
+                    'sidebar'
+                ),
             ],
             'flash' => [
                 'success' => fn () => session('success'),
@@ -104,26 +83,57 @@ class HandleInertiaRequests extends Middleware
                 'info' => fn () => session('info'),
                 'status' => fn () => session('status'),
             ],
-            /**
-             * Permissions globales (par entité) exposées au frontend.
-             *
-             * Structure:
-             * permissions: {
-             *   entities: {
-             *     resources: { viewAny, create, createAny, updateAny, deleteAny },
-             *     items: { ... },
-             *   }
-             * }
-             */
-            'permissions' => fn () => $permissionService->forUser($request->user()),
-            'ziggy' => fn () => [
-                ...(new Ziggy)->toArray(),
-                'location' => $request->url(),
-            ],
-            /** Providers OAuth activés (credentials configurés dans .env). */
-            'oauth_enabled_providers' => fn () => OAuthConfig::enabledProviders(),
-            /** Métadonnées caractéristiques (icon, color, name, etc.) pour résolution frontend. */
-            'characteristics' => fn () => $this->characteristicMeta->buildAllForFrontend(),
         ];
+    }
+
+    /**
+     * Props mémorisées côté client après la première visite (routes, permissions, OAuth).
+     *
+     * @return array<string, callable>
+     */
+    public function shareOnce(Request $request): array
+    {
+        return [
+            'permissions' => fn () => $this->permissionService->forUser($request->user()),
+            'ziggy' => fn () => (new Ziggy)->toArray(),
+            'oauth_enabled_providers' => fn () => OAuthConfig::enabledProviders(),
+        ];
+    }
+
+    /**
+     * @return array{expires_at: string}|null
+     */
+    private function resolvePendingErasure(Request $request): ?array
+    {
+        $user = $request->user();
+        if (! $user) {
+            return null;
+        }
+
+        $dsr = DataSubjectRequest::query()
+            ->where('user_id', $user->id)
+            ->where('type', DataSubjectRequest::TYPE_ERASURE)
+            ->where('status', DataSubjectRequest::STATUS_PENDING)
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '>', now())
+            ->latest('id')
+            ->first();
+
+        if (! $dsr) {
+            return null;
+        }
+
+        return [
+            'expires_at' => $dsr->expires_at->toIso8601String(),
+        ];
+    }
+
+    private function resolveNotificationsUnreadCount(Request $request): int
+    {
+        if (! $request->user()) {
+            return 0;
+        }
+
+        return $request->user()->unreadNotifications()->whereNull('archived_at')->count();
     }
 }

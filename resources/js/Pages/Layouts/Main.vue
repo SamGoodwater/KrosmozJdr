@@ -14,6 +14,9 @@
 * @slot default - Contenu principal de la page
 */
 import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { usePage } from '@inertiajs/vue3'
+import { useCharacteristicsPiniaStore } from '@/Composables/store/useCharacteristicsPiniaStore'
+import { warnDev } from '@/Utils/dev-logger'
 
 // Composants
 import Header from "@/Pages/Layouts/Header.vue";
@@ -142,6 +145,17 @@ watch([isDesktop, isMobile, isTablet], () => {
 
 onMounted(() => {
     window.addEventListener('resize', handleResize)
+
+    useCharacteristicsPiniaStore().fetchOnce().catch((err) => warnDev('Characteristics fetch failed:', err))
+
+    void import('cally')
+
+    const componentName = usePage().component ?? ''
+    if (/Section|Page\/|Cms/i.test(componentName)) {
+        import('@/Pages/Organismes/section/composables/useTemplateRegistry')
+            .then(({ preloadCommonTemplates }) => preloadCommonTemplates())
+            .catch((err) => warnDev('Template preload failed:', err))
+    }
 })
 onUnmounted(() => {
     window.removeEventListener('resize', handleResize)

@@ -337,7 +337,7 @@ final class CharacteristicMetaByDbColumnService
      */
     public function buildAllForFrontend(): array
     {
-        return Cache::remember(self::FRONTEND_CACHE_KEY, 300, function () {
+        return Cache::remember(self::FRONTEND_CACHE_KEY, 3600, function () {
             $spellByDbColumn = $this->buildSpellByDbColumn();
 
             return [

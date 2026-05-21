@@ -1,22 +1,33 @@
 /**
- * Store des métadonnées des caractéristiques (chargées au démarrage via Inertia share).
+ * Accès aux métadonnées des caractéristiques (Pinia + API, fallback props legacy).
  *
  * @description
- * Lit usePage().props.characteristics (Inertia share) et fournit des getters pour
- * résoudre par db_column, characteristic_key ou dofusdb_characteristic_id.
+ * Préfère le store Pinia (`useCharacteristicsPiniaStore`) alimenté par GET /api/characteristics.
  *
- * @see docs/50-Fonctionnalités/Characteristics-DB/AUDIT_SERVICE_AFFICHAGE_CARACTERISTIQUES.md
+ * @see docs/40-DevGuides/PERFORMANCE_GLOBAL.md
  */
 
 import { usePage } from "@inertiajs/vue3";
+import { useCharacteristicsPiniaStore } from "@/Composables/store/useCharacteristicsPiniaStore";
 
 /**
  * @returns {Record<string, { byDbColumn?: Record<string, object>, byComputedKey?: Record<string, object>, byCharacteristicKey?: Record<string, object>, byDofusdbId?: Record<string, object> }>}
  */
 function getRawData() {
     try {
+        const piniaStore = useCharacteristicsPiniaStore();
+        const fromPinia = piniaStore.characteristics;
+        if (fromPinia && typeof fromPinia === "object" && Object.keys(fromPinia).length > 0) {
+            return fromPinia;
+        }
+    } catch {
+        // Pinia non initialisé
+    }
+
+    try {
         const page = usePage();
-        return page?.props?.characteristics ?? {};
+        const legacy = page?.props?.characteristics;
+        return legacy && typeof legacy === "object" ? legacy : {};
     } catch {
         return {};
     }

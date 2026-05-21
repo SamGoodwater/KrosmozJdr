@@ -20,7 +20,7 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
 ## Frontend
 
 - **Vue.js 3** : https://fr.vuejs.org/guide/quick-start.html
-- **Inertia.js** : adapter Laravel `inertiajs/inertia-laravel` ^3, client `@inertiajs/vue3` ^2 — config `config/inertia.php` (`pages.paths` → `resources/js/Pages`)
+- **Inertia.js** : adapter Laravel `inertiajs/inertia-laravel` ^3, client `@inertiajs/vue3` ^2 — config `config/inertia.php` (`pages.paths` → `resources/js/Pages`). Props globales : `shareOnce` (permissions, ziggy, oauth), `defer` (notifications, DSR), characteristics via API — voir [PERFORMANCE_GLOBAL.md](../40-DevGuides/PERFORMANCE_GLOBAL.md).
 - **SCSS**
 - **Tailwind CSS** + **DaisyUI**
 - **Tiptap** (éditeur WYSIWYG) : https://next.tiptap.dev/docs/editor/getting-started/install/vue3
