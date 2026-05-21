@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             ScrappingEntityMappingSeeder::class,
             ScrappingEntityMappingCharacteristicSeeder::class,
             CreationPagesSeeder::class,
+            BibliothequeEntityPagesSeeder::class,
         ]);
     }
 }

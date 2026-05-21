@@ -25,6 +25,48 @@ const props = defineProps({
 
 const currentRouteValue = computed(() => props.currentRoute || page.url);
 
+/**
+ * Exclut Font Awesome ; conserve URL absolue ou chemin storage.
+ *
+ * @param {string|null|undefined} icon
+ * @returns {string}
+ */
+function sanitizeMenuIconSource(icon) {
+    if (icon == null) {
+        return '';
+    }
+    const trimmed = String(icon).trim();
+    if (trimmed === '' || trimmed.startsWith('fa-')) {
+        return '';
+    }
+    return trimmed;
+}
+
+/**
+ * Icône menu : webp entité sur le titre parent ou une entrée racine ;
+ * sous-classes = menu_icon (BDD) ; spécialisations imbriquées = aucune.
+ *
+ * @param {{ entity_key?: string|null, menu_icon?: string|null }} item
+ * @param {'parent-header'|'top-link'|'nested-link'} placement
+ * @returns {string}
+ */
+function resolveMenuIcon(item, placement) {
+    if (placement === 'nested-link') {
+        if (item?.entity_key === 'breed') {
+            return (
+                sanitizeMenuIconSource(item?.menu_icon)
+                || sanitizeMenuIconSource(item?.icon)
+            );
+        }
+        return '';
+    }
+    const key = item?.entity_key;
+    if (!key || typeof key !== 'string') {
+        return '';
+    }
+    return getEntityIconPath(key);
+}
+
 const renderMenuItem = (item) => {
     const hasChildren = item.children?.length > 0;
     const isActive = isPageActive(item, currentRouteValue.value);
@@ -106,13 +148,15 @@ const groupedMenuItems = computed(() => {
                     variant="parent"
                     compact
                     class="main-menu-collapsible"
+                    :icon="resolveMenuIcon(menuItem.item, 'parent-header')"
+                    :icon-alt="menuItem.item.title"
                 >
                     <template #title>{{ menuItem.item.title }}</template>
                     <GlassMenuItem
                         v-for="child in menuItem.children"
                         :key="child.item.id"
                         :href="child.item.url"
-                        :icon="getEntityIconPath(child.item.entity_key) || child.item.icon || ''"
+                        :icon="resolveMenuIcon(child.item, 'nested-link')"
                         :class="[
                             'main-menu-item',
                             'main-menu-item-child',
@@ -154,13 +198,15 @@ const groupedMenuItems = computed(() => {
                                 variant="parent"
                                 compact
                                 class="main-menu-collapsible"
+                                :icon="resolveMenuIcon(child.item, 'parent-header')"
+                                :icon-alt="child.item.title"
                             >
                                 <template #title>{{ child.item.title }}</template>
                                 <GlassMenuItem
                                     v-for="grandchild in child.children"
                                     :key="grandchild.item.id"
                                     :href="grandchild.item.url"
-                                    :icon="getEntityIconPath(grandchild.item.entity_key) || grandchild.item.icon || ''"
+                                    :icon="resolveMenuIcon(grandchild.item, 'nested-link')"
                                     :class="[
                                         'main-menu-item',
                                         'main-menu-item-child',
@@ -175,7 +221,7 @@ const groupedMenuItems = computed(() => {
                             <GlassMenuItem
                                 v-else
                                 :href="child.item.url"
-                                :icon="getEntityIconPath(child.item.entity_key) || child.item.icon || ''"
+                                :icon="resolveMenuIcon(child.item, 'top-link')"
                                 :class="[
                                     'main-menu-item',
                                     'main-menu-item-leaf',

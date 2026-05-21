@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\CheckRole;
+use App\Models\Entity\Breed;
 use App\Models\Page;
 use App\Models\User;
+use App\Services\PageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -406,5 +408,104 @@ class PageControllerTest extends TestCase
         $specializations = collect($libraries['children'])->firstWhere('title', 'Spécialisations');
         $this->assertNotNull($specializations, 'L’entrée Spécialisations doit être présente.');
         $this->assertSame('/pages/bibliotheque-specialization', $specializations['url']);
+    }
+
+    /**
+     * Test : les sous-pages classe exposent menu_icon depuis la colonne image si icon est vide.
+     */
+    public function test_menu_exposes_breed_menu_icon_from_image_column(): void
+    {
+        $parent = Page::factory()->create([
+            'title' => 'Classes',
+            'slug' => 'bibliotheque-breed',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'menu_group' => 'Bibliothèques',
+            'entity_key' => 'breed',
+        ]);
+
+        $breed = Breed::factory()->create([
+            'name' => 'Féca Test',
+            'icon' => null,
+            'image' => '/storage/images/entity/breeds/925/image-63-feca.png',
+        ]);
+
+        Page::factory()->create([
+            'title' => 'Féca Test',
+            'slug' => 'classe-feca-test',
+            'parent_id' => $parent->id,
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'entity_key' => 'breed',
+            'settings' => [
+                'linked_entity' => [
+                    'type' => 'breed',
+                    'id' => $breed->id,
+                ],
+            ],
+        ]);
+
+        PageService::clearMenuCache();
+
+        $response = $this->getJson(route('pages.menu'));
+        $response->assertOk();
+
+        $libraries = collect($response->json('menu'))->firstWhere('id', 'bibliotheques');
+        $classes = collect($libraries['children'])->firstWhere('title', 'Classes');
+        $child = collect($classes['children'])->firstWhere('title', 'Féca Test');
+
+        $this->assertNotNull($child);
+        $this->assertSame('/storage/images/entity/breeds/925/image-63-feca.png', $child['menu_icon']);
+    }
+
+    /**
+     * Test : les sous-pages classe exposent menu_icon depuis la colonne icon de Breed.
+     */
+    public function test_menu_exposes_breed_menu_icon_for_linked_class_pages(): void
+    {
+        $parent = Page::factory()->create([
+            'title' => 'Classes',
+            'slug' => 'bibliotheque-breed',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'menu_group' => 'Bibliothèques',
+            'entity_key' => 'breed',
+        ]);
+
+        $breed = Breed::factory()->create([
+            'name' => 'Iop Test',
+            'icon' => '/storage/images/entity/breeds/iop.webp',
+        ]);
+
+        Page::factory()->create([
+            'title' => 'Iop Test',
+            'slug' => 'classe-iop-test',
+            'parent_id' => $parent->id,
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'entity_key' => 'breed',
+            'settings' => [
+                'linked_entity' => [
+                    'type' => 'breed',
+                    'id' => $breed->id,
+                ],
+            ],
+        ]);
+
+        PageService::clearMenuCache();
+
+        $response = $this->getJson(route('pages.menu'));
+        $response->assertOk();
+
+        $libraries = collect($response->json('menu'))->firstWhere('id', 'bibliotheques');
+        $classes = collect($libraries['children'])->firstWhere('title', 'Classes');
+        $child = collect($classes['children'])->firstWhere('title', 'Iop Test');
+
+        $this->assertNotNull($child);
+        $this->assertSame('/storage/images/entity/breeds/iop.webp', $child['menu_icon']);
     }
 }

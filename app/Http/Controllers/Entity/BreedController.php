@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Entity;
 
 use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Entity\Concerns\ProvidesAvailableEntitySections;
+use App\Http\Controllers\Entity\Concerns\SyncsLeveledEntitySections;
 use App\Http\Requests\Entity\StoreBreedRequest;
 use App\Http\Requests\Entity\UpdateBreedCapabilitiesRequest;
 use App\Http\Requests\Entity\UpdateBreedCreatureTraitsRequest;
 use App\Http\Requests\Entity\UpdateBreedLanguagesRequest;
 use App\Http\Requests\Entity\UpdateBreedRequest;
+use App\Http\Requests\Entity\UpdateBreedSectionsRequest;
 use App\Http\Requests\Entity\UpdateBreedSpellsRequest;
 use App\Http\Resources\Entity\BreedResource;
 use App\Http\Resources\Entity\CapabilityResource;
@@ -29,7 +32,9 @@ use Inertia\Response;
 
 class BreedController extends Controller
 {
+    use ProvidesAvailableEntitySections;
     use RedirectsAfterEntityCreate;
+    use SyncsLeveledEntitySections;
 
     public function index()
     {
@@ -119,6 +124,7 @@ class BreedController extends Controller
             'capabilities' => fn ($q) => $q->orderBy('name'),
             'creatureTraits' => fn ($q) => $q->orderBy('name'),
             'languages',
+            'sections' => Breed::orderedSectionsEagerLoadConstraint(),
         ]);
 
         return Inertia::render('Pages/entity/breed/Show', [
@@ -140,6 +146,7 @@ class BreedController extends Controller
             'capabilities' => fn ($q) => $q->orderBy('name'),
             'creatureTraits' => fn ($q) => $q->orderBy('name'),
             'languages',
+            'sections' => Breed::orderedSectionsEagerLoadConstraint(),
         ]);
 
         $spellTable = (new Spell)->getTable();
@@ -175,7 +182,17 @@ class BreedController extends Controller
             'availableCreatureTraits' => $availableCreatureTraits,
             'availableLanguages' => $availableLanguages,
             'breedOrientationKeys' => config('breed_element_orientations.allowed_orientation_keys', []),
+            'availableSections' => $this->availableSectionsPayload(),
         ]);
+    }
+
+    public function updateSections(UpdateBreedSectionsRequest $request, Breed $breed): RedirectResponse
+    {
+        return $this->syncLeveledEntitySections(
+            $breed,
+            $request,
+            'Sections de la classe mises à jour.',
+        );
     }
 
     public function update(UpdateBreedRequest $request, Breed $breed): RedirectResponse

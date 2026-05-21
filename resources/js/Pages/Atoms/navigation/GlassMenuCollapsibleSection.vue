@@ -17,8 +17,11 @@ defineOptions({ inheritAttrs: false });
  * @props {Boolean} defaultOpen - Ouvert par défaut (si pas de valeur persistée)
  * @props {Boolean} compact - Réduit la hauteur du titre
  * @props {('group'|'parent')} variant - `group` : libellé de section (majuscules, gris, centré). `parent` : ligne comme une entrée de navigation (alignée à gauche, titre naturel).
+ * @props {String} icon - Chemin icône entité (ex. icons/entities/specialization.webp) ou FA, affiché en variant parent
+ * @props {String} iconAlt - Texte alternatif de l'icône
  */
 import { ref, watch, computed, onMounted } from 'vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const STORAGE_KEY = 'dynamic-menu-sections';
@@ -54,6 +57,8 @@ const props = defineProps({
         default: 'group',
         validator: (v) => ['group', 'parent'].includes(v),
     },
+    icon: { type: String, default: '' },
+    iconAlt: { type: String, default: '' },
 });
 
 const contentDomId = computed(() => {
@@ -135,6 +140,13 @@ const attrs = computed(() => getCommonAttrs(props));
                     'glass-menu-collapsible-section-title--parent': variant === 'parent',
                 }"
             >
+                <Icon
+                    v-if="variant === 'parent' && icon"
+                    :source="icon"
+                    :alt="iconAlt || ''"
+                    size="sm"
+                    class="glass-menu-collapsible-section-icon"
+                />
                 <slot name="title" />
             </span>
             <span
@@ -226,9 +238,17 @@ const attrs = computed(() => getCommonAttrs(props));
 }
 
 .glass-menu-collapsible-section-title--parent {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     flex: 1;
     min-width: 0;
     text-align: left;
+}
+
+.glass-menu-collapsible-section-icon {
+    flex-shrink: 0;
+    opacity: 0.82;
 }
 
 /* Flèche visible : toujours pour indiquer la rétractabilité */

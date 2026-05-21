@@ -244,6 +244,8 @@ Les options du formulaire suivent les mêmes règles que la CLI ci-dessus.
 
 ## `project:data:sync` (alias `project:update`)
 
+Après la mise à jour des entités `auto_update` (sauf `--dry-run`), enchaîne **`pages:sync-bibliotheque-entities`** pour aligner le menu Bibliothèques (classes / spécialisations).
+
 Planifiable via `.env` :
 
 - `PROJECT_UPDATE_AUTO_ENABLED=true`
@@ -312,8 +314,9 @@ Super admin : toujours via le flux seed + prompt (logique partagée avec `projec
 | Capacités | `capabilities:import-legacy` sur `database/seeders/data/capability.json` (absent = ignoré) — **avant** les appels DofusDB lourds |
 | Types DofusDB | `scrapping:types:seed`, `scrapping:races:seed`, `SpellTypeSeeder` |
 | Scrapping entités | classes, sorts, monstres, ressources, consommables, items, panoplies (`scrapping:run`) — **en dernier** avant le scheduler |
+| Menu bibliothèque | `pages:sync-bibliotheque-entities` (sous-pages par classe / spécialisation) — aussi en fin de `project:data:sync` / `project:update` et via `BibliothequeEntityPagesSeeder` / fin de `SpecializationSeeder` |
 
-Pour un `db:seed` classique global, voir aussi {@see \Database\Seeders\DatabaseSeeder} : il reprend une partie des mêmes seeders ; `project:init` ajoute scrapping, types API, import legacy spécialisations et TOC.
+Pour un `db:seed` classique global, voir aussi {@see \Database\Seeders\DatabaseSeeder} : il reprend une partie des mêmes seeders + `BibliothequeEntityPagesSeeder` ; `project:init` ajoute scrapping, types API, import legacy spécialisations et TOC.
 
 | Option | Effet |
 |--------|--------|

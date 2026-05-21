@@ -12,6 +12,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Services',
          'uses' => 
         array (
+          'breed' => 'App\\Models\\Entity\\Breed',
           'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
@@ -39,6 +40,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Services',
          'uses' => 
         array (
+          'breed' => 'App\\Models\\Entity\\Breed',
           'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
@@ -55,6 +57,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Services',
            'uses' => 
           array (
+            'breed' => 'App\\Models\\Entity\\Breed',
             'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
@@ -92,6 +95,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Services',
          'uses' => 
         array (
+          'breed' => 'App\\Models\\Entity\\Breed',
           'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
@@ -108,6 +112,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Services',
            'uses' => 
           array (
+            'breed' => 'App\\Models\\Entity\\Breed',
             'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
@@ -145,6 +150,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Services',
          'uses' => 
         array (
+          'breed' => 'App\\Models\\Entity\\Breed',
           'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
@@ -161,6 +167,282 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Services',
            'uses' => 
           array (
+            'breed' => 'App\\Models\\Entity\\Breed',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+            'cache' => 'Illuminate\\Support\\Facades\\Cache',
+          ),
+           'className' => 'App\\Services\\PageService',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      '063e0221b911091c11d2476278153889' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Services',
+         'uses' => 
+        array (
+          'breed' => 'App\\Models\\Entity\\Breed',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+          'cache' => 'Illuminate\\Support\\Facades\\Cache',
+        ),
+         'className' => 'App\\Services\\PageService',
+         'functionName' => 'prefetchBreedMenuIcons',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'App\\Services',
+           'uses' => 
+          array (
+            'breed' => 'App\\Models\\Entity\\Breed',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+            'cache' => 'Illuminate\\Support\\Facades\\Cache',
+          ),
+           'className' => 'App\\Services\\PageService',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      '4aca40eef77c55ca8c07774b13e12073' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Services',
+         'uses' => 
+        array (
+          'breed' => 'App\\Models\\Entity\\Breed',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+          'cache' => 'Illuminate\\Support\\Facades\\Cache',
+        ),
+         'className' => 'App\\Services\\PageService',
+         'functionName' => 'resolveMenuIconForPage',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'App\\Services',
+           'uses' => 
+          array (
+            'breed' => 'App\\Models\\Entity\\Breed',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+            'cache' => 'Illuminate\\Support\\Facades\\Cache',
+          ),
+           'className' => 'App\\Services\\PageService',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      '33839db9a646a314722a083fc9183fa0' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Services',
+         'uses' => 
+        array (
+          'breed' => 'App\\Models\\Entity\\Breed',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+          'cache' => 'Illuminate\\Support\\Facades\\Cache',
+        ),
+         'className' => 'App\\Services\\PageService',
+         'functionName' => 'resolveBreedMenuIconForSync',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'App\\Services',
+           'uses' => 
+          array (
+            'breed' => 'App\\Models\\Entity\\Breed',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+            'cache' => 'Illuminate\\Support\\Facades\\Cache',
+          ),
+           'className' => 'App\\Services\\PageService',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      'b906b75d7e00264a772f770cf0e8f426' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Services',
+         'uses' => 
+        array (
+          'breed' => 'App\\Models\\Entity\\Breed',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+          'cache' => 'Illuminate\\Support\\Facades\\Cache',
+        ),
+         'className' => 'App\\Services\\PageService',
+         'functionName' => 'resolveBreedMenuIcon',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'App\\Services',
+           'uses' => 
+          array (
+            'breed' => 'App\\Models\\Entity\\Breed',
+            'page' => 'App\\Models\\Page',
+            'section' => 'App\\Models\\Section',
+            'user' => 'App\\Models\\User',
+            'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+            'cache' => 'Illuminate\\Support\\Facades\\Cache',
+          ),
+           'className' => 'App\\Services\\PageService',
+           'functionName' => NULL,
+           'templatePhpDocNodes' => 
+          array (
+          ),
+           'parent' => NULL,
+           'typeAliasesMap' => 
+          array (
+          ),
+           'bypassTypeAliases' => false,
+           'constUses' => 
+          array (
+          ),
+           'typeAliasClassName' => NULL,
+           'traitData' => NULL,
+        )),
+         'typeAliasesMap' => 
+        array (
+        ),
+         'bypassTypeAliases' => false,
+         'constUses' => 
+        array (
+        ),
+         'typeAliasClassName' => NULL,
+         'traitData' => NULL,
+      )),
+      'b9a3a57a740c8feec4965b126dad0d04' => 
+      \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+         'namespace' => 'App\\Services',
+         'uses' => 
+        array (
+          'breed' => 'App\\Models\\Entity\\Breed',
+          'page' => 'App\\Models\\Page',
+          'section' => 'App\\Models\\Section',
+          'user' => 'App\\Models\\User',
+          'collection' => 'Illuminate\\Database\\Eloquent\\Collection',
+          'cache' => 'Illuminate\\Support\\Facades\\Cache',
+        ),
+         'className' => 'App\\Services\\PageService',
+         'functionName' => 'sanitizeMenuIcon',
+         'templatePhpDocNodes' => 
+        array (
+        ),
+         'parent' => 
+        \PHPStan\Analyser\IntermediaryNameScope::__set_state(array(
+           'namespace' => 'App\\Services',
+           'uses' => 
+          array (
+            'breed' => 'App\\Models\\Entity\\Breed',
             'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
@@ -198,6 +480,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Services',
          'uses' => 
         array (
+          'breed' => 'App\\Models\\Entity\\Breed',
           'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
@@ -214,6 +497,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Services',
            'uses' => 
           array (
+            'breed' => 'App\\Models\\Entity\\Breed',
             'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
@@ -251,6 +535,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Services',
          'uses' => 
         array (
+          'breed' => 'App\\Models\\Entity\\Breed',
           'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
@@ -267,6 +552,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Services',
            'uses' => 
           array (
+            'breed' => 'App\\Models\\Entity\\Breed',
             'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
@@ -304,6 +590,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Services',
          'uses' => 
         array (
+          'breed' => 'App\\Models\\Entity\\Breed',
           'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
@@ -320,6 +607,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Services',
            'uses' => 
           array (
+            'breed' => 'App\\Models\\Entity\\Breed',
             'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
@@ -357,6 +645,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Services',
          'uses' => 
         array (
+          'breed' => 'App\\Models\\Entity\\Breed',
           'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
@@ -373,6 +662,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Services',
            'uses' => 
           array (
+            'breed' => 'App\\Models\\Entity\\Breed',
             'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
@@ -410,6 +700,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
          'namespace' => 'App\\Services',
          'uses' => 
         array (
+          'breed' => 'App\\Models\\Entity\\Breed',
           'page' => 'App\\Models\\Page',
           'section' => 'App\\Models\\Section',
           'user' => 'App\\Models\\User',
@@ -426,6 +717,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
            'namespace' => 'App\\Services',
            'uses' => 
           array (
+            'breed' => 'App\\Models\\Entity\\Breed',
             'page' => 'App\\Models\\Page',
             'section' => 'App\\Models\\Section',
             'user' => 'App\\Models\\User',
@@ -461,7 +753,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Services/PageService.php' => 'c6a0f28a9075ea30b7f571aeaca96df32922aa041b6838feee681ab56e3e9d4a',
+      '/var/www/KrosmozJdr/app/Services/PageService.php' => '694e5a6a5d32fe1b2ac561cca22299f7a0f4f6407509c5f915d320c9df8258bc',
     ),
   ),
 ));

@@ -4,6 +4,8 @@ namespace Tests\Feature\Entity;
 
 use App\Models\Entity\Breed;
 use App\Models\Entity\Spell;
+use App\Models\Page;
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -215,6 +217,42 @@ class BreedControllerTest extends TestCase
             'character_level' => 1,
             'slot_index' => 1,
             'choice_order' => 0,
+        ]);
+    }
+
+    public function test_admin_can_sync_sections_on_breed(): void
+    {
+        $admin = $this->adminUser();
+        $breed = Breed::factory()->create([
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $page = Page::factory()->create(['created_by' => $admin->id]);
+        $sectionA = Section::factory()->create(['page_id' => $page->id, 'created_by' => $admin->id]);
+        $sectionB = Section::factory()->create(['page_id' => $page->id, 'created_by' => $admin->id]);
+
+        $this->actingAs($admin)
+            ->patch(route('entities.breeds.updateSections', $breed), [
+                'sections' => [
+                    ['id' => $sectionA->id, 'level' => 2],
+                    ['id' => $sectionB->id, 'level' => 1],
+                ],
+            ])
+            ->assertRedirect();
+
+        $this->assertEqualsCanonicalizing(
+            [$sectionA->id, $sectionB->id],
+            $breed->fresh()->sections->pluck('id')->all(),
+        );
+        $this->assertDatabaseHas('section_breed', [
+            'breed_id' => $breed->id,
+            'section_id' => $sectionA->id,
+            'level' => 2,
+        ]);
+        $this->assertDatabaseHas('section_breed', [
+            'breed_id' => $breed->id,
+            'section_id' => $sectionB->id,
+            'level' => 1,
         ]);
     }
 }

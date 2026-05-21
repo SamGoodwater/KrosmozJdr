@@ -6,6 +6,7 @@ namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
+use App\Console\Concerns\RunsBibliothequeEntityPagesSync;
 use Database\Seeders\Type\SpellTypeSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Artisan;
 class ProjectDataCommand extends Command
 {
     use NormalizesProjectSyncEntities;
+    use RunsBibliothequeEntityPagesSync;
 
     protected $signature = 'project:data
         {action : sync (maj auto_update), init (équivalent project:init données), fill (guide complétion)}
@@ -61,13 +63,23 @@ class ProjectDataCommand extends Command
             return $catalogCode;
         }
 
-        if (! $this->shouldRunEntitySyncAfterCatalog()) {
-            return ArtisanExitCode::SUCCESS;
+        if ($this->shouldRunEntitySyncAfterCatalog()) {
+            $params = $this->buildEntitySyncParams();
+            $syncCode = $this->call('project:data:sync', $params);
+            if ($syncCode !== ArtisanExitCode::SUCCESS) {
+                return $syncCode;
+            }
         }
 
-        $params = $this->buildEntitySyncParams();
+        if (! (bool) $this->option('dry-run')) {
+            $this->newLine();
+            $this->info('Synchronisation menu Bibliothèques (classes / spécialisations)');
+            if (! $this->runBibliothequeEntityPagesSync()) {
+                return ArtisanExitCode::FAILURE;
+            }
+        }
 
-        return $this->call('project:data:sync', $params);
+        return ArtisanExitCode::SUCCESS;
     }
 
     /**

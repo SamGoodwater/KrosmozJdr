@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Entity\Breed;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
@@ -78,10 +79,11 @@ class PageService
         // Séparer les pages racines (sans parent) et les enfants
         $roots = $pages->filter(fn ($page) => $page->parent_id === null);
         $children = $pages->filter(fn ($page) => $page->parent_id !== null);
+        $breedMenuIcons = self::prefetchBreedMenuIcons($pages);
 
         // Construire l'arborescence récursivement
-        return $roots->map(function ($page) use ($children) {
-            return self::buildMenuItem($page, $children);
+        return $roots->map(function ($page) use ($children, $breedMenuIcons) {
+            return self::buildMenuItem($page, $children, $breedMenuIcons);
         })->values()->toArray();
     }
 
@@ -92,8 +94,13 @@ class PageService
      * @param  Collection<Page>  $allChildren  Toutes les pages enfants disponibles
      * @return array<string, mixed> Item de menu avec structure
      */
-    private static function buildMenuItem(Page $page, Collection $allChildren): array
+    /**
+     * @param  array<int, string|null>  $breedMenuIcons  id Breed => URL/chemin icône menu
+     */
+    private static function buildMenuItem(Page $page, Collection $allChildren, array $breedMenuIcons = []): array
     {
+        $menuIcon = self::resolveMenuIconForPage($page, $breedMenuIcons);
+
         $item = [
             'id' => $page->id,
             'title' => $page->title,
@@ -103,6 +110,7 @@ class PageService
             'menu_group' => $page->menu_group,
             'entity_key' => $page->entity_key,
             'icon' => $page->icon,
+            'menu_icon' => $menuIcon,
             'page_css_classes' => $page->page_css_classes,
             'title_css_classes' => $page->title_css_classes,
             'menu_item_css_classes' => $page->menu_item_css_classes,
@@ -116,12 +124,146 @@ class PageService
             // Construire récursivement les enfants
             $item['children'] = $pageChildren
                 ->sortBy('menu_order')
-                ->map(fn ($child) => self::buildMenuItem($child, $allChildren))
+                ->map(fn ($child) => self::buildMenuItem($child, $allChildren, $breedMenuIcons))
                 ->values()
                 ->toArray();
         }
 
         return $item;
+    }
+
+    /**
+     * Précharge les icônes menu des classes liées (colonne icon + collection Spatie icons).
+     *
+     * @param  Collection<Page>  $pages
+     * @return array<int, string|null>
+     */
+    private static function prefetchBreedMenuIcons(Collection $pages): array
+    {
+        $breedIds = $pages
+            ->map(function (Page $page): int {
+                $linked = $page->settings['linked_entity'] ?? null;
+                if (! is_array($linked) || ($linked['type'] ?? '') !== 'breed') {
+                    return 0;
+                }
+
+                return (int) ($linked['id'] ?? 0);
+            })
+            ->filter(fn (int $id): bool => $id > 0)
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($breedIds === []) {
+            return [];
+        }
+
+        $map = [];
+        Breed::query()
+            ->whereIn('id', $breedIds)
+            ->with(['media' => fn ($query) => $query->whereIn('collection_name', ['icons', 'images'])])
+            ->get(['id', 'icon', 'image'])
+            ->each(function (Breed $breed) use (&$map): void {
+                $map[(int) $breed->id] = self::resolveBreedMenuIcon($breed);
+            });
+
+        return $map;
+    }
+
+    /**
+     * @param  array<int, string|null>  $breedMenuIcons
+     */
+    private static function resolveMenuIconForPage(Page $page, array $breedMenuIcons): ?string
+    {
+        $linked = $page->settings['linked_entity'] ?? null;
+        if (! is_array($linked)) {
+            return null;
+        }
+
+        $type = (string) ($linked['type'] ?? '');
+        if ($type !== 'breed') {
+            return null;
+        }
+
+        $breedId = (int) ($linked['id'] ?? 0);
+        if ($breedId < 1) {
+            return null;
+        }
+
+        return $breedMenuIcons[$breedId] ?? null;
+    }
+
+    /**
+     * Icône menu d'une classe : colonne icon, sinon image, puis médias Spatie icons / images.
+     */
+    public static function resolveBreedMenuIconForSync(Breed $breed): ?string
+    {
+        return self::resolveBreedMenuIcon($breed);
+    }
+
+    private static function resolveBreedMenuIcon(Breed $breed): ?string
+    {
+        foreach ([$breed->icon, $breed->image] as $columnValue) {
+            $fromColumn = self::normalizeMenuIconUrl($columnValue);
+            if ($fromColumn !== null) {
+                return $fromColumn;
+            }
+        }
+
+        foreach (['icons', 'images'] as $collection) {
+            $media = $breed->getFirstMedia($collection);
+            if ($media === null) {
+                continue;
+            }
+
+            $url = $media->hasGeneratedConversion('thumb')
+                ? $media->getUrl('thumb')
+                : $media->getUrl();
+
+            $normalized = self::normalizeMenuIconUrl($url);
+            if ($normalized !== null) {
+                return $normalized;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Exclut Font Awesome et chaînes vides ; renvoie un chemin relatif /storage/… si possible.
+     */
+    private static function normalizeMenuIconUrl(?string $icon): ?string
+    {
+        $sanitized = self::sanitizeMenuIcon($icon);
+        if ($sanitized === null) {
+            return null;
+        }
+
+        if (str_starts_with($sanitized, 'http://') || str_starts_with($sanitized, 'https://')) {
+            $path = parse_url($sanitized, PHP_URL_PATH);
+            if (is_string($path) && $path !== '') {
+                return $path;
+            }
+        }
+
+        return $sanitized;
+    }
+
+    /**
+     * Exclut Font Awesome et chaînes vides des icônes menu image.
+     */
+    private static function sanitizeMenuIcon(?string $icon): ?string
+    {
+        if ($icon === null) {
+            return null;
+        }
+
+        $trimmed = trim($icon);
+        if ($trimmed === '' || str_starts_with($trimmed, 'fa-')) {
+            return null;
+        }
+
+        return $trimmed;
     }
 
     /**

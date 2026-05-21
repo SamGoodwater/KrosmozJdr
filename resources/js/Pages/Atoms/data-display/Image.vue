@@ -4,10 +4,10 @@
  *
  * @description
  * Composant atomique pour afficher une image avec gestion de la taille, du ratio, des filtres, du fit, de la position, du mask DaisyUI.
- * - Skeleton pendant le chargement réseau (non bloquant pour le reste du site : le DOM reste rendu, img en opacity 0 jusqu’au load).
+ * - Indicateur DaisyUI loading-ring pendant le chargement réseau (img en opacity 0 jusqu’au load).
  * - Utilise ImageService pour les chemins relatifs sous storage public.
  *
- * @slot loader - Skeleton personnalisé (overlay) pendant le chargement réseau
+ * @slot loader - Loader personnalisé (overlay) pendant le chargement réseau
  * @slot fallback - Contenu alternatif en cas d’erreur définitive
  */
 
@@ -18,7 +18,7 @@ import {
     getCommonAttrs,
     mergeClasses,
 } from "@/Utils/atomic-design/uiHelper";
-import Skeleton from "@/Pages/Atoms/feedback/Skeleton.vue";
+import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import {
     sizeMap,
     ratioMap,
@@ -80,11 +80,39 @@ let retryCount = 0;
 
 const slots = useSlots();
 
-const showNetworkSkeleton = computed(
+const showLoadingIndicator = computed(
     () =>
         Boolean(imageUrl.value) &&
         !imageLoaded.value &&
         !hasError.value,
+);
+
+/** Taille du loading-ring alignée sur la prop size de l’image. */
+const imageLoadingSizeMap = {
+    xs: "xs",
+    sm: "sm",
+    md: "md",
+    lg: "lg",
+    xl: "xl",
+    "2xl": "xl",
+    "3xl": "xl",
+    "4xl": "xl",
+    "5xl": "xl",
+    "6xl": "xl",
+};
+
+const loadingSize = computed(
+    () => imageLoadingSizeMap[props.size] || "sm",
+);
+
+const placeholderWrapperClasses = computed(() =>
+    mergeClasses([
+        "flex",
+        "items-center",
+        "justify-center",
+        "min-w-0",
+        ...(!props.width && !props.height && props.size ? sizeMap[props.size] : []),
+    ]),
 );
 
 async function resolveImage() {
@@ -225,28 +253,34 @@ onMounted(() => {
 <template>
     <div :class="wrapperClasses">
         <template v-if="!imageUrl && !hasError">
-            <slot name="loader">
-                <Skeleton
-                    element="image"
-                    :size="props.size"
-                    :width="props.width"
-                    :height="props.height"
-                />
-            </slot>
+            <div :class="placeholderWrapperClasses" :style="imageStyle">
+                <slot name="loader">
+                    <Loading
+                        type="ring"
+                        :size="loadingSize"
+                        color="neutral"
+                        aria-label="Chargement de l'image"
+                    />
+                </slot>
+            </div>
         </template>
 
         <template v-else-if="imageUrl && !hasError">
-            <div class="relative inline-flex max-h-full max-w-full">
-                <slot v-if="showNetworkSkeleton" name="loader">
-                    <Skeleton
-                        element="image"
-                        :size="props.size"
-                        :width="props.width"
-                        :height="props.height"
-                        class="pointer-events-none absolute inset-0 z-10"
-                        aria-hidden="true"
-                    />
-                </slot>
+            <div class="relative inline-flex max-h-full max-w-full items-center justify-center">
+                <div
+                    v-if="showLoadingIndicator"
+                    class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
+                    aria-hidden="true"
+                >
+                    <slot name="loader">
+                        <Loading
+                            type="ring"
+                            :size="loadingSize"
+                            color="neutral"
+                            aria-label="Chargement de l'image"
+                        />
+                    </slot>
+                </div>
                 <img
                     :src="imageUrl"
                     :alt="alt"

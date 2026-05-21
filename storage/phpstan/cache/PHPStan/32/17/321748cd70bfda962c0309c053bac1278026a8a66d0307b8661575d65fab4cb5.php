@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Services/PageService.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Services\PageService
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-c6a0f28a9075ea30b7f571aeaca96df32922aa041b6838feee681ab56e3e9d4a-8.4.17-6.70.0.1',
+   'variableKey' => 'v2-694e5a6a5d32fe1b2ac561cca22299f7a0f4f6407509c5f915d320c9df8258bc-8.4.17-6.70.0.1',
    'data' => 
   array (
     'locatedSource' => 
@@ -38,8 +38,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     'attributes' => 
     array (
     ),
-    'startLine' => 24,
-    'endLine' => 234,
+    'startLine' => 25,
+    'endLine' => 347,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -63,12 +63,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '3600',
           'attributes' => 
           array (
-            'startLine' => 29,
-            'endLine' => 29,
-            'startTokenPos' => 50,
-            'startFilePos' => 720,
-            'endTokenPos' => 50,
-            'endFilePos' => 723,
+            'startLine' => 30,
+            'endLine' => 30,
+            'startTokenPos' => 55,
+            'startFilePos' => 749,
+            'endTokenPos' => 55,
+            'endFilePos' => 752,
           ),
         ),
         'docComment' => '/**
@@ -77,8 +77,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 29,
-        'endLine' => 29,
+        'startLine' => 30,
+        'endLine' => 30,
         'startColumn' => 5,
         'endColumn' => 35,
       ),
@@ -101,12 +101,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 43,
-                'endLine' => 43,
-                'startTokenPos' => 72,
-                'startFilePos' => 1199,
-                'endTokenPos' => 72,
-                'endFilePos' => 1202,
+                'startLine' => 44,
+                'endLine' => 44,
+                'startTokenPos' => 77,
+                'startFilePos' => 1228,
+                'endTokenPos' => 77,
+                'endFilePos' => 1231,
               ),
             ),
             'type' => 
@@ -143,8 +143,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 43,
-            'endLine' => 43,
+            'startLine' => 44,
+            'endLine' => 44,
             'startColumn' => 41,
             'endColumn' => 58,
             'parameterIndex' => 0,
@@ -176,8 +176,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  User|null  $user  Utilisateur connecté (null pour invité)
  * @return Collection<Page> Collection de pages
  */',
-        'startLine' => 43,
-        'endLine' => 52,
+        'startLine' => 44,
+        'endLine' => 53,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -215,8 +215,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 76,
-            'endLine' => 76,
+            'startLine' => 77,
+            'endLine' => 77,
             'startColumn' => 42,
             'endColumn' => 58,
             'parameterIndex' => 0,
@@ -258,8 +258,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * $menuTree = PageService::buildMenuTree($pages);
  * // Utilisé pour afficher le menu hiérarchique dans le frontend
  */',
-        'startLine' => 76,
-        'endLine' => 86,
+        'startLine' => 77,
+        'endLine' => 88,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -297,8 +297,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 95,
-            'endLine' => 95,
+            'startLine' => 100,
+            'endLine' => 100,
             'startColumn' => 43,
             'endColumn' => 52,
             'parameterIndex' => 0,
@@ -323,11 +323,112 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 95,
-            'endLine' => 95,
+            'startLine' => 100,
+            'endLine' => 100,
             'startColumn' => 55,
             'endColumn' => 77,
             'parameterIndex' => 1,
+            'isOptional' => false,
+          ),
+          'breedMenuIcons' => 
+          array (
+            'name' => 'breedMenuIcons',
+            'default' => 
+            array (
+              'code' => '[]',
+              'attributes' => 
+              array (
+                'startLine' => 100,
+                'endLine' => 100,
+                'startTokenPos' => 330,
+                'startFilePos' => 3570,
+                'endTokenPos' => 331,
+                'endFilePos' => 3571,
+              ),
+            ),
+            'type' => 
+            array (
+              'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+              'data' => 
+              array (
+                'name' => 'array',
+                'isIdentifier' => true,
+              ),
+            ),
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 100,
+            'endLine' => 100,
+            'startColumn' => 80,
+            'endColumn' => 105,
+            'parameterIndex' => 2,
+            'isOptional' => true,
+          ),
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+          'data' => 
+          array (
+            'name' => 'array',
+            'isIdentifier' => true,
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * @param  array<int, string|null>  $breedMenuIcons  id Breed => URL/chemin icône menu
+ */',
+        'startLine' => 100,
+        'endLine' => 133,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 20,
+        'namespace' => 'App\\Services',
+        'declaringClassName' => 'App\\Services\\PageService',
+        'implementingClassName' => 'App\\Services\\PageService',
+        'currentClassName' => 'App\\Services\\PageService',
+        'aliasName' => NULL,
+      ),
+      'prefetchBreedMenuIcons' => 
+      array (
+        'name' => 'prefetchBreedMenuIcons',
+        'parameters' => 
+        array (
+          'pages' => 
+          array (
+            'name' => 'pages',
+            'default' => NULL,
+            'type' => 
+            array (
+              'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+              'data' => 
+              array (
+                'name' => 'Illuminate\\Database\\Eloquent\\Collection',
+                'isIdentifier' => false,
+              ),
+            ),
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 141,
+            'endLine' => 141,
+            'startColumn' => 52,
+            'endColumn' => 68,
+            'parameterIndex' => 0,
             'isOptional' => false,
           ),
         ),
@@ -345,14 +446,384 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => '/**
- * Construit un item de menu avec ses enfants.
+ * Précharge les icônes menu des classes liées (colonne icon + collection Spatie icons).
  *
- * @param  Page  $page  Page à transformer en item de menu
- * @param  Collection<Page>  $allChildren  Toutes les pages enfants disponibles
- * @return array<string, mixed> Item de menu avec structure
+ * @param  Collection<Page>  $pages
+ * @return array<int, string|null>
  */',
-        'startLine' => 95,
-        'endLine' => 125,
+        'startLine' => 141,
+        'endLine' => 171,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 20,
+        'namespace' => 'App\\Services',
+        'declaringClassName' => 'App\\Services\\PageService',
+        'implementingClassName' => 'App\\Services\\PageService',
+        'currentClassName' => 'App\\Services\\PageService',
+        'aliasName' => NULL,
+      ),
+      'resolveMenuIconForPage' => 
+      array (
+        'name' => 'resolveMenuIconForPage',
+        'parameters' => 
+        array (
+          'page' => 
+          array (
+            'name' => 'page',
+            'default' => NULL,
+            'type' => 
+            array (
+              'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+              'data' => 
+              array (
+                'name' => 'App\\Models\\Page',
+                'isIdentifier' => false,
+              ),
+            ),
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 176,
+            'endLine' => 176,
+            'startColumn' => 52,
+            'endColumn' => 61,
+            'parameterIndex' => 0,
+            'isOptional' => false,
+          ),
+          'breedMenuIcons' => 
+          array (
+            'name' => 'breedMenuIcons',
+            'default' => NULL,
+            'type' => 
+            array (
+              'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+              'data' => 
+              array (
+                'name' => 'array',
+                'isIdentifier' => true,
+              ),
+            ),
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 176,
+            'endLine' => 176,
+            'startColumn' => 64,
+            'endColumn' => 84,
+            'parameterIndex' => 1,
+            'isOptional' => false,
+          ),
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionUnionType',
+          'data' => 
+          array (
+            'types' => 
+            array (
+              0 => 
+              array (
+                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                'data' => 
+                array (
+                  'name' => 'string',
+                  'isIdentifier' => true,
+                ),
+              ),
+              1 => 
+              array (
+                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                'data' => 
+                array (
+                  'name' => 'null',
+                  'isIdentifier' => true,
+                ),
+              ),
+            ),
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * @param  array<int, string|null>  $breedMenuIcons
+ */',
+        'startLine' => 176,
+        'endLine' => 194,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 20,
+        'namespace' => 'App\\Services',
+        'declaringClassName' => 'App\\Services\\PageService',
+        'implementingClassName' => 'App\\Services\\PageService',
+        'currentClassName' => 'App\\Services\\PageService',
+        'aliasName' => NULL,
+      ),
+      'resolveBreedMenuIconForSync' => 
+      array (
+        'name' => 'resolveBreedMenuIconForSync',
+        'parameters' => 
+        array (
+          'breed' => 
+          array (
+            'name' => 'breed',
+            'default' => NULL,
+            'type' => 
+            array (
+              'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+              'data' => 
+              array (
+                'name' => 'App\\Models\\Entity\\Breed',
+                'isIdentifier' => false,
+              ),
+            ),
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 199,
+            'endLine' => 199,
+            'startColumn' => 56,
+            'endColumn' => 67,
+            'parameterIndex' => 0,
+            'isOptional' => false,
+          ),
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionUnionType',
+          'data' => 
+          array (
+            'types' => 
+            array (
+              0 => 
+              array (
+                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                'data' => 
+                array (
+                  'name' => 'string',
+                  'isIdentifier' => true,
+                ),
+              ),
+              1 => 
+              array (
+                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                'data' => 
+                array (
+                  'name' => 'null',
+                  'isIdentifier' => true,
+                ),
+              ),
+            ),
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Icône menu d\'une classe (colonne icon ou média Spatie « icons »).
+ */',
+        'startLine' => 199,
+        'endLine' => 202,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 17,
+        'namespace' => 'App\\Services',
+        'declaringClassName' => 'App\\Services\\PageService',
+        'implementingClassName' => 'App\\Services\\PageService',
+        'currentClassName' => 'App\\Services\\PageService',
+        'aliasName' => NULL,
+      ),
+      'resolveBreedMenuIcon' => 
+      array (
+        'name' => 'resolveBreedMenuIcon',
+        'parameters' => 
+        array (
+          'breed' => 
+          array (
+            'name' => 'breed',
+            'default' => NULL,
+            'type' => 
+            array (
+              'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+              'data' => 
+              array (
+                'name' => 'App\\Models\\Entity\\Breed',
+                'isIdentifier' => false,
+              ),
+            ),
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 204,
+            'endLine' => 204,
+            'startColumn' => 50,
+            'endColumn' => 61,
+            'parameterIndex' => 0,
+            'isOptional' => false,
+          ),
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionUnionType',
+          'data' => 
+          array (
+            'types' => 
+            array (
+              0 => 
+              array (
+                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                'data' => 
+                array (
+                  'name' => 'string',
+                  'isIdentifier' => true,
+                ),
+              ),
+              1 => 
+              array (
+                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                'data' => 
+                array (
+                  'name' => 'null',
+                  'isIdentifier' => true,
+                ),
+              ),
+            ),
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => NULL,
+        'startLine' => 204,
+        'endLine' => 221,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 20,
+        'namespace' => 'App\\Services',
+        'declaringClassName' => 'App\\Services\\PageService',
+        'implementingClassName' => 'App\\Services\\PageService',
+        'currentClassName' => 'App\\Services\\PageService',
+        'aliasName' => NULL,
+      ),
+      'sanitizeMenuIcon' => 
+      array (
+        'name' => 'sanitizeMenuIcon',
+        'parameters' => 
+        array (
+          'icon' => 
+          array (
+            'name' => 'icon',
+            'default' => NULL,
+            'type' => 
+            array (
+              'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionUnionType',
+              'data' => 
+              array (
+                'types' => 
+                array (
+                  0 => 
+                  array (
+                    'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                    'data' => 
+                    array (
+                      'name' => 'string',
+                      'isIdentifier' => true,
+                    ),
+                  ),
+                  1 => 
+                  array (
+                    'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                    'data' => 
+                    array (
+                      'name' => 'null',
+                      'isIdentifier' => true,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 226,
+            'endLine' => 226,
+            'startColumn' => 46,
+            'endColumn' => 58,
+            'parameterIndex' => 0,
+            'isOptional' => false,
+          ),
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionUnionType',
+          'data' => 
+          array (
+            'types' => 
+            array (
+              0 => 
+              array (
+                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                'data' => 
+                array (
+                  'name' => 'string',
+                  'isIdentifier' => true,
+                ),
+              ),
+              1 => 
+              array (
+                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                'data' => 
+                array (
+                  'name' => 'null',
+                  'isIdentifier' => true,
+                ),
+              ),
+            ),
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Exclut Font Awesome et chaînes vides des icônes menu image.
+ */',
+        'startLine' => 226,
+        'endLine' => 238,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -390,8 +861,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 134,
-            'endLine' => 134,
+            'startLine' => 247,
+            'endLine' => 247,
             'startColumn' => 40,
             'endColumn' => 49,
             'parameterIndex' => 0,
@@ -405,12 +876,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 134,
-                'endLine' => 134,
-                'startTokenPos' => 552,
-                'startFilePos' => 4719,
-                'endTokenPos' => 552,
-                'endFilePos' => 4722,
+                'startLine' => 247,
+                'endLine' => 247,
+                'startTokenPos' => 1295,
+                'startFilePos' => 8038,
+                'endTokenPos' => 1295,
+                'endFilePos' => 8041,
               ),
             ),
             'type' => 
@@ -447,8 +918,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 134,
-            'endLine' => 134,
+            'startLine' => 247,
+            'endLine' => 247,
             'startColumn' => 52,
             'endColumn' => 69,
             'parameterIndex' => 1,
@@ -475,8 +946,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  User|null  $user  Utilisateur (null pour invité)
  * @return bool True si la page peut être vue
  */',
-        'startLine' => 134,
-        'endLine' => 137,
+        'startLine' => 247,
+        'endLine' => 250,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -514,8 +985,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 151,
-            'endLine' => 151,
+            'startLine' => 264,
+            'endLine' => 264,
             'startColumn' => 49,
             'endColumn' => 58,
             'parameterIndex' => 0,
@@ -529,12 +1000,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 151,
-                'endLine' => 151,
-                'startTokenPos' => 594,
-                'startFilePos' => 5302,
-                'endTokenPos' => 594,
-                'endFilePos' => 5305,
+                'startLine' => 264,
+                'endLine' => 264,
+                'startTokenPos' => 1337,
+                'startFilePos' => 8621,
+                'endTokenPos' => 1337,
+                'endFilePos' => 8624,
               ),
             ),
             'type' => 
@@ -571,8 +1042,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 151,
-            'endLine' => 151,
+            'startLine' => 264,
+            'endLine' => 264,
             'startColumn' => 61,
             'endColumn' => 78,
             'parameterIndex' => 1,
@@ -604,8 +1075,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  User|null  $user  Utilisateur connecté (null pour invité)
  * @return Collection<Section> Collection de sections
  */',
-        'startLine' => 151,
-        'endLine' => 154,
+        'startLine' => 264,
+        'endLine' => 267,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -632,12 +1103,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 181,
-                'endLine' => 181,
-                'startTokenPos' => 634,
-                'startFilePos' => 6581,
-                'endTokenPos' => 634,
-                'endFilePos' => 6584,
+                'startLine' => 294,
+                'endLine' => 294,
+                'startTokenPos' => 1377,
+                'startFilePos' => 9900,
+                'endTokenPos' => 1377,
+                'endFilePos' => 9903,
               ),
             ),
             'type' => 
@@ -674,8 +1145,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 181,
-            'endLine' => 181,
+            'startLine' => 294,
+            'endLine' => 294,
             'startColumn' => 43,
             'endColumn' => 60,
             'parameterIndex' => 0,
@@ -720,8 +1191,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * // Après modification pour un utilisateur spécifique
  * PageService::clearMenuCache($user); // Invalide seulement pour cet utilisateur
  */',
-        'startLine' => 181,
-        'endLine' => 197,
+        'startLine' => 294,
+        'endLine' => 310,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -759,8 +1230,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 206,
-            'endLine' => 206,
+            'startLine' => 319,
+            'endLine' => 319,
             'startColumn' => 42,
             'endColumn' => 53,
             'parameterIndex' => 0,
@@ -774,12 +1245,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 206,
-                'endLine' => 206,
-                'startTokenPos' => 727,
-                'startFilePos' => 7550,
-                'endTokenPos' => 727,
-                'endFilePos' => 7553,
+                'startLine' => 319,
+                'endLine' => 319,
+                'startTokenPos' => 1470,
+                'startFilePos' => 10869,
+                'endTokenPos' => 1470,
+                'endFilePos' => 10872,
               ),
             ),
             'type' => 
@@ -816,8 +1287,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 206,
-            'endLine' => 206,
+            'startLine' => 319,
+            'endLine' => 319,
             'startColumn' => 56,
             'endColumn' => 73,
             'parameterIndex' => 1,
@@ -863,8 +1334,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  User|null  $user  Utilisateur connecté (null pour invité)
  * @return Page|null Page trouvée ou null
  */',
-        'startLine' => 206,
-        'endLine' => 219,
+        'startLine' => 319,
+        'endLine' => 332,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -902,8 +1373,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 228,
-            'endLine' => 228,
+            'startLine' => 341,
+            'endLine' => 341,
             'startColumn' => 40,
             'endColumn' => 49,
             'parameterIndex' => 0,
@@ -917,12 +1388,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 228,
-                'endLine' => 228,
-                'startTokenPos' => 843,
-                'startFilePos' => 8269,
-                'endTokenPos' => 843,
-                'endFilePos' => 8272,
+                'startLine' => 341,
+                'endLine' => 341,
+                'startTokenPos' => 1586,
+                'startFilePos' => 11588,
+                'endTokenPos' => 1586,
+                'endFilePos' => 11591,
               ),
             ),
             'type' => 
@@ -959,8 +1430,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 228,
-            'endLine' => 228,
+            'startLine' => 341,
+            'endLine' => 341,
             'startColumn' => 52,
             'endColumn' => 69,
             'parameterIndex' => 1,
@@ -987,8 +1458,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  User|null  $user  Utilisateur connecté (null pour invité)
  * @return bool True si la page peut être dans le menu
  */',
-        'startLine' => 228,
-        'endLine' => 233,
+        'startLine' => 341,
+        'endLine' => 346,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

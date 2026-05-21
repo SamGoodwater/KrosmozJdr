@@ -8,10 +8,11 @@ use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
 use App\Console\Concerns\PromptsPrimarySuperAdmin;
+use App\Console\Concerns\RunsBibliothequeEntityPagesSync;
 use App\Services\NotificationService;
-use Database\Seeders\BibliothequeEntityPagesSeeder;
 use Database\Seeders\CreationPagesSeeder;
 use Database\Seeders\CriticalPagesSeeder;
+use Database\Seeders\Entity\BreedSeeder;
 use Database\Seeders\Entity\ConditionSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
@@ -53,6 +54,7 @@ class ProjectInitCommand extends Command
     use GuardsProductionEnvironment;
     use NormalizesProjectSyncEntities;
     use PromptsPrimarySuperAdmin;
+    use RunsBibliothequeEntityPagesSync;
 
     protected $signature = 'project:init|init
         {--deps : Exécuter d’abord project:deps (composer update + pnpm up + project:optimize)}
@@ -62,6 +64,7 @@ class ProjectInitCommand extends Command
         {--skip-scrapping : Ne pas scraper}
         {--skip-capabilities : Ne pas importer les capabilities}
         {--skip-specializations : Ne pas exécuter le seeder legacy des spécialisations (HTML locaux)}
+        {--skip-breeds : Ne pas reconstruire les sections CMS des classes (après scrapping)}
         {--skip-types : Ne pas extraire/seed les types (resources, consommables, équipements, races monstres)}
         {--noimage : Désactiver le téléchargement des images}
         {--skip-cache : Ignorer le cache HTTP pour le scrapping}
@@ -111,6 +114,7 @@ class ProjectInitCommand extends Command
             'capabilities' => 'pending',
             'types' => 'pending',
             'scrapping' => 'pending',
+            'breed_sections' => 'pending',
             'bibliotheque_pages' => 'pending',
             'scheduler' => 'pending',
         ];
@@ -182,7 +186,15 @@ class ProjectInitCommand extends Command
             }
             $this->newLine();
 
-            $phaseStatuses['bibliotheque_pages'] = $this->runBibliothequeEntityPagesSync() ? 'ok' : 'warn';
+            $phaseStatuses['bibliotheque_pages'] = $this->runBibliothequeEntityPagesSyncPhase() ? 'ok' : 'warn';
+            $this->newLine();
+
+            if (! (bool) $this->option('skip-breeds')) {
+                $phaseStatuses['breed_sections'] = $this->runBreedSectionsSeeder() ? 'ok' : 'warn';
+            } else {
+                $this->warn('Sections classes ignorées (--skip-breeds).');
+                $phaseStatuses['breed_sections'] = 'skipped';
+            }
             $this->newLine();
 
             if ((bool) $this->option('init-scheduler')) {
@@ -549,11 +561,18 @@ class ProjectInitCommand extends Command
         return true;
     }
 
-    private function runBibliothequeEntityPagesSync(): bool
+    private function runBibliothequeEntityPagesSyncPhase(): bool
     {
         $this->info('Phase 5b : Sous-pages bibliothèque (classes et spécialisations)');
-        $this->line('  → '.BibliothequeEntityPagesSeeder::class);
-        $code = Artisan::call('db:seed', ['--class' => BibliothequeEntityPagesSeeder::class, '--force' => true]);
+
+        return $this->runBibliothequeEntityPagesSync();
+    }
+
+    private function runBreedSectionsSeeder(): bool
+    {
+        $this->info('Phase 5c : Sections CMS des classes (BreedSeeder — HTML legacy ou colonnes scrappées)');
+        $this->line('  → '.BreedSeeder::class);
+        $code = Artisan::call('db:seed', ['--class' => BreedSeeder::class, '--force' => true]);
         $this->output->write(Artisan::output());
 
         return $code === 0;

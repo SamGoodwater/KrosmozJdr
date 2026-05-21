@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Services/BibliothequeEntityPageService.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Services\BibliothequeEntityPageService
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-88f0ac79c0b13e568da2181ff91632e8c4d0d862053719fc884e7cc8cbd93e1f-8.4.17-6.70.0.1',
+   'variableKey' => 'v2-786f58c93c157081b54228e0484e6d7ff914f09512740fcbdd9dc9e6eb7f85e0-8.4.17-6.70.0.1',
    'data' => 
   array (
     'locatedSource' => 
@@ -32,7 +32,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     array (
     ),
     'startLine' => 17,
-    'endLine' => 124,
+    'endLine' => 131,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => NULL,
@@ -349,7 +349,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @return array{synced: int, removed: int}
  */',
         'startLine' => 46,
-        'endLine' => 94,
+        'endLine' => 101,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -387,8 +387,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 96,
-            'endLine' => 96,
+            'startLine' => 103,
+            'endLine' => 103,
             'startColumn' => 36,
             'endColumn' => 53,
             'parameterIndex' => 0,
@@ -413,8 +413,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 96,
-            'endLine' => 96,
+            'startLine' => 103,
+            'endLine' => 103,
             'startColumn' => 56,
             'endColumn' => 67,
             'parameterIndex' => 1,
@@ -435,8 +435,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 96,
-        'endLine' => 105,
+        'startLine' => 103,
+        'endLine' => 112,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -474,8 +474,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 110,
-            'endLine' => 110,
+            'startLine' => 117,
+            'endLine' => 117,
             'startColumn' => 41,
             'endColumn' => 53,
             'parameterIndex' => 0,
@@ -526,8 +526,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * @param  array{type?: string, id?: int}  $linked
  */',
-        'startLine' => 110,
-        'endLine' => 123,
+        'startLine' => 117,
+        'endLine' => 130,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

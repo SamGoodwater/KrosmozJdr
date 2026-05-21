@@ -7,6 +7,7 @@ Les classes (entité technique `breed` / `breeds`) représentent les archétypes
 ## Relations principales
 
 - **NPC** : chaque NPC peut référencer une classe (`breed_id`, relation `breed`).
+- **Sections CMS** : pivot `section_breed` avec `level` (même modèle que les spécialisations) — contenu riche (évolution, spécificité, dé de vie, références `@` caractéristiques). Alimentées par `BreedSeeder` (`project:init` phase 5c) ou édition manuelle (`EntityRelationsManager`).
 - **Créatures** : les personnages joueurs ou les PNJ passent par une créature ; la **classe** est portée au niveau du **NPC** (ou des données de fiche associées), pas par une FK directe générique sur toutes les créatures dans ce modèle documentaire simplifié.
 
 ## Différence avec les spécialisations (`specializations`)

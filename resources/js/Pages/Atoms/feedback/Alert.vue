@@ -31,6 +31,7 @@
  * @props {String} variant - Style DaisyUI ('', 'outline', 'dash', 'soft')
  * @props {String} direction - Direction ('', 'vertical', 'horizontal'), défaut responsive
  * @props {String} content - Texte simple à afficher (optionnel, prioritaire sur slot #content)
+ * @props {Boolean} glass - Style glassmorphism (box-glass-sm, paires color-X et bg-color-X, texte blanc, défaut true)
  * @props {String} shadow, backdrop, opacity - utilitaires custom ('' | 'xs' | ...)
  * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot icon - Icône SVG ou composant
@@ -78,23 +79,28 @@ const atomClasses = computed(() =>
     mergeClasses(
         [
             'alert',
-            props.color === 'info' && 'alert-info',
-            props.color === 'success' && 'alert-success',
-            props.color === 'warning' && 'alert-warning',
-            props.color === 'error' && 'alert-error',
+            !props.glass && props.color === 'info' && 'alert-info',
+            !props.glass && props.color === 'success' && 'alert-success',
+            !props.glass && props.color === 'warning' && 'alert-warning',
+            !props.glass && props.color === 'error' && 'alert-error',
             props.variant === 'outline' && 'alert-outline',
             props.variant === 'dash' && 'alert-dash',
             props.variant === 'soft' && !props.glass && 'alert-soft',
-            props.glass && 'k-alert-glass',
-            props.glass && 'backdrop-blur-md',
+            props.glass && 'relative',
+            props.glass && 'box-glass-sm',
+            props.glass && 'box-soft-sm',
             props.glass && 'rounded-sm',
-            props.glass && 'border',
-            props.glass && 'shadow-lg',
-            props.glass && props.color === 'info' && 'bg-info-950/85 text-info-100 border-info-600/50',
-            props.glass && props.color === 'success' && 'bg-success-950/85 text-success-100 border-success-600/50',
-            props.glass && props.color === 'warning' && 'bg-warning-950/85 text-warning-100 border-warning-700/55',
-            props.glass && props.color === 'error' && 'bg-error-950/85 text-error-100 border-error-600/50',
-            props.glass && !props.color && 'bg-base-300/40 text-base-content border-base-content/25',
+            props.glass && 'text-white',
+            props.glass && props.color === 'info' && 'color-info',
+            props.glass && props.color === 'info' && 'bg-color-info',
+            props.glass && props.color === 'success' && 'color-success',
+            props.glass && props.color === 'success' && 'bg-color-success',
+            props.glass && props.color === 'warning' && 'color-warning',
+            props.glass && props.color === 'warning' && 'bg-color-warning',
+            props.glass && props.color === 'error' && 'color-error',
+            props.glass && props.color === 'error' && 'bg-color-error',
+            props.glass && !props.color && 'color-base',
+            props.glass && !props.color && 'bg-color-base',
             props.direction === 'vertical' && 'alert-vertical',
             props.direction === 'horizontal' && 'alert-horizontal',
             !props.direction && 'alert-vertical',

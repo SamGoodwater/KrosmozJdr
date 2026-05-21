@@ -6,7 +6,7 @@
     },
     "scripts": {
         "preinstall": "npx only-allow pnpm",
-        "prebuild": "pnpm run css",
+        "prebuild": "pnpm run sass:build && node scripts/inject-theme-vars.cjs",
         "build": "vite build",
         "preview": "vite preview",
         "dev": "vite",

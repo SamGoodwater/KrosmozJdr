@@ -6,6 +6,7 @@ namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
+use App\Console\Concerns\RunsBibliothequeEntityPagesSync;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\Schema;
 class ProjectUpdateCommand extends Command
 {
     use NormalizesProjectSyncEntities;
+    use RunsBibliothequeEntityPagesSync;
 
     protected $aliases = ['project:update'];
 
@@ -170,6 +172,13 @@ class ProjectUpdateCommand extends Command
             $this->line('  → effects:rebuild-signatures (après update)');
             Artisan::call('effects:rebuild-signatures');
             $this->output->write(Artisan::output());
+
+            $this->newLine();
+            $this->info('Synchronisation menu Bibliothèques (classes / spécialisations)');
+            if (! $this->runBibliothequeEntityPagesSync()) {
+                $errors++;
+                $this->warn('  Avertissement : pages:sync-bibliotheque-entities a échoué.');
+            }
         }
 
         $duration = microtime(true) - $startedAt;

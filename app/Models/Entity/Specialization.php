@@ -3,6 +3,7 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\HasLeveledSections;
 use App\Models\Section;
 use App\Models\User;
 use Database\Factories\Entity\SpecializationFactory;
@@ -75,7 +76,17 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Specialization extends Model implements HasMedia
 {
     /** @use HasFactory<SpecializationFactory> */
-    use HasEntityImageMedia, HasFactory, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, HasLeveledSections, SoftDeletes;
+
+    protected function sectionsPivotTable(): string
+    {
+        return 'section_specialization';
+    }
+
+    protected function sectionsPivotForeignKey(): string
+    {
+        return 'specialization_id';
+    }
 
     public const STATE_RAW = 'raw';
 
@@ -167,13 +178,6 @@ class Specialization extends Model implements HasMedia
     {
         return $this->belongsToMany(Item::class, 'item_specialization')
             ->withPivot(['level', 'quantity'])
-            ->withTimestamps();
-    }
-
-    public function sections()
-    {
-        return $this->belongsToMany(Section::class, 'section_specialization')
-            ->withPivot('level')
             ->withTimestamps();
     }
 

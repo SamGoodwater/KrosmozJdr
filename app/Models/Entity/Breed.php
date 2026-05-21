@@ -3,6 +3,7 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\HasLeveledSections;
 use App\Models\Pivots\BreedSpellPivot;
 use App\Models\User;
 use Database\Factories\Entity\BreedFactory;
@@ -100,7 +101,17 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Breed extends Model implements HasMedia
 {
     /** @use HasFactory<BreedFactory> */
-    use HasEntityImageMedia, HasFactory, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, HasLeveledSections, SoftDeletes;
+
+    protected function sectionsPivotTable(): string
+    {
+        return 'section_breed';
+    }
+
+    protected function sectionsPivotForeignKey(): string
+    {
+        return 'breed_id';
+    }
 
     /** Répertoire Media Library pour ce modèle. */
     public const MEDIA_PATH = 'images/entity/breeds';

@@ -22,6 +22,7 @@ class BibliothequeEntityPageServiceTest extends TestCase
         $breed = Breed::factory()->create([
             'name' => 'Féca Test',
             'state' => Breed::STATE_PLAYABLE,
+            'icon' => '/storage/images/entity/breeds/icon-test.webp',
         ]);
 
         $stats = app(BibliothequeEntityPageService::class)->syncAll(User::factory()->create()->id);
@@ -35,6 +36,7 @@ class BibliothequeEntityPageServiceTest extends TestCase
         $this->assertTrue($child->in_menu);
         $this->assertSame('breed', $child->settings['linked_entity']['type'] ?? null);
         $this->assertSame($breed->id, $child->settings['linked_entity']['id'] ?? null);
+        $this->assertSame('/storage/images/entity/breeds/icon-test.webp', $child->icon);
 
         PageService::clearMenuCache();
     }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Entity;
 
 use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Entity\Concerns\ProvidesAvailableEntitySections;
+use App\Http\Controllers\Entity\Concerns\SyncsLeveledEntitySections;
 use App\Http\Requests\Entity\StoreSpecializationRequest;
 use App\Http\Requests\Entity\UpdateSpecializationCapabilitiesRequest;
 use App\Http\Requests\Entity\UpdateSpecializationConsumablesRequest;
@@ -20,7 +22,6 @@ use App\Http\Resources\Entity\ItemResource;
 use App\Http\Resources\Entity\ResourceResource;
 use App\Http\Resources\Entity\SpecializationResource;
 use App\Http\Resources\Entity\SpellResource;
-use App\Http\Resources\SectionResource;
 use App\Models\Entity\Capability;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\CreatureTrait;
@@ -28,7 +29,6 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
-use App\Models\Section;
 use App\Services\PdfService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -36,7 +36,9 @@ use Inertia\Response;
 
 class SpecializationController extends Controller
 {
+    use ProvidesAvailableEntitySections;
     use RedirectsAfterEntityCreate;
+    use SyncsLeveledEntitySections;
 
     /**
      * Display a listing of the resource.
@@ -130,7 +132,7 @@ class SpecializationController extends Controller
             'consumables' => fn ($q) => $q->orderBy('name'),
             'resources' => fn ($q) => $q->orderBy('name'),
             'items' => fn ($q) => $q->orderBy('name'),
-            'sections' => fn ($q) => $q->orderByPivot('level')->orderBy('title'),
+            'sections' => Specialization::orderedSectionsEagerLoadConstraint(),
         ]);
 
         return Inertia::render('Pages/entity/specialization/Show', [
@@ -153,7 +155,7 @@ class SpecializationController extends Controller
             'consumables' => fn ($q) => $q->orderBy('name'),
             'resources' => fn ($q) => $q->orderBy('name'),
             'items' => fn ($q) => $q->orderBy('name'),
-            'sections' => fn ($q) => $q->orderByPivot('level')->orderBy('title'),
+            'sections' => Specialization::orderedSectionsEagerLoadConstraint(),
         ]);
 
         $request = request();
@@ -182,10 +184,6 @@ class SpecializationController extends Controller
             Item::query()->orderBy('name')->limit(5000)->get()
         )->toArray($request);
 
-        $availableSections = SectionResource::collection(
-            Section::query()->orderBy('title')->limit(5000)->get()
-        )->toArray($request);
-
         return Inertia::render('Pages/entity/specialization/Edit', [
             'specialization' => new SpecializationResource($specialization),
             'availableSpells' => $availableSpells,
@@ -194,7 +192,7 @@ class SpecializationController extends Controller
             'availableConsumables' => $availableConsumables,
             'availableResources' => $availableResources,
             'availableItems' => $availableItems,
-            'availableSections' => $availableSections,
+            'availableSections' => $this->availableSectionsPayload(),
         ]);
     }
 
@@ -259,9 +257,11 @@ class SpecializationController extends Controller
 
     public function updateSections(UpdateSpecializationSectionsRequest $request, Specialization $specialization): RedirectResponse
     {
-        $specialization->sections()->sync($request->validatedLeveledSyncPayload());
-
-        return redirect()->back()->with('success', 'Sections de la spécialisation mises à jour.');
+        return $this->syncLeveledEntitySections(
+            $specialization,
+            $request,
+            'Sections de la spécialisation mises à jour.',
+        );
     }
 
     /**

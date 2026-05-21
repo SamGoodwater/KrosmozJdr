@@ -15,6 +15,7 @@ import BreedSpellSlotsEditor from "@/Pages/Organismes/entity/BreedSpellSlotsEdit
 import BreedCapabilitiesEditor from "@/Pages/Organismes/entity/BreedCapabilitiesEditor.vue";
 import CreatureTraitsEditor from "@/Pages/Organismes/entity/CreatureTraitsEditor.vue";
 import EntityLanguagesEditor from "@/Pages/Organismes/entity/EntityLanguagesEditor.vue";
+import EntityRelationsManager from "@/Pages/Organismes/entity/EntityRelationsManager.vue";
 import BreedElementOrientationsEditor from "@/Pages/Organismes/entity/BreedElementOrientationsEditor.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
@@ -49,6 +50,10 @@ const props = defineProps({
         default: () => [],
     },
     availableLanguages: {
+        type: Array,
+        default: () => [],
+    },
+    availableSections: {
         type: Array,
         default: () => [],
     },
@@ -144,6 +149,17 @@ const confirmDelete = () => {
             :relations="breed.languages || []"
             :available-items="availableLanguages"
             :entity-id="breed.id"
+        />
+
+        <EntityRelationsManager
+            v-if="breed.id"
+            :relations="breed.sections || []"
+            :available-items="availableSections"
+            :entity-id="breed.id"
+            entity-type="breeds"
+            relation-type="sections"
+            relation-name="Sections"
+            :config="{ itemLabel: 'section', itemLabelPlural: 'sections', displayFields: ['title', 'slug'], searchFields: ['title', 'slug'], routeName: 'entities.breeds.updateSections', relatedEntityType: 'sections', pivotFields: ['level'] }"
         />
 
         <div v-if="breed?.can?.delete" class="flex justify-end pt-4 border-t border-base-300">

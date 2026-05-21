@@ -2,23 +2,18 @@
 /**
  * BreedViewFull — Vue Full pour Breed
  *
- * @description
- * Vue complète d'une classe, alignée sur SpellViewFull (EntityViewHeader, métas, paramètres).
- *
- * @props {Breed} breed - Instance du modèle Breed
- * @props {Boolean} showActions - Afficher les actions (défaut: true)
+ * En-tête + blocs gameplay structuraux (orientations, traits, langues, variantes sorts).
+ * Le contenu narratif (spécificité, dé de vie, évolution, capacités en prose) est dans les sections liées.
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
+import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
@@ -27,13 +22,10 @@ import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
-import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
-import RichTextReadonlyView from "@/Pages/Molecules/data-display/RichTextReadonlyView.vue";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
-import { isRichHtmlVisuallyEmpty } from "@/Utils/richText/isRichHtmlVisuallyEmpty";
 
 const props = defineProps({
     breed: {
@@ -55,7 +47,7 @@ const props = defineProps({
     characteristicRuntime: { type: Object, default: null },
 });
 
-const headerMode = computed(() => (props.inModal ? 'compact' : 'full'));
+const headerMode = computed(() => (props.inModal ? "compact" : "full"));
 
 provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
@@ -88,11 +80,6 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getBreedFieldDescriptors(ctx.value));
 
-const autoUpdateValue = computed(() => {
-    const v = props.breed?.auto_update ?? props.breed?._data?.auto_update;
-    return typeof v === "boolean" ? v : null;
-});
-
 const mediaSrc = computed(() => {
     const b = props.breed;
     const u = b?.image ?? b?.icon ?? b?._data?.image ?? b?._data?.icon;
@@ -105,13 +92,6 @@ const spellSlotGroups = computed(() => {
 });
 
 const hasSpellSlots = computed(() => spellSlotGroups.value.length > 0);
-
-const linkedCapabilities = computed(() => {
-    const raw = props.breed?._data?.capabilities ?? props.breed?.capabilities;
-    return Array.isArray(raw) ? raw : [];
-});
-
-const hasLinkedCapabilities = computed(() => linkedCapabilities.value.length > 0);
 
 const linkedCreatureTraits = computed(() => {
     const raw = props.breed?._data?.creatureTraits ?? props.breed?.creatureTraits;
@@ -127,28 +107,16 @@ const linkedLanguages = computed(() => {
 
 const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
 
-/** Pitch court (sous-titre / accroche). */
 const descriptionFast = computed(() => {
     const b = props.breed?._data ?? props.breed;
     const t = b?.description_fast;
     return t != null && String(t).trim() !== "" ? String(t).trim() : "";
 });
 
-/** Description complète (peut être distincte de description_fast). */
 const descriptionFull = computed(() => {
     const b = props.breed?._data ?? props.breed;
     const t = b?.description ?? props.breed?.description;
     return t != null && String(t).trim() !== "" ? String(t).trim() : "";
-});
-
-/** HTML TipTap — évolution de classe (rien si vide ou HTML sans texte) */
-const evolutionHtml = computed(() => {
-    const b = props.breed?._data ?? props.breed;
-    const t = b?.evolution ?? props.breed?.evolution;
-    if (t == null || isRichHtmlVisuallyEmpty(String(t))) {
-        return "";
-    }
-    return String(t);
 });
 
 const orientationMap = computed(() => {
@@ -171,21 +139,9 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-const headlineFields = computed(() => ["life_dice"].filter(canShowField));
-
-const metaFields = computed(() =>
-    ["specificity", "breed_summary_relations"]
-        .filter((k) => !(k === "breed_summary_relations" && hasSpellSlots.value))
-        .filter(canShowField)
-        .filter((k) => !headlineFields.value.includes(k))
-);
-
-const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
-
-const userCanEditFields = computed(() => ["auto_update", "read_level", "write_level"].filter(canShowField));
-
-const technicalFields = computed(() =>
-    ["dofus_version", "dofusdb_id", "official_id", "created_by", "created_at", "updated_at"].filter(canShowField)
+/** Résumé sorts uniquement si pas encore de variantes structurées. */
+const summaryMetaFields = computed(() =>
+    hasSpellSlots.value ? [] : ["breed_summary_relations"].filter(canShowField),
 );
 
 const getFieldUi = (fieldKey) =>
@@ -195,63 +151,6 @@ const getFieldUi = (fieldKey) =>
         tableMeta: props.tableMeta,
         entityType: "breed",
     });
-
-const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
-
-const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon;
-
-const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
-
-const getFieldIconStyle = (fieldKey) => {
-    const color = getFieldUi(fieldKey).color;
-    return color ? { color } : undefined;
-};
-
-const getCell = (fieldKey) => {
-    return props.breed.toCell(fieldKey, {
-        size: "lg",
-        context: "extended",
-    });
-};
-
-const getBadgeColor = (fieldKey) => {
-    const colorMap = {
-        life_dice: "warning",
-        auto_update: "warning",
-        read_level: "primary",
-        write_level: "secondary",
-        dofusdb_id: "neutral",
-        official_id: "neutral",
-        created_by: "neutral",
-        created_at: "neutral",
-        updated_at: "neutral",
-    };
-    return resolveEntityBadgeUi({
-        fieldKey,
-        cell: getCell(fieldKey),
-        fieldUi: getFieldUi(fieldKey),
-        localColorMap: colorMap,
-    }).color;
-};
-
-const getBadgeAutoParams = (fieldKey) => {
-    const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
-        fieldKey,
-        cell: getCell(fieldKey),
-        fieldUi: getFieldUi(fieldKey),
-    });
-    return { autoLabel, autoScheme, autoTone };
-};
-
-const asTextCell = (cell) => {
-    if (!cell) return { type: "text", value: "-", params: {} };
-    const v = cell?.value;
-    return {
-        type: "text",
-        value: v === null || typeof v === "undefined" || String(v) === "" ? "-" : String(v),
-        params: cell?.params || {},
-    };
-};
 
 const handleAction = async (actionKey) => {
     const breedId = props.breed.id;
@@ -298,23 +197,6 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader :mode="headerMode">
             <template #media>
                 <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
-                    <div
-                        v-if="headlineFields.length > 0"
-                        class="absolute top-2 right-2 z-20 flex flex-wrap gap-1 justify-end max-w-[75%] transition-opacity duration-150 group-hover:opacity-0"
-                    >
-                        <template v-for="fieldKey in headlineFields" :key="fieldKey">
-                            <Badge
-                                :color="getBadgeColor(fieldKey)"
-                                :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                                :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                                :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
-                                size="sm"
-                            >
-                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                            </Badge>
-                        </template>
-                    </div>
-
                     <ImageViewer
                         v-if="mediaSrc"
                         :source="mediaSrc"
@@ -360,9 +242,12 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #mainInfos>
-                <div v-if="displayMetaFields.length > 0" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                <div
+                    v-if="summaryMetaFields.length > 0"
+                    class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"
+                >
                     <EntityPropertyDisplay
-                        v-for="fieldKey in displayMetaFields"
+                        v-for="fieldKey in summaryMetaFields"
                         :key="fieldKey"
                         :field-key="fieldKey"
                         :entity="breed"
@@ -400,13 +285,6 @@ const handleAction = async (actionKey) => {
             <BreedElementOrientationsDisplay :orientation-map="orientationMap" size="md" />
         </div>
 
-        <BreedCapabilitiesDisplay
-            v-if="hasLinkedCapabilities"
-            :capabilities="linkedCapabilities"
-            density="full"
-            :characteristic-runtime="characteristicRuntime"
-        />
-
         <div
             v-if="hasLinkedCreatureTraits"
             class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2"
@@ -427,88 +305,12 @@ const handleAction = async (actionKey) => {
             <EntityLanguagesInline :languages="linkedLanguages" :show-label="false" />
         </div>
 
-        <div
-            v-if="canShowField('evolution') && evolutionHtml"
-            class="rounded-box border border-base-300 bg-base-100/40 p-4"
-            role="region"
-            aria-label="Évolution"
-        >
-            <RichTextReadonlyView
-                :html="evolutionHtml"
-                :enable-rich-references="true"
-                class="text-primary-200/90"
-            />
-        </div>
-
         <BreedVariantsDisplay
             v-if="hasSpellSlots"
             :breed="breed?._data ?? breed"
             density="full"
             :characteristic-runtime="characteristicRuntime"
         />
-
-        <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
-            <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
-                <template v-for="fieldKey in technicalFields" :key="fieldKey">
-                    <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                        <div class="inline-flex items-center gap-2 min-w-0">
-                            <Icon
-                                :source="getFieldIcon(fieldKey)"
-                                size="xs"
-                                class="text-primary-300 flex-shrink-0"
-                                :style="getFieldIconStyle(fieldKey)"
-                            />
-                            <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
-                            <span class="min-w-0 break-words">
-                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                            </span>
-                        </div>
-                    </Tooltip>
-                </template>
-            </div>
-
-            <div v-if="userCanEditFields.length > 0" class="mt-4">
-                <div class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Paramètres</div>
-                <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
-                    <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
-                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
-                            <div class="inline-flex items-center gap-2 min-w-0">
-                                <Icon
-                                    :source="getFieldIcon(fieldKey)"
-                                    size="xs"
-                                    class="text-primary-300 flex-shrink-0"
-                                    :style="getFieldIconStyle(fieldKey)"
-                                />
-                                <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
-                                <span class="min-w-0 break-words">
-                                    <template v-if="fieldKey === 'auto_update'">
-                                        <Icon
-                                            v-if="autoUpdateValue !== null"
-                                            :source="autoUpdateValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
-                                            :alt="autoUpdateValue ? 'Oui' : 'Non'"
-                                            size="sm"
-                                            :class="autoUpdateValue ? 'text-success-800' : 'text-error-800'"
-                                        />
-                                        <span v-else>—</span>
-                                    </template>
-                                    <template v-else>
-                                        <Badge
-                                            :color="getBadgeColor(fieldKey)"
-                                            :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                                            :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                                            :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
-                                            size="sm"
-                                        >
-                                            <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                                        </Badge>
-                                    </template>
-                                </span>
-                            </div>
-                        </Tooltip>
-                    </template>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 

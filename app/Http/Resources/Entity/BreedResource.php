@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Entity;
 
+use App\Http\Resources\SectionResource;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Spell;
 use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
@@ -51,6 +52,7 @@ class BreedResource extends JsonResource
             'capabilities' => $this->whenLoaded('capabilities', fn () => CapabilityResource::collection($this->capabilities)->resolve($request)),
             'creatureTraits' => $this->whenLoaded('creatureTraits', fn () => CreatureTraitResource::collection($this->creatureTraits)->resolve($request)),
             'languages' => $this->whenLoaded('languages', fn () => LanguageResource::collection($this->languages)->resolve($request)),
+            'sections' => $this->whenLoaded('sections', fn () => SectionResource::collection($this->sections)->resolve($request)),
             'spell_slots' => $this->when(
                 $this->relationLoaded('spells'),
                 fn () => $this->formatSpellSlots($request)

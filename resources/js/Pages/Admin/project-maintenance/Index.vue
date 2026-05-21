@@ -7,6 +7,7 @@ import { computed, ref } from 'vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
+import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
@@ -129,17 +130,26 @@ const langOptions = [
         </div>
 
         <template v-else>
-            <div role="region" aria-label="Sécurité" class="alert alert-info mt-4 text-sm">
-                <span>
-                    Zone sensible : l’envoi du formulaire exige une session récente de confirmation mot de passe (comme le
-                    scrapping). Les requêtes sont validées côté serveur, limitées en débit et journalisées ; le traitement
-                    est asynchrone (file d’attente).
-                </span>
-            </div>
+            <Alert
+                color="info"
+                class="mt-4 text-sm"
+                :show_icon="false"
+                aria-label="Sécurité"
+            >
+                Zone sensible : l’envoi du formulaire exige une session récente de confirmation mot de passe (comme le
+                scrapping). Les requêtes sont validées côté serveur, limitées en débit et journalisées ; le traitement est
+                asynchrone (file d’attente).
+            </Alert>
 
-            <div v-if="$page.props.flash?.success" role="status" class="alert alert-success mt-6 text-sm">
+            <Alert
+                v-if="$page.props.flash?.success"
+                color="success"
+                class="mt-6 text-sm"
+                :show_icon="false"
+                role="status"
+            >
                 {{ $page.props.flash.success }}
-            </div>
+            </Alert>
 
             <form class="mt-8 space-y-8" @submit.prevent="submit">
                 <section class="rounded-box border border-base-300 bg-base-200/40 p-4">

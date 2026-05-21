@@ -13,13 +13,19 @@
 | **Variantes sorts** | Max **4** sorts par emplacement (`BreedSpellSlotsEditor`, `UpdateBreedSpellsRequest`) ; même sort dans plusieurs emplacements autorisé. |
 | **Spécialisation** | `SpecializationRelationsByLevel` : blocs sorts / capacités / équipements / ressources / consommables par niveau + « sans niveau ». |
 | **Champs classe legacy** | `evolution`, `specificity`, `life_dice` masqués des descriptors (contenu via sections). |
+| **Sections liées (DRY)** | Trait `HasLeveledSections`, services `EntityLeveledSectionsService` + `LegacyEntitySectionImportService`, requête `UpdateEntityLeveledSectionsRequest`, traits contrôleur `SyncsLeveledEntitySections` / `ProvidesAvailableEntitySections` — communs **breed** (`section_breed`) et **specialization** (`section_specialization`). |
+| **BreedSeeder** | Phase `project:init` **5c** (après scrapping) : HTML optionnel `database/seeders/data/legacy-breeds/{slug}.html`, sinon sections depuis colonnes + kref capacités/caractéristiques. `--skip-breeds` pour ignorer. |
 | **Legacy HTML** | `SpecializationSeeder` : import sections + kref capacités ; sync menu en fin de seeder. |
 
 ## Commandes
 
 ```bash
+`pages:sync-bibliotheque-entities` est appelée automatiquement par `project:init`, `project:update` / `project:data sync`, `SpecializationSeeder`, `BibliothequeEntityPagesSeeder` et `DatabaseSeeder`.
+
+```bash
 php artisan pages:sync-bibliotheque-entities
 php artisan db:seed --class=BibliothequeEntityPagesSeeder
+```
 ```
 
 `project:init` enchaîne le seeder après le scrapping (phase 5b).

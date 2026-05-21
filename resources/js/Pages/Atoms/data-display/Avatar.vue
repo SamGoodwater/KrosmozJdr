@@ -226,7 +226,7 @@ function onStart() {
                 />
                 <template v-if="isLoading">
                     <slot name="loader">
-                        <Loading type="spinner" size="sm" color="primary" />
+                        <Loading type="ring" size="sm" color="neutral" />
                     </slot>
                 </template>
             </template>
@@ -243,7 +243,7 @@ function onStart() {
                 />
                 <template v-if="isLoading">
                     <slot name="loader">
-                        <Loading type="spinner" size="sm" color="primary" />
+                        <Loading type="ring" size="sm" color="neutral" />
                     </slot>
                 </template>
             </template>

@@ -2,29 +2,15 @@
 
 namespace App\Http\Requests\Entity;
 
-use App\Http\Requests\Entity\Concerns\ValidatesLeveledRelationSync;
 use App\Models\Entity\Specialization;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Database\Eloquent\Model;
 
-class UpdateSpecializationSectionsRequest extends FormRequest
+class UpdateSpecializationSectionsRequest extends UpdateEntityLeveledSectionsRequest
 {
-    use ValidatesLeveledRelationSync;
-
-    public function authorize(): bool
+    protected function resolveAuthorizableEntity(): ?Model
     {
         $specialization = $this->route('specialization');
 
-        return $specialization instanceof Specialization
-            && $this->user()?->can('update', $specialization) === true;
-    }
-
-    protected function relationInputKey(): string
-    {
-        return 'sections';
-    }
-
-    protected function relationEntityTable(): string
-    {
-        return 'sections';
+        return $specialization instanceof Specialization ? $specialization : null;
     }
 }

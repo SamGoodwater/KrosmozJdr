@@ -2,23 +2,26 @@
 
 namespace Database\Seeders;
 
-use App\Services\BibliothequeEntityPageService;
+use App\Console\Concerns\WritesArtisanCommandOutput;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * Crée ou met à jour les sous-pages menu « Bibliothèques » par classe et spécialisation.
+ *
+ * Délègue à {@see SyncBibliothequeEntityPagesCommand}.
  */
 class BibliothequeEntityPagesSeeder extends Seeder
 {
+    use WritesArtisanCommandOutput;
+
     public function run(): void
     {
-        $stats = app(BibliothequeEntityPageService::class)->syncAll();
+        $code = Artisan::call('pages:sync-bibliotheque-entities');
+        $this->writeArtisanCommandOutput();
 
-        $this->command?->info(sprintf(
-            'Bibliothèque : %d classes, %d spécialisations (%d entrées menu retirées).',
-            $stats['breeds'],
-            $stats['specializations'],
-            $stats['removed']
-        ));
+        if ($code !== 0) {
+            $this->command?->error('Échec de pages:sync-bibliotheque-entities.');
+        }
     }
 }

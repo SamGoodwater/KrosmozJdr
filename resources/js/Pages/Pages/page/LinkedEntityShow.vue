@@ -9,6 +9,7 @@ import BreedViewFull from "@/Pages/Molecules/entity/breed/BreedViewFull.vue";
 import SpecializationViewFull from "@/Pages/Molecules/entity/specialization/SpecializationViewFull.vue";
 import SpecializationRelationsByLevel from "@/Pages/Molecules/entity/specialization/SpecializationRelationsByLevel.vue";
 import EntitySectionsRenderer from "@/Pages/Organismes/entity/EntitySectionsRenderer.vue";
+import BreedWriteMetaPanel from "@/Pages/Molecules/entity/breed/BreedWriteMetaPanel.vue";
 import { Breed } from "@/Models/Entity/Breed";
 import { Specialization } from "@/Models/Entity/Specialization";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
@@ -44,8 +45,9 @@ const specialization = computed(() => {
 const cmsSections = computed(() => props.page?.sections ?? []);
 const hasCmsSections = computed(() => Array.isArray(cmsSections.value) && cmsSections.value.length > 0);
 
-const linkedSections = computed(() => {
-    const raw = specialization.value?.sections ?? specialization.value?._data?.sections;
+const linkedEntitySections = computed(() => {
+    const entity = breed.value ?? specialization.value;
+    const raw = entity?.sections ?? entity?._data?.sections;
     return Array.isArray(raw) ? raw : [];
 });
 </script>
@@ -65,15 +67,17 @@ const linkedSections = computed(() => {
             <SpecializationViewFull :specialization="specialization" :show-actions="true" />
 
             <SpecializationRelationsByLevel :specialization="specialization" />
-
-            <section v-if="linkedSections.length" class="space-y-3">
-                <h2 class="text-lg font-semibold">Sections liées</h2>
-                <EntitySectionsRenderer
-                    :sections="linkedSections"
-                    empty-message="Aucune section liée."
-                />
-            </section>
         </template>
+
+        <section v-if="linkedEntitySections.length" class="space-y-3">
+            <h2 class="text-lg font-semibold">Sections</h2>
+            <EntitySectionsRenderer
+                :sections="linkedEntitySections"
+                :empty-message="breed ? 'Aucune section liée à cette classe.' : 'Aucune section liée à cette spécialisation.'"
+            />
+        </section>
+
+        <BreedWriteMetaPanel v-if="breed" :breed="breed" />
 
         <section v-if="hasCmsSections" class="space-y-3 border-t border-base-300/50 pt-6">
             <h2 v-if="breed || specialization" class="text-lg font-semibold">Contenu complémentaire</h2>

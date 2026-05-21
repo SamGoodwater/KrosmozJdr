@@ -60,27 +60,34 @@ class BibliothequeEntityPageService
                 $slug = $this->buildChildSlug($entityType, (string) $entity->name);
                 $activeSlugs[] = $slug;
 
+                $pageAttributes = [
+                    'title' => (string) $entity->name,
+                    'in_menu' => true,
+                    'state' => Page::STATE_PLAYABLE,
+                    'read_level' => (int) ($entity->read_level ?? User::ROLE_GUEST),
+                    'write_level' => (int) ($entity->write_level ?? User::ROLE_ADMIN),
+                    'parent_id' => $parent->id,
+                    'menu_order' => $order++,
+                    'menu_group' => null,
+                    'entity_key' => $entityType,
+                    'menu_item_css_classes' => 'color-'.$entityType.'-500',
+                    'created_by' => $creatorId,
+                    'settings' => [
+                        'linked_entity' => [
+                            'type' => $entityType,
+                            'id' => (int) $entity->id,
+                        ],
+                    ],
+                ];
+
+                if ($entityType === 'breed' && $entity instanceof Breed) {
+                    $menuIcon = PageService::resolveBreedMenuIconForSync($entity);
+                    $pageAttributes['icon'] = $menuIcon;
+                }
+
                 Page::query()->updateOrCreate(
                     ['slug' => $slug],
-                    [
-                        'title' => (string) $entity->name,
-                        'in_menu' => true,
-                        'state' => Page::STATE_PLAYABLE,
-                        'read_level' => (int) ($entity->read_level ?? User::ROLE_GUEST),
-                        'write_level' => (int) ($entity->write_level ?? User::ROLE_ADMIN),
-                        'parent_id' => $parent->id,
-                        'menu_order' => $order++,
-                        'menu_group' => null,
-                        'entity_key' => $entityType,
-                        'menu_item_css_classes' => 'color-'.$entityType.'-500',
-                        'created_by' => $creatorId,
-                        'settings' => [
-                            'linked_entity' => [
-                                'type' => $entityType,
-                                'id' => (int) $entity->id,
-                            ],
-                        ],
-                    ]
+                    $pageAttributes
                 );
                 $synced++;
             });

@@ -230,6 +230,7 @@ class PageController extends Controller
                 'capabilities' => fn ($q) => $q->orderBy('name'),
                 'creatureTraits' => fn ($q) => $q->orderBy('name'),
                 'languages',
+                'sections' => Breed::orderedSectionsEagerLoadConstraint(),
             ]);
             $payload['linkedEntity'] = new BreedResource($entity);
         } else {
@@ -243,7 +244,7 @@ class PageController extends Controller
                 'consumables' => fn ($q) => $q->orderBy('name'),
                 'resources' => fn ($q) => $q->orderBy('name'),
                 'items' => fn ($q) => $q->orderBy('name'),
-                'sections' => fn ($q) => $q->orderByPivot('level')->orderBy('title'),
+                'sections' => Specialization::orderedSectionsEagerLoadConstraint(),
             ]);
             $payload['linkedEntity'] = new SpecializationResource($entity);
         }

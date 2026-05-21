@@ -12,6 +12,8 @@ import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import EntityViewFullWrapper from "@/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue";
 import BreedViewFull from "@/Pages/Molecules/entity/breed/BreedViewFull.vue";
+import EntitySectionsRenderer from "@/Pages/Organismes/entity/EntitySectionsRenderer.vue";
+import BreedWriteMetaPanel from "@/Pages/Molecules/entity/breed/BreedWriteMetaPanel.vue";
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -56,6 +58,16 @@ const goEdit = () => {
                     :show-actions="true"
                     :characteristic-runtime="characteristicRuntime"
                 />
+
+                <section class="space-y-3">
+                    <h2 class="text-lg font-semibold">Sections</h2>
+                    <EntitySectionsRenderer
+                        :sections="breed.sections"
+                        empty-message="Aucune section liée à cette classe."
+                    />
+                </section>
+
+                <BreedWriteMetaPanel :breed="breed" />
             </div>
         </EntityViewFullWrapper>
     </Container>
