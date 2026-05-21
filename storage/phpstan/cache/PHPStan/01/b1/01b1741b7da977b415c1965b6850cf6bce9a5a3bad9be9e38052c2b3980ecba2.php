@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/Scenario.php-presentSymbols
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-25f9afca66831ab184ce754ac2ec3572811e6ebc893835c09e530b8cc9c5c89a-8.4.17',
+   'variableKey' => 'v2-d5c4f9ef92b426954f7b7886f7a238ab20e04f93a655f3982470bf84904f2ef9-8.4.17',
    'data' => 
   array (
     'classes' => 

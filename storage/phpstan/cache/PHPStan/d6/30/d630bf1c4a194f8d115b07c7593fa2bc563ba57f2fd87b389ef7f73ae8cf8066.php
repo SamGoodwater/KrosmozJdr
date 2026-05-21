@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Type/ScenarioLink.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Type\ScenarioLink
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-19a86670e6cf11a4a0d9ba0d797918e7f8c1d6841202bd3c677ded4edb682f3f-8.4.17-6.70.0.1',
+   'variableKey' => 'v2-a337100d63f69c4fee47a435988c16841b5e8a8dbe61107c966657ba8523cbbd-8.4.17-6.70.0.1',
    'data' => 
   array (
     'locatedSource' => 
@@ -29,6 +29,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property string|null $condition
  * @property-read Scenario $nextScenario
  * @property-read Scenario $scenario
+ *
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|ScenarioLink newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|ScenarioLink newQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|ScenarioLink query()
@@ -36,13 +37,14 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|ScenarioLink whereId($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|ScenarioLink whereNextScenarioId($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|ScenarioLink whereScenarioId($value)
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 24,
-    'endLine' => 51,
+    'startLine' => 26,
+    'endLine' => 53,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -69,20 +71,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'scenario_link\'',
           'attributes' => 
           array (
-            'startLine' => 26,
-            'endLine' => 26,
+            'startLine' => 28,
+            'endLine' => 28,
             'startTokenPos' => 35,
-            'startFilePos' => 1059,
+            'startFilePos' => 1065,
             'endTokenPos' => 35,
-            'endFilePos' => 1073,
+            'endFilePos' => 1079,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 26,
-        'endLine' => 26,
+        'startLine' => 28,
+        'endLine' => 28,
         'startColumn' => 5,
         'endColumn' => 39,
         'isPromoted' => false,
@@ -104,20 +106,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => 'false',
           'attributes' => 
           array (
-            'startLine' => 28,
-            'endLine' => 28,
+            'startLine' => 30,
+            'endLine' => 30,
             'startTokenPos' => 44,
-            'startFilePos' => 1102,
+            'startFilePos' => 1108,
             'endTokenPos' => 44,
-            'endFilePos' => 1106,
+            'endFilePos' => 1112,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 28,
-        'endLine' => 28,
+        'startLine' => 30,
+        'endLine' => 30,
         'startColumn' => 5,
         'endColumn' => 31,
         'isPromoted' => false,
@@ -139,20 +141,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'scenario_id\', \'next_scenario_id\', \'condition\']',
           'attributes' => 
           array (
-            'startLine' => 30,
-            'endLine' => 34,
+            'startLine' => 32,
+            'endLine' => 36,
             'startTokenPos' => 53,
-            'startFilePos' => 1136,
+            'startFilePos' => 1142,
             'endTokenPos' => 64,
-            'endFilePos' => 1214,
+            'endFilePos' => 1220,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 30,
-        'endLine' => 34,
+        'startLine' => 32,
+        'endLine' => 36,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -179,8 +181,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Le scénario source du lien.
  */',
-        'startLine' => 39,
-        'endLine' => 42,
+        'startLine' => 41,
+        'endLine' => 44,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -208,8 +210,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Le scénario cible du lien.
  */',
-        'startLine' => 47,
-        'endLine' => 50,
+        'startLine' => 49,
+        'endLine' => 52,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

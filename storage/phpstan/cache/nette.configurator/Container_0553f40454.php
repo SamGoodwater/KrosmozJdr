@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
+class Container_0553f40454 extends _PHPStan_33c983f26\Nette\DI\Container
 {
 	protected $tags = [
 		'phpstan.diagnoseExtension' => ['06' => true, '08' => true],
@@ -5840,7 +5840,7 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_c722bccea0 $container)
+			public function __construct(Container_0553f40454 $container)
 			{
 				$this->container = $container;
 			}
@@ -5898,7 +5898,7 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_c722bccea0 $container)
+			public function __construct(Container_0553f40454 $container)
 			{
 				$this->container = $container;
 			}
@@ -5918,7 +5918,7 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_c722bccea0 $container)
+			public function __construct(Container_0553f40454 $container)
 			{
 				$this->container = $container;
 			}
@@ -5938,7 +5938,7 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_c722bccea0 $container)
+			public function __construct(Container_0553f40454 $container)
 			{
 				$this->container = $container;
 			}
@@ -5963,7 +5963,7 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_c722bccea0 $container)
+			public function __construct(Container_0553f40454 $container)
 			{
 				$this->container = $container;
 			}
@@ -5983,7 +5983,7 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_c722bccea0 $container)
+			public function __construct(Container_0553f40454 $container)
 			{
 				$this->container = $container;
 			}
@@ -6031,7 +6031,7 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_c722bccea0 $container)
+			public function __construct(Container_0553f40454 $container)
 			{
 				$this->container = $container;
 			}
@@ -6097,7 +6097,7 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_c722bccea0 $container)
+			public function __construct(Container_0553f40454 $container)
 			{
 				$this->container = $container;
 			}
@@ -9532,7 +9532,7 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 	}
 
 
-	public function createServiceContainer(): Container_c722bccea0
+	public function createServiceContainer(): Container_0553f40454
 	{
 		return $this;
 	}
@@ -10281,7 +10281,7 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 				'SHELL' => '/bin/bash',
 				'COLORTERM' => 'truecolor',
 				'WSL2_GUI_APPS_ENABLED' => '1',
-				'TERM_PROGRAM_VERSION' => '3.4.20',
+				'TERM_PROGRAM_VERSION' => '3.5.17',
 				'FNM_ARCH' => 'arm64',
 				'WSL_DISTRO_NAME' => 'KrosmozDebian',
 				'FNM_NODE_DIST_MIRROR' => 'https://nodejs.org/dist',
@@ -10289,15 +10289,15 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 				'PWD' => '/var/www/KrosmozJdr',
 				'LOGNAME' => 'goodwater',
 				'PNPM_HOME' => '/home/goodwater/.local/share/pnpm',
-				'VSCODE_GIT_ASKPASS_NODE' => '/home/goodwater/.cursor-server/bin/0cf8b06883f54e26bb4f0fb8647c9500ccb43310/node',
+				'VSCODE_GIT_ASKPASS_NODE' => '/home/goodwater/.cursor-server/bin/d5b2fc092e16007956c9e5047f76097b9e626ca0/node',
 				'HOME' => '/home/goodwater',
 				'LANG' => 'en_US.UTF-8',
-				'WSL_INTEROP' => '/run/WSL/379551_interop',
+				'WSL_INTEROP' => '/run/WSL/1156885_interop',
 				'FNM_COREPACK_ENABLED' => 'false',
 				'LS_COLORS' => 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.swp=00;90:*.tmp=00;90:*.dpkg-dist=00;90:*.dpkg-old=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:',
 				'WAYLAND_DISPLAY' => 'wayland-0',
-				'GIT_ASKPASS' => '/home/goodwater/.cursor-server/bin/0cf8b06883f54e26bb4f0fb8647c9500ccb43310/extensions/git/dist/askpass.sh',
-				'VSCODE_GIT_IPC_AUTH_TOKEN' => '3b18da542240a40c0bcf1ba6d3d2de11de5d8efbb9190b429882755b0b2daacf',
+				'GIT_ASKPASS' => '/home/goodwater/.cursor-server/bin/d5b2fc092e16007956c9e5047f76097b9e626ca0/extensions/git/dist/askpass.sh',
+				'VSCODE_GIT_IPC_AUTH_TOKEN' => '86c929f09cebd718fe80e5cf07ecca5943954b841aefdf9e212b438de9545a24',
 				'VSCODE_GIT_ASKPASS_EXTRA_ARGS' => '',
 				'TERM' => 'xterm-256color',
 				'USER' => 'goodwater',
@@ -10308,25 +10308,25 @@ class Container_c722bccea0 extends _PHPStan_33c983f26\Nette\DI\Container
 				'XDG_RUNTIME_DIR' => '/run/user/1000/',
 				'FNM_RESOLVE_ENGINES' => 'true',
 				'WSLENV' => '',
-				'VSCODE_GIT_ASKPASS_MAIN' => '/home/goodwater/.cursor-server/bin/0cf8b06883f54e26bb4f0fb8647c9500ccb43310/extensions/git/dist/askpass-main.js',
-				'PATH' => '/run/user/1000/fnm_multishells/1132463_1779273940560/bin:/home/goodwater/.local/share/fnm:/home/goodwater/.cursor-server/bin/0cf8b06883f54e26bb4f0fb8647c9500ccb43310/bin/remote-cli:/home/goodwater/.local/bin:/run/user/1000/fnm_multishells/379666_1778871448435/bin:/home/goodwater/.local/share/fnm:/home/goodwater/.local/share/pnpm:/home/goodwater/.cursor-server/bin/0cf8b06883f54e26bb4f0fb8647c9500ccb43310/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Users/sambo/AppData/Local/Programs/cursor/resources/app/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/PowerShell/7/:/mnt/c/Users/sambo/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/sambo/AppData/Local/Programs/cursor/resources/app/bin:/mnt/c/Users/sambo/AppData/Local/GitHubDesktop/bin:/mnt/c/Users/sambo/AppData/Local/PowerToys/DSCModules/',
+				'VSCODE_GIT_ASKPASS_MAIN' => '/home/goodwater/.cursor-server/bin/d5b2fc092e16007956c9e5047f76097b9e626ca0/extensions/git/dist/askpass-main.js',
+				'PATH' => '/run/user/1000/fnm_multishells/1176529_1779345190541/bin:/home/goodwater/.local/share/fnm:/home/goodwater/.cursor-server/bin/d5b2fc092e16007956c9e5047f76097b9e626ca0/bin/remote-cli:/home/goodwater/.local/bin:/run/user/1000/fnm_multishells/1157003_1779341492644/bin:/home/goodwater/.local/share/fnm:/home/goodwater/.local/share/pnpm:/home/goodwater/.cursor-server/bin/d5b2fc092e16007956c9e5047f76097b9e626ca0/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Users/sambo/AppData/Local/Programs/cursor/resources/app/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/PowerShell/7/:/mnt/c/Program Files/Git/cmd:/mnt/c/Users/sambo/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/sambo/AppData/Local/Programs/cursor/resources/app/bin:/mnt/c/Users/sambo/AppData/Local/GitHubDesktop/bin:/mnt/c/Users/sambo/AppData/Local/PowerToys/DSCModules/',
 				'DBUS_SESSION_BUS_ADDRESS' => 'unix:path=/run/user/1000/bus',
 				'HOSTTYPE' => 'x86_64',
 				'FNM_DIR' => '/home/goodwater/.local/share/fnm',
-				'FNM_MULTISHELL_PATH' => '/run/user/1000/fnm_multishells/1132463_1779273940560',
+				'FNM_MULTISHELL_PATH' => '/run/user/1000/fnm_multishells/1176529_1779345190541',
 				'PULSE_SERVER' => 'unix:/mnt/wslg/PulseServer',
 				'FNM_LOGLEVEL' => 'info',
 				'OVSX_REGISTRY_URL' => 'https://open-vsx.org',
-				'OLDPWD' => '/home/goodwater/.cursor-server/bin/0cf8b06883f54e26bb4f0fb8647c9500ccb43310',
+				'OLDPWD' => '/home/goodwater/.cursor-server/bin/d5b2fc092e16007956c9e5047f76097b9e626ca0',
 				'TERM_PROGRAM' => 'vscode',
-				'VSCODE_IPC_HOOK_CLI' => '/run/user/1000/vscode-ipc-1e6f97b2-36fc-444d-b5a1-a5e6a88a1c5d.sock',
+				'VSCODE_IPC_HOOK_CLI' => '/run/user/1000/vscode-ipc-c1a8299d-19b5-420e-8cb6-ad4b250aba67.sock',
 				'_' => '/usr/bin/php',
 				'LINES' => '50',
 				'COLUMNS' => '80',
 				'PHPSTAN_ORIGINAL_INIS' => '/etc/php/8.4/cli/php.ini:/etc/php/8.4/cli/conf.d/10-mysqlnd.ini:/etc/php/8.4/cli/conf.d/10-opcache.ini:/etc/php/8.4/cli/conf.d/10-pdo.ini:/etc/php/8.4/cli/conf.d/15-xml.ini:/etc/php/8.4/cli/conf.d/20-bcmath.ini:/etc/php/8.4/cli/conf.d/20-calendar.ini:/etc/php/8.4/cli/conf.d/20-ctype.ini:/etc/php/8.4/cli/conf.d/20-curl.ini:/etc/php/8.4/cli/conf.d/20-dom.ini:/etc/php/8.4/cli/conf.d/20-exif.ini:/etc/php/8.4/cli/conf.d/20-ffi.ini:/etc/php/8.4/cli/conf.d/20-fileinfo.ini:/etc/php/8.4/cli/conf.d/20-ftp.ini:/etc/php/8.4/cli/conf.d/20-gd.ini:/etc/php/8.4/cli/conf.d/20-gettext.ini:/etc/php/8.4/cli/conf.d/20-iconv.ini:/etc/php/8.4/cli/conf.d/20-igbinary.ini:/etc/php/8.4/cli/conf.d/20-imagick.ini:/etc/php/8.4/cli/conf.d/20-intl.ini:/etc/php/8.4/cli/conf.d/20-ldap.ini:/etc/php/8.4/cli/conf.d/20-mbstring.ini:/etc/php/8.4/cli/conf.d/20-mysqli.ini:/etc/php/8.4/cli/conf.d/20-pdo_mysql.ini:/etc/php/8.4/cli/conf.d/20-phar.ini:/etc/php/8.4/cli/conf.d/20-posix.ini:/etc/php/8.4/cli/conf.d/20-readline.ini:/etc/php/8.4/cli/conf.d/20-shmop.ini:/etc/php/8.4/cli/conf.d/20-simplexml.ini:/etc/php/8.4/cli/conf.d/20-soap.ini:/etc/php/8.4/cli/conf.d/20-sockets.ini:/etc/php/8.4/cli/conf.d/20-sysvmsg.ini:/etc/php/8.4/cli/conf.d/20-sysvsem.ini:/etc/php/8.4/cli/conf.d/20-sysvshm.ini:/etc/php/8.4/cli/conf.d/20-tokenizer.ini:/etc/php/8.4/cli/conf.d/20-xdebug.ini:/etc/php/8.4/cli/conf.d/20-xmlreader.ini:/etc/php/8.4/cli/conf.d/20-xmlwriter.ini:/etc/php/8.4/cli/conf.d/20-xsl.ini:/etc/php/8.4/cli/conf.d/20-zip.ini:/etc/php/8.4/cli/conf.d/25-redis.ini',
 				'PHP_INI_SCAN_DIR' => '',
-				'PHPRC' => '/tmp/j5r2n0ibfnv12FQpzyk',
-				'XDEBUG_HANDLER_SETTINGS' => '/tmp/j5r2n0ibfnv12FQpzyk|1|*|*|/etc/php/8.4/cli/php.ini:/etc/php/8.4/cli/conf.d/10-mysqlnd.ini:/etc/php/8.4/cli/conf.d/10-opcache.ini:/etc/php/8.4/cli/conf.d/10-pdo.ini:/etc/php/8.4/cli/conf.d/15-xml.ini:/etc/php/8.4/cli/conf.d/20-bcmath.ini:/etc/php/8.4/cli/conf.d/20-calendar.ini:/etc/php/8.4/cli/conf.d/20-ctype.ini:/etc/php/8.4/cli/conf.d/20-curl.ini:/etc/php/8.4/cli/conf.d/20-dom.ini:/etc/php/8.4/cli/conf.d/20-exif.ini:/etc/php/8.4/cli/conf.d/20-ffi.ini:/etc/php/8.4/cli/conf.d/20-fileinfo.ini:/etc/php/8.4/cli/conf.d/20-ftp.ini:/etc/php/8.4/cli/conf.d/20-gd.ini:/etc/php/8.4/cli/conf.d/20-gettext.ini:/etc/php/8.4/cli/conf.d/20-iconv.ini:/etc/php/8.4/cli/conf.d/20-igbinary.ini:/etc/php/8.4/cli/conf.d/20-imagick.ini:/etc/php/8.4/cli/conf.d/20-intl.ini:/etc/php/8.4/cli/conf.d/20-ldap.ini:/etc/php/8.4/cli/conf.d/20-mbstring.ini:/etc/php/8.4/cli/conf.d/20-mysqli.ini:/etc/php/8.4/cli/conf.d/20-pdo_mysql.ini:/etc/php/8.4/cli/conf.d/20-phar.ini:/etc/php/8.4/cli/conf.d/20-posix.ini:/etc/php/8.4/cli/conf.d/20-readline.ini:/etc/php/8.4/cli/conf.d/20-shmop.ini:/etc/php/8.4/cli/conf.d/20-simplexml.ini:/etc/php/8.4/cli/conf.d/20-soap.ini:/etc/php/8.4/cli/conf.d/20-sockets.ini:/etc/php/8.4/cli/conf.d/20-sysvmsg.ini:/etc/php/8.4/cli/conf.d/20-sysvsem.ini:/etc/php/8.4/cli/conf.d/20-sysvshm.ini:/etc/php/8.4/cli/conf.d/20-tokenizer.ini:/etc/php/8.4/cli/conf.d/20-xdebug.ini:/etc/php/8.4/cli/conf.d/20-xmlreader.ini:/etc/php/8.4/cli/conf.d/20-xmlwriter.ini:/etc/php/8.4/cli/conf.d/20-xsl.ini:/etc/php/8.4/cli/conf.d/20-zip.ini:/etc/php/8.4/cli/conf.d/25-redis.ini|3.5.0',
+				'PHPRC' => '/tmp/o44hd36769lf5zjg8JE',
+				'XDEBUG_HANDLER_SETTINGS' => '/tmp/o44hd36769lf5zjg8JE|1|*|*|/etc/php/8.4/cli/php.ini:/etc/php/8.4/cli/conf.d/10-mysqlnd.ini:/etc/php/8.4/cli/conf.d/10-opcache.ini:/etc/php/8.4/cli/conf.d/10-pdo.ini:/etc/php/8.4/cli/conf.d/15-xml.ini:/etc/php/8.4/cli/conf.d/20-bcmath.ini:/etc/php/8.4/cli/conf.d/20-calendar.ini:/etc/php/8.4/cli/conf.d/20-ctype.ini:/etc/php/8.4/cli/conf.d/20-curl.ini:/etc/php/8.4/cli/conf.d/20-dom.ini:/etc/php/8.4/cli/conf.d/20-exif.ini:/etc/php/8.4/cli/conf.d/20-ffi.ini:/etc/php/8.4/cli/conf.d/20-fileinfo.ini:/etc/php/8.4/cli/conf.d/20-ftp.ini:/etc/php/8.4/cli/conf.d/20-gd.ini:/etc/php/8.4/cli/conf.d/20-gettext.ini:/etc/php/8.4/cli/conf.d/20-iconv.ini:/etc/php/8.4/cli/conf.d/20-igbinary.ini:/etc/php/8.4/cli/conf.d/20-imagick.ini:/etc/php/8.4/cli/conf.d/20-intl.ini:/etc/php/8.4/cli/conf.d/20-ldap.ini:/etc/php/8.4/cli/conf.d/20-mbstring.ini:/etc/php/8.4/cli/conf.d/20-mysqli.ini:/etc/php/8.4/cli/conf.d/20-pdo_mysql.ini:/etc/php/8.4/cli/conf.d/20-phar.ini:/etc/php/8.4/cli/conf.d/20-posix.ini:/etc/php/8.4/cli/conf.d/20-readline.ini:/etc/php/8.4/cli/conf.d/20-shmop.ini:/etc/php/8.4/cli/conf.d/20-simplexml.ini:/etc/php/8.4/cli/conf.d/20-soap.ini:/etc/php/8.4/cli/conf.d/20-sockets.ini:/etc/php/8.4/cli/conf.d/20-sysvmsg.ini:/etc/php/8.4/cli/conf.d/20-sysvsem.ini:/etc/php/8.4/cli/conf.d/20-sysvshm.ini:/etc/php/8.4/cli/conf.d/20-tokenizer.ini:/etc/php/8.4/cli/conf.d/20-xdebug.ini:/etc/php/8.4/cli/conf.d/20-xmlreader.ini:/etc/php/8.4/cli/conf.d/20-xmlwriter.ini:/etc/php/8.4/cli/conf.d/20-xsl.ini:/etc/php/8.4/cli/conf.d/20-zip.ini:/etc/php/8.4/cli/conf.d/25-redis.ini|3.5.0',
 			],
 		];
 	}

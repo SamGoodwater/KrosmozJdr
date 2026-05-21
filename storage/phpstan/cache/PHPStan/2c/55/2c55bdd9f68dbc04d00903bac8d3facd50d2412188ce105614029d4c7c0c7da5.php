@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/OAuthAccount.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\OAuthAccount
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-79721839a70bec27eb57a94ffb0eec74a2443d5e574c860b12002c1e5e5fd061-8.4.17-6.70.0.1',
+   'variableKey' => 'v2-06caf96e8aa626d978d259170401e49cc4569de739d21aaaa5508de41fec26f8-8.4.17-6.70.0.1',
    'data' => 
   array (
     'locatedSource' => 
@@ -37,6 +37,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read User $user
+ *
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|OAuthAccount forUser(int $userId)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|OAuthAccount newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|OAuthAccount newQuery()
@@ -51,13 +52,14 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|OAuthAccount whereProviderName($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|OAuthAccount whereUpdatedAt($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|OAuthAccount whereUserId($value)
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 41,
-    'endLine' => 92,
+    'startLine' => 43,
+    'endLine' => 94,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -81,20 +83,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'github\'',
           'attributes' => 
           array (
-            'startLine' => 46,
-            'endLine' => 46,
+            'startLine' => 48,
+            'endLine' => 48,
             'startTokenPos' => 58,
-            'startFilePos' => 2269,
+            'startFilePos' => 2275,
             'endTokenPos' => 58,
-            'endFilePos' => 2276,
+            'endFilePos' => 2282,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 46,
-        'endLine' => 46,
+        'startLine' => 48,
+        'endLine' => 48,
         'startColumn' => 5,
         'endColumn' => 44,
       ),
@@ -110,20 +112,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'discord\'',
           'attributes' => 
           array (
-            'startLine' => 48,
-            'endLine' => 48,
+            'startLine' => 50,
+            'endLine' => 50,
             'startTokenPos' => 69,
-            'startFilePos' => 2316,
+            'startFilePos' => 2322,
             'endTokenPos' => 69,
-            'endFilePos' => 2324,
+            'endFilePos' => 2330,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 48,
-        'endLine' => 48,
+        'startLine' => 50,
+        'endLine' => 50,
         'startColumn' => 5,
         'endColumn' => 46,
       ),
@@ -139,20 +141,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'steam\'',
           'attributes' => 
           array (
-            'startLine' => 50,
-            'endLine' => 50,
+            'startLine' => 52,
+            'endLine' => 52,
             'startTokenPos' => 80,
-            'startFilePos' => 2362,
+            'startFilePos' => 2368,
             'endTokenPos' => 80,
-            'endFilePos' => 2368,
+            'endFilePos' => 2374,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 50,
-        'endLine' => 50,
+        'startLine' => 52,
+        'endLine' => 52,
         'startColumn' => 5,
         'endColumn' => 42,
       ),
@@ -168,20 +170,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[self::PROVIDER_GITHUB, self::PROVIDER_DISCORD, self::PROVIDER_STEAM]',
           'attributes' => 
           array (
-            'startLine' => 52,
-            'endLine' => 52,
+            'startLine' => 54,
+            'endLine' => 54,
             'startTokenPos' => 91,
-            'startFilePos' => 2401,
+            'startFilePos' => 2407,
             'endTokenPos' => 105,
-            'endFilePos' => 2469,
+            'endFilePos' => 2475,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 52,
-        'endLine' => 52,
+        'startLine' => 54,
+        'endLine' => 54,
         'startColumn' => 5,
         'endColumn' => 99,
       ),
@@ -200,20 +202,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'oauth_accounts\'',
           'attributes' => 
           array (
-            'startLine' => 44,
-            'endLine' => 44,
+            'startLine' => 46,
+            'endLine' => 46,
             'startTokenPos' => 47,
-            'startFilePos' => 2215,
+            'startFilePos' => 2221,
             'endTokenPos' => 47,
-            'endFilePos' => 2230,
+            'endFilePos' => 2236,
           ),
         ),
         'docComment' => '/** @var string Nom de la table (évite la pluralisation incorrecte "o_auth_accounts"). */',
         'attributes' => 
         array (
         ),
-        'startLine' => 44,
-        'endLine' => 44,
+        'startLine' => 46,
+        'endLine' => 46,
         'startColumn' => 5,
         'endColumn' => 40,
         'isPromoted' => false,
@@ -235,20 +237,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'user_id\', \'provider\', \'provider_id\', \'provider_email\', \'provider_name\', \'avatar_url\']',
           'attributes' => 
           array (
-            'startLine' => 54,
-            'endLine' => 61,
+            'startLine' => 56,
+            'endLine' => 63,
             'startTokenPos' => 114,
-            'startFilePos' => 2499,
+            'startFilePos' => 2505,
             'endTokenPos' => 134,
-            'endFilePos' => 2640,
+            'endFilePos' => 2646,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 54,
-        'endLine' => 61,
+        'startLine' => 56,
+        'endLine' => 63,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -283,8 +285,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Relation vers l\'utilisateur.
  */',
-        'startLine' => 66,
-        'endLine' => 69,
+        'startLine' => 68,
+        'endLine' => 71,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -322,8 +324,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 77,
-            'endLine' => 77,
+            'startLine' => 79,
+            'endLine' => 79,
             'startColumn' => 35,
             'endColumn' => 48,
             'parameterIndex' => 0,
@@ -348,8 +350,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 77,
-            'endLine' => 77,
+            'startLine' => 79,
+            'endLine' => 79,
             'startColumn' => 51,
             'endColumn' => 66,
             'parameterIndex' => 1,
@@ -375,8 +377,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  Builder<OAuthAccount>  $query
  * @return Builder<OAuthAccount>
  */',
-        'startLine' => 77,
-        'endLine' => 80,
+        'startLine' => 79,
+        'endLine' => 82,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -414,8 +416,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 88,
-            'endLine' => 88,
+            'startLine' => 90,
+            'endLine' => 90,
             'startColumn' => 34,
             'endColumn' => 47,
             'parameterIndex' => 0,
@@ -440,8 +442,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 88,
-            'endLine' => 88,
+            'startLine' => 90,
+            'endLine' => 90,
             'startColumn' => 50,
             'endColumn' => 60,
             'parameterIndex' => 1,
@@ -467,8 +469,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @param  Builder<OAuthAccount>  $query
  * @return Builder<OAuthAccount>
  */',
-        'startLine' => 88,
-        'endLine' => 91,
+        'startLine' => 90,
+        'endLine' => 93,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

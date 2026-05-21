@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/CreatureTrait.php-presentSymbols
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-58f49b4f450c2ca5242d9c200b5754aa1cab0e68cbc184cc33103344d6e6edb1-8.4.17',
+   'variableKey' => 'v2-bc51f26a66cb93ac181632ed37fb11d4d05a629be364660ef2a478bb8e1a341d-8.4.17',
    'data' => 
   array (
     'classes' => 

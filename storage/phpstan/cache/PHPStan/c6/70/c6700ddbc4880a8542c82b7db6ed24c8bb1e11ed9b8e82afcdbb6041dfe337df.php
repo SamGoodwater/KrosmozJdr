@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/Npc.php-presentSymbols
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-c4db4d57b7d2fc1aa964d1a4aaf422badb30a1cc37036ed92119af8091cbb553-8.4.17',
+   'variableKey' => 'v2-e67b1b23ef3214f825d0f242909cf147d1b643187d2b4b261743e8a129ee8e1e-8.4.17',
    'data' => 
   array (
     'classes' => 

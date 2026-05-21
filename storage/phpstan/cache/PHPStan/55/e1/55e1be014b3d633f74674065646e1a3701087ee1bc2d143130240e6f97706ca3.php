@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Type/MonsterRace.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Type\MonsterRace
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-54a713e9a8369e1d77a8e31f0d552b8f9dbb89330a20abee360d7f234c31bc22-8.4.17-6.70.0.1',
+   'variableKey' => 'v2-bd5c5b03e88d3a7cc79b948bcbd16270931e6872e3ea070f77d5b984e959a532-8.4.17-6.70.0.1',
    'data' => 
   array (
     'locatedSource' => 
@@ -40,6 +40,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property-read Collection<int, MonsterRace> $subRaces
  * @property-read int|null $sub_races_count
  * @property-read MonsterRace|null $superRace
+ *
  * @method static \\Database\\Factories\\Type\\MonsterRaceFactory factory($count = null, $state = [])
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|MonsterRace newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|MonsterRace newQuery()
@@ -58,13 +59,14 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|MonsterRace withTrashed()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|MonsterRace withoutTrashed()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|MonsterRace whereDofusdbRaceId($value)
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 51,
-    'endLine' => 156,
+    'startLine' => 53,
+    'endLine' => 158,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -90,20 +92,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'raw\'',
           'attributes' => 
           array (
-            'startLine' => 56,
-            'endLine' => 56,
+            'startLine' => 58,
+            'endLine' => 58,
             'startTokenPos' => 72,
-            'startFilePos' => 2850,
+            'startFilePos' => 2856,
             'endTokenPos' => 72,
-            'endFilePos' => 2854,
+            'endFilePos' => 2860,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 56,
-        'endLine' => 56,
+        'startLine' => 58,
+        'endLine' => 58,
         'startColumn' => 5,
         'endColumn' => 35,
       ),
@@ -119,20 +121,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'draft\'',
           'attributes' => 
           array (
-            'startLine' => 58,
-            'endLine' => 58,
+            'startLine' => 60,
+            'endLine' => 60,
             'startTokenPos' => 83,
-            'startFilePos' => 2889,
+            'startFilePos' => 2895,
             'endTokenPos' => 83,
-            'endFilePos' => 2895,
+            'endFilePos' => 2901,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 58,
-        'endLine' => 58,
+        'startLine' => 60,
+        'endLine' => 60,
         'startColumn' => 5,
         'endColumn' => 39,
       ),
@@ -148,20 +150,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'playable\'',
           'attributes' => 
           array (
-            'startLine' => 60,
-            'endLine' => 60,
+            'startLine' => 62,
+            'endLine' => 62,
             'startTokenPos' => 94,
-            'startFilePos' => 2933,
+            'startFilePos' => 2939,
             'endTokenPos' => 94,
-            'endFilePos' => 2942,
+            'endFilePos' => 2948,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 60,
-        'endLine' => 60,
+        'startLine' => 62,
+        'endLine' => 62,
         'startColumn' => 5,
         'endColumn' => 45,
       ),
@@ -177,20 +179,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'archived\'',
           'attributes' => 
           array (
-            'startLine' => 62,
-            'endLine' => 62,
+            'startLine' => 64,
+            'endLine' => 64,
             'startTokenPos' => 105,
-            'startFilePos' => 2980,
+            'startFilePos' => 2986,
             'endTokenPos' => 105,
-            'endFilePos' => 2989,
+            'endFilePos' => 2995,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 62,
-        'endLine' => 62,
+        'startLine' => 64,
+        'endLine' => 64,
         'startColumn' => 5,
         'endColumn' => 45,
       ),
@@ -209,12 +211,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'dofusdb_race_id\', \'name\', \'state\', \'read_level\', \'write_level\', \'created_by\', \'id_super_race\']',
           'attributes' => 
           array (
-            'startLine' => 69,
-            'endLine' => 77,
+            'startLine' => 71,
+            'endLine' => 79,
             'startTokenPos' => 116,
-            'startFilePos' => 3115,
+            'startFilePos' => 3121,
             'endTokenPos' => 139,
-            'endFilePos' => 3273,
+            'endFilePos' => 3279,
           ),
         ),
         'docComment' => '/**
@@ -225,8 +227,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 69,
-        'endLine' => 77,
+        'startLine' => 71,
+        'endLine' => 79,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -248,12 +250,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'read_level\' => \'integer\', \'write_level\' => \'integer\', \'dofusdb_race_id\' => \'integer\']',
           'attributes' => 
           array (
-            'startLine' => 84,
-            'endLine' => 88,
+            'startLine' => 86,
+            'endLine' => 90,
             'startTokenPos' => 150,
-            'startFilePos' => 3400,
+            'startFilePos' => 3406,
             'endTokenPos' => 173,
-            'endFilePos' => 3517,
+            'endFilePos' => 3523,
           ),
         ),
         'docComment' => '/**
@@ -264,8 +266,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 84,
-        'endLine' => 88,
+        'startLine' => 86,
+        'endLine' => 90,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -302,8 +304,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 93,
-            'endLine' => 93,
+            'startLine' => 95,
+            'endLine' => 95,
             'startColumn' => 45,
             'endColumn' => 62,
             'parameterIndex' => 0,
@@ -317,12 +319,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
               'code' => 'null',
               'attributes' => 
               array (
-                'startLine' => 93,
-                'endLine' => 93,
+                'startLine' => 95,
+                'endLine' => 95,
                 'startTokenPos' => 198,
-                'startFilePos' => 3688,
+                'startFilePos' => 3694,
                 'endTokenPos' => 198,
-                'endFilePos' => 3691,
+                'endFilePos' => 3697,
               ),
             ),
             'type' => 
@@ -359,8 +361,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
             'attributes' => 
             array (
             ),
-            'startLine' => 93,
-            'endLine' => 93,
+            'startLine' => 95,
+            'endLine' => 95,
             'startColumn' => 65,
             'endColumn' => 84,
             'parameterIndex' => 1,
@@ -383,8 +385,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Enregistre/actualise une race DofusDB vue pendant le scrapping.
  */',
-        'startLine' => 93,
-        'endLine' => 123,
+        'startLine' => 95,
+        'endLine' => 125,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -412,8 +414,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the user that created the monster race.
  */',
-        'startLine' => 128,
-        'endLine' => 131,
+        'startLine' => 130,
+        'endLine' => 133,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -441,8 +443,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the super race (parent race) of this monster race.
  */',
-        'startLine' => 136,
-        'endLine' => 139,
+        'startLine' => 138,
+        'endLine' => 141,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -470,8 +472,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les monstres de cette race.
  */',
-        'startLine' => 144,
-        'endLine' => 147,
+        'startLine' => 146,
+        'endLine' => 149,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -499,8 +501,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les sous-races de cette race.
  */',
-        'startLine' => 152,
-        'endLine' => 155,
+        'startLine' => 154,
+        'endLine' => 157,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/BreedElementOrientation.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Entity\BreedElementOrientation
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-6cd0353b39c033301e974f51c708c4e00408c4b3bf0b8c6aef1f24bd8f72cc21-8.4.17-6.70.0.1',
+   'variableKey' => 'v2-dcfa6faf8ef20fd4f2de537fc22ea8ca7ec33e2afb5c2e793a3e9af7dd759c9d-8.4.17-6.70.0.1',
    'data' => 
   array (
     'locatedSource' => 
@@ -32,6 +32,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Breed $breed
+ *
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedElementOrientation newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedElementOrientation newQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedElementOrientation query()
@@ -41,13 +42,14 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedElementOrientation whereId($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedElementOrientation whereOrientationKey($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedElementOrientation whereUpdatedAt($value)
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 30,
-    'endLine' => 60,
+    'startLine' => 32,
+    'endLine' => 62,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -71,20 +73,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'air\'',
           'attributes' => 
           array (
-            'startLine' => 32,
-            'endLine' => 32,
+            'startLine' => 34,
+            'endLine' => 34,
             'startTokenPos' => 42,
-            'startFilePos' => 1589,
+            'startFilePos' => 1595,
             'endTokenPos' => 42,
-            'endFilePos' => 1593,
+            'endFilePos' => 1599,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 32,
-        'endLine' => 32,
+        'startLine' => 34,
+        'endLine' => 34,
         'startColumn' => 5,
         'endColumn' => 37,
       ),
@@ -100,20 +102,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'earth\'',
           'attributes' => 
           array (
-            'startLine' => 34,
-            'endLine' => 34,
+            'startLine' => 36,
+            'endLine' => 36,
             'startTokenPos' => 53,
-            'startFilePos' => 1630,
+            'startFilePos' => 1636,
             'endTokenPos' => 53,
-            'endFilePos' => 1636,
+            'endFilePos' => 1642,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 34,
-        'endLine' => 34,
+        'startLine' => 36,
+        'endLine' => 36,
         'startColumn' => 5,
         'endColumn' => 41,
       ),
@@ -129,20 +131,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'fire\'',
           'attributes' => 
           array (
-            'startLine' => 36,
-            'endLine' => 36,
+            'startLine' => 38,
+            'endLine' => 38,
             'startTokenPos' => 64,
-            'startFilePos' => 1672,
+            'startFilePos' => 1678,
             'endTokenPos' => 64,
-            'endFilePos' => 1677,
+            'endFilePos' => 1683,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 36,
-        'endLine' => 36,
+        'startLine' => 38,
+        'endLine' => 38,
         'startColumn' => 5,
         'endColumn' => 39,
       ),
@@ -158,20 +160,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'water\'',
           'attributes' => 
           array (
-            'startLine' => 38,
-            'endLine' => 38,
+            'startLine' => 40,
+            'endLine' => 40,
             'startTokenPos' => 75,
-            'startFilePos' => 1714,
+            'startFilePos' => 1720,
             'endTokenPos' => 75,
-            'endFilePos' => 1720,
+            'endFilePos' => 1726,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 38,
-        'endLine' => 38,
+        'startLine' => 40,
+        'endLine' => 40,
         'startColumn' => 5,
         'endColumn' => 41,
       ),
@@ -187,20 +189,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[self::ELEMENT_AIR, self::ELEMENT_EARTH, self::ELEMENT_FIRE, self::ELEMENT_WATER]',
           'attributes' => 
           array (
-            'startLine' => 41,
-            'endLine' => 46,
+            'startLine' => 43,
+            'endLine' => 48,
             'startTokenPos' => 88,
-            'startFilePos' => 1781,
+            'startFilePos' => 1787,
             'endTokenPos' => 110,
-            'endFilePos' => 1900,
+            'endFilePos' => 1906,
           ),
         ),
         'docComment' => '/** @var list<string> */',
         'attributes' => 
         array (
         ),
-        'startLine' => 41,
-        'endLine' => 46,
+        'startLine' => 43,
+        'endLine' => 48,
         'startColumn' => 5,
         'endColumn' => 6,
       ),
@@ -219,20 +221,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'breed_element_orientations\'',
           'attributes' => 
           array (
-            'startLine' => 48,
-            'endLine' => 48,
+            'startLine' => 50,
+            'endLine' => 50,
             'startTokenPos' => 119,
-            'startFilePos' => 1927,
+            'startFilePos' => 1933,
             'endTokenPos' => 119,
-            'endFilePos' => 1954,
+            'endFilePos' => 1960,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 48,
-        'endLine' => 48,
+        'startLine' => 50,
+        'endLine' => 50,
         'startColumn' => 5,
         'endColumn' => 52,
         'isPromoted' => false,
@@ -254,20 +256,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'breed_id\', \'element\', \'orientation_key\']',
           'attributes' => 
           array (
-            'startLine' => 50,
-            'endLine' => 54,
+            'startLine' => 52,
+            'endLine' => 56,
             'startTokenPos' => 128,
-            'startFilePos' => 1984,
+            'startFilePos' => 1990,
             'endTokenPos' => 139,
-            'endFilePos' => 2056,
+            'endFilePos' => 2062,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 50,
-        'endLine' => 54,
+        'startLine' => 52,
+        'endLine' => 56,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -300,8 +302,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 56,
-        'endLine' => 59,
+        'startLine' => 58,
+        'endLine' => 61,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

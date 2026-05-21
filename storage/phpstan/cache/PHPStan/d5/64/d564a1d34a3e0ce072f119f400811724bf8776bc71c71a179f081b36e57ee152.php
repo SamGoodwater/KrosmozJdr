@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/Language.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Entity\Language
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-fd651f06330c6c45f3ca353a8ce772eeead35589613d0cd5b15bc7ceaf0677bb-8.4.17-6.70.0.1',
+   'variableKey' => 'v2-0419dfee01057c395519475cd5336204b33fb6d8a40290582ae0c80be75d5060-8.4.17-6.70.0.1',
    'data' => 
   array (
     'locatedSource' => 
@@ -29,13 +29,16 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property string $name
  * @property string|null $description
  * @property string $color Hex #RRGGBB
+ *
  * @method static LanguageFactory factory($count = null, $state = [])
+ *
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
  * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
+ *
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language newQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language query()
@@ -45,13 +48,14 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language whereId($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language whereName($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Language whereUpdatedAt($value)
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 37,
-    'endLine' => 63,
+    'startLine' => 41,
+    'endLine' => 67,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -79,20 +83,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'name\', \'description\', \'color\']',
           'attributes' => 
           array (
-            'startLine' => 42,
-            'endLine' => 46,
+            'startLine' => 46,
+            'endLine' => 50,
             'startTokenPos' => 62,
-            'startFilePos' => 1824,
+            'startFilePos' => 1836,
             'endTokenPos' => 73,
-            'endFilePos' => 1886,
+            'endFilePos' => 1898,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 42,
-        'endLine' => 46,
+        'startLine' => 46,
+        'endLine' => 50,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -125,8 +129,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 48,
-        'endLine' => 54,
+        'startLine' => 52,
+        'endLine' => 58,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -160,8 +164,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         array (
         ),
         'docComment' => NULL,
-        'startLine' => 56,
-        'endLine' => 62,
+        'startLine' => 60,
+        'endLine' => 66,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

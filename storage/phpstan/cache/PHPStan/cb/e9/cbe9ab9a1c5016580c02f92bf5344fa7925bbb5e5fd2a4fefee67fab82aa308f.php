@@ -78,7 +78,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Models/Pivots/BreedSpellPivot.php' => '0acac7a91b446f5249eae8f73838741bee9c9c12292ab68e1223df6c1cd464cd',
+      '/var/www/KrosmozJdr/app/Models/Pivots/BreedSpellPivot.php' => 'acc48225657901040370305313cf7788ba3f93a73834ef981bf36acd20e4307c',
     ),
   ),
 ));

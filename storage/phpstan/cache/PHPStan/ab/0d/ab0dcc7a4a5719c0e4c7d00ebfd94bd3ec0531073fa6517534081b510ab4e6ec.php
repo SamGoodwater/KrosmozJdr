@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Pivots/BreedSpellPivot.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Pivots\BreedSpellPivot
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-0acac7a91b446f5249eae8f73838741bee9c9c12292ab68e1223df6c1cd464cd-8.4.17-6.70.0.1',
+   'variableKey' => 'v2-acc48225657901040370305313cf7788ba3f93a73834ef981bf36acd20e4307c-8.4.17-6.70.0.1',
    'data' => 
   array (
     'locatedSource' => 
@@ -31,6 +31,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property int $slot_index
  * @property int $choice_order
  * @property int $id
+ *
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedSpellPivot newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedSpellPivot newQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedSpellPivot query()
@@ -40,13 +41,14 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedSpellPivot whereId($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedSpellPivot whereSlotIndex($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|BreedSpellPivot whereSpellId($value)
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 27,
-    'endLine' => 56,
+    'startLine' => 29,
+    'endLine' => 58,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Relations\\Pivot',
@@ -73,20 +75,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => 'true',
           'attributes' => 
           array (
-            'startLine' => 30,
-            'endLine' => 30,
+            'startLine' => 32,
+            'endLine' => 32,
             'startTokenPos' => 32,
-            'startFilePos' => 1400,
+            'startFilePos' => 1406,
             'endTokenPos' => 32,
-            'endFilePos' => 1403,
+            'endFilePos' => 1409,
           ),
         ),
         'docComment' => '/** @var bool La table pivot possède une clé `id` auto-incrémentée. */',
         'attributes' => 
         array (
         ),
-        'startLine' => 30,
-        'endLine' => 30,
+        'startLine' => 32,
+        'endLine' => 32,
         'startColumn' => 5,
         'endColumn' => 32,
         'isPromoted' => false,
@@ -108,20 +110,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'breed_spell\'',
           'attributes' => 
           array (
-            'startLine' => 32,
-            'endLine' => 32,
+            'startLine' => 34,
+            'endLine' => 34,
             'startTokenPos' => 41,
-            'startFilePos' => 1430,
+            'startFilePos' => 1436,
             'endTokenPos' => 41,
-            'endFilePos' => 1442,
+            'endFilePos' => 1448,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 32,
-        'endLine' => 32,
+        'startLine' => 34,
+        'endLine' => 34,
         'startColumn' => 5,
         'endColumn' => 37,
         'isPromoted' => false,
@@ -143,12 +145,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'breed_id\', \'spell_id\', \'character_level\', \'slot_index\', \'choice_order\']',
           'attributes' => 
           array (
-            'startLine' => 37,
-            'endLine' => 43,
+            'startLine' => 39,
+            'endLine' => 45,
             'startTokenPos' => 52,
-            'startFilePos' => 1513,
+            'startFilePos' => 1519,
             'endTokenPos' => 69,
-            'endFilePos' => 1632,
+            'endFilePos' => 1638,
           ),
         ),
         'docComment' => '/**
@@ -157,8 +159,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 37,
-        'endLine' => 43,
+        'startLine' => 39,
+        'endLine' => 45,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -193,8 +195,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * @return array<string, string>
  */',
-        'startLine' => 48,
-        'endLine' => 55,
+        'startLine' => 50,
+        'endLine' => 57,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

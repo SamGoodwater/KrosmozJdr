@@ -2,7 +2,7 @@
 
 // osfsl-/var/www/KrosmozJdr/app/Models/Entity/Shop.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Entity\Shop
 return \PHPStan\Cache\CacheItem::__set_state(array(
-   'variableKey' => 'v2-5650c262c6557c0ec0c4cf91e5c371d9efebbff12c391877ad4494fd205f73f2-8.4.17-6.70.0.1',
+   'variableKey' => 'v2-065fb5391c271b353998a7d8c9db777c85cfaccd721c6381b670a71124d10cc4-8.4.17-6.70.0.1',
    'data' => 
   array (
     'locatedSource' => 
@@ -51,6 +51,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @property-read int|null $resources_count
  * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
+ *
  * @method static \\Database\\Factories\\Entity\\ShopFactory factory($count = null, $state = [])
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Shop newModelQuery()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Shop newQuery()
@@ -72,15 +73,17 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Shop whereWriteLevel($value)
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Shop withTrashed()
  * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Shop withoutTrashed()
+ *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ *
  * @mixin \\Eloquent
  */',
     'attributes' => 
     array (
     ),
-    'startLine' => 70,
-    'endLine' => 181,
+    'startLine' => 73,
+    'endLine' => 184,
     'startColumn' => 1,
     'endColumn' => 1,
     'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
@@ -108,20 +111,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'raw\'',
           'attributes' => 
           array (
-            'startLine' => 75,
-            'endLine' => 75,
+            'startLine' => 78,
+            'endLine' => 78,
             'startTokenPos' => 94,
-            'startFilePos' => 3746,
+            'startFilePos' => 3755,
             'endTokenPos' => 94,
-            'endFilePos' => 3750,
+            'endFilePos' => 3759,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 75,
-        'endLine' => 75,
+        'startLine' => 78,
+        'endLine' => 78,
         'startColumn' => 5,
         'endColumn' => 35,
       ),
@@ -137,20 +140,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'draft\'',
           'attributes' => 
           array (
-            'startLine' => 77,
-            'endLine' => 77,
+            'startLine' => 80,
+            'endLine' => 80,
             'startTokenPos' => 105,
-            'startFilePos' => 3785,
+            'startFilePos' => 3794,
             'endTokenPos' => 105,
-            'endFilePos' => 3791,
+            'endFilePos' => 3800,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 77,
-        'endLine' => 77,
+        'startLine' => 80,
+        'endLine' => 80,
         'startColumn' => 5,
         'endColumn' => 39,
       ),
@@ -166,20 +169,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'playable\'',
           'attributes' => 
           array (
-            'startLine' => 79,
-            'endLine' => 79,
+            'startLine' => 82,
+            'endLine' => 82,
             'startTokenPos' => 116,
-            'startFilePos' => 3829,
+            'startFilePos' => 3838,
             'endTokenPos' => 116,
-            'endFilePos' => 3838,
+            'endFilePos' => 3847,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 79,
-        'endLine' => 79,
+        'startLine' => 82,
+        'endLine' => 82,
         'startColumn' => 5,
         'endColumn' => 45,
       ),
@@ -195,20 +198,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'archived\'',
           'attributes' => 
           array (
-            'startLine' => 81,
-            'endLine' => 81,
+            'startLine' => 84,
+            'endLine' => 84,
             'startTokenPos' => 127,
-            'startFilePos' => 3876,
+            'startFilePos' => 3885,
             'endTokenPos' => 127,
-            'endFilePos' => 3885,
+            'endFilePos' => 3894,
           ),
         ),
         'docComment' => NULL,
         'attributes' => 
         array (
         ),
-        'startLine' => 81,
-        'endLine' => 81,
+        'startLine' => 84,
+        'endLine' => 84,
         'startColumn' => 5,
         'endColumn' => 45,
       ),
@@ -224,20 +227,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'images/entity/shops\'',
           'attributes' => 
           array (
-            'startLine' => 84,
-            'endLine' => 84,
+            'startLine' => 87,
+            'endLine' => 87,
             'startTokenPos' => 140,
-            'startFilePos' => 3973,
+            'startFilePos' => 3982,
             'endTokenPos' => 140,
-            'endFilePos' => 3993,
+            'endFilePos' => 4002,
           ),
         ),
         'docComment' => '/** Répertoire Media Library pour ce modèle. */',
         'attributes' => 
         array (
         ),
-        'startLine' => 84,
-        'endLine' => 84,
+        'startLine' => 87,
+        'endLine' => 87,
         'startColumn' => 5,
         'endColumn' => 52,
       ),
@@ -253,20 +256,20 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '\'image-[id]-[name]\'',
           'attributes' => 
           array (
-            'startLine' => 87,
-            'endLine' => 87,
+            'startLine' => 90,
+            'endLine' => 90,
             'startTokenPos' => 153,
-            'startFilePos' => 4134,
+            'startFilePos' => 4143,
             'endTokenPos' => 153,
-            'endFilePos' => 4152,
+            'endFilePos' => 4161,
           ),
         ),
         'docComment' => '/** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */',
         'attributes' => 
         array (
         ),
-        'startLine' => 87,
-        'endLine' => 87,
+        'startLine' => 90,
+        'endLine' => 90,
         'startColumn' => 5,
         'endColumn' => 65,
       ),
@@ -285,12 +288,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'name\', \'description\', \'location\', \'price\', \'state\', \'read_level\', \'write_level\', \'image\', \'created_by\', \'npc_id\']',
           'attributes' => 
           array (
-            'startLine' => 94,
-            'endLine' => 105,
+            'startLine' => 97,
+            'endLine' => 108,
             'startTokenPos' => 164,
-            'startFilePos' => 4278,
+            'startFilePos' => 4287,
             'endTokenPos' => 196,
-            'endFilePos' => 4479,
+            'endFilePos' => 4488,
           ),
         ),
         'docComment' => '/**
@@ -301,8 +304,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 94,
-        'endLine' => 105,
+        'startLine' => 97,
+        'endLine' => 108,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -324,12 +327,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
           'code' => '[\'price\' => \'integer\', \'read_level\' => \'integer\', \'write_level\' => \'integer\']',
           'attributes' => 
           array (
-            'startLine' => 112,
-            'endLine' => 116,
+            'startLine' => 115,
+            'endLine' => 119,
             'startTokenPos' => 207,
-            'startFilePos' => 4606,
+            'startFilePos' => 4615,
             'endTokenPos' => 230,
-            'endFilePos' => 4713,
+            'endFilePos' => 4722,
           ),
         ),
         'docComment' => '/**
@@ -340,8 +343,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'attributes' => 
         array (
         ),
-        'startLine' => 112,
-        'endLine' => 116,
+        'startLine' => 115,
+        'endLine' => 119,
         'startColumn' => 5,
         'endColumn' => 6,
         'isPromoted' => false,
@@ -368,8 +371,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the user that created the shop.
  */',
-        'startLine' => 121,
-        'endLine' => 124,
+        'startLine' => 124,
+        'endLine' => 127,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -397,8 +400,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Get the NPC associated with the shop.
  */',
-        'startLine' => 129,
-        'endLine' => 132,
+        'startLine' => 132,
+        'endLine' => 135,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -426,8 +429,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les objets vendus dans cette hotel de vente.
  */',
-        'startLine' => 137,
-        'endLine' => 140,
+        'startLine' => 140,
+        'endLine' => 143,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -455,8 +458,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les panoplies vendues dans cette hotel de vente.
  */',
-        'startLine' => 145,
-        'endLine' => 148,
+        'startLine' => 148,
+        'endLine' => 151,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -484,8 +487,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les consommables vendus dans cette hotel de vente.
  */',
-        'startLine' => 153,
-        'endLine' => 156,
+        'startLine' => 156,
+        'endLine' => 159,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -513,8 +516,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les ressources vendues dans cette hotel de vente.
  */',
-        'startLine' => 161,
-        'endLine' => 164,
+        'startLine' => 164,
+        'endLine' => 167,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -542,8 +545,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les scénarios associés à cette hotel de vente.
  */',
-        'startLine' => 169,
-        'endLine' => 172,
+        'startLine' => 172,
+        'endLine' => 175,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,
@@ -571,8 +574,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         'docComment' => '/**
  * Les campagnes associées à cette hotel de vente vente.
  */',
-        'startLine' => 177,
-        'endLine' => 180,
+        'startLine' => 180,
+        'endLine' => 183,
         'startColumn' => 5,
         'endColumn' => 5,
         'couldThrow' => false,

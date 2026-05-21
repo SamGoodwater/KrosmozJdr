@@ -9808,7 +9808,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     1 => 
     array (
-      '/var/www/KrosmozJdr/app/Models/Section.php' => '95c8594fe7f28d5d6745584c1481819aeb4ceff4c91df93186d19165306b0dc5',
+      '/var/www/KrosmozJdr/app/Models/Section.php' => '8a6949d8b3fc065219d77c522e7312da68f19d6b273d4bcd19ea15def9093488',
       '/var/www/KrosmozJdr/vendor/composer/../laravel/framework/src/Illuminate/Database/Eloquent/Factories/HasFactory.php' => 'b6cb2b164e90168e80963a5549541f5f3188a3ec8cfd368bf3611bd94fbd46a7',
       '/var/www/KrosmozJdr/app/Models/Concerns/HasMediaCustomNaming.php' => '4d2d30c927978dfb2f19ff2fd24a406d3c814153d432d2738f419461d5ba131c',
       '/var/www/KrosmozJdr/vendor/composer/../spatie/laravel-medialibrary/src/InteractsWithMedia.php' => '2fa4c26f5b3757892fb1f79083cefb514993dbef90e48da37597f36e834ace33',
