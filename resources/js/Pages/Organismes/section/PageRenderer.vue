@@ -19,7 +19,7 @@
  */
 import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { router } from '@inertiajs/vue3';
-import SectionRenderer from './SectionRenderer.vue';
+import SectionLazyGate from './SectionLazyGate.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import EditPageModal from './modals/EditPageModal.vue';
 import CreateSectionModal from './modals/CreateSectionModal.vue';
@@ -277,6 +277,89 @@ const sortedSections = computed(() => {
     });
 });
 
+/** IDs de sections à monter immédiatement (ancre URL, plan, édition). */
+const forceMountSectionIds = ref(new Set());
+
+/**
+ * Résout l’id section depuis une ancre `#section-{id}` ou `#ssec-{slug}…`.
+ *
+ * @param {string} targetId
+ * @returns {number|null}
+ */
+function resolveSectionIdFromAnchor(targetId) {
+    const raw = String(targetId || "").replace(/^#/, "").trim();
+    if (!raw) {
+        return null;
+    }
+    if (raw.startsWith("section-") && raw.length > "section-".length) {
+        const id = Number(raw.slice("section-".length));
+        return Number.isNaN(id) || id <= 0 ? null : id;
+    }
+    if (raw.startsWith("ssec-") && raw.length > "ssec-".length) {
+        const rest = raw.slice("ssec-".length);
+        for (const s of sortedSections.value) {
+            const slug = String(s.slug || "").trim();
+            if (!slug) {
+                continue;
+            }
+            if (rest === slug || rest.startsWith(`${slug}-`)) {
+                const id = Number(s.id);
+                return Number.isNaN(id) || id <= 0 ? null : id;
+            }
+        }
+    }
+    return null;
+}
+
+function collectHashEagerSectionIds() {
+    if (typeof window === "undefined") {
+        return new Set();
+    }
+    const raw = window.location.hash.replace(/^#/, "").trim();
+    if (!raw) {
+        return new Set();
+    }
+    const id = resolveSectionIdFromAnchor(raw);
+    return id ? new Set([id]) : new Set();
+}
+
+/**
+ * Premières sections + ancre + édition auto : montage eager (le reste via IntersectionObserver).
+ *
+ * @param {Object} section
+ * @param {number} index
+ * @returns {boolean}
+ */
+function isSectionEager(section, index) {
+    const id = Number(section?.id);
+    if (Number.isNaN(id) || id <= 0) {
+        return index < 2;
+    }
+    if (index < 2) {
+        return true;
+    }
+    if (sectionToEdit.value === id) {
+        return true;
+    }
+    if (forceMountSectionIds.value.has(id)) {
+        return true;
+    }
+    return collectHashEagerSectionIds().has(id);
+}
+
+function requestSectionMount(sectionOrId) {
+    const id =
+        typeof sectionOrId === "object"
+            ? Number(sectionOrId?.id)
+            : Number(sectionOrId);
+    if (Number.isNaN(id) || id <= 0) {
+        return;
+    }
+    const next = new Set(forceMountSectionIds.value);
+    next.add(id);
+    forceMountSectionIds.value = next;
+}
+
 const sectionHash = (section) => {
     if (!section) return '';
     const slug = String(section.slug || '').trim();
@@ -423,13 +506,19 @@ const navigateToSection = (section) => {
     const hash = section.hash || '';
     if (!hash) return;
     if (typeof window !== 'undefined') {
-        window.location.hash = hash;
         const targetId = hash.replace(/^#/, '');
-        requestAnimationFrame(() => {
-            const el = document.getElementById(targetId);
-            if (el && typeof el.scrollIntoView === 'function') {
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+        const sectionId = resolveSectionIdFromAnchor(targetId) ?? Number(section?.id);
+        if (sectionId) {
+            requestSectionMount(sectionId);
+        }
+        window.location.hash = hash;
+        nextTick(() => {
+            requestAnimationFrame(() => {
+                const el = document.getElementById(targetId);
+                if (el && typeof el.scrollIntoView === 'function') {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
         });
     }
 };
@@ -451,6 +540,12 @@ function scrollToSectionFromHash() {
     const isNumericSection = raw.startsWith('section-') && raw !== 'section-';
     const isSlugSection = raw.startsWith('ssec-') && raw.length > 'ssec-'.length;
     if (!isNumericSection && !isSlugSection) return;
+
+    const sectionId = resolveSectionIdFromAnchor(raw);
+    if (sectionId) {
+        requestSectionMount(sectionId);
+    }
+
     nextTick(() => {
         requestAnimationFrame(() => {
             const el = document.getElementById(raw);
@@ -531,6 +626,12 @@ watch(
         nextTick(() => setupSectionObserver());
     },
 );
+
+watch(sectionToEdit, (id) => {
+    if (id) {
+        requestSectionMount(id);
+    }
+});
 </script>
 
 <template>
@@ -600,12 +701,13 @@ watch(
 
             <!-- Sections -->
             <div v-if="sortedSections.length > 0" class="sections">
-            <SectionRenderer
-                v-for="section in sortedSections"
+            <SectionLazyGate
+                v-for="(section, index) in sortedSections"
                 :key="section.id"
                 :section="section"
                 :user="user"
                 :auto-edit="sectionToEdit === section.id"
+                :eager="isSectionEager(section, index)"
             />
         </div>
 

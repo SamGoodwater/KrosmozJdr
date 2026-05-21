@@ -68,6 +68,8 @@ const props = defineProps({
     },
 });
 
+const emit = defineEmits(["open", "close"]);
+
 const slots = useSlots();
 
 const hasTooltip = computed(() => {
@@ -141,6 +143,8 @@ const overlayContent = computed(() =>
         :close-on-outside="false"
         :close-on-escape="true"
         :panel-class="floatingPanelClasses"
+        @open="emit('open')"
+        @close="emit('close')"
     >
         <span :class="triggerClasses" v-bind="attrs">
             <slot />

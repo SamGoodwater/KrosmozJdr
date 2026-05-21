@@ -165,24 +165,36 @@ const charTooltipMeta = computed(() => {
     }));
 });
 
+/**
+ * Métadonnées formulaires (API reference-table) — uniquement à l’ouverture de l’infobulle, pas au rendu du nœud.
+ */
+async function ensureCharReferenceMeta() {
+    if (krefType.value !== "characteristic") {
+        return;
+    }
+    const key = typeof payload.value?.key === "string" ? payload.value.key.trim() : "";
+    if (!key) {
+        charReferenceMeta.value = null;
+        return;
+    }
+    if (charReferenceMeta.value !== null) {
+        return;
+    }
+
+    const seq = ++charReferenceLoadSeq;
+    const meta = await loadKrefCharacteristicReferenceMeta(key);
+    if (seq !== charReferenceLoadSeq) {
+        return;
+    }
+    charReferenceMeta.value = meta;
+}
+
 watch(
     () => [krefType.value, payload.value?.key],
-    async () => {
-        if (krefType.value !== "characteristic") {
-            charReferenceMeta.value = null;
-            return;
-        }
-        const key = typeof payload.value?.key === "string" ? payload.value.key.trim() : "";
-        if (!key) {
-            charReferenceMeta.value = null;
-            return;
-        }
-        const seq = ++charReferenceLoadSeq;
-        const meta = await loadKrefCharacteristicReferenceMeta(key);
-        if (seq !== charReferenceLoadSeq) return;
-        charReferenceMeta.value = meta;
+    () => {
+        charReferenceMeta.value = null;
+        charReferenceLoadSeq += 1;
     },
-    { immediate: true },
 );
 
 const entityId = computed(() => {
@@ -222,6 +234,7 @@ const wrapEntityTooltip = computed(
             glass
             color="neutral"
             class="inline-flex max-w-full min-w-0 align-baseline"
+            @open="ensureCharReferenceMeta"
         >
             <template #content>
                 <div class="kref-rich-preview-panel max-w-sm whitespace-pre-wrap text-sm leading-snug text-base-content">

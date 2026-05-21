@@ -49,6 +49,10 @@ Le format `data-kref-type` / `data-kref-payload` est également pris en charge.
 
 ## Rendu et interactions
 
+- **Caractéristique (TipTap)** : libellé/icône depuis le store Pinia ; métadonnées formulaires (`reference-table`) chargées **au survol** (événement `open` du `Tooltip`), pas à l’affichage du paragraphe.
+- **Entité (TipTap)** : aperçu via `KrefEntityTooltipBody` monté à l’ouverture de l’infobulle (`OverlayTrigger` lazy + cache).
+- **Section (HTML readonly)** : `RichTextKrefInteractions` — fetch snippet après ~380 ms de survol.
+
 - Le nœud TipTap `referenceInline` rend les références en puces visuelles.
 - Les classes de rendu sont calculées de façon unifiée (`kref`, `kref--type-*`, `kref--nav`, `kref--invalid`).
 - Les références navigables (`page`, `pageSection`, `entity`) ouvrent la cible au clic via Inertia.

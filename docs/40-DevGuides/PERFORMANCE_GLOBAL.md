@@ -77,9 +77,53 @@ pnpm run build
 composer dev:review:agent
 ```
 
-## Hors scope (par fonctionnalité)
+## Optimisations par fonctionnalité (audit 2026-05)
 
-Tables TanStack, fiches entité full, scrapping, GlobalSearch, CharacteristicGetterService — plans séparés.
+### CMS — pages et sections
+
+| Zone | Comportement actuel | Piste |
+|------|---------------------|-------|
+| `PageRenderer` | `SectionLazyGate` : montage différé (`IntersectionObserver`, `rootMargin` ~320/480px) | **Implémenté** — 2 premières sections + ancre URL + édition en eager |
+| `SectionRenderer` | Import dynamique du template (OK) | — |
+| `SectionTextRead` + krefs | TipTap readonly (`RichTextReadonlyView`) — **conservé** (rendu identique aux krefs inline) | Pas de remplacement par `v-html` : TipTap assure le rendu `referenceInline` |
+| `SectionEntityTableRead` | TanStack + API `api.tables.*` au mount | Limiter `limit` section ; lazy mount si section hors viewport |
+| `PageController::show` | Sections + `media` en une requête | OK ; éviter payloads JSON énormes dans `section.data` |
+
+### Kref — survol / popover
+
+| Type | Chargement réseau | Statut |
+|------|------------------|--------|
+| **Section** (`pageSection`) | `RichTextKrefInteractions` : délai 380 ms puis `GET` snippet | OK (à la demande) |
+| **Entité** | `KrefEntityTooltipBody` via `OverlayTrigger` lazy → fetch au premier survol + cache | OK |
+| **Caractéristique** (TipTap) | Avant : `watch` `immediate` → API dès le rendu de chaque kref | **Corrigé** : `GET reference-table` au `@open` du `Tooltip` |
+| **Page** | Texte statique dans le popover | OK |
+
+Fichiers : `ReferenceInlineNodeView.vue`, `RichTextKrefInteractions.vue`, `kref*PreviewCache.js`.
+
+### Caractéristiques (hors kref)
+
+- Métadonnées : Pinia `fetchOnce()` → `/api/characteristics` (plus dans Inertia).
+- Affichage entité : `resolveDef` / store synchrone ; éviter N appels API dans les grilles.
+
+### Entités — vues minimal / line
+
+- Données en général déjà dans la ligne API table (`format=entities`).
+- `SpellViewMinimal` : `provideCharacteristicRuntime`, effets résolus côté cellule — coût CPU, pas de fetch extra si `tableMeta` fourni.
+- Piste : virtualisation TanStack (déjà partiel) ; différer `EntityActions` / PDF hors viewport.
+
+### Fichiers CMS perf
+
+- `resources/js/Pages/Organismes/section/SectionLazyGate.vue`
+- `resources/js/Pages/Organismes/section/PageRenderer.vue`
+
+### Prochaines pistes
+
+- Test Vitest : pas de fetch carac. kref sans `@open` du `Tooltip`
+- Virtualisation TanStack sur grosses sections `entity_table`
+
+## Hors scope (plans séparés)
+
+Tables TanStack avancées, fiches entité full, scrapping, GlobalSearch, CharacteristicGetterService.
 
 ## Références
 

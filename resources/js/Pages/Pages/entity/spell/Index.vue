@@ -108,7 +108,7 @@ const tableConfig = computed(() => {
     return config.build(ctx);
 });
 // Pagination côté serveur pour les gros volumes (10k+ sorts)
-const serverBaseUrl = route('api.tables.spells');
+const serverBaseUrl = computed(() => route('api.tables.spells'));
 
 watch(
     () => canModify.value,
