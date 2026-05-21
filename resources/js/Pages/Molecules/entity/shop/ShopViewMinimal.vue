@@ -11,7 +11,7 @@
  */
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
-import Image from '@/Pages/Atoms/data-display/Image.vue';
+import EntityThumb from '@/Pages/Molecules/entity/shared/EntityThumb.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
@@ -156,11 +156,10 @@ const handleAction = async (actionKey) => {
             <!-- En-tête avec image, nom et actions -->
             <div class="flex items-start justify-between gap-2 mb-2">
                 <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <Image
-                        v-if="shop.image"
-                        :src="shop.image"
-                        :alt="shop.name || 'Shop'"
-                        class="w-8 h-8 rounded object-cover flex-shrink-0"
+                    <EntityThumb
+                        size="table"
+                        :src="shop.image || ''"
+                        :label="shop.name || 'Boutique'"
                     />
                     <Tooltip :content="shop.name || 'Shop'" placement="top">
                         <span class="font-semibold text-primary-100 text-sm truncate block">

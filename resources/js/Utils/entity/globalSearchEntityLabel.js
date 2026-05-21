@@ -23,8 +23,11 @@ export function globalSearchEntityLabelKey(apiType) {
         specializations: "specialization",
         panoplies: "panoply",
         "creature-traits": "creature-trait",
-        creatures: "creature",
         "resource-types": "resource",
+        "item-types": "item",
+        "consumable-types": "consumable",
+        "spell-types": "spell",
+        "monster-races": "monster",
     };
 
     return map[apiType] || apiType.replace(/s$/, "");

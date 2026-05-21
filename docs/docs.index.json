@@ -620,6 +620,11 @@
     "description": "Unifier la **forme** des lignes de sous-effet sur :"
   },
   {
+    "path": "30-UI/SITE_LOADING_OVERLAY.md",
+    "title": "Écran de chargement (tunnel / zoom)",
+    "description": "Overlay plein page au premier chargement : image loading.webp, zoom infini centré, splash HTML boot, fermeture auto ou croix secours."
+  },
+  {
     "path": "30-UI/TANSTACK_TABLE.md",
     "title": "TanStack Table — Architecture & Contrats (Table v2)",
     "description": "Mettre en place un **système de tableau unique, générique et scalable**, basé sur **TanStack Table**, sans duplication de code, et compatible avec :"

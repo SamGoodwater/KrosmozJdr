@@ -559,6 +559,13 @@
     "file": "feedback/FeedbackFab.vue"
   },
   {
+    "name": "SiteLoadingOverlay",
+    "description": "Écran de chargement plein page : image tunnel (zoom infini centré), croix de fermeture secours, auto-dismiss quand le document est prêt.",
+    "props": [],
+    "slots": [],
+    "file": "feedback/SiteLoadingOverlay.vue"
+  },
+  {
     "name": "SpellEffectsUnifiedSection",
     "description": "Panneau unifié « effets du sort » : liaison pivot effect_spell, édition par définition (degrés + seuils).",
     "props": [],

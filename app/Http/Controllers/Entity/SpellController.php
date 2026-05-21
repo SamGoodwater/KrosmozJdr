@@ -52,6 +52,11 @@ class SpellController extends Controller
             $query->where('pa', request()->pa);
         }
 
+        if (request()->has('spell_type_id') && request()->spell_type_id !== '') {
+            $spellTypeId = (int) request()->spell_type_id;
+            $query->whereHas('spellTypes', fn ($q) => $q->where('spell_types.id', $spellTypeId));
+        }
+
         // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
@@ -70,7 +75,7 @@ class SpellController extends Controller
 
         return Inertia::render('Pages/entity/spell/Index', [
             'spells' => SpellResource::collection($spells),
-            'filters' => request()->only(['search', 'level', 'pa']),
+            'filters' => request()->only(['search', 'level', 'pa', 'spell_type_id']),
             'spellTypes' => $spellTypes,
         ]);
     }

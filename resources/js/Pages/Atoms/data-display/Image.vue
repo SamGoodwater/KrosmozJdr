@@ -57,7 +57,7 @@ const props = defineProps({
     filter: { type: [String, Array], default: "" },
     rounded: {
         type: String,
-        default: "",
+        default: "box",
         validator: (v) => v === "" || Object.keys(roundedMap).includes(v),
     },
     mask: {
@@ -191,8 +191,10 @@ const wrapperClasses = computed(() =>
         "inline-flex",
         "justify-center",
         "items-center",
+        "overflow-hidden",
         props.ratio && ratioMap[props.ratio],
         ...(!props.width && !props.height && props.size ? sizeMap[props.size] : []),
+        props.rounded && roundedMap[props.rounded],
         props.class,
     ]),
 );

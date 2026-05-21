@@ -12,6 +12,16 @@ import { getEntityConfig, getEntityResponseAdapter } from "@/Entities/entity-reg
 import { getEntitySingularRouteKey } from "@/Composables/entity/entityRouteRegistry";
 import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vue";
 
+/**
+ * Virtualisation client (TanStackTable) — activée uniquement dans les sections CMS.
+ * Les pages Index entité gardent le seuil par défaut (500+) sauf config explicite.
+ */
+const CMS_ENTITY_TABLE_VIRTUALIZATION = {
+    enabled: true,
+    minRows: 40,
+    rowHeight: 64,
+};
+
 const props = defineProps({
     section: { type: Object, required: true },
     data: { type: Object, default: () => ({}) },
@@ -55,7 +65,15 @@ const tableConfig = computed(() => {
 
     const descriptors = entityConfig.value.getDescriptors(ctx);
     const config = TableConfig.fromDescriptors(descriptors, ctx);
-    return config.build(ctx);
+    const built = config.build(ctx);
+
+    return {
+        ...built,
+        features: {
+            ...(built.features || {}),
+            virtualization: CMS_ENTITY_TABLE_VIRTUALIZATION,
+        },
+    };
 });
 
 const responseAdapter = computed(() => getEntityResponseAdapter(entityType.value));

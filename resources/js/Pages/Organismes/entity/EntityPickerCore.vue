@@ -17,7 +17,9 @@ import InputCore from '@/Pages/Atoms/data-input/InputCore.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import EntityThumb from '@/Pages/Molecules/entity/shared/EntityThumb.vue';
 import { useEntitySearch } from '@/Composables/entity/useEntitySearch';
+import { resolveEntityImageUrl, resolveEntityThumbLabel } from '@/Utils/entity/entityThumb';
 
 const props = defineProps({
     modelValue: {
@@ -386,17 +388,22 @@ const showError = computed(() => !!error.value);
             </Tooltip>
         </div>
 
-        <div class="border border-base-300 rounded-xl bg-base-100/60 max-h-80 overflow-y-auto divide-y divide-base-200">
+        <div class="border border-base-300 rounded-box bg-base-100/60 max-h-80 overflow-y-auto divide-y divide-base-200">
             <button
                 v-for="entity in results"
                 :key="String(entity.id)"
                 type="button"
-                class="w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-base-200/80 transition-colors"
+                class="w-full flex items-center justify-between gap-2.5 px-3 py-2 text-sm hover:bg-base-200/80 transition-colors"
                 :class="isSelected(entity.id) ? 'bg-primary/10' : ''"
                 @click.stop="toggleSelect(entity)"
             >
-                <div class="flex flex-col items-start gap-0.5">
-                    <span class="font-medium">
+                <EntityThumb
+                    size="compact"
+                    :src="resolveEntityImageUrl(entity)"
+                    :label="resolveEntityThumbLabel(entity, `#${entity.id}`)"
+                />
+                <div class="flex min-w-0 flex-1 flex-col items-start gap-0.5">
+                    <span class="font-medium truncate w-full">
                         {{ entity.name || entity.creature?.name || `#${entity.id}` }}
                     </span>
                     <span class="text-xs text-base-content/70">

@@ -11,6 +11,7 @@ import { createApp, h } from "vue";
 import { InertiaZiggyVue } from "@/Plugins/inertia-ziggy";
 import { createPinia } from "pinia";
 import DefaultLayout from "@/Pages/Layouts/Main.vue";
+import SiteLoadingOverlay from "@/Pages/Organismes/feedback/SiteLoadingOverlay.vue";
 
 const appName = import.meta.env.VITE_APP_NAME || "KrosmozJDR";
 
@@ -28,7 +29,9 @@ createInertiaApp({
         );
         void import("@/Utils/Formatters");
         const pinia = createPinia();
-        return createApp({ render: () => h(App, props) })
+        return createApp({
+            render: () => [h(SiteLoadingOverlay), h(App, props)],
+        })
             .use(plugin)
             .use(InertiaZiggyVue)
             .use(pinia)
@@ -38,6 +41,6 @@ createInertiaApp({
     },
     progress: {
         color: "#155e75",
-        showSpinner: true,
+        showSpinner: false,
     },
 });

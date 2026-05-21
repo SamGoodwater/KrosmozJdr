@@ -207,6 +207,10 @@ const labelClasses = computed(() =>
     outline: none;
     transition: all 0.2s ease-in-out;
     --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
+
+    &:not(.rounded-none) {
+        border-radius: var(--radius-field);
+    }
     
     // États de focus
     &:focus {

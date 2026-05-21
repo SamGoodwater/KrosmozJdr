@@ -9,8 +9,7 @@ import { computed } from "vue";
 import CapabilityViewText from "@/Pages/Molecules/entity/capability/CapabilityViewText.vue";
 import CapabilityViewMinimal from "@/Pages/Molecules/entity/capability/CapabilityViewMinimal.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import { partitionBreedCapabilities } from "@/Utils/entity/breedCapabilitiesPartition";
 
 const props = defineProps({
@@ -92,14 +91,12 @@ function openCapability(entity) {
                         :aria-label="`Ouvrir ${entityName(c)}`"
                         @click.stop="openCapability(c)"
                     >
-                        <Image
-                            v-if="entityImage(c)"
-                            :source="entityImage(c)"
-                            :alt="entityName(c)"
-                            fit="contain"
+                        <EntityThumb
+                            size="table"
                             class="h-4 w-4"
+                            :src="entityImage(c) || ''"
+                            :label="entityName(c)"
                         />
-                        <Icon v-else source="fa-solid fa-bolt" size="xs" />
                     </button>
                 </Tooltip>
                 <span v-if="hiddenPassiveCount > 0" class="text-[10px] text-base-content/60">+{{ hiddenPassiveCount }}</span>
@@ -139,14 +136,12 @@ function openCapability(entity) {
                         :aria-label="`Ouvrir ${entityName(c)}`"
                         @click.stop="openCapability(c)"
                     >
-                        <Image
-                            v-if="entityImage(c)"
-                            :source="entityImage(c)"
-                            :alt="entityName(c)"
-                            fit="contain"
+                        <EntityThumb
+                            size="table"
                             class="h-4 w-4"
+                            :src="entityImage(c) || ''"
+                            :label="entityName(c)"
                         />
-                        <Icon v-else source="fa-solid fa-bolt" size="xs" />
                     </button>
                 </Tooltip>
                 <span v-if="hiddenOtherCount > 0" class="text-[10px] text-base-content/60">+{{ hiddenOtherCount }}</span>

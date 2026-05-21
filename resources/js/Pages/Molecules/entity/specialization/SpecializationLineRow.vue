@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from "vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
@@ -32,10 +31,12 @@ const traits = computed(() => Array.isArray(entity.value?.creatureTraits) ? enti
         @click="(e) => emitLineRowClick(emit, row, e)"
         @dblclick="(e) => emitLineRowDblClick(emit, row, e)"
     >
-        <div class="w-16 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center">
-            <Image v-if="imageUrl" :source="imageUrl" :alt="name" fit="contain" class="h-full w-full" />
-            <Icon v-else source="fa-solid fa-graduation-cap" alt="" size="sm" class="text-base-content/40" />
-        </div>
+        <EntityThumb
+            size="line"
+            class="w-16"
+            :src="imageUrl || ''"
+            :label="name || 'Spécialisation'"
+        />
 
         <div class="flex-1 min-w-0 space-y-1">
             <div class="flex items-center gap-2">

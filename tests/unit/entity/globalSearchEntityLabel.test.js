@@ -8,4 +8,11 @@ describe("globalSearchEntityLabelKey", () => {
         expect(globalSearchEntityLabelKey("creature-traits")).toBe("creature-trait");
         expect(globalSearchEntityLabelKey("resource-types")).toBe("resource");
     });
+
+    it("mappe les types de taxonomie (équipement, consommable, sort, race)", () => {
+        expect(globalSearchEntityLabelKey("item-types")).toBe("item");
+        expect(globalSearchEntityLabelKey("consumable-types")).toBe("consumable");
+        expect(globalSearchEntityLabelKey("spell-types")).toBe("spell");
+        expect(globalSearchEntityLabelKey("monster-races")).toBe("monster");
+    });
 });

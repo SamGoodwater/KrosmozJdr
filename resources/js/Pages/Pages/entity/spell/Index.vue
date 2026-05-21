@@ -38,6 +38,7 @@ import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityInde
 import { clearKrefEntityPreviewCache } from "@/Composables/richText/krefEntityPreviewCache";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
+import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 
 const props = defineProps({
     spells: {
@@ -109,6 +110,7 @@ const tableConfig = computed(() => {
 });
 // Pagination côté serveur pour les gros volumes (10k+ sorts)
 const serverBaseUrl = computed(() => route('api.tables.spells'));
+const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
 
 watch(
     () => canModify.value,
@@ -337,6 +339,7 @@ const handleModalDelete = (_entity) => {
                     :config="tableConfig"
                     server-side
                     :server-base-url="serverBaseUrl"
+                    :initial-filter-values="indexTableFilters"
                     :refresh-token="refreshToken"
                     :response-adapter="getEntityResponseAdapter('spells')"
                     v-model:selected-ids="selectedIds"

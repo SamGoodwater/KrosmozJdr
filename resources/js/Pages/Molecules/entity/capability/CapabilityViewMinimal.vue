@@ -11,8 +11,7 @@
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
@@ -175,18 +174,11 @@ const handleAction = async (actionKey) => {
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
                 <div class="flex gap-2">
-                    <div
-                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
-                    >
-                        <Image
-                            v-if="imageUrl"
-                            :source="imageUrl"
-                            :alt="entity?.name ?? 'Capacité'"
-                            fit="contain"
-                            class="h-full w-full"
-                        />
-                        <Icon v-else source="fa-solid fa-bolt" alt="" size="xs" class="text-base-content/40" />
-                    </div>
+                    <EntityThumb
+                        size="compact"
+                        :src="imageUrl || ''"
+                        :label="entity?.name ?? 'Capacité'"
+                    />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
@@ -272,18 +264,11 @@ const handleAction = async (actionKey) => {
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
                 <div class="flex gap-2">
-                    <div
-                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
-                    >
-                        <Image
-                            v-if="imageUrl"
-                            :source="imageUrl"
-                            :alt="entity?.name ?? 'Capacité'"
-                            fit="contain"
-                            class="h-full w-full"
-                        />
-                        <Icon v-else source="fa-solid fa-bolt" alt="" size="xs" class="text-base-content/40" />
-                    </div>
+                    <EntityThumb
+                        size="compact"
+                        :src="imageUrl || ''"
+                        :label="entity?.name ?? 'Capacité'"
+                    />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />

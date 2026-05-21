@@ -30,6 +30,10 @@ import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
+import {
+    normalizeIndexTableFilters,
+    useEntityIndexTableApiUrl,
+} from "@/Composables/entity/useEntityIndexTableFilters";
 
 const props = defineProps({
     resources: {
@@ -93,11 +97,8 @@ const tableConfig = computed(() => {
     return config.build(ctx);
 });
 
-const serverUrl = computed(() => {
-    const base = route('api.tables.resources');
-    // Option B (migration): le backend renvoie des entités brutes, le front génère les `cells`.
-    return `${base}?limit=5000&format=entities&_t=${refreshToken.value}`;
-});
+const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
+const serverUrl = useEntityIndexTableApiUrl("api.tables.resources", () => props.filters, refreshToken);
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
@@ -330,6 +331,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="resources"
                     :config="tableConfig"
                     :server-url="serverUrl"
+                    :initial-filter-values="indexTableFilters"
                     :response-adapter="getEntityResponseAdapter('resources')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"

@@ -9,8 +9,7 @@
  */
 import { computed } from "vue";
 import { Link } from "@inertiajs/vue3";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
@@ -123,18 +122,11 @@ const ingredients = computed(
         <!-- Bloc Image + titre + propriétés -->
         <div class="flex gap-3">
         <!-- Image : pleine hauteur à gauche -->
-        <div
-            class="w-20 shrink-0 self-stretch min-h-20 rounded overflow-hidden bg-base-200 flex items-center justify-center"
-        >
-            <Image
-                v-if="imageCell?.value"
-                :source="imageCell.value"
-                :alt="entity?.name ?? row?.name ?? 'Image'"
-                fit="contain"
-                class="h-full w-full"
-            />
-            <Icon v-else source="fa-solid fa-image" alt="" size="sm" class="text-base-content/40" />
-        </div>
+        <EntityThumb
+            size="line"
+            :src="imageCell?.value || ''"
+            :label="entity?.name ?? row?.name ?? 'Ressource'"
+        />
         <!-- Contenu à droite de l'image -->
         <div class="flex-1 min-w-0 flex flex-col gap-1.5 pl-1">
             <!-- Ligne 1 : Titre + Niveau + Actions -->

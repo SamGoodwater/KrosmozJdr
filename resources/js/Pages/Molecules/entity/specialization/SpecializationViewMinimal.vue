@@ -11,8 +11,7 @@
  */
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
-import Image from '@/Pages/Atoms/data-display/Image.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import EntityThumb from '@/Pages/Molecules/entity/shared/EntityThumb.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
@@ -162,11 +161,10 @@ const handleAction = async (actionKey) => {
             <!-- En-tête avec image, nom et actions -->
             <div class="flex items-start justify-between gap-2 mb-2">
                 <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <Image
-                        v-if="specialization.image"
-                        :src="specialization.image"
-                        :alt="specialization.name || 'Specialization'"
-                        class="w-8 h-8 rounded object-cover flex-shrink-0"
+                    <EntityThumb
+                        size="table"
+                        :src="specialization.image || ''"
+                        :label="specialization.name || 'Spécialisation'"
                     />
                     <Tooltip :content="specialization.name || 'Specialization'" placement="top">
                         <span class="font-semibold text-primary-100 text-sm truncate block">

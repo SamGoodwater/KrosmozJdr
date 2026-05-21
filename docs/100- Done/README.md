@@ -12,6 +12,7 @@ Pour la documentation technique et les bonnes pratiques, voir :
 
 ### Livraisons
 
+- **Écran de chargement tunnel (2026-05)** : overlay plein page (`loading.webp` / PNG), zoom infini centré, splash HTML avant hydratation Vue, croix de fermeture secours. Doc : [SITE_LOADING_OVERLAY.md](../30-UI/SITE_LOADING_OVERLAY.md).
 - **Performance globale (2026-05)** : Inertia `shareOnce` / `defer`, Ziggy dédupliqué, cache permissions invité, characteristics via API + Pinia, shell frontend allégé. Doc : [PERFORMANCE_GLOBAL_OPTIMISATIONS.md](./PERFORMANCE_GLOBAL_OPTIMISATIONS.md), guide [PERFORMANCE_GLOBAL.md](../40-DevGuides/PERFORMANCE_GLOBAL.md).
 - **Changelog 1.3.2 (2026-05)** : journal public joueur/MJ dans `storage/app/public/changelog/1.3.2.md` ; semver via `PUBLIC_CHANGELOG_SEMVER`.
 - **Transverse release 1.3.2 (2026-05)** : feedback email récap connectés ; contrôles audit/PHPStan/ESLint + tests Feature ciblés. Doc : [RELEASE_1.3.2_VERIFICATION.md](../10-BestPractices/RELEASE_1.3.2_VERIFICATION.md).

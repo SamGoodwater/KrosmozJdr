@@ -35,7 +35,7 @@ const ENTITY_CONFIG = {
   'creature-trait': { color: 'emerald', label: 'Trait' },
   capitalize: { color: 'slate', label: 'Capital' },
   breed: { color: 'teal', label: 'Classe' },
-  capability: { color: 'fuchsia', label: 'Capacité' },
+  capability: { color: 'pink', label: 'Capacité' },
   consumable: { color: 'orange', label: 'Consommable' },
   scenario: { color: 'neutral', label: 'Scénario' },
   condition: { color: 'red', label: 'État' },

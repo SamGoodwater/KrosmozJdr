@@ -10,8 +10,7 @@
  * Liste des sorts de créature en fin de ligne (lien texte + aperçu minimal au survol).
  */
 import { computed } from "vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
@@ -190,18 +189,11 @@ const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
         <div class="monster-line-main flex w-full min-w-0 flex-col gap-3 pr-14 sm:pr-16 lg:flex-row lg:items-start">
             <!-- Bloc identité : largeur contenu / plafonnée pour laisser la place aux caractéristiques -->
             <div class="flex min-w-0 shrink-0 gap-3 lg:max-w-[min(100%,26rem)]">
-                <div
-                    class="flex h-20 w-20 shrink-0 items-center justify-center self-stretch overflow-hidden rounded bg-base-200"
-                >
-                    <Image
-                        v-if="imageCell?.value"
-                        :source="imageCell.value"
-                        :alt="entity?.creature?.name ?? row?.name ?? 'Créature'"
-                        fit="contain"
-                        class="h-full w-full"
-                    />
-                    <Icon v-else source="fa-solid fa-image" alt="" size="sm" class="text-base-content/40" />
-                </div>
+                <EntityThumb
+                    size="line"
+                    :src="imageCell?.value || ''"
+                    :label="entity?.creature?.name ?? row?.name ?? 'Monstre'"
+                />
                 <div class="flex min-w-0 flex-1 flex-col gap-1.5 pl-1">
                     <div class="flex min-w-0 items-center gap-2">
                         <LevelBadge v-if="levelValue != null" :level="levelValue" size="sm" class="shrink-0" />

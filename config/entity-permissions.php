@@ -28,7 +28,11 @@ use App\Models\Entity\Shop;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
 use App\Models\Page;
+use App\Models\Type\ConsumableType;
+use App\Models\Type\ItemType;
+use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
+use App\Models\Type\SpellType;
 use App\Models\User;
 
 return [
@@ -55,6 +59,10 @@ return [
     /**
      * Types
      */
+    'item-types' => ItemType::class,
+    'consumable-types' => ConsumableType::class,
+    'spell-types' => SpellType::class,
+    'monster-races' => MonsterRace::class,
     'resource-types' => ResourceType::class,
 
     /**

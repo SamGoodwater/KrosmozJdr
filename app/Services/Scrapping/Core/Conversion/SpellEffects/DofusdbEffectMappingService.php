@@ -33,9 +33,9 @@ final class DofusdbEffectMappingService
     {
         $row = $this->findByEffectId($effectId);
         if ($row !== null) {
-            $result = [$row->sub_effect_slug, $row->characteristic_source];
-            if ($row->characteristic_key !== null && $row->characteristic_key !== '') {
-                $result[] = $row->characteristic_key;
+            $result = [$row['sub_effect_slug'], $row['characteristic_source']];
+            if ($row['characteristic_key'] !== null && $row['characteristic_key'] !== '') {
+                $result[] = $row['characteristic_key'];
             }
 
             return $result;
@@ -44,7 +44,10 @@ final class DofusdbEffectMappingService
         return FallbackEffectMapping::getSubEffectForEffectId($effectId);
     }
 
-    private function findByEffectId(int $effectId): ?DofusdbEffectMapping
+    /**
+     * @return array{sub_effect_slug: string, characteristic_source: string, characteristic_key: string|null}|null
+     */
+    private function findByEffectId(int $effectId): ?array
     {
         $all = $this->getAllMappingsIndexedById();
 
@@ -52,15 +55,27 @@ final class DofusdbEffectMappingService
     }
 
     /**
-     * @return array<int, DofusdbEffectMapping>
+     * Cache sérialisable (pas de modèles Eloquent) — évite __PHP_Incomplete_Class après unserialize.
+     *
+     * @return array<int, array{sub_effect_slug: string, characteristic_source: string, characteristic_key: string|null}>
      */
     private function getAllMappingsIndexedById(): array
     {
         return Cache::remember(self::CACHE_KEY, self::CACHE_TTL_SECONDS, function (): array {
-            $rows = $this->model->newQuery()->get();
             $indexed = [];
-            foreach ($rows as $row) {
-                $indexed[$row->dofusdb_effect_id] = $row;
+            foreach ($this->model->newQuery()->get([
+                'dofusdb_effect_id',
+                'sub_effect_slug',
+                'characteristic_source',
+                'characteristic_key',
+            ]) as $row) {
+                $indexed[(int) $row->dofusdb_effect_id] = [
+                    'sub_effect_slug' => (string) $row->sub_effect_slug,
+                    'characteristic_source' => (string) $row->characteristic_source,
+                    'characteristic_key' => $row->characteristic_key !== null && $row->characteristic_key !== ''
+                        ? (string) $row->characteristic_key
+                        : null,
+                ];
             }
 
             return $indexed;

@@ -62,7 +62,13 @@ const props = defineProps({
     size: {
         type: String,
         default: 'md',
-        validator: v => sizeXlList.includes(v),
+        validator: (v) => v === 'fill' || sizeXlList.includes(v),
+    },
+    /** `cover` (profil) ou `contain` (vignettes entité). */
+    fit: {
+        type: String,
+        default: 'cover',
+        validator: (v) => ['cover', 'contain'].includes(v),
     },
     ring: {
         type: String,
@@ -83,6 +89,11 @@ const props = defineProps({
         type: String,
         default: '',
         validator: v => v === '' || Object.keys(ringOffsetColorMap).includes(v),
+    },
+    rounded: {
+        type: String,
+        default: 'full',
+        validator: v => v === '' || Object.keys(roundedMap).includes(v),
     },
 });
 
@@ -140,25 +151,39 @@ const avatarColorRgb = computed(() => generateColorFromString(displayLabel.value
 }));
 const displayAlt = computed(() => props.alt || displayLabel.value || '');
 
+/** Classe d’arrondi (tokens DaisyUI : rounded-box, rounded-field, rounded-full, …). */
+const mediaRoundedClass = computed(() => {
+    const key = props.rounded || 'full';
+
+    return roundedMap[key] || roundedMap.full;
+});
+
 // État de l'avatar
 const showImage = computed(() => props.src && !imageError.value);
 const showDefaultAvatar = computed(() => !showImage.value && props.defaultAvatar && !defaultAvatarError.value);
 const showPlaceholder = computed(() => !showImage.value && !showDefaultAvatar.value && displayLabel.value);
 const showFallbackAvatar = computed(() => !showImage.value && !showDefaultAvatar.value && !displayLabel.value);
 
+const isFillSize = computed(() => props.size === 'fill');
+
+const imageObjectFitClass = computed(() =>
+    props.fit === 'contain' ? 'object-contain' : 'object-cover',
+);
+
 const atomClasses = computed(() =>
     mergeClasses(
         [
             'avatar',
-            // Classes de taille DaisyUI pour l'avatar
-            props.size === 'xs' && 'avatar-xs',
-            props.size === 'sm' && 'avatar-sm',
-            props.size === 'md' && 'avatar-md',
-            props.size === 'lg' && 'avatar-lg',
-            props.size === 'xl' && 'avatar-xl',
-            props.size === '2xl' && 'avatar-2xl',
-            props.size === '3xl' && 'avatar-3xl',
-            props.size === '4xl' && 'avatar-4xl',
+            isFillSize.value && 'avatar-fill block h-full w-full min-h-0 min-w-0',
+            !isFillSize.value && props.size === 'xs' && 'avatar-xs',
+            !isFillSize.value && props.size === 'sm' && 'avatar-sm',
+            !isFillSize.value && props.size === 'md' && 'avatar-md',
+            !isFillSize.value && props.size === 'lg' && 'avatar-lg',
+            !isFillSize.value && props.size === 'xl' && 'avatar-xl',
+            !isFillSize.value && props.size === '2xl' && 'avatar-2xl',
+            !isFillSize.value && props.size === '3xl' && 'avatar-3xl',
+            !isFillSize.value && props.size === '4xl' && 'avatar-4xl',
+            mediaRoundedClass.value,
             // Classe placeholder pour DaisyUI
             showPlaceholder.value && 'avatar-placeholder',
         ].filter(Boolean),
@@ -170,7 +195,7 @@ const atomClasses = computed(() =>
 const innerClasses = computed(() =>
     mergeClasses(
         [
-            props.rounded && roundedMap[props.rounded],
+            mediaRoundedClass.value,
             props.ring && ringMap[props.ring] && 'ring',
             props.ring && ringMap[props.ring],
             props.ringColor && ringColorMap[props.ringColor],
@@ -180,6 +205,7 @@ const innerClasses = computed(() =>
             'flex',
             'items-center',
             'justify-center',
+            isFillSize.value && 'h-full w-full min-h-0 min-w-0',
         ].filter(Boolean)
     )
 );
@@ -222,7 +248,7 @@ function onStart() {
                     @load="onLoad" 
                     @error="onError" 
                     @loadstart="onStart"
-                    class="w-full h-full object-cover rounded-full" 
+                    :class="['w-full', 'h-full', imageObjectFitClass, mediaRoundedClass]"
                 />
                 <template v-if="isLoading">
                     <slot name="loader">
@@ -239,7 +265,7 @@ function onStart() {
                     @load="onLoad" 
                     @error="onDefaultAvatarError" 
                     @loadstart="onStart"
-                    class="w-full h-full object-cover rounded-full" 
+                    :class="['w-full', 'h-full', imageObjectFitClass, mediaRoundedClass]"
                 />
                 <template v-if="isLoading">
                     <slot name="loader">
@@ -252,7 +278,7 @@ function onStart() {
             <template v-else-if="showPlaceholder">
                 <slot>
                     <span 
-                        class="text-white font-bold rounded-full select-none flex items-center justify-center w-full h-full avatar-initials"
+                        :class="['text-white', 'font-bold', 'select-none', 'flex', 'items-center', 'justify-center', 'w-full', 'h-full', 'avatar-initials', mediaRoundedClass]"
                         :style="{ '--color': avatarColorRgb }"
                     >
                         {{ initials }}
@@ -265,7 +291,7 @@ function onStart() {
                 <img 
                     :src="FALLBACK_AVATAR" 
                     :alt="displayAlt" 
-                    class="w-full h-full object-cover rounded-full" 
+                    :class="['w-full', 'h-full', imageObjectFitClass, mediaRoundedClass]"
                 />
             </template>
             
@@ -274,7 +300,7 @@ function onStart() {
                 <img 
                     :src="FALLBACK_IMAGE_URL" 
                     :alt="displayAlt" 
-                    class="w-full h-full object-cover rounded-full" 
+                    :class="['w-full', 'h-full', imageObjectFitClass, mediaRoundedClass]"
                 />
             </template>
         </div>
@@ -343,11 +369,26 @@ function onStart() {
     font-size: 2.5rem;
 }
 
-/* Style de base pour l'avatar */
+/* Style de base pour l'avatar (arrondi via prop rounded → rounded-box / rounded-full, etc.) */
 .avatar {
     position: relative;
     display: inline-block;
-    border-radius: 50%;
+}
+
+/* Remplit le conteneur parent (EntityThumb, etc.) */
+.avatar-fill {
+    display: block;
+}
+
+.avatar-fill > div {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+}
+
+.avatar-fill .relative.inline-flex {
+    width: 100%;
+    height: 100%;
 }
 
 /* Style pour le placeholder avec initiales */

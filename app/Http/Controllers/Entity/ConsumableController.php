@@ -113,7 +113,19 @@ class ConsumableController extends Controller
      */
     public function show(Consumable $consumable)
     {
-        //
+        $this->authorize('view', $consumable);
+
+        $consumable->load([
+            'consumableType',
+            'createdBy',
+            'resources',
+            'effectUsages.effectDegree.effect',
+            'objectEffects',
+        ]);
+
+        return Inertia::render('Pages/entity/consumable/Show', [
+            'consumable' => new ConsumableResource($consumable),
+        ]);
     }
 
     /**

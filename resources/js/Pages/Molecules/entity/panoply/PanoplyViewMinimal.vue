@@ -10,7 +10,7 @@
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
@@ -96,11 +96,10 @@ const handleAction = async (actionKey) => {
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
                 <div class="flex gap-2">
-                    <div
-                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
-                    >
-                        <Icon source="fa-solid fa-layer-group" alt="" size="md" class="text-base-content/40" />
-                    </div>
+                    <EntityThumb
+                        size="compact"
+                        :label="entity?.name ?? 'Panoplie'"
+                    />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <div class="min-w-0 flex-1">
@@ -175,11 +174,10 @@ const handleAction = async (actionKey) => {
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
                 <div class="flex gap-2">
-                    <div
-                        class="w-14 h-14 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
-                    >
-                        <Icon source="fa-solid fa-layer-group" alt="" size="md" class="text-base-content/40" />
-                    </div>
+                    <EntityThumb
+                        size="compact"
+                        :label="entity?.name ?? 'Panoplie'"
+                    />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <div class="min-w-0 flex-1">

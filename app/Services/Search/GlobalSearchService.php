@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Search;
 
+use App\Models\Entity\Creature;
+use App\Models\Entity\Monster;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
@@ -21,28 +23,34 @@ use Illuminate\Support\Str;
  */
 final class GlobalSearchService
 {
-    /** @var list<string> */
-    public const ALLOWED_TYPES = [
-        'conditions',
-        'campaigns',
-        'capabilities',
+    /** Ordre d'affichage des groupes de résultats et d'interrogation par défaut. */
+    public const SEARCH_TYPE_ORDER = [
         'breeds',
-        'consumables',
-        'creatures',
-        'creature-traits',
-        'items',
-        'monsters',
-        'npcs',
-        'panoplies',
-        'resources',
-        'scenarios',
-        'shops',
-        'spells',
         'specializations',
+        'monsters',
+        'spells',
+        'capabilities',
+        'creature-traits',
+        'conditions',
+        'items',
+        'consumables',
+        'resources',
+        'panoplies',
+        'campaigns',
+        'scenarios',
+        'npcs',
+        'shops',
+        'item-types',
+        'consumable-types',
+        'spell-types',
+        'monster-races',
         'resource-types',
         'pages',
         'sections',
     ];
+
+    /** @var list<string> */
+    public const ALLOWED_TYPES = self::SEARCH_TYPE_ORDER;
 
     /** @var list<string> */
     public const ALLOWED_STATES = ['raw', 'draft', 'playable', 'archived'];
@@ -64,11 +72,7 @@ final class GlobalSearchService
         }
 
         $limit = max(1, min($limit, 80));
-        $types = array_values(array_intersect(self::ALLOWED_TYPES, $types));
-        if ($types === []) {
-            $types = self::ALLOWED_TYPES;
-        }
-
+        $types = $this->normalizeTypes($types);
         $states = array_values(array_intersect(self::ALLOWED_STATES, $states));
 
         $perType = (int) max(3, ceil($limit / max(1, count($types))));
@@ -92,6 +96,34 @@ final class GlobalSearchService
             'results' => $sliced,
             'hasMore' => count($collected) > $limit,
         ];
+    }
+
+    /**
+     * @param  list<string>  $types
+     * @return list<string>
+     */
+    private function normalizeTypes(array $types): array
+    {
+        $allowed = array_flip(self::ALLOWED_TYPES);
+        $filtered = [];
+        foreach ($types as $type) {
+            if (isset($allowed[$type])) {
+                $filtered[$type] = true;
+            }
+        }
+
+        if ($filtered === []) {
+            return self::SEARCH_TYPE_ORDER;
+        }
+
+        $ordered = [];
+        foreach (self::SEARCH_TYPE_ORDER as $type) {
+            if (isset($filtered[$type])) {
+                $ordered[] = $type;
+            }
+        }
+
+        return $ordered;
     }
 
     /**
@@ -126,6 +158,7 @@ final class GlobalSearchService
         $probe = $q->getModel();
 
         if ($type === 'monsters') {
+            $q->with(['creature', 'monsterRace']);
             $q->where(function (Builder $qq) use ($like): void {
                 $qq->whereHas('creature', fn (Builder $c) => $c->where('name', 'like', $like))
                     ->orWhereHas('monsterRace', fn (Builder $r) => $r->where('name', 'like', $like));
@@ -151,7 +184,7 @@ final class GlobalSearchService
             });
         }
 
-        if ($states !== []) {
+        if ($states !== [] && $this->tableHasColumn($probe, 'state')) {
             $q->whereIn('state', $states);
         }
 
@@ -217,8 +250,9 @@ final class GlobalSearchService
      */
     private function serializeHit(string $type, string $group, Model $model): array
     {
-        $title = $this->inferTitle($model);
+        $title = $this->inferTitle($type, $model);
         $subtitle = $this->inferSubtitle($model);
+        $visual = $this->inferVisual($type, $model);
 
         return [
             'id' => $model->getKey(),
@@ -227,13 +261,118 @@ final class GlobalSearchService
             'title' => $title,
             'subtitle' => $subtitle,
             'href' => $this->inferHref($type, $model),
-            'icon' => '',
-            'iconUrl' => '',
+            'icon' => $visual['icon'],
+            'iconUrl' => $visual['iconUrl'],
         ];
     }
 
-    private function inferTitle(Model $model): string
+    /**
+     * Visuel d’une ligne (URL image ou icône FA ; pas de requête média supplémentaire).
+     *
+     * @return array{icon: string, iconUrl: string}
+     */
+    private function inferVisual(string $type, Model $model): array
     {
+        $iconUrl = $this->inferImageUrl($type, $model);
+        if ($iconUrl !== '') {
+            return ['icon' => '', 'iconUrl' => $iconUrl];
+        }
+
+        return ['icon' => $this->inferFaIcon($model), 'iconUrl' => ''];
+    }
+
+    private function inferImageUrl(string $type, Model $model): string
+    {
+        if ($type === 'monsters' && $model instanceof Monster) {
+            $creature = $model->relationLoaded('creature') ? $model->creature : null;
+            if ($creature instanceof Creature && $this->tableHasColumn($creature, 'image')) {
+                $raw = (string) ($creature->image ?? '');
+
+                return $this->looksLikeImageUrl($raw) ? $this->normalizeImageUrl($raw) : '';
+            }
+        }
+
+        foreach (['image', 'icon'] as $attr) {
+            if (! $this->tableHasColumn($model, $attr)) {
+                continue;
+            }
+            $raw = (string) ($model->{$attr} ?? '');
+            if (! $this->looksLikeImageUrl($raw)) {
+                continue;
+            }
+
+            return $this->normalizeImageUrl($raw);
+        }
+
+        return '';
+    }
+
+    private function inferFaIcon(Model $model): string
+    {
+        if (! $this->tableHasColumn($model, 'icon')) {
+            return '';
+        }
+
+        $icon = trim((string) ($model->icon ?? ''));
+        if ($icon === '' || $this->looksLikeImageUrl($icon)) {
+            return '';
+        }
+
+        return $icon;
+    }
+
+    private function looksLikeImageUrl(string $raw): bool
+    {
+        $value = trim($raw);
+        if ($value === '') {
+            return false;
+        }
+        if (str_starts_with($value, 'fa-') || str_contains($value, 'fa-solid') || str_contains($value, 'fa-regular')) {
+            return false;
+        }
+
+        return str_starts_with($value, 'http://')
+            || str_starts_with($value, 'https://')
+            || str_starts_with($value, '/')
+            || str_starts_with($value, 'storage/');
+    }
+
+    private function normalizeImageUrl(string $raw): string
+    {
+        $value = trim($raw);
+        if ($value === '') {
+            return '';
+        }
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://') || str_starts_with($value, '/')) {
+            return $value;
+        }
+        if (str_starts_with($value, 'storage/')) {
+            return asset($value);
+        }
+
+        return asset('storage/'.$value);
+    }
+
+    private function inferTitle(string $type, Model $model): string
+    {
+        if ($type === 'monsters' && $model instanceof Monster) {
+            $creatureName = $model->relationLoaded('creature') && $model->creature !== null
+                ? trim((string) ($model->creature->name ?? ''))
+                : '';
+            if ($creatureName !== '') {
+                return $creatureName;
+            }
+
+            $raceName = $model->relationLoaded('monsterRace') && $model->monsterRace !== null
+                ? trim((string) ($model->monsterRace->name ?? ''))
+                : '';
+            if ($raceName !== '') {
+                return $raceName;
+            }
+
+            return '#'.$model->getKey();
+        }
+
         foreach (['name', 'title'] as $attr) {
             if (isset($model->{$attr}) && is_string($model->{$attr}) && trim($model->{$attr}) !== '') {
                 return trim($model->{$attr});
@@ -301,12 +440,17 @@ final class GlobalSearchService
             return '';
         }
 
-        $slugOrId = $model->slug ?? $model->getKey();
+        $id = $model->getKey();
+        $slugOrId = $model->slug ?? $id;
 
         return match ($type) {
             'breeds' => route('entities.breeds.show', ['breed' => $slugOrId]),
-            'resource-types' => route('entities.resource-types.show', ['resourceType' => $slugOrId]),
             'creature-traits' => route('entities.creature-traits.show', ['creatureTrait' => $slugOrId]),
+            'resource-types' => route('entities.resources.index').'?'.http_build_query(['resource_type_id' => $id]),
+            'item-types' => route('entities.items.index').'?'.http_build_query(['item_type_id' => $id]),
+            'consumable-types' => route('entities.consumables.index').'?'.http_build_query(['consumable_type_id' => $id]),
+            'monster-races' => route('entities.monsters.index').'?'.http_build_query(['monster_race_id' => $id]),
+            'spell-types' => route('entities.spells.index').'?'.http_build_query(['spell_type_id' => $id]),
             default => route('entities.'.$type.'.show', $slugOrId),
         };
     }
@@ -314,14 +458,13 @@ final class GlobalSearchService
     private function groupLabel(string $type): string
     {
         return match ($type) {
-            'conditions' => 'Conditions',
+            'conditions' => 'États',
             'campaigns' => 'Campagnes',
             'capabilities' => 'Capacités',
             'breeds' => 'Classes',
             'consumables' => 'Consommables',
-            'creatures' => 'Créatures',
             'creature-traits' => 'Traits de créature',
-            'items' => 'Objets',
+            'items' => 'Équipements',
             'monsters' => 'Monstres',
             'npcs' => 'PNJ',
             'panoplies' => 'Panoplies',
@@ -331,6 +474,10 @@ final class GlobalSearchService
             'spells' => 'Sorts',
             'specializations' => 'Spécialisations',
             'resource-types' => 'Types de ressource',
+            'item-types' => "Types d'équipement",
+            'consumable-types' => 'Types de consommable',
+            'spell-types' => 'Types de sort',
+            'monster-races' => 'Races',
             'pages' => 'Pages',
             'sections' => 'Sections',
             default => $type,

@@ -11,28 +11,65 @@
 import { ref, computed, watch } from "vue";
 import { globalSearchEntityLabelKey } from "@/Utils/entity/globalSearchEntityLabel";
 
-/** Filtres « catégories » proposés dans le header (valeurs = GlobalSearchService::ALLOWED_TYPES). */
-export const GLOBAL_SEARCH_TYPE_FILTERS = Object.freeze([
-    { value: "pages", label: "Pages" },
-    { value: "sections", label: "Sections" },
-    { value: "spells", label: "Sorts" },
-    { value: "monsters", label: "Monstres" },
-    { value: "items", label: "Objets" },
-    { value: "resources", label: "Ressources" },
-    { value: "consumables", label: "Consommables" },
-    { value: "breeds", label: "Classes" },
-    { value: "campaigns", label: "Campagnes" },
-    { value: "scenarios", label: "Scénarios" },
-    { value: "npcs", label: "PNJ" },
-    { value: "shops", label: "Boutiques" },
-    { value: "conditions", label: "Conditions" },
-    { value: "capabilities", label: "Capacités" },
-    { value: "specializations", label: "Spécialisations" },
-    { value: "panoplies", label: "Panoplies" },
-    { value: "creature-traits", label: "Traits de créature" },
-    { value: "creatures", label: "Créatures" },
-    { value: "resource-types", label: "Types de ressource" },
+/** Ordre d'affichage des groupes (aligné sur GlobalSearchService::SEARCH_TYPE_ORDER). */
+export const GLOBAL_SEARCH_TYPE_ORDER = Object.freeze([
+    "breeds",
+    "specializations",
+    "monsters",
+    "spells",
+    "capabilities",
+    "creature-traits",
+    "conditions",
+    "items",
+    "consumables",
+    "resources",
+    "panoplies",
+    "campaigns",
+    "scenarios",
+    "npcs",
+    "shops",
+    "pages",
+    "sections",
 ]);
+
+/** Types recherchés en arrière-plan mais sans bouton filtre dans le header. */
+const GLOBAL_SEARCH_HIDDEN_FILTER_TYPES = new Set([
+    "item-types",
+    "consumable-types",
+    "spell-types",
+    "monster-races",
+    "resource-types",
+]);
+
+const GLOBAL_SEARCH_TYPE_LABELS = Object.freeze({
+    breeds: "Classes",
+    specializations: "Spécialisations",
+    monsters: "Monstres",
+    spells: "Sorts",
+    capabilities: "Capacités",
+    "creature-traits": "Traits de créature",
+    conditions: "États",
+    items: "Équipements",
+    consumables: "Consommables",
+    resources: "Ressources",
+    panoplies: "Panoplies",
+    campaigns: "Campagnes",
+    scenarios: "Scénarios",
+    npcs: "PNJ",
+    shops: "Boutiques",
+    pages: "Pages",
+    sections: "Sections",
+});
+
+/** Filtres « catégories » affichés dans le header (sous-ensemble ordonné). */
+export const GLOBAL_SEARCH_TYPE_FILTERS = Object.freeze(
+    GLOBAL_SEARCH_TYPE_ORDER.filter((value) => !GLOBAL_SEARCH_HIDDEN_FILTER_TYPES.has(value)).map(
+        (value) => ({
+            value,
+            label: GLOBAL_SEARCH_TYPE_LABELS[value] ?? value,
+        })
+    )
+);
 
 /** Filtres d’état de publication (valeurs = GlobalSearchService::ALLOWED_STATES). */
 export const GLOBAL_SEARCH_STATE_FILTERS = Object.freeze([
@@ -41,6 +78,10 @@ export const GLOBAL_SEARCH_STATE_FILTERS = Object.freeze([
     { value: "raw", label: "Brut" },
     { value: "archived", label: "Archivé" },
 ]);
+
+const typeOrderIndex = Object.fromEntries(
+    GLOBAL_SEARCH_TYPE_ORDER.map((type, index) => [type, index])
+);
 
 /**
  * @param {Object} [options]
@@ -93,7 +134,11 @@ export function useGlobalEntitySearch(options = {}) {
             map.get(key).items.push(row);
         }
 
-        return [...map.values()];
+        return [...map.values()].sort((a, b) => {
+            const ai = typeOrderIndex[a.entityType] ?? 999;
+            const bi = typeOrderIndex[b.entityType] ?? 999;
+            return ai - bi;
+        });
     });
 
     const clearResults = () => {

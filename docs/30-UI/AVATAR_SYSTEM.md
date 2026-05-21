@@ -50,6 +50,18 @@ getTailwindTokenFromLabel("Niveau 12", { mode: "numericProgression", baseColor: 
 getTailwindTokenFromLabel("Bob", { mode: "alphabetical", tone: "light" }) // ex: "amber-200"
 ```
 
+## EntityThumb (vignettes entités)
+
+**Fichier :** `resources/js/Pages/Molecules/entity/shared/EntityThumb.vue`
+
+Wrapper autour de `Avatar` pour les listes, lignes de tableau, recherche globale et pickers :
+
+- `rounded="box"` par défaut (`--radius-box`)
+- `label` → initiales si pas d’image
+- Tailles : `search`, `table`, `xs`, `compact`, `line`
+
+Helpers : `resources/js/Utils/entity/entityThumb.js` (`resolveEntityImageUrl`, `resolveEntityThumbLabel`).
+
 ## API du Composant Avatar
 
 ### Props
@@ -251,7 +263,7 @@ const tailwindColor = getNearestTailwindColor('#ff6b6b'); // "red-500"
 Le composant utilise les classes DaisyUI pour :
 - Tailles (`avatar-xs`, `avatar-sm`, etc.)
 - Anneaux (`ring`, `ring-offset`)
-- Arrondis (`rounded-full`, etc.)
+- Arrondis via prop `rounded` (`box` = `--radius-box`, `full` = cercle profil utilisateur, etc.) ; appliqué sur le conteneur, les images et les initiales.
 
 ## Utilisation dans le Projet
 

@@ -119,7 +119,19 @@ class ItemController extends Controller
      */
     public function show(Item $item)
     {
-        //
+        $this->authorize('view', $item);
+
+        $item->load([
+            'itemType',
+            'createdBy',
+            'resources',
+            'effectUsages.effectDegree.effect',
+            'objectEffects',
+        ]);
+
+        return Inertia::render('Pages/entity/item/Show', [
+            'item' => new ItemResource($item),
+        ]);
     }
 
     /**

@@ -11,8 +11,7 @@
  */
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
-import Image from '@/Pages/Atoms/data-display/Image.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import EntityThumb from '@/Pages/Molecules/entity/shared/EntityThumb.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
@@ -159,15 +158,11 @@ const handleAction = async (actionKey) => {
         <div class="p-3">
             <EntityViewHeader mode="minimal">
                 <template #media>
-                    <div v-if="campaign.image" class="w-8 h-8">
-                        <Image
-                            :src="campaign.image"
-                            :alt="campaign.name || 'Campaign'"
-                            size="xs"
-                            class="w-full h-full rounded object-cover"
-                        />
-                    </div>
-                    <Icon v-else source="fa-solid fa-flag" :alt="campaign.name || 'Campaign'" size="sm" class="flex-shrink-0" />
+                    <EntityThumb
+                        size="table"
+                        :src="campaign.image || ''"
+                        :label="campaign.name || 'Campagne'"
+                    />
                 </template>
 
                 <template #title>

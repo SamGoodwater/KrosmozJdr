@@ -6,8 +6,7 @@
  * Aligné sur MonsterLineRow / SpellLineRow : état • image • dé de vie • nom • spécificité • relations • description.
  */
 import { computed } from "vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
@@ -87,18 +86,11 @@ const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
         @dblclick="(e) => emitLineRowDblClick(emit, row, e)"
     >
         <div class="flex gap-3">
-            <div
-                class="w-20 shrink-0 self-stretch min-h-20 rounded overflow-hidden bg-base-200 flex items-center justify-center"
-            >
-                <Image
-                    v-if="imageUrl"
-                    :source="imageUrl"
-                    :alt="entity?.name ?? row?.name ?? 'Classe'"
-                    fit="contain"
-                    class="h-full w-full"
-                />
-                <Icon v-else source="fa-solid fa-graduation-cap" alt="" size="sm" class="text-base-content/40" />
-            </div>
+            <EntityThumb
+                size="line"
+                :src="imageUrl || ''"
+                :label="entity?.name ?? row?.name ?? 'Classe'"
+            />
             <div class="flex-1 min-w-0 flex flex-col gap-1.5 pl-1">
                 <div class="flex items-center gap-2">
                     <div class="flex items-center gap-2 min-w-0 flex-1">

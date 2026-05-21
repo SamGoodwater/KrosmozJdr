@@ -9,8 +9,7 @@ import { computed } from "vue";
 import SpellViewText from "@/Pages/Molecules/entity/spell/SpellViewText.vue";
 import SpellViewMinimal from "@/Pages/Molecules/entity/spell/SpellViewMinimal.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import { Spell } from "@/Models/Entity/Spell";
 import { splitBreedSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 
@@ -204,14 +203,12 @@ const variantTitle = (g) => {
                             :aria-label="`Ouvrir ${spellName(s)}`"
                             @click.stop="openSpell(s)"
                         >
-                            <Image
-                                v-if="spellImage(s)"
-                                :source="spellImage(s)"
-                                :alt="spellName(s)"
-                                fit="contain"
+                            <EntityThumb
+                                size="table"
                                 class="h-4 w-4"
+                                :src="spellImage(s) || ''"
+                                :label="spellName(s)"
                             />
-                            <Icon v-else source="fa-solid fa-wand-magic-sparkles" size="xs" />
                         </button>
                     </Tooltip>
                     <span v-if="hiddenVariantCount > 0" class="text-[10px] text-base-content/60">+{{ hiddenVariantCount }}</span>
@@ -248,14 +245,12 @@ const variantTitle = (g) => {
                             :aria-label="`Ouvrir ${spellName(s)}`"
                             @click.stop="openSpell(s)"
                         >
-                            <Image
-                                v-if="spellImage(s)"
-                                :source="spellImage(s)"
-                                :alt="spellName(s)"
-                                fit="contain"
+                            <EntityThumb
+                                size="table"
                                 class="h-4 w-4"
+                                :src="spellImage(s) || ''"
+                                :label="spellName(s)"
                             />
-                            <Icon v-else source="fa-solid fa-wand-magic-sparkles" size="xs" />
                         </button>
                     </Tooltip>
                     <span v-if="hiddenAlwaysCount > 0" class="text-[10px] text-base-content/60">+{{ hiddenAlwaysCount }}</span>

@@ -113,6 +113,10 @@ const props = defineProps({
      * Droit global d’édition sur l’entité (quick edit). Le toggle n’apparaît que si true.
      */
     quickEditAllowed: { type: Boolean, default: false },
+    /**
+     * Valeurs de filtres initiales (ex. query string de l’index Inertia).
+     */
+    initialFilterValues: { type: Object, default: () => ({}) },
 });
 
 const emit = defineEmits([
@@ -899,6 +903,28 @@ const resolvedFilterOptions = computed(() => {
     return out;
 });
 const activeFilters = ref({});
+
+function applyInitialFilterValues(source) {
+    const initial = source && typeof source === "object" ? source : {};
+    const next = {};
+    for (const [key, value] of Object.entries(initial)) {
+        if (value === null || value === undefined || value === "") {
+            continue;
+        }
+        next[key] = value;
+    }
+    if (Object.keys(next).length > 0) {
+        activeFilters.value = next;
+    }
+}
+
+applyInitialFilterValues(props.initialFilterValues);
+
+watch(
+    () => props.initialFilterValues,
+    (next) => applyInitialFilterValues(next),
+    { deep: true }
+);
 
 const tableSearch = useTableSearch({
     serverSide: computed(() => props.serverSide),

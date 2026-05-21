@@ -15,7 +15,8 @@
  * @see docs/30-UI/TANSTACK_TABLE.md
  */
 
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
+import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 import TanStackTable from "@/Pages/Organismes/table/TanStackTable.vue";
 import { resolveEntityViewComponentSync } from "@/Utils/entity/resolveEntityViewComponent.js";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
@@ -59,6 +60,10 @@ const props = defineProps({
      * IDs sélectionnés (v-model).
      */
     selectedIds: { type: Array, default: null },
+    /**
+     * Filtres initiaux (query string Inertia → UI + fetch API en mode serverSide).
+     */
+    initialFilterValues: { type: Object, default: () => ({}) },
 });
 
 const emit = defineEmits([
@@ -85,7 +90,19 @@ const isServerEnabled = computed(() => {
 });
 
 /** Params serveur (source de vérité en mode serverSide). */
-const { serverParams, mergeParams, buildFetchUrl } = useTableServerParams();
+const { serverParams, mergeParams, buildFetchUrl } = useTableServerParams({
+    filters: normalizeIndexTableFilters(props.initialFilterValues),
+});
+
+onMounted(() => {
+    const initial = normalizeIndexTableFilters(props.initialFilterValues);
+    if (Object.keys(initial).length === 0) {
+        return;
+    }
+    if (props.serverSide) {
+        mergeParams({ filters: initial, page: 1 });
+    }
+});
 
 /** URL de fetch : statique (serverUrl) ou construite via useTableServerParams. */
 const effectiveServerUrl = computed(() => {
@@ -325,6 +342,7 @@ const handleRefresh = async () => {
         :server-side="serverSide"
         :server-pagination-meta="serverPaginationMeta"
         :server-params="serverParams"
+        :initial-filter-values="initialFilterValues"
         :quick-edit-allowed="canUpdateAny"
         @update:server-params="handleServerParamsChange"
         @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"

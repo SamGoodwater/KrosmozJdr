@@ -30,6 +30,10 @@ import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors }
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
+import {
+    normalizeIndexTableFilters,
+    useEntityIndexTableApiUrl,
+} from "@/Composables/entity/useEntityIndexTableFilters";
 
 // Props Inertia (gardées à titre documentaire, même si non utilisées directement ici)
 const props = defineProps({
@@ -65,7 +69,8 @@ const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
 
-const serverUrl = computed(() => `${route('api.tables.items')}?limit=5000&format=entities&_t=${refreshToken.value}`);
+const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
+const serverUrl = useEntityIndexTableApiUrl("api.tables.items", () => props.filters, refreshToken);
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
@@ -318,6 +323,7 @@ const clearSelection = () => {
                     entity-type="items"
                     :config="tableConfig"
                     :server-url="serverUrl"
+                    :initial-filter-values="indexTableFilters"
                     :response-adapter="getEntityResponseAdapter('items')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"

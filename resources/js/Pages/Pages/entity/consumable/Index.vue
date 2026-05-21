@@ -30,6 +30,10 @@ import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
+import {
+    normalizeIndexTableFilters,
+    useEntityIndexTableApiUrl,
+} from "@/Composables/entity/useEntityIndexTableFilters";
 
 const props = defineProps({
     consumables: {
@@ -98,7 +102,8 @@ const tableConfig = computed(() => {
     const config = TableConfig.fromDescriptors(descriptors, ctx);
     return config.build(ctx);
 });
-const serverUrl = computed(() => `${route('api.tables.consumables')}?format=entities&limit=5000&_t=${refreshToken.value}`);
+const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
+const serverUrl = useEntityIndexTableApiUrl("api.tables.consumables", () => props.filters, refreshToken);
 
 // Fields config pour les formulaires (généré depuis les descriptors)
 const fieldsConfig = computed(() => {
@@ -301,6 +306,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="consumables"
                     :config="tableConfig"
                     :server-url="serverUrl"
+                    :initial-filter-values="indexTableFilters"
                     :response-adapter="getEntityResponseAdapter('consumables')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"

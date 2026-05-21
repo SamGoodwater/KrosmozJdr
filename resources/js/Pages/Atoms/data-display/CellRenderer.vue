@@ -23,7 +23,7 @@
 
 import { computed, defineAsyncComponent } from "vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import ElementDisplay from "@/Pages/Atoms/data-display/ElementDisplay.vue";
 import AreaDisplay from "@/Pages/Molecules/entity/spell/AreaDisplay.vue";
@@ -270,17 +270,12 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
     </span>
 
     <span v-else-if="type === 'image'" class="inline-flex items-center justify-center">
-        <Image
-            v-if="value"
-            :source="String(value)"
+        <EntityThumb
+            size="table"
+            :src="value ? String(value) : ''"
+            :label="params.alt || params.searchValue || 'Entité'"
             :alt="params.alt || 'Image'"
-            fit="contain"
-            rounded="md"
-            width="2rem"
-            height="2rem"
-            class="inline-flex max-h-8 max-w-8"
         />
-        <span v-else class="text-base-content/40">—</span>
     </span>
 
     <span v-else-if="type === 'route'">

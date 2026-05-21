@@ -86,7 +86,7 @@ composer dev:review:agent
 | `PageRenderer` | `SectionLazyGate` : montage différé (`IntersectionObserver`, `rootMargin` ~320/480px) | **Implémenté** — 2 premières sections + ancre URL + édition en eager |
 | `SectionRenderer` | Import dynamique du template (OK) | — |
 | `SectionTextRead` + krefs | TipTap readonly (`RichTextReadonlyView`) — **conservé** (rendu identique aux krefs inline) | Pas de remplacement par `v-html` : TipTap assure le rendu `referenceInline` |
-| `SectionEntityTableRead` | TanStack + API `api.tables.*` au mount | Limiter `limit` section ; lazy mount si section hors viewport |
+| `SectionEntityTableRead` | TanStack + API `api.tables.*` ; virtualisation si ≥ 40 lignes (CMS uniquement) | **Implémenté** — seuil Index inchangé (500+) |
 | `PageController::show` | Sections + `media` en une requête | OK ; éviter payloads JSON énormes dans `section.data` |
 
 ### Kref — survol / popover
@@ -119,7 +119,6 @@ Fichiers : `ReferenceInlineNodeView.vue`, `RichTextKrefInteractions.vue`, `kref*
 ### Prochaines pistes
 
 - Test Vitest : pas de fetch carac. kref sans `@open` du `Tooltip`
-- Virtualisation TanStack sur grosses sections `entity_table`
 
 ## Hors scope (plans séparés)
 

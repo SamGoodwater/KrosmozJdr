@@ -9,8 +9,7 @@
  */
 import { computed } from "vue";
 import { Link } from "@inertiajs/vue3";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
@@ -120,18 +119,11 @@ const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spe
         @dblclick="(e) => emitLineRowDblClick(emit, row, e)"
     >
         <div class="flex gap-3">
-            <div
-                class="w-20 shrink-0 self-stretch min-h-20 rounded overflow-hidden bg-base-200 flex items-center justify-center"
-            >
-                <Image
-                    v-if="imageCell?.value"
-                    :source="imageCell.value"
-                    :alt="entity?.name ?? row?.name ?? 'Sort'"
-                    fit="contain"
-                    class="h-full w-full"
-                />
-                <Icon v-else source="fa-solid fa-wand-magic-sparkles" alt="" size="sm" class="text-base-content/40" />
-            </div>
+            <EntityThumb
+                size="line"
+                :src="imageCell?.value || ''"
+                :label="entity?.name ?? row?.name ?? 'Sort'"
+            />
             <div class="flex-1 min-w-0 flex flex-col gap-1.5 pl-1">
                 <div class="flex items-center gap-2">
                     <div class="flex items-center gap-2 min-w-0 flex-1">

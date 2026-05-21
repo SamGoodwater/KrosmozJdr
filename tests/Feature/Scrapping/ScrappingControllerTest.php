@@ -5,6 +5,7 @@ namespace Tests\Feature\Scrapping;
 use App\Http\Middleware\RequirePasswordWithInactivity;
 use App\Models\Entity\Breed;
 use App\Models\User;
+use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\SeedsScrappingPipeline;
@@ -23,6 +24,7 @@ class ScrappingControllerTest extends TestCase
     {
         parent::setUp();
         $this->seedScrappingPipeline();
+        $this->app->make(DofusdbEffectMappingService::class)->clearCache();
         $this->admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         // Routes scrapping protégées par password.confirm ; en tests on contourne pour éviter 423
         $this->withoutMiddleware(RequirePasswordWithInactivity::class);

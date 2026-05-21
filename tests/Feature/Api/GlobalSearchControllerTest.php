@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace Tests\Feature\Api;
 
 use App\Http\Controllers\Api\GlobalSearchController;
+use App\Models\Entity\Consumable;
+use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
+use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\Page;
+use App\Models\Type\ResourceType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -67,6 +72,69 @@ class GlobalSearchControllerTest extends TestCase
         $this->assertSame('Sorts', $hit['group']);
         $this->assertStringContainsString($token, (string) $hit['title']);
         $this->assertNotEmpty($hit['href']);
+    }
+
+    /**
+     * Les hits exposent iconUrl lorsque l’entité a une image (pas de requête média supplémentaire).
+     */
+    public function test_hit_includes_icon_url_from_entity_image(): void
+    {
+        $token = 'GlSearchImgTok'.uniqid();
+        $imageUrl = 'https://cdn.example.test/spells/'.$token.'.png';
+
+        Spell::factory()->create([
+            'name' => 'Sort '.$token,
+            'image' => $imageUrl,
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->getJson('/api/global-search?'.http_build_query([
+            'q' => $token,
+            'types' => ['spells'],
+            'limit' => 10,
+        ]));
+
+        $response->assertOk();
+        $hit = collect($response->json('results'))->firstWhere('entityType', 'spells');
+        $this->assertNotNull($hit);
+        $this->assertSame($imageUrl, $hit['iconUrl']);
+        $this->assertSame('', $hit['icon']);
+    }
+
+    /**
+     * Monstre : miniature via creature.image (relation déjà eager-loadée).
+     */
+    public function test_monster_hit_uses_creature_image(): void
+    {
+        $token = 'GlSearchMonImg'.uniqid();
+        $imageUrl = 'https://cdn.example.test/monsters/'.$token.'.png';
+
+        $creature = Creature::factory()->create([
+            'name' => 'Créature '.$token,
+            'image' => $imageUrl,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'state' => 'playable',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->getJson('/api/global-search?'.http_build_query([
+            'q' => $token,
+            'types' => ['monsters'],
+            'limit' => 10,
+        ]));
+
+        $response->assertOk();
+        $hit = collect($response->json('results'))->firstWhere('entityType', 'monsters');
+        $this->assertNotNull($hit);
+        $this->assertSame($imageUrl, $hit['iconUrl']);
     }
 
     /**
@@ -233,5 +301,155 @@ class GlobalSearchControllerTest extends TestCase
         $response->assertOk();
         $this->assertCount(2, $response->json('results'));
         $this->assertTrue($response->json('meta.hasMore'));
+    }
+
+    /**
+     * Le titre d’un monstre utilise le nom de la créature liée (pas l’id seul).
+     */
+    public function test_monster_title_uses_creature_name(): void
+    {
+        $token = 'GlSearchMonsterTok'.uniqid();
+        $creatureName = 'Bouftou '.$token;
+
+        $creature = Creature::factory()->create([
+            'name' => $creatureName,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'state' => 'playable',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->getJson('/api/global-search?'.http_build_query([
+            'q' => $token,
+            'types' => ['monsters'],
+        ]));
+
+        $response->assertOk();
+        $hit = collect($response->json('results'))->firstWhere('entityType', 'monsters');
+        $this->assertNotNull($hit);
+        $this->assertSame($creatureName, $hit['title']);
+        $this->assertStringNotContainsString('#', (string) $hit['title']);
+    }
+
+    /**
+     * Le type `creatures` n’est plus indexé par la recherche globale.
+     */
+    public function test_creatures_type_is_not_searchable(): void
+    {
+        $token = 'GlSearchCreatureTok'.uniqid();
+
+        Creature::factory()->create([
+            'name' => 'Créature '.$token,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->getJson('/api/global-search?'.http_build_query([
+            'q' => $token,
+            'types' => ['creatures'],
+        ]));
+
+        $response->assertOk();
+        $this->assertSame([], $response->json('results'));
+    }
+
+    /**
+     * Un type de ressource redirige vers l’index ressources filtré.
+     */
+    public function test_resource_type_href_points_to_filtered_resources_index(): void
+    {
+        $token = 'GlSearchResTypeTok'.uniqid();
+
+        $resourceType = ResourceType::factory()->create([
+            'name' => 'Minerai '.$token,
+            'state' => ResourceType::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->getJson('/api/global-search?'.http_build_query([
+            'q' => $token,
+            'types' => ['resource-types'],
+        ]));
+
+        $response->assertOk();
+        $hit = collect($response->json('results'))->firstWhere('entityType', 'resource-types');
+        $this->assertNotNull($hit);
+        $this->assertStringContainsString('resource_type_id='.$resourceType->id, (string) $hit['href']);
+        $this->assertStringContainsString(route('entities.resources.index', [], false), (string) $hit['href']);
+    }
+
+    /**
+     * Libellé de groupe « Équipements » pour les items.
+     */
+    public function test_item_group_label_is_equipements(): void
+    {
+        $token = 'GlSearchItemLblTok'.uniqid();
+
+        Item::factory()->create([
+            'name' => 'Épée '.$token,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->getJson('/api/global-search?'.http_build_query([
+            'q' => $token,
+            'types' => ['items'],
+        ]));
+
+        $response->assertOk();
+        $hit = collect($response->json('results'))->firstWhere('entityType', 'items');
+        $this->assertNotNull($hit);
+        $this->assertSame('Équipements', $hit['group']);
+    }
+
+    /**
+     * Fiche show équipement : page Inertia rendue pour un invité autorisé.
+     */
+    public function test_item_show_page_renders_for_guest(): void
+    {
+        $item = Item::factory()->create([
+            'name' => 'Item show test',
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->get(route('entities.items.show', $item));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Pages/entity/item/Show')
+            ->has('item.data')
+            ->where('item.data.id', $item->id)
+        );
+    }
+
+    /**
+     * Fiche show consommable : page Inertia rendue pour un invité autorisé.
+     */
+    public function test_consumable_show_page_renders_for_guest(): void
+    {
+        $consumable = Consumable::factory()->create([
+            'name' => 'Consumable show test',
+            'state' => Consumable::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->get(route('entities.consumables.show', $consumable));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Pages/entity/consumable/Show')
+            ->has('consumable.data')
+            ->where('consumable.data.id', $consumable->id)
+        );
     }
 }

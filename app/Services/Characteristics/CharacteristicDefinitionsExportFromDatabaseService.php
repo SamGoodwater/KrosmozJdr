@@ -157,9 +157,18 @@ final class CharacteristicDefinitionsExportFromDatabaseService
             $conversionFunction = null;
         }
 
-        $itemTypeIds = $r->relationLoaded('allowedItemTypes')
-            ? $r->allowedItemTypes->pluck('id')->map(fn ($id): int => (int) $id)->values()->all()
-            : [];
+        $allowedItemTypes = $r->relationLoaded('allowedItemTypes') ? $r->allowedItemTypes : collect();
+        $itemTypeDofusIds = $allowedItemTypes
+            ->pluck('dofusdb_type_id')
+            ->filter(static fn ($id): bool => $id !== null && $id !== '')
+            ->map(static fn ($id): int => (int) $id)
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+        $itemTypeIds = $allowedItemTypes->pluck('id')->map(fn ($id): int => (int) $id)->values()->all();
+        $usePortableDofusIds = $itemTypeDofusIds !== []
+            && count($itemTypeDofusIds) === $allowedItemTypes->count();
 
         return [
             'dofusdb_characteristic_id' => $r->dofusdb_characteristic_id,
@@ -182,7 +191,8 @@ final class CharacteristicDefinitionsExportFromDatabaseService
             'base_price_per_unit' => $r->base_price_per_unit !== null ? (float) $r->base_price_per_unit : null,
             'rune_price_per_unit' => $r->rune_price_per_unit !== null ? (float) $r->rune_price_per_unit : null,
             'value_available' => $r->value_available,
-            'item_type_ids' => $itemTypeIds !== [] ? $itemTypeIds : null,
+            'item_type_dofus_ids' => $usePortableDofusIds ? $itemTypeDofusIds : null,
+            'item_type_ids' => ! $usePortableDofusIds && $itemTypeIds !== [] ? $itemTypeIds : null,
         ];
     }
 

@@ -11,8 +11,7 @@
  */
 import { ref, computed } from "vue";
 import { router } from "@inertiajs/vue3";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
@@ -91,23 +90,11 @@ const handleAction = async (actionKey) => {
         <div class="flex flex-1 flex-col gap-2 p-3">
             <div class="flex items-start justify-between gap-2">
                 <div class="flex min-w-0 flex-1 items-start gap-2">
-                    <div
-                        v-if="imageUrl"
-                        class="w-10 h-10 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
-                    >
-                        <Image
-                            :src="imageUrl"
-                            :alt="condition.name || 'État'"
-                            fit="contain"
-                            class="h-full w-full object-contain"
-                        />
-                    </div>
-                    <div
-                        v-else
-                        class="w-10 h-10 shrink-0 rounded bg-base-200 flex items-center justify-center"
-                    >
-                        <Icon source="fa-solid fa-list-check" alt="" size="sm" class="text-base-content/40" />
-                    </div>
+                    <EntityThumb
+                        size="xs"
+                        :src="imageUrl || ''"
+                        :label="condition.name || 'État'"
+                    />
                     <Tooltip :content="condition.name || 'État'" placement="top">
                         <span class="block min-w-0 wrap-break-word text-sm font-semibold text-primary-100">
                             <CellRenderer :cell="getCell('name')" ui-color="primary" />
