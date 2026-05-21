@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
  * Mapping effectId DofusDB → sous-effet KrosmozJDR (sub_effect_slug + characteristic_source).
  *
  * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md
+ *
  * @property int $id
  * @property int $dofusdb_effect_id
  * @property string $sub_effect_slug
@@ -18,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $characteristic_key
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping query()
@@ -28,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereSubEffectSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class DofusdbEffectMapping extends Model

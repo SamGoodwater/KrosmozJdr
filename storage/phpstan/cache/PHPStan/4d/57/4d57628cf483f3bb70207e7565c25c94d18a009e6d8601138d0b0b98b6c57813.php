@@ -1,0 +1,1214 @@
+<?php declare(strict_types = 1);
+
+// osfsl-/var/www/KrosmozJdr/app/Models/Entity/Spell.php-PHPStan\BetterReflection\Reflection\ReflectionClass-App\Models\Entity\Spell
+return \PHPStan\Cache\CacheItem::__set_state(array(
+   'variableKey' => 'v2-05f0994c29853b1e78867b5df4886c305783d5fc30f220bfdc7c88d853d20448-8.4.17-6.70.0.1',
+   'data' => 
+  array (
+    'locatedSource' => 
+    array (
+      'class' => 'PHPStan\\BetterReflection\\SourceLocator\\Located\\LocatedSource',
+      'data' => 
+      array (
+        'name' => 'App\\Models\\Entity\\Spell',
+        'filename' => '/var/www/KrosmozJdr/app/Models/Entity/Spell.php',
+      ),
+    ),
+    'namespace' => 'App\\Models\\Entity',
+    'name' => 'App\\Models\\Entity\\Spell',
+    'shortName' => 'Spell',
+    'isInterface' => false,
+    'isTrait' => false,
+    'isEnum' => false,
+    'isBackedEnum' => false,
+    'modifiers' => 0,
+    'docComment' => '/**
+ * @property int $id
+ * @property string|null $official_id
+ * @property string|null $dofusdb_id
+ * @property string $name
+ * @property string $description Toujours non null en base ; une valeur API `null` est normalisée en chaîne vide.
+ * @property string|null $effect
+ * @property string $level
+ * @property string|null $po_min Portée min (valeur ou formule, ex. "0", "[level]")
+ * @property string|null $po_max Portée max (valeur ou formule, ex. "1", "6")
+ * @property bool $po_editable
+ * @property string $pa
+ * @property string $cast_per_turn
+ * @property string $cast_per_target
+ * @property bool $sight_line
+ * @property string $number_between_two_cast
+ * @property int $element
+ * @property int $category
+ * @property bool $is_magic
+ * @property int $powerful
+ * @property string $resolution_mode
+ * @property string|null $attack_characteristic_key
+ * @property string|null $save_characteristic_key
+ * @property string|null $save_dc_formula
+ * @property string|null $save_success_note
+ * @property bool $auto_success_if_willing_target Réussite auto si la cible est consentante
+ * @property bool $allows_reaction Utilisable comme réaction de combat (PA non récupérés au tour suivant)
+ * @property string|null $casting_time Temps d\'incantation (texte libre)
+ * @property bool|null $ritual_available Utilisable en mode rituel (null = non renseigné)
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
+ * @property string|null $image
+ * @property bool $auto_update
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property int|null $created_by
+ * @property-read Collection<int, Campaign> $campaigns
+ * @property-read int|null $campaigns_count
+ * @property-read User|null $createdBy
+ * @property-read Collection<int, Creature> $creatures
+ * @property-read int|null $creatures_count
+ * @property-read Collection<int, Monster> $monsters
+ * @property-read int|null $monsters_count
+ * @property-read Collection<int, Scenario> $scenarios
+ * @property-read int|null $scenarios_count
+ * @property-read Collection<int, SpellType> $spellTypes
+ * @property-read int|null $spell_types_count
+ * @method static \\Database\\Factories\\Entity\\SpellFactory factory($count = null, $state = [])
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell newModelQuery()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell newQuery()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell onlyTrashed()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell query()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereArea($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereAutoUpdate($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereCastPerTarget($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereCastPerTurn($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereCategory($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereCreatedAt($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereCreatedBy($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereDeletedAt($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereDescription($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereDofusdbId($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereEffect($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereElement($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereId($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereImage($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereIsMagic($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereReadLevel($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereLevel($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereName($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereNumberBetweenTwoCast($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereOfficialId($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell wherePa($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell wherePoMin($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell wherePoMax($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell wherePoEditable($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell wherePowerful($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereSightLine($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereUpdatedAt($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereState($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereWriteLevel($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell withTrashed()
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell withoutTrashed()
+ * @property string|null $duration
+ * @property-read Collection<int, Breed> $breeds
+ * @property-read int|null $breeds_count
+ * @property-read Collection<int, Effect> $effects
+ * @property-read int|null $effects_count
+ * @property-read string|null $area
+ * @property-read string $po_display
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @property-read Collection<int, SpellEffect> $spellEffects
+ * @property-read int|null $spell_effects_count
+ * @property-read Collection<int, Condition> $conditions
+ * @property-read int|null $conditions_count
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereAllowsReaction($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereAttackCharacteristicKey($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereAutoSuccessIfWillingTarget($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereCastingTime($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereDuration($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereResolutionMode($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereRitualAvailable($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereSaveCharacteristicKey($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereSaveDcFormula($value)
+ * @method static \\Illuminate\\Database\\Eloquent\\Builder<static>|Spell whereSaveSuccessNote($value)
+ * @property-read BreedSpellPivot|null $pivot
+ * @mixin \\Eloquent
+ */',
+    'attributes' => 
+    array (
+    ),
+    'startLine' => 133,
+    'endLine' => 408,
+    'startColumn' => 1,
+    'endColumn' => 1,
+    'parentClassName' => 'Illuminate\\Database\\Eloquent\\Model',
+    'implementsClassNames' => 
+    array (
+      0 => 'Spatie\\MediaLibrary\\HasMedia',
+    ),
+    'traitClassNames' => 
+    array (
+      0 => 'App\\Models\\Concerns\\HasEntityImageMedia',
+      1 => 'Illuminate\\Database\\Eloquent\\Factories\\HasFactory',
+      2 => 'Illuminate\\Database\\Eloquent\\SoftDeletes',
+    ),
+    'immediateConstants' => 
+    array (
+      'STATE_RAW' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'STATE_RAW',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'raw\'',
+          'attributes' => 
+          array (
+            'startLine' => 138,
+            'endLine' => 138,
+            'startTokenPos' => 124,
+            'startFilePos' => 8010,
+            'endTokenPos' => 124,
+            'endFilePos' => 8014,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 138,
+        'endLine' => 138,
+        'startColumn' => 5,
+        'endColumn' => 35,
+      ),
+      'STATE_DRAFT' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'STATE_DRAFT',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'draft\'',
+          'attributes' => 
+          array (
+            'startLine' => 140,
+            'endLine' => 140,
+            'startTokenPos' => 135,
+            'startFilePos' => 8049,
+            'endTokenPos' => 135,
+            'endFilePos' => 8055,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 140,
+        'endLine' => 140,
+        'startColumn' => 5,
+        'endColumn' => 39,
+      ),
+      'STATE_PLAYABLE' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'STATE_PLAYABLE',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'playable\'',
+          'attributes' => 
+          array (
+            'startLine' => 142,
+            'endLine' => 142,
+            'startTokenPos' => 146,
+            'startFilePos' => 8093,
+            'endTokenPos' => 146,
+            'endFilePos' => 8102,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 142,
+        'endLine' => 142,
+        'startColumn' => 5,
+        'endColumn' => 45,
+      ),
+      'STATE_ARCHIVED' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'STATE_ARCHIVED',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'archived\'',
+          'attributes' => 
+          array (
+            'startLine' => 144,
+            'endLine' => 144,
+            'startTokenPos' => 157,
+            'startFilePos' => 8140,
+            'endTokenPos' => 157,
+            'endFilePos' => 8149,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 144,
+        'endLine' => 144,
+        'startColumn' => 5,
+        'endColumn' => 45,
+      ),
+      'CATEGORY_CLASS' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'CATEGORY_CLASS',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '0',
+          'attributes' => 
+          array (
+            'startLine' => 146,
+            'endLine' => 146,
+            'startTokenPos' => 168,
+            'startFilePos' => 8187,
+            'endTokenPos' => 168,
+            'endFilePos' => 8187,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 146,
+        'endLine' => 146,
+        'startColumn' => 5,
+        'endColumn' => 36,
+      ),
+      'CATEGORY_CREATURE' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'CATEGORY_CREATURE',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '1',
+          'attributes' => 
+          array (
+            'startLine' => 148,
+            'endLine' => 148,
+            'startTokenPos' => 179,
+            'startFilePos' => 8228,
+            'endTokenPos' => 179,
+            'endFilePos' => 8228,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 148,
+        'endLine' => 148,
+        'startColumn' => 5,
+        'endColumn' => 39,
+      ),
+      'CATEGORY_LEARNABLE' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'CATEGORY_LEARNABLE',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '2',
+          'attributes' => 
+          array (
+            'startLine' => 150,
+            'endLine' => 150,
+            'startTokenPos' => 190,
+            'startFilePos' => 8270,
+            'endTokenPos' => 190,
+            'endFilePos' => 8270,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 150,
+        'endLine' => 150,
+        'startColumn' => 5,
+        'endColumn' => 40,
+      ),
+      'CATEGORY_CONSUMABLE' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'CATEGORY_CONSUMABLE',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '3',
+          'attributes' => 
+          array (
+            'startLine' => 152,
+            'endLine' => 152,
+            'startTokenPos' => 201,
+            'startFilePos' => 8313,
+            'endTokenPos' => 201,
+            'endFilePos' => 8313,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 152,
+        'endLine' => 152,
+        'startColumn' => 5,
+        'endColumn' => 41,
+      ),
+      'RESOLUTION_ATTACK_ROLL' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'RESOLUTION_ATTACK_ROLL',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'attack_roll\'',
+          'attributes' => 
+          array (
+            'startLine' => 154,
+            'endLine' => 154,
+            'startTokenPos' => 212,
+            'startFilePos' => 8359,
+            'endTokenPos' => 212,
+            'endFilePos' => 8371,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 154,
+        'endLine' => 154,
+        'startColumn' => 5,
+        'endColumn' => 56,
+      ),
+      'RESOLUTION_SAVING_THROW' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'RESOLUTION_SAVING_THROW',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'saving_throw\'',
+          'attributes' => 
+          array (
+            'startLine' => 156,
+            'endLine' => 156,
+            'startTokenPos' => 223,
+            'startFilePos' => 8418,
+            'endTokenPos' => 223,
+            'endFilePos' => 8431,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 156,
+        'endLine' => 156,
+        'startColumn' => 5,
+        'endColumn' => 58,
+      ),
+      'RESOLUTION_AUTO_SUCCESS' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'RESOLUTION_AUTO_SUCCESS',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'auto_success\'',
+          'attributes' => 
+          array (
+            'startLine' => 158,
+            'endLine' => 158,
+            'startTokenPos' => 234,
+            'startFilePos' => 8478,
+            'endTokenPos' => 234,
+            'endFilePos' => 8491,
+          ),
+        ),
+        'docComment' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 158,
+        'endLine' => 158,
+        'startColumn' => 5,
+        'endColumn' => 58,
+      ),
+      'AREAS_SHAPE' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'AREAS_SHAPE',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\\App\\Support\\AreaConstants::SHAPE_ID_MAP',
+          'attributes' => 
+          array (
+            'startLine' => 161,
+            'endLine' => 161,
+            'startTokenPos' => 247,
+            'startFilePos' => 8586,
+            'endTokenPos' => 249,
+            'endFilePos' => 8612,
+          ),
+        ),
+        'docComment' => '/** @deprecated Utiliser AreaConstants::SHAPE_ID_MAP */',
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 161,
+        'endLine' => 161,
+        'startColumn' => 5,
+        'endColumn' => 59,
+      ),
+      'MEDIA_PATH' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'MEDIA_PATH',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'images/entity/spells\'',
+          'attributes' => 
+          array (
+            'startLine' => 164,
+            'endLine' => 164,
+            'startTokenPos' => 262,
+            'startFilePos' => 8700,
+            'endTokenPos' => 262,
+            'endFilePos' => 8721,
+          ),
+        ),
+        'docComment' => '/** Répertoire Media Library pour ce modèle. */',
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 164,
+        'endLine' => 164,
+        'startColumn' => 5,
+        'endColumn' => 53,
+      ),
+      'MEDIA_FILE_PATTERN_IMAGES' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'MEDIA_FILE_PATTERN_IMAGES',
+        'modifiers' => 1,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '\'image-[id]-[name]\'',
+          'attributes' => 
+          array (
+            'startLine' => 167,
+            'endLine' => 167,
+            'startTokenPos' => 275,
+            'startFilePos' => 8862,
+            'endTokenPos' => 275,
+            'endFilePos' => 8880,
+          ),
+        ),
+        'docComment' => '/** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */',
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 167,
+        'endLine' => 167,
+        'startColumn' => 5,
+        'endColumn' => 65,
+      ),
+      'ATTRIBUTE_FALLBACK_WHEN_NULL' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'ATTRIBUTE_FALLBACK_WHEN_NULL',
+        'modifiers' => 4,
+        'type' => NULL,
+        'value' => 
+        array (
+          'code' => '[\'description\' => \'\', \'level\' => \'1\', \'po_min\' => \'1\', \'po_max\' => \'1\', \'pa\' => \'3\', \'cast_per_turn\' => \'1\', \'cast_per_target\' => \'0\', \'number_between_two_cast\' => \'0\', \'po_editable\' => true, \'sight_line\' => true, \'category\' => 0, \'is_magic\' => true, \'powerful\' => 0, \'resolution_mode\' => self::RESOLUTION_ATTACK_ROLL, \'state\' => self::STATE_DRAFT, \'read_level\' => 0, \'write_level\' => 3, \'auto_update\' => true, \'auto_success_if_willing_target\' => false, \'allows_reaction\' => false]',
+          'attributes' => 
+          array (
+            'startLine' => 175,
+            'endLine' => 196,
+            'startTokenPos' => 288,
+            'startFilePos' => 9213,
+            'endTokenPos' => 434,
+            'endFilePos' => 9860,
+          ),
+        ),
+        'docComment' => '/**
+ * Colonnes NOT NULL : les FormRequest acceptent souvent `nullable` alors que MySQL refuse NULL.
+ * Valeurs alignées sur les défauts du schéma (migrations `entity_spells` et colonnes ajoutées ensuite).
+ *
+ * @var array<string, bool|int|string>
+ */',
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 175,
+        'endLine' => 196,
+        'startColumn' => 5,
+        'endColumn' => 6,
+      ),
+    ),
+    'immediateProperties' => 
+    array (
+      'fillable' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'fillable',
+        'modifiers' => 2,
+        'type' => NULL,
+        'default' => 
+        array (
+          'code' => '[\'official_id\', \'dofusdb_id\', \'name\', \'description\', \'effect\', \'level\', \'po_min\', \'po_max\', \'po_editable\', \'pa\', \'casting_time\', \'ritual_available\', \'cast_per_turn\', \'cast_per_target\', \'sight_line\', \'number_between_two_cast\', \'duration\', \'element\', \'category\', \'is_magic\', \'powerful\', \'resolution_mode\', \'attack_characteristic_key\', \'save_characteristic_key\', \'save_dc_formula\', \'save_success_note\', \'auto_success_if_willing_target\', \'allows_reaction\', \'state\', \'read_level\', \'write_level\', \'image\', \'auto_update\', \'created_by\']',
+          'attributes' => 
+          array (
+            'startLine' => 203,
+            'endLine' => 238,
+            'startTokenPos' => 445,
+            'startFilePos' => 9986,
+            'endTokenPos' => 549,
+            'endFilePos' => 10792,
+          ),
+        ),
+        'docComment' => '/**
+ * The attributes that are mass assignable.
+ *
+ * @var list<string>
+ */',
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 203,
+        'endLine' => 238,
+        'startColumn' => 5,
+        'endColumn' => 6,
+        'isPromoted' => false,
+        'declaredAtCompileTime' => true,
+        'immediateVirtual' => false,
+        'immediateHooks' => 
+        array (
+        ),
+      ),
+      'casts' => 
+      array (
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'name' => 'casts',
+        'modifiers' => 2,
+        'type' => NULL,
+        'default' => 
+        array (
+          'code' => '[\'element\' => \'integer\', \'category\' => \'integer\', \'powerful\' => \'integer\', \'read_level\' => \'integer\', \'write_level\' => \'integer\', \'po_editable\' => \'boolean\', \'sight_line\' => \'boolean\', \'is_magic\' => \'boolean\', \'auto_update\' => \'boolean\', \'auto_success_if_willing_target\' => \'boolean\', \'allows_reaction\' => \'boolean\', \'ritual_available\' => \'boolean\']',
+          'attributes' => 
+          array (
+            'startLine' => 245,
+            'endLine' => 258,
+            'startTokenPos' => 560,
+            'startFilePos' => 10919,
+            'endTokenPos' => 646,
+            'endFilePos' => 11370,
+          ),
+        ),
+        'docComment' => '/**
+ * The attributes that should be cast.
+ *
+ * @var array<string, string>
+ */',
+        'attributes' => 
+        array (
+        ),
+        'startLine' => 245,
+        'endLine' => 258,
+        'startColumn' => 5,
+        'endColumn' => 6,
+        'isPromoted' => false,
+        'declaredAtCompileTime' => true,
+        'immediateVirtual' => false,
+        'immediateHooks' => 
+        array (
+        ),
+      ),
+    ),
+    'immediateMethods' => 
+    array (
+      'setAttribute' => 
+      array (
+        'name' => 'setAttribute',
+        'parameters' => 
+        array (
+          'key' => 
+          array (
+            'name' => 'key',
+            'default' => NULL,
+            'type' => NULL,
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 264,
+            'endLine' => 264,
+            'startColumn' => 34,
+            'endColumn' => 37,
+            'parameterIndex' => 0,
+            'isOptional' => false,
+          ),
+          'value' => 
+          array (
+            'name' => 'value',
+            'default' => NULL,
+            'type' => NULL,
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 264,
+            'endLine' => 264,
+            'startColumn' => 40,
+            'endColumn' => 45,
+            'parameterIndex' => 1,
+            'isOptional' => false,
+          ),
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * @param  mixed  $value
+ * @return $this
+ */',
+        'startLine' => 264,
+        'endLine' => 271,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'setDescriptionAttribute' => 
+      array (
+        'name' => 'setDescriptionAttribute',
+        'parameters' => 
+        array (
+          'value' => 
+          array (
+            'name' => 'value',
+            'default' => NULL,
+            'type' => 
+            array (
+              'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+              'data' => 
+              array (
+                'name' => 'mixed',
+                'isIdentifier' => true,
+              ),
+            ),
+            'isVariadic' => false,
+            'byRef' => false,
+            'isPromoted' => false,
+            'attributes' => 
+            array (
+            ),
+            'startLine' => 276,
+            'endLine' => 276,
+            'startColumn' => 45,
+            'endColumn' => 56,
+            'parameterIndex' => 0,
+            'isOptional' => false,
+          ),
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+          'data' => 
+          array (
+            'name' => 'void',
+            'isIdentifier' => true,
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Stockage texte : évite les types non string et les avertissements PHP 8.4+ sur (string) null.
+ */',
+        'startLine' => 276,
+        'endLine' => 279,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'createdBy' => 
+      array (
+        'name' => 'createdBy',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Get the user that created the spell.
+ */',
+        'startLine' => 284,
+        'endLine' => 287,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'breeds' => 
+      array (
+        'name' => 'breeds',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Les breeds (affichées « Classes ») associées à ce sort.
+ */',
+        'startLine' => 292,
+        'endLine' => 297,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'creatures' => 
+      array (
+        'name' => 'creatures',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Les créatures associées à ce sort.
+ */',
+        'startLine' => 302,
+        'endLine' => 305,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'scenarios' => 
+      array (
+        'name' => 'scenarios',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Les scénarios associés à ce sort.
+ */',
+        'startLine' => 310,
+        'endLine' => 313,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'campaigns' => 
+      array (
+        'name' => 'campaigns',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Les campagnes associées à ce sort.
+ */',
+        'startLine' => 318,
+        'endLine' => 321,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'spellTypes' => 
+      array (
+        'name' => 'spellTypes',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Les types de ce sort.
+ */',
+        'startLine' => 326,
+        'endLine' => 329,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'spellEffects' => 
+      array (
+        'name' => 'spellEffects',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Les effets de ce sort (instances liées aux types d\'effet).
+ *
+ * @return HasMany<SpellEffect, $this>
+ */',
+        'startLine' => 336,
+        'endLine' => 339,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'monsters' => 
+      array (
+        'name' => 'monsters',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Les monstres invoqués par ce sort.
+ */',
+        'startLine' => 344,
+        'endLine' => 347,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'conditions' => 
+      array (
+        'name' => 'conditions',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Les états que ce sort peut appliquer (sur cible ou lanceur).
+ */',
+        'startLine' => 352,
+        'endLine' => 357,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'effects' => 
+      array (
+        'name' => 'effects',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => NULL,
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Définitions d’effets liées à ce sort (pivot effect_spell).
+ */',
+        'startLine' => 362,
+        'endLine' => 365,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'getPoDisplayAttribute' => 
+      array (
+        'name' => 'getPoDisplayAttribute',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+          'data' => 
+          array (
+            'name' => 'string',
+            'isIdentifier' => true,
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Portée affichable à partir de po_min / po_max : une seule valeur si une borne est vide ou si min = max ;
+ * sinon « min - max » (espaces). Chaîne vide si les deux sont vides. 1 seul (ou 1 et 1) = CàC côté UI.
+ */',
+        'startLine' => 371,
+        'endLine' => 394,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+      'getAreaAttribute' => 
+      array (
+        'name' => 'getAreaAttribute',
+        'parameters' => 
+        array (
+        ),
+        'returnsReference' => false,
+        'returnType' => 
+        array (
+          'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionUnionType',
+          'data' => 
+          array (
+            'types' => 
+            array (
+              0 => 
+              array (
+                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                'data' => 
+                array (
+                  'name' => 'string',
+                  'isIdentifier' => true,
+                ),
+              ),
+              1 => 
+              array (
+                'class' => 'PHPStan\\BetterReflection\\Reflection\\ReflectionNamedType',
+                'data' => 
+                array (
+                  'name' => 'null',
+                  'isIdentifier' => true,
+                ),
+              ),
+            ),
+          ),
+        ),
+        'attributes' => 
+        array (
+        ),
+        'docComment' => '/**
+ * Zone d’impact affichée (premier degré du premier effet lié).
+ *
+ * @return string|null Notation zone (point, line-1x9, …) ou null
+ */',
+        'startLine' => 401,
+        'endLine' => 407,
+        'startColumn' => 5,
+        'endColumn' => 5,
+        'couldThrow' => false,
+        'isClosure' => false,
+        'isGenerator' => false,
+        'isVariadic' => false,
+        'modifiers' => 1,
+        'namespace' => 'App\\Models\\Entity',
+        'declaringClassName' => 'App\\Models\\Entity\\Spell',
+        'implementingClassName' => 'App\\Models\\Entity\\Spell',
+        'currentClassName' => 'App\\Models\\Entity\\Spell',
+        'aliasName' => NULL,
+      ),
+    ),
+    'traitsData' => 
+    array (
+      'aliases' => 
+      array (
+      ),
+      'modifiers' => 
+      array (
+      ),
+      'precedences' => 
+      array (
+      ),
+      'hashes' => 
+      array (
+      ),
+    ),
+  ),
+));

@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, Spell> $spellInvocations
  * @property-read int|null $spell_invocations_count
+ *
  * @method static \Database\Factories\Entity\MonsterFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster newQuery()
@@ -42,18 +43,24 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereUpdatedAt($value)
+ *
  * @property int $is_boss
  * @property string $boss_pa
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereBossPa($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereIsBoss($value)
+ *
  * @property string $state
  * @property int $read_level
  * @property int $write_level
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereWriteLevel($value)
+ *
  * @property-read Collection<int, Language> $languages
  * @property-read int|null $languages_count
+ *
  * @mixin \Eloquent
  */
 class Monster extends Model

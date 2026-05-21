@@ -25,6 +25,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob query()
@@ -44,6 +45,7 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereSummary($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ScrappingJob extends Model

@@ -42,6 +42,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $resources_count
  * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
+ *
  * @method static \Database\Factories\Entity\ShopFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop newQuery()
@@ -63,8 +64,10 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withoutTrashed()
+ *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ *
  * @mixin \Eloquent
  */
 class Shop extends Model implements HasMedia

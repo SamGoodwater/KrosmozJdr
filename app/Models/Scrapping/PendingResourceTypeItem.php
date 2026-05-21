@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
  *   'dofusdb_item_id' => 12345,
  *   'context' => 'recipe',
  * ]);
+ *
  * @property int $id
  * @property int $dofusdb_type_id
  * @property int $dofusdb_item_id
@@ -22,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $quantity
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem query()
@@ -34,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereSourceEntityDofusdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereSourceEntityType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class PendingResourceTypeItem extends Model

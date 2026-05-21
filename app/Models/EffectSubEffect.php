@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read EffectDegree $effectDegree
  * @property-read SubEffect $subEffect
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect query()
@@ -50,6 +51,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereValueMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereValueMin($value)
+ *
  * @mixin \Eloquent
  */
 class EffectSubEffect extends Model

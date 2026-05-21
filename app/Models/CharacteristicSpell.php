@@ -35,6 +35,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Characteristic $characteristic
  * @property-read Section|null $normsHelpSection
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell query()
@@ -60,6 +61,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereNormsHelpSectionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereValueAvailable($value)
+ *
  * @mixin \Eloquent
  */
 class CharacteristicSpell extends Model

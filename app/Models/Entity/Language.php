@@ -16,13 +16,16 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string|null $description
  * @property string $color Hex #RRGGBB
+ *
  * @method static LanguageFactory factory($count = null, $state = [])
+ *
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
  * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language query()
@@ -32,6 +35,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Language extends Model
