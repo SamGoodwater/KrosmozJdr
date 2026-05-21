@@ -2,12 +2,11 @@ const fs = require('fs');
 const path = require('path');
 
 // Chemins des fichiers à nettoyer
+// Ne pas supprimer app.css / custom.css : sources versionnées requises par Vite (entry points).
 const filesToClean = [
-    path.join(__dirname, '../resources/css/custom.css'),
-    path.join(__dirname, '../resources/css/app.css'),
     path.join(__dirname, '../resources/css/custom.css.map'),
     path.join(__dirname, '../resources/css/theme.css.map'),
-    path.join(__dirname, '../resources/css/app.css.map')
+    path.join(__dirname, '../resources/css/app.css.map'),
 ];
 
 // Configuration des options
@@ -27,9 +26,7 @@ Options:
   --verbose   Afficher plus de détails
   --help, -h  Afficher cette aide
 
-Ce script supprime :
-  - Les fichiers CSS minifiés (*.min.css)
-  - Les fichiers de map CSS (*.css.map)
+Ce script supprime les fichiers *.css.map (pas app.css ni custom.css).
 `);
     process.exit(0);
 }

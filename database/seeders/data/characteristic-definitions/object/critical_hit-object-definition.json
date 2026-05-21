@@ -1,5 +1,4 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "critical_hit_object",
         "name": "Bonus de coup critique",
@@ -221,7 +220,9 @@
             "rune_price_per_unit": 2400,
             "value_available": null,
             "item_type_ids": null,
-            "item_type_dofus_ids": [1]
+            "item_type_dofus_ids": [
+                1
+            ]
         }
     },
     "relations": null

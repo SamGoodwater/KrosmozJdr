@@ -6,7 +6,7 @@
     },
     "scripts": {
         "preinstall": "npx only-allow pnpm",
-        "prebuild": "pnpm run sass:build",
+        "prebuild": "pnpm run css",
         "build": "vite build",
         "preview": "vite preview",
         "dev": "vite",
