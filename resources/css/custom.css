@@ -5774,3 +5774,160 @@ body {
   outline: 2px solid hsl(var(--p));
   outline-offset: 2px;
 }
+
+.glass-menu-hover-accent-b-sm {
+  position: relative;
+  --color: color-mix(in srgb, var(--color-base-content) 78%, transparent);
+}
+.glass-menu-hover-accent-b-sm::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: center center;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  background-image: linear-gradient(to right, transparent 0%, color-mix(in oklch, var(--color) 10%, transparent) 20%, color-mix(in oklch, var(--color) 20%, transparent) 50%, color-mix(in oklch, var(--color) 10%, transparent) 80%, transparent 100%);
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: 100% 1px;
+}
+.glass-menu-hover-accent-b-sm:hover::after, .glass-menu-hover-accent-b-sm:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.glass-menu-hover-accent-b-md {
+  position: relative;
+  --color: color-mix(in srgb, var(--color-base-content) 78%, transparent);
+}
+.glass-menu-hover-accent-b-md::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: center center;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  background-image: linear-gradient(to right, transparent 0%, color-mix(in oklch, var(--color) 30%, transparent) 20%, color-mix(in oklch, var(--color) 40%, transparent) 50%, color-mix(in oklch, var(--color) 30%, transparent) 80%, transparent 100%);
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: 100% 1px;
+}
+.glass-menu-hover-accent-b-md:hover::after, .glass-menu-hover-accent-b-md:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.glass-menu-link:hover .glass-menu-hover-accent-b-sm::after,
+.glass-menu-link:hover .glass-menu-hover-accent-b-md::after,
+.glass-menu-link:focus-visible .glass-menu-hover-accent-b-sm::after,
+.glass-menu-link:focus-visible .glass-menu-hover-accent-b-md::after {
+  transform: scaleX(1);
+}
+
+.glass-menu-item-active.glass-menu-hover-accent-b-sm::after,
+.glass-menu-item-active.glass-menu-hover-accent-b-md::after {
+  transform: scaleX(0.72);
+  opacity: 0.7;
+}
+
+.glass-menu-item-active.glass-menu-hover-accent-b-sm:hover::after,
+.glass-menu-item-active.glass-menu-hover-accent-b-md:hover::after,
+.glass-menu-link:hover .glass-menu-item-active.glass-menu-hover-accent-b-sm::after,
+.glass-menu-link:hover .glass-menu-item-active.glass-menu-hover-accent-b-md::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+@keyframes glass-menu-item-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > * {
+  animation: glass-menu-item-enter 0.22s ease both;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(2) {
+  animation-delay: 38ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(3) {
+  animation-delay: 76ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(4) {
+  animation-delay: 114ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(5) {
+  animation-delay: 152ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(6) {
+  animation-delay: 190ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(7) {
+  animation-delay: 228ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(8) {
+  animation-delay: 266ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(9) {
+  animation-delay: 304ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(10) {
+  animation-delay: 342ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(11) {
+  animation-delay: 380ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(12) {
+  animation-delay: 418ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(13) {
+  animation-delay: 456ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(14) {
+  animation-delay: 494ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(15) {
+  animation-delay: 532ms;
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > *:nth-child(16) {
+  animation-delay: 570ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-menu-hover-accent-b-sm::after,
+  .glass-menu-hover-accent-b-md::after {
+    transition: none;
+  }
+  .glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > * {
+    animation: none;
+  }
+}

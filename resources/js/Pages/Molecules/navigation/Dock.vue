@@ -77,11 +77,12 @@ const attrs = computed(() => getCommonAttrs(props));
     padding: calc(0.25rem * 2);
     list-style: none;
 
-    &>* {
+    & > :deep(*) {
         text-decoration: none;
         position: relative;
         margin-bottom: calc(0.25rem * 2);
         display: flex;
+        width: 100%;
         height: 100%;
         max-width: calc(0.25rem * 32);
         flex-shrink: 1;
@@ -94,6 +95,38 @@ const attrs = computed(() => getCommonAttrs(props));
         border-radius: var(--radius-box);
         background-color: transparent;
         transition: opacity 0.2s ease-out;
+    }
+
+    :deep(.dock-item) {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        list-style: none;
+    }
+
+    :deep(.dock-item__trigger) {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    :deep(.dock-item__icon) {
+        margin-bottom: calc(0.25rem * 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 </style>

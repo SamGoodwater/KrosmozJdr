@@ -51,6 +51,7 @@ class UpdatePageRequest extends FormRequest
             'menu_item_css_classes' => ['nullable', 'string', 'max:500'],
             'settings' => ['nullable', 'array'],
             'settings.show_rules_breadcrumb' => ['sometimes', 'boolean'],
+            'settings.menu_collapsible' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -112,6 +113,9 @@ class UpdatePageRequest extends FormRequest
             }
             if (array_key_exists('show_rules_breadcrumb', $settings)) {
                 $settings['show_rules_breadcrumb'] = filter_var($settings['show_rules_breadcrumb'], FILTER_VALIDATE_BOOLEAN);
+            }
+            if (array_key_exists('menu_collapsible', $settings)) {
+                $settings['menu_collapsible'] = filter_var($settings['menu_collapsible'], FILTER_VALIDATE_BOOLEAN);
             }
             $this->merge(['settings' => $settings]);
         }

@@ -77,6 +77,7 @@ const props = defineProps({
 const atomClasses = computed(() =>
     mergeClasses(
         [
+            "dock-item",
             props.active && "dock-active",
             props.size === "xs" && "dock-xs",
             props.size === "sm" && "dock-sm",
@@ -103,11 +104,11 @@ const attrs = computed(() => getCommonAttrs(props));
             :role="props.role"
             :id="props.id"
             :target="props.target"
-            :class="'flex flex-col items-center w-full'"
+            class="dock-item__trigger"
         >
             <span
                 v-if="$slots.icon || icon"
-                class="mb-1 flex items-center justify-center"
+                class="dock-item__icon"
             >
                 <slot name="icon">
                     <Icon
@@ -130,11 +131,11 @@ const attrs = computed(() => getCommonAttrs(props));
             :disabled="props.disabled"
             :tabindex="props.tabindex"
             :aria-label="props.ariaLabel"
-            :class="'flex flex-col items-center w-full'"
+            class="dock-item__trigger"
         >
             <span
                 v-if="$slots.icon || icon"
-                class="mb-1 flex items-center justify-center"
+                class="dock-item__icon"
             >
                 <slot name="icon">
                     <Icon

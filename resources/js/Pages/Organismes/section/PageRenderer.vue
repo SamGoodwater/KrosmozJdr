@@ -25,6 +25,7 @@ import EditPageModal from './modals/EditPageModal.vue';
 import CreateSectionModal from './modals/CreateSectionModal.vue';
 import RulesPagePlan from './RulesPagePlan.vue';
 import RulesBreadcrumbSticky from './RulesBreadcrumbSticky.vue';
+import PageMenuChildrenIndex from './PageMenuChildrenIndex.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { Page } from '@/Models';
@@ -58,7 +59,11 @@ const props = defineProps({
     pages: {
         type: Array,
         default: () => []
-    }
+    },
+    menuChildIndex: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 // Modals
@@ -436,10 +441,14 @@ const flattenedMenuPages = computed(() => {
     const visit = (items = []) => {
         if (!Array.isArray(items) || !items.length || siblingBranch) return;
         for (const item of items) {
+            const itemUrl = normalize(item?.url);
+            if (itemUrl === current) {
+                siblingBranch = items;
+                return;
+            }
             const children = Array.isArray(item?.children) ? item.children : [];
             if (children.length) {
-                const matchedChild = children.some((child) => normalize(child?.url) === current);
-                if (matchedChild) {
+                if (children.some((child) => normalize(child?.url) === current)) {
                     siblingBranch = children;
                     return;
                 }
@@ -498,6 +507,25 @@ const l1Title = computed(() => {
     if (menuGroup) return menuGroup;
     return 'Règles';
 });
+
+const parentPageBreadcrumb = computed(() => {
+    const parent = pageModel.value?.parent;
+    if (!parent?.title) return null;
+    const url = String(parent.url || '').trim();
+    if (!url) return null;
+    return { title: parent.title, url };
+});
+
+const currentPageBreadcrumb = computed(() => {
+    const title = String(pageModel.value?.title || props.page?.title || '').trim();
+    const url = String(pageModel.value?.url || '').trim();
+    if (!title || !url) return null;
+    return { title, url };
+});
+
+const menuChildIndexItems = computed(() =>
+    Array.isArray(props.menuChildIndex) ? props.menuChildIndex : [],
+);
 
 const showRulesBreadcrumb = computed(() => pageModel.value?.showRulesBreadcrumb !== false);
 
@@ -649,6 +677,8 @@ watch(sectionToEdit, (id) => {
                         :l1-title="l1Title"
                         :l1-pages="l1Pages"
                         :page-title="pageModel?.title || props.page?.title || 'Page'"
+                        :page-url="currentPageBreadcrumb?.url || ''"
+                        :parent-page="parentPageBreadcrumb"
                         :active-section-title="activeSectionTitle"
                         :pages="flattenedMenuPages"
                         :sections="planSections"
@@ -698,6 +728,11 @@ watch(sectionToEdit, (id) => {
                     </div>
                 </div>
             </div>
+
+            <PageMenuChildrenIndex
+                v-if="menuChildIndexItems.length > 0"
+                :items="menuChildIndexItems"
+            />
 
             <!-- Sections -->
             <div v-if="sortedSections.length > 0" class="sections">

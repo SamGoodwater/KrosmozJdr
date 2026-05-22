@@ -5,6 +5,8 @@ const props = defineProps({
     l1Title: { type: String, default: "" },
     l1Pages: { type: Array, default: () => [] },
     pageTitle: { type: String, default: "" },
+    pageUrl: { type: String, default: "" },
+    parentPage: { type: Object, default: null },
     activeSectionTitle: { type: String, default: "" },
     pages: { type: Array, default: () => [] },
     sections: { type: Array, default: () => [] },
@@ -28,8 +30,28 @@ const hasL1Choices = computed(() => l1PagesList.value.length > 1);
 const hasPageChoices = computed(() => pagesList.value.length > 1);
 const hasSectionChoices = computed(() => sectionsList.value.length > 1);
 
-const singleL1Item = computed(() => l1PagesList.value[0] || null);
-const singlePageItem = computed(() => pagesList.value[0] || null);
+const singlePageItem = computed(() => {
+    if (pagesList.value.length === 1) {
+        return pagesList.value[0];
+    }
+    const url = String(props.pageUrl || "").trim();
+    const title = String(props.pageTitle || "").trim();
+    if (url && title) {
+        return { title, url };
+    }
+    return null;
+});
+
+const singleL1Item = computed(() => {
+    if (l1PagesList.value.length === 1) {
+        return l1PagesList.value[0];
+    }
+    const parent = props.parentPage;
+    if (parent?.url && parent?.title) {
+        return { title: parent.title, url: parent.url };
+    }
+    return null;
+});
 const singleSectionItem = computed(() => sectionsList.value[0] || null);
 
 const compactTail = computed(() => {

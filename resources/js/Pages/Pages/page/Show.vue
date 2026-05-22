@@ -24,7 +24,11 @@ const props = defineProps({
     pages: {
         type: Array,
         default: () => []
-    }
+    },
+    menuChildIndex: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 /**
@@ -58,6 +62,7 @@ watch(
         :page="props.page"
         :user="user"
         :pages="props.pages"
+        :menu-child-index="props.menuChildIndex"
     />
 </template>
 

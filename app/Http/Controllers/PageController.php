@@ -174,6 +174,7 @@ class PageController extends Controller
         return Inertia::render('Pages/page/Show', [
             'page' => new PageResource($page),
             'pages' => $pagesFiltered,
+            'menuChildIndex' => PageService::buildMenuChildIndex($page, $user),
         ]);
     }
 

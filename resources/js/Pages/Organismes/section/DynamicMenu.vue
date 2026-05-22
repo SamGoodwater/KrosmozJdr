@@ -67,12 +67,34 @@ function resolveMenuIcon(item, placement) {
     return getEntityIconPath(key);
 }
 
+function isMenuGroupContainer(item) {
+    const id = item?.id;
+    return (
+        typeof id === 'string'
+        && !/^\d+$/.test(String(id))
+        && Array.isArray(item?.children)
+        && item.children.length > 0
+    );
+}
+
 const renderMenuItem = (item) => {
     const hasChildren = item.children?.length > 0;
+
+    if (isMenuGroupContainer(item)) {
+        const children = item.children.map((child) => renderMenuItem(child));
+        return {
+            type: 'group',
+            item,
+            isOpen: shouldMenuBeOpen(item, currentRouteValue.value),
+            children,
+        };
+    }
+
+    const isMenuCollapsible = Boolean(item.menu_collapsible) && hasChildren;
     const isActive = isPageActive(item, currentRouteValue.value);
     const isOpen = shouldMenuBeOpen(item, currentRouteValue.value);
 
-    if (hasChildren) {
+    if (isMenuCollapsible) {
         return {
             type: 'parent',
             item,
@@ -93,6 +115,9 @@ const groupedMenuItems = computed(() => {
     const groupedByTitle = new Map();
 
     for (const item of formattedMenuItems.value) {
+        if (item.type === 'group') {
+            continue;
+        }
         const rawGroup = String(item.item?.menu_group ?? '').trim();
         if (rawGroup === '') {
             ungrouped.push(item);
@@ -104,8 +129,19 @@ const groupedMenuItems = computed(() => {
         groupedByTitle.get(rawGroup).push(item);
     }
 
+    const apiGroups = formattedMenuItems.value
+        .filter((item) => item.type === 'group')
+        .map((entry) => ({
+            title: entry.item?.title || entry.item?.menu_group || 'Section',
+            children: entry.children,
+            isOpen: entry.isOpen,
+            minOrder: Number(entry.item?.order ?? 0),
+        }))
+        .sort((a, b) => a.minOrder - b.minOrder);
+
     return {
         ungrouped,
+        apiGroups,
         groups: Array.from(groupedByTitle.entries())
             .map(([title, items]) => {
                 const flatChildren = items.flatMap(e =>
@@ -148,6 +184,8 @@ const groupedMenuItems = computed(() => {
                     variant="parent"
                     compact
                     class="main-menu-collapsible"
+                    :parent-href="menuItem.item.url"
+                    :parent-label="menuItem.item.title"
                     :icon="resolveMenuIcon(menuItem.item, 'parent-header')"
                     :icon-alt="menuItem.item.title"
                 >
@@ -172,12 +210,72 @@ const groupedMenuItems = computed(() => {
                 <GlassMenuItem
                     v-else
                     :href="menuItem.item.url"
+                    :icon="resolveMenuIcon(menuItem.item, 'top-link')"
                     :active="menuItem.isActive"
                     :class="['main-menu-item', 'main-menu-item-leaf', menuItem.item.menu_item_css_classes]"
                     compact
                 >
                     {{ menuItem.item.title }}
                 </GlassMenuItem>
+            </template>
+
+            <template v-for="group in groupedMenuItems.apiGroups" :key="`api-group-${group.title}`">
+                <div class="dynamic-menu-group">
+                    <GlassMenuCollapsibleSection
+                        :section-id="`group-${group.title}`"
+                        :default-open="group.isOpen"
+                        variant="group"
+                        compact
+                        class="main-menu-collapsible"
+                    >
+                        <template #title>{{ group.title }}</template>
+                        <template v-for="child in group.children" :key="child.item.id">
+                            <GlassMenuCollapsibleSection
+                                v-if="child.type === 'parent'"
+                                :section-id="`parent-${child.item.id}`"
+                                :default-open="child.isOpen"
+                                variant="parent"
+                                compact
+                                class="main-menu-collapsible"
+                                :parent-href="child.item.url"
+                                :parent-label="child.item.title"
+                                :icon="resolveMenuIcon(child.item, 'parent-header')"
+                                :icon-alt="child.item.title"
+                            >
+                                <template #title>{{ child.item.title }}</template>
+                                <GlassMenuItem
+                                    v-for="grandchild in child.children"
+                                    :key="grandchild.item.id"
+                                    :href="grandchild.item.url"
+                                    :icon="resolveMenuIcon(grandchild.item, 'nested-link')"
+                                    :class="[
+                                        'main-menu-item',
+                                        'main-menu-item-child',
+                                        grandchild.item.menu_item_css_classes
+                                    ]"
+                                    compact
+                                    :active="grandchild.isActive"
+                                >
+                                    {{ grandchild.item.title }}
+                                </GlassMenuItem>
+                            </GlassMenuCollapsibleSection>
+                            <GlassMenuItem
+                                v-else
+                                :href="child.item.url"
+                                :icon="resolveMenuIcon(child.item, 'top-link')"
+                                :class="[
+                                    'main-menu-item',
+                                    'main-menu-item-leaf',
+                                    child.item.menu_item_css_classes
+                                ]"
+                                compact
+                                :active="child.isActive"
+                            >
+                                {{ child.item.title }}
+                            </GlassMenuItem>
+                        </template>
+                    </GlassMenuCollapsibleSection>
+                </div>
             </template>
 
             <template v-for="group in groupedMenuItems.groups" :key="group.title">
@@ -198,6 +296,8 @@ const groupedMenuItems = computed(() => {
                                 variant="parent"
                                 compact
                                 class="main-menu-collapsible"
+                                :parent-href="child.item.url"
+                                :parent-label="child.item.title"
                                 :icon="resolveMenuIcon(child.item, 'parent-header')"
                                 :icon-alt="child.item.title"
                             >

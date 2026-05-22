@@ -1,0 +1,109 @@
+// ===============================
+//  Effets navigation glass menu (Aside, dropdowns compte, etc.)
+// ===============================
+
+@mixin glass-bottom-accent-gradient($opacity-base) {
+  background-image: linear-gradient(
+    to right,
+    transparent 0%,
+    color-mix(in oklch, var(--color) #{$opacity-base - 5%}, transparent) 20%,
+    color-mix(in oklch, var(--color) #{$opacity-base + 5%}, transparent) 50%,
+    color-mix(in oklch, var(--color) #{$opacity-base - 5%}, transparent) 80%,
+    transparent 100%
+  );
+}
+
+@mixin glass-menu-hover-accent-b($opacity-base) {
+  position: relative;
+  --color: color-mix(in srgb, var(--color-base-content) 78%, transparent);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    pointer-events: none;
+    transform: scaleX(0);
+    transform-origin: center center;
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    @include glass-bottom-accent-gradient($opacity-base);
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: 100% 1px;
+  }
+}
+
+@mixin glass-menu-hover-accent-b-active {
+  &:hover::after,
+  &:focus-visible::after {
+    transform: scaleX(1);
+  }
+}
+
+.glass-menu-hover-accent-b-sm {
+  @include glass-menu-hover-accent-b(15%);
+  @include glass-menu-hover-accent-b-active;
+}
+
+.glass-menu-hover-accent-b-md {
+  @include glass-menu-hover-accent-b(35%);
+  @include glass-menu-hover-accent-b-active;
+}
+
+.glass-menu-link:hover .glass-menu-hover-accent-b-sm::after,
+.glass-menu-link:hover .glass-menu-hover-accent-b-md::after,
+.glass-menu-link:focus-visible .glass-menu-hover-accent-b-sm::after,
+.glass-menu-link:focus-visible .glass-menu-hover-accent-b-md::after {
+  transform: scaleX(1);
+}
+
+.glass-menu-item-active.glass-menu-hover-accent-b-sm::after,
+.glass-menu-item-active.glass-menu-hover-accent-b-md::after {
+  transform: scaleX(0.72);
+  opacity: 0.7;
+}
+
+.glass-menu-item-active.glass-menu-hover-accent-b-sm:hover::after,
+.glass-menu-item-active.glass-menu-hover-accent-b-md:hover::after,
+.glass-menu-link:hover .glass-menu-item-active.glass-menu-hover-accent-b-sm::after,
+.glass-menu-link:hover .glass-menu-item-active.glass-menu-hover-accent-b-md::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+@keyframes glass-menu-item-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > * {
+  animation: glass-menu-item-enter 0.22s ease both;
+}
+
+@for $i from 1 through 16 {
+  .glass-menu-collapsible-section.is-opening
+    .glass-menu-collapsible-section-content
+    > *:nth-child(#{$i}) {
+    animation-delay: #{($i - 1) * 38}ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-menu-hover-accent-b-sm::after,
+  .glass-menu-hover-accent-b-md::after {
+    transition: none;
+  }
+
+  .glass-menu-collapsible-section.is-opening .glass-menu-collapsible-section-content > * {
+    animation: none;
+  }
+}

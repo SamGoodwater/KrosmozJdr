@@ -55,7 +55,7 @@ const itemClasses = computed(() =>
     mergeClasses(
         [
             "glass-menu-item",
-            "hover:box-glass-xs-b",
+            "glass-menu-hover-accent-b-md",
             props.active && "glass-menu-item-active",
             props.compact && "glass-menu-item-compact",
             props.danger && "glass-menu-item-danger",
@@ -138,7 +138,6 @@ function handleClick(event) {
     min-height: 2.25rem;
     padding: 0.4rem 0.65rem;
     border: none;
-    overflow: hidden;
     transition:
         transform 0.18s ease,
         background 0.18s ease,

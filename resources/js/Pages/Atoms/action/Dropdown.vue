@@ -114,6 +114,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  /** Étire le trigger sur toute la largeur (dock, barres d’outils, etc.). */
+  block: {
+    type: Boolean,
+    default: false,
+  },
   // Accessibilité
   ariaLabel: {
     type: String,
@@ -377,13 +382,13 @@ defineExpose({ open, close, toggle, isOpen });
 <template>
   <div 
     ref="containerRef" 
-    :class="['dropdown-container']" 
+    :class="['dropdown-container', props.block && 'dropdown-container--block']" 
     v-bind="containerAttrs"
   >
     <!-- Trigger -->
     <div
       ref="triggerRef"
-      :class="['dropdown-trigger-container']"
+      :class="['dropdown-trigger-container', props.block && 'dropdown-trigger-container--block']"
       @mouseenter="handleTriggerMouseEnter"
       @mouseleave="handleTriggerMouseLeave"
     >
@@ -442,10 +447,26 @@ defineExpose({ open, close, toggle, isOpen });
 .dropdown-container {
   position: relative;
   display: inline-block;
+
+  &--block {
+    display: block;
+    width: 100%;
+  }
 }
 
 .dropdown-trigger-container {
   display: inline-block;
+
+  &--block {
+    display: block;
+    width: 100%;
+
+    [class^="dropdown-trigger-"] {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+    }
+  }
 }
 
 .dropdown-content {

@@ -68,6 +68,11 @@ const isCriticalPage = computed(() => {
     return criticalSlugs.includes(slug);
 });
 
+const hasMenuChildren = computed(() => {
+    const children = pageModel.value?.children;
+    return Array.isArray(children) && children.length > 0;
+});
+
 // Options pour les selects
 const { stateOptions, roleOptions, parentPageOptions, entityKeyOptions } = usePageFormOptions(
     () => props.pages,
@@ -109,6 +114,7 @@ const initializeForm = () => {
         menu_item_css_classes: model.menuItemCssClasses || null,
         settings: {
             show_rules_breadcrumb: model.showRulesBreadcrumb,
+            menu_collapsible: model.menuCollapsible,
         },
     };
     
@@ -379,6 +385,14 @@ const handleClose = () => {
                         v-model="formInstance.settings.show_rules_breadcrumb"
                         label="Afficher le breadcrumb des règles"
                         helper="Affiche la navigation sticky (breadcrumb + sections) en haut de la page."
+                    />
+                </div>
+
+                <div v-if="hasMenuChildren" class="form-field">
+                    <ToggleField
+                        v-model="formInstance.settings.menu_collapsible"
+                        label="Menu Aside repliable"
+                        helper="Affiche les sous-pages dans un collapse du menu latéral. La page reste accessible via la zone gauche du libellé."
                     />
                 </div>
 

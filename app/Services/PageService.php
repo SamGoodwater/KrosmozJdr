@@ -2,12 +2,16 @@
 
 namespace App\Services;
 
+use App\Http\Resources\Entity\BreedResource;
+use App\Http\Resources\Entity\SpecializationResource;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Specialization;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Service pour la gestion des pages et sections.
@@ -181,6 +185,8 @@ class PageService
                 ->values()
                 ->toArray();
         }
+
+        $item['menu_collapsible'] = self::isMenuCollapsible($page, $pageChildren->isNotEmpty());
 
         return $item;
     }
@@ -425,5 +431,129 @@ class PageService
         return $page->isPlayable()
             && $page->in_menu
             && $page->isReadableFor($user);
+    }
+
+    /**
+     * Indique si la page parente affiche ses sous-pages dans un collapse du menu Aside.
+     *
+     * @param  Page  $page  Page candidate
+     * @param  bool|null  $hasMenuChildren  Présence d'enfants menu (évite une requête si déjà connu)
+     */
+    public static function isMenuCollapsible(Page $page, ?bool $hasMenuChildren = null): bool
+    {
+        $settings = is_array($page->settings) ? $page->settings : [];
+        if (array_key_exists('menu_collapsible', $settings)) {
+            return filter_var($settings['menu_collapsible'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        if ($hasMenuChildren !== null) {
+            return $hasMenuChildren;
+        }
+
+        if ($page->relationLoaded('children')) {
+            return $page->children->contains(fn (Page $child) => self::canBeInMenu($child, null));
+        }
+
+        return $page->children()
+            ->where('in_menu', true)
+            ->where('state', Page::STATE_PLAYABLE)
+            ->exists();
+    }
+
+    /**
+     * Index automatique des sous-pages pour une page parente (cartes ou fiches minimal entité).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function buildMenuChildIndex(Page $page, ?User $user = null): array
+    {
+        if (! self::isMenuCollapsible($page)) {
+            return [];
+        }
+
+        $children = ($page->relationLoaded('children') ? $page->children : $page->children()->get())
+            ->filter(fn (Page $child) => self::canBeInMenu($child, $user))
+            ->sortBy('menu_order')
+            ->values();
+
+        if ($children->isEmpty()) {
+            return [];
+        }
+
+        $breedIds = [];
+        $specIds = [];
+        foreach ($children as $child) {
+            $linked = $child->settings['linked_entity'] ?? null;
+            if (! is_array($linked)) {
+                continue;
+            }
+            $type = (string) ($linked['type'] ?? '');
+            $id = (int) ($linked['id'] ?? 0);
+            if ($id < 1) {
+                continue;
+            }
+            if ($type === 'breed') {
+                $breedIds[] = $id;
+            } elseif ($type === 'specialization') {
+                $specIds[] = $id;
+            }
+        }
+
+        $breeds = $breedIds !== []
+            ? Breed::query()->whereIn('id', array_unique($breedIds))->get()->keyBy('id')
+            : collect();
+        $specializations = $specIds !== []
+            ? Specialization::query()->whereIn('id', array_unique($specIds))->get()->keyBy('id')
+            : collect();
+
+        $resolver = app(BibliothequeEntityPageService::class);
+
+        return $children->map(function (Page $child) use ($user, $resolver, $breeds, $specializations) {
+            $base = [
+                'id' => $child->id,
+                'title' => $child->title,
+                'slug' => $child->slug,
+                'url' => route('pages.show', $child->slug, false),
+                'icon' => $child->icon,
+                'entity_key' => $child->entity_key,
+                'menu_icon' => self::resolveMenuIconForPage($child, []),
+            ];
+
+            $linked = $child->settings['linked_entity'] ?? null;
+            if (! is_array($linked)) {
+                return array_merge($base, ['kind' => 'page']);
+            }
+
+            $type = (string) ($linked['type'] ?? '');
+            $entityId = (int) ($linked['id'] ?? 0);
+            if ($entityId < 1 || ! in_array($type, ['breed', 'specialization'], true)) {
+                return array_merge($base, ['kind' => 'page']);
+            }
+
+            $entity = $type === 'breed'
+                ? $breeds->get($entityId)
+                : $specializations->get($entityId);
+
+            if ($entity === null) {
+                $entity = $resolver->resolveLinkedEntity($linked);
+            }
+
+            if ($entity === null || ! Gate::forUser($user)->allows('view', $entity)) {
+                return array_merge($base, ['kind' => 'page']);
+            }
+
+            if ($entity instanceof Breed) {
+                return array_merge($base, [
+                    'kind' => 'breed',
+                    'entity' => (new BreedResource($entity))->resolve(request()),
+                ]);
+            }
+
+            /** @var Specialization $entity */
+            return array_merge($base, [
+                'kind' => 'specialization',
+                'entity' => (new SpecializationResource($entity))->resolve(request()),
+            ]);
+        })->values()->all();
     }
 }

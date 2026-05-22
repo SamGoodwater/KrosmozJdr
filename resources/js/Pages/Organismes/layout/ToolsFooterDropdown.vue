@@ -47,8 +47,9 @@ const tools = [
 </script>
 
 <template>
-    <li class="dock-custom dock-md flex flex-col items-center w-full">
+    <li class="dock-item">
         <Dropdown
+            block
             placement="top-start"
             variant="glass"
             :aria-label="label"
@@ -56,11 +57,11 @@ const tools = [
             <template #trigger>
                 <button
                     type="button"
-                    class="flex flex-col items-center w-full"
+                    class="dock-item__trigger"
                     aria-haspopup="true"
                     :aria-expanded="undefined"
                 >
-                    <span class="mb-1 flex items-center justify-center">
+                    <span class="dock-item__icon">
                         <Icon
                             :source="icon"
                             :pack="pack"

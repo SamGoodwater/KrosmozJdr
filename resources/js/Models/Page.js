@@ -87,6 +87,13 @@ export class Page extends BaseModel {
         return true;
     }
 
+    /** Affiche les sous-pages dans un collapse du menu Aside. */
+    get menuCollapsible() {
+        const value = this.settings?.menu_collapsible;
+        if (typeof value === 'boolean') return value;
+        return Boolean(this.children?.length);
+    }
+
 
     // ============================================
     // RELATIONS
