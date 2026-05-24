@@ -61,7 +61,7 @@ const isMobileMode = computed(() => isMobile.value || isTablet.value);
 
 const mainClasses = computed(() => {
     const baseClasses = [
-        'right-0 bottom-0 top-0 overflow-x-hidden overflow-y-auto fixed'
+        'right-0 bottom-0 top-0 overflow-x-clip overflow-y-auto fixed scrollbar-hide',
     ];
     
     // Ajouter le padding-top seulement si le header est ouvert ET qu'on n'est pas en mobile
@@ -163,7 +163,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative min-h-screen w-full overflow-x-hidden">
+    <div class="relative min-h-full w-full max-w-full overflow-x-clip">
         <!-- Background (image + fallback dégradé) -->
         <div class="background">
             <div class="background-image" aria-hidden="true"></div>

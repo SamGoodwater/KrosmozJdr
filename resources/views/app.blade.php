@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="dark" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html data-theme="dark" lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full w-full overflow-hidden">
 
 <head>
     <meta charset="UTF-8">
@@ -126,7 +126,7 @@
     <link rel="stylesheet" href="{{ asset('css/characteristic-colors.css') }}" />
 </head>
 
-<body class="antialiased w-screen h-screen overflow-hidden">
+<body class="antialiased h-full w-full max-w-full overflow-hidden">
     <div id="site-loading-boot" aria-hidden="true">
         <div class="site-loading-boot__stage">
             <img src="{{ asset('storage/images/backgrounds/loading.webp') }}"

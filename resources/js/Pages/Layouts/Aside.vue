@@ -140,16 +140,6 @@ const footerItems = [
         overflow-x: hidden;
     }
     
-    /* Masquer la scrollbar tout en gardant le scroll fonctionnel */
-    .scrollbar-hide {
-        -ms-overflow-style: none;  /* IE et Edge */
-        scrollbar-width: none;  /* Firefox */
-    }
-    
-    .scrollbar-hide::-webkit-scrollbar {
-        display: none;  /* Chrome, Safari et Opera */
-    }
-
     /* Menu plus dense : marges et paddings réduits */
     .aside-menu-panel {
         margin: 0.5rem 0.25rem;

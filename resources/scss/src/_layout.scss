@@ -172,3 +172,21 @@
     outline: 2px solid var(--color-primary-content);
     outline-offset: 2px;
 }
+
+/* Défilement réservé à #main-content : pas de scroll sur la page (html/body). */
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Masque la barre de scroll tout en conservant le défilement. */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
