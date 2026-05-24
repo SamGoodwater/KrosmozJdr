@@ -84,6 +84,13 @@
     "file": "section/SectionRenderer.vue"
   },
   {
+    "name": "SectionLazyGate",
+    "description": "Monte SectionRenderer uniquement lorsque la section entre (ou approche) le viewport.",
+    "props": [],
+    "slots": [],
+    "file": "section/SectionLazyGate.vue"
+  },
+  {
     "name": "SectionCommonFields",
     "description": "SectionCommonFields Component",
     "props": [
@@ -161,6 +168,19 @@
     ],
     "slots": [],
     "file": "section/PageRenderer.vue"
+  },
+  {
+    "name": "PageMenuChildrenIndex",
+    "description": "PageMenuChildrenIndex — Index automatique des sous-pages d'une page parente.",
+    "props": [
+      {
+        "name": "items",
+        "type": "Array",
+        "desc": "- Entrées renvoyées par PageService::buildMenuChildIndex"
+      }
+    ],
+    "slots": [],
+    "file": "section/PageMenuChildrenIndex.vue"
   },
   {
     "name": "DynamicMenu",
@@ -545,6 +565,13 @@
     "file": "layout/HorizontalOverflowNav.vue"
   },
   {
+    "name": "SiteLoadingOverlay",
+    "description": "SiteLoadingOverlay — Écran de chargement plein page (effet tunnel / zoom).",
+    "props": [],
+    "slots": [],
+    "file": "feedback/SiteLoadingOverlay.vue"
+  },
+  {
     "name": "NotificationContainer",
     "description": "NotificationContainer Organism",
     "props": [],
@@ -557,13 +584,6 @@
     "props": [],
     "slots": [],
     "file": "feedback/FeedbackFab.vue"
-  },
-  {
-    "name": "SiteLoadingOverlay",
-    "description": "Écran de chargement plein page : image tunnel (zoom infini centré), croix de fermeture secours, auto-dismiss quand le document est prêt.",
-    "props": [],
-    "slots": [],
-    "file": "feedback/SiteLoadingOverlay.vue"
   },
   {
     "name": "SpellEffectsUnifiedSection",

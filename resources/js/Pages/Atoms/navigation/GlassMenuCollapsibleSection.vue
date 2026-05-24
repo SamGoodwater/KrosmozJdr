@@ -6,7 +6,7 @@ defineOptions({ inheritAttrs: false });
  *
  * @description
  * Section repliable avec style titre (uppercase, gris, centré).
- * Variant `parent` : texte = lien page ; reste de la ligne (icône, fond, chevron) = toggle collapse.
+ * Variant `parent` : label (lien page) à gauche ; toute la ligne (sauf le label) → toggle collapse.
  * Si sectionId est fourni, l'état ouvert/fermé est persisté dans sessionStorage.
  *
  * @props {String} sectionId - Identifiant pour persistance (sessionStorage)
@@ -173,28 +173,23 @@ const attrs = computed(() => getCommonAttrs(props));
         v-bind="attrs"
         v-on="$attrs"
     >
-        <!-- Variant parent : texte → page ; toute la ligne sauf le texte → collapse -->
+        <!-- Variant parent : ligne entière → collapse ; seul le label reste un lien page -->
         <div
             v-if="isParentSplit"
             :class="headerClasses"
             role="presentation"
         >
-            <Tooltip :content="collapseTooltip" placement="right" class="glass-menu-parent-header-toggle-wrap">
-                <button
-                    type="button"
-                    class="glass-menu-parent-header-toggle"
-                    :aria-expanded="isOpen"
-                    :aria-controls="contentDomId"
-                    :aria-label="collapseTooltip"
-                    @click="toggle"
-                >
-                    <span class="glass-menu-collapsible-section-caret" aria-hidden="true">
-                        <i class="fa-solid fa-chevron-down glass-menu-collapsible-section-caret-icon"></i>
-                    </span>
-                </button>
-            </Tooltip>
+            <button
+                type="button"
+                class="glass-menu-parent-header-hit"
+                :aria-expanded="isOpen"
+                :aria-controls="contentDomId"
+                :aria-label="collapseTooltip"
+                :title="collapseTooltip"
+                @click="toggle"
+            ></button>
 
-            <div class="glass-menu-parent-header-label">
+            <div class="glass-menu-parent-header-leading">
                 <Icon
                     v-if="icon"
                     :source="icon"
@@ -207,6 +202,7 @@ const attrs = computed(() => getCommonAttrs(props));
                         :href="parentHref"
                         class="glass-menu-parent-header-link glass-menu-hover-accent-b-md"
                         :aria-label="pageTooltip"
+                        @click.stop
                     >
                         <span class="glass-menu-parent-header-link-text">
                             <slot name="title" />
@@ -214,6 +210,13 @@ const attrs = computed(() => getCommonAttrs(props));
                     </Route>
                 </Tooltip>
             </div>
+
+            <span
+                class="glass-menu-collapsible-section-caret glass-menu-parent-header-caret"
+                aria-hidden="true"
+            >
+                <i class="fa-solid fa-chevron-down glass-menu-collapsible-section-caret-icon"></i>
+            </span>
         </div>
 
         <!-- Variant group ou parent sans href : bouton unique -->
@@ -282,64 +285,71 @@ const attrs = computed(() => getCommonAttrs(props));
 
 .glass-menu-collapsible-section-header--parent-split {
     position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
     gap: 0;
     padding: 0;
-    cursor: default;
     min-height: 1.85rem;
+    border-radius: var(--radius-field, 0.25rem);
+    cursor: pointer;
 }
 
-.glass-menu-parent-header-toggle-wrap {
+.glass-menu-parent-header-hit {
     position: absolute;
     inset: 0;
     z-index: 0;
-    display: block;
-    width: 100%;
-    min-width: 0;
-}
-
-.glass-menu-parent-header-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
     width: 100%;
     height: 100%;
-    min-height: 1.85rem;
-    padding: 0.3rem 0.45rem;
+    margin: 0;
+    padding: 0;
     border: none;
-    border-radius: var(--radius-field, 0.25rem);
+    border-radius: inherit;
     background: transparent;
-    color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
     cursor: pointer;
-    transition:
-        color 0.18s ease,
-        background 0.18s ease;
+    transition: background 0.18s ease;
 }
 
-.glass-menu-parent-header-toggle:hover,
-.glass-menu-parent-header-toggle:focus-visible {
+.glass-menu-parent-header-hit:hover,
+.glass-menu-parent-header-hit:focus-visible {
     background: color-mix(in srgb, var(--color-base-100) 24%, transparent);
-    color: var(--color-base-content);
 }
 
-.glass-menu-parent-header-label {
+.glass-menu-parent-header-leading {
     position: relative;
     z-index: 1;
     display: flex;
     align-items: center;
     gap: 0.4rem;
+    flex: 0 1 auto;
     min-width: 0;
-    max-width: calc(100% - 1.5rem);
-    padding: 0.3rem 0.45rem;
-    pointer-events: none;
+    padding: 0.3rem 0.2rem 0.3rem 0.45rem;
     font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0.02em;
     color: color-mix(in srgb, var(--color-base-content) 88%, transparent);
+    pointer-events: none;
+}
+
+.glass-menu-parent-header-caret {
+    position: relative;
+    z-index: 1;
+    width: auto;
+    align-self: center;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    align-items: center;
+    min-width: 0;
+    margin-left: auto;
+    padding: 0.3rem 0.45rem 0.3rem 0.15rem;
+    pointer-events: none;
 }
 
 .glass-menu-parent-header-link-wrap {
     min-width: 0;
     max-width: 100%;
+    pointer-events: none;
 }
 
 .glass-menu-parent-header-link {
@@ -348,6 +358,7 @@ const attrs = computed(() => getCommonAttrs(props));
     border-radius: var(--radius-field, 0.25rem);
     text-decoration: none;
     color: inherit;
+    cursor: pointer;
     pointer-events: auto;
     transition:
         color 0.18s ease,
@@ -370,11 +381,14 @@ const attrs = computed(() => getCommonAttrs(props));
 .glass-menu-collapsible-section-header--parent-split.glass-menu-collapsible-section-header--compact {
     min-height: 1.75rem;
 
-    .glass-menu-parent-header-toggle,
-    .glass-menu-parent-header-label {
+    .glass-menu-parent-header-leading {
         min-height: 1.75rem;
-        padding: 0.24rem 0.45rem;
+        padding: 0.24rem 0.2rem 0.24rem 0.45rem;
         font-size: 0.8rem;
+    }
+
+    .glass-menu-parent-header-caret {
+        padding: 0.24rem 0.45rem 0.24rem 0.15rem;
     }
 }
 
@@ -444,22 +458,29 @@ const attrs = computed(() => getCommonAttrs(props));
     width: 0.85rem;
     height: 0.85rem;
     opacity: 0.55;
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    transition:
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.18s ease;
 }
 
 .glass-menu-collapsible-section-caret-icon {
     font-size: 0.6rem;
     line-height: 1;
-    transform: rotate(-90deg);
-    transform-origin: center center;
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease;
 }
 
-.glass-menu-collapsible-section.is-open .glass-menu-collapsible-section-caret-icon {
-    transform: rotate(90deg);
+.glass-menu-collapsible-section-caret.glass-menu-parent-header-caret {
+    height: auto;
+    align-self: center;
 }
 
-.glass-menu-parent-header-toggle:hover .glass-menu-collapsible-section-caret-icon,
-.glass-menu-parent-header-toggle:focus-visible .glass-menu-collapsible-section-caret-icon {
+.glass-menu-collapsible-section.is-open > .glass-menu-collapsible-section-header .glass-menu-collapsible-section-caret {
+    transform: rotate(0deg);
+}
+
+.glass-menu-collapsible-section-header:hover .glass-menu-collapsible-section-caret,
+.glass-menu-collapsible-section-header:focus-within .glass-menu-collapsible-section-caret {
     animation: glass-menu-caret-hint 1.35s ease-in-out infinite;
 }
 
@@ -476,13 +497,13 @@ const attrs = computed(() => getCommonAttrs(props));
     }
 }
 
-.glass-menu-collapsible-section.is-open .glass-menu-parent-header-toggle:hover .glass-menu-collapsible-section-caret-icon,
-.glass-menu-collapsible-section.is-open .glass-menu-parent-header-toggle:focus-visible .glass-menu-collapsible-section-caret-icon {
-    --caret-rotate: 90deg;
+.glass-menu-collapsible-section.is-open > .glass-menu-collapsible-section-header:hover .glass-menu-collapsible-section-caret,
+.glass-menu-collapsible-section.is-open > .glass-menu-collapsible-section-header:focus-within .glass-menu-collapsible-section-caret {
+    --caret-rotate: 0deg;
 }
 
-.glass-menu-collapsible-section:not(.is-open) .glass-menu-parent-header-toggle:hover .glass-menu-collapsible-section-caret-icon,
-.glass-menu-collapsible-section:not(.is-open) .glass-menu-parent-header-toggle:focus-visible .glass-menu-collapsible-section-caret-icon {
+.glass-menu-collapsible-section:not(.is-open) > .glass-menu-collapsible-section-header:hover .glass-menu-collapsible-section-caret,
+.glass-menu-collapsible-section:not(.is-open) > .glass-menu-collapsible-section-header:focus-within .glass-menu-collapsible-section-caret {
     --caret-rotate: -90deg;
 }
 
@@ -518,9 +539,9 @@ const attrs = computed(() => getCommonAttrs(props));
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .glass-menu-collapsible-section-caret-icon,
-    .glass-menu-parent-header-toggle:hover .glass-menu-collapsible-section-caret-icon,
-    .glass-menu-parent-header-toggle:focus-visible .glass-menu-collapsible-section-caret-icon {
+    .glass-menu-collapsible-section-caret,
+    .glass-menu-collapsible-section-header:hover .glass-menu-collapsible-section-caret,
+    .glass-menu-collapsible-section-header:focus-within .glass-menu-collapsible-section-caret {
         animation: none;
         transition: none;
     }

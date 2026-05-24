@@ -23,16 +23,16 @@
 //
 // Voir les docblocks des molecules pour leur API détaillée.
 
-import { usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 import Navbar from "@/Pages/Molecules/navigation/Navbar.vue";
 import SearchInput from "@/Pages/Organismes/data-input/SearchInput.vue";
 import LoginHeaderContainer from "@/Pages/Molecules/header/LoginHeaderContainer.vue";
 import LoggedHeaderContainer from "@/Pages/Molecules/header/LoggedHeaderContainer.vue";
 
 // Composables
-const page = usePage();
 const { pageTitle } = usePageTitle();
+const { isAuthenticated } = usePermissions();
 
 // Props
 defineProps({
@@ -57,12 +57,8 @@ defineProps({
         </template>
         <template #end>
             <div class="flex gap-2 items-center mr-12">
-                <template v-if="page.props.auth.isLogged">
-                    <LoggedHeaderContainer />
-                </template>
-                <template v-else>
-                    <LoginHeaderContainer />
-                </template>
+                <LoggedHeaderContainer v-if="isAuthenticated" />
+                <LoginHeaderContainer v-else />
             </div>
         </template>
     </Navbar>

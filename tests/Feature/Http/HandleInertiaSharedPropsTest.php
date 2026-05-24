@@ -43,4 +43,20 @@ class HandleInertiaSharedPropsTest extends TestCase
             ->where('auth.user.id', $user->id)
         );
     }
+
+    public function test_partial_reload_still_includes_auth_props(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('user.show', $user));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->reloadOnly('user', fn ($partial) => $partial
+                ->has('auth.user')
+                ->where('auth.isLogged', true)
+                ->where('auth.user.id', $user->id)
+            )
+        );
+    }
 }

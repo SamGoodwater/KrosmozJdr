@@ -339,12 +339,22 @@
       {
         "name": "variant",
         "type": "('group'|'parent')",
-        "desc": "- `group` : libellé de section (majuscules, gris, centré). `parent` : ligne comme une entrée de navigation (alignée à gauche, titre naturel)."
+        "desc": "- `group` : libellé de section. `parent` : page parente avec collapse."
+      },
+      {
+        "name": "parentHref",
+        "type": "String",
+        "desc": "- URL de la page parente (variant parent)"
+      },
+      {
+        "name": "parentLabel",
+        "type": "String",
+        "desc": "- Libellé pour tooltips (variant parent)"
       },
       {
         "name": "icon",
         "type": "String",
-        "desc": "- Chemin icône entité (ex. icons/entities/specialization.webp) ou FA, affiché en variant parent"
+        "desc": "- Chemin icône entité ou FA (variant parent)"
       },
       {
         "name": "iconAlt",

@@ -43,6 +43,9 @@ const { isOpen, loading, error, resolved, resolvedKind } = service;
 const { triggerAttrs, panelAttrs } = a11y;
 
 const panelMaxWidthClass = computed(() => OVERLAY_MAX_WIDTH_CLASS[props.maxWidth] || "");
+const panelPointerEventsClass = computed(() =>
+    props.interactive ? "pointer-events-auto" : "pointer-events-none",
+);
 const panelStyle = computed(() => ({
     ...(floatingStyles?.value || {}),
     zIndex: OVERLAY_Z_INDEX.floatingPanel,
@@ -107,8 +110,8 @@ function handleKeydown(event) {
     <Teleport v-if="isOpen" :to="teleportTarget">
         <div
             ref="overlayRef"
-            class="tooltip-floating-surface color-neutral pointer-events-auto"
-            :class="[panelMaxWidthClass, panelClass]"
+            class="tooltip-floating-surface color-neutral"
+            :class="[panelPointerEventsClass, panelMaxWidthClass, panelClass]"
             :style="panelStyle"
             :aria-hidden="!isPositionReady"
             v-show="isPositionReady"

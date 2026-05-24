@@ -196,6 +196,34 @@
     "file": "navigation/Steps.vue"
   },
   {
+    "name": "PageChildIndexCard",
+    "description": "PageChildIndexCard — Carte lien vers une sous-page (index parent).",
+    "props": [
+      {
+        "name": "title",
+        "type": "String",
+        "desc": "- Titre affiché"
+      },
+      {
+        "name": "href",
+        "type": "String",
+        "desc": "- URL de la sous-page"
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Icône optionnelle (chemin ou FA)"
+      },
+      {
+        "name": "iconAlt",
+        "type": "String",
+        "desc": "- Texte alternatif icône"
+      }
+    ],
+    "slots": [],
+    "file": "navigation/PageChildIndexCard.vue"
+  },
+  {
     "name": "Navbar",
     "description": "Navbar Molecule (DaisyUI + Custom Utility)",
     "props": [
@@ -1183,6 +1211,13 @@
     "props": [],
     "slots": [],
     "file": "entity/shared/EntityViewFullWrapper.vue"
+  },
+  {
+    "name": "EntityThumb",
+    "description": "EntityThumb — Vignette entité (image ou initiales, tokens site).",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityThumb.vue"
   },
   {
     "name": "EntityPropertyDisplay",

@@ -43,7 +43,8 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'ziggy_location' => fn () => $request->url(),
             'pending_erasure' => Inertia::defer(fn () => $this->resolvePendingErasure($request)),
-            'auth' => [
+            // Toujours renvoyé (même sur reload partiel `only`) pour garder le header auth à jour.
+            'auth' => Inertia::always([
                 'user' => function () use ($request) {
                     $user = $request->user();
                     if (! $user) {
@@ -54,7 +55,7 @@ class HandleInertiaRequests extends Middleware
 
                     return (new UserLightResource($user))->toArray($request);
                 },
-                'isLogged' => fn () => $request->user() !== null,
+                'isLogged' => $request->user() !== null,
                 'password_recently_confirmed' => function () use ($request) {
                     if (! $request->user()) {
                         return false;
@@ -75,7 +76,7 @@ class HandleInertiaRequests extends Middleware
                     fn () => $this->resolveNotificationsUnreadCount($request),
                     'sidebar'
                 ),
-            ],
+            ]),
             'flash' => [
                 'success' => fn () => session('success'),
                 'error' => fn () => session('error'),

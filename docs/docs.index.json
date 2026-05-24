@@ -205,6 +205,11 @@
     "description": "**Contexte** : La base de données (MySQL de développement) se vidait régulièrement sans action volontaire (déconnexion, utilisateurs disparus après un `db:seed`)."
   },
   {
+    "path": "100- Done/PERFORMANCE_GLOBAL_OPTIMISATIONS.md",
+    "title": "Optimisations performance globales (2026-05)",
+    "description": "Réduction du coût fixe Inertia et du premier chargement SPA."
+  },
+  {
     "path": "100- Done/README.md",
     "title": "100-Done",
     "description": "Ce dossier est réservé aux **résumés descriptifs** de fonctionnalités livrées ou de décisions d’architecture, lorsqu’ils servent de référence (et non de journal chronologique)."
@@ -615,14 +620,14 @@
     "description": "- **[PROPERTY_DISPLAY_SYSTEM.md](./PROPERTY_DISPLAY_SYSTEM.md)** — Propriétés / caractéristiques : baseline, flux BDD → Inertia, refonte unifiée (`CharacteristicProperty`, `useCharacteristicViewModel`, runtime créature)"
   },
   {
+    "path": "30-UI/SITE_LOADING_OVERLAY.md",
+    "title": "Écran de chargement (tunnel / zoom)",
+    "description": "Overlay plein page affiché au premier chargement du site, avant que l’app Vue/Inertia soit prête."
+  },
+  {
     "path": "30-UI/SPELL_SUB_EFFECTS_DISPLAY.md",
     "title": "Affichage des sous-effets de sort (actions)",
     "description": "Unifier la **forme** des lignes de sous-effet sur :"
-  },
-  {
-    "path": "30-UI/SITE_LOADING_OVERLAY.md",
-    "title": "Écran de chargement (tunnel / zoom)",
-    "description": "Overlay plein page au premier chargement : image loading.webp, zoom infini centré, splash HTML boot, fermeture auto ou croix secours."
   },
   {
     "path": "30-UI/TANSTACK_TABLE.md",
@@ -651,8 +656,8 @@
   },
   {
     "path": "40-DevGuides/PERFORMANCE_GLOBAL.md",
-    "title": "Performance globale — optimisations transversales",
-    "description": "Réduction du coût fixe Inertia (shareOnce, defer, cache), Ziggy, characteristics API, shell frontend et infra prod."
+    "title": "Performance globale — Krosmoz-JDR",
+    "description": "Guide transversal pour réduire le coût fixe de chaque navigation Inertia et du premier chargement SPA."
   },
   {
     "path": "40-DevGuides/PROJECT_CLI.md",

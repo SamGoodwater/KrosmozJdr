@@ -37,21 +37,9 @@ function getCsrfToken() {
 }
 
 const page = usePage();
-const user = ref(page.props.auth.user);
-const avatar = ref(user.value.avatar);
-const pseudo = ref(user.value.name);
-
-watch(
-    () => page.props.auth.user,
-    (newUser) => {
-        if (newUser) {
-            user.value = newUser;
-            avatar.value = newUser.avatar;
-            pseudo.value = newUser.name;
-        }
-    },
-    { deep: true },
-);
+const user = computed(() => page.props.auth?.user ?? null);
+const avatar = computed(() => user.value?.avatar ?? null);
+const pseudo = computed(() => user.value?.name ?? "");
 
 // Compteur : uniquement les notifications « messages » (BDD), pas les temporaires
 const unreadCount = ref(page.props.auth?.notifications_unread_count ?? 0);

@@ -112,11 +112,10 @@ const tooltipAccentColorClass = computed(() => {
 });
 
 const floatingPanelClasses = computed(() => {
-    const base = "pointer-events-auto";
     if (!props.glass) {
-        return mergeClasses(base, "tooltip-floating-chromeless");
+        return "tooltip-floating-chromeless";
     }
-    return mergeClasses(base, "tooltip-floating-surface", tooltipAccentColorClass.value);
+    return mergeClasses("tooltip-floating-surface", tooltipAccentColorClass.value);
 });
 
 /** Trigger : pas de classes `tooltip-*` Daisy (évite le pseudo ::before clippé). */
