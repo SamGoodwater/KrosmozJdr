@@ -4,14 +4,17 @@
  * Page dédiée aux paramètres (indépendante des notifications), avec onglets (Notifications, etc.).
  * L’ancre #notifications permet d’ouvrir directement l’onglet Notifications (ex. depuis le centre de notifications).
  */
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted, inject } from 'vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
-import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 
 const page = usePage();
-const { success, error } = useNotificationStore();
+const notificationStore = inject('notificationStore', null);
+const showToast = (type, message) => {
+    if (!notificationStore || !message) return;
+    notificationStore[type](message, { duration: 8000, placement: 'top-right' });
+};
 
 const TAB_NOTIFICATIONS = 'notifications';
 const TAB_CONNECTIONS = 'connections';
@@ -61,10 +64,10 @@ function submitConvert() {
     formConvert.post(route('user.oauth.convert'), {
         preserveScroll: true,
         onSuccess: () => {
-            success('Compte converti. Tu peux maintenant te connecter avec ton email et ton mot de passe.');
+            showToast('success', 'Compte converti. Tu peux maintenant te connecter avec ton email et ton mot de passe.');
             formConvert.reset();
         },
-        onError: () => error('Erreur lors de la conversion.'),
+        onError: () => showToast('error', 'Erreur lors de la conversion.'),
     });
 }
 
@@ -72,38 +75,41 @@ function unlinkProvider(provider) {
     if (!canUnlink(provider)) return;
     router.delete(route('user.oauth.unlink', { provider }), {
         preserveScroll: true,
-        onSuccess: () => success('Compte délié.'),
-        onError: () => error('Impossible de délier ce compte.'),
+        onSuccess: () => showToast('success', 'Compte délié.'),
+        onError: () => showToast('error', 'Impossible de délier ce compte.'),
     });
 }
 
 /**
- * Données utilisateur pour Settings.
- * Combine page.props.user (controller) et auth.user (partagé) pour garantir
- * oauth_accounts disponible (état des connexions OAuth liées).
+ * Utilisateur de la page paramètres (source complète : préférences, OAuth, etc.).
+ * Ne pas utiliser auth.user seul : il n’expose pas notification_preferences.
  */
-const user = computed(() => {
+const settingsUser = computed(() => {
     const pageUser = page.props.user;
     const pageUnwrapped = pageUser?.data?.id ? pageUser.data : pageUser;
+    return pageUnwrapped?.id ? pageUnwrapped : null;
+});
+
+/**
+ * Données utilisateur pour Settings (OAuth, affichage).
+ * Combine page.props.user et auth.user pour oauth_accounts.
+ */
+const user = computed(() => {
+    const pageUnwrapped = settingsUser.value;
     const authUser = page.props.auth?.user ?? {};
 
     const primary = pageUnwrapped?.id ? pageUnwrapped : authUser;
-    if (!primary) return {};
+    if (!primary?.id) return {};
 
-    // Fallback sur auth.user si page.user n'a pas oauth_accounts (ex. wrapping JsonResource)
     const oauthAccounts =
         (primary.oauth_accounts?.length ? primary.oauth_accounts : null)
         ?? (authUser.oauth_accounts?.length ? authUser.oauth_accounts : null)
         ?? [];
     return {
         ...primary,
+        notification_preferences: pageUnwrapped?.notification_preferences ?? primary.notification_preferences ?? {},
         oauth_accounts: Array.isArray(oauthAccounts) ? oauthAccounts : [],
     };
-});
-
-const formNotifications = useForm({
-    notifications_enabled: true,
-    notification_preferences: {},
 });
 
 const notificationTypesFiltered = computed(() => {
@@ -117,6 +123,27 @@ const notificationTypesFiltered = computed(() => {
     });
 });
 
+const formNotifications = useForm({
+    notifications_enabled: true,
+    notification_preferences: {},
+});
+
+const notificationFrequencies = computed(() => page.props.notificationFrequencies || {});
+
+const notificationGroups = computed(() => {
+    const personal = [];
+    const admin = [];
+    for (const entry of notificationTypesFiltered.value) {
+        const category = entry[1].category ?? 'personal';
+        if (category === 'admin' || category === 'admin_action') {
+            admin.push(entry);
+        } else {
+            personal.push(entry);
+        }
+    }
+    return { personal, admin };
+});
+
 const notificationChannelOptions = [
     { value: [], label: 'Aucune' },
     { value: ['database'], label: 'Sur le site uniquement' },
@@ -124,11 +151,34 @@ const notificationChannelOptions = [
     { value: ['database', 'mail'], label: 'Sur le site et par email' },
 ];
 
+function frequencyFromPref(val) {
+    if (val && typeof val === 'object' && typeof val.frequency === 'string') {
+        return val.frequency;
+    }
+    return 'instant';
+}
+
 function setNotificationPreference(typeKey, channels) {
     if (!formNotifications.notification_preferences) {
         formNotifications.notification_preferences = {};
     }
-    formNotifications.notification_preferences[typeKey] = Array.isArray(channels) ? [...channels].sort() : [];
+    const current = formNotifications.notification_preferences[typeKey] ?? {};
+    formNotifications.notification_preferences[typeKey] = {
+        channels: Array.isArray(channels) ? [...channels].sort() : [],
+        frequency: frequencyFromPref(current),
+    };
+}
+
+function setNotificationFrequency(typeKey, frequency) {
+    if (!formNotifications.notification_preferences) {
+        formNotifications.notification_preferences = {};
+    }
+    const current = formNotifications.notification_preferences[typeKey] ?? {};
+    const channels = channelsFromPref(current);
+    formNotifications.notification_preferences[typeKey] = {
+        channels,
+        frequency,
+    };
 }
 
 /** Extrait les canaux depuis le format backend { channels: [...], frequency } ou tableau direct. */
@@ -143,40 +193,106 @@ function preferenceChannelsValue(typeKey) {
     return JSON.stringify([...ch].sort());
 }
 
-/** Normalise les préférences backend (format { type: { channels, frequency } }) en format formulaire (type: [...]). */
-function normalizePrefsChannels(prefs) {
+function preferenceFrequencyValue(typeKey) {
+    return frequencyFromPref(formNotifications.notification_preferences?.[typeKey]);
+}
+
+function isFrequencyEditable(typeKey, config) {
+    if (config?.frequency_editable === false) return false;
+    const channels = channelsFromPref(formNotifications.notification_preferences?.[typeKey]);
+    return channels.length > 0;
+}
+
+function channelsSummary(typeKey) {
+    const channels = channelsFromPref(formNotifications.notification_preferences?.[typeKey]);
+    if (channels.length === 0) return 'Désactivée';
+    const parts = [];
+    if (channels.includes('database')) parts.push('site');
+    if (channels.includes('mail')) parts.push('email');
+    return parts.join(' + ');
+}
+
+/** Normalise les préférences backend en format formulaire { channels, frequency }. */
+function normalizePrefs(prefs) {
     const result = {};
-    for (const [key, val] of Object.entries(prefs)) {
-        if (Array.isArray(val)) {
-            result[key] = val;
-        } else if (val && typeof val === 'object' && Array.isArray(val.channels)) {
-            result[key] = val.channels;
-        } else {
-            result[key] = [];
-        }
+    for (const [key, config] of notificationTypesFiltered.value) {
+        const val = prefs?.[key];
+        const defaultChannels = config.channels_default || ['database'];
+        const defaultFrequency = config.frequency_default || 'instant';
+        result[key] = {
+            channels: channelsFromPref(val ?? defaultChannels),
+            frequency: val ? frequencyFromPref(val) : defaultFrequency,
+        };
     }
     return result;
 }
 
+function buildNotificationPreferencesPayload() {
+    const payload = {};
+    for (const [typeKey] of notificationTypesFiltered.value) {
+        const pref = formNotifications.notification_preferences?.[typeKey] ?? {};
+        payload[typeKey] = {
+            channels: channelsFromPref(pref),
+            frequency: frequencyFromPref(pref),
+        };
+    }
+    return payload;
+}
+
+function collectFormErrors(errors, out = []) {
+    if (!errors || typeof errors !== 'object') return out;
+    for (const val of Object.values(errors)) {
+        if (Array.isArray(val)) {
+            val.filter(Boolean).forEach((m) => out.push(String(m)));
+        } else if (typeof val === 'string' && val.trim() !== '') {
+            out.push(val.trim());
+        } else if (val && typeof val === 'object') {
+            collectFormErrors(val, out);
+        }
+    }
+    return out;
+}
+
+function firstFormError(errors) {
+    const messages = collectFormErrors(errors);
+    return messages[0] ?? null;
+}
+
+const notificationSaveErrorMessages = computed(() => {
+    if (!formNotifications.hasErrors) return [];
+    const messages = collectFormErrors(formNotifications.errors);
+    return messages.length > 0
+        ? messages
+        : ['Erreur lors de l’enregistrement des préférences.'];
+});
+
 function initNotificationForm() {
-    const data = user.value;
+    const data = settingsUser.value;
     if (!data?.id) return;
-    const types = page.props.notificationTypes || {};
-    const prefs = data.notification_preferences || {};
-    const defaultPrefs = Object.fromEntries(
-        Object.keys(types).map((k) => [k, types[k].channels_default || ['database']])
-    );
-    const normalizedPrefs = normalizePrefsChannels(prefs);
+    formNotifications.clearErrors();
     formNotifications.notifications_enabled = data.notifications_enabled ?? true;
-    formNotifications.notification_preferences = { ...defaultPrefs, ...normalizedPrefs };
+    formNotifications.notification_preferences = normalizePrefs(data.notification_preferences || {});
 }
 
 function saveNotifications() {
-    const url = `${route('user.update')}?redirect=settings`;
-    formNotifications.patch(url, {
+    if (!settingsUser.value?.id) {
+        showToast('error', 'Impossible de charger ton profil. Recharge la page.');
+        return;
+    }
+
+    formNotifications.notification_preferences = buildNotificationPreferencesPayload();
+    formNotifications.patch(`${route('user.update')}?redirect=settings`, {
         preserveScroll: true,
-        onSuccess: () => success('Préférences de notification enregistrées.'),
-        onError: () => error('Erreur lors de l’enregistrement des préférences.'),
+        onSuccess: () => {
+            formNotifications.clearErrors();
+            initNotificationForm();
+        },
+        onError: (errors) => {
+            const msg = firstFormError(errors)
+                ?? firstFormError(formNotifications.errors)
+                ?? 'Erreur lors de l’enregistrement des préférences.';
+            showToast('error', msg);
+        },
     });
 }
 
@@ -193,9 +309,11 @@ function syncHashToTab() {
     window.history.replaceState(null, '', url.toString());
 }
 
-watch(user, (newUser) => {
-    if (newUser?.id) initNotificationForm();
-}, { immediate: true, deep: true });
+watch(settingsUser, (newUser) => {
+    if (newUser?.id && !formNotifications.processing) {
+        initNotificationForm();
+    }
+}, { immediate: true });
 
 watch(activeTab, syncHashToTab);
 
@@ -271,7 +389,8 @@ function goBackToProfile() {
             <div class="rounded-box border border-base-300 bg-base-200/30 p-4">
                 <h2 class="text-lg font-medium text-content-300">Préférences de notification</h2>
                 <p class="mt-1 text-sm text-content-600">
-                    Choisissez quelles notifications recevoir et comment (sur le site, par email, ou les deux).
+                    Choisissez quelles notifications recevoir, comment (site, email) et à quelle fréquence.
+                    Si « Aucune » est sélectionné ou si les notifications sont désactivées globalement, aucun email ne part.
                 </p>
                 <label class="mt-4 flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-base-300/60 bg-base-100/50 px-3 py-3">
                     <span>
@@ -287,31 +406,115 @@ function goBackToProfile() {
                         :disabled="formNotifications.processing"
                     />
                 </label>
+
+                <div
+                    v-if="formNotifications.hasErrors"
+                    class="alert alert-error mt-4"
+                    role="alert"
+                >
+                    <ul class="list-disc list-inside space-y-1 text-sm">
+                        <li
+                            v-for="(msg, idx) in notificationSaveErrorMessages"
+                            :key="idx"
+                        >
+                            {{ msg }}
+                        </li>
+                    </ul>
+                </div>
+
                 <div
                     v-if="notificationTypesFiltered.length > 0"
-                    class="mt-4 space-y-3"
+                    class="mt-4 space-y-6"
                     :class="{ 'opacity-50 pointer-events-none': !formNotifications.notifications_enabled }"
                 >
-                    <div
-                        v-for="[typeKey, config] in notificationTypesFiltered"
-                        :key="typeKey"
-                        class="flex flex-wrap items-center justify-between gap-2 py-2 border-b border-base-300/50 last:border-0"
-                    >
-                        <label class="text-sm font-medium text-content-200">{{ config.label }}</label>
-                        <select
-                            :value="preferenceChannelsValue(typeKey)"
-                            class="select select-bordered select-sm max-w-xs"
-                            @change="setNotificationPreference(typeKey, JSON.parse($event.target.value))"
+                    <section v-if="notificationGroups.personal.length > 0" class="space-y-3">
+                        <h3 class="text-sm font-semibold text-content-300">Activité personnelle</h3>
+                        <div
+                            v-for="[typeKey, config] in notificationGroups.personal"
+                            :key="typeKey"
+                            class="flex flex-wrap items-center justify-between gap-3 py-2 border-b border-base-300/50 last:border-0"
                         >
-                            <option
-                                v-for="opt in notificationChannelOptions"
-                                :key="opt.label"
-                                :value="JSON.stringify(opt.value)"
-                            >
-                                {{ opt.label }}
-                            </option>
-                        </select>
-                    </div>
+                            <div class="min-w-0 flex-1">
+                                <label class="text-sm font-medium text-content-200">{{ config.label }}</label>
+                                <p class="text-xs text-content-600">Actuellement : {{ channelsSummary(typeKey) }}</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <select
+                                    :value="preferenceChannelsValue(typeKey)"
+                                    class="select select-bordered select-sm max-w-xs"
+                                    @change="setNotificationPreference(typeKey, JSON.parse($event.target.value))"
+                                >
+                                    <option
+                                        v-for="opt in notificationChannelOptions"
+                                        :key="opt.label"
+                                        :value="JSON.stringify(opt.value)"
+                                    >
+                                        {{ opt.label }}
+                                    </option>
+                                </select>
+                                <select
+                                    v-if="isFrequencyEditable(typeKey, config)"
+                                    :value="preferenceFrequencyValue(typeKey)"
+                                    class="select select-bordered select-sm max-w-xs"
+                                    @change="setNotificationFrequency(typeKey, $event.target.value)"
+                                >
+                                    <option
+                                        v-for="(label, freqKey) in notificationFrequencies"
+                                        :key="freqKey"
+                                        :value="freqKey"
+                                    >
+                                        {{ label }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section v-if="notificationGroups.admin.length > 0" class="space-y-3">
+                        <h3 class="text-sm font-semibold text-content-300">Administration</h3>
+                        <p class="text-xs text-content-600">
+                            Visible dans le centre de notifications, onglet « À traiter » ou « Administration ».
+                        </p>
+                        <div
+                            v-for="[typeKey, config] in notificationGroups.admin"
+                            :key="typeKey"
+                            class="flex flex-wrap items-center justify-between gap-3 py-2 border-b border-base-300/50 last:border-0"
+                        >
+                            <div class="min-w-0 flex-1">
+                                <label class="text-sm font-medium text-content-200">{{ config.label }}</label>
+                                <p class="text-xs text-content-600">Actuellement : {{ channelsSummary(typeKey) }}</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <select
+                                    :value="preferenceChannelsValue(typeKey)"
+                                    class="select select-bordered select-sm max-w-xs"
+                                    @change="setNotificationPreference(typeKey, JSON.parse($event.target.value))"
+                                >
+                                    <option
+                                        v-for="opt in notificationChannelOptions"
+                                        :key="opt.label"
+                                        :value="JSON.stringify(opt.value)"
+                                    >
+                                        {{ opt.label }}
+                                    </option>
+                                </select>
+                                <select
+                                    v-if="isFrequencyEditable(typeKey, config)"
+                                    :value="preferenceFrequencyValue(typeKey)"
+                                    class="select select-bordered select-sm max-w-xs"
+                                    @change="setNotificationFrequency(typeKey, $event.target.value)"
+                                >
+                                    <option
+                                        v-for="(label, freqKey) in notificationFrequencies"
+                                        :key="freqKey"
+                                        :value="freqKey"
+                                    >
+                                        {{ label }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
                 </div>
                 <p v-else class="mt-4 text-sm text-content-500">
                     Aucune préférence de notification configurée pour ton niveau d'accès.

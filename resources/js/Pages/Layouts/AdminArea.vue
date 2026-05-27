@@ -20,6 +20,9 @@ const isContentArea = computed(() => {
         || p.startsWith("/admin/characteristics")
     );
 });
+
+/** Force le remontage de la page Inertia quand l’URL ou le composant change (layout persistant). */
+const pageRenderKey = computed(() => `${page.component ?? ""}:${page.url ?? ""}`);
 </script>
 
 <template>
@@ -29,7 +32,9 @@ const isContentArea = computed(() => {
             <AdminSidebarNav v-else />
             <div class="min-w-0 flex-1 rounded-2xl border border-base-content/5 bg-base-100/20 p-1 min-h-[60vh]">
                 <div class="rounded-xl p-3 sm:p-4 lg:p-5">
-                    <slot />
+                    <div :key="pageRenderKey">
+                        <slot />
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,8 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import { Head, useForm, usePage } from "@inertiajs/vue3";
-import Route from "@/Pages/Atoms/action/Route.vue";
+import { Head, useForm, usePage, router } from "@inertiajs/vue3";
 
 const props = defineProps({
     status: {
@@ -18,6 +17,10 @@ const submit = () => {
     form.post(route("verification.send"), {
         preserveState: false,
     });
+};
+
+const logout = () => {
+    router.post(route("logout"));
 };
 
 /** Status depuis la prop ou le flash Inertia (après redirect). */
@@ -56,13 +59,12 @@ const verificationLinkSent = computed(
                 Renvoyer l'email de vérification
             </Btn>
         </form>
-        <Route
-            route="logout"
-            method="post"
+        <Btn
             color="neutral"
             variant="ghost"
+            @click="logout"
         >
             Se déconnecter
-        </Route>
+        </Btn>
     </div>
 </template>

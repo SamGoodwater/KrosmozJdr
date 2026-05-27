@@ -42,8 +42,8 @@
  * @note Ce composant fusionne l'API DaisyUI Link et Inertia Link.
  */
 
-import { computed, ref } from "vue";
-import { Link, router } from "@inertiajs/vue3";
+import { computed } from "vue";
+import { Link } from "@inertiajs/vue3";
 import {
     getCommonProps,
     getCommonAttrs,
@@ -169,15 +169,39 @@ const linkComponent = computed(() => {
     return shouldUseNativeLink.value ? 'a' : Link;
 });
 
-const attrs = computed(() => getCommonAttrs(props));
+/** Évite un GET sur une route POST/DELETE (ex. logout → 405). */
+const linkAs = computed(() => {
+    if (shouldUseNativeLink.value || props.method === 'get') {
+        return undefined;
+    }
+
+    return 'button';
+});
+
+const inertiaLinkProps = computed(() => ({
+    href: hrefRef.value,
+    method: props.method,
+    replace: props.replace,
+    ...(linkAs.value ? { as: linkAs.value } : {}),
+}));
+
+const componentBind = computed(() => {
+    if (shouldUseNativeLink.value) {
+        return { href: hrefRef.value, ...getCommonAttrs(props) };
+    }
+
+    return {
+        ...inertiaLinkProps.value,
+        ...getCommonAttrs(props),
+    };
+});
 </script>
 
 <template>
     <component
         :is="linkComponent"
-        :href="hrefRef"
+        v-bind="componentBind"
         :target="target || undefined"
-        v-bind="attrs"
         v-on="$attrs"
         :class="atomClasses"
     >

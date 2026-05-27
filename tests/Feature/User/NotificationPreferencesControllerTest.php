@@ -150,6 +150,45 @@ class NotificationPreferencesControllerTest extends TestCase
         $this->assertEquals([], $user->notification_preferences['entity_modified']['channels']);
     }
 
+    public function test_user_can_update_notification_frequency_from_settings(): void
+    {
+        $user = User::factory()->create([
+            'notification_preferences' => null,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->patchJson(route('user.update').'?redirect=settings', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'notification_preferences' => [
+                    'profile_modified' => [
+                        'channels' => ['mail'],
+                        'frequency' => 'daily',
+                    ],
+                ],
+            ]);
+
+        $response->assertRedirect();
+        $user->refresh();
+        $this->assertEquals(['mail'], $user->notification_preferences['profile_modified']['channels']);
+        $this->assertSame('daily', $user->notification_preferences['profile_modified']['frequency']);
+        $this->assertFalse($user->getChannelsForNotificationType('profile_modified') === []);
+        $this->assertTrue($user->wantsNotificationForType('profile_modified'));
+    }
+
+    public function test_mail_channel_blocked_when_notifications_disabled_globally(): void
+    {
+        $user = User::factory()->create([
+            'notifications_enabled' => false,
+            'notification_preferences' => [
+                'profile_modified' => ['channels' => ['database', 'mail'], 'frequency' => 'instant'],
+            ],
+        ]);
+
+        $this->assertSame([], $user->getChannelsForNotificationType('profile_modified'));
+        $this->assertFalse($user->wantsNotificationForType('profile_modified'));
+    }
+
     public function test_settings_page_includes_notification_types(): void
     {
         $user = User::factory()->create();
@@ -163,5 +202,73 @@ class NotificationPreferencesControllerTest extends TestCase
             ->has('notificationChannelsLabels')
             ->has('notificationFrequencies')
         );
+    }
+
+    public function test_super_admin_can_save_all_notification_types_from_settings(): void
+    {
+        $types = config('notifications.types', []);
+        $prefs = [];
+        foreach ($types as $typeKey => $cfg) {
+            if (isset($cfg['roles']) && ! in_array('super_admin', $cfg['roles'], true)) {
+                continue;
+            }
+            $prefs[$typeKey] = [
+                'channels' => $cfg['channels_default'] ?? ['database'],
+                'frequency' => $cfg['frequency_default'] ?? 'instant',
+            ];
+        }
+
+        $user = User::factory()->create([
+            'role' => User::ROLE_SUPER_ADMIN,
+            'notification_channels' => ['database', 'mail'],
+            'notification_preferences' => null,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->withHeaders(['X-Inertia' => 'true', 'X-Requested-With' => 'XMLHttpRequest'])
+            ->from(route('user.settings'))
+            ->patch(route('user.update').'?redirect=settings', [
+                'notifications_enabled' => true,
+                'notification_preferences' => $prefs,
+            ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        $user->refresh();
+        $this->assertArrayHasKey('new_account_registered', $user->notification_preferences);
+    }
+
+    public function test_user_can_save_notification_settings_without_profile_fields(): void
+    {
+        $types = config('notifications.types', []);
+        $prefs = [];
+        foreach (array_keys($types) as $typeKey) {
+            $cfg = $types[$typeKey];
+            if (isset($cfg['roles']) && ! in_array('user', $cfg['roles'], true)) {
+                continue;
+            }
+            $prefs[$typeKey] = [
+                'channels' => $cfg['channels_default'] ?? ['database'],
+                'frequency' => $cfg['frequency_default'] ?? 'instant',
+            ];
+        }
+
+        $user = User::factory()->create([
+            'notification_channels' => ['database', 'mail'],
+            'notification_preferences' => null,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->patchJson(route('user.update').'?redirect=settings', [
+                'notifications_enabled' => true,
+                'notification_preferences' => $prefs,
+            ]);
+
+        $response->assertRedirect(route('user.settings').'#notifications');
+        $response->assertSessionHas('success');
+
+        $user->refresh();
+        $this->assertSame(['database', 'mail'], $user->notification_channels);
+        $this->assertArrayHasKey('profile_modified', $user->notification_preferences);
     }
 }

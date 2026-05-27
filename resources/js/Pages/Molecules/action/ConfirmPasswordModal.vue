@@ -40,6 +40,7 @@ const password = ref('');
 const error = ref(null);
 const loading = ref(false);
 const passwordInputRef = ref(null);
+const suppressCloseCancel = ref(false);
 
 function getCsrfToken() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -63,8 +64,9 @@ async function submit() {
         if (data?.confirmed) {
             const pwd = password.value;
             reset();
-            open.value = false;
+            suppressCloseCancel.value = true;
             emit('confirmed', pwd);
+            open.value = false;
         } else {
             error.value = 'Une erreur est survenue.';
         }
@@ -75,6 +77,7 @@ async function submit() {
         error.value = Array.isArray(msg) ? msg[0] : msg;
     } finally {
         loading.value = false;
+        suppressCloseCancel.value = false;
     }
 }
 
@@ -84,6 +87,9 @@ function reset() {
 }
 
 function close() {
+    if (suppressCloseCancel.value) {
+        return;
+    }
     reset();
     open.value = false;
     emit('cancel');

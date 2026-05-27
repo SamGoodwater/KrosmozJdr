@@ -118,6 +118,7 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
         $more_changes = count($this->changes) > 3;
 
         return [
+            'config_type' => 'profile_modified',
             'modified_user_id' => $this->modifiedUser->id,
             'modifier_id' => $this->modifier->id,
             'modifier_name' => $this->modifier->name,

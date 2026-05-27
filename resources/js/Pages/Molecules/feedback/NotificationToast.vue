@@ -276,7 +276,8 @@ onUnmounted(() => {
 <style scoped>
 .notification-toast {
     display: block;
-    width: 100%;
+    width: fit-content;
+    max-width: min(20rem, calc(100vw - 2rem));
     margin-bottom: 0.5rem; /* Espacement entre les notifications */
 }
 

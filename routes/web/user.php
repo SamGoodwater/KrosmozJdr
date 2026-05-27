@@ -55,6 +55,7 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'verified'])->group(fu
         Route::middleware('password.confirm')->group(function () {
             Route::post('/', [UserController::class, 'store'])->name('store');
             Route::patch('/{user}', [UserController::class, 'update'])->name('admin.update');
+            Route::delete('/{user}', [UserController::class, 'delete'])->name('admin.delete');
             Route::post('/{user}/avatar', [UserController::class, 'updateAvatar'])->name('admin.updateAvatar');
             Route::delete('/{user}/avatar', [UserController::class, 'deleteAvatar'])->name('admin.deleteAvatar');
             Route::post('/{user}/restore', [UserController::class, 'restore'])->name('restore');
@@ -64,6 +65,13 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'verified'])->group(fu
     });
 
     Route::middleware(['role:super_admin', 'password.confirm'])->group(function () {
-        Route::delete('/forceDelete/{user}', [UserController::class, 'forceDelete'])->name('forceDelete');
+        Route::post('/{user}/force-delete', [UserController::class, 'forceDelete'])->name('forceDelete');
     });
+
+    // Ancienne URL (DELETE user/forceDelete/{id}) : évite un 405 après redirect intended obsolète.
+    Route::get('/forceDelete/{user}', function () {
+        return redirect()
+            ->route('user.index', ['status' => 'trashed'])
+            ->with('info', 'Relance la suppression depuis le menu actions de la liste utilisateurs.');
+    })->middleware(['role:super_admin'])->name('forceDelete.legacy');
 });

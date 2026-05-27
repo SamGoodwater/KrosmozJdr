@@ -11,6 +11,13 @@ Ce document sert de référence pour toute personne qui contribue à la rédacti
 - **Tutoiement** : On s'adresse au lecteur (joueur ou MJ) avec **tu / ton / ta**. Ex. : « Tu peux répartir tes points… », « Si ton personnage est taclé… ».
 - **Style** : Ton léger et accessible, à la façon d'Ankama : clins d'œil possibles, pas de ton scolaire ou guindé, tout en restant clair et précis pour le jeu.
 - **Cohérence** : Utiliser le même ton dans tout le livre (éviter de mélanger tutoiement et vouvoiement).
+- **Assouplissement automatique** : `php artisan pages:rules-friendly-tone` corrige les impératifs « vous » et certaines formulations scolaires dans les `.md` (sans toucher aux tableaux ni aux exemples). Relancer après gros imports de texte si besoin.
+- **Écriture inclusive** :
+  - **Personnage** : terme épicène par défaut pour le PJ (*ton personnage*, *un personnage Iop*).
+  - **Allié·e** : **allié·e** / **allié·e·s** / **un·e allié·e** pour un campagnard ou PNJ amical (`php artisan pages:rules-inclusive-ally`).
+  - **Joueur·euse** : à utiliser avec parcimonie quand on parle de la personne à la table plutôt que du personnage (ex. « un·e joueur·euse rejoint la campagne »).
+  - **Classes** : ne pas genrer les classes ni leur assigner *il* / *elle* dans les exemples — parler du **personnage** porteur de la classe (*un personnage Enutrof niv. 8*, pas *il* / *elle* selon la classe).
+  - Éviter *héros*, *aventurier*, *allié* (masculin générique) ; le tutoiement reste la forme principale pour le lecteur.
 
 ---
 
@@ -138,6 +145,13 @@ Pour plus de détails, consulte :
 ### 4.1. Fichiers Markdown ↔ pages CMS (import TOC)
 
 La commande `php artisan pages:import-rules-toc` (alias `project:data:import-rules-toc`) lit [TABLE_DES_MATIERES.md](TABLE_DES_MATIERES.md) et les fichiers `N.N.N-*.md` pour créer / mettre à jour les **pages** et **sections** du site.
+
+- Chaque fichier `N.N.N-*.md` (entrée niveau 3 de la TOC) est **découpé en plusieurs sections CMS** :
+  - préambule (description, règles rapides) → **Résumé** ;
+  - chaque titre `##` → section dédiée (sauf « Contenu » et « Sources ») ;
+  - encarts finaux `### À retenir / À faire / À éviter` → sections dédiées.
+- Le **premier bloc** conserve le slug historique `regle-{numero}-{titre}` ; les sous-blocs reçoivent un suffixe (`-mecanique-d20`, `-a-retenir`, etc.).
+- Les sections obsolètes sur une page règles sont supprimées à l’import. Utilise `--force-content` pour réappliquer le HTML issu des Markdown.
 
 - Les **liens relatifs** entre `.md` (dossier `420- Règles/`) restent la référence pour la lecture dans le dépôt et pour l’import (conversion Markdown → HTML des sections).
 - Les **liens profonds côté site** utilisent l’identifiant de section en base : `/pages/{slug}#section-{id}` (l’`id` est attribué à l’import ; il n’est en général **pas** figé dans les sources Markdown du dépôt). Pour le texte riche **édité dans le CMS** avec références riches, utilise le sélecteur de pages/sections (`@`) plutôt que de deviner l’`id`.

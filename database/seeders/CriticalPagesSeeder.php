@@ -6,6 +6,7 @@ use App\Enums\SectionType;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use App\Support\Cms\KrefShortcodeReplacer;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -258,92 +259,149 @@ class CriticalPagesSeeder extends Seeder
     }
 
     /**
-     * Sections de la page d’accueil (ton joueur, aligné sur la présentation des règles).
+     * Sections de la page d’accueil (6 blocs : hero, bêta, jeu, plateforme, parcours, contribuer).
      */
     private function seedAccueilSections(Page $homePage, ?int $creatorId): void
     {
+        $kref = KrefShortcodeReplacer::forEssentialPages();
+
         $this->ensureTextSection(
             $homePage,
             'hero-accueil',
-            'Bienvenue sur Krosmoz JDR',
-            '<p>Tu es au bon endroit : ici vivent les <strong>règles</strong>, les <strong>bibliothèques de jeu</strong> et les outils pour préparer (ou improviser) ta prochaine aventure.</p>'
-            .'<p>Que tu découvres le projet ou que tu reviennes après une pause, prends le temps de parcourir cette page — elle te donne la carte avant d’ouvrir le grimoire.</p>',
+            'Le Monde des Douze, autour de la table',
+            $kref->replace(
+                '<p><strong>Le Monde des Douze, autour de la table.</strong> Dofus rencontre le JdR tactique : tu annonces, tu lances, tu dépenses tes [[kref:characteristic:action_points_creature|PA]] — et tu racontes ta légende.</p>'
+            ),
             1,
-            $creatorId
+            $creatorId,
+            true
         );
 
         $this->ensureTextSection(
             $homePage,
-            'quest-ce-que-krosmoz-jdr',
-            'Qu’est-ce que Krosmoz JDR ?',
-            '<p><strong>Krosmoz JDR</strong> est un jeu de rôle sur table qui croise la structure et la profondeur tactique des grands JDR classiques avec l’univers coloré, drôle et familier de <em>Dofus</em> / <em>Wakfu</em>.</p>'
-            .'<p>Les personnages évoluent, les combats se jouent au tour par tour avec des choix qui comptent, et les scènes laissent de la place à l’improvisation et au récit collectif. Pas besoin d’avoir tout lu pour commencer une table : l’essentiel est expliqué au fil des chapitres des règles.</p>',
+            'encart-beta',
+            'Version bêta',
+            $kref->replace(
+                '<div class="alert alert-info shadow-sm not-prose">'
+                .'<i class="fa-solid fa-flask" aria-hidden="true"></i>'
+                .'<div>'
+                .'<p><strong>Krosmoz JDR est en bêta.</strong> Les règles sont jouables et le site évolue vite — mais tout n’est pas encore au catalogue.</p>'
+                .'<ul>'
+                .'<li><strong>En cours</strong> : peu de sorts, monstres et classes pleinement disponibles dans les bibliothèques.</li>'
+                .'<li><strong>En progression</strong> : règles, [[kref:page:essentiels-bien-demarrer|L’Essentiel]], outils du site, contenu qui grossit version après version.</li>'
+                .'</ul>'
+                .'<p>Les bibliothèques se remplissent — la bêta, c’est jouer et construire en même temps. Envie d’aider ? Voir la section <em>Contribuer</em> plus bas.</p>'
+                .'</div>'
+                .'</div>'
+            ),
             2,
-            $creatorId
+            $creatorId,
+            true
         );
 
         $this->ensureTextSection(
             $homePage,
-            'ce-site',
-            'Ce site, à quoi ça sert ?',
-            '<p>Ce site officiel est le point d’entrée pour jouer et préparer des parties :</p>'
-            .'<ul>'
-            .'<li><strong>Règles</strong> — le corpus complet, structuré par chapitres (création de personnage, combat, magie, progression…).</li>'
-            .'<li><strong>Bibliothèques</strong> — classes, sorts, monstres, équipements, états et autres entrées consultables et filtrables.</li>'
-            .'<li><strong>Recherche rapide</strong> — raccourci <kbd>Alt</kbd> + <kbd>K</kbd> pour retrouver une page ou une entité sans fouiller les menus.</li>'
-            .'<li><strong>Compte</strong> — inscription optionnelle pour suivre tes favoris, recevoir des notifications et, selon ton rôle, contribuer au contenu.</li>'
-            .'</ul>'
-            .'<p>Le site grandit avec le jeu : de nouvelles entrées et de nouveaux outils arrivent au fil des versions.</p>',
+            'le-jeu',
+            'Le jeu',
+            $kref->replace(
+                '<ul>'
+                .'<li><strong>Univers Dofus / Wakfu</strong> — classes iconiques, humour léger, Monde des Douze.</li>'
+                .'<li><strong>Tactique au tour par tour</strong> — [[kref:characteristic:action_points_creature|PA]], [[kref:characteristic:movement_points_creature|PM]], grille, choix qui comptent.</li>'
+                .'<li><strong>JdR classique</strong> — d20, progression, narration à table avec ton groupe.</li>'
+                .'<li><strong>Pas besoin de tout lire</strong> — [[kref:page:essentiels-bien-demarrer|L’Essentiel]] pour démarrer, le détail dans les [[kref:page:regles-1-introduction|Règles]].</li>'
+                .'</ul>'
+            ),
             3,
-            $creatorId
+            $creatorId,
+            true
         );
 
         $this->ensureTextSection(
             $homePage,
-            'esprit-du-jeu',
-            'L’esprit du jeu',
-            '<p>Les textes officiels (règles comme pages d’accueil) visent un ton <strong>clair et précis</strong>, sans jargon inutile. On assume une part d’<strong>humour léger</strong> héritée de l’univers Krosmoz, sans que la mécanique devienne une blague : quand un sort ou une règle s’applique, elle s’applique.</p>'
-            .'<p>En table, on privilégie :</p>'
-            .'<ul>'
-            .'<li>des <strong>choix tactiques</strong> lisibles (position, ressources, timing) ;</li>'
-            .'<li>une <strong>narration partagée</strong> (les joueuses et joueurs font avancer l’histoire, le MJ arbitre et anime) ;</li>'
-            .'<li>des <strong>personnages attachants</strong>, pas des fiches optimisées au détriment du fun.</li>'
-            .'</ul>'
-            .'<p>L’aventure avant tout — le reste est dans le menu <em>Règles</em>.</p>',
+            'la-plateforme',
+            'La plateforme',
+            $kref->replace(
+                '<p>Ce site, c’est ton camp de base pour jouer et préparer :</p>'
+                .'<ul>'
+                .'<li><strong>[[kref:page:regles-1-introduction|Règles]]</strong> — corpus structuré par chapitres.</li>'
+                .'<li><strong>L’Essentiel</strong> — résumés pour jouer et trucs pour le MJ ([[kref:page:essentiels-bien-demarrer|Bien démarrer]]).</li>'
+                .'<li><strong>Bibliothèques</strong> — classes, sorts, monstres, équipements… catalogue en cours de remplissage.</li>'
+                .'<li><strong>Recherche rapide</strong> — <kbd>Alt</kbd> + <kbd>K</kbd> pour retrouver une page ou une entité.</li>'
+                .'<li><strong>Compte</strong> — favoris, notifications, contribution selon ton rôle.</li>'
+                .'</ul>'
+            ),
             4,
-            $creatorId
+            $creatorId,
+            true
         );
 
         $this->ensureTextSection(
             $homePage,
-            'premiers-pas',
+            'par-ou-commencer',
             'Par où commencer ?',
-            '<p><strong>Si tu es joueuse ou joueur</strong></p>'
-            .'<ul>'
-            .'<li>Ouvre le menu <em>Règles</em> et lis la présentation du jeu, puis la création de personnage quand tu es prêt·e.</li>'
-            .'<li>Parcours les <em>Bibliothèques</em> pour te faire une idée des classes, sorts et équipements disponibles.</li>'
-            .'<li>Crée un compte si tu veux enregistrer des favoris ou rester informé·e des mises à jour.</li>'
-            .'</ul>'
-            .'<p><strong>Si tu es meneuse ou meneur de jeu</strong></p>'
-            .'<ul>'
-            .'<li>Les mêmes ressources t’aident à préparer : règles de référence, bestiaire, objets, états.</li>'
-            .'<li>Avec un compte et les droits adaptés, tu peux proposer ou modifier du contenu (pages, sections, entités) selon la politique du site.</li>'
-            .'<li>Utilise la recherche <kbd>Alt</kbd> + <kbd>K</kbd> en session pour retrouver une règle ou une fiche en quelques secondes.</li>'
-            .'</ul>'
-            .'<p>Une question sur les données personnelles ou les conditions d’utilisation ? Consulte les pages <em>Légales</em> et [[kref:page:cgu|Conditions générales d’utilisation]] dans le menu.</p>',
+            $kref->replace(
+                '<p><strong>Nouveau·elle en JdR ou sur Krosmoz</strong></p>'
+                .'<ul>'
+                .'<li>[[kref:page:essentiels-bien-demarrer|L’Essentiel — Bien démarrer]]</li>'
+                .'<li>[[kref:page:essentiels-creation-personnage|Création de personnage]]</li>'
+                .'<li>Parcourir une [[kref:page:bibliotheque-breed|classe]] en bibliothèque</li>'
+                .'</ul>'
+                .'<p><strong>Déjà à l’aise en JdR</strong></p>'
+                .'<ul>'
+                .'<li>[[kref:page:regles-1-introduction|Règles]] ch. 1–3 + [[kref:page:essentiels-combat|Essentiel combat]]</li>'
+                .'</ul>'
+                .'<p><strong>Meneuse ou meneur de jeu (MJ)</strong></p>'
+                .'<ul>'
+                .'<li>[[kref:page:essentiels-bien-demarrer|L’Essentiel]] pour les rappels de table</li>'
+                .'<li>[[kref:page:regles-1-introduction|Règles]] comme référence + bibliothèques pour préparer les rencontres</li>'
+                .'<li><kbd>Alt</kbd> + <kbd>K</kbd> en session pour retrouver une règle ou une fiche</li>'
+                .'</ul>'
+                .'<p>Questions légales ? Menu <em>Légales</em> et [[kref:page:cgu|Conditions générales d’utilisation]].</p>'
+            ),
             5,
-            $creatorId
+            $creatorId,
+            true
         );
 
         $this->ensureTextSection(
             $homePage,
-            'nouveautes-version',
-            'Nouveautés de la version 1.3.2',
-            '<p>La version <strong>1.3.2</strong> apporte notamment : une recherche globale plus fluide, des fiches entités plus lisibles, des réglages de visibilité pour les contenus, des améliorations d’accessibilité (navigation clavier, contrastes) et un formulaire de retour enrichi pour nous aider à corriger le site.</p>'
-            .'<p>Le détail pour les joueuses, joueurs et MJ est dans le [[kref:page:changelog|journal des mises à jour]].</p>',
+            'contribuer',
+            'Contribuer',
+            $kref->replace(
+                '<p>La bêta avance grâce aux tables et aux contributeur·rice·s. Tu peux aider de plusieurs façons :</p>'
+                .'<ul>'
+                .'<li><strong>Retours de jeu</strong> — playtest, relecture, signalement de coquilles</li>'
+                .'<li><strong>Contenu</strong> — sorts, monstres, classes, textes (selon les droits sur ton compte)</li>'
+                .'<li><strong>Communauté</strong> — [[kref:page:nous-rejoindre|Nous rejoindre]] pour Discord, GitHub et la demande d’accès éditeur</li>'
+                .'</ul>'
+                .'<p>Tu peux aussi passer par la page <a href="/contribuer">Contribuer</a> — elle te redirige vers les bonnes ressources.</p>'
+            ),
             6,
-            $creatorId
+            $creatorId,
+            true
         );
+
+        $this->removeOrphanAccueilSections($homePage);
+    }
+
+    /**
+     * Supprime les sections d’accueil obsolètes (slug hors structure courante).
+     */
+    private function removeOrphanAccueilSections(Page $homePage): void
+    {
+        $expectedSlugs = [
+            'hero-accueil',
+            'encart-beta',
+            'le-jeu',
+            'la-plateforme',
+            'par-ou-commencer',
+            'contribuer',
+        ];
+
+        Section::query()
+            ->where('page_id', $homePage->id)
+            ->whereNotIn('slug', $expectedSlugs)
+            ->each(fn (Section $section) => $section->delete());
     }
 
     private function ensureTextSection(
@@ -352,12 +410,21 @@ class CriticalPagesSeeder extends Seeder
         string $title,
         string $contentHtml,
         int $order,
-        ?int $creatorId
+        ?int $creatorId,
+        bool $enableRichReferences = false
     ): Section {
         $section = Section::withTrashed()
             ->where('page_id', $page->id)
             ->where('slug', $slug)
             ->first();
+
+        $settings = [
+            'align' => 'left',
+            'size' => 'md',
+        ];
+        if ($enableRichReferences) {
+            $settings['enableRichReferences'] = true;
+        }
 
         $attributes = [
             'page_id' => $page->id,
@@ -366,10 +433,7 @@ class CriticalPagesSeeder extends Seeder
             'order' => $order,
             'template' => SectionType::TEXT->value,
             'type' => SectionType::TEXT->value,
-            'settings' => [
-                'align' => 'left',
-                'size' => 'md',
-            ],
+            'settings' => $settings,
             'data' => [
                 'content' => $contentHtml,
             ],

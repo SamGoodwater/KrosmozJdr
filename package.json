@@ -139,6 +139,9 @@
             "puppeteer",
             "sqlite3",
             "vue-demi"
+        ],
+        "ignoredBuiltDependencies": [
+            "@anthropic-ai/claude-code"
         ]
     }
 }

@@ -77,13 +77,13 @@ class HandleInertiaRequests extends Middleware
                     'sidebar'
                 ),
             ]),
-            'flash' => [
+            'flash' => Inertia::always([
                 'success' => fn () => session('success'),
                 'error' => fn () => session('error'),
                 'warning' => fn () => session('warning'),
                 'info' => fn () => session('info'),
                 'status' => fn () => session('status'),
-            ],
+            ]),
         ];
     }
 

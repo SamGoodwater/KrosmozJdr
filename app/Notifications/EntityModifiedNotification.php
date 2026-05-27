@@ -39,6 +39,9 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
     /** @var string|null URL vers l'entité (page/section avec slug si fourni) */
     public $url;
 
+    /** @var string|null Clé config/notifications.php (filtrage centre de notifications) */
+    public $configType;
+
     /**
      * @param  string  $entityType
      * @param  int  $entityId
@@ -47,8 +50,9 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
      * @param  array  $channels
      * @param  array  $changes
      * @param  string|null  $url
+     * @param  string|null  $configType
      */
-    public function __construct($entityType, $entityId, $entityName, $modifier, $channels = ['database'], $changes = [], $url = null)
+    public function __construct($entityType, $entityId, $entityName, $modifier, $channels = ['database'], $changes = [], $url = null, $configType = null)
     {
         $this->entityType = $entityType;
         $this->entityId = $entityId;
@@ -57,6 +61,7 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
         $this->channels = $channels;
         $this->changes = $changes;
         $this->url = $url;
+        $this->configType = $configType;
     }
 
     /**
@@ -135,6 +140,7 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
         $linkUrl = $this->url ?? url("/{$this->entityType}/{$this->entityId}");
 
         return [
+            'config_type' => $this->configType,
             'entity_type' => $this->entityType,
             'entity_id' => $this->entityId,
             'entity_name' => $this->entityName,

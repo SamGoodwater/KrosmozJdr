@@ -6,6 +6,7 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
@@ -65,6 +66,7 @@ class ProjectMaintenanceNotification extends Notification implements ShouldQueue
         $duration = $this->formatDuration($this->durationSeconds);
 
         return [
+            'config_type' => 'project_maintenance',
             'command' => $this->command,
             'success' => $this->success,
             'duration_seconds' => $this->durationSeconds,

@@ -46,9 +46,9 @@ class UserController extends Controller
 
         $search = trim((string) $request->input('search', ''));
         $role = $request->input('role');
-        $status = (string) $request->input('status', 'active'); // active|trashed|all
+        $status = (string) $request->input('status', 'all'); // active|trashed|all
 
-        $query = User::query()->with(['scenarios', 'campaigns', 'pages', 'sections']);
+        $query = User::query()->with(['scenarios', 'campaigns', 'pages', 'sections', 'media']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -227,6 +227,11 @@ class UserController extends Controller
         $this->authorize('update', $user);
         $old = clone $user;
         $data = $request->validated();
+
+        if (! $request->has('notification_channels')) {
+            unset($data['notification_channels']);
+        }
+
         // Gestion de l'avatar (Media Library)
         if ($request->hasFile('avatar')) {
             $user->clearMediaCollection('avatars');
@@ -257,10 +262,22 @@ class UserController extends Controller
                 }
             }
         }
+
         $user->update($data);
-        NotificationService::notifyProfileModified($user, Auth::user(), $old);
+
+        if ($this->shouldNotifyProfileModified($request)) {
+            try {
+                NotificationService::notifyProfileModified($user, Auth::user(), $old);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
         // Redirection selon le contexte ou la demande (ex. depuis la page paramètres)
         if ($request->input('redirect') === 'settings' && $user->id === Auth::id()) {
+            if ($request->header('X-Inertia')) {
+                return back()->with('success', 'Préférences enregistrées.');
+            }
+
             return redirect()->to(route('user.settings').'#notifications')->with('success', 'Préférences enregistrées.');
         }
         if ($user->id === Auth::id()) {
@@ -275,9 +292,21 @@ class UserController extends Controller
      *
      * @return RedirectResponse
      */
-    public function delete(User $user)
+    public function delete(?User $user = null)
     {
+        $user = $user ?? Auth::user();
         $this->authorize('delete', $user);
+
+        if ($user->id === Auth::id()) {
+            return back()->withErrors([
+                'user' => 'Utilise la page Confidentialité pour supprimer ton propre compte.',
+            ]);
+        }
+
+        if ($user->trashed()) {
+            return back()->with('info', 'Ce compte est déjà archivé.');
+        }
+
         try {
             NotificationService::notifyUserDeleted($user, Auth::user());
         } catch (\Throwable $e) {
@@ -285,16 +314,14 @@ class UserController extends Controller
         }
         $user->delete();
 
-        return redirect()->route('user.index')->with('success', 'Utilisateur supprimé.');
+        return redirect()->route('user.index', ['status' => 'all'])->with('success', 'Utilisateur archivé.');
     }
 
     /**
      * Supprime définitivement un utilisateur (admin only).
      * Supprime aussi l'avatar physique si présent.
-     *
-     * @return RedirectResponse
      */
-    public function forceDelete(User $user)
+    public function forceDelete(User $user): RedirectResponse
     {
         $this->authorize('forceDelete', $user);
         $user->clearMediaCollection('avatars');
@@ -305,15 +332,11 @@ class UserController extends Controller
 
     /**
      * Restaure un utilisateur supprimé.
-     *
-     * @param  User  $user
-     * @return RedirectResponse
      */
-    public function restore(int $user)
+    public function restore(User $user): RedirectResponse
     {
-        $model = User::withTrashed()->findOrFail($user);
-        $this->authorize('restore', $model);
-        $model->restore();
+        $this->authorize('restore', $user);
+        $user->restore();
 
         return redirect()->route('user.index')->with('success', 'Utilisateur restauré.');
     }
@@ -480,5 +503,15 @@ class UserController extends Controller
         $user->oauthAccounts()->provider($provider)->delete();
 
         return back()->with('success', 'Compte '.$provider.' délié.');
+    }
+
+    /**
+     * Notifie la modification de profil uniquement si des champs identité ont changé
+     * (pas lors d'une mise à jour des seules préférences de notification).
+     */
+    private function shouldNotifyProfileModified(UpdateUserRequest $request): bool
+    {
+        return $request->hasAny(['name', 'email', 'password'])
+            || $request->hasFile('avatar');
     }
 }

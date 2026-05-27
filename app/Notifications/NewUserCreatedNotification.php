@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
@@ -29,17 +30,18 @@ class NewUserCreatedNotification extends Notification implements ShouldQueue
             ->subject('Nouveau compte créé sur Krosmoz JDR')
             ->greeting('Bonjour !')
             ->line("Un nouveau compte a été créé : {$this->newUser->name} ({$this->newUser->email}).")
-            ->action('Voir les utilisateurs', url('/users'));
+            ->action('Examiner le compte', url('/users/'.$this->newUser->id));
     }
 
     public function toArray($notifiable): array
     {
         return [
+            'config_type' => 'new_account_registered',
             'new_user_id' => $this->newUser->id,
             'new_user_name' => $this->newUser->name,
             'new_user_email' => $this->newUser->email,
             'message' => "Nouveau compte créé : {$this->newUser->name} ({$this->newUser->email}).",
-            'url' => url('/users'),
+            'url' => url('/users/'.$this->newUser->id),
         ];
     }
 }

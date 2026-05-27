@@ -322,7 +322,12 @@ function getNotificationState(notification) {
     if (notification.duration === 0) {
         return 'full';
     }
-    
+
+    // Succès / erreur : garder le message lisible (évite le mode icône seule)
+    if (notification.type === 'success' || notification.type === 'error') {
+        return 'full';
+    }
+
     const elapsed = getElapsedMs(notification);
 
     return elapsed < notification.fullDisplayTime ? 'full' : 'contracted';
