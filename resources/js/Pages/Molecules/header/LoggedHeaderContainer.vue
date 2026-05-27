@@ -19,6 +19,7 @@
  * @note Respecte la philosophie Atomic Design (niveau molecule, composition d'atoms).
  */
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import Route from "@/Pages/Atoms/action/Route.vue";
 import Avatar from "@/Pages/Atoms/data-display/Avatar.vue";
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
@@ -510,6 +511,12 @@ const logout = () => {
                                 class="btn-sm"
                                 @click="goToNotificationCenter"
                             />
+                            <Route
+                                :href="`${route('user.settings')}#notifications`"
+                                class="btn btn-ghost btn-sm hidden sm:inline-flex"
+                            >
+                                Préférences
+                            </Route>
                             <template v-if="popoverTab === 'messages'">
                                 <Tooltip
                                     content="Toasts affichés pendant la session (non enregistrés)."

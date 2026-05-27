@@ -20,8 +20,7 @@ import {
     ref,
     watch,
 } from 'vue';
-import { Link } from '@inertiajs/vue3';
-import Route from '@/Pages/Atoms/action/Route.vue';
+import { Link, router } from '@inertiajs/vue3';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import { useDevice } from '@/Composables/layout/useDevice';
@@ -202,6 +201,13 @@ watch(
     { immediate: true }
 );
 
+function navigateTo(item) {
+    router.visit(route(item.href), {
+        preserveState: false,
+        preserveScroll: false,
+    });
+}
+
 function itemKey(item, prefix) {
     return `${prefix}-${item.href}`;
 }
@@ -270,21 +276,20 @@ function itemKey(item, prefix) {
                     :key="'measure-' + item.href"
                     class="inline-flex shrink-0"
                 >
-                    <Route :route="item.href">
-                        <Btn
-                            variant="glass"
-                            color="neutral"
-                            size="md"
-                            :class="navBtnClass"
-                        >
-                            <span
-                                class="fa-solid opacity-90"
-                                :class="item.icon"
-                                aria-hidden="true"
-                            />
-                            {{ item.title }}
-                        </Btn>
-                    </Route>
+                    <Btn
+                        variant="glass"
+                        color="neutral"
+                        size="md"
+                        :class="navBtnClass"
+                        @click="navigateTo(item)"
+                    >
+                        <span
+                            class="fa-solid opacity-90"
+                            :class="item.icon"
+                            aria-hidden="true"
+                        />
+                        {{ item.title }}
+                    </Btn>
                 </div>
                 <div class="inline-flex shrink-0">
                     <Btn
@@ -311,22 +316,22 @@ function itemKey(item, prefix) {
                         :key="item.href"
                         class="shrink-0"
                     >
-                        <Route :route="item.href" :title="item.title">
-                            <Btn
-                                variant="glass"
-                                color="neutral"
-                                size="md"
-                                :active="isItemActive(item)"
-                                :class="navBtnClass"
-                            >
-                                <span
-                                    class="fa-solid opacity-90"
-                                    :class="item.icon"
-                                    aria-hidden="true"
-                                />
-                                {{ item.title }}
-                            </Btn>
-                        </Route>
+                        <Btn
+                            variant="glass"
+                            color="neutral"
+                            size="md"
+                            :active="isItemActive(item)"
+                            :class="navBtnClass"
+                            :title="item.title"
+                            @click="navigateTo(item)"
+                        >
+                            <span
+                                class="fa-solid opacity-90"
+                                :class="item.icon"
+                                aria-hidden="true"
+                            />
+                            {{ item.title }}
+                        </Btn>
                     </li>
                     <li v-if="overflowItems.length" class="shrink-0">
                         <Dropdown

@@ -55,17 +55,15 @@ class UpdateUserRequest extends FormRequest
         ];
     }
 
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
-        $data = $this->all();
-        if (isset($data['notifications_enabled'])) {
+        if ($this->has('notifications_enabled')) {
+            $raw = $this->input('notifications_enabled');
+            if (is_bool($raw)) {
+                return;
+            }
             $this->merge([
-                'notifications_enabled' => filter_var($data['notifications_enabled'], FILTER_VALIDATE_BOOLEAN),
-            ]);
-        }
-        if (! isset($data['notification_channels'])) {
-            $this->merge([
-                'notification_channels' => [],
+                'notifications_enabled' => filter_var($raw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false,
             ]);
         }
     }

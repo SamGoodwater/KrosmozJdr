@@ -12,6 +12,8 @@ Pour la documentation technique et les bonnes pratiques, voir :
 
 ### Livraisons
 
+- **Page d’accueil (2026-05)** : 6 sections CMS (hero, encart bêta, jeu, plateforme, parcours, contribuer) dans `CriticalPagesSeeder` ; fallback `Home.vue` aligné ; tutoiement, ton honnête sur la bêta, sans bloc changelog. Seed : `php artisan db:seed --class=CriticalPagesSeeder`.
+- **Ton Essentiel & Règles (2026-05)** : réécriture des pages « L'Essentiel » (seed `essential-pages.php`, plus court, tutoiement) ; passe ton sur les **90 fichiers** Markdown des règles (tutoiement, descriptions accueillantes, mécaniques et exemples conservés) ; commande `php artisan pages:rules-friendly-tone` pour corrections automatiques récurrentes. Doc : [FORMAT_REGLES.md](../400-%20Jeu/420-%20R%C3%A8gles/FORMAT_REGLES.md).
 - **Écran de chargement tunnel (2026-05)** : overlay plein page (`loading.webp` / PNG), zoom infini centré, splash HTML avant hydratation Vue, croix de fermeture secours. Doc : [SITE_LOADING_OVERLAY.md](../30-UI/SITE_LOADING_OVERLAY.md).
 - **Performance globale (2026-05)** : Inertia `shareOnce` / `defer`, Ziggy dédupliqué, cache permissions invité, characteristics via API + Pinia, shell frontend allégé. Doc : [PERFORMANCE_GLOBAL_OPTIMISATIONS.md](./PERFORMANCE_GLOBAL_OPTIMISATIONS.md), guide [PERFORMANCE_GLOBAL.md](../40-DevGuides/PERFORMANCE_GLOBAL.md).
 - **Changelog 1.3.2 (2026-05)** : journal public joueur/MJ dans `storage/app/public/changelog/1.3.2.md` ; semver via `PUBLIC_CHANGELOG_SEMVER`.

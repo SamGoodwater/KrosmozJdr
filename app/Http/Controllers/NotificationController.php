@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Notifications\ScrappingJobProgressNotification;
+use App\Support\Notifications\NotificationCatalog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
@@ -25,16 +27,25 @@ class NotificationController extends Controller
      */
     public function index(Request $request): JsonResponse|Response
     {
+        $user = $request->user();
+        $isAdmin = $user->role >= User::ROLE_ADMIN;
+
         if (! $request->wantsJson()) {
             return Inertia::render('Pages/notifications/Index', [
-                'unreadCount' => $request->user()->unreadNotifications()->whereNull('archived_at')->count(),
+                'unreadCount' => $user->unreadNotifications()->whereNull('archived_at')->count(),
+                'isAdmin' => $isAdmin,
+                'notificationCategories' => [
+                    'admin_action' => 'À traiter',
+                    'admin' => 'Administration',
+                    'personal' => 'Personnelles',
+                ],
             ]);
         }
 
-        $user = $request->user();
         $perPage = (int) $request->input('per_page', 15);
         $perPage = min(max($perPage, 5), 50);
         $archived = $request->boolean('archived', false);
+        $scope = (string) $request->input('scope', 'all');
 
         $query = $user->notifications();
         if ($archived) {
@@ -42,11 +53,24 @@ class NotificationController extends Controller
         } else {
             $query->whereNull('archived_at');
         }
+
         $notifications = $query->orderByRaw('pinned_at IS NOT NULL DESC')
             ->orderByDesc('created_at')
             ->paginate($perPage);
 
-        $items = $notifications->getCollection()->map(fn (DatabaseNotification $n) => $this->formatNotification($n));
+        $items = $notifications->getCollection()
+            ->map(fn (DatabaseNotification $n) => $this->formatNotification($n));
+
+        if ($isAdmin && $scope !== 'all') {
+            $items = $items->filter(function (array $item) use ($scope) {
+                return match ($scope) {
+                    'admin_action' => ($item['category'] ?? '') === 'admin_action',
+                    'admin' => in_array($item['category'] ?? '', ['admin', 'admin_action'], true),
+                    'personal' => ($item['category'] ?? '') === 'personal',
+                    default => true,
+                };
+            })->values();
+        }
 
         $unreadCount = $user->unreadNotifications()->whereNull('archived_at')->count();
 
@@ -58,6 +82,7 @@ class NotificationController extends Controller
                 'last_page' => $notifications->lastPage(),
                 'per_page' => $notifications->perPage(),
                 'total' => $notifications->total(),
+                'scope' => $scope,
             ],
         ]);
     }
@@ -72,10 +97,16 @@ class NotificationController extends Controller
         $data = is_array($notification->data) ? $notification->data : [];
         $isScrappingJob = $notification->type === self::SCRAPPING_NOTIFICATION_TYPE
             || (($data['kind'] ?? null) === 'scrapping_job');
+        $meta = NotificationCatalog::resolve($notification->type, $data);
 
         return [
             'id' => $notification->id,
             'type' => $notification->type,
+            'config_type' => $meta['config_type'],
+            'category' => $meta['category'],
+            'type_label' => $meta['label'],
+            'action_label' => $meta['action_label'],
+            'requires_action' => $meta['category'] === 'admin_action',
             'message' => $data['message'] ?? '',
             'url' => $data['url'] ?? null,
             'read_at' => isset($notification->read_at) ? $notification->read_at->toIso8601String() : null,

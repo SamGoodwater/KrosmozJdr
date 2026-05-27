@@ -32,7 +32,7 @@ class RequirePasswordWithInactivity
             : (int) config('auth.password_inactivity_timeout', 3600);
 
         if ($this->shouldConfirmPassword($request, $timeout)) {
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->header('X-Inertia')) {
                 return $this->responseFactory->json([
                     'message' => 'Password confirmation required.',
                 ], 423);

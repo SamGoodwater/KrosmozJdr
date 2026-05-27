@@ -22,10 +22,21 @@ import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
 import VerifyMailAlert from '@/Pages/Molecules/user/VerifyMailAlert.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
+import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
+import { useProtectedAdminAction } from '@/Composables/auth/useProtectedAdminAction';
 
 const page = usePage();
 const { success, error } = useNotificationStore();
 const { isAdmin, isSuperAdmin } = usePermissions();
+const {
+    showPasswordModal,
+    passwordModalTitle,
+    passwordModalMessage,
+    passwordModalConfirmLabel,
+    requirePassword,
+    onPasswordConfirmed,
+    onPasswordModalCancel,
+} = useProtectedAdminAction();
 
 // Utilisateur à éditer
 // Le user est passé via page.props.user (UserResource)
@@ -350,22 +361,69 @@ const adminRoleSelectOptions = computed(() =>
 );
 
 const showForceDeleteModal = ref(false);
+const showSoftDeleteModal = ref(false);
 
-const restoreUser = () => {
-    if (user.value?.id) {
-        router.post(route('user.restore', user.value.id), {}, {
-            preserveScroll: true,
-        });
-    }
+const handleActionError = (errors) => {
+    const message = errors?.user
+        || errors?.message
+        || 'Action impossible. Vérifie ton mot de passe ou tes droits.';
+    error(Array.isArray(message) ? message[0] : message);
 };
 
-const confirmForceDelete = () => {
-    if (user.value?.id) {
-        router.delete(route('user.forceDelete', user.value.id), {
-            preserveScroll: true,
-        });
+const restoreUser = () => {
+    if (!user.value?.id) {
+        return;
     }
+    requirePassword(
+        'Confirmer la restauration',
+        `Entre ton mot de passe pour restaurer ${user.value.name || user.value.email}.`,
+        'Restaurer',
+        () => {
+            router.post(route('user.restore', user.value.id), {}, {
+                preserveScroll: true,
+                onSuccess: () => success('Utilisateur restauré.'),
+                onError: handleActionError,
+            });
+        },
+    );
+};
+
+const confirmForceDeletePrompt = () => {
     showForceDeleteModal.value = false;
+    if (!user.value?.id) {
+        return;
+    }
+    requirePassword(
+        'Confirmer la suppression définitive',
+        `Entre ton mot de passe pour supprimer définitivement ${user.value.name || user.value.email}.`,
+        'Supprimer définitivement',
+        () => {
+            router.post(route('user.forceDelete', user.value.id), {}, {
+                preserveScroll: true,
+                onSuccess: () => success('Utilisateur supprimé définitivement.'),
+                onError: handleActionError,
+            });
+        },
+    );
+};
+
+const confirmSoftDeletePrompt = () => {
+    showSoftDeleteModal.value = false;
+    if (!user.value?.id) {
+        return;
+    }
+    requirePassword(
+        'Confirmer l\'archivage',
+        `Entre ton mot de passe pour archiver ${user.value.name || user.value.email}.`,
+        'Archiver',
+        () => {
+            router.delete(route('user.admin.delete', user.value.id), {
+                preserveScroll: true,
+                onSuccess: () => success('Utilisateur archivé.'),
+                onError: handleActionError,
+            });
+        },
+    );
 };
 
 </script>
@@ -587,6 +645,44 @@ const confirmForceDelete = () => {
                     </div>
                 </div>
             </div>
+            <!-- Section admin : archiver un compte actif -->
+            <div
+                v-if="isAdmin && !isSelfUpdate && !user?.deleted_at && user?.can?.delete"
+                class="mt-6"
+            >
+                <hr class="border-gray-300 dark:border-gray-700 my-4" />
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-content-300">
+                        Archiver le compte
+                    </h3>
+                    <p class="mt-1 text-sm text-content-600">
+                        Le compte sera désactivé (soft delete) et pourra être restauré depuis la liste des utilisateurs.
+                    </p>
+                </div>
+                <div class="mt-4">
+                    <Btn
+                        color="warning"
+                        size="sm"
+                        @click="showSoftDeleteModal = true"
+                    >
+                        <i class="fa-solid fa-box-archive mr-1" aria-hidden="true" />
+                        Archiver le compte
+                    </Btn>
+                </div>
+                <ConfirmModal
+                    :open="showSoftDeleteModal"
+                    title="Archiver le compte"
+                    :message="`Archiver le compte de ${user?.name || user?.email} ? Il pourra être restauré ultérieurement.`"
+                    confirm-label="Continuer"
+                    cancel-label="Annuler"
+                    confirm-color="warning"
+                    confirm-icon="fa-solid fa-box-archive"
+                    @close="showSoftDeleteModal = false"
+                    @confirm="confirmSoftDeletePrompt"
+                    @cancel="showSoftDeleteModal = false"
+                />
+            </div>
+
             <!-- Section admin : actions sur compte supprimé (restaurer, supprimer définitivement) -->
             <div
                 v-if="isAdmin && !isSelfUpdate && user?.deleted_at"
@@ -625,15 +721,24 @@ const confirmForceDelete = () => {
                     :open="showForceDeleteModal"
                     title="Supprimer définitivement"
                     :message="user ? `Supprimer définitivement le compte de ${user.name || user.email} ? Cette action est irréversible.` : ''"
-                    confirm-label="Supprimer définitivement"
+                    confirm-label="Continuer"
                     cancel-label="Annuler"
                     confirm-color="error"
                     confirm-icon="fa-solid fa-trash"
                     @close="showForceDeleteModal = false"
-                    @confirm="confirmForceDelete"
+                    @confirm="confirmForceDeletePrompt"
                     @cancel="showForceDeleteModal = false"
                 />
             </div>
+
+            <ConfirmPasswordModal
+                v-model:open="showPasswordModal"
+                :title="passwordModalTitle"
+                :message="passwordModalMessage"
+                :confirm-label="passwordModalConfirmLabel"
+                @confirmed="onPasswordConfirmed"
+                @cancel="onPasswordModalCancel"
+            />
 
             <!-- Section admin : rôle (uniquement pour les admins modifiant un autre utilisateur) -->
             <div

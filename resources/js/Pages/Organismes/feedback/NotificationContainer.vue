@@ -45,7 +45,7 @@ const getPositionClasses = (placement) => {
     const isCenter = horizontal === 'center';
     
     const containerClasses = [
-        'fixed z-50 pointer-events-none',
+        'fixed z-[10060] pointer-events-none',
         vertical === 'top' ? 'top-4' : 'bottom-4',
         'flex flex-col gap-2',
     ];

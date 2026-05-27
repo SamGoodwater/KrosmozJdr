@@ -82,12 +82,12 @@ const atomClasses = computed(() =>
             props.vertical === 'bottom' && 'toast-bottom',
             // Classes de couleur
             color.value && `color-${color.value}`,
-            color.value === 'success' && 'bg-success-800/10 text-success-100',
-            color.value === 'error' && 'bg-error-800/10 text-error-100',
-            color.value === 'info' && 'bg-info-800/10 text-info-100',
-            color.value === 'warning' && 'bg-warning-800/10 text-warning-100',
-            color.value === 'primary' && 'bg-primary-800/10 text-primary-100',
-            color.value === 'secondary' && 'bg-secondary-800/10 text-secondary-100',
+            color.value === 'success' && 'bg-success/10 text-success border border-success/20',
+            color.value === 'error' && 'bg-error/10 text-error border border-error/20',
+            color.value === 'info' && 'bg-info/10 text-info border border-info/20',
+            color.value === 'warning' && 'bg-warning/10 text-warning border border-warning/20',
+            color.value === 'primary' && 'bg-primary/10 text-primary border border-primary/20',
+            color.value === 'secondary' && 'bg-secondary/10 text-secondary border border-secondary/20',
         ].filter(Boolean),
         getCustomUtilityClasses(props),
         props.class

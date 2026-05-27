@@ -401,6 +401,23 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     }
 
     /**
+     * Indique si l'utilisateur n'a pas d'avatar personnalisé (colonne legacy ou média).
+     */
+    public function usesDefaultAvatar(): bool
+    {
+        if ($this->getFirstMediaUrl('avatars') !== '') {
+            return false;
+        }
+
+        if ($this->avatar === null || $this->avatar === '') {
+            return true;
+        }
+
+        return $this->avatar === self::DEFAULT_AVATAR
+            || str_ends_with($this->avatar, 'default_avatar_head.webp');
+    }
+
+    /**
      * Relation vers les comptes OAuth liés.
      *
      * @return HasMany<OAuthAccount>

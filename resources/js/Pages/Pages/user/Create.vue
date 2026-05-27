@@ -1,11 +1,15 @@
 <script setup>
-import { computed } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { useForm, router } from '@inertiajs/vue3';
+import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Route from '@/Pages/Atoms/action/Route.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
+import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
+import { useProtectedAdminAction } from '@/Composables/auth/useProtectedAdminAction';
 import { getRoleTranslation } from '@/Utils/user/RoleManager';
+
+defineOptions({ layout: AdminArea });
 
 const props = defineProps({
     roles: { type: Object, default: () => ({}) },
@@ -19,6 +23,16 @@ const form = useForm({
     role: 1,
 });
 
+const {
+    showPasswordModal,
+    passwordModalTitle,
+    passwordModalMessage,
+    passwordModalConfirmLabel,
+    requirePassword,
+    onPasswordConfirmed,
+    onPasswordModalCancel,
+} = useProtectedAdminAction();
+
 const roleOptions = computed(() => {
     return Object.entries(props.roles || {})
         .map(([value, roleName]) => ({
@@ -28,21 +42,28 @@ const roleOptions = computed(() => {
         .filter((opt) => opt.value !== 5);
 });
 
+const goToList = () => router.visit(route('user.index'), { preserveState: false, preserveScroll: false });
+
 const submit = () => {
-    form.post(route('user.store'), {
-        preserveScroll: true,
-    });
+    requirePassword(
+        'Confirmer la création',
+        'Entre ton mot de passe pour créer ce compte utilisateur.',
+        'Créer',
+        () => {
+            form.post(route('user.store'), {
+                preserveScroll: true,
+            });
+        },
+    );
 };
 </script>
 <template>
     <section class="space-y-5">
         <header class="space-y-2">
-            <Route route="user.index">
-                <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
-                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                    Retour à la liste
-                </Btn>
-            </Route>
+            <Btn color="neutral" variant="ghost" size="sm" class="gap-2" @click="goToList">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Retour à la liste
+            </Btn>
             <div>
                 <h1 class="text-2xl font-bold">Créer un compte utilisateur</h1>
                 <p class="text-sm opacity-70">
@@ -68,17 +89,23 @@ const submit = () => {
                     Le rôle super administrateur ne peut pas être attribué depuis cet écran.
                 </div>
                 <div class="md:col-span-2 flex items-center gap-2 pt-2">
-                    <Btn color="primary" size="sm" :disabled="form.processing" @click="submit">
+                    <Btn type="submit" color="primary" size="sm" :disabled="form.processing">
                         Créer le compte
                     </Btn>
-                    <Route route="user.index">
-                        <Btn color="neutral" variant="ghost" size="sm" :disabled="form.processing">
-                            Annuler
-                        </Btn>
-                    </Route>
+                    <Btn color="neutral" variant="ghost" size="sm" :disabled="form.processing" @click="goToList">
+                        Annuler
+                    </Btn>
                 </div>
             </form>
         </div>
+
+        <ConfirmPasswordModal
+            v-model:open="showPasswordModal"
+            :title="passwordModalTitle"
+            :message="passwordModalMessage"
+            :confirm-label="passwordModalConfirmLabel"
+            @confirmed="onPasswordConfirmed"
+            @cancel="onPasswordModalCancel"
+        />
     </section>
 </template>
-

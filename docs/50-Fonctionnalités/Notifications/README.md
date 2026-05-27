@@ -36,8 +36,9 @@ L’historique temporaire (onglet « Temporaires » du centre) reçoit aussi les
 - **Modèle User** : `getChannelsForNotificationType(string $type)`, `getFrequencyForNotificationType(string $type)`, `wantsNotificationForType(string $type)`. Préférence par type : `{ channels: ['database','mail'], frequency: 'instant'|'daily'|'weekly'|'monthly' }`.
 - **NotificationService** : chaque envoi utilise le type (ex. `entity_modified`, `entity_created`, `profile_modified`) et n’envoie que si l’utilisateur a activé au moins un canal pour ce type.
 - **NotificationService** : envoi immédiat si fréquence `instant`, sinon enregistrement en `notification_digest_queue` ; respect des canaux et du type (entity / page_section / profile / admin).
-- **Paramétrage utilisateur** : page « Mon compte » → « Modifier » ; section « Notifications » avec par type : canaux (Aucune / Sur le site / Par email / Les deux) et fréquence (Au fur et à mesure / Quotidienne / Hebdomadaire / Mensuelle). Données : `notificationTypes`, `notificationChannelsLabels`, `notificationFrequencies`.
-- **Mapping frontend/backend** : le formulaire envoie `notification_preferences[typeKey] = ['database'|'mail']` ; le `UserController` normalise en `{ channels: [...], frequency }` ; `initNotificationForm` (Settings, Edit) extrait les canaux depuis le format backend via `normalizePrefsChannels` / `channelsFromPref`.
+- **Paramétrage utilisateur** : page « Paramètres du compte » (`/user/settings`, onglet Notifications) ; par type : canaux (Aucune / Sur le site / Par email / Les deux) et fréquence (Au fur et à mesure / Quotidienne / Hebdomadaire / Mensuelle). Lien depuis le centre de notifications et le popover header.
+- **Mapping frontend/backend** : le formulaire envoie `notification_preferences[typeKey] = { channels: [...], frequency: 'instant'|... }` ; le `UserController` normalise et filtre les types inconnus ; `initNotificationForm` (Settings) extrait canaux et fréquence depuis le format backend.
+- **Centre de notifications (page)** : filtres admin « À traiter », « Administration », « Personnelles » ; métadonnées `category`, `config_type`, `action_label` exposées par l’API JSON.
 
 ## Emails de notification (canal mail)
 

@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support\Cms;
 
 /**
- * Remplace les liens Markdown relatifs vers des fichiers de règles {@code N[.N]+-titre.md}
- * par des shortcodes {@code [[kref:pageSection:pageSlug@sectionSlug|libellé]]} lorsque le
- * numéro de section est connu dans la TOC ; sinon {@code [[kref:page:slug|libellé]]}.
+ * Remplace les liens Markdown relatifs vers des fichiers ou dossiers de règles
+ * par des shortcodes {@code [[kref:page:slug|libellé]]}.
  */
 final class RulesMarkdownInternalRulesLinkToPageKref
 {
@@ -21,6 +22,8 @@ final class RulesMarkdownInternalRulesLinkToPageKref
             return $markdown;
         }
 
+        $markdown = self::replaceSectionLinksWithEmbeddedKref($markdown, $currentMdAbsolutePath, $rulesRootAbsolutePath, $index);
+
         $rulesRoot = rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $rulesRootAbsolutePath), DIRECTORY_SEPARATOR);
         $currentDir = dirname(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $currentMdAbsolutePath));
 
@@ -31,36 +34,88 @@ final class RulesMarkdownInternalRulesLinkToPageKref
                 return $m[0];
             }
 
+            if (str_contains($rawTarget, 'REFERENCE_CLES_CARACTERISTIQUES.md')) {
+                $display = $label !== '' ? $label : 'Caractéristiques';
+
+                return '[[kref:page:caracteristiques|'.$display.']]';
+            }
+
+            if (str_starts_with($rawTarget, '#')) {
+                return $m[0];
+            }
+
             $targetPath = preg_replace('/#.*$/', '', $rawTarget) ?? $rawTarget;
             $joined = $currentDir.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $targetPath);
             $resolved = realpath($joined);
-            if ($resolved === false || ! str_starts_with($resolved, $rulesRoot)) {
+
+            $sectionNumber = null;
+            if ($resolved !== false) {
+                if (is_file($resolved)) {
+                    $sectionNumber = self::sectionNumberFromBasename(basename($resolved));
+                } elseif (is_dir($resolved)) {
+                    $sectionNumber = self::sectionNumberFromBasename(basename($resolved));
+                }
+            }
+
+            if ($sectionNumber === null) {
+                $sectionNumber = self::sectionNumberFromBasename(basename(rtrim($targetPath, '/')));
+            }
+
+            if ($sectionNumber === null) {
                 return $m[0];
             }
 
-            $basename = basename($resolved);
-            if (! preg_match('/^(\d+(?:\.\d+){1,2})-[^\/\\\\]+\.md$/u', $basename, $bm)) {
+            if ($resolved !== false && ! str_starts_with($resolved, $rulesRoot)) {
                 return $m[0];
             }
 
-            $num = (string) $bm[1];
-            $parentL2 = self::parentLevel2NumberFromSectionNumber($num);
-            $slug = $index->slugForLevel2Number($parentL2);
-            if ($slug === null) {
-                return $m[0];
-            }
+            $display = $label !== '' ? $label : $sectionNumber;
+            $kref = $index->krefForSectionNumber($sectionNumber, $display);
 
-            $display = $label !== '' ? $label : $basename;
-
-            $sectionSlug = $index->sectionSlugForL3Number($num);
-            if ($sectionSlug !== null) {
-                return '[[kref:pageSection:'.$slug.'@'.$sectionSlug.'|'.$display.']]';
-            }
-
-            return '[[kref:page:'.$slug.'|'.$display.']]';
+            return $kref ?? $m[0];
         }, $markdown);
 
         return is_string($out) ? $out : $markdown;
+    }
+
+    /**
+     * Liens du type {@code [Section 3.3.4 : [[kref:…|Libellé]]](fichier.md)} (labels imbriqués).
+     */
+    private static function replaceSectionLinksWithEmbeddedKref(
+        string $markdown,
+        string $currentMdAbsolutePath,
+        string $rulesRootAbsolutePath,
+        RulesTocSlugIndex $index,
+    ): string {
+        $pattern = '/\[Section\s+(?<num>\d+(?:\.\d+)*)\s*[:—–-]\s*\[\[kref:[^|]+\|(?<kreflabel>[^\]]+)\]\]\]\((?<target>[^)]+)\)/u';
+
+        $rulesRoot = rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $rulesRootAbsolutePath), DIRECTORY_SEPARATOR);
+        $currentDir = dirname(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $currentMdAbsolutePath));
+
+        $out = preg_replace_callback($pattern, function (array $m) use ($currentDir, $rulesRoot, $index): string {
+            $sectionNumber = trim((string) ($m['num'] ?? ''));
+            $label = trim((string) ($m['kreflabel'] ?? ''));
+            $rawTarget = trim((string) ($m['target'] ?? ''));
+            $resolvedNumber = self::resolveSectionNumberFromTarget($rawTarget, $currentDir, $rulesRoot) ?? $sectionNumber;
+            $kref = $index->krefForSectionNumber($resolvedNumber, $label);
+
+            return $kref ?? $m[0];
+        }, $markdown);
+
+        return is_string($out) ? $out : $markdown;
+    }
+
+    private static function resolveSectionNumberFromTarget(string $rawTarget, string $currentDir, string $rulesRoot): ?string
+    {
+        $targetPath = preg_replace('/#.*$/', '', $rawTarget) ?? $rawTarget;
+        $joined = $currentDir.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $targetPath);
+        $resolved = realpath($joined);
+        if ($resolved !== false && ! str_starts_with($resolved, $rulesRoot)) {
+            return null;
+        }
+        $basename = $resolved !== false ? basename($resolved) : basename(rtrim($targetPath, '/'));
+
+        return self::sectionNumberFromBasename($basename);
     }
 
     /**
@@ -74,5 +129,14 @@ final class RulesMarkdownInternalRulesLinkToPageKref
         }
 
         return $number;
+    }
+
+    private static function sectionNumberFromBasename(string $basename): ?string
+    {
+        if (preg_match('/^(\d+(?:\.\d+){1,2})(?:-[^\/\\\\]+)?(?:\.md)?$/u', $basename, $m)) {
+            return (string) $m[1];
+        }
+
+        return null;
     }
 }

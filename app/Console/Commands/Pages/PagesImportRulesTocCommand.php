@@ -7,9 +7,11 @@ use App\Enums\SectionType;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use App\Support\Cms\RulesHtmlSectionSplitter;
 use App\Support\Cms\RulesImportSlugHelper;
 use App\Support\Cms\RulesMarkdownCharacteristicKrefAutowrap;
 use App\Support\Cms\RulesMarkdownInternalRulesLinkToPageKref;
+use App\Support\Cms\RulesMarkdownPlainReferenceToKref;
 use App\Support\Cms\RulesTocParser;
 use App\Support\Cms\RulesTocSlugIndex;
 use Illuminate\Console\Command;
@@ -36,9 +38,9 @@ class PagesImportRulesTocCommand extends Command
     protected $description = 'Crée/maj pages et sections depuis la table des matières des règles.';
 
     /**
-     * Map du contenu HTML des règles par numéro (ex: 3.2.2 => "<p>...</p>").
+     * Contenus HTML découpés par numéro TOC (ex: 3.2.2 => liste de blocs).
      *
-     * @var array<string, string>
+     * @var array<string, list<array{title: string, html: string}>>
      */
     private array $sectionContentByNumber = [];
 
@@ -110,9 +112,15 @@ class PagesImportRulesTocCommand extends Command
                 foreach ($level1['children'] as $level2) {
                     $child = $this->upsertLevel2Page($level2, (int) $parent->id, $creatorId);
 
+                    $expectedSectionSlugs = [];
+                    $pageSectionOrder = 0;
                     foreach ($level2['sections'] as $level3) {
-                        $this->upsertLevel3Section($level3, (int) $child->id, $creatorId);
+                        foreach ($this->upsertLevel3Sections($level3, (int) $child->id, $creatorId, $pageSectionOrder) as $slug) {
+                            $expectedSectionSlugs[] = $slug;
+                        }
                     }
+
+                    $this->purgeOrphanSectionsOnPage((int) $child->id, $expectedSectionSlugs);
                 }
             }
 
@@ -179,12 +187,61 @@ class PagesImportRulesTocCommand extends Command
 
     /**
      * @param  array{number:string,title:string,order:int}  $level3
+     * @return list<string> Slugs créés ou mis à jour
      */
-    private function upsertLevel3Section(array $level3, int $pageId, ?int $creatorId): Section
+    private function upsertLevel3Sections(array $level3, int $pageId, ?int $creatorId, int &$pageSectionOrder): array
     {
-        $slug = $this->buildSectionSlug($level3['number'], $level3['title']);
-        $content = $this->resolveSectionContent($level3['number'], $level3['title']);
+        $baseSlug = $this->buildSectionSlug($level3['number'], $level3['title']);
+        $chunks = $this->resolveSectionChunks($level3['number'], $level3['title']);
+        $slugs = [];
 
+        foreach ($chunks as $index => $chunk) {
+            $chunkTitle = trim($chunk['title']) !== '' ? trim($chunk['title']) : $level3['title'];
+            $slug = count($chunks) === 1
+                ? $baseSlug
+                : ($index === 0 ? $baseSlug : $baseSlug.'-'.Str::slug($chunkTitle));
+            $content = trim($chunk['html']);
+
+            $this->upsertTextSectionBySlug(
+                $pageId,
+                $slug,
+                $chunkTitle,
+                $content !== '' ? $content : '<p>'.e($chunkTitle).'</p>',
+                $pageSectionOrder,
+                $creatorId,
+                $level3['number'],
+            );
+
+            $slugs[] = $slug;
+            $pageSectionOrder++;
+        }
+
+        return $slugs;
+    }
+
+    /**
+     * @return list<array{title: string, html: string}>
+     */
+    private function resolveSectionChunks(string $number, string $fallbackTitle): array
+    {
+        if (! isset($this->sectionContentByNumber[$number])) {
+            return [['title' => $fallbackTitle, 'html' => '<h3>'.e($fallbackTitle).'</h3>']];
+        }
+
+        $chunks = $this->sectionContentByNumber[$number];
+
+        return $chunks !== [] ? $chunks : [['title' => $fallbackTitle, 'html' => '<h3>'.e($fallbackTitle).'</h3>']];
+    }
+
+    private function upsertTextSectionBySlug(
+        int $pageId,
+        string $slug,
+        string $title,
+        string $content,
+        int $order,
+        ?int $creatorId,
+        string $level3Number,
+    ): Section {
         $existing = Section::withTrashed()
             ->where('page_id', $pageId)
             ->where('slug', $slug)
@@ -198,9 +255,9 @@ class PagesImportRulesTocCommand extends Command
 
         $attributes = [
             'page_id' => $pageId,
-            'title' => $level3['title'],
+            'title' => $title,
             'slug' => $slug,
-            'order' => $level3['order'],
+            'order' => $order,
             'template' => SectionType::TEXT->value,
             'type' => SectionType::TEXT->value,
             'settings' => $textSettings,
@@ -231,7 +288,7 @@ class PagesImportRulesTocCommand extends Command
                 $attributes['data'] = $this->replaceSectionContent($existingData, $content);
                 $attributes['params'] = $this->replaceSectionContent($existingParams, $content);
             } else {
-                $hasMarkdownForNumber = isset($this->sectionContentByNumber[$level3['number']]);
+                $hasMarkdownForNumber = isset($this->sectionContentByNumber[$level3Number]);
                 if ($hasMarkdownForNumber && ($hasCustomDataContent || $hasCustomParamsContent)) {
                     $this->skippedExistingSectionBodyFromMarkdown++;
                 }
@@ -251,16 +308,19 @@ class PagesImportRulesTocCommand extends Command
         return Section::create($attributes);
     }
 
-    private function resolveSectionContent(string $number, string $title): string
+    /**
+     * @param  list<string>  $expectedSlugs
+     */
+    private function purgeOrphanSectionsOnPage(int $pageId, array $expectedSlugs): void
     {
-        if (isset($this->sectionContentByNumber[$number])) {
-            $content = trim($this->sectionContentByNumber[$number]);
-            if ($content !== '') {
-                return $content;
-            }
+        if ($expectedSlugs === []) {
+            return;
         }
 
-        return '<h3>'.e($title).'</h3>';
+        Section::query()
+            ->where('page_id', $pageId)
+            ->whereNotIn('slug', $expectedSlugs)
+            ->each(fn (Section $section) => $section->delete());
     }
 
     /**
@@ -321,6 +381,10 @@ class PagesImportRulesTocCommand extends Command
                 $rulesRootReal,
                 $this->rulesTocSlugIndex,
             );
+            $normalizedMarkdown = RulesMarkdownPlainReferenceToKref::apply(
+                $normalizedMarkdown,
+                $this->rulesTocSlugIndex,
+            );
             $normalizedMarkdown = RulesMarkdownCharacteristicKrefAutowrap::apply($normalizedMarkdown);
             $normalizedMarkdown = $this->replaceKrefShortcodes($normalizedMarkdown);
             $html = trim((string) Str::markdown($normalizedMarkdown));
@@ -328,7 +392,10 @@ class PagesImportRulesTocCommand extends Command
                 continue;
             }
 
-            $contentByNumber[$number] = $html;
+            $chunks = RulesHtmlSectionSplitter::split($html);
+            $contentByNumber[$number] = $chunks !== []
+                ? $chunks
+                : [['title' => '', 'html' => $html]];
         }
 
         return $contentByNumber;

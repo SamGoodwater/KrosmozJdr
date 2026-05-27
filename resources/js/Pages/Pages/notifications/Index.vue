@@ -4,7 +4,7 @@
  * - Onglets : Notifications messages (BDD, lu/archivé/épinglé, copier, supprimer) et Notifications temporaires (toasts de la session, copier, vider).
  * - Lien vers la page Paramètres du compte (onglet Notifications).
  */
-import { ref, computed, inject, onMounted } from 'vue';
+import { ref, computed, inject, onMounted, watch } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import Tab from '@/Pages/Molecules/navigation/Tab.vue';
 import TabItem from '@/Pages/Atoms/navigation/TabItem.vue';
@@ -17,6 +17,21 @@ import ScrappingJobNotificationCard from '@/Pages/Molecules/feedback/ScrappingJo
 const page = usePage();
 const activeTab = ref('messages');
 const showArchived = ref(false);
+const messageScope = ref('all');
+
+const isAdmin = computed(() => Boolean(page.props.isAdmin));
+const settingsUrl = computed(() => `${route('user.settings')}#notifications`);
+
+const scopeOptions = computed(() => {
+    const base = [{ value: 'all', label: 'Toutes' }];
+    if (!isAdmin.value) return base;
+    return [
+        ...base,
+        { value: 'admin_action', label: 'À traiter' },
+        { value: 'admin', label: 'Administration' },
+        { value: 'personal', label: 'Personnelles' },
+    ];
+});
 
 const notificationStore = inject('notificationStore', null);
 const temporaryHistory = computed(() => notificationStore?.temporaryHistory?.value ?? []);
@@ -48,6 +63,7 @@ async function fetchMessages() {
         url.searchParams.set('per_page', 15);
         url.searchParams.set('page', messagesMeta.value.current_page);
         if (showArchived.value) url.searchParams.set('archived', '1');
+        if (messageScope.value !== 'all') url.searchParams.set('scope', messageScope.value);
         const res = await fetch(url, { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
         const json = await res.json();
         if (json.data) messages.value = json.data;
@@ -236,6 +252,11 @@ function clearTemporaryHistory() {
     notificationStore?.clearTemporaryHistory();
 }
 
+watch(messageScope, () => {
+    messagesMeta.value.current_page = 1;
+    fetchMessages();
+});
+
 onMounted(() => { fetchMessages(); });
 </script>
 
@@ -243,9 +264,22 @@ onMounted(() => { fetchMessages(); });
     <div class="container mx-auto px-4 py-6 max-w-4xl">
         <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
             <h1 class="text-2xl font-bold">Centre de notifications</h1>
-            <Route :href="route('user.settings') + '#notifications'" class="btn btn-ghost btn-sm gap-2">
+            <Route :href="settingsUrl" class="btn btn-ghost btn-sm gap-2">
                 <Icon source="fa-cog" pack="solid" size="sm" alt="" />
                 Paramètres de notification
+            </Route>
+        </div>
+
+        <div class="rounded-box border border-base-300 bg-base-200/30 p-4 mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <p class="text-sm font-medium text-content-200">Canaux et fréquence</p>
+                <p class="text-xs text-content-600">
+                    Les emails et notifications in-app respectent tes préférences par type (site, email, digest).
+                </p>
+            </div>
+            <Route :href="settingsUrl" class="btn btn-outline btn-sm gap-2">
+                <Icon source="fa-sliders" pack="solid" size="sm" alt="" />
+                Gérer les préférences
             </Route>
         </div>
 
@@ -267,6 +301,18 @@ onMounted(() => { fetchMessages(); });
 
         <!-- Vue Notifications (classiques) -->
         <div v-show="activeTab === 'messages'" class="space-y-4">
+            <div v-if="isAdmin" class="flex flex-wrap gap-2">
+                <button
+                    v-for="opt in scopeOptions"
+                    :key="opt.value"
+                    type="button"
+                    class="btn btn-sm"
+                    :class="messageScope === opt.value ? 'btn-primary' : 'btn-ghost'"
+                    @click="messageScope = opt.value"
+                >
+                    {{ opt.label }}
+                </button>
+            </div>
             <div class="flex flex-wrap items-center gap-2">
                 <label class="label cursor-pointer gap-2">
                     <input
@@ -280,7 +326,11 @@ onMounted(() => { fetchMessages(); });
             </div>
             <p v-if="messagesLoading" class="text-sm text-base-content/60 py-4">Chargement…</p>
             <template v-else-if="messages.length === 0">
-                <p class="text-sm text-base-content/60 py-4">Aucune notification.</p>
+                <p class="text-sm text-base-content/60 py-4">
+                    {{ messageScope === 'admin_action'
+                        ? 'Aucune notification à traiter pour le moment.'
+                        : 'Aucune notification.' }}
+                </p>
             </template>
             <template v-else>
                 <div
@@ -296,7 +346,10 @@ onMounted(() => { fetchMessages(); });
                         v-for="item in messages"
                         :key="item.id"
                         class="relative border border-base-300 rounded-box p-3 flex flex-col gap-2"
-                        :class="{ 'bg-primary/5': !item.read_at }"
+                        :class="{
+                            'bg-primary/5': !item.read_at,
+                            'border-warning/40 bg-warning/5': item.requires_action && !item.read_at,
+                        }"
                     >
                         <template v-if="item.is_scrapping_job">
                             <ScrappingJobNotificationCard
@@ -329,10 +382,23 @@ onMounted(() => { fetchMessages(); });
                                 class="text-left flex-1 min-w-0"
                                 @click="openMessage(item)"
                             >
+                                <span v-if="item.type_label" class="block text-xs font-medium text-primary mb-1">
+                                    {{ item.type_label }}
+                                </span>
                                 <span class="line-clamp-2">{{ item.message }}</span>
                                 <span class="text-xs text-base-content/50">{{ formatDate(item.created_at) }}</span>
                             </button>
                             <div class="flex items-center gap-1 shrink-0">
+                                <Btn
+                                    v-if="item.url && item.action_label"
+                                    color="primary"
+                                    variant="outline"
+                                    size="xs"
+                                    class="hidden sm:inline-flex"
+                                    @click.stop="openMessage(item)"
+                                >
+                                    {{ item.action_label }}
+                                </Btn>
                                 <Btn
                                     variant="ghost"
                                     size="xs"

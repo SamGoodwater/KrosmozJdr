@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
@@ -33,6 +34,7 @@ class LastConnectionNotification extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'config_type' => 'last_connection',
             'logged_at' => $this->loggedAtIso,
             'message' => 'Connexion enregistrée le '.$this->loggedAtIso.'.',
             'url' => url('/user'),

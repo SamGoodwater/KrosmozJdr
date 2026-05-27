@@ -3,13 +3,16 @@ import { computed, ref } from 'vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Route from '@/Pages/Atoms/action/Route.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import Avatar from '@/Pages/Atoms/data-display/Avatar.vue';
 import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
+import UserListRowActions from '@/Pages/Molecules/user/UserListRowActions.vue';
 import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
+import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
+import { useProtectedAdminAction } from '@/Composables/auth/useProtectedAdminAction';
+import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import { getRoleTranslation, ROLES } from '@/Utils/user/RoleManager';
 
 defineOptions({ layout: AdminArea });
@@ -22,6 +25,16 @@ const props = defineProps({
 
 const page = usePage();
 const { isSuperAdmin } = usePermissions();
+const { success, error: notifyError } = useNotificationStore();
+const {
+    showPasswordModal,
+    passwordModalTitle,
+    passwordModalMessage,
+    passwordModalConfirmLabel,
+    requirePassword,
+    onPasswordConfirmed,
+    onPasswordModalCancel,
+} = useProtectedAdminAction();
 
 const usersData = computed(() => Array.isArray(props.users?.data) ? props.users.data : []);
 const links = computed(() => Array.isArray(props.users?.links) ? props.users.links : []);
@@ -53,12 +66,14 @@ const statusOptions = [
 const form = useForm({
     search: props.filters?.search ?? '',
     role: props.filters?.role ?? '',
-    status: props.filters?.status ?? 'active',
+    status: props.filters?.status ?? 'all',
 });
+
+const visitOptions = { preserveState: false, preserveScroll: false };
 
 const applyFilters = () => {
     form.get(route('user.index'), {
-        preserveState: true,
+        preserveState: false,
         preserveScroll: true,
     });
 };
@@ -66,15 +81,17 @@ const applyFilters = () => {
 const resetFilters = () => {
     form.search = '';
     form.role = '';
-    form.status = 'active';
+    form.status = 'all';
     applyFilters();
 };
 
-const goToEdit = (userId) => router.visit(route('user.admin.edit', userId));
-const goToResetPassword = (userId) => router.visit(`${route('user.admin.edit', userId)}#password-admin`);
+const goToEdit = (userId) => router.visit(route('user.admin.edit', userId), visitOptions);
+const goToCreate = () => router.visit(route('user.create'), visitOptions);
+const goToResetPassword = (userId) => router.visit(`${route('user.admin.edit', userId)}#password-admin`, visitOptions);
+const userAvatarSrc = (u) => (u?.avatar_is_default ? '' : (u?.avatar || ''));
 const toLabel = (v) => (v === null || typeof v === 'undefined' || v === '' ? '-' : String(v));
 const isCurrentUser = (userId) => Number(page.props?.auth?.user?.id) === Number(userId);
-const hasActiveFilters = computed(() => Boolean(form.search || form.role || (form.status && form.status !== 'active')));
+const hasActiveFilters = computed(() => Boolean(form.search || form.role || (form.status && form.status !== 'all')));
 const selectedRoleLabel = computed(() => {
     if (!form.role) return null;
     const role = roleOptions.value.find((option) => Number(option.value) === Number(form.role));
@@ -93,7 +110,7 @@ const clearRole = () => {
     applyFilters();
 };
 const clearStatus = () => {
-    form.status = 'active';
+    form.status = 'all';
     applyFilters();
 };
 const decodeHtmlEntities = (value) => String(value)
@@ -105,13 +122,76 @@ const decodeHtmlEntities = (value) => String(value)
     .replace(/&quot;/g, '"');
 const paginationLabel = (label) => decodeHtmlEntities(label).replace(/<[^>]*>/g, '').trim();
 
+const rowActionRefs = ref({});
 const showForceDeleteModal = ref(false);
+const showSoftDeleteModal = ref(false);
 const userToForceDelete = ref(null);
+const userToSoftDelete = ref(null);
 
-const restoreUser = (userId) => {
-    router.post(route('user.restore', userId), {}, {
-        preserveScroll: true,
-    });
+const setRowActionRef = (userId, el) => {
+    if (el) {
+        rowActionRefs.value[userId] = el;
+    }
+};
+
+const openRowContextMenu = (event, user) => {
+    event.preventDefault();
+    rowActionRefs.value[user.id]?.openContextMenu?.(event);
+};
+
+const handleVisitError = (errors) => {
+    const message = errors?.user
+        || errors?.message
+        || 'Action impossible. Vérifie ton mot de passe ou tes droits.';
+    notifyError(Array.isArray(message) ? message[0] : message);
+};
+
+const openSoftDeleteModal = (u) => {
+    userToSoftDelete.value = u;
+    showSoftDeleteModal.value = true;
+};
+
+const closeSoftDeleteModal = () => {
+    showSoftDeleteModal.value = false;
+    userToSoftDelete.value = null;
+};
+
+const confirmSoftDeletePrompt = () => {
+    const target = userToSoftDelete.value;
+    showSoftDeleteModal.value = false;
+    if (!target?.id) {
+        return;
+    }
+    requirePassword(
+        'Confirmer l\'archivage',
+        `Entre ton mot de passe pour archiver ${target.name || target.email}.`,
+        'Archiver',
+        () => {
+            router.delete(route('user.admin.delete', target.id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    success('Utilisateur archivé.');
+                    userToSoftDelete.value = null;
+                },
+                onError: handleVisitError,
+            });
+        },
+    );
+};
+
+const restoreUser = (u) => {
+    requirePassword(
+        'Confirmer la restauration',
+        `Entre ton mot de passe pour restaurer ${u.name || u.email}.`,
+        'Restaurer',
+        () => {
+            router.post(route('user.restore', u.id), {}, {
+                preserveScroll: true,
+                onSuccess: () => success('Utilisateur restauré.'),
+                onError: handleVisitError,
+            });
+        },
+    );
 };
 
 const openForceDeleteModal = (u) => {
@@ -119,19 +199,54 @@ const openForceDeleteModal = (u) => {
     showForceDeleteModal.value = true;
 };
 
-const confirmForceDelete = () => {
-    if (userToForceDelete.value?.id) {
-        router.delete(route('user.forceDelete', userToForceDelete.value.id), {
-            preserveScroll: true,
-        });
-    }
+const closeForceDeleteModal = () => {
     showForceDeleteModal.value = false;
     userToForceDelete.value = null;
 };
 
-const closeForceDeleteModal = () => {
+const confirmForceDeletePrompt = () => {
+    const target = userToForceDelete.value;
     showForceDeleteModal.value = false;
-    userToForceDelete.value = null;
+    if (!target?.id) {
+        return;
+    }
+    requirePassword(
+        'Confirmer la suppression définitive',
+        `Entre ton mot de passe pour supprimer définitivement ${target.name || target.email}.`,
+        'Supprimer définitivement',
+        () => {
+            router.post(route('user.forceDelete', target.id), {}, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    success('Utilisateur supprimé définitivement.');
+                    userToForceDelete.value = null;
+                },
+                onError: handleVisitError,
+            });
+        },
+    );
+};
+
+const handleRowAction = (action, user) => {
+    switch (action) {
+    case 'open':
+        goToEdit(user.id);
+        break;
+    case 'reset-password':
+        goToResetPassword(user.id);
+        break;
+    case 'archive':
+        openSoftDeleteModal(user);
+        break;
+    case 'restore':
+        restoreUser(user);
+        break;
+    case 'force-delete':
+        openForceDeleteModal(user);
+        break;
+    default:
+        break;
+    }
 };
 </script>
 
@@ -142,14 +257,13 @@ const closeForceDeleteModal = () => {
                 <h1 class="text-2xl font-bold">Utilisateurs</h1>
                 <p class="text-sm opacity-70">
                     Gérez les comptes, les accès et les réinitialisations de mot de passe.
+                    Clic droit sur une ligne pour le menu d’actions.
                 </p>
             </div>
-            <Route route="user.create">
-                <Btn color="primary" size="sm" class="gap-2">
-                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                    Créer un utilisateur
-                </Btn>
-            </Route>
+            <Btn color="primary" size="sm" class="gap-2" @click="goToCreate">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                Créer un utilisateur
+            </Btn>
         </header>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -218,7 +332,7 @@ const closeForceDeleteModal = () => {
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
                 <button
-                    v-if="form.status !== 'active' && selectedStatusLabel"
+                    v-if="form.status !== 'all' && selectedStatusLabel"
                     type="button"
                     class="badge badge-soft badge-neutral gap-1"
                     @click="clearStatus"
@@ -241,10 +355,15 @@ const closeForceDeleteModal = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="u in usersData" :key="u.id">
+                    <tr
+                        v-for="u in usersData"
+                        :key="u.id"
+                        class="cursor-context-menu"
+                        @contextmenu="openRowContextMenu($event, u)"
+                    >
                         <td>
                             <div class="flex items-center gap-2">
-                                <Avatar :src="u.avatar" :label="u.name" :alt="u.name" size="sm" />
+                                <Avatar :src="userAvatarSrc(u)" :label="u.name" :alt="u.name" size="sm" />
                                 <div class="min-w-0">
                                     <p class="font-medium truncate">{{ toLabel(u.name) }}</p>
                                     <p class="text-xs opacity-70">#{{ u.id }}</p>
@@ -260,38 +379,17 @@ const closeForceDeleteModal = () => {
                             <span v-else class="badge badge-success badge-soft">Actif</span>
                         </td>
                         <td>
-                            <div class="flex items-center justify-end gap-2 flex-wrap">
-                                <Btn size="xs" color="primary" variant="ghost" @click="goToEdit(u.id)">
-                                    Ouvrir
-                                </Btn>
-                                <Btn
-                                    v-if="u.can?.restore && u.deleted_at && !isCurrentUser(u.id)"
-                                    size="xs"
-                                    color="success"
-                                    variant="ghost"
-                                    @click="restoreUser(u.id)"
-                                >
-                                    Restaurer
-                                </Btn>
-                                <Btn
-                                    v-if="u.can?.forceDelete && u.deleted_at && !isCurrentUser(u.id)"
-                                    size="xs"
-                                    color="error"
-                                    variant="ghost"
-                                    @click="openForceDeleteModal(u)"
-                                >
-                                    Supprimer définitivement
-                                </Btn>
-                                <Btn
-                                    v-if="isSuperAdmin && !isCurrentUser(u.id)"
-                                    size="xs"
-                                    color="warning"
-                                    variant="ghost"
-                                    @click="goToResetPassword(u.id)"
-                                >
-                                    Réinit. mot de passe
-                                </Btn>
-                            </div>
+                            <UserListRowActions
+                                :ref="(el) => setRowActionRef(u.id, el)"
+                                :user="u"
+                                :is-super-admin="isSuperAdmin"
+                                :is-current-user="isCurrentUser(u.id)"
+                                @open="handleRowAction('open', u)"
+                                @reset-password="handleRowAction('reset-password', u)"
+                                @archive="handleRowAction('archive', u)"
+                                @restore="handleRowAction('restore', u)"
+                                @force-delete="handleRowAction('force-delete', u)"
+                            />
                         </td>
                     </tr>
                     <tr v-if="usersData.length === 0">
@@ -309,16 +407,38 @@ const closeForceDeleteModal = () => {
         </div>
 
         <ConfirmModal
+            :open="showSoftDeleteModal"
+            title="Archiver le compte"
+            :message="userToSoftDelete ? `Archiver le compte de ${userToSoftDelete.name || userToSoftDelete.email} ? Il pourra être restauré depuis la liste (filtre « Supprimés » ou « Tous »).` : ''"
+            confirm-label="Continuer"
+            cancel-label="Annuler"
+            confirm-color="warning"
+            confirm-icon="fa-solid fa-box-archive"
+            @close="closeSoftDeleteModal"
+            @confirm="confirmSoftDeletePrompt"
+            @cancel="closeSoftDeleteModal"
+        />
+
+        <ConfirmModal
             :open="showForceDeleteModal"
             title="Supprimer définitivement"
             :message="userToForceDelete ? `Supprimer définitivement le compte de ${userToForceDelete.name || userToForceDelete.email} ? Cette action est irréversible.` : ''"
-            confirm-label="Supprimer définitivement"
+            confirm-label="Continuer"
             cancel-label="Annuler"
             confirm-color="error"
             confirm-icon="fa-solid fa-trash"
             @close="closeForceDeleteModal"
-            @confirm="confirmForceDelete"
+            @confirm="confirmForceDeletePrompt"
             @cancel="closeForceDeleteModal"
+        />
+
+        <ConfirmPasswordModal
+            v-model:open="showPasswordModal"
+            :title="passwordModalTitle"
+            :message="passwordModalMessage"
+            :confirm-label="passwordModalConfirmLabel"
+            @confirmed="onPasswordConfirmed"
+            @cancel="onPasswordModalCancel"
         />
 
         <div v-if="links.length > 3" class="flex items-center justify-between gap-3 flex-wrap">
@@ -332,7 +452,7 @@ const closeForceDeleteModal = () => {
                     class="join-item btn btn-sm"
                     :class="{ 'btn-active': link.active }"
                     :disabled="!link.url"
-                    @click="link.url ? router.visit(link.url, { preserveScroll: true, preserveState: true }) : null"
+                    @click="link.url ? router.visit(link.url, { preserveScroll: true, preserveState: false }) : null"
                 >
                     {{ paginationLabel(link.label) }}
                 </button>
@@ -341,3 +461,8 @@ const closeForceDeleteModal = () => {
     </section>
 </template>
 
+<style scoped>
+.cursor-context-menu {
+    cursor: context-menu;
+}
+</style>

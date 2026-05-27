@@ -20,6 +20,43 @@ class RestoreSoftDeletedUserTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_super_admin_can_soft_delete_user_via_admin_route(): void
+    {
+        $superAdmin = User::factory()->create([
+            'role' => User::ROLE_SUPER_ADMIN,
+        ]);
+
+        $target = User::factory()->create([
+            'role' => User::ROLE_USER,
+        ]);
+
+        $response = $this->actingAs($superAdmin)
+            ->withSession($this->passwordConfirmedSession())
+            ->delete(route('user.admin.delete', $target));
+
+        $response->assertRedirect(route('user.index', ['status' => 'all']));
+        $this->assertSoftDeleted('users', ['id' => $target->id]);
+    }
+
+    public function test_super_admin_can_force_delete_soft_deleted_user(): void
+    {
+        $superAdmin = User::factory()->create([
+            'role' => User::ROLE_SUPER_ADMIN,
+        ]);
+
+        $target = User::factory()->create([
+            'role' => User::ROLE_USER,
+        ]);
+        $target->delete();
+
+        $response = $this->actingAs($superAdmin)
+            ->withSession($this->passwordConfirmedSession())
+            ->post(route('user.forceDelete', $target));
+
+        $response->assertRedirect(route('user.index'));
+        $this->assertDatabaseMissing('users', ['id' => $target->id]);
+    }
+
     public function test_super_admin_can_restore_soft_deleted_user(): void
     {
         $superAdmin = User::factory()->create([

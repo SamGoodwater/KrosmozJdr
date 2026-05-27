@@ -113,7 +113,8 @@ class NotificationService
                     $modifier,
                     $channels,
                     $changes,
-                    $entityUrl
+                    $entityUrl,
+                    $type
                 ));
 
                 return;
@@ -263,7 +264,9 @@ class NotificationService
                 $entityName,
                 $creator,
                 $channels,
-                ['action' => ['old' => null, 'new' => $message]]
+                ['action' => ['old' => null, 'new' => $message]],
+                self::entityUrl($entity),
+                'entity_created'
             ));
         }
     }
@@ -297,7 +300,8 @@ class NotificationService
                     $deleter,
                     $channels,
                     ['action' => ['old' => null, 'new' => $message]],
-                    $entityUrl
+                    $entityUrl,
+                    $type
                 ));
 
                 return;
@@ -365,7 +369,9 @@ class NotificationService
                     $entityName,
                     $restorer,
                     $channels,
-                    ['action' => ['old' => null, 'new' => $message]]
+                    ['action' => ['old' => null, 'new' => $message]],
+                    self::entityUrl($entity),
+                    'entity_restored'
                 ));
             }
         }
@@ -384,7 +390,9 @@ class NotificationService
                 $entityName,
                 $restorer,
                 $channels,
-                ['action' => ['old' => null, 'new' => $message]]
+                ['action' => ['old' => null, 'new' => $message]],
+                self::entityUrl($entity),
+                'entity_restored'
             ));
         }
     }
@@ -414,7 +422,9 @@ class NotificationService
                     $entityName,
                     $forcer,
                     $channels,
-                    ['action' => ['old' => null, 'new' => $message]]
+                    ['action' => ['old' => null, 'new' => $message]],
+                    self::entityUrl($entity),
+                    'entity_force_deleted'
                 ));
             }
         }
@@ -433,7 +443,9 @@ class NotificationService
                 $entityName,
                 $forcer,
                 $channels,
-                ['action' => ['old' => null, 'new' => $message]]
+                ['action' => ['old' => null, 'new' => $message]],
+                self::entityUrl($entity),
+                'entity_force_deleted'
             ));
         }
     }

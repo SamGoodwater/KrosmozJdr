@@ -81,7 +81,7 @@ function onDownloadConfirmed() {
         <section class="rounded-box border border-error/40 bg-error/10 p-4 space-y-3">
             <h2 class="text-lg font-semibold text-error">Supprimer mon compte</h2>
             <p class="text-sm text-content-500">
-                Cette action supprime ton compte et anonymise tes données. Confirme avec ton mot de passe.
+                Cette action enregistre une demande de suppression (délai de rétractation). Ton compte reste actif pendant ce délai et peut être récupéré en te reconnectant. Confirme avec ton mot de passe.
             </p>
 
             <Btn color="error" :disabled="deletionForm.processing" @click="openDeleteModal">

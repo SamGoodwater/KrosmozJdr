@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
@@ -38,6 +39,7 @@ class UserDeletedNotification extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'config_type' => 'user_deleted',
             'deleted_user_id' => $this->deletedUserId,
             'deleted_user_name' => $this->deletedUserName,
             'deleted_user_email' => $this->deletedUserEmail,

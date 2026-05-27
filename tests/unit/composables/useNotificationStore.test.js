@@ -22,6 +22,15 @@ describe("useNotificationStore timing", () => {
         expect(store.notifications.value.some((n) => n.id === id)).toBe(false);
     });
 
+    it("garde success et error en mode full (message toujours visible)", async () => {
+        const { useNotificationStore } = await import("@/Composables/store/useNotificationStore");
+        const store = useNotificationStore();
+        const successNotif = { type: "success", duration: 6000, createdAt: Date.now() - 10000, fullDisplayTime: 3000 };
+        const infoNotif = { type: "info", duration: 6000, createdAt: Date.now() - 10000, fullDisplayTime: 3000 };
+        expect(store.getNotificationState(successNotif)).toBe("full");
+        expect(store.getNotificationState(infoNotif)).toBe("contracted");
+    });
+
     it("met en pause le compte à rebours au survol", async () => {
         const { useNotificationStore } = await import("@/Composables/store/useNotificationStore");
         const store = useNotificationStore();
