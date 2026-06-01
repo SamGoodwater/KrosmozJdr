@@ -31,7 +31,6 @@ use Illuminate\Support\Carbon;
  * @property-read Characteristic|null $characteristic
  * @property-read Monster|null $monster
  * @property-read Model|\Eloquent $objectEffectable
- *
  * @method static \Database\Factories\ObjectEffectFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect newQuery()
@@ -45,7 +44,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereObjectEffectableType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ObjectEffect whereValue($value)
- *
  * @mixin \Eloquent
  */
 class ObjectEffect extends Model

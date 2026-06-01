@@ -43,7 +43,6 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $allowed_item_types_count
  * @property-read Characteristic $characteristic
  * @property-read Section|null $normsHelpSection
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject query()
@@ -73,7 +72,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereRunePricePerUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereValueAvailable($value)
- *
  * @mixin \Eloquent
  */
 class CharacteristicObject extends Model

@@ -7,6 +7,13 @@
     "file": "user/VerifyMailAlert.vue"
   },
   {
+    "name": "UserListRowActions",
+    "description": "Menu d’actions pour une ligne utilisateur (dropdown + clic droit).",
+    "props": [],
+    "slots": [],
+    "file": "user/UserListRowActions.vue"
+  },
+  {
     "name": "BadgeRole",
     "description": "BadgeRole Molecule (Atomic Design, DaisyUI)",
     "props": [

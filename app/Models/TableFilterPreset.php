@@ -24,7 +24,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset query()
@@ -39,7 +38,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset whereTableId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TableFilterPreset whereUserId($value)
- *
  * @mixin \Eloquent
  */
 class TableFilterPreset extends Model

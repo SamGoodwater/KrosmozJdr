@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "dodge_action_points_object",
         "name": "Bonus d'esquive aux points d'action",
@@ -195,9 +196,7 @@
             "base_price_per_unit": 300,
             "rune_price_per_unit": 600,
             "value_available": null,
-            "item_type_dofus_ids": [
-                1
-            ],
+            "item_type_dofus_ids": null,
             "item_type_ids": null
         }
     },

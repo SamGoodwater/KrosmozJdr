@@ -59,7 +59,7 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <kbd :class="atomClasses" v-bind="attrs" v-on="$attrs">
+    <kbd :class="atomClasses" v-bind="attrs">
         <slot />
     </kbd>
 </template>

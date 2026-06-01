@@ -39,8 +39,6 @@ function getCsrfToken() {
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user ?? null);
-const avatar = computed(() => user.value?.avatar ?? null);
-const pseudo = computed(() => user.value?.name ?? "");
 
 // Compteur : uniquement les notifications « messages » (BDD), pas les temporaires
 const unreadCount = ref(page.props.auth?.notifications_unread_count ?? 0);

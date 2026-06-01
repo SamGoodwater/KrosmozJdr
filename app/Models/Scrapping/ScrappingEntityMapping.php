@@ -27,9 +27,7 @@ use Illuminate\Support\Carbon;
  * @property array|null $formatters
  * @property string|null $spell_level_aggregation first|max|min|last (agrégation multi spell-level)
  * @property int $sort_order
- *
  * @example ScrappingEntityMapping::where('source', 'dofusdb')->where('entity', 'monster')->orderBy('sort_order')->get();
- *
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Characteristic|null $characteristic
@@ -37,7 +35,6 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $characteristics_count
  * @property-read Collection<int, ScrappingEntityMappingTarget> $targets
  * @property-read int|null $targets_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping query()
@@ -53,7 +50,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSource($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSpellLevelAggregation($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class ScrappingEntityMapping extends Model

@@ -25,7 +25,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read EffectDegree $effectDegree
  * @property-read Model|\Eloquent $entity
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage query()
@@ -35,7 +34,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEntityType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class EffectUsage extends Model

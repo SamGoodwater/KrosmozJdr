@@ -15,7 +15,6 @@ use Illuminate\Support\Carbon;
  * @property array<string, mixed> $value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting query()
@@ -24,7 +23,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting whereKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationSetting whereValue($value)
- *
  * @mixin \Eloquent
  */
 class ApplicationSetting extends Model

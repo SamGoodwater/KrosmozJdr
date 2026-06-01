@@ -144,26 +144,6 @@ class PageController extends Controller
             $section->setRelation('page', $page);
         });
 
-        // Debug en développement
-        if (config('app.debug')) {
-            \Log::debug('PageController::show - Sections loaded', [
-                'page_id' => $page->id,
-                'user_id' => $user?->id,
-                'can_update_page' => $user ? $user->can('update', $page) : false,
-                'sections_count' => $sections->count(),
-                'sections' => $sections->map(fn ($s) => [
-                    'id' => $s->id,
-                    'template' => $s->template->value ?? $s->template,
-                    'state' => $s->state,
-                    'read_level' => $s->read_level ?? null,
-                    'write_level' => $s->write_level ?? null,
-                    'page_read_level' => $s->page ? ($s->page->read_level ?? null) : null,
-                    'page_write_level' => $s->page ? ($s->page->write_level ?? null) : null,
-                    'can_be_edited_by' => $user ? $s->canBeEditedBy($user) : false,
-                ])->toArray(),
-            ]);
-        }
-
         $page->setRelation('sections', $sections);
 
         $pages = collect(PageService::getPagesSelectList());
