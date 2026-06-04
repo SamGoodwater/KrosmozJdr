@@ -1,23 +1,34 @@
 ---
-globs: resources/**/*.scss,resources/**/*.vue,resources/**/*.js,resources/**/*.css,resources/**/*.php,package.json,postcss.config.js,vite.config.js,jsconfig.json
+globs: resources/**/*.scss,resources/**/*.vue,resources/**/*.js,resources/**/*.css,package.json,postcss.config.js,vite.config.js,jsconfig.json
 alwaysApply: false
 ---
 # Structure Frontend Vue 3
 
-- Utiliser la Composition API, TypeScript, et Pinia pour la gestion d’état.
-- Organisation recommandée :
-  - `components/` : composants réutilisables
-  - `composables/` : hooks/fonctions de composition
-  - `views/` : pages principales
-  - `store/` : Pinia
-  - `assets/` : images, styles
-- Les tests unitaires sont écrits avec Vitest ou Jest, voir [FRONTEND_TESTS.md](../../docs/10-BestPractices/TESTING_PRACTICES.md) (à compléter si besoin).
-- Respecter le guide officiel Vue 3 et la structure Atomic Design ([ATOMIC_DESIGN.md](../../docs/30-UI/ATOMIC_DESIGN.md)).
+Frontend Vue 3 en **Composition API et JavaScript** (pas de TypeScript), lié au backend via **Inertia.js**, buildé par **Vite**. UI en **Atomic Design**, Tailwind 4 + DaisyUI.
 
-Exemples :
-- Un composant doit avoir un fichier de test associé dans `__tests__/`.
-- Les props et emits sont typés.
-description:
-globs:
-alwaysApply: false
----
+## Organisation réelle (`resources/js/`)
+
+- `Pages/Atoms/`, `Pages/Molecules/`, `Pages/Organismes/` — composants Atomic Design (index machine `*.index.json`).
+- `Pages/Pages/`, `Pages/Admin/` — pages Inertia (résolues par `Inertia::render('Pages/...')`).
+- `Pages/Layouts/` — layouts (`Main.vue`…).
+- `Composables/` — logique réutilisable (`use*`) : entity, table, layout, overlay, form, permissions…
+- `Entities/`, `Models/`, `Utils/`, `Mappers/` — registre d'entités, modèles, utilitaires, mappers.
+- Routing : **Ziggy** (`ziggy.js`, `Plugins/inertia-ziggy.js`), `route()` global.
+
+## État (state management)
+
+- **Props Inertia** (`usePage().props`) = source principale (auth, permissions, données).
+- **Pinia** : minimal — essentiellement `useCharacteristicsPiniaStore`.
+- Sinon : composables module-level (notifications, overlays) + `localStorage` (préférences de vue/table).
+
+## Points d'attention
+
+- **i18n** : `vue-i18n` est documenté mais **non branché** dans `resources/js` — les libellés sont en français en dur.
+- **Pas de classes Tailwind dynamiques** : voir [ui-design-system.mdc](ui-design-system.mdc).
+- **Vues d'entités** : 5 vues canoniques (`minimal`/`line`/`text`/`full`/`edit`), voir [entity-views.mdc](entity-views.mdc).
+- DocBlocks JSDoc sur composants/composables ; alias Vite `@` → `resources/js`.
+
+## Pour aller plus loin
+
+- Carte IA : `docV2/frontend/_ai.md`.
+- Doc : [ATOMIC_DESIGN.md](../../docs/30-UI/ATOMIC_DESIGN.md), [PROJECT_STRUCTURE.md](../../docs/10-BestPractices/PROJECT_STRUCTURE.md), [TESTING_PRACTICES.md](../../docs/10-BestPractices/TESTING_PRACTICES.md).

@@ -1,18 +1,32 @@
 ---
-globs: app/**/*.php,config/**/*.php,database/**/*.php,routes/**/*.php,tests/**/*.php,composer.json,postcss.config.js,vite.config.js,jsconfig.json
+globs: app/**/*.php,config/**/*.php,database/**/*.php,routes/**/*.php,tests/**/*.php,composer.json
 alwaysApply: false
 ---
 # Structure Backend Laravel
 
-- Modules internes dans `app/Modules/`, chaque module est autonome et documenté.
-- Respecter les conventions Laravel et PHP 8.4+ ([PROJECT_STRUCTURE.md](../../docs/10-BestPractices/PROJECT_STRUCTURE.md)).
-- Les tests unitaires sont écrits avec PHPUnit, voir [TESTING_PRACTICES.md](../../docs/10-BestPractices/TESTING_PRACTICES.md) (à compléter si besoin).
-- Utiliser Pint pour le formatage, et documenter chaque module avec un README.
+Backend Laravel 12 / PHP 8.4, **monolithe classique sous `app/`** (il n'y a pas de dossier `app/Modules/`). Sert Inertia.js + une API « hybride » (souvent `middleware ['web','auth']`, donc session + CSRF).
 
-Exemples :
-- Un module doit avoir ses propres tests dans `tests/Modules/NomDuModule/`.
-- Les migrations et seeders sont dans le dossier du module.
-description:
-globs:
-alwaysApply: false
----
+## Organisation réelle
+
+- `app/Models/` — modèles Eloquent (`User`, `Page`, `Section`, `Entity/*`, `Type/*`, `Scrapping/*`, `Effect*`, `Characteristic*`).
+- `app/Http/Controllers/` — sous-dossiers `Entity/`, `Admin/`, `Auth/`, `Api/`, `Scrapping/`, `Type/`.
+- `app/Http/Requests/` — validation par action (Form Requests dédiées).
+- `app/Http/Resources/` — transformation JSON (Inertia/API).
+- `app/Http/Middleware/` — `HandleInertiaRequests`, `CheckRole`, `EnsureAdminAreaAccess`, `RequirePasswordWithInactivity`…
+- `app/Policies/` — autorisation (`Entity/BaseEntityPolicy`, `UserPolicy`, `PagePolicy`…).
+- `app/Services/` — logique métier (`Scrapping/`, `Characteristic/`, `Effect/`, `Entity/`, `Media/`, `Privacy/`…).
+- `app/Jobs/`, `app/Console/Commands/` — files d'attente et CLI (`project:*`, `scrapping:*`).
+- `routes/` — modulaire : `web.php` / `api.php` incluent `routes/{web,api,entities,admin}/*.php`.
+- `config/` — `scrapping.php`, `entity-permissions.php`, `access-permissions.php`, `services.php`.
+
+## Conventions
+
+- `declare(strict_types=1);` sur les fichiers récents ; PHPDoc riche sur modèles/contrôleurs.
+- Validation via Form Requests (mass assignment global `Model::unguard()` dans `AppServiceProvider`).
+- Policies : `BaseEntityPolicy` + surcharge ponctuelle (abilities `viewAny`, `createAny`, `updateAny`, `manageAny`).
+- Outils : Pint (formatage), PHPStan (`phpstan.neon`), PHPUnit.
+
+## Pour aller plus loin
+
+- Carte IA : `docV2/backend/_ai.md` ; entités : `docV2/features/entities/_ai.md`.
+- Doc : [PROJECT_STRUCTURE.md](../../docs/10-BestPractices/PROJECT_STRUCTURE.md), [ROUTES_ARCHITECTURE.md](../../docs/10-BestPractices/ROUTES_ARCHITECTURE.md), [TESTING_PRACTICES.md](../../docs/10-BestPractices/TESTING_PRACTICES.md).
