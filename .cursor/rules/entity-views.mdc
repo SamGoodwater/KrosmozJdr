@@ -30,5 +30,5 @@ alwaysApply: false
 
 ## Doc
 
-- `docs/30-UI/ENTITY_VIEWS.md`
-- `docs/10-BestPractices/ENTITY_VIEWS_PHASE_C.md`
+- `docs/frontend/entity-views/README.md`
+- `docs/frontend/entity-views/README.md`

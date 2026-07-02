@@ -9,8 +9,8 @@ namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
  *
  * @deprecated Phase 2 : préférer la table dofusdb_effect_mappings et DofusdbEffectMappingService.
  *             Conservé comme fallback lorsque la BDD est vide (DofusdbEffectMappingService délègue ici).
- * @see docs/50-Fonctionnalités/Scrapping/DOFUSDB_EFFECTS_CONVERSION.md
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_SCRAPPING.md
+ * @see docs/features/effects/README.md
+ * @see docs/features/scrapping/README.md
  */
 final class DofusDbEffectMapping
 {

@@ -11,7 +11,7 @@ namespace App\Services\Characteristic\Formula;
  * les alias nom_court => valeur pour chaque clé qui se termine par _creature, _object ou _spell,
  * afin que l'évaluation de formule accepte les deux syntaxes.
  *
- * @see docs/10-BestPractices/SYNTAXE_FORMULES_CARACTERISTIQUES.md
+ * @see docs/features/characteristics/README.md
  */
 final class FormulaVariableResolver
 {

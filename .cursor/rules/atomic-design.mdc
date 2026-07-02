@@ -35,7 +35,7 @@ Chaque index liste : nom, description, props, slots, chemin du fichier source, e
 
 ## Liens utiles
 
-- Carte IA frontend : `docV2/frontend/_ai.md`
+- Carte IA frontend : `docs/frontend/_ai.md`
 - [Atomic Design - Brad Frost](https://atomicdesign.bradfrost.com/chapter-2/)
 - [Pattern Lab - Patterns & Indexation](https://patternlab.io/docs/overview-of-patterns/)
 

@@ -2,7 +2,7 @@
 /**
  * Rendu structuré d’un sous-effet (modèle unifié définition ou chip).
  *
- * @see docs/30-UI/SPELL_SUB_EFFECTS_DISPLAY.md
+ * @see docs/features/effects/README.md
  *
  * @props {object} model - {@link buildUnifiedSubEffectModel}
  */

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Mail;
  * Envoie un email aux admins. Accessible sans authentification.
  *
  * @see routes/web/feedback.php
- * @see docs/00-Project/FEEDBACK_SYSTEM.md
+ * @see docs/features/feedback/README.md
  */
 class FeedbackController extends Controller
 {

@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 /**
  * Mapping effectId DofusDB → sous-effet KrosmozJDR (sub_effect_slug + characteristic_source).
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md
+ * @see docs/features/effects/README.md
  * @property int $id
  * @property int $dofusdb_effect_id
  * @property string $sub_effect_slug

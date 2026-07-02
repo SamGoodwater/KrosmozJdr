@@ -3,7 +3,7 @@
         "source": "dofusdb",
         "endpoint": "\/item-types",
         "total": 232,
-        "description": "Référence des item-types DofusDB (API /item-types). Tous les 232 types sont listés pour validation et mapping. Aligné avec item-super-types.json (superTypesReference). Rafraîchir : GET /item-types?$skip=0&$limit=50&lang=fr (5 pages), voir docs/50-Fonctionnalités/Scrapping/Refonte/ITEM_TYPES_REFERENCE.md.",
+        "description": "Référence des item-types DofusDB (API /item-types). Tous les 232 types sont listés pour validation et mapping. Aligné avec item-super-types.json (superTypesReference). Rafraîchir : GET /item-types?$skip=0&$limit=50&lang=fr (5 pages), voir docs/features/scrapping/README.md.",
         "lastSync": "2026-02-01T08:53:28+00:00"
     },
     "itemTypes": [

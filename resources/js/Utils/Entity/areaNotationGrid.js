@@ -4,7 +4,7 @@
  * Métrique : distance de Chebyshev pour cercles / anneaux (aligné damier tactique).
  * Croix : bras le long des axes uniquement.
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
+ * @see docs/features/effects/README.md
  */
 
 /** @typedef {{ x: number, y: number }} Cell */

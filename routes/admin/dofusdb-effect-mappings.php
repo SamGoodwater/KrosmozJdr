@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 /**
  * Administration des mappings effectId DofusDB → sous-effet Krosmoz (effets de sorts).
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md
+ * @see docs/features/effects/README.md
  *
  * Mutations : password.confirm.
  */

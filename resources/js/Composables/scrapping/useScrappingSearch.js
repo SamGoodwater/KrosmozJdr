@@ -1,7 +1,7 @@
 /**
  * Composable : recherche + pagination + rawItems.
  * Responsabilité unique : requête GET search et pagination. Ne gère pas les statuts ni le preview.
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 
 import { computed, ref } from "vue";

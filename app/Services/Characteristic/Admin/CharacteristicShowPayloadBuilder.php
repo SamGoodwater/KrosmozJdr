@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Schema;
  * Construit le payload Inertia pour la page « show » d'une caractéristique (selected, mappings, etc.).
  * Une seule responsabilité : assembler les données d'affichage à partir du modèle et des services.
  *
- * @see docs/50-Fonctionnalités/AUDIT_OPTIMISATION_SCRAPPING_MAPPING_CARACTERISTIQUES.md
+ * @see docs/features/characteristics/README.md
  */
 final class CharacteristicShowPayloadBuilder
 {

@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Log;
  * pour empiler les objets à importer et mettre à jour les tables de relation au fur et à mesure.
  *
  * @see RelationImportStack
- * @see docs/50-Fonctionnalités/Scrapping/Architecture/RELATIONS.md
+ * @see docs/features/scrapping/README.md
  */
 final class RelationResolutionService
 {

@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  * Tests du service de conversion valeur(s) → notation ndX / ndX+y.
  *
  * @see DiceNotationService
- * @see docs/50-Fonctionnalités/Scrapping/DICE_NOTATION_SERVICE.md
+ * @see docs/features/scrapping/README.md
  */
 class DiceNotationServiceTest extends TestCase
 {

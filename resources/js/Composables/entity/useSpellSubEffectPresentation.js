@@ -1,7 +1,7 @@
 /**
  * Présentation unifiée des sous-effets (journal + chips table).
  *
- * @see docs/30-UI/SPELL_SUB_EFFECTS_DISPLAY.md
+ * @see docs/features/effects/README.md
  */
 
 /** @typedef {'large'|'compact'|'line'|'minimal'} SubEffectLayout */

@@ -16,7 +16,7 @@ use Illuminate\Console\Command;
  * Phase 3 du plan types item BDD / seeders. À lancer une fois pour initialiser les fichiers,
  * puis utiliser scrapping:seeders:export --item-types après réglages en UI.
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md
+ * @see docs/features/scrapping/README.md
  */
 class ScrappingTypesExtractCommand extends Command
 {

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
  * Une règle de mapping = une clé logique (ex. level, name) pour une source+entité,
  * avec chemin DofusDB, formatters et cibles (model.field) multiples possibles.
  *
- * @see docs/50-Fonctionnalités/VISION_UI_ADMIN_MAPPING_ET_CARACTERISTIQUES.md
+ * @see docs/features/scrapping/README.md
  */
 return new class extends Migration
 {

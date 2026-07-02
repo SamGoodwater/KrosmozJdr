@@ -1,7 +1,7 @@
 /**
  * Composable : Simuler / Importer (batch ou par pages).
  * Construit le payload et exécute simulate/import ; met à jour les statuts via callbacks.
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 
 import { computed, ref } from "vue";

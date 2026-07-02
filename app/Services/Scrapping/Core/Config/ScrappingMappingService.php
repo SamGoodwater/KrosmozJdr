@@ -11,8 +11,8 @@ use App\Models\Scrapping\ScrappingEntityMapping;
  * Retourne un tableau au format attendu par ConversionService (même forme que le JSON).
  * Expose characteristic_id et characteristic_key pour que le pipeline utilise les formules/limites BDD.
  *
- * @see docs/50-Fonctionnalités/VISION_UI_ADMIN_MAPPING_ET_CARACTERISTIQUES.md
- * @see docs/50-Fonctionnalités/ARCHITECTURE_SCRAPPING_MAPPING_CARACTERISTIQUES.md
+ * @see docs/features/scrapping/README.md
+ * @see docs/features/scrapping/README.md
  */
 final class ScrappingMappingService
 {

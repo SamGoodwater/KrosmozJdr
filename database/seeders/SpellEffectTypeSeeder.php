@@ -14,7 +14,7 @@ use Illuminate\Database\Seeder;
  * Pour régénérer le fichier depuis la BDD (après modification via l'interface) :
  * php artisan db:export-seeder-data --spell-effect-types
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/TAXONOMIE_EFFETS_SORTS.md
+ * @see docs/features/effects/README.md
  */
 class SpellEffectTypeSeeder extends Seeder
 {

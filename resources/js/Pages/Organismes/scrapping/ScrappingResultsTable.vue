@@ -3,7 +3,7 @@
  * ScrappingResultsTable — Tableau résultats (lignes entité + relation + détail dépliable).
  * Reçoit rows et getters (statut, triple*, comparisonRows) ; émet toggle-expand, open-compare, open-entity, update:selectedIds.
  * Affiche le type d'entité via EntityLabel (icône + label).
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";

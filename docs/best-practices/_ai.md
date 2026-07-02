@@ -1,0 +1,15 @@
+# Best practices — IA
+
+> Conventions rapides.
+
+## Documentation
+
+- `README.md` humain + `_ai.md` condensé par nœud.
+- Pas d'historique dans `/docs`.
+- Jeu/règles : `private/game/`.
+- Archives/plans/prompts : `private/archive/`.
+
+## Code
+
+- Backend Laravel classique, Form Requests, policies, services.
+- Frontend Vue 3 JS, Atomic Design, Tailwind/DaisyUI.

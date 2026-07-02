@@ -15,7 +15,7 @@ namespace App\Support;
  *
  * Krosmoz : bits 0–4 = Neutre, Terre, Feu, Air, Eau (voir {@see ElementBitmask::PRIMARY_LABELS}).
  *
- * @see docs/50-Fonctionnalités/Scrapping/DOFUSDB_EFFECTS_CONVERSION.md
+ * @see docs/features/effects/README.md
  */
 final class DofusDbElementId
 {

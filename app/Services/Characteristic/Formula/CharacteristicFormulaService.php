@@ -9,7 +9,7 @@ namespace App\Services\Characteristic\Formula;
  * Utilisé par le service Conversion et pour les valeurs par défaut / dérivées.
  *
  * @see FormulaResolutionService
- * @see docs/10-BestPractices/SYNTAXE_FORMULES_CARACTERISTIQUES.md
+ * @see docs/features/characteristics/README.md
  */
 final class CharacteristicFormulaService
 {

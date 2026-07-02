@@ -12,7 +12,7 @@
  * - fetch serveur si `serverUrl` est fourni
  * - sinon, consomme `rows` (dataset local)
  *
- * @see docs/30-UI/TANSTACK_TABLE.md
+ * @see docs/frontend/README.md
  */
 
 import { computed, onMounted, ref, watch } from "vue";

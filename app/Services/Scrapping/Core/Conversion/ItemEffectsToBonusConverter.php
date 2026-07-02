@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
  * Source de vérité : BDD (dofusdb_characteristic_id sur characteristic_object).
  * Pas de fallback JSON : les id non mappés en BDD sont ignorés.
  *
- * @see docs/50-Fonctionnalités/Scrapping/SIMPLIFICATIONS_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 final class ItemEffectsToBonusConverter
 {

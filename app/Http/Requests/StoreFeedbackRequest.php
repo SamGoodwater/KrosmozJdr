@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
  * Validation pour la soumission d'un retour utilisateur (bug, erreur, suggestion, autre).
  *
  * @see App\Http\Controllers\FeedbackController
- * @see docs/00-Project/FEEDBACK_SYSTEM.md
+ * @see docs/features/feedback/README.md
  */
 class StoreFeedbackRequest extends FormRequest
 {

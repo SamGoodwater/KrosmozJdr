@@ -12,7 +12,7 @@ use Illuminate\Bus\Queueable;
  * Remplace la notification Laravel par défaut pour utiliser notre Mailable
  * et layout emails. Envoi synchrone pour que l'utilisateur voie l'email immédiatement.
  *
- * @see docs/00-Project/EMAIL_SYSTEM.md
+ * @see docs/features/notifications/README.md
  */
 class VerifyEmailNotification extends VerifyEmailBase
 {

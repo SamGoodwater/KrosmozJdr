@@ -7,7 +7,7 @@ namespace App\Support;
 /**
  * Validation stricte de la notation de zone Krosmoz (Effect.area, etc.).
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
+ * @see docs/features/effects/README.md
  */
 final class AreaNotation
 {
@@ -67,7 +67,7 @@ final class AreaNotation
     /**
      * Libellé français pour tooltips et résumés UI (ex. chips sous-effets de sort).
      *
-     * S’aligne sur la notation Krosmoz (voir `docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md`).
+     * S’aligne sur la notation Krosmoz (voir `docs/features/effects/README.md`).
      * avec paramètres issus de la notation Krosmoz.
      *
      * @return string Chaîne vide si null/vide ; sinon phrase lisible ; notation brute en dernier recours

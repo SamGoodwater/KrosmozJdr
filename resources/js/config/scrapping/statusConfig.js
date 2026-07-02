@@ -1,7 +1,7 @@
 /**
  * Config des statuts d’affichage par ligne (recherche, conversion, simulation, import).
  * Une seule source de vérité pour les libellés et couleurs des badges.
- * @see docs/50-Fonctionnalités/Scrapping/SPEC_UI_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 
 /** Libellés d’état pour l’affichage (Badge). */

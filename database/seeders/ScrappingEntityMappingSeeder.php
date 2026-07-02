@@ -16,7 +16,7 @@ use Illuminate\Database\Seeder;
  * Fichier généré par : php artisan scrapping:seeders:export --scrapping-mappings
  * (après modification des règles via l'UI admin « Mapping scrapping »).
  *
- * @see docs/50-Fonctionnalités/VISION_UI_ADMIN_MAPPING_ET_CARACTERISTIQUES.md
+ * @see docs/features/scrapping/README.md
  */
 class ScrappingEntityMappingSeeder extends Seeder
 {

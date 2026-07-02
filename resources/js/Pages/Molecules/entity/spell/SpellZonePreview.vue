@@ -5,7 +5,7 @@
  * @description
  * Taille max du bloc fixe ; les cases rétrécissent si la zone couvre beaucoup de cellules.
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
+ * @see docs/features/effects/README.md
  */
 import { computed } from 'vue';
 import {

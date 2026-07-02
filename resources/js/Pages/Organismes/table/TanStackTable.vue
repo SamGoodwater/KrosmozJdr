@@ -9,7 +9,7 @@
  * - Cellules: rend `Cell{type,value,params}` via `CellRenderer`
  * - Loading: skeleton par cellule
  *
- * @see docs/30-UI/TANSTACK_TABLE.md
+ * @see docs/frontend/README.md
  *
  * @example
  * <TanStackTable :config="config" :rows="rows" :loading="loading" />
@@ -152,7 +152,7 @@ const isNameLikeColumn = (col) => NAME_COLUMN_RE.test(buildColumnHaystack(col));
 
 /**
  * UI (style global du tableau).
- * @see docs/30-UI/TANSTACK_TABLE.md
+ * @see docs/frontend/README.md
  */
 const configUiSize = computed(() => String(props.config?.ui?.size || "md"));
 const uiColor = computed(() => String(props.config?.ui?.color || "primary"));

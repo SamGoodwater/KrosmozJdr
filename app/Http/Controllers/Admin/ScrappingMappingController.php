@@ -18,7 +18,7 @@ use Inertia\Response as InertiaResponse;
 /**
  * Administration du mapping DofusDB → Krosmoz (remplace/complète les JSON par entité).
  *
- * @see docs/50-Fonctionnalités/VISION_UI_ADMIN_MAPPING_ET_CARACTERISTIQUES.md
+ * @see docs/features/scrapping/README.md
  */
 class ScrappingMappingController extends Controller
 {

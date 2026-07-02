@@ -13,7 +13,7 @@ namespace App\Services\Characteristic\Formula;
  * - Évaluer une formule (ou table JSON) avec des variables données
  * - Produire toutes les valeurs possibles pour une plage d'une variable (ex. level 1 à 20)
  *
- * @see docs/10-BestPractices/SYNTAXE_FORMULES_CARACTERISTIQUES.md
+ * @see docs/features/characteristics/README.md
  * @see FormulaConfigDecoder
  * @see SafeExpressionEvaluator
  */

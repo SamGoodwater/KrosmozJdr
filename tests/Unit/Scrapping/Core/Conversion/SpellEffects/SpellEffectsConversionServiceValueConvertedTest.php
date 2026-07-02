@@ -21,7 +21,7 @@ use Tests\TestCase;
 /**
  * Vérifie que la conversion des effets de sort remplit value_converted (Phase 3).
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_PHASE3_CONVERSION_VALEURS_EFFETS.md
+ * @see docs/features/effects/README.md
  */
 class SpellEffectsConversionServiceValueConvertedTest extends TestCase
 {

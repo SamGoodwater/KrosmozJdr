@@ -24,7 +24,7 @@ use App\Services\Scrapping\Core\Relation\RelationResolutionService;
  *
  * Centralise les dépendances pour que le flux soit lisible et que les tests puissent surcharger une étape.
  *
- * @see docs/50-Fonctionnalités/Scrapping/SIMPLIFICATIONS_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 final class ScrappingPipelineFactory
 {

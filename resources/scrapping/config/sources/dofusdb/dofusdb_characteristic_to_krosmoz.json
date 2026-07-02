@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "https://api.dofusdb.fr/characteristics",
-  "description": "Mapping id caractéristique DofusDB (champ effect.characteristic des items) vers characteristic_key Krosmoz (groupe object). Les ids 33–37 sont cinq propriétés distinctes (Terre, Feu, Eau, Air, Neutre) : chaque effet % résistance Dofus est converti en palier 0/1/2 (resistance_percent_tier_*_object). Référence : docs/50-Fonctionnalités/Characteristics-DB/DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md",
+  "description": "Mapping id caractéristique DofusDB (champ effect.characteristic des items) vers characteristic_key Krosmoz (groupe object). Les ids 33–37 sont cinq propriétés distinctes (Terre, Feu, Eau, Air, Neutre) : chaque effet % résistance Dofus est converti en palier 0/1/2 (resistance_percent_tier_*_object). Référence : docs/features/characteristics/README.md",
   "notation": {
     "dofusdb_characteristic_id": "id renvoyé par GET /characteristics (et présent dans item.effects[].characteristic)",
     "characteristic_key": "clé Krosmoz du seeder characteristic_object (ex: pa_object, strong_object)"

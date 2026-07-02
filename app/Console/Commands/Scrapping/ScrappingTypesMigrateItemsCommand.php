@@ -19,7 +19,7 @@ use Illuminate\Console\Command;
  *
  * Cette commande met à jour les items existants pour pointer vers le bon ItemType (superTypeId).
  *
- * @see docs/50-Fonctionnalités/Scrapping/PROPRIETES_ITEMS_RESOURCES_CONSUMABLES.md
+ * @see docs/features/scrapping/README.md
  */
 class ScrappingTypesMigrateItemsCommand extends Command
 {

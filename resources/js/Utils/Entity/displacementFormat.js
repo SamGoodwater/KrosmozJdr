@@ -1,7 +1,7 @@
 /**
  * Déplacement en cases : règle Krosmoz 1 case = 1,5 m.
  *
- * @see docs/30-UI/SPELL_SUB_EFFECTS_DISPLAY.md
+ * @see docs/features/effects/README.md
  */
 
 /** Mètres équivalents à une case (JDR Krosmoz). */

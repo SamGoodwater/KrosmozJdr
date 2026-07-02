@@ -4,7 +4,7 @@
  * Aligné avec App\Support\AreaConstants.
  * Icônes dans storage/app/public/images/icons/areas/ (point.svg, line.svg, etc.)
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
+ * @see docs/features/effects/README.md
  */
 
 const AREA_ICON_BASE = 'icons/areas';

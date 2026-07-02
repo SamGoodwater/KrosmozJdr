@@ -63,11 +63,16 @@ export function useFlashNotifications(store = null) {
         showFlashToasts(event.detail.page.props.flash);
     }
 
+    /** @type {(() => void) | undefined} */
+    let removeSuccessListener;
+
     onMounted(() => {
-        router.on('success', handleSuccess);
+        removeSuccessListener = router.on('success', handleSuccess);
     });
 
     onUnmounted(() => {
-        router.off('success', handleSuccess);
+        if (typeof removeSuccessListener === 'function') {
+            removeSuccessListener();
+        }
     });
 }

@@ -16,8 +16,8 @@ use Illuminate\Database\Seeder;
  * (mapping id GET /characteristics → characteristic_key groupe object).
  * Phase 1.1 — Permet la résolution id → caractéristique côté service (M2).
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_SCRAPPING.md
- * @see docs/50-Fonctionnalités/Characteristics-DB/DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md
+ * @see docs/features/scrapping/README.md
+ * @see docs/features/characteristics/README.md
  */
 class DofusdbCharacteristicIdSeeder extends Seeder
 {

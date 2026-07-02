@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\URL;
  * Utilisé par VerifyEmailNotification (envoi déclenché par MustVerifyEmail).
  * Envoi synchrone pour que l'utilisateur puisse récupérer le lien immédiatement (logs).
  *
- * @see docs/00-Project/EMAIL_SYSTEM.md
+ * @see docs/features/notifications/README.md
  */
 class VerifyEmailMail extends Mailable
 {

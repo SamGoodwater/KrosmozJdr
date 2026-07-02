@@ -7,7 +7,7 @@
  * Permet de signaler un bug, une erreur, une suggestion ou autre, avec URL, pseudo et pièce jointe.
  * Envoi par email aux admins.
  *
- * @see docs/00-Project/FEEDBACK_SYSTEM.md
+ * @see docs/features/feedback/README.md
  * @see https://daisyui.com/components/fab/
  */
 import { ref, watch, computed, nextTick } from 'vue';

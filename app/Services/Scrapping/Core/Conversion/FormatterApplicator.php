@@ -368,7 +368,7 @@ final class FormatterApplicator
      * N'ajoute que les types dont le superType DofusDB = 9 (Ressource).
      * Les consommables (superType 6, 70) et équipements (autres) retournent null.
      *
-     * @see docs/50-Fonctionnalités/Scrapping/Architecture/ITEM_TYPES_REFERENCE.md
+     * @see docs/features/scrapping/README.md
      */
     /**
      * @param  array<string, mixed>  $context  Doit contenir targetModel (resources|consumables|items) quand conversion ciblée.
@@ -422,7 +422,7 @@ final class FormatterApplicator
      * Résout un typeId DofusDB vers l'id Krosmoz item_types (équipements).
      * On stocke le typeId (Arc, Baguette, Épée, Marteau…) comme pour resource_types et consumable_types.
      *
-     * @see docs/50-Fonctionnalités/Scrapping/Architecture/ITEM_TYPES_REFERENCE.md
+     * @see docs/features/scrapping/README.md
      */
     /**
      * @param  array<string, mixed>  $context  targetModel = items pour équipements (conversion ciblée).
@@ -476,7 +476,7 @@ final class FormatterApplicator
      * Résout un typeId DofusDB vers l'id Krosmoz consumable_types.
      * N'ajoute que les types dont le superType DofusDB = 6 ou 70 (Consommable).
      *
-     * @see docs/50-Fonctionnalités/Scrapping/Architecture/ITEM_TYPES_REFERENCE.md
+     * @see docs/features/scrapping/README.md
      */
     /**
      * @param  array<string, mixed>  $context  targetModel = consumables en conversion ciblée.

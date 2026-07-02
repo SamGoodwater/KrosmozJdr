@@ -8,8 +8,8 @@ namespace App\Services\Effect;
  * Sanitization du texte des effets (template, description, formula).
  * Supprime HTML/JS ; préserve lettres, chiffres, ponctuation, [var] et ndX.
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/EFFETS_TEMPLATES_ET_SURETE.md
- * @see docs/50-Fonctionnalités/Spell-Effects/SYNTAXE_EFFETS.md
+ * @see docs/features/effects/README.md
+ * @see docs/features/effects/README.md
  */
 final class EffectTextSanitizer
 {

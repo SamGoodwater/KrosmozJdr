@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
  * Les sous-classes héritent du layout emails.layout et peuvent surcharger
  * subject, view et données.
  *
- * @see docs/00-Project/EMAIL_SYSTEM.md
+ * @see docs/features/notifications/README.md
  */
 abstract class BaseMailable extends Mailable
 {

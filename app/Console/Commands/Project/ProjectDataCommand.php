@@ -305,7 +305,7 @@ class ProjectDataCommand extends Command
         $this->line('Ce mode n’est pas encore encapsulé : utilisez `scrapping:run` par entité sans `--skip-existing`, ou des filtres `--idMin` / `--levelMin` / `--limit`.');
         $this->line('Pour mettre à jour les entités déjà présentes avec auto_update, enchaînez avec `php artisan project:data sync`.');
         $this->newLine();
-        $this->line('Documentation : docs/40-DevGuides/PROJECT_CLI.md');
+        $this->line('Documentation : docs/operations/README.md');
 
         return ArtisanExitCode::SUCCESS;
     }

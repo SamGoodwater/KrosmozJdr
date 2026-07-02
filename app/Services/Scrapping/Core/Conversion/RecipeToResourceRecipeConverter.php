@@ -8,7 +8,7 @@ namespace App\Services\Scrapping\Core\Conversion;
  * Transforme une recette DofusDB (ingredientIds + quantities ou recipeIds) en liste
  * recipe_ingredients pour la table pivot resource_recipe.
  *
- * @see docs/50-Fonctionnalités/Scrapping/SIMPLIFICATIONS_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  *
  * @return list<array{ingredient_dofusdb_id: string, quantity: int}>
  */

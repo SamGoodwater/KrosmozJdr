@@ -1,7 +1,7 @@
 /**
  * Helpers API sécurisés : fetch + parsing JSON sans throw.
  * En cas d’erreur HTTP ou JSON invalide, retourne { ok: false, error }.
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 
 /**

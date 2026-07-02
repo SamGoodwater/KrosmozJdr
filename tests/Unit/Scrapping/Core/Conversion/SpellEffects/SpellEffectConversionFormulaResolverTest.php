@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  * Tests du resolver action → characteristic_key (groupe spell) pour la conversion des valeurs d'effet.
  *
  * @see SpellEffectConversionFormulaResolver
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_PHASE3_CONVERSION_VALEURS_EFFETS.md
+ * @see docs/features/effects/README.md
  */
 class SpellEffectConversionFormulaResolverTest extends TestCase
 {

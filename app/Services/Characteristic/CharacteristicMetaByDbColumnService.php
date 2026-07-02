@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Log;
  * Construit les métadonnées "byDbColumn" pour les caractéristiques (creature, object, spell).
  * Utilisé par les API Table (format=entities) pour exposer icônes, couleurs, libellés au frontend.
  *
- * @see docs/00-Project/PLAN-TABLEAUX-ET-DISPLAY-ENTITES.md Phase 3
+ * @see docs/features/entities/README.md
  */
 final class CharacteristicMetaByDbColumnService
 {

@@ -13,7 +13,7 @@ use Illuminate\Support\Carbon;
 /**
  * Degré d’un effet : zone, slug, seuil de niveau requis, sous-effets.
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
+ * @see docs/features/effects/README.md
  * @property int $id
  * @property int $effect_id
  * @property int $degree

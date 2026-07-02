@@ -13,7 +13,7 @@ use Tests\TestCaseNoDatabase;
  * qui utilise Mail::fake et une adresse en dur).
  *
  * @see App\Mail\NotificationMail
- * @see docs/00-Project/EMAIL_SYSTEM.md
+ * @see docs/features/notifications/README.md
  */
 class NotificationMailTest extends TestCaseNoDatabase
 {

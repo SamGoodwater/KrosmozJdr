@@ -10,7 +10,7 @@ namespace App\Services\Effect;
  * - `dgt` = dégâts primaires (sans résistances) issus de la formule de dégâts du même pivot.
  * - `50%`, `12.5 %` → `[dgt]*(50/100)` (chaque occurrence `N%` dans la chaîne).
  *
- * @see docs/10-BestPractices/SYNTAXE_FORMULES_CARACTERISTIQUES.md
+ * @see docs/features/characteristics/README.md
  */
 final class LifeStealFormulaNormalizer
 {

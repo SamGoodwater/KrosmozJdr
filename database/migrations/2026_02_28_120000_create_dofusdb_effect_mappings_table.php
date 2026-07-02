@@ -11,7 +11,7 @@ return new class extends Migration
     /**
      * Table de mapping effectId DofusDB → sous-effet KrosmozJDR (action + source de caractéristique).
      *
-     * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md
+     * @see docs/features/effects/README.md
      */
     public function up(): void
     {

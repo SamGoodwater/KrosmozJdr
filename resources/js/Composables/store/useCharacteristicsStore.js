@@ -4,7 +4,7 @@
  * @description
  * Préfère le store Pinia (`useCharacteristicsPiniaStore`) alimenté par GET /api/characteristics.
  *
- * @see docs/40-DevGuides/PERFORMANCE_GLOBAL.md
+ * @see docs/operations/README.md
  */
 
 import { usePage } from "@inertiajs/vue3";

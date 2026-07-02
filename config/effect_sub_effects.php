@@ -5,9 +5,9 @@
  * Une seule liste de caractéristiques : stats/ressources + éléments (category pour filtrer par action).
  * Effect décide quelles catégories sont valides pour quelle action (ex. frapper ⇒ element).
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/ARCHITECTURE_EFFETS_3_COUCHES.md
- * @see docs/50-Fonctionnalités/Spell-Effects/TAXONOMIE_SOUS_EFFETS.md
- * @see docs/10-BestPractices/CHARACTERISTIC_PROPERTY_NAMING_REFERENCE.md
+ * @see docs/features/effects/README.md
+ * @see docs/features/effects/README.md
+ * @see docs/features/characteristics/README.md
  */
 return [
     /*

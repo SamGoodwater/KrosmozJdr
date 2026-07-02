@@ -7,7 +7,7 @@ namespace App\Services\Effect;
 /**
  * Résout les variables [var] dans un template et formate la notation ndX.
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/SYNTAXE_EFFETS.md
+ * @see docs/features/effects/README.md
  */
 final class EffectTextResolver
 {

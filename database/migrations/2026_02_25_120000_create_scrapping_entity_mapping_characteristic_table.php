@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Schema;
  * Table pivot : plusieurs caractéristiques peuvent être liées à une même règle de mapping
  * (ex. bonus item / bonus panoply liés à sagesse, force, pa, etc.).
  *
- * @see docs/50-Fonctionnalités/Characteristics-DB/DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md
+ * @see docs/features/characteristics/README.md
  */
 return new class extends Migration
 {

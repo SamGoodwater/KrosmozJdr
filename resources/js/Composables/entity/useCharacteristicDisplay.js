@@ -7,7 +7,7 @@
  * CharacteristicChip, CharacteristicEffectsGrid, PropertyDisplay.
  * Utilise useCharacteristicsStore (Inertia share) pour la résolution des définitions.
  *
- * @see docs/50-Fonctionnalités/Characteristics-DB/AUDIT_SERVICE_AFFICHAGE_CARACTERISTIQUES.md
+ * @see docs/features/characteristics/README.md
  */
 
 import {

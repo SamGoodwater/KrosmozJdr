@@ -15,7 +15,7 @@ use Tests\TestCase;
  * et que l'utilisateur peut les modifier depuis les paramètres.
  *
  * @see UserController::update
- * @see docs/50-Fonctionnalités/Notifications/README.md
+ * @see docs/features/notifications/README.md
  */
 class NotificationPreferencesControllerTest extends TestCase
 {

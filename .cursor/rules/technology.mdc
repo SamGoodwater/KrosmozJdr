@@ -21,8 +21,8 @@ alwaysApply: true
 ## 📁 Références documentation
 
 - `/docs/docs.index.json` — Index de la documentation
-- `/docs/00-Project/TECHNOLOGIES.md` — Stack détaillée et organisation
-- `/docs/10-BestPractices/PROJECT_STRUCTURE.md` — Structure et conventions
+- `/docs/project/README.md` — Stack détaillée et organisation
+- `/docs/backend/README.md` — Structure et conventions
 
 ## 🔄 Workflow recommandé pour l'IA
 

@@ -2,7 +2,7 @@
 /**
  * ScrappingOptionsPanel — Options d'import, historique, erreurs batch.
  * Bloc repliable ; n'exécute pas de logique batch, uniquement affichage et emit.
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";

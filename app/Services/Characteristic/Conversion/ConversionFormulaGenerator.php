@@ -11,7 +11,7 @@ namespace App\Services\Characteristic\Conversion;
  *
  * Variable utilisée dans les formules : [d] = valeur Dofus à convertir.
  *
- * @see docs/50-Fonctionnalités/Characteristics-DB/PROPRIETES_CONVERSION_DOFUS_KROSMOZ.md
+ * @see docs/features/characteristics/README.md
  */
 final class ConversionFormulaGenerator
 {

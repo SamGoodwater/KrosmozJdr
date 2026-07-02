@@ -13,8 +13,8 @@ namespace App\Services\Scrapping\Core\Normalizer;
  *
  * Utilisé par l'Orchestrator avant ConversionService::convert() pour entity=spell.
  *
- * @see docs/50-Fonctionnalités/Scrapping/DOFUSDB_API_SPELLS_REFERENCE.md
- * @see docs/50-Fonctionnalités/Scrapping/DOFUSDB_EFFECTS_CONVERSION.md
+ * @see docs/features/scrapping/README.md
+ * @see docs/features/effects/README.md
  */
 final class SpellGlobalNormalizer
 {

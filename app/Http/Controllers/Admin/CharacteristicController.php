@@ -502,7 +502,7 @@ class CharacteristicController extends Controller
     /**
      * Modal mapping : sans entity → liste des entités DofusDB pour le groupe ; avec entity → chemins (from_path) depuis le JSON.
      *
-     * @see docs/50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md
+     * @see docs/features/scrapping/README.md
      */
     public function scrappingMappingOptions(Request $request, string $characteristic_key): JsonResponse
     {
@@ -539,7 +539,7 @@ class CharacteristicController extends Controller
      * Crée (ou met à jour) une règle de mapping depuis un chemin DofusDB et la lie à cette caractéristique.
      * Les targets et formatters viennent du JSON d'entité.
      *
-     * @see docs/50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md
+     * @see docs/features/scrapping/README.md
      */
     public function storeScrappingMapping(Request $request, string $characteristic_key): JsonResponse
     {
@@ -636,7 +636,7 @@ class CharacteristicController extends Controller
     /**
      * Délie une règle de mapping de cette caractéristique (characteristic_id = null).
      *
-     * @see docs/50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md
+     * @see docs/features/scrapping/README.md
      */
     public function unlinkScrappingMapping(Request $request, string $characteristic_key): JsonResponse
     {

@@ -13,7 +13,7 @@ use Illuminate\Database\Seeder;
  * Liste : frapper (dommages + vol de vie optionnel via life_steal_formula), soigner, protéger, booster, retirer, voler-caracteristiques, invoquer, déplacer, appliquer-etat, s-appliquer-etat, autre.
  * param_schema décrit les paramètres ; categories sur characteristic filtre la liste (element / toutes caractéristiques / monster / sans option).
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/ARCHITECTURE_EFFETS_3_COUCHES.md
+ * @see docs/features/effects/README.md
  */
 class SubEffectSeeder extends Seeder
 {

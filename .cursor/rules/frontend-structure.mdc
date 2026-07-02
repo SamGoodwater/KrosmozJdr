@@ -30,5 +30,5 @@ Frontend Vue 3 en **Composition API et JavaScript** (pas de TypeScript), lié au
 
 ## Pour aller plus loin
 
-- Carte IA : `docV2/frontend/_ai.md`.
-- Doc : [ATOMIC_DESIGN.md](../../docs/30-UI/ATOMIC_DESIGN.md), [PROJECT_STRUCTURE.md](../../docs/10-BestPractices/PROJECT_STRUCTURE.md), [TESTING_PRACTICES.md](../../docs/10-BestPractices/TESTING_PRACTICES.md).
+- Carte IA : `docs/frontend/_ai.md`.
+- Doc : [ATOMIC_DESIGN.md](../../docs/frontend/atomic-design/README.md), [PROJECT_STRUCTURE.md](../../docs/backend/README.md), [TESTING_PRACTICES.md](../../docs/best-practices/README.md).

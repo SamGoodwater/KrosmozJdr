@@ -5,7 +5,7 @@ Les routes sont organisées par thème pour garder des fichiers de taille raison
 - **`web.php`** : point d'entrée web ; inclut auth, **web/** (statics, user, notifications, file, page), **admin/**\*, **entities/**\*, **services/**.
 - **`api.php`** : point d'entrée API ; inclut **api/** (auth, scrapping, types, entity-table, tables, entities).
 
-Documentation détaillée : [docs/10-BestPractices/ROUTES_ARCHITECTURE.md](../docs/10-BestPractices/ROUTES_ARCHITECTURE.md).
+Documentation détaillée : [docs/backend/routes/README.md](../docs/backend/routes/README.md).
 
 ## Ajouter des routes
 

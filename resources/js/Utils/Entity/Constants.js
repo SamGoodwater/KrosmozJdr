@@ -151,7 +151,7 @@ export const DISPLAY_MODES = Object.freeze({
  * Modes d'affichage des propriétés/caractéristiques.
  * Mapping vue entité → mode : Minimal/Line→minimal, Compact→compact, Large→extended/detailed
  *
- * @see docs/30-UI/PROPERTY_DISPLAY_SYSTEM.md
+ * @see docs/frontend/entity-views/README.md
  */
 export const PROPERTY_DISPLAY_MODES = Object.freeze({
     /** icône + valeur + unité */
@@ -176,7 +176,7 @@ export const LABEL_MODE_TO_PROPERTY_DISPLAY = Object.freeze({
 /**
  * Densité — composant unifié CharacteristicProperty (icône + libellés + valeur).
  *
- * @see docs/30-UI/PROPERTY_DISPLAY_SYSTEM.md
+ * @see docs/frontend/entity-views/README.md
  */
 export const CHARACTERISTIC_PROPERTY_DENSITY = Object.freeze({
     /** label complet (ou équivalent extended) */

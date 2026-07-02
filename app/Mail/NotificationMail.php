@@ -15,7 +15,7 @@ use Illuminate\Queue\SerializesModels;
  * Compatible avec les notifications Laravel (retourné par toMail()).
  *
  * @see resources/views/emails/notification.blade.php
- * @see docs/00-Project/EMAIL_SYSTEM.md
+ * @see docs/features/notifications/README.md
  */
 class NotificationMail extends Mailable
 {

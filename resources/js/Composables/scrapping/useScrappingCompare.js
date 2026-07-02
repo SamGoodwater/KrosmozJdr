@@ -1,7 +1,7 @@
 /**
  * Composable : helpers comparaison (existant / converti / brut), triples et comparisonRows.
  * Dérive les valeurs d'affichage pour une ligne ; fonctions pures à partir des refs.
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 import {
     formatConditionDispellable,

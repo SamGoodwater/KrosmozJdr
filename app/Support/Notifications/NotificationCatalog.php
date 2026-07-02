@@ -17,7 +17,7 @@ use App\Notifications\UserDeletedNotification;
  * Métadonnées des notifications in-app (catégorie, type config, actions admin).
  *
  * @see config/notifications.php
- * @see docs/50-Fonctionnalités/Notifications/README.md
+ * @see docs/features/notifications/README.md
  */
 class NotificationCatalog
 {

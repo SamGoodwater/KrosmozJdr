@@ -6,7 +6,7 @@
  * descriptor/table (via useEntityPropertyDisplay) et optionnellement un payload runtime
  * (ex. GET /entities/creatures/{id}/resolved-stats → computed[key]).
  *
- * @see docs/30-UI/PROPERTY_DISPLAY_SYSTEM.md
+ * @see docs/frontend/entity-views/README.md
  */
 
 import { computed, toValue } from "vue";

@@ -2,7 +2,7 @@
 /**
  * ScrappingFilters — Bloc filtres de recherche (IDs, nom, types, races, niveau, pagination).
  * Affiche les champs selon le type d'entité et la config ; émet @search au clic Rechercher.
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 import { computed } from "vue";
 import Loading from "@/Pages/Atoms/feedback/Loading.vue";

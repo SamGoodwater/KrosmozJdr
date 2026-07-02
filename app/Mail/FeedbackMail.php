@@ -14,8 +14,8 @@ use Illuminate\Queue\SerializesModels;
  * Email envoyé aux admins lors d'un retour utilisateur (bug, erreur, suggestion, autre).
  *
  * @see resources/views/emails/feedback.blade.php
- * @see docs/00-Project/FEEDBACK_SYSTEM.md
- * @see docs/00-Project/EMAIL_SYSTEM.md
+ * @see docs/features/feedback/README.md
+ * @see docs/features/notifications/README.md
  */
 class FeedbackMail extends Mailable
 {

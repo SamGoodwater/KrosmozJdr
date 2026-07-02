@@ -21,8 +21,8 @@ use Illuminate\Support\Str;
  * et produit une structure prête pour l'intégration (EffectGroup + Effects + sous-effets).
  * Phase 3 : conversion des valeurs via characteristic_spell (value_converted).
  *
- * @see docs/50-Fonctionnalités/Scrapping/DOFUSDB_EFFECTS_CONVERSION.md
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_PHASE3_CONVERSION_VALEURS_EFFETS.md
+ * @see docs/features/effects/README.md
+ * @see docs/features/effects/README.md
  */
 final class SpellEffectsConversionService
 {
@@ -250,7 +250,7 @@ final class SpellEffectsConversionService
      * Shapes DofusDB : 80 = case unique, 67 = cercle, 79 = anneau sans centre, 76 = ligne,
      * 88 = croix pleine, 81 = croix sans centre, 71 = carré.
      *
-     * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
+     * @see docs/features/effects/README.md
      *
      * @param  array{shape?: int, param1?: int, param2?: int}  $zoneDescr
      */

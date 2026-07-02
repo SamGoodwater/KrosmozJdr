@@ -25,8 +25,8 @@ use Illuminate\Database\Seeder;
  * characteristic_source : element | characteristic | none.
  * characteristic_key : null pour element/none ; clé Krosmoz si characteristic.
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md
- * @see docs/50-Fonctionnalités/Scrapping/CARACTERISTIQUES_EFFETS_PAR_ACTION.md
+ * @see docs/features/effects/README.md
+ * @see docs/features/effects/README.md
  */
 class DofusdbEffectMappingSeeder extends Seeder
 {

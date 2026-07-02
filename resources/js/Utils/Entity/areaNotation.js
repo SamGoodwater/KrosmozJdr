@@ -1,7 +1,7 @@
 /**
  * Validation de la notation de zone Krosmoz (alignée avec App\Support\AreaNotation).
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
+ * @see docs/features/effects/README.md
  */
 
 /** Message d’aide pour les champs zone (UI). */

@@ -60,7 +60,7 @@ class PagesImportRulesTocCommand extends Command
 
     public function handle(): int
     {
-        $path = (string) ($this->argument('path') ?: base_path('docs/400- Jeu/420- Règles/TABLE_DES_MATIERES.md'));
+        $path = (string) ($this->argument('path') ?: base_path('private/game/rules/TABLE_DES_MATIERES.md'));
         $dryRun = (bool) $this->option('dry-run');
         $this->forceContent = (bool) $this->option('force-content');
 

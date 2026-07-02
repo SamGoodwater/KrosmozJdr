@@ -2,7 +2,7 @@
 /**
  * Panneau 3 — Mapping : lien DofusDB ↔ Krosmoz par entité.
  * Modal : à gauche choix de l'objet (breed, item, monster, panoply, spell), à droite propriétés (chemins) avec recherche.
- * @see docs/50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md
+ * @see docs/features/scrapping/README.md
  */
 import { ref, computed, watch } from 'vue';
 import { router } from '@inertiajs/vue3';

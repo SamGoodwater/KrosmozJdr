@@ -28,5 +28,5 @@ Backend Laravel 12 / PHP 8.4, **monolithe classique sous `app/`** (il n'y a pas 
 
 ## Pour aller plus loin
 
-- Carte IA : `docV2/backend/_ai.md` ; entités : `docV2/features/entities/_ai.md`.
-- Doc : [PROJECT_STRUCTURE.md](../../docs/10-BestPractices/PROJECT_STRUCTURE.md), [ROUTES_ARCHITECTURE.md](../../docs/10-BestPractices/ROUTES_ARCHITECTURE.md), [TESTING_PRACTICES.md](../../docs/10-BestPractices/TESTING_PRACTICES.md).
+- Carte IA : `docs/backend/_ai.md` ; entités : `docs/features/entities/_ai.md`.
+- Doc : [PROJECT_STRUCTURE.md](../../docs/backend/README.md), [ROUTES_ARCHITECTURE.md](../../docs/backend/routes/README.md), [TESTING_PRACTICES.md](../../docs/best-practices/README.md).

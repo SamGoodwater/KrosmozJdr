@@ -30,8 +30,8 @@ use Throwable;
  * @example php artisan dev:review --tests
  * @example php artisan dev:review --all
  *
- * @see docs/10-BestPractices/SECURITY_PRACTICES.md
- * @see docs/10-BestPractices/TESTING_PRACTICES.md
+ * @see docs/best-practices/README.md
+ * @see docs/best-practices/README.md
  */
 class DevReviewCommand extends Command
 {
@@ -465,7 +465,7 @@ MD;
     {
         $this->info('Sécurité : composer audit…');
         $md = "\n## Sécurité (dépendances)\n\n";
-        $md .= "> Revue applicative (validation, XSS, auth, etc.) : voir `docs/10-BestPractices/SECURITY_PRACTICES.md` et le prompt Cursor ci-dessous.\n\n";
+        $md .= "> Revue applicative (validation, XSS, auth, etc.) : voir `docs/best-practices/README.md` et le prompt Cursor ci-dessous.\n\n";
 
         $audit = $this->runProcess(['composer', 'audit', '--no-interaction'], 120);
         $md .= $this->markdownProcessResult($audit);
@@ -690,7 +690,7 @@ MD;
         if ($this->actionPlan['security']) {
             $items[] = [
                 'title' => 'Sécurité & robustesse',
-                'prompt' => 'En t’appuyant sur le rapport et sur docs/10-BestPractices/SECURITY_PRACTICES.md, liste les risques (validation, XSS, auth, fuites de données, requêtes N+1 sensibles). Propose des correctifs concrets par fichier ou par zone.',
+                'prompt' => 'En t’appuyant sur le rapport et sur docs/best-practices/README.md, liste les risques (validation, XSS, auth, fuites de données, requêtes N+1 sensibles). Propose des correctifs concrets par fichier ou par zone.',
             ];
         }
 

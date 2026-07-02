@@ -10,7 +10,7 @@ namespace App\Support;
  * Notation : forme[-paramètres] (point, line-1x9, cross-0-2, circle-0-2, rect-3x4).
  * Icônes dans storage/app/public/images/icons/areas/ (point.svg, line.svg, etc.).
  *
- * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
+ * @see docs/features/effects/README.md
  */
 final class AreaConstants
 {

@@ -12,8 +12,8 @@ alwaysApply: true
 **Liens utiles** :
 - [docs/README.md](../../docs/README.md)
 - [docs.index.json](../../docs/docs.index.json)
-- [docs/00-Project/TECHNOLOGIES.md](../../docs/00-Project/TECHNOLOGIES.md)
-- [docs/10-BestPractices/PROJECT_STRUCTURE.md](../../docs/10-BestPractices/PROJECT_STRUCTURE.md)
+- [docs/project/README.md](../../docs/project/README.md)
+- [docs/backend/README.md](../../docs/backend/README.md)
 
 Exemples :
 - Pour ajouter une dépendance, vérifier d’abord `TECHNOLOGIES.md`.

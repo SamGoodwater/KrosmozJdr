@@ -14,7 +14,7 @@ use Illuminate\Queue\SerializesModels;
  * Copie récapitulative envoyée à l'utilisateur connecté après un retour feedback.
  *
  * @see FeedbackMail
- * @see docs/00-Project/FEEDBACK_SYSTEM.md
+ * @see docs/features/feedback/README.md
  */
 class FeedbackRecapMail extends Mailable
 {

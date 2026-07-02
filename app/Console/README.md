@@ -6,8 +6,8 @@ Closures Artisan : `routes/console.php`.
 
 - **Liste à jour :** `php artisan list`
 - **Aide d’une commande :** `php artisan <nom> --help`
-- **Données DofusDB (sync catalogue / entités, cas limites) :** le détail des règles et exemples avancés reste dans [docs/40-DevGuides/PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md).
-- **Interface web :** tableau de bord `/admin` (sync DofusDB, sauvegarde, mise à jour stack, etc.) — voir la section *Interface web* dans [PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md).
+- **Données DofusDB (sync catalogue / entités, cas limites) :** le détail des règles et exemples avancés reste dans [docs/operations/README.md](../../docs/operations/README.md).
+- **Interface web :** tableau de bord `/admin` (sync DofusDB, sauvegarde, mise à jour stack, etc.) — voir la section *Interface web* dans [PROJECT_CLI.md](../../docs/operations/README.md).
 
 ### Tests PHPUnit (extrait)
 
@@ -175,7 +175,7 @@ php artisan project:data sync --type=all
 php artisan project:data init --fresh
 ```
 
-**Détail des alias d’entités, interaction `--type` / `--entity`, sync admin web :** [PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md).
+**Détail des alias d’entités, interaction `--type` / `--entity`, sync admin web :** [PROJECT_CLI.md](../../docs/operations/README.md).
 
 ### 1.12 `project:data:sync` — alias `project:update`
 
@@ -234,7 +234,7 @@ php artisan project:backup --no-storage
 php artisan project:backup --prune-only --dry-run
 ```
 
-Voir [PROJECT_CLI.md](../../docs/40-DevGuides/PROJECT_CLI.md) (section backup) pour les options complètes.
+Voir [PROJECT_CLI.md](../../docs/operations/README.md) (section backup) pour les options complètes.
 
 ### 1.19 Flux dev courant
 

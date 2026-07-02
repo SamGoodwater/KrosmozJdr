@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
  *
  * Lit d'abord la table dofusdb_effect_mappings (avec cache), sinon délègue à DofusDbEffectMapping (constante PHP).
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md
+ * @see docs/features/effects/README.md
  */
 final class DofusdbEffectMappingService
 {

@@ -24,7 +24,7 @@ use App\Models\Entity\Spell;
  * Types de dépendances : recipe, breed_spell, creature_spell, creature_drop, spell_invocation, panoply_item.
  *
  * @see RelationResolutionService
- * @see docs/50-Fonctionnalités/Scrapping/Architecture/RELATIONS.md
+ * @see docs/features/scrapping/README.md
  */
 final class RelationImportStack
 {

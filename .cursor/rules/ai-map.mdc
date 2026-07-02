@@ -9,25 +9,25 @@ Avant d'explorer le code en masse, utilise la **documentation condensée pour IA
 
 ## Protocole
 
-1. Ouvre la carte maître : `docV2/_ai.md` (degré 0, liste tous les domaines en une ligne).
+1. Ouvre la carte maître : `docs/_ai.md` (degré 0, liste tous les domaines en une ligne).
 2. Descends dans le `_ai.md` du domaine concerné, puis de `_ai.md` en `_ai.md` jusqu'au bon nœud.
 3. N'ouvre le `README.md` humain ou le code **que** si tu as besoin du détail d'implémentation.
 4. Ne charge pas des domaines hors sujet.
 
-`docV2/` est la nouvelle doc en cours de construction ; l'ancienne `docs/` reste la référence détaillée tant que la migration n'est pas finie. Les `_ai.md` pointent vers `docs/` quand un domaine n'est pas encore migré.
+`docs/` est la documentation technique/dev/IA active. Les contenus de jeu et archives sont séparés dans `private/`.
 
 ## Raccourcis domaines
 
-- Vue d'ensemble : `docV2/_ai.md`
-- Backend Laravel : `docV2/backend/_ai.md`
-- Frontend Vue/Inertia : `docV2/frontend/_ai.md`
-- Base de données : `docV2/database/_ai.md`
-- Fonctionnalités : `docV2/features/_ai.md` (entités, scrapping, CMS, droits…)
-- Bonnes pratiques : `docV2/best-practices/_ai.md`
+- Vue d'ensemble : `docs/_ai.md`
+- Backend Laravel : `docs/backend/_ai.md`
+- Frontend Vue/Inertia : `docs/frontend/_ai.md`
+- Base de données : `docs/backend/database/_ai.md`
+- Fonctionnalités : `docs/features/_ai.md` (entités, scrapping, CMS, droits…)
+- Bonnes pratiques : `docs/best-practices/_ai.md`
 
 ## À savoir absolument
 
-- **Doc code/site** (à maintenir) vs **contenu de jeu** (`docs/400- Jeu/`, lore + règles JDR) : ne réécris pas le contenu de jeu sans demande explicite (`docV2/game-content/_ai.md`).
+- **Doc code/site** (à maintenir) vs **contenu de jeu** (`private/game/`, lore + règles JDR) : ne réécris pas le contenu de jeu sans demande explicite.
 - Rôles utilisateur : entier 0→5 (guest → super_admin).
 - Entités de jeu : champs communs `state` (`raw`/`draft`/`playable`/`archived`), `read_level`, `write_level`, `created_by`.
 - i18n `vue-i18n` documenté mais **non branché** côté front (libellés FR en dur).

@@ -14,7 +14,7 @@ use Illuminate\Database\Seeder;
  *
  * Exclut : CA, recharge wakfu, bonus de sauvegarde, compétences, bonus de touche.
  *
- * @see docs/50-Fonctionnalités/Characteristics-DB/DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md
+ * @see docs/features/characteristics/README.md
  */
 class ScrappingEntityMappingCharacteristicSeeder extends Seeder
 {

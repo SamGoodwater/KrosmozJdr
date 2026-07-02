@@ -4,7 +4,7 @@
  * - mise à jour progressive de l'UI (avancement visible),
  * - éviter les timeouts PHP (requêtes plus courtes).
  * Ne lance jamais.
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 
 import { ref } from "vue";

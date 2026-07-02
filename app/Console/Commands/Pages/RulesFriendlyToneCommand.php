@@ -17,7 +17,7 @@ use RecursiveIteratorIterator;
 class RulesFriendlyToneCommand extends Command
 {
     protected $signature = 'pages:rules-friendly-tone
-        {--path= : Répertoire racine des règles (défaut : docs/400- Jeu/420- Règles)}
+        {--path= : Répertoire racine des règles (défaut : private/game/rules)}
         {--dry-run : Affiche les fichiers modifiés sans écrire sur le disque}';
 
     protected $description = 'Uniformise le ton des .md des règles (tutoiement, formulations moins scolaires).';
@@ -36,7 +36,7 @@ class RulesFriendlyToneCommand extends Command
 
     public function handle(): int
     {
-        $root = (string) ($this->option('path') ?: base_path('docs/400- Jeu/420- Règles'));
+        $root = (string) ($this->option('path') ?: base_path('private/game/rules'));
         $dryRun = (bool) $this->option('dry-run');
 
         if (! is_dir($root)) {

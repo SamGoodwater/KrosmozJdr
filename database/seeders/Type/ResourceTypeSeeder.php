@@ -15,7 +15,7 @@ use Illuminate\Database\Seeder;
  * Fichier généré par : php artisan scrapping:types:extract
  * Régénéré depuis la BDD par : php artisan scrapping:seeders:export --item-types
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md
+ * @see docs/features/scrapping/README.md
  */
 class ResourceTypeSeeder extends Seeder
 {

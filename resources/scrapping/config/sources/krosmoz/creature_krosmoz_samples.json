@@ -4,9 +4,9 @@
   "description": "Samples Krosmoz JDR (niveau 1–20 → valeur cible) pour les caractéristiques creature (monster, npc), issus des règles 2.2.1 / 2.2.2. Données fiables : objectif à atteindre pour la conversion Dofus → Krosmoz.",
   "reference_levels_krosmoz": [1, 4, 8, 12, 16, 20],
   "sources_rule": [
-    "docs/400- Jeu/420- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.1-caracteristiques-principales.md",
-    "docs/400- Jeu/420- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.2-caracteristiques-secondaires.md",
-    "docs/400- Jeu/420- Règles/3-Jouer/3.3-sorts/3.3.4-reserve-de-wakfu.md"
+    "private/game/rules/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.1-caracteristiques-principales.md",
+    "private/game/rules/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.2-caracteristiques-secondaires.md",
+    "private/game/rules/3-Jouer/3.3-sorts/3.3.4-reserve-de-wakfu.md"
   ],
   "by_characteristic_key": {
     "level_creature": {

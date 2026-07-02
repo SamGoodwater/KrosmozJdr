@@ -18,7 +18,7 @@ namespace App\Services\Jdr;
  * Les valeurs d'entrée sont considérées comme la cible Krosmoz (échelle déjà réduite si besoin).
  * Les dés classiques utilisés : d4, d6, d8, d10, d12, d20.
  *
- * @see docs/50-Fonctionnalités/Scrapping/DICE_NOTATION_SERVICE.md
+ * @see docs/features/scrapping/README.md
  */
 final class DiceNotationService
 {

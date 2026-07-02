@@ -16,7 +16,7 @@ use RecursiveIteratorIterator;
 class RulesInclusiveAllyCommand extends Command
 {
     protected $signature = 'pages:rules-inclusive-ally
-        {--path= : Répertoire racine des règles (défaut : docs/400- Jeu/420- Règles)}
+        {--path= : Répertoire racine des règles (défaut : private/game/rules)}
         {--dry-run : Affiche les fichiers modifiés sans écrire sur le disque}';
 
     protected $description = 'Applique l\'écriture inclusive (allié·e, personnage, en-têtes) dans les .md des règles.';
@@ -35,7 +35,7 @@ class RulesInclusiveAllyCommand extends Command
 
     public function handle(): int
     {
-        $root = (string) ($this->option('path') ?: base_path('docs/400- Jeu/420- Règles'));
+        $root = (string) ($this->option('path') ?: base_path('private/game/rules'));
         $dryRun = (bool) $this->option('dry-run');
 
         if (! is_dir($root)) {

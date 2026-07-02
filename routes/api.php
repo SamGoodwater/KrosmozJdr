@@ -9,7 +9,7 @@
 | Chaque fichier est chargé ci-dessous. Préfixe "api" et middleware
 | "api" appliqués par bootstrap/app.php.
 |
-| Voir docs/10-BestPractices/ROUTES_ARCHITECTURE.md.
+| Voir docs/backend/routes/README.md.
 |
 */
 

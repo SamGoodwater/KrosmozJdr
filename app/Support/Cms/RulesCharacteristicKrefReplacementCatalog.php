@@ -6,7 +6,7 @@ namespace App\Support\Cms;
  * Catalogue des remplacements texte → shortcode {@code [[kref:characteristic:clé|libellé]]}
  * pour les fichiers Markdown des règles (hors blocs masqués).
  *
- * @see docs/400- Jeu/420- Règles/REFERENCE_KREF_CONVERSIONS_CARACTERISTIQUES.md
+ * @see private/game/rules/REFERENCE_KREF_CONVERSIONS_CARACTERISTIQUES.md
  */
 final class RulesCharacteristicKrefReplacementCatalog
 {

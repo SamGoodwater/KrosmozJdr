@@ -19,7 +19,7 @@ use Illuminate\Console\Command;
  *   php artisan scrapping:effects:map --output=database/seeders/data/dofusdb_effect_mappings.php
  *   php artisan scrapping:effects:map --lang=fr --no-cache
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md
+ * @see docs/features/effects/README.md
  */
 class ScrappingEffectsMapCommand extends Command
 {

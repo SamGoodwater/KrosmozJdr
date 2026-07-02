@@ -6,7 +6,7 @@
 |--------------------------------------------------------------------------
 |
 | Découpage par thème : auth (racine), web/*, admin/*, entities/*, services/*.
-| Voir docs/10-BestPractices/ROUTES_ARCHITECTURE.md.
+| Voir docs/backend/routes/README.md.
 |
 */
 

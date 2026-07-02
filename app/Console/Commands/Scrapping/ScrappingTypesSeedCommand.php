@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Artisan;
  * écrit les fichiers database/seeders/data/*.php puis exécute les 3 seeders pour synchroniser la BDD.
  * Aucun type n’est oublié : la classification repose sur l’API (https://api.dofusdb.fr/item-types).
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md
+ * @see docs/features/scrapping/README.md
  */
 class ScrappingTypesSeedCommand extends Command
 {

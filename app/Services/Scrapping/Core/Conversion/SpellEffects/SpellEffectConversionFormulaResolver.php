@@ -8,7 +8,7 @@ namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
  * Résout la characteristic_key (groupe spell) à utiliser pour la conversion de la valeur
  * d'un sous-effet, selon l'action (sub_effect_slug) et les params (ex. characteristic).
  *
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_PHASE3_CONVERSION_VALEURS_EFFETS.md
+ * @see docs/features/effects/README.md
  */
 final class SpellEffectConversionFormulaResolver
 {

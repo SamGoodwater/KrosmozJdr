@@ -42,7 +42,7 @@ const props = defineProps({
 
 const { isMobile } = useDevice();
 
-const visibleCount = ref(999);
+const visibleCount = ref(0);
 
 const safeItems = computed(() =>
     Array.isArray(props.items) ? props.items.filter(Boolean) : []
@@ -69,6 +69,8 @@ const mobileDropdownAria = computed(
 
 const itemsRowRef = ref(null);
 const measureRef = ref(null);
+/** Largeur de la zone utile (px), alignée sur la barre visible pour le calcul overflow. */
+const measureWidthPx = ref(0);
 
 const GAP_FALLBACK_PX = 12;
 
@@ -116,26 +118,31 @@ function updateVisibleCount() {
 
     if (!row || !measure || n === 0) {
         visibleCount.value = n;
+        measureWidthPx.value = 0;
         return;
     }
 
+    const available = row.getBoundingClientRect().width;
+    if (available <= 1) {
+        return;
+    }
+
+    measureWidthPx.value = Math.floor(available);
+
     const kids = Array.from(measure.children);
     if (kids.length < 2) {
-        visibleCount.value = n;
         return;
     }
 
     const moreEl = kids[kids.length - 1];
     const itemEls = kids.slice(0, -1);
     if (itemEls.length !== n) {
-        visibleCount.value = n;
         return;
     }
 
     const widths = itemEls.map((el) => el.getBoundingClientRect().width);
     const moreW = moreEl.getBoundingClientRect().width;
     const gap = readGapPx(measure);
-    const available = row.getBoundingClientRect().width;
 
     let best = n;
     for (let k = n; k >= 0; k--) {
@@ -159,11 +166,40 @@ function updateVisibleCount() {
 
 /** @type {ResizeObserver | null} */
 let rowObserver = null;
+/** @type {number} */
+let layoutRetryTimer = 0;
+/** @type {(() => void) | undefined} */
+let removeNavigateListener;
 
-function scheduleLayout() {
+function scheduleLayout(retry = 0) {
+    if (typeof window !== 'undefined' && layoutRetryTimer) {
+        window.clearTimeout(layoutRetryTimer);
+        layoutRetryTimer = 0;
+    }
+
     nextTick(() => {
-        updateVisibleCount();
+        requestAnimationFrame(() => {
+            updateVisibleCount();
+
+            const row = itemsRowRef.value;
+            const measure = measureRef.value;
+            const n = safeItems.value.length;
+            const kids = measure ? measure.children.length : 0;
+            const measureReady = !measure || kids >= n + 1;
+            const rowReady = !row || row.getBoundingClientRect().width > 1;
+
+            if (retry < 4 && n > 0 && (!measureReady || !rowReady)) {
+                layoutRetryTimer = window.setTimeout(
+                    () => scheduleLayout(retry + 1),
+                    50
+                );
+            }
+        });
     });
+}
+
+function onWindowResize() {
+    scheduleLayout();
 }
 
 onMounted(() => {
@@ -171,17 +207,31 @@ onMounted(() => {
     if (typeof document !== 'undefined' && document.fonts?.ready) {
         document.fonts.ready.then(() => scheduleLayout());
     }
+    if (typeof window !== 'undefined') {
+        window.addEventListener('resize', onWindowResize, { passive: true });
+    }
+    removeNavigateListener = router.on('navigate', () => scheduleLayout());
 });
 
 onUnmounted(() => {
     rowObserver?.disconnect();
     rowObserver = null;
+    if (layoutRetryTimer) {
+        window.clearTimeout(layoutRetryTimer);
+        layoutRetryTimer = 0;
+    }
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', onWindowResize);
+    }
+    if (typeof removeNavigateListener === 'function') {
+        removeNavigateListener();
+    }
 });
 
 watch(
     () => safeItems.value.map((s) => s.href).join('\0'),
     () => {
-        visibleCount.value = safeItems.value.length;
+        visibleCount.value = 0;
         scheduleLayout();
     }
 );
@@ -214,7 +264,10 @@ function itemKey(item, prefix) {
 </script>
 
 <template>
-    <nav class="glass-border-b-sm mb-2 w-full pb-4 pt-0.5" :aria-label="ariaLabel">
+    <nav
+        class="relative z-30 mb-2 w-full min-w-0 pb-4 pt-0.5 glass-border-b-sm"
+        :aria-label="ariaLabel"
+    >
         <div v-if="isMobile" class="flex w-full justify-end">
             <Dropdown
                 placement="bottom-end"
@@ -266,9 +319,11 @@ function itemKey(item, prefix) {
         </div>
 
         <template v-else>
+            <div class="relative w-full min-w-0">
             <div
                 ref="measureRef"
-                class="pointer-events-none fixed top-0 left-0 z-[-1000] flex gap-3 opacity-0"
+                class="pointer-events-none absolute left-0 top-0 flex gap-3 overflow-hidden opacity-0"
+                :style="measureWidthPx > 0 ? { width: `${measureWidthPx}px` } : undefined"
                 aria-hidden="true"
             >
                 <div
@@ -306,10 +361,10 @@ function itemKey(item, prefix) {
 
             <div
                 ref="itemsRowRef"
-                class="flex min-w-0 w-full justify-end overflow-hidden"
+                class="relative flex w-full min-w-0 justify-end overflow-hidden"
             >
                 <ul
-                    class="flex min-w-0 flex-1 flex-nowrap items-center justify-end gap-3"
+                    class="flex w-full min-w-0 flex-nowrap items-center justify-end gap-3"
                 >
                     <li
                         v-for="item in visibleItems"
@@ -333,7 +388,7 @@ function itemKey(item, prefix) {
                             {{ item.title }}
                         </Btn>
                     </li>
-                    <li v-if="overflowItems.length" class="shrink-0">
+                    <li v-if="overflowItems.length" class="relative shrink-0">
                         <Dropdown
                             placement="bottom-end"
                             variant="glass"
@@ -385,6 +440,7 @@ function itemKey(item, prefix) {
                         </Dropdown>
                     </li>
                 </ul>
+            </div>
             </div>
         </template>
     </nav>

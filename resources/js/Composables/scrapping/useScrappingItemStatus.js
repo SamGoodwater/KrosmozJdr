@@ -1,7 +1,7 @@
 /**
  * Composable : statuts par ligne (recherché, converti, simulé, importé, erreur).
  * Utilise statusConfig ; ne fait aucun appel API.
- * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md
+ * @see docs/features/scrapping/README.md
  */
 
 import { ref } from "vue";

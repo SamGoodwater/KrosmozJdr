@@ -11,7 +11,7 @@ namespace App\Services\Characteristic\Formula;
  * - Une formule simple (chaîne) : ex. "[vitality]*10+[level]*2"
  * - Un tableau par caractéristique (JSON) : ex. {"characteristic":"level","1":0,"7":2,"14":4}
  *
- * @see docs/10-BestPractices/SYNTAXE_FORMULES_CARACTERISTIQUES.md
+ * @see docs/features/characteristics/README.md
  */
 final class FormulaConfigDecoder
 {

@@ -18,7 +18,7 @@ use Tests\TestCase;
  * a désactivé les canaux correspondants.
  *
  * @see App\Services\NotificationService
- * @see docs/50-Fonctionnalités/Notifications/README.md
+ * @see docs/features/notifications/README.md
  */
 class NotificationServiceTest extends TestCase
 {
