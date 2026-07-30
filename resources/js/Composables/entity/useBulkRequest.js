@@ -36,11 +36,13 @@ export function useBulkRequest() {
   };
 
   /**
-   * @param {BulkPatchJsonOptions} opts
+   * @param {BulkPatchJsonOptions|string} opts
+   * @param {any} [legacyPayload]
    * @returns {Promise<boolean>}
    */
-  const bulkPatchJson = async (opts) => {
-    const url = String(opts?.url || "").trim();
+  const bulkPatchJson = async (opts, legacyPayload = undefined) => {
+    const normalized = typeof opts === "string" ? { url: opts, payload: legacyPayload } : (opts || {});
+    const url = String(normalized?.url || "").trim();
     if (!url) return false;
 
     const csrfToken = getCsrfToken();
@@ -57,7 +59,7 @@ export function useBulkRequest() {
           "X-CSRF-TOKEN": csrfToken,
           Accept: "application/json",
         },
-        body: JSON.stringify(opts?.payload ?? {}),
+        body: JSON.stringify(normalized?.payload ?? {}),
       });
 
       let data = null;
@@ -68,7 +70,7 @@ export function useBulkRequest() {
       }
 
       if (!response.ok || !data?.success) {
-        notifyError(data?.message || opts?.errorMessage || "Erreur lors de la mise à jour en masse.");
+        notifyError(data?.message || normalized?.errorMessage || "Erreur lors de la mise à jour en masse.");
         return false;
       }
 
@@ -79,7 +81,7 @@ export function useBulkRequest() {
           ? `Mis à jour: ${updated}/${requested}`
           : "Mis à jour.";
 
-      notifySuccess(opts?.successMessage || defaultSuccess);
+      notifySuccess(normalized?.successMessage || defaultSuccess);
 
       return true;
     } catch (e) {

@@ -29,8 +29,11 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
+use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -267,14 +270,15 @@ class SpecializationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Specialization $specialization): RedirectResponse
+    public function delete(Request $request, Specialization $specialization, EntityDeletionService $deletionService): RedirectResponse
     {
-        $this->authorize('delete', $specialization);
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
 
-        $specialization->delete();
+        $deletionService->softDelete($specialization, $actor);
 
         return redirect()->route('entities.specializations.index')
-            ->with('success', 'Spécialisation supprimée (corbeille).');
+            ->with('success', 'Spécialisation placée en corbeille.');
     }
 
     /**

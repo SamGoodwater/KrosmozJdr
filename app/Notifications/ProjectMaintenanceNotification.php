@@ -10,9 +10,9 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * Notification envoyée aux admin/super_admin après project:init ou project:update.
+ * Notification envoyée aux admin/super_admin après une maintenance projet.
  *
- * @property string $command 'init'|'update'
+ * @property string $command 'init'|'update'|'backup'
  * @property bool $success
  * @property float $durationSeconds
  * @property string $finishedAt Formatted datetime
@@ -41,7 +41,7 @@ class ProjectMaintenanceNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $label = $this->command === 'init' ? 'Initialisation' : 'Mise à jour';
+        $label = $this->commandLabel();
         $status = $this->success ? 'réussie' : 'échouée';
         $duration = $this->formatDuration($this->durationSeconds);
 
@@ -61,7 +61,7 @@ class ProjectMaintenanceNotification extends Notification implements ShouldQueue
 
     public function toArray(object $notifiable): array
     {
-        $label = $this->command === 'init' ? 'Initialisation' : 'Mise à jour';
+        $label = $this->commandLabel();
         $status = $this->success ? 'réussie' : 'échouée';
         $duration = $this->formatDuration($this->durationSeconds);
 
@@ -76,6 +76,15 @@ class ProjectMaintenanceNotification extends Notification implements ShouldQueue
                 .($this->message ? " {$this->message}" : ''),
             'url' => url('/admin'),
         ];
+    }
+
+    private function commandLabel(): string
+    {
+        return match ($this->command) {
+            'init' => 'Initialisation',
+            'backup' => 'Sauvegarde',
+            default => 'Mise à jour',
+        };
     }
 
     private function formatDuration(float $seconds): string

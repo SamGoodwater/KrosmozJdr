@@ -55,7 +55,7 @@ return [
     125 => ['booster', 'characteristic', 'vitality'], // 125 — #1{{~1~2 à }}#2 Vitalité ; carac DofusDB id=11
     126 => ['booster', 'characteristic', 'intel'], // 126 — #1{{~1~2 à }}#2 Intelligence ; carac DofusDB id=15
     128 => ['booster', 'characteristic', 'pm'], // 128 — #1{{~1~2 à }}#2 PM ; carac DofusDB id=23
-    132 => ['retirer', 'characteristic', null], // 132 — Enlève les envoûtements
+    132 => ['retirer', 'characteristic', null], // 132 — Retire les effets dissipables
     135 => ['booster', 'characteristic', 'po'], // 135 — Portée du lanceur réduite de : #1{{~1~2 à }}#2 ; carac DofusDB id=19
     136 => ['booster', 'characteristic', 'po'], // 136 — +#1{{~1~2 à }}#2 Portée (lanceur) ; carac DofusDB id=19
     137 => ['frapper', 'element', null], // 137 — Dommages physiques du lanceur augmentés de : #1{{~1~2 à }}#2

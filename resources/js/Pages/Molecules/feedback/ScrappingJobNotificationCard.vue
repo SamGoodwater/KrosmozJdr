@@ -17,21 +17,25 @@ const status = computed(() => String(data.value?.status || "running"));
 const locked = computed(() => data.value?.locked === true);
 const backendJobId = computed(() => data.value?.meta?.job_id ?? null);
 const canCancel = computed(() => {
-    return locked.value && !!backendJobId.value && (status.value === "running" || status.value === "cancelling");
+    return locked.value
+        && !!backendJobId.value
+        && ["queued", "running", "cancelling"].includes(status.value);
 });
 
 const statusLabel = computed(() => {
-    if (status.value === "success") return "Terminé";
-    if (status.value === "error") return "Erreur";
+    if (status.value === "queued") return "En attente";
+    if (status.value === "success" || status.value === "succeeded") return "Terminé";
+    if (status.value === "error" || status.value === "failed") return "Erreur";
     if (status.value === "cancelled") return "Annulé";
     if (status.value === "cancelling") return "Annulation...";
     return "En cours";
 });
 
 const statusColorClass = computed(() => {
-    if (status.value === "success") return "text-success";
-    if (status.value === "error") return "text-error";
+    if (status.value === "success" || status.value === "succeeded") return "text-success";
+    if (status.value === "error" || status.value === "failed") return "text-error";
     if (status.value === "cancelled") return "text-warning";
+    if (status.value === "queued") return "text-warning";
     return "text-info";
 });
 

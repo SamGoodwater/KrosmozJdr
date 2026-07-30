@@ -189,8 +189,7 @@ const { handleKeyboardIntent } = useEntityIndexTableIntents({
         modalOpen.value = true;
     },
     openEdit: (model) => {
-        quickEditEntity.value = model;
-        quickEditModalOpen.value = true;
+        openCapabilityEditModal(model?.id);
     },
 });
 

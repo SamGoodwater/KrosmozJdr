@@ -10,7 +10,10 @@ use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Shop;
+use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
@@ -124,9 +127,18 @@ class ShopController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Shop $shop)
+    /**
+     * Place la boutique en corbeille (soft delete).
+     */
+    public function delete(Request $request, Shop $shop, EntityDeletionService $deletionService): RedirectResponse
     {
-        //
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
+
+        $deletionService->softDelete($shop, $actor);
+
+        return redirect()->route('entities.shops.index')
+            ->with('success', 'Boutique placée en corbeille.');
     }
 
     /**

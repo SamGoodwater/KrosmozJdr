@@ -12,7 +12,10 @@ use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Spell;
+use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
@@ -137,9 +140,18 @@ class ScenarioController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Scenario $scenario)
+    /**
+     * Place le scénario en corbeille (soft delete).
+     */
+    public function delete(Request $request, Scenario $scenario, EntityDeletionService $deletionService): RedirectResponse
     {
-        //
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
+
+        $deletionService->softDelete($scenario, $actor);
+
+        return redirect()->route('entities.scenarios.index')
+            ->with('success', 'Scénario placé en corbeille.');
     }
 
     /**

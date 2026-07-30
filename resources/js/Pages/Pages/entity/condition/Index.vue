@@ -272,6 +272,7 @@ const handleQuickEditSubmit = async (payload) => {
     }
     refreshToken.value++;
     quickEditEntity.value = null;
+    quickEditModalOpen.value = false;
 };
 </script>
 

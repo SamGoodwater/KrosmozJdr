@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['web'])->prefix('cms')->group(function () {
     Route::get('/page-section-picker', [CmsPageSectionPickerController::class, 'index'])
         ->name('api.cms.page-section-picker');
+    Route::get('/pages/{page:slug}/preview-snippet', [CmsSectionPreviewController::class, 'showPage'])
+        ->name('api.cms.pages.preview-snippet');
     Route::get('/section-preview-snippet', [CmsSectionPreviewController::class, 'showByQuery'])
         ->name('api.cms.sections.preview-snippet-query');
     Route::get('/sections/{section}/preview-snippet', [CmsSectionPreviewController::class, 'show'])

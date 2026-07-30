@@ -5,6 +5,7 @@ namespace App\Models\Entity;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -18,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $specialization_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read Breed|null $breed
@@ -48,12 +50,16 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereWriteLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc withoutTrashed()
  * @mixin \Eloquent
  */
 class Npc extends Model
 {
     /** @use HasFactory<\\Database\\Factories\\NpcFactory> */
     use HasFactory;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.

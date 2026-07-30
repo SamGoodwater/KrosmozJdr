@@ -101,6 +101,7 @@ const handleClose = () => {
             <CapabilityEditFormContent
                 v-else-if="payload"
                 :capability="payload.capability"
+                :available-conditions="payload.availableConditions || []"
                 embedded-in-modal
                 redirect-after-update="stay"
                 @cancel="handleClose"

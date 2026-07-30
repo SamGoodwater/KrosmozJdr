@@ -195,9 +195,14 @@ const handleTableAction = async (actionKey, entity, row) => {
     }
 };
 
-const handleQuickEditSubmit = () => {
+const handleQuickEditSubmit = async (payload) => {
+    if (payload) {
+        const ok = await bulkPatchJson("/api/scrapping/resource-types/bulk", payload);
+        if (!ok) return;
+    }
     refreshToken.value++;
     quickEditEntity.value = null;
+    quickEditModalOpen.value = false;
 };
 
 const resourceTypeDescriptors = computed(() => getResourceTypeFieldDescriptors({ capabilities: props.can || {} }));

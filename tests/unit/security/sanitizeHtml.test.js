@@ -10,6 +10,14 @@ describe('sanitizeHtml', () => {
     expect(output.toLowerCase()).not.toContain('<script');
     expect(output.toLowerCase()).not.toContain('onerror');
   });
+
+  it('preserves kref title payloads used by rich reference navigation', () => {
+    const input = '<p><span class="kref kref--nav" title="eyJ0IjoicGFnZSJ9">Guide</span></p>';
+    const output = sanitizeHtml(input);
+
+    expect(output).toContain('class="kref kref--nav"');
+    expect(output).toContain('title="eyJ0IjoicGFnZSJ9"');
+  });
 });
 
 

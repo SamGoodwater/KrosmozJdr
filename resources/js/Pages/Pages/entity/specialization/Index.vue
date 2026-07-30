@@ -287,9 +287,14 @@ const handleModalDelete = (entity) => {
     }
 };
 
-const handleQuickEditSubmit = () => {
+const handleQuickEditSubmit = async (payload) => {
+    if (payload) {
+        const ok = await bulkPatchJson("/api/entities/specializations/bulk", payload);
+        if (!ok) return;
+    }
     refreshToken.value++;
     quickEditEntity.value = null;
+    quickEditModalOpen.value = false;
 };
 </script>
 

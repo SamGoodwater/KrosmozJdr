@@ -11,9 +11,12 @@ use App\Http\Resources\Entity\CapabilityResource;
 use App\Http\Resources\Entity\ConditionResource;
 use App\Models\Entity\Capability;
 use App\Models\Entity\Condition;
+use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CapabilityController extends Controller
@@ -201,13 +204,15 @@ class CapabilityController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Capability $capability): RedirectResponse
+    public function delete(Request $request, Capability $capability, EntityDeletionService $deletionService): RedirectResponse
     {
-        $this->authorize('delete', $capability);
-        $capability->delete();
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
+
+        $deletionService->softDelete($capability, $actor);
 
         return redirect()->route('entities.capabilities.index')
-            ->with('success', 'Capacité supprimée (corbeille).');
+            ->with('success', 'Capacité placée en corbeille.');
     }
 
     /**

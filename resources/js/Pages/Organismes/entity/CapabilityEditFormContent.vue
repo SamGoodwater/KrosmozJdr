@@ -10,6 +10,7 @@ import { router } from "@inertiajs/vue3";
 import { Capability } from "@/Models/Entity/Capability";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
+import ConditionsEditor from "@/Pages/Organismes/entity/ConditionsEditor.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import {
@@ -20,6 +21,7 @@ import { invalidateKrefEntityPreviewCache } from "@/Composables/richText/krefEnt
 
 const props = defineProps({
     capability: { type: Object, required: true },
+    availableConditions: { type: Array, default: () => [] },
     embeddedInModal: { type: Boolean, default: false },
     /**
      * Redirection après PATCH : `stay` = modal / même page ; `edit` = page édition.
@@ -138,6 +140,18 @@ function confirmDelete() {
             :shortcuts-active="!embeddedInModal"
             @cancel="emit('cancel')"
             @submit="emit('saved')"
+        />
+
+        <!-- Même éditeur d’états en page et en modal (source unique). -->
+        <ConditionsEditor
+            v-if="capabilityModel.id"
+            :relations="capabilityModel.conditions || []"
+            :available-items="availableConditions"
+            :entity-id="capabilityModel.id"
+            route-name="entities.capabilities.updateConditions"
+            route-param-name="capability"
+            title="États appliqués"
+            help="États que cette capacité peut appliquer. La description de la capacité précise leur interaction avec les créatures."
         />
     </div>
 </template>

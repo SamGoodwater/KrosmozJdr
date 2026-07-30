@@ -8,8 +8,12 @@ use App\Http\Requests\Entity\StoreConditionRequest;
 use App\Http\Requests\Entity\UpdateConditionRequest;
 use App\Http\Resources\Entity\ConditionResource;
 use App\Models\Entity\Condition;
+use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 
@@ -149,12 +153,14 @@ class ConditionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Condition $condition)
+    public function delete(Request $request, Condition $condition, EntityDeletionService $deletionService): JsonResponse
     {
-        $this->authorize('delete', $condition);
-        $condition->delete();
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
 
-        return response()->json(['message' => 'Deleted'], 204);
+        $deletionService->softDelete($condition, $actor);
+
+        return response()->json(['message' => 'Entité placée en corbeille.']);
     }
 
     /**

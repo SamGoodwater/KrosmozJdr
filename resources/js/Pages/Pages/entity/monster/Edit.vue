@@ -3,7 +3,7 @@
  * Monster Edit Page
  * 
  * @description
- * Page d'édition d'un monstre avec deux modes d'affichage (Grand et Compact)
+ * Page d'édition d'un monstre via le formulaire d'entité générique.
  * 
  * @props {Object} monster - Données du monstre à éditer
  */

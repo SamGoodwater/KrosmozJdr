@@ -21,6 +21,8 @@ import TanStackTable from "@/Pages/Organismes/table/TanStackTable.vue";
 import { resolveEntityViewComponentSync } from "@/Utils/entity/resolveEntityViewComponent.js";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useTableServerParams } from "@/Composables/table/useTableServerParams";
+import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
+import Btn from "@/Pages/Atoms/action/Btn.vue";
 
 const props = defineProps({
     entityType: { type: String, required: true },
@@ -81,6 +83,7 @@ const emit = defineEmits([
 ]);
 
 const permissions = usePermissions();
+const { downloadPdf, isDownloading } = useDownloadPdf(props.entityType);
 
 const isServerEnabled = computed(() => {
     if (props.serverSide) {
@@ -151,6 +154,8 @@ const canViewAny = computed(() => canAbility("viewAny"));
 const canUpdateAny = computed(() => {
     return canAbility("updateAny");
 });
+const selectedPdfIds = computed(() => (Array.isArray(props.selectedIds) ? props.selectedIds : []));
+const canDownloadSelectionPdf = computed(() => canViewAny.value && selectedPdfIds.value.length > 0);
 
 const canManageAny = computed(() => canAbility("manageAny"));
 
@@ -243,7 +248,7 @@ const resolvedConfig = computed(() => {
             ...(cfg.features || {}),
             selection: {
                 ...((cfg.features || {}).selection || {}),
-                enabled: (cfg.features || {}).selection?.enabled ? canUpdateAny.value : false,
+                enabled: (cfg.features || {}).selection?.enabled ? canViewAny.value : false,
             },
             export: {
                 ...((cfg.features || {}).export || {}),
@@ -322,6 +327,11 @@ const handleRefresh = async () => {
     }
     emit("refresh");
 };
+
+const handleDownloadSelectionPdf = async () => {
+    if (!canDownloadSelectionPdf.value) return;
+    await downloadPdf(selectedPdfIds.value);
+};
 </script>
 
 <template>
@@ -329,31 +339,46 @@ const handleRefresh = async () => {
         Accès refusé.
     </div>
 
-    <TanStackTable
-        v-else
-        :config="resolvedConfig"
-        :line-row-component="lineRowComponent"
-        :rows="activeRows"
-        :loading="loading"
-        :filter-options="activeFilterOptions"
-        :selected-ids="selectedIds"
-        :entity-type="entityType"
-        :show-actions-column="true"
-        :server-side="serverSide"
-        :server-pagination-meta="serverPaginationMeta"
-        :server-params="serverParams"
-        :initial-filter-values="initialFilterValues"
-        :quick-edit-allowed="canUpdateAny"
-        @update:server-params="handleServerParamsChange"
-        @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
-        @update:quick-edit-enabled="(v) => emit('update:quickEditEnabled', v)"
-        @create-request="() => emit('create-request')"
-        @keyboard-intent="(p) => emit('keyboard-intent', p)"
-        @row-click="handleRowClick"
-        @row-dblclick="(row) => emit('row-dblclick', row)"
-        @refresh="handleRefresh"
-        @action="handleAction"
-    />
+    <div v-else class="space-y-2">
+        <div v-if="canDownloadSelectionPdf" class="flex justify-end">
+            <Btn
+                size="xs"
+                color="primary"
+                variant="outline"
+                class="gap-2"
+                :disabled="isDownloading"
+                type="button"
+                @click="handleDownloadSelectionPdf"
+            >
+                <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
+                PDF sélection ({{ selectedPdfIds.length }})
+            </Btn>
+        </div>
+        <TanStackTable
+            :config="resolvedConfig"
+            :line-row-component="lineRowComponent"
+            :rows="activeRows"
+            :loading="loading"
+            :filter-options="activeFilterOptions"
+            :selected-ids="selectedIds"
+            :entity-type="entityType"
+            :show-actions-column="true"
+            :server-side="serverSide"
+            :server-pagination-meta="serverPaginationMeta"
+            :server-params="serverParams"
+            :initial-filter-values="initialFilterValues"
+            :quick-edit-allowed="canUpdateAny"
+            @update:server-params="handleServerParamsChange"
+            @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
+            @update:quick-edit-enabled="(v) => emit('update:quickEditEnabled', v)"
+            @create-request="() => emit('create-request')"
+            @keyboard-intent="(p) => emit('keyboard-intent', p)"
+            @row-click="handleRowClick"
+            @row-dblclick="(row) => emit('row-dblclick', row)"
+            @refresh="handleRefresh"
+            @action="handleAction"
+        />
+    </div>
 </template>
 
 

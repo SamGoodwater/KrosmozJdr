@@ -12,9 +12,11 @@ use App\Models\Effect;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use App\Support\Entity\ObjectEffectEditOptions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 
@@ -204,11 +206,17 @@ class ItemController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Place l’item en corbeille (soft delete).
      */
-    public function delete(Item $item)
+    public function delete(Request $request, Item $item, EntityDeletionService $deletionService): RedirectResponse
     {
-        //
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
+
+        $deletionService->softDelete($item, $actor);
+
+        return redirect()->route('entities.items.index')
+            ->with('success', 'Item placé en corbeille.');
     }
 
     /**

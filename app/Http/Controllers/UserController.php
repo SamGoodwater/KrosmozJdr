@@ -112,7 +112,18 @@ class UserController extends Controller
 
         $request->validate(['password' => ['required', 'string']]);
 
-        if (! Hash::check($request->password, $request->user()->password)) {
+        $user = $request->user();
+
+        if ($user->password === null || $user->password === '') {
+            return response()->json([
+                'message' => 'Ce compte n\'a pas de mot de passe local.',
+                'errors' => [
+                    'password' => ['Ce compte n\'a pas de mot de passe local. Utilise ta connexion OAuth ou définis un mot de passe dans Mon compte.'],
+                ],
+            ], 422);
+        }
+
+        if (! Hash::check($request->password, $user->password)) {
             return response()->json([
                 'errors' => ['password' => [__('auth.password')]],
             ], 422);

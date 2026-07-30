@@ -7,9 +7,12 @@ namespace Tests\Feature\Web;
 use App\Http\Controllers\FeedbackController;
 use App\Mail\FeedbackMail;
 use App\Mail\FeedbackRecapMail;
+use App\Models\FeedbackThread;
 use App\Models\User;
+use App\Notifications\FeedbackThreadNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 /**
@@ -39,11 +42,12 @@ class FeedbackControllerTest extends TestCase
         unset($admin);
     }
 
-    public function test_authenticated_user_receives_recap_only_when_opted_in(): void
+    public function test_authenticated_user_creates_thread_and_receives_recap_only_when_opted_in(): void
     {
         Mail::fake();
+        Notification::fake();
 
-        User::factory()->create(['role' => User::ROLE_ADMIN, 'email' => 'admin-feedback@example.test']);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN, 'email' => 'admin-feedback@example.test']);
 
         $user = User::factory()->create([
             'role' => User::ROLE_PLAYER,
@@ -54,10 +58,21 @@ class FeedbackControllerTest extends TestCase
             'type' => 'suggestion',
             'message' => 'Améliorer la recherche',
             'email_recap' => false,
-        ])->assertSessionHas('success');
+        ])->assertRedirect();
 
-        Mail::assertSent(FeedbackMail::class);
+        $this->assertDatabaseHas('feedback_threads', [
+            'user_id' => $user->id,
+            'type' => 'suggestion',
+            'staff_unread_count' => 1,
+        ]);
+        $this->assertDatabaseHas('feedback_messages', [
+            'author_id' => $user->id,
+            'author_role' => 'user',
+            'body' => 'Améliorer la recherche',
+        ]);
+        Mail::assertNotSent(FeedbackMail::class);
         Mail::assertNotSent(FeedbackRecapMail::class);
+        Notification::assertSentTo($admin, FeedbackThreadNotification::class);
 
         Mail::fake();
 
@@ -71,6 +86,8 @@ class FeedbackControllerTest extends TestCase
             return $mail->hasTo($user->email)
                 && str_contains($mail->feedbackMessage, 'Autre suggestion');
         });
+
+        $this->assertSame(2, FeedbackThread::query()->where('user_id', $user->id)->count());
     }
 
     public function test_message_is_required(): void

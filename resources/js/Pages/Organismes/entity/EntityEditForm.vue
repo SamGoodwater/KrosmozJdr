@@ -18,6 +18,7 @@ import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
+import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
 import FormulaHelpHint from '@/Pages/Molecules/entity/FormulaHelpHint.vue';
 import EntityEditFormFieldBody from '@/Pages/Molecules/entity/EntityEditFormFieldBody.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
@@ -196,7 +197,8 @@ const entitiesPluralSegment = computed(() => {
     return `${et}s`;
 });
 
-const { dispatchEntityAction } = useEntityActionDispatcher(entitiesPluralSegment);
+const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete } =
+    useEntityActionDispatcher(entitiesPluralSegment);
 const showReadAction = computed(() => props.isUpdating && Boolean(props.entity?.id));
 
 /**
@@ -1278,6 +1280,19 @@ async function handleEditPageAction(actionKey) {
             </div>
         </form>
     </Container>
+
+    <ConfirmModal
+        :open="deleteConfirm.open"
+        :title="deleteConfirm.title"
+        :message="deleteConfirm.message"
+        :details="deleteConfirm.details"
+        confirm-label="Mettre en corbeille"
+        confirm-color="error"
+        confirm-icon="fa-solid fa-trash-can"
+        @confirm="confirmPendingDelete"
+        @cancel="cancelPendingDelete"
+        @close="cancelPendingDelete"
+    />
 </template>
 
 <style scoped lang="scss">

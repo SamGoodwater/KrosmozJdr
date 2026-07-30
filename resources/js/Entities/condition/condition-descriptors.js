@@ -54,10 +54,6 @@ import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/Shared
  * @returns {Record<string, ConditionFieldDescriptor>} Objet avec tous les descripteurs
  */
 export function getConditionFieldDescriptors(ctx = {}) {
-  const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
-  const canUpdateAny = Boolean(can?.updateAny);
-  const canCreateAny = Boolean(can?.createAny);
-
   return {
     id: {
       key: "id",
@@ -139,7 +135,7 @@ export function getConditionFieldDescriptors(ctx = {}) {
         form: {
           type: "checkbox",
           group: "Règles",
-          help: "Si désactivé, l’état ne peut pas être retiré par dissipation (désenvoûtement, etc.).",
+          help: "Si désactivé, l’état ne peut pas être retiré par dissipation.",
           required: false,
           showInCompact: true,
           defaultValue: true,

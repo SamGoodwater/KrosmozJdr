@@ -457,6 +457,8 @@ onBeforeUnmount(() => {
             ref="dialogRef" 
             :id="id" 
             :class="moleculeClasses" 
+            role="dialog"
+            aria-modal="true"
             v-bind="attrs"
             @click="handleBackdropClick"
         >
@@ -526,7 +528,7 @@ onBeforeUnmount(() => {
                 :class="overlayClasses"
             >
                 <slot name="backdrop">
-                    <button type="submit" class="sr-only">close</button>
+                    <button type="submit" class="sr-only" aria-label="Fermer le modal">Fermer</button>
                 </slot>
             </form>
         </dialog>

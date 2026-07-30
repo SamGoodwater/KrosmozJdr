@@ -10,7 +10,10 @@ use App\Models\Entity\Campaign;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Scenario;
+use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
@@ -126,9 +129,19 @@ class NpcController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Npc $npc)
+    /**
+     * Place le PNJ en corbeille (soft delete).
+     */
+    public function delete(Request $request, Npc $npc, EntityDeletionService $deletionService): RedirectResponse
     {
-        //
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
+
+        $deletionService->softDelete($npc, $actor);
+
+        return redirect()
+            ->route('entities.npcs.index')
+            ->with('success', 'PNJ placé en corbeille.');
     }
 
     /**

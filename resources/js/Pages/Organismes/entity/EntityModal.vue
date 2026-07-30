@@ -14,6 +14,7 @@
  */
 import { computed, defineAsyncComponent, shallowRef, watch } from 'vue';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
+import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -101,7 +102,7 @@ const { downloadPdf } = useDownloadPdf(normalizedEntityType);
 /** Pluriel normalisé (ex. spells) — actions, reload Inertia */
 const entityTypePlural = computed(() => normalizeEntityType(props.entityType));
 
-const { dispatchEntityAction } = useEntityActionDispatcher(entityTypePlural, {
+const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete } = useEntityActionDispatcher(entityTypePlural, {
     openEditModal: (entity) => emit('quick-edit', entity),
     onOpenPage: (entity) => {
         emit('expand', entity);
@@ -113,7 +114,11 @@ const { dispatchEntityAction } = useEntityActionDispatcher(entityTypePlural, {
     },
     onCopyLink: (entity) => emit('copy-link', entity),
     onRefresh: (entity) => emit('refresh', entity),
-    onDelete: (entity) => emit('delete', entity),
+    onDeleted: (entity) => {
+        emit('delete', entity);
+        emit('refresh', entity);
+        handleClose();
+    },
 });
 
 // Charger dynamiquement le composant de vue approprié
@@ -326,5 +331,18 @@ const handleAction = async (actionKey, entity) => {
             <Btn @click="handleClose">Fermer</Btn>
         </template>
     </Modal>
+
+    <ConfirmModal
+        :open="deleteConfirm.open"
+        :title="deleteConfirm.title"
+        :message="deleteConfirm.message"
+        :details="deleteConfirm.details"
+        confirm-label="Mettre en corbeille"
+        confirm-color="error"
+        confirm-icon="fa-solid fa-trash-can"
+        @confirm="confirmPendingDelete"
+        @cancel="cancelPendingDelete"
+        @close="cancelPendingDelete"
+    />
 </template>
 

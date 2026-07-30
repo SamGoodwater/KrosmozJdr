@@ -10,6 +10,7 @@ use Cron\CronExpression;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 /**
  * Applique le planning Laravel depuis la base + catalogue de handlers sécurisé.
@@ -23,17 +24,29 @@ final class ProjectScheduleRegistrar
 {
     public static function register(Schedule $schedule): void
     {
-        if (! Schema::hasTable('project_schedule_tasks')) {
-            Log::notice('ProjectScheduleRegistrar : table `project_schedule_tasks` absente — mode secours (`.env`). Exécutez `php artisan migrate`.');
+        try {
+            if (! Schema::hasTable('project_schedule_tasks')) {
+                Log::notice('ProjectScheduleRegistrar : table `project_schedule_tasks` absente — mode secours (`.env`). Exécutez `php artisan migrate`.');
+
+                self::registerLegacyEnvSchedule($schedule);
+
+                return;
+            }
+
+            $handlers = ProjectScheduleCatalog::handlers();
+            $tasks = ProjectScheduleTask::query()
+                ->whereIn('task_key', array_keys($handlers), 'and', false)
+                ->get()
+                ->keyBy('task_key');
+        } catch (Throwable $e) {
+            Log::warning('ProjectScheduleRegistrar : planning BDD indisponible — mode secours (`.env`).', [
+                'exception' => $e->getMessage(),
+            ]);
 
             self::registerLegacyEnvSchedule($schedule);
 
             return;
         }
-
-        $handlers = ProjectScheduleCatalog::handlers();
-
-        $tasks = ProjectScheduleTask::query()->whereIn('task_key', array_keys($handlers))->get()->keyBy('task_key');
 
         foreach ($handlers as $key => $definition) {
             $row = $tasks->get($key);
@@ -67,6 +80,10 @@ final class ProjectScheduleRegistrar
     private static function registerLegacyEnvSchedule(Schedule $schedule): void
     {
         $schedule->command('media:clean-thumbnails')->daily();
+        if ((bool) env('PROJECT_CLEAR_AUTO_ENABLED', false)) {
+            $schedule->command('project:cron --clear')
+                ->cron((string) env('PROJECT_CLEAR_CRON', '30 0 * * *'));
+        }
         $schedule->command('privacy:process-deletion-requests')->dailyAt('02:00');
 
         $schedule->job(new SendNotificationDigestsJob('daily'))->dailyAt('00:05');

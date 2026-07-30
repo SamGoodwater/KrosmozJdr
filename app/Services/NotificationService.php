@@ -398,7 +398,7 @@ class NotificationService
     }
 
     /**
-     * Notifie le créateur (hors self) et les admins lors de la suppression définitive d'une entité.
+     * Notifie les admins lors de la suppression définitive d'une entité.
      * Envoi immédiat uniquement (pas de digest).
      *
      * @param  object  $entity  Entité supprimée définitivement
@@ -411,23 +411,6 @@ class NotificationService
         $entityName = $entity->name ?? $entity->title ?? ('#'.$entityId);
         $message = "L'entité {$entityType} : '{$entityName}' a été supprimée définitivement par {$forcer->name}.";
 
-        // Notifier le créateur (hors self)
-        if ($entity->created_by && $entity->created_by != $forcer->id) {
-            $creator = User::find($entity->created_by);
-            if ($creator && $creator->wantsNotificationForType('entity_force_deleted')) {
-                $channels = $creator->getChannelsForNotificationType('entity_force_deleted');
-                $creator->notify(new EntityModifiedNotification(
-                    $entityType,
-                    $entityId,
-                    $entityName,
-                    $forcer,
-                    $channels,
-                    ['action' => ['old' => null, 'new' => $message]],
-                    self::entityUrl($entity),
-                    'entity_force_deleted'
-                ));
-            }
-        }
         // Notifier tous les admins (hors self)
         $admins = User::whereIn('role', [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])
             ->where('id', '!=', $forcer->id)

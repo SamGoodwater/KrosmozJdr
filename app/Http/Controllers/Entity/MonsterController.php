@@ -19,6 +19,7 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Spell;
 use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -236,11 +237,18 @@ class MonsterController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Place le monstre en corbeille (soft delete).
      */
-    public function delete(Monster $monster)
+    public function delete(Request $request, Monster $monster, EntityDeletionService $deletionService): RedirectResponse
     {
-        //
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
+
+        $deletionService->softDelete($monster, $actor);
+
+        return redirect()
+            ->route('entities.monsters.index')
+            ->with('success', 'Monstre placé en corbeille.');
     }
 
     /**

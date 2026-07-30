@@ -37,6 +37,12 @@ final class ProjectScheduleCatalog
                 'command' => 'media:clean-thumbnails',
                 'overlap_minutes' => 30,
             ],
+            'project_clear_safe' => [
+                'label' => 'Nettoyage projet sûr (caches planifiés)',
+                'type' => 'artisan',
+                'command' => 'project:cron --clear',
+                'overlap_minutes' => 60,
+            ],
             'privacy_process_deletion_requests' => [
                 'label' => 'Traitement demandes de suppression (RGPD)',
                 'type' => 'artisan',
@@ -100,6 +106,12 @@ final class ProjectScheduleCatalog
                 'task_key' => 'media_clean_thumbnails',
                 'enabled' => true,
                 'cron_expression' => '0 0 * * *',
+                'without_overlapping' => true,
+            ],
+            [
+                'task_key' => 'project_clear_safe',
+                'enabled' => (bool) env('PROJECT_CLEAR_AUTO_ENABLED', false),
+                'cron_expression' => (string) env('PROJECT_CLEAR_CRON', '30 0 * * *'),
                 'without_overlapping' => true,
             ],
             [

@@ -17,6 +17,7 @@ use App\Models\Entity\Scenario;
 use App\Models\Entity\Shop;
 use App\Models\Type\ResourceType;
 use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use App\Support\Entity\ObjectEffectEditOptions;
 use Illuminate\Http\RedirectResponse;
@@ -250,15 +251,16 @@ class ResourceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Resource $resource)
+    public function delete(Request $request, Resource $resource, EntityDeletionService $deletionService): RedirectResponse
     {
-        $this->authorize('delete', $resource);
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
 
-        $resource->delete();
+        $deletionService->softDelete($resource, $actor);
 
         return redirect()
             ->route('entities.resources.index')
-            ->with('success', 'Ressource supprimée avec succès.');
+            ->with('success', 'Ressource placée en corbeille.');
     }
 
     /**

@@ -17,6 +17,7 @@ use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionSe
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Normalizer\SpellGlobalNormalizer;
+use App\Services\Scrapping\Core\Norms\NormAwareEntityProcessor;
 use App\Services\Scrapping\Core\Relation\RelationImportStack;
 use App\Services\Scrapping\Core\Relation\RelationResolutionService;
 
@@ -36,7 +37,8 @@ final class Orchestrator
         private IntegrationService $integrationService,
         private SpellEffectsConversionService $spellEffectsConversionService,
         private ?RelationResolutionService $relationResolutionService = null,
-        private ?SpellGlobalNormalizer $spellGlobalNormalizer = null
+        private ?SpellGlobalNormalizer $spellGlobalNormalizer = null,
+        private ?NormAwareEntityProcessor $normAwareProcessor = null,
     ) {}
 
     /**
@@ -227,6 +229,10 @@ final class Orchestrator
             }
         }
 
+        if (empty($options['integrate']) && $this->normAwareProcessor !== null) {
+            $converted = $this->normAwareProcessor->enrichPreview($entity, $converted, $raw);
+        }
+
         $integrationResult = null;
         $relations = null;
         if (! empty($options['integrate'])) {
@@ -343,8 +349,6 @@ final class Orchestrator
                     }
                 }
 
-                $convertedList[] = $converted;
-
                 $entityTypeForItem = $entityType === 'item' ? $this->integrationService->getItemTargetTable($converted) : $entityType;
 
                 $doValidate = ($options['validate'] ?? true) !== false;
@@ -362,6 +366,11 @@ final class Orchestrator
                         }
                     }
                 }
+
+                if (empty($options['integrate']) && $this->normAwareProcessor !== null) {
+                    $converted = $this->normAwareProcessor->enrichPreview($entity, $converted, $raw);
+                }
+                $convertedList[] = $converted;
 
                 // N'intégrer que les items dont la validation a réussi (ou lorsque la validation est désactivée).
                 if ($itemValid && ! empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false)) {

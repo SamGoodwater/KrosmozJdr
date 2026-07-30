@@ -11,9 +11,11 @@ use App\Models\Effect;
 use App\Models\Entity\Consumable;
 use App\Models\Type\ConsumableType;
 use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use App\Support\Entity\ObjectEffectEditOptions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 
@@ -200,9 +202,18 @@ class ConsumableController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Consumable $consumable)
+    /**
+     * Place le consommable en corbeille (soft delete).
+     */
+    public function delete(Request $request, Consumable $consumable, EntityDeletionService $deletionService): RedirectResponse
     {
-        //
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
+
+        $deletionService->softDelete($consumable, $actor);
+
+        return redirect()->route('entities.consumables.index')
+            ->with('success', 'Consommable placé en corbeille.');
     }
 
     /**

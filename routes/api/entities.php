@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ConditionBulkController;
 use App\Http\Controllers\Api\ConsumableBulkController;
 use App\Http\Controllers\Api\CreatureBulkController;
 use App\Http\Controllers\Api\CreatureTraitBulkController;
+use App\Http\Controllers\Api\EntityDeletionController;
 use App\Http\Controllers\Api\EntityStateController;
 use App\Http\Controllers\Api\ItemBulkController;
 use App\Http\Controllers\Api\MonsterBulkController;
@@ -36,6 +37,22 @@ Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')
         ->name('api.entities.state.update');
+    Route::get('/{entityType}/{id}/delete-impact', [EntityDeletionController::class, 'impact'])
+        ->where('entityType', '[a-z-]+')
+        ->whereNumber('id')
+        ->name('api.entities.delete-impact');
+    Route::delete('/{entityType}/{id}', [EntityDeletionController::class, 'delete'])
+        ->where('entityType', '[a-z-]+')
+        ->whereNumber('id')
+        ->name('api.entities.delete');
+    Route::post('/{entityType}/{id}/restore', [EntityDeletionController::class, 'restore'])
+        ->where('entityType', '[a-z-]+')
+        ->whereNumber('id')
+        ->name('api.entities.restore');
+    Route::delete('/{entityType}/{id}/force', [EntityDeletionController::class, 'forceDelete'])
+        ->where('entityType', '[a-z-]+')
+        ->whereNumber('id')
+        ->name('api.entities.force-delete');
     Route::patch('/resources/bulk', [ResourceBulkController::class, 'bulkUpdate'])
         ->name('api.entities.resources.bulk');
     Route::patch('/items/bulk', [ItemBulkController::class, 'bulkUpdate'])

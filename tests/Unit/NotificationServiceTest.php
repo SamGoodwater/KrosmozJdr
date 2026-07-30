@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\User;
+use App\Notifications\EntityModifiedNotification;
 use App\Notifications\LastConnectionNotification;
 use App\Notifications\NewUserCreatedNotification;
 use App\Notifications\ProfileModifiedNotification;
@@ -152,5 +153,39 @@ class NotificationServiceTest extends TestCase
 
         $withTags = '<script>alert(1)</script>Hello';
         $this->assertEquals('Hello', NotificationService::truncateAndSanitize($withTags));
+    }
+
+    public function test_notify_entity_force_deleted_notifies_admins_only(): void
+    {
+        $creator = User::factory()->create([
+            'notification_preferences' => [
+                'entity_force_deleted' => ['channels' => ['database'], 'frequency' => 'instant'],
+            ],
+        ]);
+        $forcer = User::factory()->create();
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+            'notification_preferences' => [
+                'entity_force_deleted' => ['channels' => ['database'], 'frequency' => 'instant'],
+            ],
+        ]);
+        $superAdmin = User::factory()->create([
+            'role' => User::ROLE_SUPER_ADMIN,
+            'notification_preferences' => [
+                'entity_force_deleted' => ['channels' => ['database'], 'frequency' => 'instant'],
+            ],
+        ]);
+
+        $entity = (object) [
+            'id' => 123,
+            'name' => 'Entité de test',
+            'created_by' => $creator->id,
+        ];
+
+        NotificationService::notifyEntityForceDeleted($entity, $forcer);
+
+        Notification::assertNotSentTo($creator, EntityModifiedNotification::class);
+        Notification::assertSentTo($admin, EntityModifiedNotification::class);
+        Notification::assertSentTo($superAdmin, EntityModifiedNotification::class);
     }
 }

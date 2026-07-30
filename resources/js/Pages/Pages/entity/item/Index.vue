@@ -251,9 +251,14 @@ const handleModalDelete = (entity) => {
     // TODO: Implémenter la suppression avec confirmation
 };
 
-const handleQuickEditSubmit = () => {
+const handleQuickEditSubmit = async (payload) => {
+    if (payload) {
+        const ok = await bulkPatchJson("/api/entities/items/bulk", payload);
+        if (!ok) return;
+    }
     refreshToken.value++;
     quickEditEntity.value = null;
+    quickEditModalOpen.value = false;
 };
 
 const handleCreate = () => {

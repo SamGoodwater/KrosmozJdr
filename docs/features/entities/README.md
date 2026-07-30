@@ -42,12 +42,18 @@ La logique est centralisée dans `app/Policies/Entity/BaseEntityPolicy.php`. Pou
 
 Pour l'écriture (`update`/`delete`) : admin, auteur, ou `rôle ≥ write_level`. Les abilities « bulk » (`updateAny`, `deleteAny`, `manageAny`) ciblent game_master/admin. Le registre des permissions exposées au front est dans `config/entity-permissions.php` (consommé par `EntityPermissionService`, partagé via Inertia → composable `usePermissions`).
 
+La restauration et la suppression définitive (`restore`, `forceDelete`) sont réservées aux admins/super-admins via la policy de base.
+
 ## Backend (CRUD)
 
 - Un contrôleur web par entité : `app/Http/Controllers/Entity/<Type>Controller.php` (ex. `SpellController`, `ItemController`, `MonsterController`). Pattern : `index`/`show` publics, `create`/`store`/`edit`/`update`/`destroy` sous `auth`, plus des routes relationnelles (ex. sorts d'une classe).
 - Validation : Form Requests dédiées dans `app/Http/Requests/Entity/` (une par action).
 - Transformation de sortie : `app/Http/Resources/Entity/`.
 - Lecture en table : `app/Http/Controllers/Api/<Type>TableController.php` (datasets TanStack server-side), édition multiple via `*BulkController`, changement d'état via `EntityStateController`.
+- Corbeille entités : API générique `api/entities/{entityType}/{id}` (`DELETE` soft delete), `POST .../restore`, `DELETE .../force`, `GET .../delete-impact`. La logique commune est dans `app/Services/Entity/EntityDeletionService.php` et la résolution des modèles dans `app/Support/EntityModelRegistry.php`. Les routes web `DELETE entities/{type}/{id}` déléguent aussi à ce service (notifications + journal admin).
+- Soft delete : trait `SoftDeletes` sur les modèles d’entité JDR, y compris `Monster` et `Npc` (colonne `deleted_at`).
+- Force delete : détache les relations `BelongsToMany`, supprime les médias Spatie, puis `forceDelete` ; refusé (422) si l’entité n’est pas déjà en corbeille.
+- Journal admin : les suppressions/restaurations d'entités alimentent `admin_activity_logs` via `AdminActivityLogger`. La page `/admin/activity-log` affiche les activités récentes et la corbeille centralisée, avec confirmation + récapitulatif d’impact avant restauration / suppression définitive.
 
 ## Frontend
 
@@ -66,6 +72,7 @@ Pour l'écriture (`update`/`delete`) : admin, auteur, ou `rôle ≥ write_level`
   Les composants par type sont dans `resources/js/Pages/Molecules/entity/<type>/`. Le resolver supporte aussi des variantes d'édition (`quickedit`), mais on ne crée plus `ViewLarge`/`ViewCompact` (voir rule `.cursor/rules/entity-views.mdc`).
 - **Table** : `resources/js/Pages/Organismes/table/EntityTanStackTable.vue` (server-side) ; préférences/filtres via `resources/js/Composables/table/*`.
 - **Édition** : `resources/js/Pages/Organismes/entity/EntityEditForm.vue`, modales (`EntityModal`, `CreateEntityModal`, `EntityQuickEditPanel`).
+- **Suppression UI** : `useEntityActionDispatcher` ouvre une `ConfirmModal` avec le récapitulatif `delete-impact` (relations détachées, médias) avant soft delete depuis page/modal d’entité.
 
 ## Exemple : ajouter un champ à une entité
 

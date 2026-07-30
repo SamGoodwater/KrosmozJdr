@@ -3,12 +3,15 @@
  *
  * @description
  * Mutualise les effets standards : navigation, modal, copie de lien, refresh et suppression.
+ * La suppression expose un état de ConfirmModal (récap impact) plutôt qu’un `window.confirm`.
  *
  * @example
- * const { dispatchEntityAction } = useEntityActionDispatcher('items', { openModal });
+ * const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete } =
+ *   useEntityActionDispatcher('items', { openModal });
  */
+import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
-import { computed } from "vue";
+import axios from "axios";
 import { normalizeActionEntityType } from "@/Entities/entity-actions-config";
 import {
     getEntityRouteConfig,
@@ -22,12 +25,116 @@ function getEntityId(entity) {
     return entity?.id ?? entity?._data?.id ?? null;
 }
 
+function getEntityLabel(entity) {
+    return entity?.name || entity?.title || entity?._data?.name || entity?._data?.title || "cette entité";
+}
+
 export function useEntityActionDispatcher(entityType, handlers = {}) {
     const { copyToClipboard } = useCopyToClipboard();
     const { refreshEntity } = useScrapping();
 
     const normalizedType = computed(() => normalizeActionEntityType(entityType?.value ?? entityType));
     const routeParamKey = computed(() => getEntitySingularRouteKey(normalizedType.value));
+
+    const deleteConfirm = ref({
+        open: false,
+        title: "Placer en corbeille",
+        message: "",
+        details: [],
+        entity: null,
+        meta: {},
+        loading: false,
+    });
+
+    function resetDeleteConfirm() {
+        deleteConfirm.value = {
+            open: false,
+            title: "Placer en corbeille",
+            message: "",
+            details: [],
+            entity: null,
+            meta: {},
+            loading: false,
+        };
+    }
+
+    async function deleteEntityWithConfirmation(entity, meta = {}) {
+        if (handlers.onDelete) {
+            handlers.onDelete(entity, meta);
+            return true;
+        }
+
+        const entityId = getEntityId(entity);
+        const plural = normalizedType.value;
+        if (!entityId || !plural) return false;
+
+        let impact = null;
+        try {
+            const { data } = await axios.get(`/api/entities/${encodeURIComponent(plural)}/${entityId}/delete-impact`, {
+                headers: { Accept: "application/json" },
+            });
+            impact = data;
+        } catch {
+            impact = null;
+        }
+
+        const relations = Array.isArray(impact?.relations) ? impact.relations : [];
+        const mediaCount = Number(impact?.media_count ?? 0);
+        const details = [
+            relations.length > 0
+                ? `${relations.length} relation(s) seront détachées en suppression définitive : ${relations.join(", ")}.`
+                : null,
+            mediaCount > 0
+                ? `${mediaCount} média(s) lié(s) seront conservés en corbeille.`
+                : null,
+            "Un administrateur pourra restaurer l’entité depuis le journal admin.",
+        ].filter(Boolean);
+
+        deleteConfirm.value = {
+            open: true,
+            title: "Placer en corbeille",
+            message: `Placer « ${getEntityLabel(entity)} » en corbeille ?`,
+            details,
+            entity,
+            meta,
+            loading: false,
+        };
+
+        return true;
+    }
+
+    async function confirmPendingDelete() {
+        const pending = deleteConfirm.value;
+        const entity = pending.entity;
+        const entityId = getEntityId(entity);
+        const plural = normalizedType.value;
+        if (!entityId || !plural || pending.loading) return false;
+
+        deleteConfirm.value = { ...pending, loading: true };
+        try {
+            await axios.delete(`/api/entities/${encodeURIComponent(plural)}/${entityId}`, {
+                headers: { Accept: "application/json" },
+            });
+            handlers.onDeleted?.(entity, pending.meta);
+            if (!handlers.onDeleted) {
+                router.reload();
+            }
+            resetDeleteConfirm();
+            return true;
+        } catch (error) {
+            const message =
+                error?.response?.data?.message
+                || Object.values(error?.response?.data?.errors || {})?.flat()?.[0]
+                || "Impossible de placer l’entité en corbeille.";
+            window.alert(message);
+            deleteConfirm.value = { ...deleteConfirm.value, loading: false };
+            return false;
+        }
+    }
+
+    function cancelPendingDelete() {
+        resetDeleteConfirm();
+    }
 
     async function dispatchEntityAction(actionKey, entity, meta = {}) {
         const entityId = getEntityId(entity);
@@ -78,8 +185,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             }
 
             case "delete":
-                handlers.onDelete?.(entity, meta);
-                return true;
+                return deleteEntityWithConfirmation(entity, meta);
 
             default:
                 handlers.onUnhandled?.(actionKey, entity, meta);
@@ -89,5 +195,8 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
 
     return {
         dispatchEntityAction,
+        deleteConfirm,
+        confirmPendingDelete,
+        cancelPendingDelete,
     };
 }

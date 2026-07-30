@@ -115,6 +115,23 @@ class RequirePasswordWithInactivityTest extends TestCase
             ->assertOk();
     }
 
+    public function test_password_confirm_store_json_redirects_to_intended_url(): void
+    {
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+            'password' => bcrypt('secret-password'),
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['url.intended' => route('admin.recap.index')])
+            ->postJson(route('password.confirm.store'), ['password' => 'secret-password'])
+            ->assertOk()
+            ->assertJson([
+                'confirmed' => true,
+                'redirect' => route('admin.recap.index'),
+            ]);
+    }
+
     public function test_password_confirm_store_returns_validation_error_on_bad_password(): void
     {
         $admin = User::factory()->create([

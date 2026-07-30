@@ -15,7 +15,9 @@ use App\Models\Entity\Resource;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Spell;
 use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -187,12 +189,14 @@ class CampaignController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Campaign $campaign)
+    public function delete(Request $request, Campaign $campaign, EntityDeletionService $deletionService): JsonResponse
     {
-        $this->authorize('delete', $campaign);
-        $campaign->delete();
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
 
-        return response()->json(['message' => 'Deleted'], 204);
+        $deletionService->softDelete($campaign, $actor);
+
+        return response()->json(['message' => 'Entité placée en corbeille.']);
     }
 
     /**

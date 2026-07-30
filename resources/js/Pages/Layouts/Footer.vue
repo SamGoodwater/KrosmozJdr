@@ -37,56 +37,77 @@ const convertStability = {
 const appName = ref(import.meta.env.VITE_APP_NAME);
 const appVersion = ref(import.meta.env.VITE_APP_VERSION);
 const appDescription = ref(import.meta.env.VITE_APP_DESCRIPTION);
-const appStability = ref(convertStability[import.meta.env.VITE_APP_STABILITY]);
+const appStability = ref(convertStability[import.meta.env.VITE_APP_STABILITY] ?? "");
+const githubUrl = import.meta.env.VITE_GITHUB_URL ?? "";
 
 const footerItems = [
     {
         icon: "fa-envelope",
         pack: "solid",
         href: "mailto:contact@krosmoz-jdr.fr",
-        label: "contact@krosmoz-jdr.fr",
+        label: "Contact",
         tooltip: "Envoyer un email",
     },
     {
         icon: "fa-discord",
         pack: "brands",
         href: "https://discord.gg/XVu4VWFskj",
-        label: "#XVu4VWFskj",
+        label: "Discord",
         tooltip: "Rejoindre notre serveur Discord",
         target: "_blank",
     },
+    ...(githubUrl ? [{
+        icon: "fa-github",
+        pack: "brands",
+        href: githubUrl,
+        label: "GitHub",
+        tooltip: "Voir le dépôt GitHub",
+        target: "_blank",
+    }] : []),
 ];
 </script>
 
 <template>
-    <FooterMolecule direction="vertical" center textColor="text-content" class="box-glass-t-xs max-sm:hidden" v-bind="$attrs">
+    <FooterMolecule
+        direction="vertical"
+        textColor="text-base-content"
+        class="box-glass-t-xs border-t border-base-content/10 bg-base-300/30 px-4 py-5 max-sm:hidden"
+        v-bind="$attrs"
+    >
         <template #logo>
-            <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" height="24px" class="mx-auto" @error="logoError = true" />
+            <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" height="28px" class="mx-auto opacity-90" />
         </template>
         <template #section>
-            <div class="flex w-full flex-wrap items-end justify-between gap-3">
-                <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
-                    <span>
+            <div class="flex w-full max-w-6xl flex-col gap-4 text-sm lg:flex-row lg:items-center lg:justify-between">
+                <div class="min-w-0 space-y-1 text-center lg:text-left">
+                    <p class="font-medium text-base-content">
                         {{ appName }}
                         | version {{ appVersion + " " + appStability }}
                         | {{ new Date().getFullYear() }}
-                    </span>
-                    <span v-for="item in footerItems" :key="item.label" class="flex items-center gap-2">
+                    </p>
+                    <p class="text-xs text-base-content/70">
+                        {{ appDescription }}
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center justify-center gap-2 lg:justify-end">
+                    <span v-for="item in footerItems" :key="item.label">
                         <Tooltip :content="item.tooltip" placement="top">
-                            <Route :href="item.href" :target="item.target" class="flex items-center gap-2">
-                                <Icon :source="item.icon" :pack="item.pack" :alt="item.tooltip" class="w-4 h-4" />
+                            <Route
+                                :href="item.href"
+                                :target="item.target"
+                                hover
+                                class="inline-flex items-center gap-2 rounded-box border border-base-content/10 bg-base-100/40 px-3 py-2 text-base-content/80 transition-colors hover:bg-base-100/70 hover:text-base-content"
+                            >
+                                <Icon :source="item.icon" :pack="item.pack" :alt="item.tooltip" size="sm" class="h-4 w-4" />
                                 <span>{{ item.label }}</span>
                             </Route>
                         </Tooltip>
                     </span>
-                </div>
-                <div class="ml-auto shrink-0 self-end">
-                    <CookieConsentTriggerButton />
+                    <div class="ml-1">
+                        <CookieConsentTriggerButton />
+                    </div>
                 </div>
             </div>
-        </template>
-        <template #copyright>
-            {{ appDescription }}
         </template>
     </FooterMolecule>
     <!-- Mobile : cookies dans le flux (au-dessus du dock), aligné à droite — non fixe -->

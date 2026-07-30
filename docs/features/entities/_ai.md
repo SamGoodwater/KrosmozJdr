@@ -13,6 +13,7 @@
 - **Champs communs** : `state` (`raw`/`draft`/`playable`/`archived`), `read_level` (0-5), `write_level` (0-5), `created_by`, soft delete. Beaucoup ont aussi `official_id`, `dofusdb_id`, `auto_update`. Détail : [README](./README.md#champs-communs).
 - **Droits** : matrice rôle × état, puis `read_level`/`write_level`, l'auteur garde l'accès. Code : `app/Policies/Entity/BaseEntityPolicy.php`. Détail : [README](./README.md#droits).
 - **Backend CRUD** : un contrôleur web par entité dans `app/Http/Controllers/Entity/` ; validation par Form Requests `app/Http/Requests/Entity/`.
+- **Suppression** : `EntityDeletionService` (soft/restore/force + impact) ; API `EntityDeletionController` ; web `delete` → même service. UI : `ConfirmModal` + `delete-impact`.
 - **Tables (lecture)** : API server-side TanStack via `app/Http/Controllers/Api/*TableController.php` + bulk via `*BulkController`, changement d'état via `EntityStateController`.
 - **Registre front** : `resources/js/Entities/entity-registry.js` (modèle + descriptors + adapter par type ; `normalizeEntityType()` normalise singulier/pluriel).
 - **Vues** : `minimal` | `line` | `text` | `full` | `edit`. Résolution dynamique : `resources/js/Utils/entity/resolveEntityViewComponent.js`. Conventions : rule `.cursor/rules/entity-views.mdc`.
@@ -21,7 +22,8 @@
 
 - `app/Policies/Entity/BaseEntityPolicy.php` — logique de droits commune (view/create/update/delete + matrice visibilité).
 - `app/Http/Controllers/Entity/SpellController.php` — exemple de contrôleur web d'entité (pattern réutilisé).
-- `app/Http/Controllers/Api/` — `*TableController`, `*BulkController`, `EntityStateController`.
+- `app/Http/Controllers/Api/` — `*TableController`, `*BulkController`, `EntityStateController`, `EntityDeletionController`.
+- `app/Services/Entity/EntityDeletionService.php` — soft delete / restore / force delete + récapitulatif d’impact.
 - `resources/js/Entities/entity-registry.js` — point d'entrée front d'une entité.
 - `resources/js/Utils/entity/resolveEntityViewComponent.js` — charge le bon composant de vue.
 - `resources/js/Pages/Organismes/table/EntityTanStackTable.vue` — table d'index.

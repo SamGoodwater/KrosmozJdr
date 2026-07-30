@@ -64,7 +64,7 @@ const props = defineProps({
         type: String,
         default: '',
     },
-    show_icon: {
+    showIcon: {
         type: Boolean,
         default: true,
     },
@@ -118,31 +118,31 @@ const attrs = computed(() => getCommonAttrs(props));
     <div :class="atomClasses" v-bind="attrs" role="alert" v-on="$attrs">
         <!-- Icone + contenu côte à côte -->
         <div class="flex items-center gap-3 flex-1">
-            <span v-if="$slots.icon && show_icon" class="shrink-0">
+            <span v-if="$slots.icon && showIcon" class="shrink-0">
                 <slot name="icon" />
             </span>
-            <span v-else-if="color === 'info' && show_icon" class="shrink-0">
+            <span v-else-if="color === 'info' && showIcon" class="shrink-0">
                 <!-- Icône info par défaut DaisyUI -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </span>
-            <span v-else-if="color === 'success' && show_icon" class="shrink-0">
+            <span v-else-if="color === 'success' && showIcon" class="shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </span>
-            <span v-else-if="color === 'warning' && show_icon" class="shrink-0">
+            <span v-else-if="color === 'warning' && showIcon" class="shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </span>
-            <span v-else-if="color === 'error' && show_icon" class="shrink-0">
+            <span v-else-if="color === 'error' && showIcon" class="shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

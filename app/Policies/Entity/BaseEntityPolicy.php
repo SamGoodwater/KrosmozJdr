@@ -198,20 +198,20 @@ abstract class BaseEntityPolicy
     /**
      * Determine whether the user can restore the model.
      *
-     * Par défaut, la restauration n'est pas autorisée.
+     * Par défaut, la restauration est réservée aux admins.
      */
     public function restore(User $user, Model $model): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      *
-     * Par défaut, la suppression définitive n'est pas autorisée.
+     * Par défaut, la suppression définitive est réservée aux admins.
      */
     public function forceDelete(User $user, Model $model): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 }

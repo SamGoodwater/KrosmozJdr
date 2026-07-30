@@ -11,6 +11,7 @@ use DOMElement;
 use DOMNode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Mews\Purifier\Facades\Purifier;
 
@@ -35,6 +36,41 @@ class CmsSectionPreviewController extends Controller
         $this->authorize('view', $section);
 
         return response()->json($this->buildPreviewBody($section, false));
+    }
+
+    /**
+     * Sommaire léger d'une page CMS pour les références riches `page`.
+     */
+    public function showPage(Request $request, Page $page): JsonResponse
+    {
+        $this->authorize('view', $page);
+
+        $visibleSections = $page->sections()
+            ->select(['id', 'page_id', 'title', 'slug', 'order', 'state', 'read_level', 'write_level', 'created_by'])
+            ->ordered()
+            ->limit(80)
+            ->get()
+            ->filter(fn (Section $section): bool => Gate::forUser($request->user())->allows('view', $section))
+            ->values();
+
+        return response()->json([
+            'canView' => true,
+            'title' => $page->title,
+            'slug' => $page->slug,
+            'sectionCount' => $visibleSections->count(),
+            'sections' => $visibleSections->take(12)->map(function (Section $section) use ($page): array {
+                $anchorId = $section->slug ? 'ssec-'.$section->slug : 'section-'.$section->id;
+
+                return [
+                    'id' => $section->id,
+                    'title' => $section->title ?: 'Section #'.$section->id,
+                    'slug' => $section->slug,
+                    'order' => $section->order,
+                    'anchorId' => $anchorId,
+                    'href' => route('pages.show', $page->slug).'#'.$anchorId,
+                ];
+            })->all(),
+        ]);
     }
 
     /**

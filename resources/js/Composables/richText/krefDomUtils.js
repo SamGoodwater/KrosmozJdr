@@ -73,6 +73,22 @@ export function buildHrefFromKref(info) {
 }
 
 /**
+ * URL JSON d’aperçu page (popover sommaire).
+ *
+ * @param {{ krefType: string, payload: object }} info
+ * @returns {string|null}
+ */
+export function buildPagePreviewSnippetUrl(info) {
+    if (normalizeKrefType(info?.krefType) !== "page") return null;
+    const p = info?.payload && typeof info.payload === "object" ? info.payload : {};
+    const pageSlugRaw = readPayloadValue(p, "pageSlug", "page_slug");
+    const pageSlug = pageSlugRaw != null ? String(pageSlugRaw).trim() : null;
+    if (!pageSlug) return null;
+
+    return route("api.cms.pages.preview-snippet", { page: pageSlug });
+}
+
+/**
  * Identifiant de section pour l’API d’aperçu (références `pageSection` uniquement).
  *
  * @param {{ krefType: string, payload: object }} info

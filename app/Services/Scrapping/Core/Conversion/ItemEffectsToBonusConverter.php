@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Scrapping\Core\Conversion;
 
 use App\Services\Characteristic\Conversion\DofusConversionService;
+use App\Services\Characteristic\Compatibility\CharacteristicCompatibilityService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Illuminate\Support\Facades\Log;
 
@@ -20,7 +21,8 @@ final class ItemEffectsToBonusConverter
 {
     public function __construct(
         private readonly CharacteristicGetterService $getter,
-        private readonly ?DofusConversionService $conversionService = null
+        private readonly ?DofusConversionService $conversionService = null,
+        private readonly ?CharacteristicCompatibilityService $compatibilityService = null,
     ) {}
 
     /**
@@ -141,6 +143,17 @@ final class ItemEffectsToBonusConverter
 
                 continue;
             }
+            $shortKey = str_ends_with($charKey, '_object') ? substr($charKey, 0, -7) : $charKey;
+            if (! $this->isCompatibleObjectBonus($shortKey, $entityType, $context)) {
+                Log::info('Scrapping bonus: bonus incompatible avec le type d’équipement ignoré.', [
+                    'entity_type' => $entityType,
+                    'short_key' => $shortKey,
+                    'item_type_id' => $this->itemTypeIdFromContext($context),
+                    'run_id' => $context['run_id'] ?? null,
+                ]);
+
+                continue;
+            }
             $from = isset($effect['from']) && is_numeric($effect['from']) ? (int) $effect['from'] : null;
             $to = isset($effect['to']) && is_numeric($effect['to']) ? (int) $effect['to'] : null;
             $val = $effect['value'] ?? $effect['min'] ?? $effect['max'] ?? null;
@@ -160,11 +173,38 @@ final class ItemEffectsToBonusConverter
             if ($this->conversionService !== null) {
                 $val = $this->conversionService->convertObjectAttribute($charKey, $val, $entityType, $context);
             }
-            $shortKey = str_ends_with($charKey, '_object') ? substr($charKey, 0, -7) : $charKey;
             $bonus[$shortKey] = ($bonus[$shortKey] ?? 0) + $val;
         }
 
         return $bonus;
+    }
+
+    /**
+     * @param  array<string, mixed>  $context
+     */
+    private function isCompatibleObjectBonus(string $shortKey, string $entityType, array $context): bool
+    {
+        if ($this->compatibilityService === null || ! in_array($entityType, ['item', 'equipment'], true)) {
+            return true;
+        }
+
+        return $this->compatibilityService->isObjectBonusAllowed($shortKey, $this->itemTypeIdFromContext($context));
+    }
+
+    /**
+     * @param  array<string, mixed>  $context
+     */
+    private function itemTypeIdFromContext(array $context): ?int
+    {
+        $converted = $context[DofusConversionService::CONTEXT_CONVERTED_OUTPUT] ?? [];
+        if (is_array($converted)) {
+            $candidate = $converted['items']['item_type_id'] ?? null;
+            if (is_numeric($candidate)) {
+                return (int) $candidate;
+            }
+        }
+
+        return null;
     }
 
     /**

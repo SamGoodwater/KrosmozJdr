@@ -11,6 +11,7 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import EffectGroupEditorForm from '@/Pages/Organismes/entity/EffectGroupEditorForm.vue';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
 import {
     formatConditionDispellable,
     formatConditionDuration,
@@ -38,6 +39,7 @@ const props = defineProps({
 });
 
 const notificationStore = useNotificationStore();
+const { canAccess } = usePermissions();
 const effectEditorFormRef = ref(null);
 
 const selectedAnchorId = ref(null);
@@ -51,6 +53,9 @@ const lastAttachedDefinitionId = ref(null);
 const previewLevel = ref(1);
 const previewData = ref(null);
 const previewLoading = ref(false);
+const canManageEffectsAdmin = computed(
+    () => canAccess('effectsAdmin') || canAccess('adminPanel')
+);
 
 const selectedGroup = computed(() => {
     if (!selectedAnchorId.value || !props.spellEffectGroups?.length) {
@@ -332,7 +337,11 @@ defineExpose({ flushEffectGroupSave });
                     >
                         {{ attachLoading ? 'Liaison…' : 'Lier au sort' }}
                     </button>
-                    <Link :href="route('admin.effects.create')" class="btn btn-sm btn-outline">
+                    <Link
+                        v-if="canManageEffectsAdmin"
+                        :href="route('admin.effects.create')"
+                        class="btn btn-sm btn-outline"
+                    >
                         Créer un effet (admin)
                     </Link>
                 </div>

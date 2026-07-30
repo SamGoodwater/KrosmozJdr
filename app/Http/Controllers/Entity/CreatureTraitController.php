@@ -8,8 +8,12 @@ use App\Http\Requests\Entity\StoreCreatureTraitRequest;
 use App\Http\Requests\Entity\UpdateCreatureTraitRequest;
 use App\Http\Resources\Entity\CreatureTraitResource;
 use App\Models\Entity\CreatureTrait;
+use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 
@@ -149,12 +153,14 @@ class CreatureTraitController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(CreatureTrait $creatureTrait)
+    public function delete(Request $request, CreatureTrait $creatureTrait, EntityDeletionService $deletionService): JsonResponse
     {
-        $this->authorize('delete', $creatureTrait);
-        $creatureTrait->delete();
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
 
-        return response()->json(['message' => 'Deleted'], 204);
+        $deletionService->softDelete($creatureTrait, $actor);
+
+        return response()->json(['message' => 'Entité placée en corbeille.']);
     }
 
     /**

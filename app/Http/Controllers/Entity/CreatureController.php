@@ -14,9 +14,12 @@ use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
+use App\Models\User;
 use App\Services\Creature\Runtime\CreatureRuntimeStatsService;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
@@ -152,11 +155,17 @@ class CreatureController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Place la créature en corbeille (soft delete).
      */
-    public function delete(Creature $creature)
+    public function delete(Request $request, Creature $creature, EntityDeletionService $deletionService): RedirectResponse
     {
-        //
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
+
+        $deletionService->softDelete($creature, $actor);
+
+        return redirect()->route('entities.creatures.index')
+            ->with('success', 'Créature placée en corbeille.');
     }
 
     public function updateCreatureTraits(UpdateCreatureCreatureTraitsRequest $request, Creature $creature)

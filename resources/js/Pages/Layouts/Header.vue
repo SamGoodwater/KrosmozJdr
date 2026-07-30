@@ -29,6 +29,7 @@ import Navbar from "@/Pages/Molecules/navigation/Navbar.vue";
 import SearchInput from "@/Pages/Organismes/data-input/SearchInput.vue";
 import LoginHeaderContainer from "@/Pages/Molecules/header/LoginHeaderContainer.vue";
 import LoggedHeaderContainer from "@/Pages/Molecules/header/LoggedHeaderContainer.vue";
+import AlmanaxHeaderBadge from "@/Pages/Molecules/header/AlmanaxHeaderBadge.vue";
 
 // Composables
 const { pageTitle } = usePageTitle();
@@ -57,6 +58,7 @@ defineProps({
         </template>
         <template #end>
             <div class="flex gap-2 items-center mr-12">
+                <AlmanaxHeaderBadge />
                 <LoggedHeaderContainer v-if="isAuthenticated" />
                 <LoginHeaderContainer v-else />
             </div>

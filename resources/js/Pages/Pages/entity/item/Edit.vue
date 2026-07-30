@@ -3,7 +3,7 @@
  * Item Edit Page
  * 
  * @description
- * Page d'édition d'un item avec deux modes d'affichage (Grand et Compact)
+ * Page d'édition d'un item via le formulaire d'entité générique.
  * 
  * @props {Object} item - Données de l'item à éditer
  */

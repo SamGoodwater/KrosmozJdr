@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AdminRecapController;
+use App\Http\Controllers\Admin\AdminActivityLogController;
+use App\Http\Controllers\Admin\FeedbackThreadController;
 use App\Http\Controllers\Admin\ProjectBackupWebController;
 use App\Http\Controllers\Admin\ProjectDepsWebController;
 use Illuminate\Http\RedirectResponse;
@@ -30,6 +32,23 @@ Route::prefix('admin')
         Route::get('/recap', AdminRecapController::class)
             ->middleware(['admin.area', 'password.confirm'])
             ->name('recap.index');
+
+        Route::get('/activity-log', [AdminActivityLogController::class, 'index'])
+            ->middleware(['admin.area', 'password.confirm'])
+            ->name('activity-log.index');
+
+        Route::get('/feedback', [FeedbackThreadController::class, 'index'])
+            ->middleware(['admin.area', 'password.confirm'])
+            ->name('feedback.index');
+        Route::get('/feedback/{feedback}', [FeedbackThreadController::class, 'show'])
+            ->middleware(['admin.area', 'password.confirm'])
+            ->name('feedback.show');
+        Route::post('/feedback/{feedback}/reply', [FeedbackThreadController::class, 'reply'])
+            ->middleware(['admin.area', 'password.confirm', 'throttle:12,1'])
+            ->name('feedback.reply');
+        Route::patch('/feedback/{feedback}/status', [FeedbackThreadController::class, 'updateStatus'])
+            ->middleware(['admin.area', 'password.confirm', 'throttle:12,1'])
+            ->name('feedback.status');
     });
 
 Route::prefix('admin/backup')

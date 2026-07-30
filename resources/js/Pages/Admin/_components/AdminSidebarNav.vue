@@ -38,6 +38,22 @@ const adminNavItems = computed(() => {
         icon: 'fa-chart-pie',
         show: true,
     });
+    items.push({
+        title: 'Journal',
+        href: 'admin.activity-log.index',
+        url: '/admin/activity-log',
+        path: '/admin/activity-log',
+        icon: 'fa-clock-rotate-left',
+        show: canAccess('adminPanel'),
+    });
+    items.push({
+        title: 'Retours',
+        href: 'admin.feedback.index',
+        url: '/admin/feedback',
+        path: '/admin/feedback',
+        icon: 'fa-comments',
+        show: canAccess('adminPanel'),
+    });
 
     if (isSuperAdmin.value) {
         items.push(

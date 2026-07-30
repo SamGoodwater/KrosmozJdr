@@ -18,7 +18,7 @@ const page = usePage();
 const maintenanceUnlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
 const showConfirmModal = ref(false);
 
-const props = defineProps({
+defineProps({
     entityChoices: { type: Array, default: () => [] },
     catalogTypeChoices: { type: Array, default: () => [] },
 });
@@ -133,7 +133,7 @@ const langOptions = [
             <Alert
                 color="info"
                 class="mt-4 text-sm"
-                :show_icon="false"
+                :show-icon="false"
                 aria-label="Sécurité"
             >
                 Zone sensible : l’envoi du formulaire exige une session récente de confirmation mot de passe (comme le
@@ -145,7 +145,7 @@ const langOptions = [
                 v-if="$page.props.flash?.success"
                 color="success"
                 class="mt-6 text-sm"
-                :show_icon="false"
+                :show-icon="false"
                 role="status"
             >
                 {{ $page.props.flash.success }}

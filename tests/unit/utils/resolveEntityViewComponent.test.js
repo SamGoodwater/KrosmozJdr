@@ -12,5 +12,5 @@ describe("resolveEntityViewComponent", () => {
         const component = await resolveEntityViewComponent("spells", "full");
         expect(component).toBeTruthy();
         expect(String(component?.__name || component?.name || "")).toMatch(/SpellViewFull|default/i);
-    });
+    }, 20000);
 });

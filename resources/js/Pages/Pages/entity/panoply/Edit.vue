@@ -3,7 +3,7 @@
  * Panoply Edit Page
  * 
  * @description
- * Page d'édition d'une panoplie avec deux modes d'affichage (Grand et Compact)
+ * Page d'édition d'une panoplie via le formulaire d'entité générique.
  * 
  * @props {Object} panoply - Données de la panoplie à éditer
  */

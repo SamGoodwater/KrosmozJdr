@@ -21,10 +21,12 @@ import Modal from "@/Pages/Molecules/action/Modal.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 
-const props = defineProps({
+defineProps({
     open: { type: Boolean, default: false },
     title: { type: String, default: "Confirmer" },
     message: { type: String, default: "Es-tu sûr ?" },
+    /** Lignes de récapitulatif (ex. impact suppression). */
+    details: { type: Array, default: () => [] },
     confirmLabel: { type: String, default: "Confirmer" },
     cancelLabel: { type: String, default: "Annuler" },
     confirmColor: { type: String, default: "error" },
@@ -46,9 +48,17 @@ const emit = defineEmits(["close", "confirm", "cancel"]);
         </template>
 
         <div class="space-y-4">
-            <p class="text-sm text-primary-200">
+            <p class="text-sm text-base-content/80 whitespace-pre-line">
                 {{ message }}
             </p>
+            <ul
+                v-if="details.length"
+                class="list-disc space-y-1 pl-5 text-sm text-base-content/70"
+            >
+                <li v-for="(line, index) in details" :key="`detail-${index}`">
+                    {{ line }}
+                </li>
+            </ul>
 
             <div class="flex justify-end gap-2">
                 <Btn variant="ghost" @click="emit('cancel')">

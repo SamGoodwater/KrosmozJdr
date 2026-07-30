@@ -147,6 +147,66 @@ class CmsSectionPreviewApiTest extends TestCase
         $this->assertStringContainsString('Extrait slug', (string) $res->json('html'));
     }
 
+    public function test_page_preview_snippet_returns_visible_ordered_sections(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $page = Page::factory()->create([
+            'slug' => 'page-kref-sommaire',
+            'title' => 'Page avec sommaire',
+            'created_by' => $admin->id,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        Section::factory()->create([
+            'page_id' => $page->id,
+            'title' => 'Deuxième section',
+            'slug' => 'deuxieme-section',
+            'order' => 2,
+            'template' => SectionType::TEXT->value,
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $admin->id,
+        ]);
+        Section::factory()->create([
+            'page_id' => $page->id,
+            'title' => 'Première section',
+            'slug' => 'premiere-section',
+            'order' => 1,
+            'template' => SectionType::TEXT->value,
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $admin->id,
+        ]);
+        Section::factory()->create([
+            'page_id' => $page->id,
+            'title' => 'Section admin',
+            'slug' => 'section-admin',
+            'order' => 3,
+            'template' => SectionType::TEXT->value,
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_ADMIN,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $admin->id,
+        ]);
+
+        $res = $this->getJson(route('api.cms.pages.preview-snippet', ['page' => 'page-kref-sommaire']));
+
+        $res->assertOk()
+            ->assertJsonPath('canView', true)
+            ->assertJsonPath('title', 'Page avec sommaire')
+            ->assertJsonPath('sectionCount', 2)
+            ->assertJsonPath('sections.0.title', 'Première section')
+            ->assertJsonPath('sections.1.title', 'Deuxième section');
+
+        $this->assertSame('ssec-premiere-section', $res->json('sections.0.anchorId'));
+        $this->assertStringNotContainsString('Section admin', json_encode($res->json('sections'), JSON_THROW_ON_ERROR));
+    }
+
     public function test_preview_snippet_truncates_after_ten_blocks(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

@@ -3,7 +3,7 @@
  * Barre de navigation horizontale : boutons glass alignés à droite, overflow dans un menu,
  * et sous le breakpoint `md` (useDevice) tout regroupé dans un seul dropdown.
  *
- * Item attendu : `{ title, href, icon, path? }` — `href` = nom de route Ziggy, `path` = préfixe URL pour l’état actif.
+ * Item attendu : `{ title, href, url?, icon, path? }` — `href` = nom Ziggy, `url` = URL directe optionnelle.
  *
  * @example
  * <HorizontalOverflowNav
@@ -26,7 +26,7 @@ import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import { useDevice } from '@/Composables/layout/useDevice';
 
 const props = defineProps({
-    /** @type {{ title: string, href: string, icon: string, path?: string }[]} */
+    /** @type {{ title: string, href: string, url?: string, icon: string, path?: string }[]} */
     items: { type: Array, required: true },
     /** (item) => boolean */
     isItemActive: { type: Function, required: true },
@@ -251,15 +251,19 @@ watch(
     { immediate: true }
 );
 
+function itemHref(item) {
+    return item.url || route(item.href);
+}
+
 function navigateTo(item) {
-    router.visit(route(item.href), {
+    router.visit(itemHref(item), {
         preserveState: false,
         preserveScroll: false,
     });
 }
 
 function itemKey(item, prefix) {
-    return `${prefix}-${item.href}`;
+    return `${prefix}-${item.url || item.href}`;
 }
 </script>
 
@@ -301,7 +305,7 @@ function itemKey(item, prefix) {
                             role="none"
                         >
                             <Link
-                                :href="route(item.href)"
+                                :href="itemHref(item)"
                                 role="menuitem"
                                 :class="dropdownMenuLinkClass(item)"
                             >
@@ -328,7 +332,7 @@ function itemKey(item, prefix) {
             >
                 <div
                     v-for="item in safeItems"
-                    :key="'measure-' + item.href"
+                    :key="'measure-' + (item.url || item.href)"
                     class="inline-flex shrink-0"
                 >
                     <Btn
@@ -368,7 +372,7 @@ function itemKey(item, prefix) {
                 >
                     <li
                         v-for="item in visibleItems"
-                        :key="item.href"
+                        :key="item.url || item.href"
                         class="shrink-0"
                     >
                         <Btn
@@ -421,7 +425,7 @@ function itemKey(item, prefix) {
                                         role="none"
                                     >
                                         <Link
-                                            :href="route(item.href)"
+                                            :href="itemHref(item)"
                                             role="menuitem"
                                             :class="dropdownMenuLinkClass(item)"
                                         >

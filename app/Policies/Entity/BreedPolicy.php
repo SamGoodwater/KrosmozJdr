@@ -93,7 +93,7 @@ class BreedPolicy
      */
     public function restore(User $user, Breed $breed): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -101,6 +101,6 @@ class BreedPolicy
      */
     public function forceDelete(User $user, Breed $breed): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 }

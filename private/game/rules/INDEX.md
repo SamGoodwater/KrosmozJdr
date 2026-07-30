@@ -1616,7 +1616,7 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 
 
 
-**Désenvoutement** : 
+**Dissipation** : 
 3.2.5
 
 

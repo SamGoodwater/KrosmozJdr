@@ -593,6 +593,13 @@
     "file": "header/LoggedHeaderContainer.vue"
   },
   {
+    "name": "AlmanaxHeaderBadge",
+    "description": "AlmanaxHeaderBadge",
+    "props": [],
+    "slots": [],
+    "file": "header/AlmanaxHeaderBadge.vue"
+  },
+  {
     "name": "NotificationToast",
     "description": "NotificationToast Molecule (Toast + Alert + Animations avancées)",
     "props": [

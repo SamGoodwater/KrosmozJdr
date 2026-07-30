@@ -7,6 +7,7 @@ import { ref, watch, onBeforeUnmount, nextTick } from "vue";
 import { router } from "@inertiajs/vue3";
 import {
     buildHrefFromKref,
+    buildPagePreviewSnippetUrl,
     buildSectionPreviewSnippetUrl,
     getDecodedKrefFromElement,
 } from "@/Composables/richText/krefDomUtils";
@@ -175,6 +176,77 @@ async function loadSectionPreview(info) {
     }
 }
 
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function buildPageSummaryHtml(data) {
+    const sections = Array.isArray(data?.sections) ? data.sections : [];
+    if (sections.length === 0) {
+        return "<p>Aucune section accessible dans cette page.</p>";
+    }
+
+    const items = sections.map((section) => {
+        const title = escapeHtml(section?.title || `Section #${section?.id || "?"}`);
+        const href = escapeHtml(section?.href || "#");
+        return `<li><a href="${href}">${title}</a></li>`;
+    });
+
+    return `<ol>${items.join("")}</ol>`;
+}
+
+async function loadPagePreview(info) {
+    popoverLoading.value = true;
+    popoverHtml.value = "";
+    popoverHint.value = "";
+    cancelFetch();
+    const controller = new AbortController();
+    abortFetch = controller;
+
+    try {
+        const url = buildPagePreviewSnippetUrl(info);
+        if (!url) {
+            popoverHint.value = "Cliquez pour ouvrir la page.";
+            return;
+        }
+        const res = await fetch(url, {
+            method: "GET",
+            signal: controller.signal,
+            credentials: "same-origin",
+            headers: {
+                Accept: "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        });
+        if (res.status === 401) {
+            popoverHint.value = "Connectez-vous pour voir l’aperçu.";
+            return;
+        }
+        if (!res.ok) {
+            popoverHint.value = "Cliquez pour ouvrir la page.";
+            return;
+        }
+        const data = await res.json();
+        popoverTitle.value = String(data?.title || info?.label || "Page");
+        popoverHtml.value = sanitizeHtml(buildPageSummaryHtml(data));
+        const count = Number(data?.sectionCount ?? 0);
+        if (count > 12) {
+            popoverHint.value = `${count - 12} section(s) supplémentaire(s) sur la page.`;
+        }
+    } catch (e) {
+        if (e?.name === "AbortError") return;
+        popoverHint.value = "Impossible de charger l’aperçu.";
+    } finally {
+        popoverLoading.value = false;
+        abortFetch = null;
+    }
+}
+
 function openForAnchor(anchor, info) {
     if (!props.enabled || !anchor) return;
     const t = String(info?.krefType || "");
@@ -196,7 +268,7 @@ function openForAnchor(anchor, info) {
 
     if (info.krefType === "page") {
         popoverTitle.value = info.label || "Page";
-        popoverHint.value = "Cliquez pour ouvrir la page.";
+        void loadPagePreview(info);
         return;
     }
 
@@ -335,7 +407,7 @@ function onPopoverLeave() {
             <!-- eslint-disable vue/no-v-html -- HTML issu de l’API + second passage sanitizeHtml() -->
             <div
                 v-else-if="popoverHtml"
-                class="kref-preview-popover__body kref-rich-preview-panel prose prose-sm max-w-none overflow-x-hidden overflow-y-auto break-words px-3 py-2 text-base-content"
+                class="kref-preview-popover__body kref-rich-preview-panel prose prose-sm max-w-none overflow-x-hidden overflow-y-auto wrap-break-word px-3 py-2 text-base-content"
                 v-html="popoverHtml"
             />
             <!-- eslint-enable vue/no-v-html -->

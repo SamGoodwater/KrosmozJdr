@@ -590,6 +590,9 @@ const logout = () => {
                             <GlassMenuItem route="user.show" icon="fa-user" icon-alt="" hover3d>
                                 Mon compte
                             </GlassMenuItem>
+                            <GlassMenuItem href="/feedback" icon="fa-comments" icon-alt="" hover3d>
+                                Mes retours
+                            </GlassMenuItem>
                         </div>
                         <GlassMenuDivider />
                         <template v-if="canAccess('contentManagement') || canAccess('effectsAdmin')">

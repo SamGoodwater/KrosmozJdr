@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
+use App\Services\NotificationService;
 use App\Services\Project\ProjectBackupService;
 use Illuminate\Console\Command;
+use Throwable;
 
 /**
  * Sauvegarde MySQL/MariaDB/SQLite + archive compressée de storage/app (hors backups), rotation ~1 mois.
@@ -25,12 +27,14 @@ class ProjectBackupCommand extends Command
         {--retention-days= : Jours de conservation des fichiers (défaut : config, 30)}
         {--no-prune : Ne pas supprimer les sauvegardes plus anciennes que la rétention}
         {--prune-only : Exécuter uniquement la purge (pas de nouvelle sauvegarde)}
-        {--dry-run : Avec --prune-only ou --no-prune absent : afficher les fichiers qui seraient supprimés}';
+        {--dry-run : Avec --prune-only ou --no-prune absent : afficher les fichiers qui seraient supprimés}
+        {--skip-notify : Ne pas notifier les admins du résultat de la sauvegarde}';
 
     protected $description = 'Sauvegarde BDD + storage/app compressés, purge des fichiers > rétention (défaut 30 j)';
 
     public function handle(): int
     {
+        $startedAt = microtime(true);
         $service = $this->makeService();
 
         $pruneOnly = (bool) $this->option('prune-only');
@@ -45,6 +49,8 @@ class ProjectBackupCommand extends Command
             );
             $this->info($dryRun ? "Fichiers concernés (simulation) : {$n}" : "Fichiers supprimés : {$n}");
 
+            $this->notifyBackupResult(true, $startedAt, $dryRun ? "Purge dry-run : {$n} fichier(s) concerné(s)." : "Purge : {$n} fichier(s) supprimé(s).");
+
             return ArtisanExitCode::SUCCESS;
         }
 
@@ -53,26 +59,44 @@ class ProjectBackupCommand extends Command
 
         if (! $withDatabase && ! $withStorage) {
             $this->error('Indiquez au moins une cible : ne pas passer --no-database et --no-storage ensemble (utilisez --prune-only pour purger seul).');
+            $this->notifyBackupResult(false, $startedAt, 'Aucune cible de sauvegarde sélectionnée.');
 
             return ArtisanExitCode::FAILURE;
         }
 
-        $result = $service->run(
-            $withDatabase,
-            $withStorage,
-            $prune,
-            $dryRun && $prune,
-            fn (string $m) => $this->line($m),
-            fn (string $m) => $this->error($m)
-        );
+        try {
+            $result = $service->run(
+                $withDatabase,
+                $withStorage,
+                $prune,
+                $dryRun && $prune,
+                fn (string $m) => $this->line($m),
+                fn (string $m) => $this->error($m)
+            );
+        } catch (Throwable $e) {
+            $this->error('Sauvegarde impossible : '.$e->getMessage());
+            $this->notifyBackupResult(false, $startedAt, $e->getMessage());
+
+            return ArtisanExitCode::FAILURE;
+        }
 
         if ($result['run_id'] === '' && ($withDatabase || $withStorage)) {
+            $this->notifyBackupResult(false, $startedAt, 'Sauvegarde interrompue avant création de run.');
+
             return ArtisanExitCode::FAILURE;
         }
 
         if ($result['files'] !== []) {
             $this->info('Sauvegarde terminée : '.count($result['files']).' fichier(s).');
         }
+
+        $this->notifyBackupResult(
+            $result['files'] !== [],
+            $startedAt,
+            $result['files'] !== []
+                ? 'Fichier(s) créé(s) : '.count($result['files']).'.'
+                : 'Aucun fichier créé.'
+        );
 
         return ArtisanExitCode::SUCCESS;
     }
@@ -94,5 +118,24 @@ class ProjectBackupCommand extends Command
         $prefix = (string) config('project-backup.filename_prefix', '') ?: 'project-backup';
 
         return new ProjectBackupService($backupRoot, $retention, $mysqldump, $prefix);
+    }
+
+    private function notifyBackupResult(bool $success, float $startedAt, ?string $message): void
+    {
+        if ((bool) $this->option('skip-notify')) {
+            return;
+        }
+
+        try {
+            NotificationService::notifyProjectMaintenance(
+                'backup',
+                $success,
+                microtime(true) - $startedAt,
+                now()->format('d/m/Y à H:i'),
+                $message
+            );
+        } catch (Throwable $e) {
+            $this->warn('Notification admin impossible : '.$e->getMessage());
+        }
     }
 }

@@ -6,6 +6,7 @@ namespace App\Support\Notifications;
 
 use App\Notifications\DigestNotification;
 use App\Notifications\EntityModifiedNotification;
+use App\Notifications\FeedbackThreadNotification;
 use App\Notifications\LastConnectionNotification;
 use App\Notifications\NewUserCreatedNotification;
 use App\Notifications\ProfileModifiedNotification;
@@ -62,6 +63,11 @@ class NotificationCatalog
             'config_type' => null,
             'category' => 'personal',
             'action_label' => 'Voir l’entité',
+        ],
+        FeedbackThreadNotification::class => [
+            'config_type' => null,
+            'category' => 'personal',
+            'action_label' => 'Voir le retour',
         ],
     ];
 
@@ -139,6 +145,7 @@ class NotificationCatalog
             UserDeletedNotification::class,
             ProjectMaintenanceNotification::class,
             EntityModifiedNotification::class,
+            FeedbackThreadNotification::class,
         ];
     }
 

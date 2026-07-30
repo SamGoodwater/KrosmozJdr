@@ -23,9 +23,12 @@ use App\Models\Entity\Capability;
 use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Language;
 use App\Models\Entity\Spell;
+use App\Models\User;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\Entity\SyncBreedElementOrientations;
 use App\Services\PdfService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -255,14 +258,15 @@ class BreedController extends Controller
             ->with('success', 'Langues de la classe mises à jour.');
     }
 
-    public function delete(Breed $breed): RedirectResponse
+    public function delete(Request $request, Breed $breed, EntityDeletionService $deletionService): RedirectResponse
     {
-        $this->authorize('delete', $breed);
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
 
-        $breed->delete();
+        $deletionService->softDelete($breed, $actor);
 
         return redirect()->route('entities.breeds.index')
-            ->with('success', 'Classe supprimée (corbeille).');
+            ->with('success', 'Classe placée en corbeille.');
     }
 
     /**

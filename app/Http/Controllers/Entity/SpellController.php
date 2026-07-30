@@ -11,8 +11,10 @@ use App\Http\Resources\Entity\SpellResource;
 use App\Models\Effect;
 use App\Models\Entity\Spell;
 use App\Models\Type\SpellType;
+use App\Models\User;
 use App\Services\Effect\EffectGroupEditorDataService;
 use App\Services\Effect\EffectGroupUpdateService;
+use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
@@ -337,13 +339,15 @@ class SpellController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Spell $spell): RedirectResponse
+    public function delete(Request $request, Spell $spell, EntityDeletionService $deletionService): RedirectResponse
     {
-        $this->authorize('delete', $spell);
-        $spell->delete();
+        $actor = $request->user();
+        abort_unless($actor instanceof User, 401);
+
+        $deletionService->softDelete($spell, $actor);
 
         return redirect()->route('entities.spells.index')
-            ->with('success', 'Sort supprimé (corbeille).');
+            ->with('success', 'Sort placé en corbeille.');
     }
 
     /**

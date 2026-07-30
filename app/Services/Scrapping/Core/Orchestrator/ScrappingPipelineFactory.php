@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Scrapping\Core\Orchestrator;
 
 use App\Services\Characteristic\Conversion\DofusConversionService;
+use App\Services\Characteristic\Compatibility\CharacteristicCompatibilityService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Characteristic\Limit\CharacteristicLimitService;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
@@ -17,6 +18,7 @@ use App\Services\Scrapping\Core\Conversion\ItemEffectsToBonusConverter;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Normalizer\SpellGlobalNormalizer;
+use App\Services\Scrapping\Core\Norms\NormAwareEntityProcessor;
 use App\Services\Scrapping\Core\Relation\RelationResolutionService;
 
 /**
@@ -37,7 +39,7 @@ final class ScrappingPipelineFactory
         $conversionService = app(DofusConversionService::class);
         $getter = app(CharacteristicGetterService::class);
 
-        $itemEffectsConverter = new ItemEffectsToBonusConverter($getter, $conversionService);
+        $itemEffectsConverter = new ItemEffectsToBonusConverter($getter, $conversionService, app(CharacteristicCompatibilityService::class));
         $formatterApplicator = new FormatterApplicator(
             $conversionService,
             $getter,
@@ -55,7 +57,8 @@ final class ScrappingPipelineFactory
             app(IntegrationService::class),
             app(SpellEffectsConversionService::class),
             null,
-            new SpellGlobalNormalizer
+            new SpellGlobalNormalizer,
+            app(NormAwareEntityProcessor::class)
         );
         $orchestrator->setRelationResolutionService(new RelationResolutionService($orchestrator));
 

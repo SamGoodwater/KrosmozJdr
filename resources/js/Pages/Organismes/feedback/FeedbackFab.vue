@@ -123,21 +123,16 @@ function submit() {
 </script>
 
 <template>
-    <div class="fixed bottom-4 right-4 z-40">
-        <!-- Bouton FAB -->
-        <div
-            tabindex="0"
-            role="button"
-            class="btn btn-lg btn-circle btn-primary shadow-lg hover:shadow-xl transition-shadow focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-base-100"
+    <div class="fixed bottom-4 right-4 z-40 sm:bottom-5 sm:right-5">
+        <button
+            type="button"
+            class="btn btn-lg btn-square rounded-2xl border border-base-content/15 bg-base-100/80 text-base-content shadow-[0_12px_32px_rgba(0,0,0,0.28)] backdrop-blur-md transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:bg-base-200/90 hover:shadow-[0_16px_40px_rgba(0,0,0,0.34)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base-100"
             aria-label="Signaler un problème ou envoyer une suggestion"
             @click="openModal"
-            @keydown.enter="openModal"
-            @keydown.space.prevent="openModal"
         >
-            <Icon source="fa-comment-dots" pack="solid" alt="Feedback" size="lg" />
-        </div>
+            <Icon source="fa-comment-dots" pack="solid" alt="" size="lg" />
+        </button>
 
-        <!-- Modal formulaire -->
         <Modal
             :open="modalOpen"
             size="lg"
@@ -147,13 +142,19 @@ function submit() {
             @close="closeModal"
         >
             <template #header>
-                <h3 class="text-lg font-bold">Signaler un problème ou faire une suggestion</h3>
+                <div class="space-y-1 pr-8">
+                    <h3 class="text-lg font-semibold text-base-content">
+                        Signaler un problème ou faire une suggestion
+                    </h3>
+                    <p class="text-sm text-base-content/70">
+                        Décris ce que tu as vu, on recevra le contexte de la page avec ton retour.
+                    </p>
+                </div>
             </template>
 
-            <form @submit.prevent="submit" class="space-y-4">
+            <form class="space-y-5" @submit.prevent="submit">
                 <template v-if="authUser">
-                    <!-- Inclure mon pseudo -->
-                    <div class="form-control">
+                    <div class="grid gap-2 rounded-box border border-base-content/10 bg-base-200/40 p-3">
                         <label class="label cursor-pointer justify-start gap-2">
                             <input
                                 v-model="form.includePseudo"
@@ -162,10 +163,6 @@ function submit() {
                             />
                             <span class="label-text">Inclure mon pseudo</span>
                         </label>
-                    </div>
-
-                    <!-- Récap par email -->
-                    <div class="form-control">
                         <label class="label cursor-pointer justify-start gap-2">
                             <input
                                 v-model="form.emailRecap"
@@ -177,16 +174,15 @@ function submit() {
                     </div>
                 </template>
 
-                <!-- Type -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text">Type de retour</span>
+                        <span class="label-text font-medium">Type de retour</span>
                     </label>
                     <div class="flex flex-wrap gap-2">
                         <label
                             v-for="opt in TYPE_OPTIONS"
                             :key="opt.value"
-                            class="label cursor-pointer gap-2 border rounded-box px-4 py-2 has-[:checked]:border-primary has-[:checked]:bg-primary/10"
+                            class="label cursor-pointer gap-2 rounded-box border border-base-content/10 bg-base-100/60 px-4 py-2 transition-colors has-checked:border-primary has-checked:bg-primary/10"
                         >
                             <input
                                 v-model="form.type"
@@ -199,18 +195,17 @@ function submit() {
                     </div>
                 </div>
 
-                <!-- Message -->
                 <div class="form-control">
                     <label class="label" for="feedback-message">
-                        <span class="label-text">Message</span>
+                        <span class="label-text font-medium">Message</span>
                         <span class="label-text-alt text-error" v-if="formErrors.message">{{ formErrors.message }}</span>
                     </label>
                     <textarea
                         id="feedback-message"
                         v-model="form.message"
-                        rows="4"
+                        rows="5"
                         maxlength="2000"
-                        class="textarea textarea-bordered w-full"
+                        class="textarea textarea-bordered w-full bg-base-100/80"
                         placeholder="Décris le problème ou ta suggestion..."
                         :class="{ 'textarea-error': formErrors.message }"
                     />
@@ -219,10 +214,9 @@ function submit() {
                     </label>
                 </div>
 
-                <!-- Pièce jointe -->
                 <div class="form-control">
                     <label class="label" for="feedback-attachment">
-                        <span class="label-text">Pièce jointe (optionnel)</span>
+                        <span class="label-text font-medium">Pièce jointe (optionnel)</span>
                         <span class="label-text-alt text-error" v-if="formErrors.attachment">{{ formErrors.attachment }}</span>
                     </label>
                     <input
@@ -230,7 +224,7 @@ function submit() {
                         ref="attachmentInputRef"
                         type="file"
                         accept=".jpg,.jpeg,.png,.gif,.pdf,.txt"
-                        class="file-input file-input-bordered w-full max-w-xs"
+                        class="file-input file-input-bordered w-full bg-base-100/80"
                         @change="onFileChange"
                     />
                     <label class="label" v-if="form.attachment">
@@ -250,7 +244,7 @@ function submit() {
             </form>
 
             <template #actions>
-                <div class="flex gap-2 justify-end">
+                <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                     <Btn color="neutral" variant="ghost" @click="closeModal">Annuler</Btn>
                     <Btn
                         color="primary"

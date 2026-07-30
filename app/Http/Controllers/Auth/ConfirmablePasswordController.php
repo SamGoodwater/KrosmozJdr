@@ -14,15 +14,17 @@ class ConfirmablePasswordController extends Controller
     /**
      * Show the confirm password page.
      */
-    public function show(): Response
+    public function show(Request $request): Response
     {
-        return Inertia::render('auth/ConfirmPassword');
+        return Inertia::render('auth/ConfirmPassword', [
+            'intendedUrl' => $request->session()->get('url.intended', url('/')),
+        ]);
     }
 
     /**
      * Confirm the user's password.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|\Illuminate\Http\JsonResponse
     {
         $request->validate([
             'password' => ['required', 'string'],
@@ -31,12 +33,28 @@ class ConfirmablePasswordController extends Controller
         $user = $request->user();
 
         if ($user->password === null || $user->password === '') {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Ce compte n\'a pas de mot de passe local.',
+                    'errors' => [
+                        'password' => ['Ce compte n\'a pas de mot de passe local. Utilise ta connexion OAuth ou définis un mot de passe dans Mon compte.'],
+                    ],
+                ], 422);
+            }
+
             return back()->withErrors([
                 'password' => 'Ce compte n\'a pas de mot de passe local. Utilise ta connexion OAuth ou définis un mot de passe dans Mon compte.',
             ]);
         }
 
         if (! Hash::check($request->password, $user->password)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => __('auth.password'),
+                    'errors' => ['password' => [__('auth.password')]],
+                ], 422);
+            }
+
             return back()->withErrors([
                 'password' => __('auth.password'),
             ]);
@@ -45,6 +63,15 @@ class ConfirmablePasswordController extends Controller
         $now = time();
         $request->session()->put('auth.password_confirmed_at', $now);
         $request->session()->put('auth.password_last_activity_at', $now);
+
+        $redirectUrl = redirect()->intended('/')->getTargetUrl();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'confirmed' => true,
+                'redirect' => $redirectUrl,
+            ]);
+        }
 
         return redirect()->intended('/');
     }

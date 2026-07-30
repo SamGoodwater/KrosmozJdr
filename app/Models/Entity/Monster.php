@@ -7,6 +7,7 @@ use Database\Factories\MonsterFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -20,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $monster_race_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read Creature|null $creature
@@ -54,12 +56,16 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereWriteLevel($value)
  * @property-read Collection<int, Language> $languages
  * @property-read int|null $languages_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster withoutTrashed()
  * @mixin \Eloquent
  */
 class Monster extends Model
 {
     /** @use HasFactory<MonsterFactory> */
     use HasFactory;
+    use SoftDeletes;
 
     const SIZE = [
         0 => 'Minuscule',

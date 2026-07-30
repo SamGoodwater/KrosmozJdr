@@ -214,7 +214,7 @@ return [
             [
                 'slug' => 'etats',
                 'title' => 'États',
-                'html' => '<p>Buffs, malédictions, DOT — dissipation par sauvegarde, durée ou désenvoutement. Fiches : [[kref:page:conditions|États]] · [[kref:page:bibliotheque-condition|Bibliothèque]]. Certains ne se cumulent pas.</p>',
+                'html' => '<p>Buffs, malédictions, DOT — dissipation par sauvegarde, durée ou effet de dissipation. Fiches : [[kref:page:conditions|États]] · [[kref:page:bibliotheque-condition|Bibliothèque]]. Certains ne se cumulent pas.</p>',
             ],
             [
                 'slug' => 'repos',

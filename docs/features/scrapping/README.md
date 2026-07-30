@@ -20,6 +20,15 @@ flowchart TD
 
 Le pipeline est assemblé par `ScrappingPipelineFactory::createDefault()` (ou `Orchestrator::default()`), dépendances résolues via le conteneur Laravel. Pour les imports longs, l'exécution passe par `app/Jobs/ProcessScrappingJob.php` (suivi en table `scrapping_jobs`).
 
+## Création Intelligente V1
+
+La conversion des objets utilise maintenant une couche norm-aware minimale :
+- `ItemEffectsToBonusConverter` filtre les bonus incompatibles avec le type d'équipement lorsque la caractéristique définit `allowed_item_type_ids`.
+- `NormAwareEntityProcessor` enrichit la preview des items avec `_smart_creation` : puissance seedable, rapport aux `norms_grid`, signature de bonus et `price_calculated` indicatif.
+- Les services purs sont testables sans base : `NormsResolver`, `PowerCoefficientAssigner`, `EquipmentPriceCalculator`, `DuplicateEquipmentSignatureChecker`.
+
+Cette v1 enrichit la preview et prépare l'import normé sans forcer de snap automatique à l'écriture. Les imports continuent de passer par les validations min/max existantes.
+
 ## Où modifier le mapping
 
 | Type de règle | Où | Support |

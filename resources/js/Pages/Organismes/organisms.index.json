@@ -559,7 +559,7 @@
   },
   {
     "name": "HorizontalOverflowNav",
-    "description": "Barre de navigation horizontale : boutons glass alignés à droite, overflow dans un menu, et sous le breakpoint `md` (useDevice) tout regroupé dans un seul dropdown. Item attendu : `{ title, href, icon, path? }` — `href` = nom de route Ziggy, `path` = préfixe URL pour l’état actif.",
+    "description": "Barre de navigation horizontale : boutons glass alignés à droite, overflow dans un menu, et sous le breakpoint `md` (useDevice) tout regroupé dans un seul dropdown. Item attendu : `{ title, href, url?, icon, path? }` — `href` = nom Ziggy, `url` = URL directe optionnelle.",
     "props": [],
     "slots": [],
     "file": "layout/HorizontalOverflowNav.vue"
