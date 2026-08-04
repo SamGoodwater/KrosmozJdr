@@ -2,6 +2,19 @@
 
 ```mermaid
 erDiagram
+  ADMIN_ACTIVITY_LOGS {
+    id : bigint(20) unsigned
+    domain : varchar(40)
+    action : varchar(40)
+    subject_type : varchar(255)
+    subject_id : bigint(20) unsigned
+    subject_label : varchar(255)
+    actor_id : bigint(20) unsigned
+    status : varchar(40)
+    properties : longtext
+    created_at : timestamp
+    updated_at : timestamp
+  }
   APPLICATION_SETTINGS {
     id : bigint(20) unsigned
     key : varchar(255)
@@ -628,6 +641,30 @@ erDiagram
     payload : longtext
     exception : longtext
     failed_at : timestamp
+  }
+  FEEDBACK_MESSAGES {
+    id : bigint(20) unsigned
+    feedback_thread_id : bigint(20) unsigned
+    author_id : bigint(20) unsigned
+    author_role : varchar(16)
+    body : text
+    attachment_path : varchar(255)
+    attachment_name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  FEEDBACK_THREADS {
+    id : bigint(20) unsigned
+    user_id : bigint(20) unsigned
+    type : varchar(32)
+    status : varchar(32)
+    url : varchar(500)
+    subject_preview : varchar(160)
+    last_message_at : timestamp
+    user_unread_count : int(10) unsigned
+    staff_unread_count : int(10) unsigned
+    created_at : timestamp
+    updated_at : timestamp
   }
   ITEM_CAMPAIGN {
     item_id : bigint(20) unsigned
@@ -1340,6 +1377,7 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  ADMIN_ACTIVITY_LOGS }o--|| USERS : "FK actor_id"
   BREED_CAPABILITY }o--|| BREEDS : "FK breed_id"
   BREED_CAPABILITY }o--|| CAPABILITIES : "FK capability_id"
   BREED_CREATURE_TRAIT }o--|| BREEDS : "FK breed_id"
@@ -1418,6 +1456,9 @@ erDiagram
   EFFECT_SUB_EFFECT }o--|| EFFECT_DEGREES : "FK effect_degree_id"
   EFFECT_SUB_EFFECT }o--|| SUB_EFFECTS : "FK sub_effect_id"
   EFFECT_USAGES }o--|| EFFECT_DEGREES : "FK effect_degree_id"
+  FEEDBACK_MESSAGES }o--|| USERS : "FK author_id"
+  FEEDBACK_MESSAGES }o--|| FEEDBACK_THREADS : "FK feedback_thread_id"
+  FEEDBACK_THREADS }o--|| USERS : "FK user_id"
   ITEM_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   ITEM_CAMPAIGN }o--|| ITEMS : "FK item_id"
   ITEM_PANOPLY }o--|| ITEMS : "FK item_id"
