@@ -86,6 +86,43 @@ class DofusConversionServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $result);
     }
 
+    public function test_convert_object_main_attributes_preserves_signed_bonuses_and_maluses(): void
+    {
+        $this->assertSame(3, $this->service->convertObjectAttribute('strength_object', 100, 'item'));
+        $this->assertSame(-3, $this->service->convertObjectAttribute('strength_object', -100, 'item'));
+        $this->assertSame(6, $this->service->convertObjectAttribute('strength_object', 600, 'item'));
+        $this->assertSame(-6, $this->service->convertObjectAttribute('strength_object', -600, 'item'));
+    }
+
+    public function test_convert_object_ap_and_mp_use_equipment_only_limits(): void
+    {
+        $this->assertSame(5, $this->service->convertObjectAttribute('action_points_object', 9, 'item'));
+        $this->assertSame(-5, $this->service->convertObjectAttribute('action_points_object', -9, 'item'));
+        $this->assertSame(2, $this->service->convertObjectAttribute('movement_points_object', 4, 'item'));
+        $this->assertSame(-2, $this->service->convertObjectAttribute('movement_points_object', -4, 'item'));
+    }
+
+    public function test_convert_object_critical_and_tactical_bonuses_are_symmetric(): void
+    {
+        $this->assertSame(3, $this->service->convertObjectAttribute('critical_hit_object', 15, 'item'));
+        $this->assertSame(-3, $this->service->convertObjectAttribute('critical_hit_object', -15, 'item'));
+        $this->assertSame(4, $this->service->convertObjectAttribute('heal_bonus_object', 22, 'item'));
+        $this->assertSame(-4, $this->service->convertObjectAttribute('heal_bonus_object', -22, 'item'));
+        $this->assertSame(10, $this->service->convertObjectAttribute('tackle_object', 50, 'item'));
+        $this->assertSame(-10, $this->service->convertObjectAttribute('dodge_object', -50, 'item'));
+    }
+
+    public function test_convert_panoply_percent_resistance_uses_five_bands(): void
+    {
+        $key = 'resistance_percent_tier_fire_object';
+
+        $this->assertSame(-2, $this->service->convertObjectAttribute($key, -51, 'panoply'));
+        $this->assertSame(-1, $this->service->convertObjectAttribute($key, -50, 'panoply'));
+        $this->assertSame(0, $this->service->convertObjectAttribute($key, 7, 'panoply'));
+        $this->assertSame(1, $this->service->convertObjectAttribute($key, 8, 'panoply'));
+        $this->assertSame(2, $this->service->convertObjectAttribute($key, 13, 'panoply'));
+    }
+
     public function test_convert_life_returns_integer(): void
     {
         $result = $this->service->convert('life_points_creature', ['d' => 1000.0, 'level' => 10], 'monster', 55.0);

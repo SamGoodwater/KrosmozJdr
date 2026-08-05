@@ -6,12 +6,12 @@ namespace Tests\Unit\Scrapping\Core\Conversion;
 
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Scrapping\Core\Conversion\ConversionDiagnosticBag;
 use App\Services\Scrapping\Core\Conversion\ItemEffectsToBonusConverter;
 use Database\Seeders\CharacteristicSeeder;
 use Database\Seeders\DofusdbCharacteristicIdSeeder;
 use Database\Seeders\ObjectCharacteristicSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 /**
@@ -67,15 +67,15 @@ class ItemEffectsToBonusConverterTest extends TestCase
 
     public function test_convert_ignores_effects_with_unknown_characteristic_id(): void
     {
-        Log::spy();
+        $diagnostics = new ConversionDiagnosticBag;
         $effects = [
             ['characteristic' => 99999, 'value' => 5],
         ];
 
-        $result = $this->converter->convert($effects, [], []);
+        $result = $this->converter->convert($effects, [], ['diagnostics' => $diagnostics]);
 
         $this->assertNull($result);
-        Log::shouldHaveReceived('warning')->once();
+        $this->assertTrue($diagnostics->requiresManualReview());
     }
 
     public function test_convert_uses_from_to_when_value_missing(): void
@@ -142,26 +142,64 @@ class ItemEffectsToBonusConverterTest extends TestCase
         $this->assertSame(20, $decoded['heal_bonus']);
     }
 
-    /**
-     * Résistances % par élément : une clé bonus par id Dofus (33–37), palier 0/1/2 après conversion.
-     */
-    public function test_convert_maps_percent_resist_per_element_with_dofus_conversion(): void
+    public function test_convert_ignores_percent_resistance_on_individual_items(): void
+    {
+        $getter = $this->app->make(CharacteristicGetterService::class);
+        $conversion = $this->app->make(DofusConversionService::class);
+        $converter = new ItemEffectsToBonusConverter($getter, $conversion);
+
+        $result = $converter->convert(
+            [['characteristic' => 33, 'value' => 13]],
+            [],
+            ['entityType' => 'item']
+        );
+
+        $this->assertNull($result);
+    }
+
+    public function test_convert_maps_percent_resistance_bands_on_panoplies(): void
     {
         $getter = $this->app->make(CharacteristicGetterService::class);
         $conversion = $this->app->make(DofusConversionService::class);
         $converter = new ItemEffectsToBonusConverter($getter, $conversion);
 
         $effects = [
-            ['characteristic' => 33, 'value' => 90],
-            ['characteristic' => 34, 'value' => 96],
+            ['characteristic' => 33, 'value' => 8],
+            ['characteristic' => 34, 'value' => 13],
+            ['characteristic' => 35, 'value' => -20],
+            ['characteristic' => 36, 'value' => -51],
         ];
 
-        $result = $converter->convert($effects, [], ['entityType' => 'item']);
+        $result = $converter->convert($effects, [], ['entityType' => 'panoply']);
         $this->assertIsString($result);
         $decoded = json_decode($result, true);
         $this->assertIsArray($decoded);
         $this->assertSame(1, $decoded['resistance_percent_tier_earth'] ?? null);
         $this->assertSame(2, $decoded['resistance_percent_tier_fire'] ?? null);
+        $this->assertSame(-1, $decoded['resistance_percent_tier_water'] ?? null);
+        $this->assertSame(-2, $decoded['resistance_percent_tier_air'] ?? null);
+    }
+
+    public function test_convert_ignores_ambiguous_characteristic_zero(): void
+    {
+        $result = $this->converter->convert(
+            [['characteristic' => 0, 'effectId' => 1179, 'value' => 20]],
+            [],
+            ['entityType' => 'item']
+        );
+
+        $this->assertNull($result);
+    }
+
+    public function test_convert_maps_all_damage_to_multiple_fixed_damage(): void
+    {
+        $effects = [['characteristic' => 16, 'effectId' => 112, 'value' => 10]];
+
+        $result = $this->converter->convert($effects, [], ['entityType' => 'item']);
+
+        $this->assertIsString($result);
+        $decoded = json_decode($result, true);
+        $this->assertSame(10, $decoded['fixed_damage_multiple'] ?? null);
     }
 
     public function test_convert_ignores_deprecated_characteristics_push(): void
@@ -177,13 +215,16 @@ class ItemEffectsToBonusConverterTest extends TestCase
 
     public function test_convert_logs_id_38_as_unknown_without_polluting_bonus(): void
     {
-        Log::spy();
+        $diagnostics = new ConversionDiagnosticBag;
         $effects = [
             ['characteristic' => 10, 'value' => 5],
             ['characteristic' => 38, 'value' => 20],
         ];
 
-        $result = $this->converter->convert($effects, ['id' => 1234], ['entityType' => 'panoply']);
+        $result = $this->converter->convert($effects, ['id' => 1234], [
+            'entityType' => 'panoply',
+            'diagnostics' => $diagnostics,
+        ]);
 
         $this->assertIsString($result);
         $decoded = json_decode($result, true);
@@ -191,13 +232,7 @@ class ItemEffectsToBonusConverterTest extends TestCase
         $this->assertSame(5, $decoded['strength'] ?? null);
         $this->assertArrayNotHasKey('38', $decoded);
         $this->assertArrayNotHasKey('unknown', $decoded);
-
-        Log::shouldHaveReceived('warning')
-            ->withArgs(function (string $message, array $context): bool {
-                return str_contains($message, 'non mappés ignorés')
-                    && (($context['contains_id_38'] ?? false) === true)
-                    && ($context['source_id'] ?? null) === 1234;
-            })
-            ->once();
+        $this->assertTrue($diagnostics->requiresManualReview());
+        $this->assertSame(38, $diagnostics->all()[0]['context']['dofusdb_characteristic_id'] ?? null);
     }
 }

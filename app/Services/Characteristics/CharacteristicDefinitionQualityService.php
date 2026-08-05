@@ -169,21 +169,7 @@ final class CharacteristicDefinitionQualityService
 
     public function helperImpliesItemTypeRestriction(string $helper): bool
     {
-        $h = mb_strtolower($helper);
-
-        return str_contains($h, 'amulette')
-            || str_contains($h, 'chapeau')
-            || str_contains($h, 'cape')
-            || str_contains($h, 'arme')
-            || str_contains($h, 'arc')
-            || str_contains($h, 'baguette')
-            || str_contains($h, 'épée')
-            || str_contains($h, 'epee')
-            || str_contains($h, 'dague')
-            || str_contains($h, 'marteau')
-            || str_contains($h, 'pelle')
-            || str_contains($h, 'bâton')
-            || str_contains($h, 'baton');
+        return $this->suggestedDofusTypeIdsForHelper($helper) !== [];
     }
 
     /**
@@ -192,20 +178,36 @@ final class CharacteristicDefinitionQualityService
     public function suggestedDofusTypeIdsForHelper(string $helper): array
     {
         $h = mb_strtolower($helper);
+        $ids = [];
         if (str_contains($h, 'amulette')) {
-            return [1];
+            $ids[] = 1;
         }
-        if (str_contains($h, 'chapeau') || str_contains($h, 'cape')
-            || (str_contains($h, 'équipement') && (str_contains($h, 'chapeau') || str_contains($h, 'cape')))) {
-            return [9, 10];
+        if (str_contains($h, 'anneau')) {
+            $ids[] = 9;
+        }
+        if (str_contains($h, 'ceinture')) {
+            $ids[] = 10;
+        }
+        if (str_contains($h, 'botte')) {
+            $ids[] = 11;
+        }
+        if (str_contains($h, 'chapeau')) {
+            $ids[] = 16;
+        }
+        if (str_contains($h, 'cape')) {
+            $ids[] = 17;
+        }
+        if (str_contains($h, 'bouclier')) {
+            $ids[] = 82;
         }
         if (str_contains($h, 'arme') || str_contains($h, 'arc') || str_contains($h, 'baguette')
             || str_contains($h, 'bâton') || str_contains($h, 'baton') || str_contains($h, 'dague')
             || str_contains($h, 'épée') || str_contains($h, 'epee') || str_contains($h, 'marteau')
-            || str_contains($h, 'pelle')) {
-            return [2, 3, 4, 5, 6, 7, 8];
+            || str_contains($h, 'pelle') || str_contains($h, 'hache') || str_contains($h, 'pioche')
+            || str_contains($h, 'faux') || str_contains($h, 'lance')) {
+            $ids = array_merge($ids, [2, 3, 4, 5, 6, 7, 8, 19, 21, 22, 114, 271]);
         }
 
-        return [];
+        return array_values(array_unique($ids));
     }
 }

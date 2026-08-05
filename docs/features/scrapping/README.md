@@ -16,6 +16,17 @@ Les autres conversions propres aux monstres suivent ces principes :
 - le bonus critique Dofus devient un bonus Krosmoz rare de 0 à 3 et le soin est ramené linéairement de 5–40 vers 0–7 ;
 - les Kamas ne sont pas importés depuis un monstre.
 
+### Conversion des objets et panoplies
+
+Les effets numériques des objets sont convertis avec des formules signées : un malus Dofus reste un bonus
+Krosmoz négatif, dans une plage symétrique. Les caractéristiques principales sont limitées à `±6`, les PA
+à `±5` et les PM à `±2`, hors marge de forgemagie.
+
+Les résistances en pourcentage sont ignorées pour les objets individuels et restent disponibles dans le
+JSON brut. Pour les panoplies, elles deviennent des paliers de `-2` à `2` aux seuils `-50`, `-20`, `8`
+et `13`. L'ID DofusDB `0` est volontairement ignoré car il regroupe des effets techniques hétérogènes ;
+les dommages multi-éléments utilisent l'ID `16`.
+
 Accès **réservé aux administrateurs** : toutes les routes (web et API) passent par `role:admin` + `password.confirm`. La page `/scrapping` impose une confirmation de mot de passe (`ConfirmPasswordModal`) avec un délai d'inactivité.
 
 ## Pipeline

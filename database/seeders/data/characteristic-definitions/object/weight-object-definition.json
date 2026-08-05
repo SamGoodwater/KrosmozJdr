@@ -38,43 +38,42 @@
                 "160": 500,
                 "200": 500
             },
-            "conversion_krosmoz_sample": null,
             "conversion_sample_rows": [
                 {
                     "dofus_level": 1,
                     "dofus_value": 114,
                     "krosmoz_level": 1,
-                    "krosmoz_value": null
+                    "krosmoz_value": 57
                 },
                 {
                     "dofus_level": 40,
                     "dofus_value": 151,
                     "krosmoz_level": 4,
-                    "krosmoz_value": null
+                    "krosmoz_value": 75
                 },
                 {
                     "dofus_level": 80,
                     "dofus_value": 233,
                     "krosmoz_level": 8,
-                    "krosmoz_value": null
+                    "krosmoz_value": 116
                 },
                 {
                     "dofus_level": 120,
                     "dofus_value": 389,
                     "krosmoz_level": 12,
-                    "krosmoz_value": null
+                    "krosmoz_value": 194
                 },
                 {
                     "dofus_level": 160,
                     "dofus_value": 500,
                     "krosmoz_level": 16,
-                    "krosmoz_value": null
+                    "krosmoz_value": 250
                 },
                 {
                     "dofus_level": 200,
                     "dofus_value": 500,
                     "krosmoz_level": 20,
-                    "krosmoz_value": null
+                    "krosmoz_value": 250
                 }
             ],
             "norms_grid": null,
@@ -86,7 +85,15 @@
             "rune_price_per_unit": null,
             "value_available": null,
             "item_type_dofus_ids": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "conversion_krosmoz_sample": {
+                "1": 57,
+                "4": 75,
+                "8": 116,
+                "12": 194,
+                "16": 250,
+                "20": 250
+            }
         },
         "resource": {
             "dofusdb_characteristic_id": 40,
@@ -106,43 +113,42 @@
                 "160": 500,
                 "200": 500
             },
-            "conversion_krosmoz_sample": null,
             "conversion_sample_rows": [
                 {
                     "dofus_level": 1,
                     "dofus_value": 114,
                     "krosmoz_level": 1,
-                    "krosmoz_value": null
+                    "krosmoz_value": 114
                 },
                 {
                     "dofus_level": 40,
                     "dofus_value": 151,
                     "krosmoz_level": 4,
-                    "krosmoz_value": null
+                    "krosmoz_value": 151
                 },
                 {
                     "dofus_level": 80,
                     "dofus_value": 233,
                     "krosmoz_level": 8,
-                    "krosmoz_value": null
+                    "krosmoz_value": 233
                 },
                 {
                     "dofus_level": 120,
                     "dofus_value": 389,
                     "krosmoz_level": 12,
-                    "krosmoz_value": null
+                    "krosmoz_value": 389
                 },
                 {
                     "dofus_level": 160,
                     "dofus_value": 500,
                     "krosmoz_level": 16,
-                    "krosmoz_value": null
+                    "krosmoz_value": 500
                 },
                 {
                     "dofus_level": 200,
                     "dofus_value": 500,
                     "krosmoz_level": 20,
-                    "krosmoz_value": null
+                    "krosmoz_value": 500
                 }
             ],
             "norms_grid": null,
@@ -154,7 +160,15 @@
             "rune_price_per_unit": null,
             "value_available": null,
             "item_type_dofus_ids": null,
-            "item_type_ids": null
+            "item_type_ids": null,
+            "conversion_krosmoz_sample": {
+                "1": 114,
+                "4": 151,
+                "8": 233,
+                "12": 389,
+                "16": 500,
+                "20": 500
+            }
         }
     },
     "relations": null

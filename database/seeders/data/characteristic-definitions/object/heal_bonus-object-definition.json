@@ -1,5 +1,4 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "heal_bonus_object",
         "name": "Bonus de soins",
@@ -23,12 +22,12 @@
         "*": {
             "dofusdb_characteristic_id": 49,
             "db_column": null,
-            "min": "0",
+            "min": "-5",
             "max": "5",
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "floor(0.2 * [d])",
+            "conversion_formula": "([d] / max(abs([d]), 1)) * (round(min(5, abs([d]) / 5)))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "1": 0,
@@ -191,9 +190,9 @@
                     5,
                     5,
                     5,
-                    6,
-                    6,
-                    7
+                    5,
+                    5,
+                    5
                 ]
             },
             "norms_conditions": null,
@@ -203,7 +202,9 @@
             "base_price_per_unit": 700,
             "rune_price_per_unit": 1400,
             "value_available": null,
-            "item_type_dofus_ids": null,
+            "item_type_dofus_ids": [
+                9
+            ],
             "item_type_ids": null
         }
     },

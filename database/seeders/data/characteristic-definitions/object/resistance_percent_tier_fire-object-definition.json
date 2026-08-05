@@ -1,5 +1,4 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "resistance_percent_tier_fire_object",
         "name": "Bonus de résistance en % (Feu, palier)",
@@ -11,20 +10,28 @@
         "color": "orange",
         "value_overrides": [
             {
+                "value": -2,
+                "subtitle": "Vulnérabilité"
+            },
+            {
+                "value": -1,
+                "subtitle": "Faiblesse"
+            },
+            {
                 "value": 0,
-                "subtitle": "aucune résistance"
+                "subtitle": "Aucune résistance"
             },
             {
                 "value": 1,
                 "icon": "resFireResistance.webp",
                 "color": "orange",
-                "subtitle": "Résistance (50%)"
+                "subtitle": "Résistance (50 %)"
             },
             {
                 "value": 2,
                 "icon": "resFireInvulnerability.webp",
                 "color": "orange",
-                "subtitle": "Invulnérabilité (100%)"
+                "subtitle": "Invulnérabilité (100 %)"
             }
         ],
         "hide_when_empty": true,
@@ -40,23 +47,13 @@
         "*": {
             "dofusdb_characteristic_id": 34,
             "db_column": null,
-            "min": "0",
+            "min": "-2",
             "max": "2",
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "{\"characteristic\":\"d\",\"0\":0,\"80\":1,\"95\":2}",
+            "conversion_formula": "[d]",
             "conversion_function": null,
-            "conversion_dofus_sample": null,
-            "conversion_krosmoz_sample": {
-                "1": 0,
-                "4": 0,
-                "8": 0,
-                "12": 0,
-                "16": 0,
-                "20": 0
-            },
-            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -171,6 +168,160 @@
             },
             "norms_conditions": null,
             "norms_description": "Palier de résistance en pourcentage pour le feu ; plusieurs degrés selon la fiche.",
+            "norms_help_section_id": null,
+            "forgemagie_max": 0,
+            "base_price_per_unit": 2500,
+            "rune_price_per_unit": null,
+            "value_available": null,
+            "item_type_dofus_ids": [
+                82
+            ],
+            "item_type_ids": null
+        },
+        "panoply": {
+            "dofusdb_characteristic_id": 34,
+            "db_column": null,
+            "min": "-2",
+            "max": "2",
+            "formula": null,
+            "formula_display": null,
+            "default_value": "0",
+            "conversion_formula": "{\"-10000\":-2,\"-50\":-1,\"-19\":0,\"8\":1,\"13\":2,\"characteristic\":\"d\"}",
+            "conversion_function": null,
+            "conversion_dofus_sample": {
+                "-60": -60,
+                "-50": -50,
+                "-20": -20,
+                "0": 0,
+                "7": 7,
+                "8": 8,
+                "12": 12,
+                "13": 13
+            },
+            "conversion_krosmoz_sample": {
+                "-60": -2,
+                "-50": -1,
+                "-20": -1,
+                "0": 0,
+                "7": 0,
+                "8": 1,
+                "12": 1,
+                "13": 2
+            },
+            "norms_grid": {
+                "very_weak": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "weak": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "neutral": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    2,
+                    2
+                ],
+                "strong": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2
+                ],
+                "very_strong": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2
+                ]
+            },
+            "norms_conditions": null,
+            "norms_description": "Bonus de panoplie uniquement : vulnérabilité < -50 %, faiblesse -50 à -20 %, résistance 8 à 12 %, invulnérabilité dès 13 %.",
             "norms_help_section_id": null,
             "forgemagie_max": 0,
             "base_price_per_unit": 2500,

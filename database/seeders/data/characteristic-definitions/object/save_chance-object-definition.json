@@ -1,5 +1,4 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "save_chance_object",
         "name": "Bonus de sauvegarde (Chance)",
@@ -30,46 +29,6 @@
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,
-            "conversion_dofus_sample": null,
-            "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": null
-                }
-            ],
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -189,7 +148,9 @@
             "base_price_per_unit": 700,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_dofus_ids": null,
+            "item_type_dofus_ids": [
+                17
+            ],
             "item_type_ids": null
         }
     },

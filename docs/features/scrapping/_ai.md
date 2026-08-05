@@ -16,6 +16,7 @@
 - **Mappings spécialisés** : effets de sorts → `dofusdb_effect_mappings` ; bonus objets → `characteristic_object.dofusdb_characteristic_id`.
 - **Conversion paramétrable** : les valeurs numériques passent par `convertCharacteristic` + `characteristic_key` → `conversion_formula` → limites. Les diagnostics conservent les cas à revoir.
 - **Monstres** : niveau 1–30, caractéristiques principales 6–30, PA 3–14, PM 2–10, PO 0–10 ; résistances relatives par paliers `-100/-50/0/50/100`, sans conversion automatique vers les résistances fixes.
+- **Objets** : bonus/malus signés et bornes symétriques (caractéristiques ±6, PA ±5, PM ±2 hors forgemagie) ; résistances relatives converties uniquement sur les panoplies en paliers `-2/-1/0/1/2`.
 - **Audit** : `php artisan scrapping:audit` valide le socle sans écriture ; `runMany()` retourne des résultats partiels par entité.
 - **Sécurité** : middleware `role:admin` + `password.confirm` sur toutes les routes ; porte `ConfirmPasswordModal` sur la page.
 - **CLI** : `php artisan scrapping:setup` (socle) puis `scrapping:run` (exploitation).

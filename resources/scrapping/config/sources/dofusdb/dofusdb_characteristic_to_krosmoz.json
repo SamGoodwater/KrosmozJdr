@@ -1,13 +1,12 @@
 {
   "version": 1,
   "source": "https://api.dofusdb.fr/characteristics",
-  "description": "Mapping id caractéristique DofusDB (champ effect.characteristic des items) vers characteristic_key Krosmoz (groupe object). Les ids 33–37 sont cinq propriétés distinctes (Terre, Feu, Eau, Air, Neutre) : chaque effet % résistance Dofus est converti en palier 0/1/2 (resistance_percent_tier_*_object). Référence : docs/features/characteristics/README.md",
+  "description": "Mapping id caractéristique DofusDB (champ effect.characteristic des items) vers characteristic_key Krosmoz (groupe object). Les ids 33–37 ne sont convertis en paliers -2..2 que pour les bonus de panoplies ; les pourcentages des objets individuels restent dans le JSON brut. Référence : docs/features/characteristics/README.md",
   "notation": {
     "dofusdb_characteristic_id": "id renvoyé par GET /characteristics (et présent dans item.effects[].characteristic)",
     "characteristic_key": "clé Krosmoz du seeder characteristic_object (ex: pa_object, strong_object)"
   },
   "mapping": {
-    "0": "life_points_max_object",
     "1": "action_points_object",
     "5": "level_object",
     "10": "strength_object",
@@ -16,6 +15,7 @@
     "13": "chance_object" ,
     "14": "agility_object",
     "15": "intelligence_object",
+    "16": "fixed_damage_multiple_object",
     "18": "critical_hit_object",
     "23": "movement_points_object",
     "26": "summoning_object",
@@ -41,8 +41,7 @@
     "89": "fixed_damage_fire_object",
     "90": "fixed_damage_water_object",
     "91": "fixed_damage_air_object",
-    "92": "fixed_damage_neutral_object",
-    "103": "fixed_damage_multiple_object"
+    "92": "fixed_damage_neutral_object"
   },
   "keywords_by_id": {
     "-1": "unknown",

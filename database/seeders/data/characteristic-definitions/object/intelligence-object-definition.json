@@ -1,11 +1,10 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "intelligence_object",
         "name": "Bonus d'intelligence",
         "short_name": "Int",
         "helper": "Équipement (capes) : bonus au score d'intelligence.",
-        "descriptions": "Bonus d’Intelligence donné par l’équipement (chapeaux, ceintures). S’ajoute au score sur la fiche, dans la limite des règles (2.2.1).",
+        "descriptions": "Bonus d’Intelligence donné par les capes. S’ajoute au score sur la fiche, dans la limite des règles (2.2.1).",
         "icon": "fire.webp",
         "icon_false": null,
         "color": "orange",
@@ -23,12 +22,12 @@
         "*": {
             "dofusdb_characteristic_id": 15,
             "db_column": null,
-            "min": "0",
-            "max": "8",
+            "min": "-6",
+            "max": "6",
             "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"9\":\"4\",\"11\":\"4\",\"13\":\"5\",\"15\":\"5\",\"17\":\"6\",\"20\":\"6\",\"characteristic\":\"level_object\"}",
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "floor(0.0408 * pow([d], 0.9412))",
+            "conversion_formula": "([d] / max(abs([d]), 1)) * (round(0.0408 * pow(abs([d]), 0.9412)))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "1": 7,
@@ -41,49 +40,11 @@
             "conversion_krosmoz_sample": {
                 "1": 0,
                 "4": 1,
-                "8": 2,
-                "12": 3,
-                "16": 4,
-                "20": 4
+                "8": 1,
+                "12": 1,
+                "16": 1,
+                "20": 1
             },
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": null
-                }
-            ],
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -171,7 +132,7 @@
                     5,
                     6,
                     6,
-                    7
+                    6
                 ],
                 "very_strong": [
                     1,
@@ -190,20 +151,22 @@
                     6,
                     6,
                     6,
-                    7,
-                    7,
-                    7,
-                    8
+                    6,
+                    6,
+                    6,
+                    6
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Bonus intelligence d'équipement. Règle 5.2.4.",
+            "norms_description": "Bonus intelligence d'équipement. Règle 5.2.4. Les malus Dofus sont conservés symétriquement jusqu’à -6.",
             "norms_help_section_id": null,
             "forgemagie_max": 2,
             "base_price_per_unit": 500,
             "rune_price_per_unit": 1000,
             "value_available": null,
-            "item_type_dofus_ids": null,
+            "item_type_dofus_ids": [
+                17
+            ],
             "item_type_ids": null
         }
     },

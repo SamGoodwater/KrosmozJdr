@@ -4,7 +4,7 @@
         "key": "life_points_max_object",
         "name": "Bonus de points de vie maximum",
         "short_name": "PV",
-        "helper": "Équipement : bonus aux points de vie maximum (2.2.2).",
+        "helper": "Équipement (amulettes, anneaux, bottes et capes) : bonus aux points de vie maximum (2.2.2).",
         "descriptions": "Augmente le plafond de tes points de vie tant que tu portes l’objet ; le calcul complet est dans les règles de personnage (2.2.2).",
         "icon": "life.webp",
         "icon_false": null,
@@ -21,69 +21,15 @@
     },
     "entities": {
         "*": {
-            "dofusdb_characteristic_id": 0,
+            "dofusdb_characteristic_id": null,
             "db_column": null,
-            "min": "0",
-            "max": "30",
+            "min": "-∞",
+            "max": "∞",
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "floor(-0.4+ 13.8587 * pow(([d]-10)/340, 0.8))",
+            "conversion_formula": "[d]",
             "conversion_function": null,
-            "conversion_dofus_sample": {
-                "1": 10,
-                "40": 50,
-                "80": 80,
-                "120": 150,
-                "160": 230,
-                "200": 350
-            },
-            "conversion_krosmoz_sample": {
-                "1": 1,
-                "4": 3,
-                "8": 5,
-                "12": 8,
-                "16": 10,
-                "20": 15
-            },
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": null
-                }
-            ],
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -199,11 +145,16 @@
             "norms_conditions": null,
             "norms_description": "Bonus aux points de vie maximum ; la forgemagie peut encore l’augmenter selon les règles (2.2.2).",
             "norms_help_section_id": null,
-            "forgemagie_max": 15,
+            "forgemagie_max": 20,
             "base_price_per_unit": 50,
             "rune_price_per_unit": 100,
             "value_available": null,
-            "item_type_dofus_ids": null,
+            "item_type_dofus_ids": [
+                1,
+                9,
+                11,
+                17
+            ],
             "item_type_ids": null
         }
     },

@@ -1,11 +1,10 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "vitality_object",
         "name": "Bonus de vitalité",
         "short_name": "Vit",
         "helper": "Équipement (chapeaux) : bonus au score de vitalité.",
-        "descriptions": "Bonus de Vitalité donné par l’équipement (chapeaux, capes). S’ajoute au score sur la fiche et donc aux points de vie, dans la limite des règles (2.2.1).",
+        "descriptions": "Bonus de Vitalité donné par les chapeaux. S’ajoute au score sur la fiche et donc aux points de vie, dans la limite des règles (2.2.1).",
         "icon": "vitality.webp",
         "icon_false": null,
         "color": "amber",
@@ -23,12 +22,12 @@
         "*": {
             "dofusdb_characteristic_id": 11,
             "db_column": null,
-            "min": "0",
+            "min": "-6",
             "max": "6",
             "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"9\":\"3\",\"11\":\"4\",\"13\":\"4\",\"15\":\"5\",\"17\":\"5\",\"20\":\"6\",\"characteristic\":\"level\"}",
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "floor(0.0408 * pow([d], 0.9412))",
+            "conversion_formula": "([d] / max(abs([d]), 1)) * (round(0.0408 * pow(abs([d]), 0.9412)))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "1": 16,
@@ -39,12 +38,12 @@
                 "200": 307
             },
             "conversion_krosmoz_sample": {
-                "1": 0,
+                "1": 1,
                 "4": 1,
                 "8": 2,
-                "12": 3,
-                "16": 4,
-                "20": 4
+                "12": 4,
+                "16": 6,
+                "20": 6
             },
             "conversion_sample_rows": [
                 {
@@ -171,7 +170,7 @@
                     5,
                     6,
                     6,
-                    7
+                    6
                 ],
                 "very_strong": [
                     1,
@@ -190,20 +189,22 @@
                     6,
                     6,
                     6,
-                    7,
-                    7,
-                    7,
-                    8
+                    6,
+                    6,
+                    6,
+                    6
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Bonus vitalité d'équipement. Règle 5.2.4.",
+            "norms_description": "Bonus vitalité d'équipement. Règle 5.2.4. Les malus Dofus sont conservés symétriquement jusqu’à -6.",
             "norms_help_section_id": null,
             "forgemagie_max": 2,
             "base_price_per_unit": 600,
             "rune_price_per_unit": 1200,
             "value_available": null,
-            "item_type_dofus_ids": null,
+            "item_type_dofus_ids": [
+                16
+            ],
             "item_type_ids": null
         }
     },

@@ -10,8 +10,8 @@ Ce document compare les valeurs min/max, formules et limites des caractéristiqu
 
 | Élément | Règles | Seeder | Statut |
 |--------|--------|--------|--------|
-| **PA (créature)** | Base 6, max 12, équip. +6, forgemagie +1 | `action_points_creature` min 6, max 12, formula_display idem | OK |
-| **PM (créature)** | Base 3, max 6, équip. +3, forgemagie +1 | `movement_points_creature` min 3, max 6, formula_display idem | OK |
+| **PA (créature)** | Base 6, max 12, équip. +5, forgemagie +1 | `action_points_creature` min 6, max 12 | OK |
+| **PM (créature)** | Base 3, max 6, équip. +2, forgemagie +1 | `movement_points_creature` min 3, max 6 | OK |
 | **PO (créature)** | Base 0, max 6, équip. +6, forgemagie +1 | `range_creature` min 0, max 6, formula_display idem | OK |
 | **Scores caractéristiques** | Personnages 6–24 ; monstres 6–30 | `*_creature` : max 24 (`*`), max 30 (`monster`) | OK |
 | **Modificateurs** | ⌊(Score − 10) / 2⌋ | `modifier_*_creature` : max +7 (`*`), max +10 (`monster`) | OK |
@@ -39,16 +39,17 @@ Une clé **`_comment_limits`** (préfixe `_`, ignorée au seed) rappelle cette c
 
 | Zone | Règles | Seeder (objet) | Remarque |
 |------|--------|----------------|----------|
-| **PA** | +6 équip., +1 forgem. (2.2.2) | `action_points_object` `max` 6, `forgemagie_max` 1 | Plafond amulette 2.6.1 cohérent avec +6 équip. |
-| **Caracs principales** (chapeau / cape) | +6 équip., +2 forgem. (2.6.1) | `*_object` Force, Int, etc. : `max` 6, `forgemagie_max` 2 ; formule-table plafonnée à +6 | Ancien `max` 8 cumulait visuellement équip. + forgem. |
+| **PA** | +5 équip., +1 forgem. (2.2.2) | `action_points_object` `max` 5, `forgemagie_max` 1 | Total maximal +6. |
+| **Caracs principales** (chapeau / cape) | ±6 équip., ±2 forgem. (2.6.1) | `*_object` : `min` -6, `max` 6, `forgemagie_max` 2 ; conversion signée | Les malus suivent la même amplitude. |
 | **Compétences (actives)** | +5 équip., +3 forgem. (2.2.2) | `acrobatics_object`, etc. : `max` 5, `forgemagie_max` 3 | Ancien `max` 8 = total 5+3. |
 | **Compétences passives** | bonus équip. / forgem. distincts | `*_passive_object` : `max` 3, `forgemagie_max` 2 | Inchangé (déjà séparé). |
 | **Tacle / Fuite** | +10 équip., +2 forgem. (2.2.2) | `tackle_object`, `dodge_object` : `max` 10, `forgemagie_max` 2 ; formule étendue jusqu’à 20 | Ancien `max` 8 cumulait mal la règle globale. |
 | **Esquive PA / PM** | +3 équip., +2 forgem. (2.2.2) | `dodge_action_points_object`, `dodge_movement_points_object` : `max` 3 | Ancien `max` 5 était incohérent. |
-| **Résistances fixes** | +10 équip., +3 forgem. (2.2.2) | `fixed_resistance_*_object` : `max` 10, `forgemagie_max` 3 | Bouclier seul : +7 par emplacement (2.6.1) ; cumul global en 2.2.2. |
+| **Résistances fixes** | ±7 par bouclier, ±3 forgem. (2.6.1) | `fixed_resistance_*_object` : `min` -7, `max` 7, `forgemagie_max` 3 | Le plafond de définition décrit l'objet seul, avant forgemagie. |
 | **Dommages fixes** | +10 équip., +5 forgem. (2.2.2) | `fixed_damage_*` (éléments) : `max` 10 | Ancien `max` 5 + `forgemagie_max` 5 = total OK mais `max` sous-plafonnait l’équipement. |
 | **Bonus de soins** | 7 au total, dont +2 forgem. (2.2.2) | `heal_bonus_object` : `max` 5, `forgemagie_max` 2 | Ancien `max` 7 incluait la forgemagie. |
-| **Critique / échec critique** | 0–3, sans forgem. (2.2.2 / fiche) | `critical_hit_object`, `failure_hit_object` : `forgemagie_max` **0** | Ancien `failure_hit_object` avait `forgemagie_max` 1. |
+| **Critique / échec critique** | critique ±3 ; échec critique 0–3 ; sans forgem. (2.2.2 / fiche) | `critical_hit_object` : `min` -3, `max` 3 ; `failure_hit_object` : `min` 0, `max` 3 ; `forgemagie_max` 0 | Un malus de critique relève le seuil, tandis que l'échec critique reste une zone positive. |
+| **PV d'objet** | bonus/malus non plafonné, forgem. ±20 (2.2.2) | `life_points_max_object` : `min` -∞, `max` ∞, `forgemagie_max` 20 | L'ID technique DofusDB 0 reste exclu de la conversion. |
 
 ---
 

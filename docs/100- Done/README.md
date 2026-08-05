@@ -27,3 +27,17 @@ simples et limitées. Les Kamas ne sont plus importés sur les monstres.
 La chaîne d'import conserve maintenant aussi la description, le tacle, la fuite, les critiques et les soins.
 Les races DofusDB sont reliées par leur identifiant source (et créées en brouillon si nécessaire). Les règles
 JSON, leur copie de secours PHP et la base sont synchronisées et contrôlées par les audits automatisés.
+
+### Calibration des objets
+
+Les bonus d'équipement Dofus conservent désormais leurs malus : les conversions sont symétriques autour
+de zéro. Les plafonds distinguent l'équipement de la forgemagie, notamment ±6 pour les caractéristiques
+principales, ±5 PA et ±2 PM hors forgemagie. Les résistances relatives ne sont transformées en paliers que
+pour les panoplies. Les faux PV issus de l'identifiant technique DofusDB 0 sont ignorés et les dommages
+multi-éléments utilisent leur véritable identifiant source.
+
+La calibration objet a ensuite été consolidée : chaque bonus réservé à un emplacement pointe vers le bon
+type DofusDB, les grilles et exemples respectent leurs plafonds et reproduisent exactement les formules.
+Les PV et l'initiative restent non plafonnés, le critique accepte les malus jusqu'à -3 et les résistances
+fixes des boucliers sont limitées à ±7 hors forgemagie. Ces règles sont synchronisées en base et couvertes
+par les contrôles automatiques.

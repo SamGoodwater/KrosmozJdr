@@ -1,5 +1,4 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "critical_hit_object",
         "name": "Bonus de coup critique",
@@ -10,6 +9,24 @@
         "icon_false": null,
         "color": "red",
         "value_overrides": [
+            {
+                "value": -3,
+                "icon": "critical.webp",
+                "color": "red",
+                "subtitle": "Malus critique maximal (zone critique réduite de trois crans)."
+            },
+            {
+                "value": -2,
+                "icon": "critical.webp",
+                "color": "red",
+                "subtitle": "Malus critique de deux crans."
+            },
+            {
+                "value": -1,
+                "icon": "critical.webp",
+                "color": "red",
+                "subtitle": "Malus critique d’un cran."
+            },
             {
                 "value": 0,
                 "icon": "critical.webp",
@@ -48,26 +65,30 @@
         "*": {
             "dofusdb_characteristic_id": 18,
             "db_column": null,
-            "min": "0",
+            "min": "-3",
             "max": "3",
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "floor(0.0802 * [d] + 0.0445)",
+            "conversion_formula": "{\"-100\":-3,\"-14\":-2,\"-9\":-1,\"-4\":0,\"5\":1,\"10\":2,\"15\":3,\"characteristic\":\"d\"}",
             "conversion_function": null,
             "conversion_dofus_sample": {
-                "1": 2,
-                "40": 5,
-                "80": 10,
-                "120": 15,
-                "200": 40
+                "-15": -15,
+                "-10": -10,
+                "-5": -5,
+                "0": 0,
+                "5": 5,
+                "10": 10,
+                "15": 15
             },
             "conversion_krosmoz_sample": {
-                "1": 0,
-                "4": 0,
-                "8": 1,
-                "11": 2,
-                "18": 3
+                "-15": -3,
+                "-10": -2,
+                "-5": -1,
+                "0": 0,
+                "5": 1,
+                "10": 2,
+                "15": 3
             },
             "conversion_sample_rows": [
                 {
@@ -220,7 +241,9 @@
             "base_price_per_unit": 1200,
             "rune_price_per_unit": 2400,
             "value_available": null,
-            "item_type_dofus_ids": null,
+            "item_type_dofus_ids": [
+                1
+            ],
             "item_type_ids": null
         }
     },

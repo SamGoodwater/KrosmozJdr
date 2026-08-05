@@ -1,5 +1,4 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "initiative_object",
         "name": "Bonus d'initiative",
@@ -23,12 +22,12 @@
         "*": {
             "dofusdb_characteristic_id": 44,
             "db_column": null,
-            "min": "0",
+            "min": "-∞",
             "max": "∞",
             "formula": "{\"1\":\"0\",\"3\":\"1\",\"8\":\"2\",\"14\":\"3\",\"characteristic\":\"level_object\"}",
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "floor(0.1643 * pow([d], 0.5457))",
+            "conversion_formula": "([d] / max(abs([d]), 1)) * (floor(0.1643 * pow(abs([d]), 0.5457)))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "1": 10,
@@ -41,9 +40,9 @@
             "conversion_krosmoz_sample": {
                 "1": 0,
                 "5": 1,
-                "8": 2,
-                "14": 3,
-                "16": 3,
+                "8": 1,
+                "14": 2,
+                "16": 2,
                 "20": 3
             },
             "conversion_sample_rows": [
@@ -203,7 +202,10 @@
             "base_price_per_unit": 100,
             "rune_price_per_unit": 200,
             "value_available": null,
-            "item_type_dofus_ids": null,
+            "item_type_dofus_ids": [
+                11,
+                17
+            ],
             "item_type_ids": null
         }
     },

@@ -395,7 +395,7 @@ Références utiles : [checklist 1.3.2](./CHECKLIST-release-1.3.2.md) · [recett
 - [x] Gate qualité : audit sans `norms_grid manquant` sur les caractéristiques « normables » (hors exemptions : level, name, price, etc.).
 - [x] Recette MJ : bouton `?` normes sur fiches + pages CMS « contributions » cohérentes avec les grilles remplies.
 
-**Validation (2026-07)** : audit qualité final sans issue sur les vraies définitions (`realIssues=0`). Commandes officielles OK : `characteristics:audit-definitions` → 282 définitions JSON, `characteristics:definitions-progress` → 282/282 (100 %), creature 112/112, object 86/86, spell 84/84. Ajout de 60 `item_type_dofus_ids` objets à partir des helpers : amulettes `[1]`, armes `[2,3,4,5,6,7,8]`, chapeaux/capes `[9,10]`. Les templates restent vides par conception et ne sont pas seedés comme définitions métier.
+**Validation mise à jour (2026-08)** : les restrictions objet utilisent les vrais identifiants DofusDB : amulettes `[1]`, anneaux `[9]`, ceintures `[10]`, bottes `[11]`, chapeaux `[16]`, capes `[17]`, boucliers `[82]` et armes `[2,3,4,5,6,7,8,19,21,22,114,271]`. Les 79 définitions dont l'aide cible un ou plusieurs emplacements portent désormais `item_type_dofus_ids`; les sept métadonnées ou caractéristiques transversales restantes ne sont volontairement pas restreintes. Les templates restent vides par conception et ne sont pas seedés comme définitions métier.
 
 **Références**
 - [CAHIER_DES_CHARGES_NORMES_ENTITES.md](../legacy-docs/50-Fonctionnalités/Characteristics-DB/CAHIER_DES_CHARGES_NORMES_ENTITES.md)

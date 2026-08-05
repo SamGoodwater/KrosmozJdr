@@ -93,7 +93,7 @@ final class ItemEffectsToBonusConverter
      *
      * @param  array<int, mixed>  $tiers
      * @param  array<string, mixed>  $context
-     * @return array<string, array<string, int>>
+     * @return array<int, array<string, int>>
      */
     private function convertTieredSetEffects(array $tiers, array $context, array &$unknownCharacteristicCounts): array
     {
@@ -137,6 +137,10 @@ final class ItemEffectsToBonusConverter
             if ($charId === null) {
                 continue;
             }
+            // DofusDB réutilise characteristic=0 pour de nombreux effets techniques sans rapport avec les PV.
+            if ($charId === 0) {
+                continue;
+            }
             $charKey = $objectMap[$charId] ?? null;
             if (! is_string($charKey) || $charKey === '') {
                 $unknownCharacteristicCounts[$charId] = ($unknownCharacteristicCounts[$charId] ?? 0) + 1;
@@ -152,6 +156,11 @@ final class ItemEffectsToBonusConverter
                 continue;
             }
             $shortKey = str_ends_with($charKey, '_object') ? substr($charKey, 0, -7) : $charKey;
+            // Les faibles pourcentages des objets isolés n'ont pas de palier Krosmoz.
+            // Seuls les bonus cumulés des panoplies utilisent cette conversion.
+            if ($entityType !== 'panoply' && str_starts_with($shortKey, 'resistance_percent_tier_')) {
+                continue;
+            }
             if (! $this->isCompatibleObjectBonus($shortKey, $entityType, $context)) {
                 Log::info('Scrapping bonus: bonus incompatible avec le type d’équipement ignoré.', [
                     'entity_type' => $entityType,

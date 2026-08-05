@@ -1,5 +1,4 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "dodge_object",
         "name": "Bonus de fuite",
@@ -23,53 +22,13 @@
         "*": {
             "dofusdb_characteristic_id": 78,
             "db_column": null,
-            "min": "0",
+            "min": "-10",
             "max": "10",
             "formula": "{\"1\":\"1\",\"3\":\"2\",\"5\":\"3\",\"9\":\"4\",\"12\":\"5\",\"14\":\"6\",\"17\":\"7\",\"19\":\"8\",\"characteristic\":\"level_object\"}",
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "floor(1.1 + 2* pow(([d]-1)/12, 0.6))",
+            "conversion_formula": "([d] / max(abs([d]), 1)) * (round(10 * pow(min(abs([d]), 50) / 50, 0.7)))",
             "conversion_function": null,
-            "conversion_dofus_sample": null,
-            "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": null
-                }
-            ],
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -189,7 +148,9 @@
             "base_price_per_unit": 300,
             "rune_price_per_unit": 600,
             "value_available": null,
-            "item_type_dofus_ids": null,
+            "item_type_dofus_ids": [
+                10
+            ],
             "item_type_ids": null
         }
     },
