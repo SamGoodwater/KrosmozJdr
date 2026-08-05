@@ -96,18 +96,23 @@ class IntegrationServiceTest extends TestCase
     public function test_integrate_monster_creates_creature_and_monster(): void
     {
         $this->createSystemUser();
-        $race = MonsterRace::factory()->create(['name' => 'Test Race']);
+        $race = MonsterRace::factory()->create(['name' => 'Test Race', 'dofusdb_race_id' => 4321]);
 
         $convertedData = [
             'creatures' => [
                 'name' => 'Bouftou Integration Test',
+                'description' => 'Description conservée.',
                 'level' => '1',
                 'life' => '10',
+                'tacle' => '12',
+                'fuite' => '8',
+                'critical_hit' => '2',
+                'heal_bonus' => '5',
             ],
             'monsters' => [
                 'dofusdb_id' => '88888',
                 'size' => 'medium',
-                'monster_race_id' => $race->id,
+                'monster_race_id' => 4321,
             ],
         ];
 
@@ -126,8 +131,29 @@ class IntegrationServiceTest extends TestCase
         $this->assertNotNull($creature);
         $this->assertNotNull($monster);
         $this->assertSame('Bouftou Integration Test', $creature->name);
+        $this->assertSame('Description conservée.', $creature->description);
+        $this->assertSame('12', (string) $creature->tacle);
+        $this->assertSame('8', (string) $creature->fuite);
+        $this->assertSame('2', (string) $creature->critical_hit);
+        $this->assertSame('5', (string) $creature->heal_bonus);
         $this->assertSame($creature->id, $monster->creature_id);
         $this->assertSame('88888', $monster->dofusdb_id);
+        $this->assertSame($race->id, $monster->monster_race_id);
+    }
+
+    public function test_integrate_monster_creates_missing_dofus_race(): void
+    {
+        $this->createSystemUser();
+
+        $result = $this->service->integrate('monster', [
+            'creatures' => ['name' => 'Monstre sans race locale', 'level' => '1', 'life' => '10'],
+            'monsters' => ['dofusdb_id' => '88999', 'size' => 'medium', 'monster_race_id' => 9876],
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $race = MonsterRace::query()->where('dofusdb_race_id', 9876)->first();
+        $this->assertNotNull($race);
+        $this->assertSame($race->id, Monster::findOrFail($result->getMonsterId())->monster_race_id);
     }
 
     public function test_integrate_monster_skips_when_dofusdb_id_exists_without_force_update(): void

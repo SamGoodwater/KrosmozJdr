@@ -5,6 +5,11 @@
     "description": "1. Choisis le domaine dans la table."
   },
   {
+    "path": "100- Done/README.md",
+    "title": "Ce qui a été fait",
+    "description": "Journal non technique des avancées visibles du projet."
+  },
+  {
     "path": "backend/_ai.md",
     "title": "Backend — IA",
     "description": "Modèles, contrôleurs, services, policies, jobs, commandes, routes."

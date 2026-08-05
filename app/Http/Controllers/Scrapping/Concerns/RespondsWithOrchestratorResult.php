@@ -28,6 +28,9 @@ trait RespondsWithOrchestratorResult
                 'success' => true,
                 'message' => $result->getMessage(),
                 'data' => $data,
+                'meta' => $result->getMeta(),
+                'item_results' => $result->getItemResults(),
+                'diagnostics' => $result->getDiagnostics(),
                 'timestamp' => now()->toISOString(),
             ];
             if ($runId !== null && $runId !== '') {
@@ -44,6 +47,7 @@ trait RespondsWithOrchestratorResult
             'message' => $result->getMessage(),
             'error' => $result->getMessage(),
             'errors' => $result->getValidationErrors(),
+            'diagnostics' => $result->getDiagnostics(),
             'timestamp' => now()->toISOString(),
         ];
         if ($runId !== null && $runId !== '') {

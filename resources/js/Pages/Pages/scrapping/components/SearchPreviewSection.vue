@@ -150,6 +150,15 @@ function extractConditionsFromConverted(converted) {
 }
 
 const previewConditions = computed(() => extractConditionsFromConverted(previewData.value?.converted));
+const previewDiagnostics = computed(() => (
+    Array.isArray(previewData.value?.diagnostics) ? previewData.value.diagnostics : []
+));
+const manualReviewDiagnostics = computed(() => (
+    previewDiagnostics.value.filter((diagnostic) => diagnostic?.level === 'manual_review')
+));
+const conversionTraces = computed(() => (
+    previewDiagnostics.value.filter((diagnostic) => diagnostic?.code === 'characteristic_conversion')
+));
 
 /** Retourne l'effet à l'index donné (pour la simulation des sorts). */
 function getEffectByIndex(index) {
@@ -527,6 +536,51 @@ const handleImport = () => {
                     </li>
                 </ul>
             </Alert>
+
+            <Alert v-if="manualReviewDiagnostics.length > 0" color="warning" class="text-sm">
+                <p class="mb-2 flex items-center gap-2 font-semibold">
+                    <Icon source="fa-solid fa-magnifying-glass" alt="" pack="solid" class="shrink-0" />
+                    Revue manuelle requise
+                    <Badge :content="String(manualReviewDiagnostics.length)" color="warning" size="xs" />
+                </p>
+                <ul class="list-inside list-disc space-y-1 text-xs text-primary-200">
+                    <li v-for="(diagnostic, idx) in manualReviewDiagnostics" :key="`${diagnostic.code}-${idx}`">
+                        <span class="font-mono text-warning">{{ diagnostic.code }}</span>
+                        <span> : {{ diagnostic.message }}</span>
+                    </li>
+                </ul>
+            </Alert>
+
+            <details v-if="conversionTraces.length > 0" class="collapse collapse-arrow border border-base-300 bg-base-200/30">
+                <summary class="collapse-title min-h-0 py-3 text-sm font-semibold">
+                    Traces de conversion
+                    <Badge :content="String(conversionTraces.length)" color="info" size="xs" class="ml-2" />
+                </summary>
+                <div class="collapse-content overflow-x-auto">
+                    <table class="table table-xs">
+                        <thead>
+                            <tr>
+                                <th>Caractéristique</th>
+                                <th>Brut</th>
+                                <th>Formule</th>
+                                <th>Calculé</th>
+                                <th>Final</th>
+                                <th>Clamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(trace, idx) in conversionTraces" :key="`${trace.context?.characteristic_key}-${idx}`">
+                                <td class="font-mono">{{ trace.context?.characteristic_key || '—' }}</td>
+                                <td>{{ trace.context?.raw ?? '—' }}</td>
+                                <td class="font-mono">{{ trace.context?.formula || 'Valeur brute' }}</td>
+                                <td>{{ trace.context?.calculated ?? '—' }}</td>
+                                <td>{{ trace.context?.value ?? '—' }}</td>
+                                <td>{{ trace.context?.clamped ? 'Oui' : 'Non' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </details>
 
             <!-- Relations détectées -->
             <Alert v-if="previewData.raw" color="info" variant="soft" class="text-sm">

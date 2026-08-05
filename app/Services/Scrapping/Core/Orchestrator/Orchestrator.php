@@ -12,6 +12,7 @@ use App\Models\Entity\Spell;
 use App\Services\Characteristic\Limit\CharacteristicLimitService;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Conversion\ConversionDiagnosticBag;
 use App\Services\Scrapping\Core\Conversion\ConversionService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
@@ -185,29 +186,13 @@ final class Orchestrator
     {
         $context = $this->contextFromOptions($options);
         $context['entityType'] = $entity === 'breed' ? 'class' : $entity;
+        $diagnostics = new ConversionDiagnosticBag;
+        $context['diagnostics'] = $diagnostics;
         $raw = $this->prepareRawForConversion($source, $entity, $raw, $options);
         $context = $this->prepareContextForEntity($entity, $raw, $context);
 
-        $converted = $this->conversionService->convert($source, $entity, $raw, $context);
-
-        if ($entity === 'spell') {
-            $levels = $raw['levels'] ?? [];
-            if ($levels !== []) {
-                $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
-                    'lang' => $context['lang'],
-                ]);
-                if ($effectsResult->hasEffects()) {
-                    $converted['spell_effects'] = [
-                        'effect_group' => $effectsResult->getEffectGroup(),
-                        'effects' => $effectsResult->getEffects(),
-                    ];
-                }
-                $converted['spells'] = array_merge(
-                    is_array($converted['spells'] ?? null) ? $converted['spells'] : [],
-                    $effectsResult->getSpellResolution()
-                );
-            }
-        }
+        $converted = $this->convertPreparedRaw($source, $entity, $raw, $context, $diagnostics);
+        $converted = $this->markRawWhenReviewRequired($converted, $diagnostics);
 
         $entityConfig = $this->configLoader->loadEntity($source, $entity);
         $entityType = (string) ($entityConfig['target']['krosmozEntity'] ?? $entity);
@@ -224,7 +209,8 @@ final class Orchestrator
                     'Validation échouée.',
                     $validationResult->getErrors(),
                     $raw,
-                    $converted
+                    $converted,
+                    $diagnostics->all(),
                 );
             }
         }
@@ -256,8 +242,74 @@ final class Orchestrator
             $integrationResult,
             null,
             null,
-            $relations
+            $relations,
+            $diagnostics->all(),
         );
+    }
+
+    /**
+     * Convertit une donnée déjà enrichie et applique l'adaptateur structurel des effets de sorts.
+     *
+     * @param  array<string, mixed>  $raw
+     * @param  array<string, mixed>  $context
+     * @return array<string, mixed>
+     */
+    private function convertPreparedRaw(
+        string $source,
+        string $entity,
+        array $raw,
+        array $context,
+        ConversionDiagnosticBag $diagnostics
+    ): array {
+        $converted = $this->conversionService->convert($source, $entity, $raw, $context);
+        if ($entity !== 'spell' || ! is_array($raw['levels'] ?? null) || $raw['levels'] === []) {
+            return $converted;
+        }
+
+        $effectsResult = $this->spellEffectsConversionService->convert($raw, $raw['levels'], [
+            'lang' => (string) ($context['lang'] ?? 'fr'),
+        ]);
+        foreach ($effectsResult->getDiagnostics() as $diagnostic) {
+            $diagnostics->add(
+                $diagnostic['level'],
+                $diagnostic['code'],
+                $diagnostic['message'],
+                $diagnostic['context'],
+            );
+        }
+        if ($effectsResult->hasEffects()) {
+            $converted['spell_effects'] = [
+                'effect_group' => $effectsResult->getEffectGroup(),
+                'effects' => $effectsResult->getEffects(),
+            ];
+        }
+        $converted['spells'] = array_merge(
+            is_array($converted['spells'] ?? null) ? $converted['spells'] : [],
+            $effectsResult->getSpellResolution()
+        );
+
+        return $converted;
+    }
+
+    /**
+     * Force l'état raw des entités dont la conversion contient une règle non couverte.
+     *
+     * @param  array<string, mixed>  $converted
+     * @return array<string, mixed>
+     */
+    private function markRawWhenReviewRequired(array $converted, ConversionDiagnosticBag $diagnostics): array
+    {
+        if (! $diagnostics->requiresManualReview()) {
+            return $converted;
+        }
+
+        foreach (['breeds', 'creatures', 'monsters', 'spells', 'items', 'resources', 'consumables', 'panoplies'] as $model) {
+            if (is_array($converted[$model] ?? null)) {
+                $converted[$model]['state'] = 'raw';
+            }
+        }
+
+        return $converted;
     }
 
     /**
@@ -319,6 +371,8 @@ final class Orchestrator
             $convertedList = [];
             $allValidationErrors = [];
             $integrationResults = [];
+            $itemResults = [];
+            $allDiagnostics = [];
             /** @var array<int, array<string, mixed>> $spellLevelsCache */
             $spellLevelsCache = [];
             /** @var array<int, array<string, mixed>|null> $recipeCache */
@@ -326,83 +380,127 @@ final class Orchestrator
 
             foreach ($items as $i => $raw) {
                 if (! is_array($raw)) {
+                    $diagnostic = [
+                        'level' => 'error',
+                        'code' => 'invalid_source_item',
+                        'message' => 'La donnée source doit être un objet.',
+                        'context' => [],
+                    ];
+                    $allDiagnostics[] = $diagnostic;
+                    $convertedList[] = [];
+                    if (! empty($options['integrate'])) {
+                        $integrationResults[] = IntegrationResult::fail($diagnostic['message']);
+                    }
+                    $itemResults[] = [
+                        'index' => $i,
+                        'source_id' => null,
+                        'success' => false,
+                        'validation_errors' => [],
+                        'diagnostics' => [$diagnostic],
+                        'integration' => null,
+                    ];
+
                     continue;
                 }
-                $raw = $this->prepareRawForConversion($source, $entity, $raw, $options, $spellLevelsCache, $recipeCache);
-                $itemContext = $this->prepareContextForEntity($entity, $raw, $context);
-                $converted = $this->conversionService->convert($source, $entity, $raw, $itemContext);
+                try {
+                    $raw = $this->prepareRawForConversion($source, $entity, $raw, $options, $spellLevelsCache, $recipeCache);
+                    $itemContext = $this->prepareContextForEntity($entity, $raw, $context);
+                    $diagnostics = new ConversionDiagnosticBag;
+                    $itemContext['diagnostics'] = $diagnostics;
+                    $converted = $this->convertPreparedRaw($source, $entity, $raw, $itemContext, $diagnostics);
+                    $converted = $this->markRawWhenReviewRequired($converted, $diagnostics);
 
-                if ($entity === 'spell') {
-                    $levels = $raw['levels'] ?? [];
-                    if ($levels !== []) {
-                        $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
-                            'lang' => $itemContext['lang'],
-                        ]);
-                        $converted['spell_effects'] = [
-                            'effect_group' => $effectsResult->getEffectGroup(),
-                            'effects' => $effectsResult->getEffects(),
-                        ];
-                        $converted['spells'] = array_merge(
-                            is_array($converted['spells'] ?? null) ? $converted['spells'] : [],
-                            $effectsResult->getSpellResolution()
-                        );
-                    }
-                }
+                    $entityTypeForItem = $entityType === 'item' ? $this->integrationService->getItemTargetTable($converted) : $entityType;
 
-                $entityTypeForItem = $entityType === 'item' ? $this->integrationService->getItemTargetTable($converted) : $entityType;
-
-                $doValidate = ($options['validate'] ?? true) !== false;
-                $itemValid = true;
-                if ($doValidate) {
-                    $converted = $this->limitService->clampConvertedData($converted, $entityTypeForItem);
-                    $validationResult = $this->limitService->validate($converted, $entityTypeForItem);
-                    if (! $validationResult->isValid()) {
-                        $itemValid = false;
-                        foreach ($validationResult->getErrors() as $err) {
-                            $allValidationErrors[] = [
-                                'path' => "item#{$i}.{$err['path']}",
-                                'message' => $err['message'],
-                            ];
+                    $doValidate = ($options['validate'] ?? true) !== false;
+                    $itemValid = true;
+                    $itemValidationErrors = [];
+                    if ($doValidate) {
+                        $converted = $this->limitService->clampConvertedData($converted, $entityTypeForItem);
+                        $validationResult = $this->limitService->validate($converted, $entityTypeForItem);
+                        if (! $validationResult->isValid()) {
+                            $itemValid = false;
+                            foreach ($validationResult->getErrors() as $err) {
+                                $normalizedError = [
+                                    'path' => "item#{$i}.{$err['path']}",
+                                    'message' => $err['message'],
+                                ];
+                                $allValidationErrors[] = $normalizedError;
+                                $itemValidationErrors[] = $normalizedError;
+                            }
                         }
                     }
-                }
 
-                if (empty($options['integrate']) && $this->normAwareProcessor !== null) {
-                    $converted = $this->normAwareProcessor->enrichPreview($entity, $converted, $raw);
-                }
-                $convertedList[] = $converted;
-
-                // N'intégrer que les items dont la validation a réussi (ou lorsque la validation est désactivée).
-                if ($itemValid && ! empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false)) {
-                    $intResult = $this->integrationService->integrate(
-                        $entityTypeForItem,
-                        $converted,
-                        $this->integrationOptions($options)
-                    );
-                    $integrationResults[] = $intResult;
-                    if ($this->relationResolutionService !== null && ($options['include_relations'] ?? false) && $intResult->isSuccess()) {
-                        $this->resolveRelationsAndDrain($source, $entity, $entityTypeForItem, $raw, $converted, $intResult, $options);
+                    if (empty($options['integrate']) && $this->normAwareProcessor !== null) {
+                        $converted = $this->normAwareProcessor->enrichPreview($entity, $converted, $raw);
                     }
-                } elseif (! empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false) && ! $itemValid) {
-                    // Conserver l'alignement des index avec convertedList pour le rapport (item non intégré car invalide).
-                    $integrationResults[] = IntegrationResult::fail('Validation échouée.');
-                }
-            }
+                    $convertedList[] = $converted;
+                    $itemIntegrationResult = null;
 
-            if ($allValidationErrors !== []) {
-                return OrchestratorResult::fail(
-                    'Validation échouée sur un ou plusieurs objets.',
-                    $allValidationErrors
-                );
+                    // N'intégrer que les items dont la validation a réussi (ou lorsque la validation est désactivée).
+                    if ($itemValid && ! empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false)) {
+                        $itemIntegrationResult = $this->integrationService->integrate(
+                            $entityTypeForItem,
+                            $converted,
+                            $this->integrationOptions($options)
+                        );
+                        $integrationResults[] = $itemIntegrationResult;
+                        if ($this->relationResolutionService !== null && ($options['include_relations'] ?? false) && $itemIntegrationResult->isSuccess()) {
+                            $this->resolveRelationsAndDrain($source, $entity, $entityTypeForItem, $raw, $converted, $itemIntegrationResult, $options);
+                        }
+                    } elseif (! empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false) && ! $itemValid) {
+                        // Conserver l'alignement des index avec convertedList pour le rapport (item non intégré car invalide).
+                        $itemIntegrationResult = IntegrationResult::fail('Validation échouée.');
+                        $integrationResults[] = $itemIntegrationResult;
+                    }
+
+                    $diagnosticEntries = $diagnostics->all();
+                    array_push($allDiagnostics, ...$diagnosticEntries);
+                    $itemResults[] = [
+                        'index' => $i,
+                        'source_id' => $raw['id'] ?? null,
+                        'success' => $itemValid && ($itemIntegrationResult === null || $itemIntegrationResult->isSuccess()),
+                        'validation_errors' => $itemValidationErrors,
+                        'diagnostics' => $diagnosticEntries,
+                        'integration' => $itemIntegrationResult?->getData(),
+                    ];
+                } catch (\Throwable $itemException) {
+                    $diagnostic = [
+                        'level' => 'error',
+                        'code' => 'batch_item_failed',
+                        'message' => $itemException->getMessage(),
+                        'context' => ['index' => $i, 'source_id' => $raw['id'] ?? null],
+                    ];
+                    $allDiagnostics[] = $diagnostic;
+                    $convertedList[] = [];
+                    if (! empty($options['integrate'])) {
+                        $integrationResults[] = IntegrationResult::fail($itemException->getMessage());
+                    }
+                    $itemResults[] = [
+                        'index' => $i,
+                        'source_id' => $raw['id'] ?? null,
+                        'success' => false,
+                        'validation_errors' => [],
+                        'diagnostics' => [$diagnostic],
+                        'integration' => null,
+                    ];
+                }
             }
 
             $integrationResultsOrNull = $integrationResults !== [] ? $integrationResults : null;
 
             $totalApi = (int) ($meta['total'] ?? count($convertedList));
             $collected = (int) ($meta['collected'] ?? count($convertedList));
+            $successCount = count(array_filter($itemResults, static fn (array $row): bool => $row['success'] === true));
+            $errorCount = count($itemResults) - $successCount;
+            $meta['processed'] = count($itemResults);
+            $meta['success'] = $successCount;
+            $meta['errors'] = $errorCount;
+            $meta['partial_success'] = $successCount > 0 && $errorCount > 0;
+            $meta['validation_errors'] = $allValidationErrors;
             $msg = $totalApi > 0
-                ? sprintf('%d objet(s) traités (offset=%d, limit=%s, total API: %d)', $collected, $meta['offset'] ?? 0, $meta['limit'] === 0 ? 'tout' : (string) $meta['limit'], $totalApi)
-                : sprintf('%d objet(s) traités (offset=%d, limit=%s)', $collected, $meta['offset'] ?? 0, $meta['limit'] === 0 ? 'tout' : (string) $meta['limit']);
+                ? sprintf('%d objet(s) traités, %d succès, %d erreur(s) (offset=%d, limit=%s, total API: %d)', $collected, $successCount, $errorCount, $meta['offset'] ?? 0, $meta['limit'] === 0 ? 'tout' : (string) $meta['limit'], $totalApi)
+                : sprintf('%d objet(s) traités, %d succès, %d erreur(s) (offset=%d, limit=%s)', $collected, $successCount, $errorCount, $meta['offset'] ?? 0, $meta['limit'] === 0 ? 'tout' : (string) $meta['limit']);
 
             return OrchestratorResult::ok(
                 $msg,
@@ -410,7 +508,10 @@ final class Orchestrator
                 $convertedList,
                 null,
                 $integrationResultsOrNull,
-                $meta
+                $meta,
+                null,
+                $allDiagnostics,
+                $itemResults,
             );
         } catch (\Throwable $e) {
             return OrchestratorResult::fail($e->getMessage());

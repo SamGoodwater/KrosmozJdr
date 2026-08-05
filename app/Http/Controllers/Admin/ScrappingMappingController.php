@@ -10,8 +10,10 @@ use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\Scrapping\ScrappingEntityMappingTarget;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Config\ScrappingMappingService;
+use App\Services\Scrapping\Core\Config\ScrappingMappingValidator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
@@ -24,7 +26,8 @@ class ScrappingMappingController extends Controller
 {
     public function __construct(
         private readonly ConfigLoader $configLoader,
-        private readonly ScrappingMappingService $mappingService
+        private readonly ScrappingMappingService $mappingService,
+        private readonly ScrappingMappingValidator $mappingValidator,
     ) {}
 
     /**
@@ -40,8 +43,17 @@ class ScrappingMappingController extends Controller
         $entitiesWithMapping = $this->mappingService->listEntitiesWithMapping($source);
 
         $mappings = [];
+        $mappingAudit = [];
         if ($entity !== '') {
             $mappings = $this->loadMappingsForEntity($source, $entity);
+            try {
+                $mappingAudit = $this->mappingValidator->validate(
+                    $entity,
+                    $this->configLoader->loadEntity($source, $entity)['mapping'] ?? []
+                );
+            } catch (\Throwable $exception) {
+                $mappingAudit = [['path' => 'config', 'message' => $exception->getMessage()]];
+            }
         }
 
         $characteristicsForSelect = Characteristic::orderBy('sort_order')->orderBy('key')
@@ -58,6 +70,7 @@ class ScrappingMappingController extends Controller
             'entities' => $entities,
             'entitiesWithMapping' => $entitiesWithMapping,
             'mappings' => $mappings,
+            'mappingAudit' => $mappingAudit,
             'characteristicsForSelect' => $characteristicsForSelect,
         ]);
     }
@@ -83,6 +96,7 @@ class ScrappingMappingController extends Controller
             'targets.*.target_field' => 'required|string|max:64',
             'targets.*.sort_order' => 'integer|min:0',
         ]);
+        $this->assertValidPayload((string) $validated['entity'], $validated);
 
         $maxSort = (int) ScrappingEntityMapping::where('source', $validated['source'])
             ->where('entity', $validated['entity'])
@@ -97,6 +111,20 @@ class ScrappingMappingController extends Controller
             'characteristic_id' => $validated['characteristic_id'] ?? null,
             'formatters' => $validated['formatters'] ?? null,
             'sort_order' => $validated['sort_order'] ?? $maxSort + 1,
+        ]);
+        $currentTargets = $mapping->targets()->get()->map(fn (ScrappingEntityMappingTarget $target): array => [
+            'target_model' => $target->target_model,
+            'target_field' => $target->target_field,
+        ])->all();
+        $this->assertValidPayload($mapping->entity, [
+            'from_path' => $validated['from_path'] ?? $mapping->from_path,
+            'characteristic_id' => array_key_exists('characteristic_id', $validated)
+                ? $validated['characteristic_id']
+                : $mapping->characteristic_id,
+            'formatters' => array_key_exists('formatters', $validated)
+                ? $validated['formatters']
+                : $mapping->formatters,
+            'targets' => $validated['targets'] ?? $currentTargets,
         ]);
 
         foreach ($validated['targets'] as $i => $t) {
@@ -222,5 +250,45 @@ class ScrappingMappingController extends Controller
                 ? $m->targets->map(fn ($t) => $t->toResponseArray())->values()->all()
                 : [],
         ];
+    }
+
+    /**
+     * Valide la cohérence métier d'une règle avant écriture.
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    private function assertValidPayload(string $entity, array $payload): void
+    {
+        $characteristicId = $payload['characteristic_id'] ?? null;
+        $characteristicKey = is_numeric($characteristicId)
+            ? Characteristic::query()->whereKey((int) $characteristicId)->value('key')
+            : null;
+        $targets = [];
+        foreach (is_array($payload['targets'] ?? null) ? $payload['targets'] : [] as $target) {
+            if (! is_array($target)) {
+                continue;
+            }
+            $targets[] = [
+                'model' => (string) ($target['target_model'] ?? $target['model'] ?? ''),
+                'field' => (string) ($target['target_field'] ?? $target['field'] ?? ''),
+            ];
+        }
+
+        $errors = $this->mappingValidator->validate($entity, [[
+            'from' => ['path' => (string) ($payload['from_path'] ?? '')],
+            'to' => $targets,
+            'formatters' => is_array($payload['formatters'] ?? null) ? $payload['formatters'] : [],
+            'characteristic_key' => is_string($characteristicKey) ? $characteristicKey : null,
+        ]]);
+        if ($errors === []) {
+            return;
+        }
+
+        throw ValidationException::withMessages([
+            'mapping' => array_map(
+                static fn (array $error): string => "{$error['path']} : {$error['message']}",
+                $errors
+            ),
+        ]);
     }
 }

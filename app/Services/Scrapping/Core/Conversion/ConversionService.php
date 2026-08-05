@@ -4,6 +4,7 @@ namespace App\Services\Scrapping\Core\Conversion;
 
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Config\ScrappingMappingValidator;
 
 /**
  * Service de conversion : applique le mapping (propriété source → cible + formatter).
@@ -17,7 +18,8 @@ final class ConversionService
     public function __construct(
         private ConfigLoader $configLoader,
         private FormatterApplicator $formatterApplicator,
-        private ?DofusConversionService $conversionService = null
+        private ?DofusConversionService $conversionService = null,
+        private ?ScrappingMappingValidator $mappingValidator = null,
     ) {}
 
     /**
@@ -37,6 +39,7 @@ final class ConversionService
         if (! is_array($mapping)) {
             return $out;
         }
+        $this->mappingValidator?->validateOrFail($entity, $mapping);
 
         foreach ($mapping as $map) {
             if (! is_array($map)) {
@@ -65,7 +68,7 @@ final class ConversionService
                         continue;
                     }
                     if (! $this->formatterApplicator->supports($fmt['name'])) {
-                        continue;
+                        throw new \InvalidArgumentException("Formatter de scrapping inconnu : {$fmt['name']}.");
                     }
                     $args = $this->interpolateArgs($fmt['args'] ?? [], ['lang' => $lang]);
                     $contextWithRule = array_merge($context, [
@@ -110,26 +113,6 @@ final class ConversionService
                     }
                 }
                 $out[$model][$field] = $writeValue;
-            }
-        }
-
-        $entityType = (string) ($context['entityType'] ?? $entity);
-        $contextTargetModel = $context['targetModel'] ?? null;
-        if ($this->conversionService !== null && in_array($entityType, ['monster', 'class', 'item'], true)) {
-            $useResistanceBatch = (bool) ($entityConfig['resistanceBatch'] ?? false);
-            if ($useResistanceBatch) {
-                $resMap = $this->conversionService->convertResistancesBatch($raw, $entityType);
-                $batchTargetModel = $entityType === 'monster' ? 'creatures' : ($entityType === 'class' ? 'breeds' : 'items');
-                if (is_string($contextTargetModel) && $contextTargetModel !== '' && $batchTargetModel !== $contextTargetModel) {
-                    // Conversion ciblée : ne pas remplir un autre bloc (ex. items pour resistances quand target = consumables).
-                } else {
-                    if (! isset($out[$batchTargetModel]) || ! is_array($out[$batchTargetModel])) {
-                        $out[$batchTargetModel] = [];
-                    }
-                    foreach ($resMap as $field => $value) {
-                        $out[$batchTargetModel][$field] = is_numeric($value) ? (int) $value : (string) $value;
-                    }
-                }
             }
         }
 

@@ -26,6 +26,9 @@ use Illuminate\Support\Str;
  */
 final class SpellEffectsConversionService
 {
+    /** @var list<array{level:string,code:string,message:string,context:array<string,mixed>}> */
+    private array $diagnostics = [];
+
     private const SAVE_DC_DEFAULT_FORMULA = '10 + modificateur de caractéristique';
 
     private const SUB_EFFECT_SLUG_APPLY_STATE = 'appliquer-etat';
@@ -54,6 +57,7 @@ final class SpellEffectsConversionService
         array $spellLevelsData,
         array $options = []
     ): SpellEffectsConversionResult {
+        $this->diagnostics = [];
         $lang = (string) ($options['lang'] ?? 'fr');
         $spellName = $this->extractSpellName($spellRaw, $lang);
         $spellId = isset($spellRaw['id']) ? (int) $spellRaw['id'] : 0;
@@ -80,7 +84,7 @@ final class SpellEffectsConversionService
 
         $resolution = $this->inferSpellResolution($effects, $spellRaw);
 
-        return new SpellEffectsConversionResult($effectGroup, $effects, $resolution);
+        return new SpellEffectsConversionResult($effectGroup, $effects, $resolution, $this->diagnostics);
     }
 
     /**
@@ -141,6 +145,16 @@ final class SpellEffectsConversionService
                     : null;
             } else {
                 $subEffectSlug = DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER;
+                $this->diagnostics[] = [
+                    'level' => 'manual_review',
+                    'code' => 'unmapped_spell_effect',
+                    'message' => "Effet DofusDB #{$effectId} conservé dans le sous-effet autre.",
+                    'context' => [
+                        'dofus_effect_id' => $effectId,
+                        'grade' => $grade,
+                        'raw_effect' => $instance,
+                    ],
+                ];
             }
 
             $order = isset($instance['order']) ? (int) $instance['order'] : $index;

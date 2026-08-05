@@ -19,6 +19,16 @@ Pour les objets, les caractéristiques dont l'aide cible un type d'équipement p
 - armes : `[2,3,4,5,6,7,8]`
 - chapeaux/capes : `[9,10]`
 
+## Surcharges des monstres
+
+Une définition `entities.monster` remplace les limites et la formule génériques uniquement pour les monstres.
+Les personnages restent plafonnés à 24 pour leurs caractéristiques principales, tandis que les monstres
+peuvent atteindre 30. Le même mécanisme porte leurs limites PA/PM/PO élargies et les conversions par
+paliers des résistances relatives et des critiques.
+
+Les tables de formule acceptent des seuils négatifs. La tranche retenue est le plus grand seuil inférieur
+ou égal à la valeur source, ce qui permet de convertir les faiblesses Dofus en `-50` ou `-100`.
+
 ## Frontend
 
 - Store Pinia : `resources/js/Composables/store/useCharacteristicsPiniaStore.js`.

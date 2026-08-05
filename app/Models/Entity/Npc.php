@@ -53,6 +53,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereDeletedAt($value)
  * @mixin \Eloquent
  */
 class Npc extends Model

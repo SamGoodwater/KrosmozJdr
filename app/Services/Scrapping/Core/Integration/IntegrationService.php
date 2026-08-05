@@ -18,6 +18,7 @@ use App\Models\Entity\Spell;
 use App\Models\SubEffect;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
+use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
 use App\Models\Type\SpellType;
 use App\Models\User;
@@ -285,6 +286,7 @@ final class IntegrationService
     {
         $attrs = [
             'name' => (string) ($creatureData['name'] ?? ''),
+            'description' => isset($creatureData['description']) ? (string) $creatureData['description'] : null,
             'level' => (string) ($creatureData['level'] ?? '1'),
             'life' => (string) ($creatureData['life'] ?? '1'),
             'strong' => (string) ($creatureData['strength'] ?? '0'),
@@ -295,7 +297,7 @@ final class IntegrationService
             'created_by' => $createdBy,
         ];
 
-        $optional = ['pa', 'pm', 'kamas', 'po', 'dodge_pa', 'dodge_pm', 'ini', 'vitality', 'res_neutre', 'res_terre', 'res_feu', 'res_air', 'res_eau', 'res_sagesse', 'res_vitalite', 'do_sagesse', 'do_vitalite'];
+        $optional = ['pa', 'pm', 'po', 'dodge_pa', 'dodge_pm', 'tacle', 'fuite', 'ini', 'vitality', 'res_neutre', 'res_terre', 'res_feu', 'res_air', 'res_eau', 'res_sagesse', 'res_vitalite', 'do_sagesse', 'do_vitalite', 'critical_hit', 'heal_bonus'];
         foreach ($optional as $key) {
             if (array_key_exists($key, $creatureData) && $creatureData[$key] !== null) {
                 $attrs[$key] = (string) $creatureData[$key];
@@ -413,9 +415,13 @@ final class IntegrationService
         if ($id === null) {
             return null;
         }
-        $exists = DB::table('monster_races')->where('id', $id)->exists();
+        $race = MonsterRace::query()->where('dofusdb_race_id', $id)->first();
+        if ($race === null) {
+            MonsterRace::touchDofusdbRace($id);
+            $race = MonsterRace::query()->where('dofusdb_race_id', $id)->first();
+        }
 
-        return $exists ? $id : null;
+        return $race?->id;
     }
 
     /**

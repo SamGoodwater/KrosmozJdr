@@ -46,6 +46,7 @@ class ScrappingRunCommand extends Command
         {--update-mode= : ignore|draft_raw_auto_update|auto_update|force (prioritaire sur replace-existing)}
         {--skip-existing : Ne pas appeler l\'API pour les entités déjà en base qu\'on n\'écraserait pas (défaut: false en init, true en update)}
         {--no-validate : Désactiver la validation}
+        {--quality-gate : Bloquer avant import si l\'audit détecte une erreur ou une revue manuelle}
         {--exclude-from-update= : Champs à ne pas écraser (ex: name,image,level)}
         {--ignore-unvalidated : Ignorer objets dont race/type non validé}
         {--lang=fr : Langue (pickLang)}
@@ -115,6 +116,20 @@ class ScrappingRunCommand extends Command
             $this->error('Aucune entité fournie. Utilise --entity=monster ou --entity=monster,item,...');
 
             return Command::FAILURE;
+        }
+        if ((bool) $this->option('quality-gate') && ! (bool) $this->option('simulate')) {
+            foreach ($entities as $entity) {
+                $entityForConfig = $entity === 'class' ? 'breed' : $entity;
+                $exitCode = $this->call('scrapping:audit', [
+                    '--entity' => $entityForConfig,
+                    '--fail-on-review' => true,
+                ]);
+                if ($exitCode !== Command::SUCCESS) {
+                    $this->error("Import annulé : quality gate en échec pour {$entity}.");
+
+                    return Command::FAILURE;
+                }
+            }
         }
 
         $doSave = ! (bool) $this->option('simulate');

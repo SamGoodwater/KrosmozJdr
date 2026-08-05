@@ -3,17 +3,21 @@
 ### Objectif
 Ces fichiers décrivent, **par source**, les entités scrappables, leurs endpoints, filtres, relations, et le mapping **source → KrosmozJDR** (avec formatters).
 
-Ils sont **versionnés** et destinés à être chargés/validés par le backend via un loader (schéma + liste blanche de formatters).
+Ils sont **versionnés** et chargés par le backend avec une liste blanche de formatters.
+Les endpoints, filtres et métadonnées restent dans les JSON. Le mapping actif est éditable
+en BDD puis exporté dans `database/seeders/data/scrapping_entity_mappings.php`.
 
 ### Arborescence
-- `resources/scrapping/sources/<source>/source.json`
-- `resources/scrapping/sources/<source>/entities/<entity>.json`
+- `resources/scrapping/config/sources/<source>/source.json`
+- `resources/scrapping/config/sources/<source>/entities/<entity>.json`
 
 ### Conventions
+- Schéma minimal obligatoire : `version` (entier positif), `source`, `entity`, `endpoints` et `target`.
 - **Pas d’expressions libres** dans les formatters : uniquement `{ name, args }`, validés côté backend.
+- Les transformations numériques utilisent `convertCharacteristic` et la `characteristic_key` liée.
 - **`from.path`** utilise une dot-notation (avec support futur pour `[]` sur arrays).
 - **`to.model`** + **`to.field`** permettent de cibler les modèles KrosmozJDR (y compris multi-modèles, ex: `creatures` + `monsters`).
 
 ### Fichiers exemples
-Voir `resources/scrapping/sources/dofusdb/`.
+Voir `resources/scrapping/config/sources/dofusdb/`.
 

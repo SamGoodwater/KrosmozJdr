@@ -45,6 +45,7 @@ class ScrappingPreviewConfigConversionTest extends TestCase
 
         $converted = $res->json('data.converted');
         $this->assertIsArray($converted);
+        $this->assertIsArray($res->json('data.diagnostics'));
         $this->assertArrayHasKey('creatures', $converted);
         $this->assertArrayHasKey('monsters', $converted);
         $this->assertEquals('Bouftou', $converted['creatures']['name'] ?? null);
@@ -71,6 +72,7 @@ class ScrappingPreviewConfigConversionTest extends TestCase
 
         $converted = $res->json('data.converted');
         $this->assertIsArray($converted);
+        $this->assertIsArray($res->json('data.diagnostics'));
         $this->assertEquals('Béco du Tofu', $converted['spells']['name'] ?? $converted['name'] ?? null);
     }
 }

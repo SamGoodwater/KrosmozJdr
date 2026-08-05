@@ -7,6 +7,13 @@ use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Conversion\ConversionService;
 use App\Services\Scrapping\Core\Conversion\FormatterApplicator;
+use Database\Seeders\CharacteristicSeeder;
+use Database\Seeders\CreatureCharacteristicSeeder;
+use Database\Seeders\ObjectCharacteristicSeeder;
+use Database\Seeders\ScrappingEntityMappingSeeder;
+use Database\Seeders\SpellCharacteristicSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Fixtures\ScrappingEntityFixtures;
 use Tests\TestCase;
 
 /**
@@ -15,11 +22,18 @@ use Tests\TestCase;
  */
 class ConversionServiceTest extends TestCase
 {
+    use RefreshDatabase;
+
     private ConversionService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seed(CharacteristicSeeder::class);
+        $this->seed(CreatureCharacteristicSeeder::class);
+        $this->seed(ObjectCharacteristicSeeder::class);
+        $this->seed(SpellCharacteristicSeeder::class);
+        $this->seed(ScrappingEntityMappingSeeder::class);
         $configLoader = ConfigLoader::default();
         $conversionService = app(DofusConversionService::class);
         $getter = app(CharacteristicGetterService::class);
@@ -32,24 +46,41 @@ class ConversionServiceTest extends TestCase
 
     public function test_convert_monster_produces_creatures_and_monsters(): void
     {
-        $raw = [
-            'id' => 31,
-            'name' => ['fr' => 'Bouftou'],
-            'raceId' => 1,
-            'grades' => [
-                ['level' => 5, 'lifePoints' => 100, 'strength' => 10, 'intelligence' => 5, 'agility' => 8, 'chance' => 6],
-            ],
-        ];
+        $raw = ScrappingEntityFixtures::monster();
 
         $out = $this->service->convert('dofusdb', 'monster', $raw, ['entityType' => 'monster', 'lang' => 'fr']);
 
-        $this->assertIsArray($out);
         $this->assertArrayHasKey('creatures', $out);
         $this->assertArrayHasKey('monsters', $out);
         $this->assertIsArray($out['creatures']);
         $this->assertIsArray($out['monsters']);
         $this->assertSame('31', $out['monsters']['dofusdb_id'] ?? null);
         $this->assertSame('Bouftou', $out['creatures']['name'] ?? null);
+    }
+
+    public function test_convert_monster_applies_monster_specific_characteristics(): void
+    {
+        $out = $this->service->convert(
+            'dofusdb',
+            'monster',
+            ScrappingEntityFixtures::monster(),
+            ['entityType' => 'monster', 'lang' => 'fr']
+        );
+
+        $creatures = $out['creatures'] ?? [];
+        $this->assertArrayNotHasKey('kamas', $creatures);
+        $this->assertSame(7, $creatures['po'] ?? null);
+        $this->assertSame(9, $creatures['dodge_pa'] ?? null);
+        $this->assertSame(11, $creatures['dodge_pm'] ?? null);
+        $this->assertSame(12, $creatures['tacle'] ?? null);
+        $this->assertSame(8, $creatures['fuite'] ?? null);
+        $this->assertSame(2, $creatures['critical_hit'] ?? null);
+        $this->assertSame(5, $creatures['heal_bonus'] ?? null);
+        $this->assertSame(0, $creatures['res_neutre'] ?? null);
+        $this->assertSame(50, $creatures['res_terre'] ?? null);
+        $this->assertSame(-50, $creatures['res_feu'] ?? null);
+        $this->assertSame(0, $creatures['res_air'] ?? null);
+        $this->assertSame(100, $creatures['res_eau'] ?? null);
     }
 
     public function test_convert_monster_applies_level_and_life_formulas(): void
@@ -71,7 +102,7 @@ class ConversionServiceTest extends TestCase
         $level = $creatures['level'] ?? null;
         $this->assertIsInt($level);
         $this->assertGreaterThanOrEqual(1, $level);
-        $this->assertLessThanOrEqual(50, $level);
+        $this->assertLessThanOrEqual(30, $level);
         // Vie : formule dépend de level JDR
         $this->assertIsInt($creatures['life'] ?? null);
         $this->assertGreaterThan(0, $creatures['life'] ?? 0);
@@ -131,18 +162,13 @@ class ConversionServiceTest extends TestCase
 
     public function test_convert_item_produces_items_key(): void
     {
-        $raw = [
-            'id' => 100,
-            'name' => ['fr' => 'Bois de frêne'],
-            'typeId' => 15,
-            'level' => 1,
-        ];
+        $raw = ScrappingEntityFixtures::resource();
 
         $out = $this->service->convert('dofusdb', 'item', $raw, ['lang' => 'fr']);
 
         $this->assertArrayHasKey('items', $out);
-        $this->assertSame('100', $out['items']['dofusdb_id'] ?? null);
-        $this->assertSame('Bois de frêne', $out['items']['name'] ?? null);
+        $this->assertSame('1002', $out['items']['dofusdb_id'] ?? null);
+        $this->assertSame('Bois de test', $out['items']['name'] ?? null);
         $this->assertSame(15, $out['items']['type_id'] ?? null);
     }
 
@@ -152,13 +178,12 @@ class ConversionServiceTest extends TestCase
 
         $out = $this->service->convert('dofusdb', 'monster', $raw, ['entityType' => 'monster', 'lang' => 'fr']);
 
-        $this->assertIsArray($out);
         // Mapping avec path manquant produit des champs vides ou absents selon formatters
         $this->assertArrayHasKey('creatures', $out);
         $this->assertArrayHasKey('monsters', $out);
     }
 
-    public function test_convert_monster_includes_resistance_batch_when_configured(): void
+    public function test_convert_monster_maps_each_relative_resistance(): void
     {
         $raw = [
             'id' => 31,
@@ -179,17 +204,10 @@ class ConversionServiceTest extends TestCase
         $out = $this->service->convert('dofusdb', 'monster', $raw, ['entityType' => 'monster', 'lang' => 'fr']);
 
         $creatures = $out['creatures'] ?? [];
-        // resistanceBatch dans monster.json : résistances fusionnées dans creatures (DofusConversionService::convertResistancesBatch)
-        $this->assertArrayHasKey('creatures', $out);
-        // Au moins une résistance mappée (selon handler ou fallback DofusDbConversionFormulas)
-        $resKeys = ['res_neutre', 'res_terre', 'res_feu', 'res_air', 'res_eau'];
-        $hasAny = false;
-        foreach ($resKeys as $k) {
-            if (array_key_exists($k, $creatures)) {
-                $hasAny = true;
-                break;
-            }
-        }
-        $this->assertTrue($hasAny, 'Au moins une clé res_* doit être présente après resistanceBatch');
+        $this->assertSame(0, $creatures['res_neutre'] ?? null);
+        $this->assertSame(0, $creatures['res_terre'] ?? null);
+        $this->assertSame(0, $creatures['res_feu'] ?? null);
+        $this->assertSame(0, $creatures['res_air'] ?? null);
+        $this->assertSame(0, $creatures['res_eau'] ?? null);
     }
 }

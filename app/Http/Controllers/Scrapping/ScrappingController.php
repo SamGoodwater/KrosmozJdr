@@ -825,17 +825,25 @@ class ScrappingController extends Controller
             $results = [];
             $successCount = 0;
             $errorCount = 0;
-            foreach ($convertedList as $i => $converted) {
+            $itemResults = $result->getItemResults();
+            foreach (is_array($convertedList) ? $convertedList : [] as $i => $converted) {
                 if (! is_array($converted)) {
                     continue;
                 }
                 $id = $this->extractDofusdbIdFromConverted($converted);
                 $intResult = $integrationResults[$i] ?? null;
-                $success = $intResult !== null && $intResult->isSuccess();
+                $itemResult = $itemResults[$i] ?? null;
+                $success = is_array($itemResult)
+                    ? (bool) ($itemResult['success'] ?? false)
+                    : $intResult !== null && $intResult->isSuccess();
+                $diagnostics = is_array($itemResult) && is_array($itemResult['diagnostics'] ?? null)
+                    ? $itemResult['diagnostics']
+                    : [];
                 $results[] = [
-                    'id' => $id ?? $startId + $i,
+                    'id' => is_array($itemResult) ? ($itemResult['source_id'] ?? $id ?? $startId + $i) : ($id ?? $startId + $i),
                     'success' => $success,
-                    'error' => $success ? null : ($intResult?->getMessage() ?? 'Erreur inconnue'),
+                    'error' => $success ? null : ($intResult?->getMessage() ?? ($diagnostics[0]['message'] ?? 'Erreur inconnue')),
+                    'diagnostics' => $diagnostics,
                 ];
                 $success ? $successCount++ : $errorCount++;
             }
@@ -989,6 +997,7 @@ class ScrappingController extends Controller
                 'raw' => $result->getRaw(),
                 'converted' => $converted,
                 'validation_errors' => $result->getValidationErrors(),
+                'diagnostics' => $result->getDiagnostics(),
                 'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
                 'spell_effects_simulation' => $spellEffectsSimulation,
             ];
@@ -1065,6 +1074,7 @@ class ScrappingController extends Controller
                         'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
                         'spell_effects_simulation' => $spellEffectsSimulation,
                         'relations' => $result->getRelations() ?? [],
+                        'diagnostics' => $result->getDiagnostics(),
                         'error' => $result->isSuccess() ? null : $result->getMessage(),
                     ];
                     if ($type === 'item') {

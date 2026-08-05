@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Scrapping\Core\Conversion;
 
-use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Compatibility\CharacteristicCompatibilityService;
+use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Illuminate\Support\Facades\Log;
 
@@ -140,6 +140,14 @@ final class ItemEffectsToBonusConverter
             $charKey = $objectMap[$charId] ?? null;
             if (! is_string($charKey) || $charKey === '') {
                 $unknownCharacteristicCounts[$charId] = ($unknownCharacteristicCounts[$charId] ?? 0) + 1;
+                $bag = $context['diagnostics'] ?? null;
+                if ($bag instanceof ConversionDiagnosticBag) {
+                    $bag->manualReview(
+                        'unmapped_object_characteristic',
+                        "Caractéristique DofusDB #{$charId} non mappée ; effet conservé dans les diagnostics.",
+                        ['dofusdb_characteristic_id' => $charId, 'effect' => $effect]
+                    );
+                }
 
                 continue;
             }
@@ -224,7 +232,7 @@ final class ItemEffectsToBonusConverter
         $runId = isset($context['run_id']) && is_string($context['run_id']) ? $context['run_id'] : null;
         UnknownCharacteristicRunTracker::addCounts($runId, $unknownCharacteristicCounts);
 
-        Log::warning('Scrapping bonus: IDs characteristic DofusDB non mappés ignorés.', [
+        Log::warning('Scrapping bonus: IDs characteristic DofusDB non mappés conservés pour revue.', [
             'run_id' => $runId,
             'entity_type' => $entityType,
             'source_id' => $sourceId,

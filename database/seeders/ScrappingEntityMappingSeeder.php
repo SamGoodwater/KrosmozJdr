@@ -26,6 +26,31 @@ class ScrappingEntityMappingSeeder extends Seeder
 
     private const SOURCE_CONFIG_BASE = 'resources/scrapping/config/sources';
 
+    /** @var array<string, string> */
+    private const MONSTER_NUMERIC_CHARACTERISTICS = [
+        'strength' => 'strength_creature',
+        'intelligence' => 'intelligence_creature',
+        'agility' => 'agility_creature',
+        'wisdom' => 'wisdom_creature',
+        'chance' => 'chance_creature',
+        'pa' => 'action_points_creature',
+        'pm' => 'movement_points_creature',
+        'po' => 'range_creature',
+        'dodge_pa' => 'dodge_action_points_creature',
+        'dodge_pm' => 'dodge_movement_points_creature',
+        'tackle' => 'tackle_creature',
+        'dodge' => 'dodge_creature',
+        'ini' => 'initiative_creature',
+        'vitality' => 'vitality_creature',
+        'res_neutre' => 'resistance_neutral_creature',
+        'res_terre' => 'resistance_earth_creature',
+        'res_feu' => 'resistance_fire_creature',
+        'res_air' => 'resistance_air_creature',
+        'res_eau' => 'resistance_water_creature',
+        'critical_hit' => 'critical_hit_creature',
+        'heal_bonus' => 'heal_bonus_creature',
+    ];
+
     public function run(): void
     {
         $rows = $this->loadDataFile(self::DATA_FILE);
@@ -43,6 +68,7 @@ class ScrappingEntityMappingSeeder extends Seeder
         ScrappingEntityMapping::query()->delete();
 
         foreach ($rows as $row) {
+            $row = $this->normalizeParametricMapping($row);
             $characteristicId = null;
             if (! empty($row['characteristic_key'])) {
                 $char = Characteristic::where('key', (string) $row['characteristic_key'])->first();
@@ -83,6 +109,33 @@ class ScrappingEntityMappingSeeder extends Seeder
         }
 
         $this->command?->info('Scrapping entity mappings : '.count($rows).' règle(s) importée(s).');
+    }
+
+    /**
+     * Normalise les anciens snapshots vers le formatter numérique paramétrable.
+     *
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private function normalizeParametricMapping(array $row): array
+    {
+        if (($row['source'] ?? null) !== 'dofusdb' || ($row['entity'] ?? null) !== 'monster') {
+            return $row;
+        }
+
+        $mappingKey = (string) ($row['mapping_key'] ?? '');
+        if (in_array($mappingKey, ['dofusdb_id', 'name', 'description', 'image', 'size', 'race'], true)) {
+            $row['characteristic_key'] = null;
+        }
+        $characteristicKey = self::MONSTER_NUMERIC_CHARACTERISTICS[$mappingKey] ?? null;
+        if ($characteristicKey === null) {
+            return $row;
+        }
+
+        $row['characteristic_key'] = $characteristicKey;
+        $row['formatters'] = [['name' => 'convertCharacteristic', 'args' => []]];
+
+        return $row;
     }
 
     /**
@@ -153,7 +206,9 @@ class ScrappingEntityMappingSeeder extends Seeder
                         'mapping_key' => isset($entry['key']) && is_string($entry['key']) && $entry['key'] !== '' ? $entry['key'] : $from['path'],
                         'from_path' => $from['path'],
                         'from_lang_aware' => (bool) ($from['langAware'] ?? false),
-                        'characteristic_key' => null,
+                        'characteristic_key' => isset($entry['characteristic_key']) && is_string($entry['characteristic_key'])
+                            ? $entry['characteristic_key']
+                            : null,
                         'formatters' => is_array($entry['formatters'] ?? null) ? $entry['formatters'] : null,
                         'spell_level_aggregation' => isset($entry['spell_level_aggregation']) && is_string($entry['spell_level_aggregation'])
                             ? $entry['spell_level_aggregation']

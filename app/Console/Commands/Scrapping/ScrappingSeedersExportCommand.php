@@ -246,7 +246,7 @@ class ScrappingSeedersExportCommand extends Command
     }
 
     /**
-     * @param  Collection<int, ResourceType|ConsumableType|ItemType>  $rows
+     * @param  Collection<int, covariant ResourceType|ConsumableType|ItemType>  $rows
      */
     private function exportItemTypesTable(string $dir, $rows, string $filename, string $label, string $comment): void
     {
@@ -304,8 +304,28 @@ class ScrappingSeedersExportCommand extends Command
         $this->info('Exported '.count($data).' scrapping entity mappings → '.$path);
     }
 
-    private function varExportShort(mixed $var): string
+    private function varExportShort(mixed $var, int $level = 0): string
     {
-        return var_export($var, true);
+        if (! is_array($var)) {
+            return match ($var) {
+                null => 'null',
+                true => 'true',
+                false => 'false',
+                default => var_export($var, true),
+            };
+        }
+        if ($var === []) {
+            return '[]';
+        }
+
+        $lines = ['['];
+        $indent = str_repeat('    ', $level + 1);
+        foreach ($var as $key => $value) {
+            $exportedKey = is_int($key) ? (string) $key : var_export($key, true);
+            $lines[] = $indent.$exportedKey.' => '.$this->varExportShort($value, $level + 1).',';
+        }
+        $lines[] = str_repeat('    ', $level).']';
+
+        return implode("\n", $lines);
     }
 }

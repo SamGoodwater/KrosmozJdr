@@ -70,6 +70,11 @@ final class FormatterApplicator
             'pickLang' => fn (mixed $v, array $a): string => $this->pickLang($v, (string) ($a['lang'] ?? 'fr'), (string) ($a['fallback'] ?? 'fr')),
             'toInt' => fn (mixed $v): int => is_numeric($v) ? (int) $v : 0,
             'nullableInt' => fn (mixed $v): ?int => $v === null ? null : (is_numeric($v) ? (int) $v : null),
+            'nullableId' => static function (mixed $v): ?int {
+                $candidate = is_array($v) ? ($v['id'] ?? null) : $v;
+
+                return is_numeric($candidate) ? (int) $candidate : null;
+            },
             /**
              * spell_global.elementId Dofus (0–4, ou -1) → masque Krosmoz (7 bits), pas les codes legacy 0–29.
              *
@@ -86,7 +91,6 @@ final class FormatterApplicator
                 return DofusDbElementId::spellGlobalElementIdToMask((int) $v);
             },
             'clampInt' => fn (mixed $v, array $a): int => $this->clampInt($v, (int) ($a['min'] ?? 0), (int) ($a['max'] ?? 0)),
-            'criticalHitFromDofus' => fn (mixed $v): int => $this->criticalHitFromDofus($v),
             'clampToCharacteristic' => function (mixed $v, array $a, array $r, array $c): int {
                 return $this->clampToCharacteristic($v, (string) ($a['characteristicId'] ?? ''), (string) ($c['entityType'] ?? 'monster'));
             },
@@ -114,6 +118,9 @@ final class FormatterApplicator
             'recipeToResourceRecipe' => fn (mixed $v, array $a, array $r): array => $this->recipeConverter->convert($v, $r),
             'itemEffectsToKrosmozBonus' => function (mixed $v, array $a, array $r, array $c): ?string {
                 return $this->itemEffectsConverter !== null ? $this->itemEffectsConverter->convert($v, $r, $c) : null;
+            },
+            'convertCharacteristic' => function (mixed $v, array $a, array $r, array $c): mixed {
+                return $this->convertCharacteristic($v, $a, $c);
             },
             'zoneDescrToNotation' => function (mixed $v): ?string {
                 if (is_array($v)) {
@@ -208,6 +215,64 @@ final class FormatterApplicator
         }
 
         return is_numeric($value) ? (float) $value : 0.0;
+    }
+
+    /**
+     * Convertit une valeur numérique avec la caractéristique liée à la règle de mapping.
+     *
+     * En l'absence de formule, la valeur brute est conservée et un diagnostic de revue
+     * manuelle est émis. Le service central applique ensuite les limites de la caractéristique.
+     *
+     * @param  array<string, mixed>  $args
+     * @param  array<string, mixed>  $context
+     */
+    private function convertCharacteristic(mixed $value, array $args, array $context): mixed
+    {
+        if ($value === null || $value === '' || ! is_numeric($value) || $this->conversionService === null) {
+            return $value;
+        }
+
+        $key = $context['_resolvedCharacteristicKey'] ?? null;
+        $bag = $context['diagnostics'] ?? null;
+        if (! is_string($key) || $key === '') {
+            if ($bag instanceof ConversionDiagnosticBag) {
+                $bag->manualReview(
+                    'missing_characteristic_key',
+                    'Valeur numérique conservée sans conversion : aucune caractéristique liée au mapping.',
+                    ['value' => $value]
+                );
+            }
+
+            return (int) round((float) $value);
+        }
+
+        $entityType = (string) ($context['entityType'] ?? 'item');
+        if ($this->getter?->getConversionFormula($key, $entityType) === null && $bag instanceof ConversionDiagnosticBag) {
+            $bag->manualReview(
+                'missing_conversion_formula',
+                "Valeur brute conservée : aucune formule de conversion pour {$key}.",
+                ['characteristic_key' => $key, 'entity_type' => $entityType, 'value' => $value]
+            );
+        }
+
+        $variables = ['d' => (float) $value];
+        foreach (is_array($args['variables'] ?? null) ? $args['variables'] : [] as $name => $variableValue) {
+            if (is_string($name) && is_numeric($variableValue)) {
+                $variables[$name] = (float) $variableValue;
+            }
+        }
+
+        $trace = $this->conversionService->convertWithTrace($key, $variables, $entityType, (float) $value, $context);
+        if ($bag instanceof ConversionDiagnosticBag) {
+            $bag->add(
+                'trace',
+                'characteristic_conversion',
+                "Conversion de {$key}.",
+                ['characteristic_key' => $key, 'entity_type' => $entityType] + $trace
+            );
+        }
+
+        return $trace['value'];
     }
 
     /**
@@ -321,21 +386,6 @@ final class FormatterApplicator
         }
 
         return max($min, min($max, $v));
-    }
-
-    /**
-     * Convertit la valeur critique Dofus vers Krosmoz (0–3).
-     * Krosmoz : 0 = nat 20, 1 = dès 19, 2 = dès 18, 3 = dès 17.
-     * Dofus peut envoyer -3 à 0 (soustrait au seuil) ou 0 à 3.
-     */
-    private function criticalHitFromDofus(mixed $value): int
-    {
-        $v = is_numeric($value) ? (int) $value : 0;
-        if ($v >= -3 && $v <= 0) {
-            return -$v;
-        }
-
-        return max(0, min(3, $v));
     }
 
     /**
@@ -548,7 +598,7 @@ final class FormatterApplicator
         $typeNode = $this->getByPath($raw, 'type');
         if (is_array($typeNode) && isset($typeNode['name'])) {
             $name = $this->pickLang($typeNode['name'], $lang, 'fr');
-            if (is_string($name) && $name !== '') {
+            if ($name !== '') {
                 return $name;
             }
         }

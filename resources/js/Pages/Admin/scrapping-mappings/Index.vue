@@ -31,6 +31,7 @@ const props = defineProps({
     entities: { type: Array, default: () => [] },
     entitiesWithMapping: { type: Array, default: () => [] },
     mappings: { type: Array, default: () => [] },
+    mappingAudit: { type: Array, default: () => [] },
     characteristicsForSelect: { type: Array, default: () => [] },
 });
 
@@ -185,7 +186,7 @@ function submitMapping() {
     axios[method](url, payload)
         .then(() => {
             showModal.value = false;
-            router.reload({ only: ['mappings', 'entitiesWithMapping'] });
+            router.reload({ only: ['mappings', 'entitiesWithMapping', 'mappingAudit'] });
         })
         .catch((err) => {
             formErrors.value = err.response?.data?.errors ?? { form: err.response?.data?.message ?? err.message };
@@ -196,7 +197,7 @@ function submitMapping() {
 function confirmDelete(mapping) {
     if (!confirm(`Supprimer la règle « ${mapping.mapping_key} » ?`)) return;
     axios.delete(route('admin.scrapping-mappings.destroy', mapping.id)).then(() => {
-        router.reload({ only: ['mappings', 'entitiesWithMapping'] });
+        router.reload({ only: ['mappings', 'entitiesWithMapping', 'mappingAudit'] });
     });
 }
 
@@ -269,6 +270,23 @@ onMounted(() => {
             </div>
 
             <template v-if="entity">
+                <div
+                    v-if="mappingAudit.length > 0"
+                    class="alert alert-warning mb-4"
+                    role="alert"
+                    aria-live="polite"
+                >
+                    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                    <div>
+                        <p class="font-semibold">Le mapping contient {{ mappingAudit.length }} erreur(s).</p>
+                        <ul class="mt-1 list-disc pl-5 text-sm">
+                            <li v-for="error in mappingAudit" :key="`${error.path}:${error.message}`">
+                                <code>{{ error.path }}</code> — {{ error.message }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
                     <h2 class="text-lg font-semibold">Entité : {{ entity }}</h2>
                     <div class="flex items-center gap-2">
@@ -374,7 +392,7 @@ onMounted(() => {
                     </label>
                     <textarea
                         v-model="formattersJson"
-                        class="textarea textarea-bordered w-full font-mono text-sm min-h-[80px]"
+                        class="textarea textarea-bordered w-full font-mono text-sm min-h-20"
                         name="formatters"
                         placeholder='[{"name":"toString","args":{}},{"name":"pickLang","args":{"lang":"fr"}}]'
                         spellcheck="false"

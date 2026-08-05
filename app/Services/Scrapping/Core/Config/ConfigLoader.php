@@ -12,6 +12,9 @@ namespace App\Services\Scrapping\Core\Config;
  */
 final class ConfigLoader
 {
+    /** @var list<string> */
+    private const ENTITY_REQUIRED_KEYS = ['version', 'source', 'entity', 'endpoints', 'target'];
+
     /** @var array<string, array<string, mixed>> */
     private array $sourceCache = [];
 
@@ -88,6 +91,7 @@ final class ConfigLoader
 
         $path = $this->baseDir."/sources/{$source}/entities/{$entity}.json";
         $data = $this->readJson($path);
+        $this->validateEntitySchema($data, $source, $entity);
 
         if (($data['source'] ?? null) !== $source) {
             throw new \InvalidArgumentException("Source mismatch pour entité '{$entity}'.");
@@ -205,5 +209,31 @@ final class ConfigLoader
         }
 
         return $decoded;
+    }
+
+    /**
+     * Valide le contrat canonique minimal des fichiers d'entité.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function validateEntitySchema(array $data, string $source, string $entity): void
+    {
+        foreach (self::ENTITY_REQUIRED_KEYS as $key) {
+            if (! array_key_exists($key, $data)) {
+                throw new \InvalidArgumentException("Config entité '{$source}/{$entity}' : clé '{$key}' requise.");
+            }
+        }
+        if (! is_int($data['version']) || $data['version'] < 1) {
+            throw new \InvalidArgumentException("Config entité '{$source}/{$entity}' : version doit être un entier positif.");
+        }
+        if (! is_string($data['source']) || ! is_string($data['entity'])) {
+            throw new \InvalidArgumentException("Config entité '{$source}/{$entity}' : source et entity doivent être des chaînes.");
+        }
+        if (! is_array($data['endpoints']) || ! is_array($data['target'])) {
+            throw new \InvalidArgumentException("Config entité '{$source}/{$entity}' : endpoints et target doivent être des objets.");
+        }
+        if (isset($data['mapping']) && ! is_array($data['mapping'])) {
+            throw new \InvalidArgumentException("Config entité '{$source}/{$entity}' : mapping doit être une liste.");
+        }
     }
 }

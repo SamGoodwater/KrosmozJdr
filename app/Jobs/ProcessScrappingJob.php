@@ -83,6 +83,7 @@ class ProcessScrappingJob implements ShouldQueue
                     'error' => 'Entite ou ID invalide',
                     'validation_errors' => [],
                     'relations' => [],
+                    'diagnostics' => [],
                 ];
                 $errorCount++;
                 $doneCount++;
@@ -116,6 +117,7 @@ class ProcessScrappingJob implements ShouldQueue
                         'error' => $success ? null : $result->getMessage(),
                         'validation_errors' => $success ? [] : $result->getValidationErrors(),
                         'relations' => $success ? ($result->getRelations() ?? []) : [],
+                        'diagnostics' => $result->getDiagnostics(),
                     ];
                     if ($success) {
                         $successCount++;

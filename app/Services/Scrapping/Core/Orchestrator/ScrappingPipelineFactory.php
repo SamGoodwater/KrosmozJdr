@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Scrapping\Core\Orchestrator;
 
-use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Compatibility\CharacteristicCompatibilityService;
+use App\Services\Characteristic\Conversion\DofusConversionService;
+use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Characteristic\Limit\CharacteristicLimitService;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Config\ScrappingMappingValidator;
 use App\Services\Scrapping\Core\Conversion\ConversionService;
 use App\Services\Scrapping\Core\Conversion\FormatterApplicator;
 use App\Services\Scrapping\Core\Conversion\ItemEffectsToBonusConverter;
@@ -52,7 +54,16 @@ final class ScrappingPipelineFactory
         $orchestrator = new Orchestrator(
             $configLoader,
             app(CollectService::class),
-            new ConversionService($configLoader, $formatterApplicator, $conversionService),
+            new ConversionService(
+                $configLoader,
+                $formatterApplicator,
+                $conversionService,
+                new ScrappingMappingValidator(
+                    $formatterApplicator,
+                    $getter,
+                    app(CharacteristicFormulaService::class),
+                ),
+            ),
             app(CharacteristicLimitService::class),
             app(IntegrationService::class),
             app(SpellEffectsConversionService::class),

@@ -59,6 +59,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereDeletedAt($value)
  * @mixin \Eloquent
  */
 class Monster extends Model

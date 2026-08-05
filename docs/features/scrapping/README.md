@@ -2,6 +2,20 @@
 
 Le scrapping importe des données du jeu Dofus depuis l'API **DofusDB** et les convertit en entités KrosmozJDR (sorts, objets, ressources, consommables, monstres, classes, panoplies…). Le système est **config-driven** : la source de vérité du mapping est en base de données (bootstrappée depuis des fichiers JSON), pas dans le code.
 
+### Conversion des monstres
+
+Le niveau d'un monstre utilise l'échelle Dofus 1–300 vers Krosmoz 1–30 :
+`floor([d]/10)`, puis limitation entre 1 et 30. Les niveaux Dofus 1 à 9 produisent
+donc un niveau Krosmoz 1.
+
+Les autres conversions propres aux monstres suivent ces principes :
+
+- les six caractéristiques principales utilisent une courbe non linéaire entre 6 et 30 ;
+- PA, PM, PO, esquives, Tacle et Fuite conservent leur valeur, avec des limites plus larges que les personnages ;
+- les résistances Dofus deviennent des paliers relatifs `-100`, `-50`, `0`, `50` ou `100` ; elles n'alimentent pas les résistances fixes ;
+- le bonus critique Dofus devient un bonus Krosmoz rare de 0 à 3 et le soin est ramené linéairement de 5–40 vers 0–7 ;
+- les Kamas ne sont pas importés depuis un monstre.
+
 Accès **réservé aux administrateurs** : toutes les routes (web et API) passent par `role:admin` + `password.confirm`. La page `/scrapping` impose une confirmation de mot de passe (`ConfirmPasswordModal`) avec un délai d'inactivité.
 
 ## Pipeline
@@ -19,6 +33,15 @@ flowchart TD
 ```
 
 Le pipeline est assemblé par `ScrappingPipelineFactory::createDefault()` (ou `Orchestrator::default()`), dépendances résolues via le conteneur Laravel. Pour les imports longs, l'exécution passe par `app/Jobs/ProcessScrappingJob.php` (suivi en table `scrapping_jobs`).
+
+### Robustesse et diagnostics
+
+- Les mappings sont validés avant conversion : chemin source, cibles, formatters et formules liées.
+- Un formatter inconnu bloque explicitement la conversion au lieu d'être ignoré.
+- `runMany()` isole les erreurs par élément et retourne `itemResults`, les compteurs `success` / `errors` et les diagnostics.
+- Les conversions pilotées par une caractéristique exposent une trace : valeur brute, formule, résultat calculé et clamp éventuel.
+- Une caractéristique ou un effet non mappé produit une revue manuelle ; l'import des autres données peut continuer en état `raw`.
+- La prévisualisation web affiche les revues manuelles et les traces de conversion dans une section dédiée.
 
 ## Création Intelligente V1
 
@@ -53,6 +76,8 @@ Toutes préfixées `/api/scrapping` (`routes/api/scrapping.php`) :
 - `GET /dofusdb/item-types`, `/monster-races` — catalogues DofusDB.
 
 Les types d'objets/ressources/consommables et les races de monstres sont gérés **en BDD** (`item_types`, `resource_types`, `consumable_types`, `monster_races`) ; les catalogues DofusDB sont exposés par des services dédiés (`DofusDbItemTypesCatalogService`, `DofusDbMonsterRacesCatalogService`).
+À l'import d'un monstre, `monster_race_id` reçu du mapping représente l'identifiant de race DofusDB :
+l'intégration le résout vers la clé locale et crée une race brouillon si elle manque.
 
 ## Commandes CLI
 
@@ -63,6 +88,10 @@ Les types d'objets/ressources/consommables et les races de monstres sont gérés
 | `php artisan scrapping:seeders:export` | Exporte les données BDD vers `database/seeders/data/*`. |
 | `php artisan scrapping:types:seed` | Extrait les item-types depuis l'API puis seede les types. |
 | `php artisan scrapping:effects:map` | Propose des mappings effectId → sous-effet. |
+| `php artisan scrapping:audit` | Audite sans écriture les mappings, formules manquantes et mappings d'effets incomplets (`--json`, `--fail-on-review`). |
+
+Pour un import massif, `php artisan scrapping:run --entity=monster --quality-gate` exécute cet audit
+avant toute écriture et annule l'import si une règle nécessite encore une revue.
 
 ## UI (admin)
 

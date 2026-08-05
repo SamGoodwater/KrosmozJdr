@@ -838,6 +838,7 @@ erDiagram
     write_level : tinyint(4)
     created_at : timestamp
     updated_at : timestamp
+    deleted_at : timestamp
   }
   NOTIFICATION_DIGEST_QUEUE {
     id : bigint(20) unsigned
@@ -885,6 +886,7 @@ erDiagram
     write_level : tinyint(4)
     created_at : timestamp
     updated_at : timestamp
+    deleted_at : timestamp
   }
   OAUTH_ACCOUNTS {
     id : bigint(20) unsigned

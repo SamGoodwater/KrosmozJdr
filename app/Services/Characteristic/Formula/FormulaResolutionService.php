@@ -283,7 +283,7 @@ final class FormulaResolutionService
 
         $refValue = isset($variables[$char]) ? (float) $variables[$char] : 0.0;
         $chosen = null;
-        $bestFrom = -1;
+        $bestFrom = PHP_INT_MIN;
         foreach ($entries as $entry) {
             $from = (int) ($entry['from'] ?? 0);
             if ($from <= $refValue && $from >= $bestFrom) {

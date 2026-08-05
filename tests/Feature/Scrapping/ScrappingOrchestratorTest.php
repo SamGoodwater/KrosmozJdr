@@ -14,6 +14,7 @@ use App\Services\Scrapping\Core\Relation\RelationResolutionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\CreatesSystemUser;
+use Tests\Fixtures\ScrappingEntityFixtures;
 use Tests\SeedsScrappingPipeline;
 use Tests\TestCase;
 
@@ -242,6 +243,30 @@ class ScrappingOrchestratorTest extends TestCase
         $this->assertEquals(2, $result['summary']['total']);
         $this->assertEquals(2, $result['summary']['success']);
         $this->assertEquals(0, $result['summary']['errors']);
+    }
+
+    public function test_run_many_isolates_invalid_source_items(): void
+    {
+        Http::fake([
+            'api.dofusdb.fr/monsters*' => Http::response([
+                'data' => [ScrappingEntityFixtures::monster(), 'invalid'],
+                'total' => 2,
+                'limit' => 2,
+                'skip' => 0,
+            ]),
+        ]);
+
+        $result = $this->orchestrator->runMany('dofusdb', 'monster', [], [
+            'convert' => true,
+            'validate' => true,
+            'integrate' => false,
+            'limit' => 2,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame(2, $result->getMeta()['processed'] ?? null);
+        $this->assertSame(1, $result->getMeta()['errors'] ?? null);
+        $this->assertFalse($result->getItemResults()[1]['success'] ?? true);
     }
 
     /**

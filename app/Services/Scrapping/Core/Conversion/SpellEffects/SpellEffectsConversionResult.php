@@ -14,11 +14,13 @@ final class SpellEffectsConversionResult
      * @param  array{name: string, slug: string}  $effectGroup
      * @param  list<array>  $effects  Chaque entrée : degree, name, slug, description, sub_effects[]
      * @param  array<string, string|null>  $spellResolution  Paramètres de résolution au niveau du sort
+     * @param  list<array{level:string,code:string,message:string,context:array<string,mixed>}>  $diagnostics
      */
     public function __construct(
         private readonly array $effectGroup,
         private readonly array $effects,
         private readonly array $spellResolution = [],
+        private readonly array $diagnostics = [],
     ) {}
 
     public function getEffectGroup(): array
@@ -48,5 +50,11 @@ final class SpellEffectsConversionResult
     public function getSpellResolution(): array
     {
         return $this->spellResolution;
+    }
+
+    /** @return list<array{level:string,code:string,message:string,context:array<string,mixed>}> */
+    public function getDiagnostics(): array
+    {
+        return $this->diagnostics;
     }
 }

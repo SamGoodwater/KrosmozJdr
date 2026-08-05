@@ -39,6 +39,25 @@ final class DofusConversionService
      */
     public function convert(string $characteristicKey, array $variables, string $entityType, ?float $fallbackWhenFormulaNull = null, array $context = []): int
     {
+        return $this->convertWithTrace($characteristicKey, $variables, $entityType, $fallbackWhenFormulaNull, $context)['value'];
+    }
+
+    /**
+     * Convertit une valeur et expose les étapes utiles à la preview et à l'audit.
+     *
+     * @param  array<string, float|int>  $variables
+     * @param  array<string, mixed>  $context
+     * @return array{value:int,raw:float|null,formula:string|null,calculated:float,after_function:float,clamped:bool}
+     *
+     * @example $trace = $service->convertWithTrace('level_creature', ['d' => 100], 'monster', 10);
+     */
+    public function convertWithTrace(
+        string $characteristicKey,
+        array $variables,
+        string $entityType,
+        ?float $fallbackWhenFormulaNull = null,
+        array $context = []
+    ): array {
         $formula = $this->getter->getConversionFormula($characteristicKey, $entityType);
         if ($formula !== null) {
             $k = $this->formulaService->evaluate($formula, $variables);
@@ -46,9 +65,19 @@ final class DofusConversionService
         } else {
             $k = $fallbackWhenFormulaNull ?? 0.0;
         }
-        $k = $this->applyConversionFunction($k, $characteristicKey, $entityType, $context);
+        $calculated = $k;
+        $afterFunction = $this->applyConversionFunction($calculated, $characteristicKey, $entityType, $context);
+        $rounded = (int) round($afterFunction);
+        $value = $this->limitService->clamp($characteristicKey, $rounded, $entityType);
 
-        return $this->limitService->clamp($characteristicKey, (int) round($k), $entityType);
+        return [
+            'value' => $value,
+            'raw' => isset($variables['d']) ? (float) $variables['d'] : null,
+            'formula' => $formula,
+            'calculated' => $calculated,
+            'after_function' => $afterFunction,
+            'clamped' => $value !== $rounded,
+        ];
     }
 
     /**
@@ -136,38 +165,6 @@ final class DofusConversionService
     public function clampToLimits(string $characteristicKey, int $value, string $entityType): int
     {
         return $this->limitService->clamp($characteristicKey, $value, $entityType);
-    }
-
-    /**
-     * Convertit en batch les résistances DofusDB (grades.0.*Resistance) vers les champs res_* Krosmoz.
-     * Utilisé par le scrapping quand resistanceBatch est activé dans la config d’entité (ex. monster).
-     *
-     * @param  array<string, mixed>  $raw  Données brutes (ex. grades.0.neutralResistance, earthResistance, …)
-     * @return array<string, int|string> Map res_neutre, res_terre, res_feu, res_air, res_eau => valeur
-     */
-    public function convertResistancesBatch(array $raw, string $entityType): array
-    {
-        $grades = $raw['grades'][0] ?? [];
-        if (! is_array($grades)) {
-            return [];
-        }
-        $map = [
-            'neutralResistance' => 'res_neutre',
-            'earthResistance' => 'res_terre',
-            'fireResistance' => 'res_feu',
-            'airResistance' => 'res_air',
-            'waterResistance' => 'res_eau',
-        ];
-        $out = [];
-        foreach ($map as $apiKey => $dbKey) {
-            $v = $grades[$apiKey] ?? null;
-            if ($v === null && ! array_key_exists($apiKey, $grades)) {
-                continue;
-            }
-            $out[$dbKey] = is_numeric($v) ? (int) $v : (string) ($v ?? '0');
-        }
-
-        return $out;
     }
 
     private function levelCharacteristicKeyForEntity(string $entityType): string

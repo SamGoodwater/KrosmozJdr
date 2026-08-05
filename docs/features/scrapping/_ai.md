@@ -14,6 +14,9 @@
 - **Config-driven** : sources JSON dans `resources/scrapping/` ; règles de mapping runtime en **BDD** (`scrapping_entity_mappings` + targets). Détail : [README](./README.md#ou-modifier-le-mapping).
 - **Jobs async** : import long via `app/Jobs/ProcessScrappingJob.php` (table `scrapping_jobs`).
 - **Mappings spécialisés** : effets de sorts → `dofusdb_effect_mappings` ; bonus objets → `characteristic_object.dofusdb_characteristic_id`.
+- **Conversion paramétrable** : les valeurs numériques passent par `convertCharacteristic` + `characteristic_key` → `conversion_formula` → limites. Les diagnostics conservent les cas à revoir.
+- **Monstres** : niveau 1–30, caractéristiques principales 6–30, PA 3–14, PM 2–10, PO 0–10 ; résistances relatives par paliers `-100/-50/0/50/100`, sans conversion automatique vers les résistances fixes.
+- **Audit** : `php artisan scrapping:audit` valide le socle sans écriture ; `runMany()` retourne des résultats partiels par entité.
 - **Sécurité** : middleware `role:admin` + `password.confirm` sur toutes les routes ; porte `ConfirmPasswordModal` sur la page.
 - **CLI** : `php artisan scrapping:setup` (socle) puis `scrapping:run` (exploitation).
 

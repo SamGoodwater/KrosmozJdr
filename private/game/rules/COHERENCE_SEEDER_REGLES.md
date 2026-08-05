@@ -13,13 +13,13 @@ Ce document compare les valeurs min/max, formules et limites des caractéristiqu
 | **PA (créature)** | Base 6, max 12, équip. +6, forgemagie +1 | `action_points_creature` min 6, max 12, formula_display idem | OK |
 | **PM (créature)** | Base 3, max 6, équip. +3, forgemagie +1 | `movement_points_creature` min 3, max 6, formula_display idem | OK |
 | **PO (créature)** | Base 0, max 6, équip. +6, forgemagie +1 | `range_creature` min 0, max 6, formula_display idem | OK |
-| **Scores caractéristiques** | Score 6–31, mod = ⌊(score−10)/2⌋ | `*_creature` (vitality, strength, etc.) min 6, max 31 | OK |
-| **Modificateurs** | ⌊(Score − 10) / 2⌋ (2.2.1.2) | `modifier_*_creature` formula_display `floor((score−10)/2) (2.2.1.2)` | OK |
+| **Scores caractéristiques** | Personnages 6–24 ; monstres 6–30 | `*_creature` : max 24 (`*`), max 30 (`monster`) | OK |
+| **Modificateurs** | ⌊(Score − 10) / 2⌋ | `modifier_*_creature` : max +7 (`*`), max +10 (`monster`) | OK |
 | **PV (créature)** | Le livre donne aussi des ordres de grandeur (ex. §5.1.2 création PNJ) ; **formule officielle seed** | `life_points_creature` : `hit_dice_creature + modifier_vitality_creature×level + (level−1)×round(hit_dice/2) + life_points_max_object` | Recaler les textes de règles si une seule formule « canon » est publiée |
 | **CA (créature)** | 10 + mod. Vitalité + bouclier (selon règles) | `armor_class_creature` **max 22** en seed (`db_column` `ca`) | Vérifier plafond **22 vs 26** selon version des règles |
 | **Initiative** | Au jet : 1d20 + mod. Intelligence + … (règles combat) | Seed : formule calculée **`[modifier_intelligence_creature]`** sur la fiche (le d20 est côté jet, pas dans cette carac) | OK si la carac = bonus fixe avant dé |
 | **PA (sorts)** | 0–12 (3.3.2.1) | `characteristic_spell` action_points_spell min 0, max 12 | OK |
-| **Niveau créature** | 1–20 (personnages), 1–40 (monstres) | `level_creature` min 1, max 20 (entity *) ; max 40 (monster) | OK |
+| **Niveau créature** | 1–20 (personnages), 1–30 (monstres) | `level_creature` min 1, max 20 (entity *) ; max 30 (`monster`) | OK |
 
 ---
 

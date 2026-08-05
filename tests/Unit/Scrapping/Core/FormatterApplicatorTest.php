@@ -56,6 +56,7 @@ class FormatterApplicatorTest extends TestCase
 
         $this->assertTrue($applicator->supports('toString'));
         $this->assertTrue($applicator->supports('toInt'));
+        $this->assertTrue($applicator->supports('nullableId'));
         $this->assertTrue($applicator->supports('pickLang'));
         $this->assertTrue($applicator->supports('truncate'));
         $this->assertTrue($applicator->supports('toJson'));
@@ -76,6 +77,15 @@ class FormatterApplicatorTest extends TestCase
 
         $this->assertSame('hello', $applicator->apply('toString', 'hello', [], [], []));
         $this->assertSame('', $applicator->apply('toString', null, [], [], []));
+    }
+
+    public function test_apply_nullable_id_accepts_scalar_or_object_shape(): void
+    {
+        $applicator = new FormatterApplicator(null, null);
+
+        $this->assertSame(42, $applicator->apply('nullableId', 42, [], [], []));
+        $this->assertSame(42, $applicator->apply('nullableId', ['id' => 42], [], [], []));
+        $this->assertNull($applicator->apply('nullableId', ['name' => 'Sans identifiant'], [], [], []));
     }
 
     public function test_apply_clamp_to_characteristic_uses_getter_limits(): void

@@ -15,6 +15,8 @@ final class OrchestratorResult
      * @param  list<array{path: string, message: string}>  $validationErrors
      * @param  array<string, mixed>|null  $meta  Meta fetchMany (total, pages, etc.)
      * @param  list<IntegrationResult>|null  $integrationResults  Résultats d’intégration (liste en runMany)
+     * @param  list<array{level:string,code:string,message:string,context:array<string,mixed>}>  $diagnostics
+     * @param  list<array<string,mixed>>|null  $itemResults
      */
     public function __construct(
         private bool $success,
@@ -25,7 +27,9 @@ final class OrchestratorResult
         private ?IntegrationResult $integrationResult = null,
         private ?array $integrationResults = null,
         private ?array $meta = null,
-        private ?array $relations = null
+        private ?array $relations = null,
+        private array $diagnostics = [],
+        private ?array $itemResults = null,
     ) {}
 
     public function isSuccess(): bool
@@ -79,9 +83,21 @@ final class OrchestratorResult
         return $this->relations;
     }
 
+    /** @return list<array{level:string,code:string,message:string,context:array<string,mixed>}> */
+    public function getDiagnostics(): array
+    {
+        return $this->diagnostics;
+    }
+
+    /** @return list<array<string,mixed>>|null */
+    public function getItemResults(): ?array
+    {
+        return $this->itemResults;
+    }
+
     public static function fail(string $message, array $validationErrors = []): self
     {
-        return new self(false, $message, null, null, $validationErrors, null, null, null, null);
+        return new self(false, $message, null, null, $validationErrors, null, null, null, null, [], null);
     }
 
     /**
@@ -91,9 +107,10 @@ final class OrchestratorResult
         string $message,
         array $validationErrors,
         ?array $raw = null,
-        ?array $converted = null
+        ?array $converted = null,
+        array $diagnostics = [],
     ): self {
-        return new self(false, $message, $raw, $converted, $validationErrors, null, null, null, null);
+        return new self(false, $message, $raw, $converted, $validationErrors, null, null, null, null, $diagnostics, null);
     }
 
     public static function ok(
@@ -103,8 +120,10 @@ final class OrchestratorResult
         ?IntegrationResult $integrationResult = null,
         ?array $integrationResults = null,
         ?array $meta = null,
-        ?array $relations = null
+        ?array $relations = null,
+        array $diagnostics = [],
+        ?array $itemResults = null,
     ): self {
-        return new self(true, $message, $raw, $converted, [], $integrationResult, $integrationResults, $meta, $relations);
+        return new self(true, $message, $raw, $converted, [], $integrationResult, $integrationResults, $meta, $relations, $diagnostics, $itemResults);
     }
 }

@@ -19,6 +19,7 @@
 | Features | Systèmes métier transverses. | [features/_ai.md](features/_ai.md) |
 | Operations | Commandes, imports, maintenance. | [operations/_ai.md](operations/_ai.md) |
 | Best practices | Conventions et garde-fous. | [best-practices/_ai.md](best-practices/_ai.md) |
+| Avancées | Journal non technique. | [100- Done/README.md](100-%20Done/README.md) |
 
 ## Hors documentation technique
 

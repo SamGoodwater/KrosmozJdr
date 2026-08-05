@@ -94,6 +94,35 @@ class FormulaResolutionServiceTest extends TestCase
         $this->assertSame([], $this->service->validateFormula($json));
     }
 
+    public function test_evaluate_table_supports_negative_thresholds(): void
+    {
+        $formula = '{"-100":-100,"-74":-50,"-24":0,"25":50,"75":100,"characteristic":"d"}';
+        $cases = [
+            -100 => -100.0,
+            -75 => -100.0,
+            -74 => -50.0,
+            -25 => -50.0,
+            -24 => 0.0,
+            24 => 0.0,
+            25 => 50.0,
+            74 => 50.0,
+            75 => 100.0,
+        ];
+
+        foreach ($cases as $raw => $expected) {
+            $this->assertSame($expected, $this->service->evaluate($formula, ['d' => $raw]));
+        }
+    }
+
+    public function test_validate_monster_attribute_formula(): void
+    {
+        $formula = '6 + 24 * sqrt(max(0, ([d] - 50) / 1150))';
+
+        $this->assertSame([], $this->service->validateFormula($formula));
+        $this->assertSame(6.0, $this->service->evaluate($formula, ['d' => 50]));
+        $this->assertSame(30.0, $this->service->evaluate($formula, ['d' => 1200]));
+    }
+
     public function test_evaluate_dice_notation_literal_1d8(): void
     {
         $result = $this->service->evaluate('1d8', []);
