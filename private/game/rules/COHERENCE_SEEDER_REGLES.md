@@ -53,7 +53,26 @@ Une clé **`_comment_limits`** (préfixe `_`, ignorée au seed) rappelle cette c
 
 ---
 
-## 4. Formules et références
+## 4. Alignement des caractéristiques de sorts
+
+| Zone | Règle Krosmoz | Définition `*_spell` |
+|------|----------------|------------------------|
+| **Niveau** | 1–20 | niveau minimal Dofus ÷ 10, borné à 1–20 |
+| **Portée de fiche** | 0–20 cases | portée min/max bornée à 20 |
+| **Cadence** | 0 = illimité ; 6/tour, 4/cible, délai 10 max | valeurs Dofus conservées puis bornées |
+| **Critique temporaire** | bonus ou malus de seuil −3 à +3 | paliers Dofus signés, indépendants du niveau du sort |
+| **Résistance relative** | −100/−50/0/50/100 | conversion dans les cinq paliers Krosmoz |
+| **Résistance fixe** | réduction 0–10 | conversion compressée, bornée à 10 |
+| **Initiative** | pas de plafond | valeur Dofus conservée directement |
+| **Bonus de soin** | 0–7 | progression linéaire de 5–40 Dofus vers 0–7 |
+| **Lancement** | ligne, diagonale, cible, cumul et délai global | caractéristiques de fiche explicites ; le moteur d’effets les exploitera séparément |
+| **Résolution** | physique → jet vs CA ; Wakfu → sauvegarde (DD 8+mod+maîtrise) ; soutien → auto | `SpellResolutionInferenceService` : `is_magic` et `resolution_*` inférés des sous-effets (DofusDB n’a pas `isMagic`) |
+
+Les zones et durées restent des notations textuelles structurées : elles ne doivent pas être traitées comme des nombres par le convertisseur de caractéristiques.
+
+---
+
+## 5. Formules et références
 
 - **Modificateur** : `floor((score−10)/2)` — identique règles (2.2.1.2) et seeders (`formula_display` modifier_*_creature).
 - **Plafond modificateur de base** : `⌊Niveau/2⌋ + 1` (règles 2.2.1) — présent uniquement dans les règles (tableau par niveau) ; pas de formule équivalente dans les seeders (normal, c’est une règle de création/perso).

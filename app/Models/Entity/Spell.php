@@ -9,6 +9,7 @@ use App\Models\SpellEffect;
 use App\Models\Type\SpellType;
 use App\Models\User;
 use App\Support\AreaConstants;
+use Database\Factories\Entity\SpellFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -34,6 +35,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $cast_per_turn
  * @property string $cast_per_target
  * @property bool $sight_line
+ * @property bool $cast_in_line Lancer uniquement en ligne
+ * @property bool $cast_in_diagonal Lancer autorisé en diagonale
+ * @property string|null $target_type Mode de pose global : direct, trap ou glyph
+ * @property int $max_stack Cumul maximal, 0 = non limité
+ * @property int $global_cooldown Temps de relance global en tours
  * @property string $number_between_two_cast
  * @property int $element
  * @property int $category
@@ -128,11 +134,16 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveDcFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveSuccessNote($value)
  * @property-read BreedSpellPivot|null $pivot
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastInDiagonal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastInLine($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereGlobalCooldown($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereMaxStack($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereTargetType($value)
  * @mixin \Eloquent
  */
 class Spell extends Model implements HasMedia
 {
-    /** @use HasFactory<\\Database\\Factories\\SpellFactory> */
+    /** @use HasFactory<SpellFactory> */
     use HasEntityImageMedia, HasFactory, SoftDeletes;
 
     public const STATE_RAW = 'raw';
@@ -193,6 +204,10 @@ class Spell extends Model implements HasMedia
         'auto_update' => true,
         'auto_success_if_willing_target' => false,
         'allows_reaction' => false,
+        'cast_in_line' => false,
+        'cast_in_diagonal' => false,
+        'max_stack' => 0,
+        'global_cooldown' => 0,
     ];
 
     /**
@@ -216,6 +231,11 @@ class Spell extends Model implements HasMedia
         'cast_per_turn',
         'cast_per_target',
         'sight_line',
+        'cast_in_line',
+        'cast_in_diagonal',
+        'target_type',
+        'max_stack',
+        'global_cooldown',
         'number_between_two_cast',
         'duration',
         'element',
@@ -250,6 +270,10 @@ class Spell extends Model implements HasMedia
         'write_level' => 'integer',
         'po_editable' => 'boolean',
         'sight_line' => 'boolean',
+        'cast_in_line' => 'boolean',
+        'cast_in_diagonal' => 'boolean',
+        'max_stack' => 'integer',
+        'global_cooldown' => 'integer',
         'is_magic' => 'boolean',
         'auto_update' => 'boolean',
         'auto_success_if_willing_target' => 'boolean',

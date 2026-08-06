@@ -200,16 +200,19 @@ class ScrappingEntityMappingSeeder extends Seeder
                         continue;
                     }
 
+                    $formatters = is_array($entry['formatters'] ?? null) ? $entry['formatters'] : null;
+                    $characteristicKey = isset($entry['characteristic_key']) && is_string($entry['characteristic_key'])
+                        ? $entry['characteristic_key']
+                        : $this->inferCharacteristicKeyFromFormatters($formatters);
+
                     $rows[] = [
                         'source' => $source,
                         'entity' => $entity,
                         'mapping_key' => isset($entry['key']) && is_string($entry['key']) && $entry['key'] !== '' ? $entry['key'] : $from['path'],
                         'from_path' => $from['path'],
                         'from_lang_aware' => (bool) ($from['langAware'] ?? false),
-                        'characteristic_key' => isset($entry['characteristic_key']) && is_string($entry['characteristic_key'])
-                            ? $entry['characteristic_key']
-                            : null,
-                        'formatters' => is_array($entry['formatters'] ?? null) ? $entry['formatters'] : null,
+                        'characteristic_key' => $characteristicKey,
+                        'formatters' => $formatters,
                         'spell_level_aggregation' => isset($entry['spell_level_aggregation']) && is_string($entry['spell_level_aggregation'])
                             ? $entry['spell_level_aggregation']
                             : null,
@@ -221,6 +224,32 @@ class ScrappingEntityMappingSeeder extends Seeder
         }
 
         return $rows;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>|null  $formatters
+     */
+    private function inferCharacteristicKeyFromFormatters(?array $formatters): ?string
+    {
+        if ($formatters === null) {
+            return null;
+        }
+        foreach ($formatters as $formatter) {
+            if (! is_array($formatter)) {
+                continue;
+            }
+            $name = $formatter['name'] ?? null;
+            if (! in_array($name, ['clampToCharacteristic', 'convertCharacteristic'], true)) {
+                continue;
+            }
+            $args = is_array($formatter['args'] ?? null) ? $formatter['args'] : [];
+            $candidate = $args['characteristicId'] ?? $args['characteristic_key'] ?? null;
+            if (is_string($candidate) && trim($candidate) !== '') {
+                return trim($candidate);
+            }
+        }
+
+        return null;
     }
 
     /**

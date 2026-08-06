@@ -16,7 +16,5 @@
   "target": {
     "krosmozEntity": "monster_race"
   },
-  "mapping": [
-    { "key": "id", "from": { "path": "id" }, "to": [], "formatters": [] }
-  ]
+  "mapping": []
 }

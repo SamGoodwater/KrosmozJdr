@@ -134,7 +134,7 @@ final class DofusConversionService
      */
     public function convertObjectAttribute(string $characteristicKey, int|float $dofusValue, string $entityType, array $context = []): int
     {
-        $d = is_numeric($dofusValue) ? (float) $dofusValue : 0.0;
+        $d = (float) $dofusValue;
 
         return $this->convert($characteristicKey, ['d' => $d], $entityType, $d, $context);
     }
@@ -169,6 +169,9 @@ final class DofusConversionService
 
     private function levelCharacteristicKeyForEntity(string $entityType): string
     {
+        if ($entityType === 'spell') {
+            return 'level_spell';
+        }
         if (in_array($entityType, ['item', 'consumable', 'resource', 'panoply'], true)) {
             return 'level_object';
         }

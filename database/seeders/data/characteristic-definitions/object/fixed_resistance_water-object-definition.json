@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "fixed_resistance_water_object",
         "name": "Bonus de résistance fixe (Eau)",
@@ -29,6 +30,7 @@
             "default_value": "0",
             "conversion_formula": "([d] / max(abs([d]), 1)) * (floor(1.1361 + 3.5 * pow(max(0, (abs([d]) - 1) / 9), 0.6)))",
             "conversion_function": null,
+            "conversion_dofus_sample": null,
             "conversion_krosmoz_sample": {
                 "1": 0,
                 "4": 2,
@@ -37,6 +39,7 @@
                 "16": 7,
                 "20": 7
             },
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -156,9 +159,7 @@
             "base_price_per_unit": 600,
             "rune_price_per_unit": 1200,
             "value_available": null,
-            "item_type_dofus_ids": [
-                82
-            ],
+            "item_type_dofus_ids": null,
             "item_type_ids": null
         }
     },

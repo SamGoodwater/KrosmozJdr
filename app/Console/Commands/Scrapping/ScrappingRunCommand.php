@@ -44,7 +44,7 @@ class ScrappingRunCommand extends Command
         {--include-relations=1 : Inclure relations (1/0) pour import/preview}
         {--replace-existing : Force mise à jour si l\'entité existe déjà}
         {--update-mode= : ignore|draft_raw_auto_update|auto_update|force (prioritaire sur replace-existing)}
-        {--skip-existing : Ne pas appeler l\'API pour les entités déjà en base qu\'on n\'écraserait pas (défaut: false en init, true en update)}
+        {--skip-existing : Ne pas appeler l\'API pour les entités déjà en base qu\'on n\'écraserait pas (true sauf --update-mode=force / --replace-existing)}
         {--no-validate : Désactiver la validation}
         {--quality-gate : Bloquer avant import si l\'audit détecte une erreur ou une revue manuelle}
         {--exclude-from-update= : Champs à ne pas écraser (ex: name,image,level)}
@@ -1102,7 +1102,8 @@ class ScrappingRunCommand extends Command
                 case 'force':
                     $replaceMode = 'always';
                     $respectAutoUpdate = false;
-                    $skipExisting = true;
+                    // Force : toujours rappeler l'API et écraser, même si l'entité existe déjà.
+                    $skipExisting = false;
                     break;
             }
         } elseif ((bool) $this->option('replace-existing')) {

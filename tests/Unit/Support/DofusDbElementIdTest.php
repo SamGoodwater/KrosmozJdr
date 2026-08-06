@@ -19,6 +19,16 @@ final class DofusDbElementIdTest extends TestCase
         $this->assertSame(3, DofusDbElementId::toKrosmozElementPrimaryIndex(4));
     }
 
+    public function test_dofus_element_ids_map_to_effect_slugs(): void
+    {
+        $this->assertSame('neutral', DofusDbElementId::toKrosmozSlug(0));
+        $this->assertSame('fire', DofusDbElementId::toKrosmozSlug(1));
+        $this->assertSame('water', DofusDbElementId::toKrosmozSlug(2));
+        $this->assertSame('earth', DofusDbElementId::toKrosmozSlug(3));
+        $this->assertSame('air', DofusDbElementId::toKrosmozSlug(4));
+        $this->assertNull(DofusDbElementId::toKrosmozSlug(99));
+    }
+
     public function test_spell_global_negative_or_null_yields_null_mask(): void
     {
         $this->assertNull(DofusDbElementId::spellGlobalElementIdToMask(null));

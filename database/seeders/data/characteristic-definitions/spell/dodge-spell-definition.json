@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 72,
+        "sort_order": 69,
         "group": "spell",
         "linked_to_key": null
     },
@@ -28,7 +28,7 @@
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "round(min(10,max(0,0.55*pow(max(1,[d]),0.45))))",
+            "conversion_formula": "round(min(10,max(0,0.55*pow(max(0,[d]),0.45))))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "2": 1,
@@ -39,7 +39,7 @@
             "conversion_krosmoz_sample": {
                 "2": 1,
                 "6": 1,
-                "10": 2,
+                "10": 1,
                 "20": 2
             },
             "conversion_sample_rows": [

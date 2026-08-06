@@ -90,6 +90,28 @@ Les types d'objets/ressources/consommables et les races de monstres sont gérés
 À l'import d'un monstre, `monster_race_id` reçu du mapping représente l'identifiant de race DofusDB :
 l'intégration le résout vers la clé locale et crée une race brouillon si elle manque.
 
+### Conversion des sorts
+
+Le niveau de sort provient du niveau minimal Dofus et non du grade : il est divisé par 10 puis borné à
+1–20. Les paramètres globaux sont bornés aux plafonds Krosmoz (portée 20, 6 lancers/tour, 4/cible,
+10 tours de relance). Les bonus utilisés par les sous-effets sont convertis par leurs définitions
+`*_spell` : critique signé, résistances relatives par paliers, résistances fixes, soins, initiative et
+dégâts fixes.
+
+L'identifiant DofusDB `16` alimente les dégâts fixes multi-éléments ; `103` désigne la puissance d'arme
+et ne doit pas être utilisé à cette fin. Les métadonnées `castInLine`, `castInDiagonal`, type de cible,
+cumul maximal et délai global sont normalisées séparément des effets.
+
+Pour les effets, `diceNum` et `diceSide` sont des bornes minimale et maximale DofusDB, et non une notation
+de dés. La plage est convertie en formule Krosmoz avant intégration ; la formule brute reste disponible
+uniquement pour diagnostic. Les variantes négatives sont importées comme retraits, les vols de PA/PM
+comme vols de caractéristiques, et les effets critiques disposent de leur propre formule convertie.
+
+La zone et l’élément d’un sort ne sont pas importés depuis les champs globaux : ils sont déduits des
+sous-effets de chaque degré. Les restrictions de lancement, le cumul maximal et le délai global sont
+clampés à partir de leurs définitions `*_spell`, puis le snapshot des mappings est régénéré depuis ces
+règles.
+
 ## Commandes CLI
 
 | Commande | Rôle |
@@ -99,10 +121,13 @@ l'intégration le résout vers la clé locale et crée une race brouillon si ell
 | `php artisan scrapping:seeders:export` | Exporte les données BDD vers `database/seeders/data/*`. |
 | `php artisan scrapping:types:seed` | Extrait les item-types depuis l'API puis seede les types. |
 | `php artisan scrapping:effects:map` | Propose des mappings effectId → sous-effet. |
-| `php artisan scrapping:audit` | Audite sans écriture les mappings, formules manquantes et mappings d'effets incomplets (`--json`, `--fail-on-review`). |
+| `php artisan scrapping:audit` | Audite sans écriture les mappings, formules manquantes et mappings d'effets incomplets (`--json`, `--fail-on-review`). Les entités `catalogOnly` (ex. `monster-race`) sont ignorées. |
 
 Pour un import massif, `php artisan scrapping:run --entity=monster --quality-gate` exécute cet audit
 avant toute écriture et annule l'import si une règle nécessite encore une revue.
+
+Les sorts locaux dont le `dofusdb_id` renvoie 404 côté API sont archivés (`state=archived`,
+`auto_update=false`) : ils restent consultables mais ne sont plus candidats aux resync auto.
 
 ## UI (admin)
 

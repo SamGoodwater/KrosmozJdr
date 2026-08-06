@@ -40,6 +40,10 @@ class SpellEffectConversionFormulaResolverTest extends TestCase
             'vol_vie_spell',
             $this->resolver->resolveLifeStealCharacteristicKeyForConversion(['life_steal_formula' => '[dgt]/2'])
         );
+        $this->assertSame(
+            'vol_vie_spell',
+            $this->resolver->resolveCharacteristicKeyForConversion('frapper', ['life_steal_formula' => '[dgt]'])
+        );
         $this->assertNull($this->resolver->resolveLifeStealCharacteristicKeyForConversion([]));
         $this->assertNull($this->resolver->resolveLifeStealCharacteristicKeyForConversion(['life_steal_formula' => '']));
     }
@@ -47,6 +51,30 @@ class SpellEffectConversionFormulaResolverTest extends TestCase
     public function test_proteger_returns_bouclier_spell(): void
     {
         $this->assertSame('bouclier_spell', $this->resolver->resolveCharacteristicKeyForConversion('protéger', []));
+    }
+
+    public function test_donner_pv_temporaires_returns_pv_temporaires_spell(): void
+    {
+        $this->assertSame(
+            'pv_temporaires_spell',
+            $this->resolver->resolveCharacteristicKeyForConversion('donner-pv-temporaires', [])
+        );
+    }
+
+    public function test_booster_with_skill_alias_returns_spell_key(): void
+    {
+        $this->assertSame(
+            'acrobatics_spell',
+            $this->resolver->resolveCharacteristicKeyForConversion('booster', ['characteristic' => 'acrobatics'])
+        );
+        $this->assertSame(
+            'stealth_spell',
+            $this->resolver->resolveCharacteristicKeyForConversion('retirer', ['characteristic' => 'stealth'])
+        );
+        $this->assertSame(
+            'medicine_spell',
+            $this->resolver->resolveCharacteristicKeyForConversion('voler-caracteristiques', ['characteristic' => 'medicine'])
+        );
     }
 
     public function test_booster_with_pa_returns_action_points_variation_spell(): void

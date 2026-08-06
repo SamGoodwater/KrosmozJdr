@@ -28,7 +28,7 @@
         "unit": null,
         "type": "bool",
         "status": "validee",
-        "sort_order": 70,
+        "sort_order": 16,
         "group": "spell",
         "linked_to_key": null
     },
@@ -45,44 +45,7 @@
             "conversion_function": null,
             "conversion_dofus_sample": null,
             "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": null
-                }
-            ],
+            "conversion_sample_rows": null,
             "norms_grid": null,
             "norms_conditions": null,
             "norms_description": "Grille 5×20 non utilisée : booléen (portée modifiable).",

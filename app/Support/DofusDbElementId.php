@@ -45,6 +45,21 @@ final class DofusDbElementId
     }
 
     /**
+     * Dofus elementId → slug élémentaire utilisé par les sous-effets.
+     */
+    public static function toKrosmozSlug(int $dofusElementId): ?string
+    {
+        return match ($dofusElementId) {
+            self::NEUTRAL => 'neutral',
+            self::FIRE => 'fire',
+            self::WATER => 'water',
+            self::EARTH => 'earth',
+            self::AIR => 'air',
+            default => null,
+        };
+    }
+
+    /**
      * Masque 7 bits avec un seul primaire élémentaire (0–127).
      */
     public static function toSingleElementMask(int $dofusElementId): int

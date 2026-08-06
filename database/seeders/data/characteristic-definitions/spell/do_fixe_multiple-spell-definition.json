@@ -5,7 +5,7 @@
         "name": "Dommages fixes multi",
         "short_name": "Do Multi",
         "helper": "Dommages fixes multi-éléments appliqués par les sous-effets de sort.",
-        "descriptions": "Dommages fixes multi-éléments via sous-effet (2.2.2). S'ajoutent à tous les éléments. Équipement 0–5, forgemagie +2. Max 20.",
+        "descriptions": "Bonus temporaire de dégâts fixes appliqué à plusieurs éléments, limité à 5.",
         "icon": "dmgArme.webp",
         "icon_false": null,
         "color": "slate",
@@ -15,20 +15,20 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 72,
+        "sort_order": 42,
         "group": "spell",
         "linked_to_key": null
     },
     "entities": {
         "*": {
-            "dofusdb_characteristic_id": null,
+            "dofusdb_characteristic_id": 16,
             "db_column": "do_fixe_multiple",
             "min": "0",
-            "max": "20",
+            "max": "5",
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "round(min(20,max(0,0.58*pow(max(1,[d]),0.48))))",
+            "conversion_formula": "ceil(min(5,max(0,0.28*pow(max(0,[d]),0.5))))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "5": 2,
@@ -38,9 +38,9 @@
             },
             "conversion_krosmoz_sample": {
                 "5": 1,
-                "20": 2,
-                "50": 4,
-                "100": 5
+                "20": 1,
+                "50": 1,
+                "100": 1
             },
             "conversion_sample_rows": [
                 {
@@ -59,13 +59,13 @@
                     "dofus_level": 50,
                     "dofus_value": 50,
                     "krosmoz_level": 50,
-                    "krosmoz_value": 4
+                    "krosmoz_value": 2
                 },
                 {
                     "dofus_level": 100,
                     "dofus_value": 100,
                     "krosmoz_level": 100,
-                    "krosmoz_value": 5
+                    "krosmoz_value": 3
                 }
             ],
             "norms_grid": {
@@ -190,7 +190,7 @@
                     "comment": "Sort coûteux → dommages fixes supérieurs"
                 }
             ],
-            "norms_description": "Dommages fixes multi-élément via sort.",
+            "norms_description": "Dommages fixes multi-éléments temporaires, plafonnés à 5 comme les lignes élémentaires de sort.",
             "norms_help_section_id": null,
             "value_available": null
         }

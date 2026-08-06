@@ -38,6 +38,14 @@
                 "160": 500,
                 "200": 500
             },
+            "conversion_krosmoz_sample": {
+                "1": 57,
+                "4": 75,
+                "8": 116,
+                "12": 194,
+                "16": 250,
+                "20": 250
+            },
             "conversion_sample_rows": [
                 {
                     "dofus_level": 1,
@@ -85,15 +93,7 @@
             "rune_price_per_unit": null,
             "value_available": null,
             "item_type_dofus_ids": null,
-            "item_type_ids": null,
-            "conversion_krosmoz_sample": {
-                "1": 57,
-                "4": 75,
-                "8": 116,
-                "12": 194,
-                "16": 250,
-                "20": 250
-            }
+            "item_type_ids": null
         },
         "resource": {
             "dofusdb_characteristic_id": 40,
@@ -112,6 +112,14 @@
                 "120": 389,
                 "160": 500,
                 "200": 500
+            },
+            "conversion_krosmoz_sample": {
+                "1": 114,
+                "4": 151,
+                "8": 233,
+                "12": 389,
+                "16": 500,
+                "20": 500
             },
             "conversion_sample_rows": [
                 {
@@ -160,15 +168,7 @@
             "rune_price_per_unit": null,
             "value_available": null,
             "item_type_dofus_ids": null,
-            "item_type_ids": null,
-            "conversion_krosmoz_sample": {
-                "1": 114,
-                "4": 151,
-                "8": 233,
-                "12": 389,
-                "16": 500,
-                "20": 500
-            }
+            "item_type_ids": null
         }
     },
     "relations": null

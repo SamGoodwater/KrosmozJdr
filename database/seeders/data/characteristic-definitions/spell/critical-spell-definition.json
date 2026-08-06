@@ -5,7 +5,7 @@
         "name": "Critiques",
         "short_name": "Crit.",
         "helper": "Critiques appliqués par les sous-effets de sort.",
-        "descriptions": "Le sort élargit ou resserre la zone de coup critique sur le dé : tu critiques plus souvent ou plus rarement selon le bonus affiché (2.2.2, 5.3.1).",
+        "descriptions": "Bonus ou malus temporaire appliqué au seuil du jet critique, de −3 à +3.",
         "icon": "critical.webp",
         "icon_false": null,
         "color": "red",
@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 72,
+        "sort_order": 36,
         "group": "spell",
         "linked_to_key": null
     },
@@ -23,12 +23,12 @@
         "*": {
             "dofusdb_characteristic_id": 18,
             "db_column": "critical",
-            "min": "0",
-            "max": "2",
+            "min": "-3",
+            "max": "3",
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "{\"characteristic\":\"level\",\"1\":0,\"7\":1,\"14\":2}",
+            "conversion_formula": "{\"-100\":-3,\"-14\":-2,\"-9\":-1,\"-4\":0,\"5\":1,\"10\":2,\"15\":3,\"characteristic\":\"d\"}",
             "conversion_function": null,
             "conversion_dofus_sample": null,
             "conversion_krosmoz_sample": null,
@@ -146,7 +146,7 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Bonus critique de sort.",
+            "norms_description": "Bonus ou malus temporaire au seuil critique, de −3 à +3 ; 0 conserve le critique sur 20 naturel.",
             "norms_help_section_id": null,
             "value_available": null
         }

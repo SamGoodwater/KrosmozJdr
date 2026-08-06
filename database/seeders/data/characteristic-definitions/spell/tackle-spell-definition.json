@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 72,
+        "sort_order": 70,
         "group": "spell",
         "linked_to_key": null
     },
@@ -28,7 +28,7 @@
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "round(min(10,max(0,0.55*pow(max(1,[d]),0.45))))",
+            "conversion_formula": "round(min(10,max(0,0.55*pow(max(0,[d]),0.45))))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "2": 1,
@@ -42,44 +42,7 @@
                 "10": 1,
                 "20": 2
             },
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": 2
-                }
-            ],
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     0,

@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "dodge_object",
         "name": "Bonus de fuite",
@@ -29,6 +30,9 @@
             "default_value": "0",
             "conversion_formula": "([d] / max(abs([d]), 1)) * (round(10 * pow(min(abs([d]), 50) / 50, 0.7)))",
             "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -148,9 +152,7 @@
             "base_price_per_unit": 300,
             "rune_price_per_unit": 600,
             "value_available": null,
-            "item_type_dofus_ids": [
-                10
-            ],
+            "item_type_dofus_ids": null,
             "item_type_ids": null
         }
     },

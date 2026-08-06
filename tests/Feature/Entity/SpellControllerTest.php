@@ -26,6 +26,46 @@ class SpellControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_admin_can_update_spell_global_metadata(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create();
+
+        $response = $this->actingAs($admin)->patch(route('entities.spells.update', $spell), [
+            'name' => $spell->name,
+            'cast_in_line' => true,
+            'cast_in_diagonal' => true,
+            'target_type' => 'trap',
+            'max_stack' => 10,
+            'global_cooldown' => 6,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $spell->refresh();
+        $this->assertTrue($spell->cast_in_line);
+        $this->assertTrue($spell->cast_in_diagonal);
+        $this->assertSame('trap', $spell->target_type);
+        $this->assertSame(10, $spell->max_stack);
+        $this->assertSame(6, $spell->global_cooldown);
+    }
+
+    public function test_spell_global_metadata_validation_rejects_out_of_range_values(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create();
+
+        $response = $this->actingAs($admin)
+            ->from(route('entities.spells.edit', $spell))
+            ->patch(route('entities.spells.update', $spell), [
+                'name' => $spell->name,
+                'target_type' => 'aura',
+                'max_stack' => 11,
+                'global_cooldown' => -1,
+            ]);
+
+        $response->assertSessionHasErrors(['target_type', 'max_stack', 'global_cooldown']);
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

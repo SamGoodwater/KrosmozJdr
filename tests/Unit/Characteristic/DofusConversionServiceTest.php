@@ -73,6 +73,16 @@ class DofusConversionServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $result);
     }
 
+    public function test_convert_spell_level_uses_the_spell_scale_from_one_to_twenty(): void
+    {
+        $key = $this->service->getLevelCharacteristicKey('spell');
+
+        $this->assertSame('level_spell', $key);
+        $this->assertSame(1, $this->service->convert($key, ['d' => 1.0], 'spell', 1.0));
+        $this->assertSame(10, $this->service->convert($key, ['d' => 100.0], 'spell', 10.0));
+        $this->assertSame(20, $this->service->convert($key, ['d' => 247.0], 'spell', 24.0));
+    }
+
     public function test_get_rarity_by_level_returns_zero_for_creature_entity(): void
     {
         $this->assertNotContains('monster', DofusConversionService::RARITY_ENTITIES);

@@ -12,23 +12,41 @@
 return [
     /*
     | Liste unique de caractéristiques (stats, ressources, éléments).
-    | key = identifiant machine (English, no abbreviations), label = libellé affiché, category = pour filtrer par action.
-    | category: stat | resource | element — Effect exige "element" pour l'action frapper, etc.
+    | key = alias reconnu par SpellEffectConversionFormulaResolver, label = libellé affiché.
+    | category: stat | resource | element | skill — Effect exige "element" pour l'action frapper, etc.
     */
     'characteristics' => [
         // Ressources
-        ['key' => 'action_points', 'label' => 'PA', 'category' => 'resource'],
-        ['key' => 'movement_points', 'label' => 'PM', 'category' => 'resource'],
-        ['key' => 'range', 'label' => 'PO', 'category' => 'resource'],
+        ['key' => 'pa', 'label' => 'PA', 'category' => 'resource'],
+        ['key' => 'pm', 'label' => 'PM', 'category' => 'resource'],
+        ['key' => 'po', 'label' => 'PO', 'category' => 'resource'],
         // Stats
-        ['key' => 'agility', 'label' => 'Agilité', 'category' => 'stat'],
-        ['key' => 'strength', 'label' => 'Force', 'category' => 'stat'],
-        ['key' => 'intelligence', 'label' => 'Intelligence', 'category' => 'stat'],
+        ['key' => 'agi', 'label' => 'Agilité', 'category' => 'stat'],
+        ['key' => 'strong', 'label' => 'Force', 'category' => 'stat'],
+        ['key' => 'intel', 'label' => 'Intelligence', 'category' => 'stat'],
         ['key' => 'chance', 'label' => 'Chance', 'category' => 'stat'],
-        ['key' => 'wisdom', 'label' => 'Sagesse', 'category' => 'stat'],
+        ['key' => 'sagesse', 'label' => 'Sagesse', 'category' => 'stat'],
         ['key' => 'vitality', 'label' => 'Vitalité', 'category' => 'stat'],
-        ['key' => 'life_points', 'label' => 'Points de vie', 'category' => 'stat'],
-        ['key' => 'shield', 'label' => 'Points de bouclier', 'category' => 'stat'],
+        ['key' => 'bouclier', 'label' => 'Points de bouclier', 'category' => 'stat'],
+        // Compétences actives
+        ['key' => 'acrobatics', 'label' => 'Acrobaties', 'category' => 'skill'],
+        ['key' => 'animal_handling', 'label' => 'Dressage', 'category' => 'skill'],
+        ['key' => 'arcana', 'label' => 'Arcane', 'category' => 'skill'],
+        ['key' => 'athletics', 'label' => 'Athlétisme', 'category' => 'skill'],
+        ['key' => 'deception', 'label' => 'Tromperie', 'category' => 'skill'],
+        ['key' => 'history', 'label' => 'Histoire', 'category' => 'skill'],
+        ['key' => 'insight', 'label' => 'Perspicacité', 'category' => 'skill'],
+        ['key' => 'intimidation', 'label' => 'Intimidation', 'category' => 'skill'],
+        ['key' => 'investigation', 'label' => 'Investigation', 'category' => 'skill'],
+        ['key' => 'medicine', 'label' => 'Médecine', 'category' => 'skill'],
+        ['key' => 'nature', 'label' => 'Nature', 'category' => 'skill'],
+        ['key' => 'perception', 'label' => 'Perception', 'category' => 'skill'],
+        ['key' => 'performance', 'label' => 'Représentation', 'category' => 'skill'],
+        ['key' => 'persuasion', 'label' => 'Persuasion', 'category' => 'skill'],
+        ['key' => 'religion', 'label' => 'Religion', 'category' => 'skill'],
+        ['key' => 'sleight_of_hand', 'label' => 'Escamotage', 'category' => 'skill'],
+        ['key' => 'stealth', 'label' => 'Discrétion', 'category' => 'skill'],
+        ['key' => 'survival', 'label' => 'Survie', 'category' => 'skill'],
         // Éléments : earth, fire, water, air, neutral
         ['key' => 'earth', 'label' => 'Terre', 'category' => 'element'],
         ['key' => 'fire', 'label' => 'Feu', 'category' => 'element'],

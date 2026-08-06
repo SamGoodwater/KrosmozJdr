@@ -10,8 +10,8 @@ use Illuminate\Database\Seeder;
 
 /**
  * Seed du référentiel de sous-effets (actions fondamentales).
- * Liste : frapper (dommages + vol de vie optionnel via life_steal_formula), soigner, protéger, booster, retirer, voler-caracteristiques, invoquer, déplacer, appliquer-etat, s-appliquer-etat, autre.
- * param_schema décrit les paramètres ; categories sur characteristic filtre la liste (element / toutes caractéristiques / monster / sans option).
+ * Liste : frapper (dommages + vol de vie optionnel via life_steal_formula), soigner, protéger, donner-pv-temporaires, booster, retirer, voler-caracteristiques, invoquer, déplacer, appliquer-etat, s-appliquer-etat, autre.
+ * param_schema décrit les paramètres ; categories sur characteristic filtre la liste (element / toutes caractéristiques / monster / sans option / skill).
  *
  * @see docs/features/effects/README.md
  */
@@ -62,6 +62,18 @@ class SubEffectSeeder extends Seeder
                 ],
             ],
             [
+                'slug' => 'donner-pv-temporaires',
+                'type_slug' => 'donner-pv-temporaires',
+                'template_text' => 'PV temporaires [value].',
+                'variables_allowed' => ['value'],
+                'param_schema' => [
+                    'action' => 'donner-pv-temporaires',
+                    'params' => [
+                        ['key' => 'value', 'type' => 'formula', 'label' => 'PV temporaires (formule)'],
+                    ],
+                ],
+            ],
+            [
                 'slug' => 'booster',
                 'type_slug' => 'booster',
                 'template_text' => 'Ajout [characteristic] de [value].',
@@ -69,7 +81,7 @@ class SubEffectSeeder extends Seeder
                 'param_schema' => [
                     'action' => 'booster',
                     'params' => [
-                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource', 'element']],
+                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource', 'element', 'skill']],
                         ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
                     ],
                 ],
@@ -82,7 +94,7 @@ class SubEffectSeeder extends Seeder
                 'param_schema' => [
                     'action' => 'retirer',
                     'params' => [
-                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource', 'element']],
+                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource', 'element', 'skill']],
                         ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
                     ],
                 ],
@@ -95,7 +107,7 @@ class SubEffectSeeder extends Seeder
                 'param_schema' => [
                     'action' => 'voler-caracteristiques',
                     'params' => [
-                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource', 'element']],
+                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource', 'element', 'skill']],
                         ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
                     ],
                 ],

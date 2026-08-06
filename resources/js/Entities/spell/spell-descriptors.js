@@ -38,6 +38,14 @@ export const SAVE_ABILITY_OPTIONS = () => [
   { value: "vitality", label: "Vitalité" },
 ];
 
+/** @returns {Array<{ value: string, label: string }>} */
+export const SPELL_TARGET_TYPE_OPTIONS = () => [
+  { value: "", label: "Non renseigné" },
+  { value: "direct", label: "Direct" },
+  { value: "trap", label: "Piège" },
+  { value: "glyph", label: "Glyphe" },
+];
+
 /**
  * @typedef {Object} SpellFieldDescriptor
  * @property {string} key - Clé unique du champ
@@ -498,6 +506,81 @@ export function getSpellFieldDescriptors(ctx = {}) {
           required: false,
           showInCompact: true,
           bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
+        },
+      },
+    },
+    cast_in_line: {
+      key: "cast_in_line",
+      label: "Lancer en ligne",
+      icon: "fa-solid fa-arrows-left-right",
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Métier",
+          required: false,
+          defaultValue: false,
+          bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
+        },
+      },
+    },
+    cast_in_diagonal: {
+      key: "cast_in_diagonal",
+      label: "Lancer en diagonale",
+      icon: "fa-solid fa-arrow-up-right",
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Métier",
+          required: false,
+          defaultValue: false,
+          bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
+        },
+      },
+    },
+    target_type: {
+      key: "target_type",
+      label: "Type de ciblage",
+      icon: "fa-solid fa-bullseye",
+      edit: {
+        form: {
+          type: "select",
+          group: "Métier",
+          required: false,
+          options: SPELL_TARGET_TYPE_OPTIONS,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    max_stack: {
+      key: "max_stack",
+      label: "Cumul maximal",
+      icon: "fa-solid fa-layer-group",
+      edit: {
+        form: {
+          type: "number",
+          group: "Métier",
+          required: false,
+          min: 0,
+          max: 10,
+          defaultValue: 0,
+          help: "0 = non limité.",
+          bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
+        },
+      },
+    },
+    global_cooldown: {
+      key: "global_cooldown",
+      label: "Relance globale",
+      icon: "fa-solid fa-clock",
+      edit: {
+        form: {
+          type: "number",
+          group: "Métier",
+          required: false,
+          min: 0,
+          max: 10,
+          defaultValue: 0,
+          bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
         },
       },
     },

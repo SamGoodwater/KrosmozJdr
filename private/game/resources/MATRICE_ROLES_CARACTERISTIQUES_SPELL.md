@@ -68,7 +68,9 @@
 | `critical_spell` | B | Bonus aux critiques / chances critique effet. |
 | `heal_bonus_spell` | B | Bonus aux soins (%). |
 | `mastery_bonus_spell` | B | Bonus de maîtrise. |
-| `bouclier_spell` | B | Points de bouclier (buffer). |
+| `bouclier_spell` | B | Points de bouclier (buffer dissipable). |
+| `pv_temporaires_spell` | B | PV temporaires (après bouclier, avant PV ; non dissipables, non cumulables). |
+| `acrobatics_spell`, `athletics_spell`, `stealth_spell`, … (×18 actives) | B | Bonus temporaire de compétence active via `booster` / `retirer` / `voler-caracteristiques` (miroir object, max 5). |
 | `wakfu_reserve_spell` | B | Réserve de Wakfu. |
 | `push_damage_reduction_spell` | B | Réduction « dégâts de poussée » (mitigation, ≠ distance de poussée). |
 | `critical_damage_reduction_spell` | B | Réduction dégâts critiques subis. |
@@ -115,9 +117,12 @@ Cette règle est appliquée dans `SpellEffectsConversionService` via `params.eff
 
 - **Déjà en `*-spell-definition.json` (rôle A — résolution)** : `resolution_mode_spell`, `attack_characteristic_key_spell`, `save_characteristic_key_spell`, `save_dc_formula_spell`, `save_success_note_spell`, `auto_success_if_willing_target_spell` (colonnes `spells.*`).
 
+- **Déjà modélisé (rôle B — PV temporaires)** : `pv_temporaires_spell` via sous-effet `donner-pv-temporaires` (charac DofusDB 95). Le max PV via sort reste `vitality_spell` (pas de `life_points_max_spell`).
+
+- **Déjà modélisé (rôle B — compétences actives)** : 18 clés `*_spell` (Acrobaties… Survie), sélectionnables dans booster/retirer/vol via catégorie `skill`. Pas de passives spell (réservées à l’équipement). Pas de mapping DofusDB natif (création manuelle / effets custom).
+
 - **Encore à modéliser** :
-  - **Actions plateau** : distance de **poussée**, **téléportation**, **traction** (cases) — dépend des types d’effets `spell_effects` et du mapping DofusDB complets.
-  - **PV temporaires / PV max** via sort — à trancher vs `vitality_spell` / états.
-  - **Compétences** (active/passive) en effet de sort — miroir possible des caracs **objet** compétences.
+  - **Actions plateau** : distance de **poussée**, **téléportation**, **traction** (cases) — dépend des types d’effets `spell_effects` et du mapping DofusDB complets (déjà largement branché en conversion).
+  - **Compétences passives** en effet de sort — optionnel ; aujourd’hui réservées à l’équipement.
 
 Voir aussi [CAHIER_DES_CHARGES_NORMES_ENTITES.md](../../50-Fonctionnalités/Characteristics-DB/CAHIER_DES_CHARGES_NORMES_ENTITES.md) pour l’usage des normes en création de contenu.

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Scrapping\Core\Normalizer;
 
+use App\Models\Effect;
+
 /**
  * Construit une vue "paramètres globaux" d'un sort pour simplifier le mapping.
  *
@@ -34,12 +36,16 @@ final class SpellGlobalNormalizer
         'minRange',
         'range',
         'grade',
+        'minPlayerLevel',
         'maxCastPerTurn',
         'maxCastPerTarget',
         'castTestLos',
+        'castInLine',
+        'castInDiagonal',
+        'maxStack',
+        'globalCooldown',
         'rangeCanBeBoosted',
         'minCastInterval',
-        'isMagic',
         'powerful',
     ];
 
@@ -51,7 +57,13 @@ final class SpellGlobalNormalizer
      */
     public function build(array $raw): array
     {
-        $global = [];
+        $global = [
+            'castInLine' => false,
+            'castInDiagonal' => false,
+            'maxStack' => 0,
+            'globalCooldown' => 0,
+            'targetType' => null,
+        ];
 
         foreach (self::FROM_SPELL_ROOT as $key) {
             if (array_key_exists($key, $raw)) {
@@ -72,8 +84,40 @@ final class SpellGlobalNormalizer
             if ($firstEffect !== null && array_key_exists('zoneDescr', $firstEffect)) {
                 $global['area'] = $firstEffect['zoneDescr'];
             }
+            $global['targetType'] = $this->extractTargetTypeFromLevel($level0);
         }
 
+        $global['maxStack'] = min(10, max(0, (int) $global['maxStack']));
+        $global['globalCooldown'] = min(10, max(0, (int) $global['globalCooldown']));
+
         return $global;
+    }
+
+    /**
+     * Déduit le mode global depuis les triggers, avec la même priorité piège/glyphe que la conversion d'effets.
+     *
+     * @param  array<string, mixed>  $levelData
+     */
+    private function extractTargetTypeFromLevel(array $levelData): string
+    {
+        $effects = $levelData['effects'] ?? [];
+        if (! is_array($effects)) {
+            return Effect::TARGET_DIRECT;
+        }
+
+        foreach ($effects as $effect) {
+            if (! is_array($effect)) {
+                continue;
+            }
+            $triggers = $effect['triggers'] ?? null;
+            if (is_string($triggers) && str_contains(strtoupper($triggers), 'P')) {
+                return Effect::TARGET_TRAP;
+            }
+            if (is_string($triggers) && str_contains(strtoupper($triggers), 'G')) {
+                return Effect::TARGET_GLYPH;
+            }
+        }
+
+        return Effect::TARGET_DIRECT;
     }
 }

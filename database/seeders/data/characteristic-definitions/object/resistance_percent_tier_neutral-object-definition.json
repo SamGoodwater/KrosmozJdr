@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "resistance_percent_tier_neutral_object",
         "name": "Bonus de résistance en % (Neutre, palier)",
@@ -54,6 +55,9 @@
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -173,9 +177,7 @@
             "base_price_per_unit": 2500,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_dofus_ids": [
-                82
-            ],
+            "item_type_dofus_ids": null,
             "item_type_ids": null
         },
         "panoply": {
@@ -208,6 +210,7 @@
                 "12": 1,
                 "13": 2
             },
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     0,

@@ -58,7 +58,7 @@
         "unit": null,
         "type": "string",
         "status": "validee",
-        "sort_order": 63,
+        "sort_order": 8,
         "group": "spell",
         "linked_to_key": null
     },

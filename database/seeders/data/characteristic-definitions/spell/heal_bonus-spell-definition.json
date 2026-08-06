@@ -5,7 +5,7 @@
         "name": "Bonus de soin",
         "short_name": "Soin",
         "helper": "Bonus de soin appliqué par les sous-effets de sort.",
-        "descriptions": "Bonus aux soins accordé temporairement par un sort. S’ajoute à tes jets de soins ; l’équipement a aussi une limite propre (2.2.2).",
+        "descriptions": "Bonus temporaire aux soins, converti linéairement de 5–40 Dofus vers 0–7 Krosmoz.",
         "icon": "heal.webp",
         "icon_false": null,
         "color": "red",
@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 72,
+        "sort_order": 38,
         "group": "spell",
         "linked_to_key": null
     },
@@ -28,7 +28,7 @@
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "round(min(7,max(0,0.5*pow(max(1,[d]),0.82))))",
+            "conversion_formula": "round(min(7,max(0,([d]-5)/5)))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "20": 6,
@@ -44,44 +44,7 @@
                 "16": 4,
                 "20": 6
             },
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": 0
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": 2
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": 3
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": 4
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": 4
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": 6
-                }
-            ],
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -195,7 +158,7 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Bonus soin de sort.",
+            "norms_description": "Bonus de soin : progression linéaire de 5–40 Dofus vers 0–7 Krosmoz.",
             "norms_help_section_id": null,
             "value_available": null
         }

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
 
 use App\Models\Effect;
-use App\Models\Entity\Spell;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Effect\SpellActionBudgetService;
 use App\Services\Jdr\DiceNotationService;
 use App\Services\Scrapping\Config\DofusDbConditionCatalog;
 use App\Services\Scrapping\Config\DofusDbEffectCatalog;
@@ -29,11 +29,13 @@ final class SpellEffectsConversionService
     /** @var list<array{level:string,code:string,message:string,context:array<string,mixed>}> */
     private array $diagnostics = [];
 
-    private const SAVE_DC_DEFAULT_FORMULA = '10 + modificateur de caractéristique';
-
     private const SUB_EFFECT_SLUG_APPLY_STATE = 'appliquer-etat';
 
     private const SUB_EFFECT_SLUG_SELF_APPLY_STATE = 's-appliquer-etat';
+
+    private SpellActionBudgetService $actionBudgetService;
+
+    private SpellResolutionInferenceService $resolutionInferenceService;
 
     public function __construct(
         private DofusDbEffectCatalog $effectCatalog,
@@ -43,7 +45,12 @@ final class SpellEffectsConversionService
         private DofusConversionService $dofusConversion,
         private CharacteristicGetterService $characteristicGetter,
         private DiceNotationService $diceNotationService,
-    ) {}
+        ?SpellActionBudgetService $actionBudgetService = null,
+        ?SpellResolutionInferenceService $resolutionInferenceService = null,
+    ) {
+        $this->actionBudgetService = $actionBudgetService ?? new SpellActionBudgetService;
+        $this->resolutionInferenceService = $resolutionInferenceService ?? new SpellResolutionInferenceService;
+    }
 
     /**
      * Convertit les effets d'un sort DofusDB (sort brut + spell-levels) en structure KrosmozJDR.
@@ -82,7 +89,7 @@ final class SpellEffectsConversionService
 
         usort($effects, static fn (array $a, array $b) => ($a['degree'] ?? 0) <=> ($b['degree'] ?? 0));
 
-        $resolution = $this->inferSpellResolution($effects, $spellRaw);
+        $resolution = $this->resolutionInferenceService->infer($effects, $spellRaw);
 
         return new SpellEffectsConversionResult($effectGroup, $effects, $resolution, $this->diagnostics);
     }
@@ -168,7 +175,17 @@ final class SpellEffectsConversionService
             if ($criticalInstance !== null && is_array($criticalInstance)) {
                 $critFormula = $this->buildValueFormula($criticalInstance);
                 if ($critFormula !== null && $critFormula !== '') {
-                    $params['value_formula_crit'] = $critFormula;
+                    $criticalParams = $params;
+                    $criticalParams['value_formula'] = $critFormula;
+                    $this->applyValueConversion($criticalInstance, $subEffectSlug, $criticalParams, $degree);
+                    $params['dofus_value_formula_crit'] = $critFormula;
+                    $params['value_formula_crit'] = $criticalParams['value_formula'] ?? $critFormula;
+                    if (isset($criticalParams['value_converted'])) {
+                        $params['value_converted_crit'] = $criticalParams['value_converted'];
+                    }
+                    if (isset($criticalParams['dice_formula'])) {
+                        $params['dice_formula_crit'] = $criticalParams['dice_formula'];
+                    }
                 }
             }
 
@@ -181,6 +198,7 @@ final class SpellEffectsConversionService
         }
 
         $area = $this->extractAreaNotationFromLevel($levelData);
+        $this->applyActionBudgets($subEffects, $levelData, $area);
         $targetType = $this->extractTargetTypeFromLevel($levelData);
 
         return [
@@ -195,8 +213,214 @@ final class SpellEffectsConversionService
     }
 
     /**
+     * Répartit les budgets par tour du référentiel « Creation sort » entre les lignes d'un lancement.
+     *
+     * @param  list<array<string, mixed>>  $subEffects
+     * @param  array<string, mixed>  $levelData
+     */
+    private function applyActionBudgets(array &$subEffects, array $levelData, ?string $area): void
+    {
+        $level = $this->krosmozLevelFromDofusLevelData($levelData);
+        $actionPointCost = isset($levelData['apCost']) && is_numeric($levelData['apCost'])
+            ? (int) $levelData['apCost']
+            : null;
+        if ($level === null || $actionPointCost === null || $actionPointCost <= 0) {
+            return;
+        }
+
+        $damageIndices = [];
+        $healIndices = [];
+        $shieldIndices = [];
+        $tempHpIndices = [];
+        $allDamageIsLifeSteal = true;
+        foreach ($subEffects as $index => $subEffect) {
+            $slug = (string) ($subEffect['sub_effect_slug'] ?? '');
+            $params = is_array($subEffect['params'] ?? null) ? $subEffect['params'] : [];
+            if ($slug === 'frapper' && isset($params['value_converted']) && is_numeric($params['value_converted'])) {
+                $damageIndices[] = $index;
+                $allDamageIsLifeSteal = $allDamageIsLifeSteal
+                    && isset($params['life_steal_formula'])
+                    && trim((string) $params['life_steal_formula']) !== '';
+            }
+            if ($slug === 'soigner' && isset($params['value_converted']) && is_numeric($params['value_converted'])) {
+                $healIndices[] = $index;
+            }
+            if ($slug === 'protéger' && isset($params['value_converted']) && is_numeric($params['value_converted'])) {
+                $shieldIndices[] = $index;
+            }
+            if ($slug === 'donner-pv-temporaires' && isset($params['value_converted']) && is_numeric($params['value_converted'])) {
+                $tempHpIndices[] = $index;
+            }
+        }
+
+        // Bouclier et PV temporaires partagent l’enveloppe survie (même groupe hybride).
+        $survivabilityIndices = array_values(array_merge($shieldIndices, $tempHpIndices));
+        $groups = array_values(array_filter(
+            [$damageIndices, $healIndices, $survivabilityIndices],
+            static fn (array $group): bool => $group !== []
+        ));
+        $hybridDivisor = max(1, count($groups));
+        $powerIndex = $this->actionPowerIndex($levelData, $area);
+
+        if ($damageIndices !== []) {
+            $action = $allDamageIsLifeSteal
+                ? SpellActionBudgetService::ACTION_LIFE_STEAL
+                : SpellActionBudgetService::ACTION_DAMAGE;
+            $this->distributeActionBudget(
+                $subEffects,
+                $damageIndices,
+                $action,
+                $level,
+                $actionPointCost,
+                $powerIndex,
+                $hybridDivisor
+            );
+        }
+        if ($healIndices !== []) {
+            $this->distributeActionBudget(
+                $subEffects,
+                $healIndices,
+                SpellActionBudgetService::ACTION_HEAL,
+                $level,
+                $actionPointCost,
+                $powerIndex,
+                $hybridDivisor
+            );
+        }
+        if ($survivabilityIndices !== []) {
+            // Même enveloppe budget que les soins ; métadonnée d’action distincte pour les PV temp.
+            $this->distributeActionBudget(
+                $subEffects,
+                $survivabilityIndices,
+                SpellActionBudgetService::ACTION_SHIELD,
+                $level,
+                $actionPointCost,
+                $powerIndex,
+                $hybridDivisor
+            );
+            foreach ($tempHpIndices as $index) {
+                $params = is_array($subEffects[$index]['params'] ?? null) ? $subEffects[$index]['params'] : [];
+                if (! is_array($params['action_budget'] ?? null)) {
+                    continue;
+                }
+                $params['action_budget']['action'] = SpellActionBudgetService::ACTION_TEMP_HP;
+                $subEffects[$index]['params'] = $params;
+            }
+        }
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $subEffects
+     * @param  list<int>  $indices
+     */
+    private function distributeActionBudget(
+        array &$subEffects,
+        array $indices,
+        string $action,
+        int $level,
+        int $actionPointCost,
+        int $powerIndex,
+        int $hybridDivisor
+    ): void {
+        $castBudget = $this->actionBudgetService->budgetForCast($action, $level, $actionPointCost, $powerIndex);
+        $castBudget = max(count($indices), (int) round($castBudget / max(1, $hybridDivisor)));
+        $weights = [];
+        foreach ($indices as $index) {
+            $params = is_array($subEffects[$index]['params'] ?? null) ? $subEffects[$index]['params'] : [];
+            $weights[] = isset($params['value_converted']) && is_numeric($params['value_converted'])
+                ? (float) $params['value_converted']
+                : 1.0;
+        }
+        $allocations = $this->actionBudgetService->distribute($castBudget, $weights);
+
+        foreach ($indices as $position => $index) {
+            $params = is_array($subEffects[$index]['params'] ?? null) ? $subEffects[$index]['params'] : [];
+            $oldValue = isset($params['value_converted']) && is_numeric($params['value_converted'])
+                ? max(1.0, (float) $params['value_converted'])
+                : 1.0;
+            $newValue = $allocations[$position];
+            $params['value_converted'] = $newValue;
+            $this->replaceActionFormula($params, $newValue);
+
+            if (isset($params['value_converted_crit']) && is_numeric($params['value_converted_crit'])) {
+                $criticalRatio = max(1.0, (float) $params['value_converted_crit'] / $oldValue);
+                $criticalValue = max($newValue, (int) round($newValue * $criticalRatio));
+                $params['value_converted_crit'] = $criticalValue;
+                $this->replaceCriticalActionFormula($params, $criticalValue);
+            }
+            if (isset($params['life_steal_formula'])) {
+                $params['life_steal_value_converted'] = $newValue;
+            }
+
+            $params['action_budget'] = [
+                'source' => 'creation-sort-pv',
+                'action' => $action,
+                'level' => $level,
+                'pa_cost' => $actionPointCost,
+                'max_pa' => $this->actionBudgetService->maxActionPoints($level),
+                'power' => SpellActionBudgetService::POWER_LEVELS[$powerIndex],
+                'turn_budget' => $this->actionBudgetService->turnBudget($action, $level, $powerIndex),
+                'cast_budget' => $castBudget,
+                'hybrid_divisor' => $hybridDivisor,
+            ];
+            $subEffects[$index]['params'] = $params;
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     */
+    private function replaceActionFormula(array &$params, int $value): void
+    {
+        $params['dice_formula'] = $this->diceNotationService->toDiceNotation($value);
+        $params['value_formula'] = $params['dice_formula'];
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     */
+    private function replaceCriticalActionFormula(array &$params, int $value): void
+    {
+        $params['dice_formula_crit'] = $this->diceNotationService->toDiceNotation($value);
+        $params['value_formula_crit'] = $params['dice_formula_crit'];
+    }
+
+    /**
+     * Le palier neutre représente le second rôle moyen.
+     * La mêlée monte d'un palier ; longue portée et zone descendent chacune d'un palier.
+     *
+     * @param  array<string, mixed>  $levelData
+     */
+    private function actionPowerIndex(array $levelData, ?string $area): int
+    {
+        $powerIndex = 2;
+        $range = isset($levelData['range']) && is_numeric($levelData['range']) ? (int) $levelData['range'] : null;
+        if ($range !== null && $range <= 1) {
+            $powerIndex++;
+        } elseif ($range !== null && $range >= 7) {
+            $powerIndex--;
+        }
+        if ($area !== null && $area !== 'point') {
+            $powerIndex--;
+        }
+
+        return max(0, min(4, $powerIndex));
+    }
+
+    /**
+     * @param  array<string, mixed>  $levelData
+     */
+    private function krosmozLevelFromDofusLevelData(array $levelData): ?int
+    {
+        if (! isset($levelData['minPlayerLevel']) || ! is_numeric($levelData['minPlayerLevel'])) {
+            return null;
+        }
+
+        return max(1, min(20, (int) round((float) $levelData['minPlayerLevel'] / 10)));
+    }
+
+    /**
      * @param  array<string, mixed>  $instance
-     * @param  array<string, mixed>  $definition
      * @param  array<string, mixed>  $stateData
      * @return array<string, mixed>
      */
@@ -501,7 +725,9 @@ final class SpellEffectsConversionService
         }
         $duration = $instance['duration'];
         if (is_numeric($duration)) {
-            $params['duration'] = (int) $duration;
+            $turns = max(0, (int) $duration);
+            $params['duration'] = $turns;
+            $params['duration_formula'] = (string) $turns;
         }
     }
 
@@ -543,8 +769,10 @@ final class SpellEffectsConversionService
         ?string $mappedCharacteristicKey = null,
         int $spellGrade = 1
     ): array {
+        $dofusValueFormula = $this->buildValueFormula($instance);
         $params = [
-            'value_formula' => $this->buildValueFormula($instance),
+            'value_formula' => $dofusValueFormula,
+            'dofus_value_formula' => $dofusValueFormula,
             'value_formula_crit' => null,
         ];
         $this->addEffectDirectionToParams($subEffectSlug, $params);
@@ -577,8 +805,8 @@ final class SpellEffectsConversionService
             }
         }
 
-        $this->applyValueConversion($instance, $subEffectSlug, $params, $spellGrade);
         $this->maybeAttachLifeStealFormulaFromDofusDefinition($subEffectSlug, $definition, $params);
+        $this->applyValueConversion($instance, $subEffectSlug, $params, $spellGrade);
         $this->applyLifeStealValueConversion($instance, $params, $spellGrade);
         $this->attachDofusElementIdFromSpellEffectInstance($instance, $params);
         $this->syncCellsFormulaForDeplacement($subEffectSlug, $params);
@@ -741,11 +969,11 @@ final class SpellEffectsConversionService
     }
 
     /**
-     * Calcule la valeur Dofus « d » (moyenne des dés ou valeur fixe) pour la conversion.
+     * Calcule la valeur Dofus « d » (moyenne de la plage ou valeur fixe) pour la conversion.
      * Quand diceSide est 0, diceNum porte souvent la valeur (ex. 10 = 10%, 50 = 50).
      *
      * @param  array<string, mixed>  $instance  Instance d'effet (diceNum, diceSide, value)
-     * @return float|null Moyenne diceNum*(diceSide+1)/2, ou diceNum si diceSide=0, ou value, ou null
+     * @return float|null Moyenne de diceNum–diceSide, ou diceNum si diceSide=0, ou value, ou null
      */
     private function computeDofusValueForConversion(array $instance): ?float
     {
@@ -755,7 +983,8 @@ final class SpellEffectsConversionService
     }
 
     /**
-     * Borne min / max / moyenne Dofus pour un effet (dés ou valeur fixe).
+     * Borne min / max / moyenne Dofus pour un effet.
+     * DofusDB nomme historiquement ces bornes `diceNum` et `diceSide`, mais elles ne représentent pas NdX.
      * Sert à convertir séparément min et max puis à produire une notation dés réaliste (écart fort = n petit, X grand).
      *
      * @return array{min: float, max: float, mean: float}|null
@@ -766,10 +995,13 @@ final class SpellEffectsConversionService
         $diceSide = isset($instance['diceSide']) && is_numeric($instance['diceSide']) ? (int) $instance['diceSide'] : null;
 
         if ($diceNum !== null && $diceSide !== null && $diceNum > 0 && $diceSide > 0) {
+            $min = min($diceNum, $diceSide);
+            $max = max($diceNum, $diceSide);
+
             return [
-                'min' => (float) $diceNum,
-                'max' => (float) ($diceNum * $diceSide),
-                'mean' => $diceNum * ($diceSide + 1) / 2.0,
+                'min' => (float) $min,
+                'max' => (float) $max,
+                'mean' => ($min + $max) / 2.0,
             ];
         }
         if ($diceNum !== null && $diceNum > 0 && ($diceSide === null || $diceSide === 0)) {
@@ -818,6 +1050,8 @@ final class SpellEffectsConversionService
             SpellEffectConversionFormulaResolver::ENTITY_SPELL
         );
         if ($conversionFunctionId !== 'convertToDice') {
+            $params['value_formula'] = (string) $params['value_converted'];
+
             return;
         }
 
@@ -845,11 +1079,13 @@ final class SpellEffectsConversionService
                 $kMax = $this->scaleRestrictiveEffectValue((float) $kMax);
             }
             $params['dice_formula'] = $this->diceNotationService->toDiceNotation((float) $kMin, (float) $kMax);
+            $params['value_formula'] = $params['dice_formula'];
 
             return;
         }
 
         $params['dice_formula'] = $this->diceNotationService->toDiceNotation((float) $params['value_converted']);
+        $params['value_formula'] = $params['dice_formula'];
     }
 
     /**
@@ -860,7 +1096,7 @@ final class SpellEffectsConversionService
     private function addEffectDirectionToParams(string $subEffectSlug, array &$params): void
     {
         $params['effect_direction'] = match ($subEffectSlug) {
-            'booster', 'soigner', 'protéger', 'invoquer' => 'bonus',
+            'booster', 'soigner', 'protéger', 'donner-pv-temporaires', 'invoquer' => 'bonus',
             'retirer' => 'malus',
             'voler-caracteristiques' => 'steal',
             default => 'action',
@@ -881,6 +1117,20 @@ final class SpellEffectsConversionService
             return;
         }
 
+        $effectId = isset($instance['effectId']) && is_numeric($instance['effectId'])
+            ? (int) $instance['effectId']
+            : (isset($params['dofus_effect_id']) && is_numeric($params['dofus_effect_id'])
+                ? (int) $params['dofus_effect_id']
+                : 0);
+
+        // Identifiants Dofus stables prioritaires sur le texte (traductions / formulations variables).
+        $kindFromId = match ($effectId) {
+            5, 1021, 1041, 4001, 4002, 1103, 4003 => 'push',
+            6, 1022, 1042, 1043 => 'pull',
+            4 => 'teleport',
+            default => null,
+        };
+
         $text = $this->normalizeDecisionText(
             implode(' ', array_filter([
                 $this->extractEffectDescription($definition, 'fr'),
@@ -889,16 +1139,21 @@ final class SpellEffectsConversionService
             ]))
         );
 
-        $kind = 'movement';
-        if (preg_match('/\b(attire|attirer|rapproche|vers le lanceur)\b/u', $text) === 1) {
-            $kind = 'pull';
-        } elseif (preg_match('/\b(repousse|repousser|pousse|eloigne|recule)\b/u', $text) === 1) {
-            $kind = 'push';
-        } elseif (preg_match('/\b(teleporte|teleportation|echange de position|transpose)\b/u', $text) === 1) {
-            $kind = 'teleport';
+        $kind = $kindFromId ?? 'movement';
+        if ($kindFromId === null) {
+            if (preg_match('/\b(attire|attirer|rapproche|vers le lanceur|avance)\b/u', $text) === 1) {
+                $kind = 'pull';
+            } elseif (preg_match('/\b(repousse|repousser|pousse|eloigne|recule)\b/u', $text) === 1) {
+                $kind = 'push';
+            } elseif (preg_match('/\b(teleporte|teleportation|echange de position|transpose)\b/u', $text) === 1) {
+                $kind = 'teleport';
+            } elseif (preg_match('/\b(saute|saut|bond|bondit)\b/u', $text) === 1) {
+                $kind = 'jump';
+            }
+        }
+
+        if ($kind === 'teleport') {
             $params['teleport'] = true;
-        } elseif (preg_match('/\b(saute|saut|bond|bondit)\b/u', $text) === 1) {
-            $kind = 'jump';
         }
 
         $params['movement_kind'] = $kind;
@@ -921,7 +1176,34 @@ final class SpellEffectsConversionService
             return;
         }
 
+        if ($this->isRelativeResistanceCharacteristic($params['characteristic'] ?? null)) {
+            $value = (int) $params['value_converted'];
+            $params['value_converted'] = $value > 0 ? min(50, $value) : 0;
+
+            return;
+        }
+
         $params['value_converted'] = $this->scaleRestrictiveEffectValue((float) $params['value_converted']);
+    }
+
+    private function isRelativeResistanceCharacteristic(mixed $characteristic): bool
+    {
+        if (! is_string($characteristic)) {
+            return false;
+        }
+        if (str_ends_with($characteristic, '_spell')) {
+            $characteristic = substr($characteristic, 0, -6);
+        }
+
+        return in_array($characteristic, [
+            'res_neutre',
+            'res_terre',
+            'res_feu',
+            'res_eau',
+            'res_air',
+            'res_sagesse',
+            'res_vitalite',
+        ], true);
     }
 
     private function isRestrictiveEffect(string $subEffectSlug): bool
@@ -939,8 +1221,9 @@ final class SpellEffectsConversionService
     }
 
     /**
-     * Construit la formule de valeur : XdY (dés), ou valeur fixe (diceNum si diceSide=0, sinon value).
-     * Quand diceSide est 0, Dofus utilise souvent diceNum pour la valeur (ex. 10 = 10%, 50 = 50).
+     * Construit une formule exécutable depuis les bornes DofusDB.
+     * `diceNum` et `diceSide` sont respectivement le minimum et le maximum, pas une notation NdX.
+     * La moyenne sert uniquement de repli lorsque la caractéristique ne dispose d'aucune conversion.
      *
      * @param  array<string, mixed>  $instance
      */
@@ -949,7 +1232,10 @@ final class SpellEffectsConversionService
         $diceNum = isset($instance['diceNum']) && is_numeric($instance['diceNum']) ? (int) $instance['diceNum'] : null;
         $diceSide = isset($instance['diceSide']) && is_numeric($instance['diceSide']) ? (int) $instance['diceSide'] : null;
         if ($diceNum !== null && $diceSide !== null && $diceNum > 0 && $diceSide > 0) {
-            return $diceNum.'d'.$diceSide;
+            $min = min($diceNum, $diceSide);
+            $max = max($diceNum, $diceSide);
+
+            return $min === $max ? (string) $min : "({$min} + {$max}) / 2";
         }
         // diceSide 0 ou absent : valeur fixe dans diceNum (ex. 10% bouclier) ou value
         if ($diceNum !== null && $diceNum > 0 && ($diceSide === null || $diceSide === 0)) {
@@ -963,259 +1249,6 @@ final class SpellEffectsConversionService
         return null;
     }
 
-    /**
-     * Déduit la résolution du sort (jet d'attaque / sauvegarde / réussite auto) à partir des sous-effets.
-     * Règles métier:
-     * - Retraits caractéristiques => sauvegarde (prioritaire, même avec dommages).
-     * - Dommages (même avec déplacement) => jet d'attaque (contre CA).
-     * - Boosts/soins/invocation/soutien => réussite auto.
-     * - Placement sans dommage explicite => sauvegarde (cas défensif par défaut).
-     *
-     * @param  list<array<string, mixed>>  $effects
-     * @param  array<string, mixed>  $spellRaw
-     * @return array<string, string|null>
-     */
-    private function inferSpellResolution(array $effects, array $spellRaw): array
-    {
-        $hasDamage = false;
-        $hasPlacement = false;
-        $hasRemoval = false;
-        $hasSupport = false;
-        $saveAbilityHint = null;
-
-        foreach ($effects as $effect) {
-            $subEffects = $effect['sub_effects'] ?? [];
-            if (! is_array($subEffects)) {
-                continue;
-            }
-
-            foreach ($subEffects as $subEffect) {
-                if (! is_array($subEffect)) {
-                    continue;
-                }
-
-                $slug = (string) ($subEffect['sub_effect_slug'] ?? '');
-                $params = is_array($subEffect['params'] ?? null) ? $subEffect['params'] : [];
-                $characteristic = isset($params['characteristic']) ? strtolower((string) $params['characteristic']) : '';
-                $valueFormula = isset($params['value_formula']) ? trim((string) $params['value_formula']) : '';
-
-                if ($slug === 'frapper') {
-                    $hasDamage = true;
-
-                    continue;
-                }
-
-                if ($slug === 'déplacer') {
-                    $hasPlacement = true;
-
-                    continue;
-                }
-
-                if ($slug === 'retirer' || $slug === 'voler-caracteristiques') {
-                    $hasRemoval = true;
-                    if ($saveAbilityHint === null) {
-                        $saveAbilityHint = $this->inferSaveAbilityFromCharacteristicKey($characteristic);
-                    }
-
-                    continue;
-                }
-
-                if (in_array($slug, ['booster', 'soigner', 'protéger', 'invoquer'], true)) {
-                    $hasSupport = true;
-                }
-
-                if ($slug === 'booster') {
-                    if ($this->isCharacteristicRemovalKey($characteristic) || str_starts_with($valueFormula, '-')) {
-                        $hasRemoval = true;
-                        if ($saveAbilityHint === null) {
-                            $saveAbilityHint = $this->inferSaveAbilityFromCharacteristicKey($characteristic);
-                        }
-                    }
-                }
-
-                if ($slug === DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER) {
-                    $otherText = strtolower((string) ($params['value'] ?? ''));
-                    if ($otherText !== '') {
-                        if ($this->isRemovalText($otherText)) {
-                            $hasRemoval = true;
-                            if ($saveAbilityHint === null) {
-                                $saveAbilityHint = $this->inferSaveAbilityFromOtherText($otherText);
-                            }
-                        }
-                        if ($this->isPlacementText($otherText)) {
-                            $hasPlacement = true;
-                        }
-                        if ($this->isDamageText($otherText)) {
-                            $hasDamage = true;
-                        }
-                        if ($this->isSupportText($otherText)) {
-                            $hasSupport = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        if ($hasRemoval || ($hasPlacement && ! $hasDamage && ! $hasSupport)) {
-            return [
-                'resolution_mode' => Spell::RESOLUTION_SAVING_THROW,
-                'attack_characteristic_key' => null,
-                'save_characteristic_key' => $saveAbilityHint ?? 'sagesse',
-                'save_dc_formula' => self::SAVE_DC_DEFAULT_FORMULA,
-                'save_success_note' => $hasDamage
-                    ? "En cas de sauvegarde réussie, réduire l'effet (ex: demi-dégâts) et annuler les retraits."
-                    : "En cas de sauvegarde réussie, annuler l'effet du sort.",
-            ];
-        }
-
-        if ($hasDamage) {
-            return [
-                'resolution_mode' => Spell::RESOLUTION_ATTACK_ROLL,
-                'attack_characteristic_key' => $this->inferAttackCharacteristicFromSpellRaw($spellRaw),
-                'save_characteristic_key' => null,
-                'save_dc_formula' => null,
-                'save_success_note' => null,
-            ];
-        }
-
-        if (! $hasDamage && ! $hasRemoval) {
-            return [
-                'resolution_mode' => Spell::RESOLUTION_AUTO_SUCCESS,
-                'attack_characteristic_key' => null,
-                'save_characteristic_key' => null,
-                'save_dc_formula' => null,
-                'save_success_note' => null,
-            ];
-        }
-
-        return [
-            'resolution_mode' => Spell::RESOLUTION_ATTACK_ROLL,
-            'attack_characteristic_key' => $this->inferAttackCharacteristicFromSpellRaw($spellRaw),
-            'save_characteristic_key' => null,
-            'save_dc_formula' => null,
-            'save_success_note' => null,
-        ];
-    }
-
-    private function inferAttackCharacteristicFromSpellRaw(array $spellRaw): string
-    {
-        $elementId = isset($spellRaw['elementId']) && is_numeric($spellRaw['elementId'])
-            ? (int) $spellRaw['elementId']
-            : (isset($spellRaw['spell_global']['elementId']) && is_numeric($spellRaw['spell_global']['elementId'])
-                ? (int) $spellRaw['spell_global']['elementId']
-                : null);
-
-        return match ($elementId) {
-            1 => 'intel',
-            2 => 'chance',
-            3 => 'strong',
-            4 => 'agi',
-            default => 'strong',
-        };
-    }
-
-    private function isCharacteristicRemovalKey(string $key): bool
-    {
-        if ($key === '') {
-            return false;
-        }
-
-        $needles = [
-            'dodge_action_points',
-            'dodge_movement_points',
-            'dodge_spell',
-            'fuite',
-            'tacle',
-        ];
-        foreach ($needles as $needle) {
-            if (str_contains($key, $needle)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private function inferSaveAbilityFromCharacteristicKey(string $key): ?string
-    {
-        if ($key === '') {
-            return null;
-        }
-
-        if (str_contains($key, 'fuite') || str_contains($key, 'tacle') || str_contains($key, 'agi')) {
-            return 'agi';
-        }
-
-        return null;
-    }
-
-    private function inferSaveAbilityFromOtherText(string $otherText): ?string
-    {
-        $text = $this->normalizeDecisionText($otherText);
-
-        if (preg_match('/\b(pa|pm|esquive pa|esquive pm)\b/u', $text) === 1) {
-            return 'sagesse';
-        }
-        if (preg_match('/\b(fuite|tacle|agilite)\b/u', $text) === 1) {
-            return 'agi';
-        }
-        if (preg_match('/\b(force)\b/u', $text) === 1) {
-            return 'strong';
-        }
-        if (preg_match('/\b(intelligence)\b/u', $text) === 1) {
-            return 'intel';
-        }
-        if (preg_match('/\b(chance)\b/u', $text) === 1) {
-            return 'chance';
-        }
-        if (preg_match('/\b(vitalite)\b/u', $text) === 1) {
-            return 'vitality';
-        }
-
-        return null;
-    }
-
-    private function isRemovalText(string $text): bool
-    {
-        $normalized = $this->normalizeDecisionText($text);
-
-        if ($normalized === '' || str_contains($normalized, 'kamas')) {
-            return false;
-        }
-
-        // "X dommages ... PA utilise" = scaling de dégâts, pas un retrait de PA.
-        if (str_contains($normalized, 'dommage') && str_contains($normalized, 'pa utilise')) {
-            return false;
-        }
-
-        $mentionsNegativePattern = preg_match('/-\s*#|\bretire\b|\bretrait\b/u', $normalized) === 1;
-        $mentionsSteal = preg_match('/\b(vole|vol de)\b/u', $normalized) === 1;
-        $mentionsStat = preg_match('/\b(pa|pm|fuite|tacle|portee|sagesse|intelligence|agilite|chance|force|vitalite)\b/u', $normalized) === 1;
-
-        return $mentionsNegativePattern || ($mentionsSteal && $mentionsStat);
-    }
-
-    private function isPlacementText(string $text): bool
-    {
-        $normalized = $this->normalizeDecisionText($text);
-
-        return preg_match('/\b(repousse|attire|teleporte|pousse|avance|recule|deplace|echange de position)\b/u', $normalized) === 1;
-    }
-
-    private function isDamageText(string $text): bool
-    {
-        $normalized = $this->normalizeDecisionText($text);
-
-        return preg_match('/\b(dommage|dommages|degat|degats|vol de vie|frappe)\b/u', $normalized) === 1;
-    }
-
-    private function isSupportText(string $text): bool
-    {
-        $normalized = $this->normalizeDecisionText($text);
-
-        return preg_match('/\b(invoque|soin|protege|bouclier|boost|augmente|rend)\b/u', $normalized) === 1;
-    }
-
     private function normalizeDecisionText(string $text): string
     {
         $value = trim(mb_strtolower($text));
@@ -1223,7 +1256,6 @@ final class SpellEffectsConversionService
             return '';
         }
 
-        // Supprime tags/sprites et harmonise les accents pour des regex stables.
         $value = strip_tags($value);
         $value = str_replace(
             ['é', 'è', 'ê', 'ë', 'à', 'â', 'ä', 'î', 'ï', 'ô', 'ö', 'ù', 'û', 'ü', 'ç'],

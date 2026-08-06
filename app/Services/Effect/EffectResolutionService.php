@@ -11,6 +11,7 @@ use App\Models\EffectSubEffect;
 use App\Models\Entity\Condition;
 use App\Models\Entity\Monster;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
+use App\Support\DofusDbElementId;
 
 /**
  * Moteur de résolution des effects.
@@ -42,17 +43,6 @@ final class EffectResolutionService
 
     /** @var array<int, string> dofusdb_id */
     private array $conditionNameByDofusdbIdCache = [];
-
-    /** Aligné sur l’UI sorts (id élément → slug config). */
-    private const ELEMENT_ID_TO_SLUG = [
-        0 => 'neutral',
-        1 => 'earth',
-        2 => 'fire',
-        3 => 'air',
-        4 => 'water',
-        5 => 'element_wisdom',
-        6 => 'element_vitality',
-    ];
 
     public function __construct(
         private readonly EffectTextResolver $textResolver,
@@ -403,7 +393,7 @@ final class EffectResolutionService
 
     private function elementIdToSlug(int $elementId): string
     {
-        return self::ELEMENT_ID_TO_SLUG[$elementId] ?? '';
+        return DofusDbElementId::toKrosmozSlug($elementId) ?? '';
     }
 
     /**

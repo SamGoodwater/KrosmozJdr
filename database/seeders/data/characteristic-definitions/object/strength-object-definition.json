@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "strength_object",
         "name": "Bonus de force",
@@ -45,6 +46,7 @@
                 "16": 1,
                 "20": 2
             },
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -164,9 +166,7 @@
             "base_price_per_unit": 500,
             "rune_price_per_unit": 1000,
             "value_available": null,
-            "item_type_dofus_ids": [
-                17
-            ],
+            "item_type_dofus_ids": null,
             "item_type_ids": null
         }
     },

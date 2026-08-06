@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Journal non technique des avancées visibles du projet."
+    "description": "Le socle d'import Dofus a été simplifié pour rendre les imports massifs plus sûrs :"
   },
   {
     "path": "backend/_ai.md",
@@ -98,6 +98,11 @@
     "path": "features/effects/_ai.md",
     "title": "Effets — IA",
     "description": "`app/Models/Effect*.php`, `app/Models/ObjectEffect.php`"
+  },
+  {
+    "path": "features/effects/MAPPINGS_HORS_PERIMETRE.md",
+    "title": "Mappings d'effets sans caractéristique Krosmoz",
+    "description": "Triage des `dofusdb_effect_mappings` dont `characteristic_source = characteristic`"
   },
   {
     "path": "features/effects/README.md",

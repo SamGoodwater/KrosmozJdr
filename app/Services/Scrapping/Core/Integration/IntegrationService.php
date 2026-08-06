@@ -481,6 +481,11 @@ final class IntegrationService
         }
 
         [$poMin, $poMax] = $this->buildSpellPoMinMax($data);
+        $targetType = isset($data['target_type']) && in_array($data['target_type'], [
+            Effect::TARGET_DIRECT,
+            Effect::TARGET_TRAP,
+            Effect::TARGET_GLYPH,
+        ], true) ? (string) $data['target_type'] : null;
         $payload = [
             'dofusdb_id' => $data['dofusdb_id'] ?? null,
             'name' => $this->localizedToString($data['name'] ?? null),
@@ -491,13 +496,19 @@ final class IntegrationService
             'po_editable' => (bool) (isset($data['po_editable']) ? (int) $data['po_editable'] : true),
             'level' => (string) ($data['level'] ?? '1'),
             'cast_per_turn' => (string) ($data['cast_per_turn'] ?? '1'),
-            'cast_per_target' => (string) (isset($data['cast_per_target']) ? $data['cast_per_target'] : '0'),
+            'cast_per_target' => (string) (isset($data['cast_per_target']) ? $data['cast_per_target'] : '1'),
             'sight_line' => (bool) (isset($data['sight_line']) ? (int) $data['sight_line'] : true),
+            'cast_in_line' => (bool) (isset($data['cast_in_line']) ? (int) $data['cast_in_line'] : false),
+            'cast_in_diagonal' => (bool) (isset($data['cast_in_diagonal']) ? (int) $data['cast_in_diagonal'] : false),
+            'target_type' => $targetType,
+            'max_stack' => min(10, max(0, (int) ($data['max_stack'] ?? 0))),
+            'global_cooldown' => min(10, max(0, (int) ($data['global_cooldown'] ?? 0))),
             'number_between_two_cast' => (string) (isset($data['number_between_two_cast']) ? $data['number_between_two_cast'] : '0'),
             /**
              * Pas de mapping depuis spell_global.elementId : côté Dofus ce champ sert au jet d’attaque
-             * (intel / chance / force / agi), pas à l’élément des dégâts — voir inferAttackCharacteristicFromSpellRaw.
+             * (intel / chance / force / agi), pas à l’élément des dégâts — voir SpellResolutionInferenceService.
              * L’élément affiché est déduit uniquement des sous-effets (inferSpellElementMaskFromEffectsPayload).
+             * is_magic / resolution_* sont écrasés par l’inférence d’effets (DofusDB n’expose pas isMagic).
              */
             'element' => null,
             'category' => (int) ($options['spell_category_hint'] ?? $data['category'] ?? Spell::CATEGORY_CREATURE),
@@ -653,50 +664,49 @@ final class IntegrationService
             $normalizedRows = $this->normalizeSubEffectsRowsForSignature($subEffectsRaw, $slugToId);
             $signature = $normalizedRows !== [] ? $this->computeEffectConfigSignature($normalizedRows, $targetType, $area) : null;
 
-            $existingDegree = ($signature !== null) ? EffectDegree::query()->where('config_signature', $signature)->first() : null;
-            if ($existingDegree !== null) {
-                $attachEffectIds[] = $existingDegree->effect_id;
+            $degreeModel = ($signature !== null)
+                ? EffectDegree::query()->where('config_signature', $signature)->first()
+                : null;
 
-                continue;
-            }
-
-            if ($localDefinition === null) {
-                $defSlug = $baseSlug;
-                $i = 0;
-                while (Effect::query()->where('slug', $defSlug)->exists()) {
-                    $i++;
-                    $defSlug = $baseSlug.'-'.$i;
+            if ($degreeModel === null) {
+                if ($localDefinition === null) {
+                    $defSlug = $baseSlug;
+                    $i = 0;
+                    while (Effect::query()->where('slug', $defSlug)->exists()) {
+                        $i++;
+                        $defSlug = $baseSlug.'-'.$i;
+                    }
+                    $localDefinition = Effect::create([
+                        'name' => $groupName !== '' ? $groupName : $effectName,
+                        'slug' => $defSlug,
+                        'description' => $effectRow['description'] ?? null,
+                        'target_type' => $targetType,
+                    ]);
                 }
-                $localDefinition = Effect::create([
-                    'name' => $groupName !== '' ? $groupName : $effectName,
-                    'slug' => $defSlug,
-                    'description' => $effectRow['description'] ?? null,
-                    'target_type' => $targetType,
-                ]);
+
+                if ($effectSlug === '') {
+                    $effectSlug = $localDefinition->slug.'-d'.$degreeNum;
+                }
+                $degSlug = $this->makeUniqueEffectDegreeSlug($effectSlug);
+
+                $degreeModel = EffectDegree::query()->firstOrCreate(
+                    [
+                        'effect_id' => $localDefinition->id,
+                        'degree' => $degreeNum,
+                    ],
+                    [
+                        'required_creature_level' => $requiredCreatureLevel,
+                        'area' => $area,
+                        'slug' => $degSlug,
+                    ]
+                );
             }
 
-            if ($effectSlug === '') {
-                $effectSlug = $localDefinition->slug.'-d'.$degreeNum;
-            }
-            $degSlug = $this->makeUniqueEffectDegreeSlug($effectSlug);
-
-            $degreeModel = EffectDegree::query()->firstOrCreate(
-                [
-                    'effect_id' => $localDefinition->id,
-                    'degree' => $degreeNum,
-                ],
-                [
-                    'required_creature_level' => $requiredCreatureLevel,
-                    'area' => $area,
-                    'slug' => $degSlug,
-                ]
-            );
-            if (! $degreeModel->wasRecentlyCreated) {
-                $degreeModel->update([
-                    'required_creature_level' => $requiredCreatureLevel,
-                    'area' => $area,
-                ]);
-            }
+            $degreeModel->update([
+                'required_creature_level' => $requiredCreatureLevel,
+                'area' => $area,
+            ]);
+            $attachEffectIds[] = $degreeModel->effect_id;
 
             foreach ($subEffectsRaw as $row) {
                 if (! is_array($row)) {
@@ -711,6 +721,12 @@ final class IntegrationService
                 $params = is_array($row['params'] ?? null) ? $row['params'] : [];
                 $critOnly = (bool) ($row['crit_only'] ?? false);
                 $order = isset($row['order']) && is_numeric($row['order']) ? (int) $row['order'] : 0;
+                $durationFormula = isset($params['duration_formula']) && is_scalar($params['duration_formula'])
+                    ? trim((string) $params['duration_formula'])
+                    : (isset($params['duration']) && is_numeric($params['duration'])
+                        ? (string) max(0, (int) $params['duration'])
+                        : null);
+                $durationFormula = $durationFormula !== '' ? $durationFormula : null;
 
                 $condition = $this->integrateConditionFromParams($spell, $slug, $params);
                 if ($condition !== null) {
@@ -721,11 +737,17 @@ final class IntegrationService
                     }
                 }
 
-                $alreadyExists = $degreeModel->effectSubEffects()
+                $existingPivot = $degreeModel->effectSubEffects()
                     ->where($this->effectSubEffectDedupWhere($subId, $critOnly, $params))
-                    ->exists();
+                    ->first();
 
-                if ($alreadyExists) {
+                if ($existingPivot !== null) {
+                    $existingPivot->update([
+                        'order' => $order,
+                        'params' => $params,
+                        'duration_formula' => $durationFormula,
+                    ]);
+
                     continue;
                 }
 
@@ -735,6 +757,7 @@ final class IntegrationService
                     'scope' => Effect::SCOPE_GENERAL,
                     'params' => $params,
                     'crit_only' => $critOnly,
+                    'duration_formula' => $durationFormula,
                 ]);
             }
 
@@ -1011,18 +1034,21 @@ final class IntegrationService
         $where = [
             'sub_effect_id' => $subEffectId,
             'crit_only' => $critOnly,
-            'params->characteristic' => $params['characteristic'] ?? null,
-            'params->value_formula' => $params['value_formula'] ?? null,
-            'params->value_formula_crit' => $params['value_formula_crit'] ?? null,
         ];
-        if (array_key_exists('value', $params)) {
-            $where['params->value'] = $params['value'];
-        }
-        if (array_key_exists('condition_dofusdb_id', $params)) {
-            $where['params->condition_dofusdb_id'] = $params['condition_dofusdb_id'];
-        }
-        if (array_key_exists('condition_id', $params)) {
-            $where['params->condition_id'] = $params['condition_id'];
+
+        // Ne jamais comparer les chemins JSON à null (`= null` ne matche jamais en SQL).
+        foreach ([
+            'characteristic' => $params['characteristic'] ?? null,
+            'value_formula' => $params['value_formula'] ?? null,
+            'value_formula_crit' => $params['value_formula_crit'] ?? null,
+            'value' => $params['value'] ?? null,
+            'condition_dofusdb_id' => $params['condition_dofusdb_id'] ?? null,
+            'condition_id' => $params['condition_id'] ?? null,
+        ] as $key => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+            $where['params->'.$key] = $value;
         }
 
         return $where;

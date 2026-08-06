@@ -5,7 +5,7 @@
         "name": "Puissance",
         "short_name": "Puis.",
         "helper": "Indice de puissance du sort (dégâts/soins).",
-        "descriptions": "Puissance du sort (3.3.2). Échelle Krosmoz 0–30, compressée depuis Dofus (1–250+). Affecte dégâts/soins via barèmes 5.2.3.",
+        "descriptions": "Indice de puissance compressé depuis la puissance DofusDB ; la progression suit une racine carrée et non une échelle linéaire.",
         "icon": "power.webp",
         "icon_false": null,
         "color": "yellow",
@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 70,
+        "sort_order": 31,
         "group": "spell",
         "linked_to_key": null
     },
@@ -28,7 +28,7 @@
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "round(min(30, max(1, 2 + 14 * pow(max(1,[d])/250, 0.5))))",
+            "conversion_formula": "([d] / max(abs([d]), 1)) * (round(min(30, max(1, 2 + 14 * pow(max(0,abs([d]))/250, 0.5)))))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "1": 1,

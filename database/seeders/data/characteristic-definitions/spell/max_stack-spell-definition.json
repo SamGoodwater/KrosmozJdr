@@ -1,0 +1,44 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "max_stack_spell",
+        "name": "Cumul maximal",
+        "short_name": "Cumul",
+        "helper": "Nombre maximal de cumuls simultanés du sort ou de son effet principal.",
+        "descriptions": "0 signifie que la source ne fixe pas de limite ; sinon la valeur est bornée à 10.",
+        "icon": "stack.webp",
+        "icon_false": null,
+        "color": "teal",
+        "value_overrides": null,
+        "hide_when_empty": false,
+        "hide_when_false": false,
+        "unit": null,
+        "type": "int",
+        "status": "validee",
+        "sort_order": 27,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "max_stack",
+            "min": "0",
+            "max": "10",
+            "formula": null,
+            "formula_display": null,
+            "default_value": "0",
+            "conversion_formula": "round(min(10,max(0,[d])))",
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": "Grille 5×20 non utilisée : métadonnée de lancement du sort.",
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

@@ -212,6 +212,11 @@ class IntegrationServiceTest extends TestCase
                 'pa' => '4',
                 'po' => '1',
                 'level' => '1',
+                'cast_in_line' => 1,
+                'cast_in_diagonal' => 1,
+                'target_type' => 'glyph',
+                'max_stack' => 4,
+                'global_cooldown' => 3,
             ],
         ];
 
@@ -223,6 +228,12 @@ class IntegrationServiceTest extends TestCase
         $this->assertNotNull($spell);
         $this->assertSame('Sort Integration Test', $spell->name);
         $this->assertSame('54321', $spell->dofusdb_id);
+        $this->assertTrue($spell->cast_in_line);
+        $this->assertTrue($spell->cast_in_diagonal);
+        $this->assertSame('glyph', $spell->target_type);
+        $this->assertSame(4, $spell->max_stack);
+        $this->assertSame(3, $spell->global_cooldown);
+        $this->assertSame('1', $spell->cast_per_target);
     }
 
     public function test_integrate_condition_persists_local_reference_in_sub_effect_params(): void
@@ -286,16 +297,27 @@ class IntegrationServiceTest extends TestCase
         $this->assertTrue($condition->cant_deal_damage);
         $this->assertTrue($condition->cant_be_tackled);
 
-        $pivotParams = EffectSubEffect::query()->firstOrFail()->params;
+        $pivot = EffectSubEffect::query()->firstOrFail();
+        $pivotParams = $pivot->params;
         $this->assertSame($condition->id, $pivotParams['condition_id'] ?? null);
         $this->assertSame(987654, $pivotParams['condition_dofusdb_id'] ?? null);
         $this->assertSame('Pesanteur Test', $pivotParams['condition_name'] ?? null);
+        $this->assertSame('2', $pivot->duration_formula);
+
+        // Re-import : met à jour la durée au lieu d'ignorer le pivot existant.
+        $convertedData['spell_effects']['effects'][0]['sub_effects'][0]['params']['duration'] = 5;
+        $convertedData['spell_effects']['effects'][0]['sub_effects'][0]['params']['duration_formula'] = '5';
+        $result = $this->service->integrate('spell', $convertedData, []);
+        $this->assertTrue($result->isSuccess());
+        $pivot->refresh();
+        $this->assertSame('5', $pivot->duration_formula);
+        $this->assertSame(5, $pivot->params['duration'] ?? null);
 
         $attachedState = $spell->conditions()->first();
         $this->assertNotNull($attachedState);
         $this->assertSame($condition->id, $attachedState->id);
         $this->assertSame('target', $attachedState->pivot->application_mode);
-        $this->assertSame(2, $attachedState->pivot->duration);
+        $this->assertSame(5, $attachedState->pivot->duration);
         $this->assertTrue((bool) $attachedState->pivot->dispellable);
         $this->assertSame('A', $attachedState->pivot->target_mask);
 

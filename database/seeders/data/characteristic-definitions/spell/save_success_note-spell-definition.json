@@ -15,7 +15,7 @@
         "unit": null,
         "type": "string",
         "status": "validee",
-        "sort_order": 65,
+        "sort_order": 10,
         "group": "spell",
         "linked_to_key": null
     },

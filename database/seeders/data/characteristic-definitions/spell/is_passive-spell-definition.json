@@ -22,7 +22,7 @@
         "unit": null,
         "type": "bool",
         "status": "validee",
-        "sort_order": 8,
+        "sort_order": 1,
         "group": "spell",
         "linked_to_key": null
     },

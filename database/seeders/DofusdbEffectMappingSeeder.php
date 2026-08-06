@@ -50,9 +50,11 @@ class DofusdbEffectMappingSeeder extends Seeder
     public function run(): void
     {
         $mappings = $this->getMappings();
+        $keptIds = [];
 
         foreach ($mappings as $dofusdbEffectId => $mapping) {
             [$subEffectSlug, $characteristicSource, $characteristicKey] = $mapping;
+            $keptIds[] = (int) $dofusdbEffectId;
 
             $this->retryOnMysqlSchemaChanged(static fn () => DofusdbEffectMapping::updateOrCreate(
                 ['dofusdb_effect_id' => $dofusdbEffectId],
@@ -62,6 +64,15 @@ class DofusdbEffectMappingSeeder extends Seeder
                     'characteristic_key' => $characteristicKey,
                 ]
             ));
+        }
+
+        // Supprime les lignes obsolètes (ex. anciens boosters d’états désormais hors mapping).
+        if ($keptIds !== [] && is_file(self::DATA_FILE)) {
+            $this->retryOnMysqlSchemaChanged(
+                static fn () => DofusdbEffectMapping::query()
+                    ->whereNotIn('dofusdb_effect_id', $keptIds)
+                    ->delete()
+            );
         }
 
         // Le service de conversion met en cache les mappings : invalider après seed

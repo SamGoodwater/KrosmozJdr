@@ -5,7 +5,7 @@
         "name": "Initiative",
         "short_name": "Ini.",
         "helper": "Initiative appliquée par les sous-effets de sort.",
-        "descriptions": "Initiative temporaire via sous-effet (2.2.2). Jet : 1d20 + mod Intel + bonus. Équipement max 3, forgemagie +3. Max 5.",
+        "descriptions": "Bonus temporaire d’initiative conservé directement depuis DofusDB, sans plafond artificiel.",
         "icon": "initiative.webp",
         "icon_false": null,
         "color": "purple",
@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 72,
+        "sort_order": 66,
         "group": "spell",
         "linked_to_key": null
     },
@@ -24,11 +24,11 @@
             "dofusdb_characteristic_id": 44,
             "db_column": "ini",
             "min": "0",
-            "max": "5",
+            "max": "∞",
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "round(min(5,max(0,0.38*pow(max(1,[d]),0.92))))",
+            "conversion_formula": "[d]",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "5": 2,
@@ -44,44 +44,7 @@
                 "16": 5,
                 "20": 5
             },
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": 0
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": 1
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": 3
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": 4
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": 5
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": 5
-                }
-            ],
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -195,7 +158,7 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Bonus initiative via sort (buff temporaire).",
+            "norms_description": "Bonus temporaire d’initiative conservé directement, sans plafond artificiel.",
             "norms_help_section_id": null,
             "value_available": null
         }

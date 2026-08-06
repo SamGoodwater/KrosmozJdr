@@ -26,7 +26,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 70,
+        "sort_order": 15,
         "group": "spell",
         "linked_to_key": null
     },
@@ -35,52 +35,15 @@
             "dofusdb_characteristic_id": null,
             "db_column": "po_max",
             "min": "0",
-            "max": "63",
+            "max": "20",
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "[d]",
+            "conversion_formula": "round(min(20,max(0,[d])))",
             "conversion_function": null,
             "conversion_dofus_sample": null,
             "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": null
-                }
-            ],
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     1,
@@ -194,7 +157,7 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Portée maximale du sort. Progression par paliers.",
+            "norms_description": "Portée maximale en cases, bornée à 20 ; le bonus de PO du lanceur ne s’ajoute que si la portée est modifiable.",
             "norms_help_section_id": null,
             "value_available": null
         }

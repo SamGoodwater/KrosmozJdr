@@ -45,6 +45,17 @@ class StoreSpellRequest extends FormRequest
             'cast_per_turn' => ['nullable', 'string', 'max:255'],
             'cast_per_target' => ['nullable', 'string', 'max:255'],
             'sight_line' => ['nullable', 'boolean'],
+            'cast_in_line' => $this->characteristicRules('cast_in_line', 'spell') ?: ['nullable', 'boolean'],
+            'cast_in_diagonal' => $this->characteristicRules('cast_in_diagonal', 'spell') ?: ['nullable', 'boolean'],
+            'target_type' => ['nullable', 'string', 'in:direct,trap,glyph'],
+            'max_stack' => array_merge(
+                ['nullable', 'integer'],
+                $this->characteristicMinMaxRules('max_stack', 'spell') ?: ['min:0', 'max:10']
+            ),
+            'global_cooldown' => array_merge(
+                ['nullable', 'integer'],
+                $this->characteristicMinMaxRules('global_cooldown', 'spell') ?: ['min:0', 'max:10']
+            ),
             'number_between_two_cast' => ['nullable', 'string', 'max:255'],
             'duration' => ['nullable', 'string', 'max:255'],
             'element' => array_merge(

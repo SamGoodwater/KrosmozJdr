@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
 
+use App\Support\DofusDbElementId;
+
 /**
  * Mapping effectId DofusDB vers sous-effet KrosmozJDR (constante PHP).
  *
@@ -17,14 +19,6 @@ final class DofusDbEffectMapping
     /** Slug du sous-effet de repli pour les effectId non mappés (valeur seule, pas de caractéristique). */
     public const SUB_EFFECT_SLUG_OTHER = 'autre';
 
-    private const ELEMENT_ID_TO_KEY = [
-        0 => 'neutral',
-        1 => 'fire',
-        2 => 'water',
-        3 => 'earth',
-        4 => 'air',
-    ];
-
     /** effectId => [sub_effect_slug, characteristic_source: 'element'|'none'] */
     private const EFFECT_ID_TO_SUB_EFFECT = [
         96 => ['frapper', 'element'],
@@ -32,6 +26,9 @@ final class DofusDbEffectMapping
         98 => ['frapper', 'element'],
         99 => ['frapper', 'element'],
         100 => ['frapper', 'element'],
+        1020 => ['protéger', 'none'],
+        1039 => ['protéger', 'none'],
+        1040 => ['protéger', 'none'],
     ];
 
     public static function getSubEffectForEffectId(int $effectId): ?array
@@ -45,6 +42,6 @@ final class DofusDbEffectMapping
             return null;
         }
 
-        return self::ELEMENT_ID_TO_KEY[$elementId] ?? null;
+        return DofusDbElementId::toKrosmozSlug($elementId);
     }
 }

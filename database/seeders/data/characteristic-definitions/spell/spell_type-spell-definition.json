@@ -64,7 +64,7 @@
         "unit": null,
         "type": "string",
         "status": "validee",
-        "sort_order": 71,
+        "sort_order": 4,
         "group": "spell",
         "linked_to_key": null
     },

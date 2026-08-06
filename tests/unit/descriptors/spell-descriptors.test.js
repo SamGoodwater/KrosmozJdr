@@ -19,7 +19,22 @@ describe('spell-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
             const descriptors = getSpellFieldDescriptors();
-            const requiredFields = ['id', 'name', 'level', 'pa', 'po', 'area', 'state', 'read_level', 'write_level'];
+            const requiredFields = [
+                'id',
+                'name',
+                'level',
+                'pa',
+                'po',
+                'area',
+                'cast_in_line',
+                'cast_in_diagonal',
+                'target_type',
+                'max_stack',
+                'global_cooldown',
+                'state',
+                'read_level',
+                'write_level',
+            ];
 
             requiredFields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);

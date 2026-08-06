@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Règles de mapping scrapping (DofusDB → Krosmoz). Régénéré par : php artisan scrapping:seeders:export --scrapping-mappings
+ * Règles de mapping scrapping (DofusDB → Krosmoz). Régénéré depuis les JSON d’entité.
  */
 
 return [
@@ -34,21 +34,15 @@ return [
         'source' => 'dofusdb',
         'entity' => 'breed',
         'mapping_key' => 'name',
-        'from_path' => 'shortName',
+        'from_path' => 'name',
         'from_lang_aware' => true,
-        'characteristic_key' => 'name_object',
+        'characteristic_key' => null,
         'formatters' => [
             0 => [
                 'name' => 'pickLang',
                 'args' => [
                     'lang' => 'fr',
                     'fallback' => 'fr',
-                ],
-            ],
-            1 => [
-                'name' => 'truncate',
-                'args' => [
-                    'max' => 255,
                 ],
             ],
         ],
@@ -295,7 +289,7 @@ return [
         'mapping_key' => 'level',
         'from_path' => 'level',
         'from_lang_aware' => false,
-        'characteristic_key' => 'level_object',
+        'characteristic_key' => null,
         'formatters' => [
             0 => [
                 'name' => 'dofusdb_level',
@@ -332,7 +326,7 @@ return [
         'mapping_key' => 'price',
         'from_path' => 'price',
         'from_lang_aware' => false,
-        'characteristic_key' => 'price_object',
+        'characteristic_key' => null,
         'formatters' => [
             0 => [
                 'name' => 'nullableInt',
@@ -500,10 +494,64 @@ return [
     16 => [
         'source' => 'dofusdb',
         'entity' => 'item',
+        'mapping_key' => 'type_name_item',
+        'from_path' => 'typeId',
+        'from_lang_aware' => false,
+        'characteristic_key' => null,
+        'formatters' => [
+            0 => [
+                'name' => 'resolveItemTypeName',
+                'args' => [],
+            ],
+        ],
+        'spell_level_aggregation' => null,
+        'sort_order' => 10,
+        'targets' => [
+            0 => [
+                'target_model' => 'items',
+                'target_field' => 'type_name',
+                'sort_order' => 0,
+            ],
+        ],
+    ],
+    17 => [
+        'source' => 'dofusdb',
+        'entity' => 'item',
+        'mapping_key' => 'type_name_catalog',
+        'from_path' => 'type.name',
+        'from_lang_aware' => false,
+        'characteristic_key' => null,
+        'formatters' => [
+            0 => [
+                'name' => 'pickLang',
+                'args' => [
+                    'lang' => 'fr',
+                    'fallback' => 'fr',
+                ],
+            ],
+        ],
+        'spell_level_aggregation' => null,
+        'sort_order' => 11,
+        'targets' => [
+            0 => [
+                'target_model' => 'resources',
+                'target_field' => 'type_name',
+                'sort_order' => 0,
+            ],
+            1 => [
+                'target_model' => 'consumables',
+                'target_field' => 'type_name',
+                'sort_order' => 1,
+            ],
+        ],
+    ],
+    18 => [
+        'source' => 'dofusdb',
+        'entity' => 'item',
         'mapping_key' => 'weight',
         'from_path' => 'realWeight',
         'from_lang_aware' => false,
-        'characteristic_key' => 'weight_object',
+        'characteristic_key' => null,
         'formatters' => [
             0 => [
                 'name' => 'nullableInt',
@@ -511,7 +559,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 10,
+        'sort_order' => 12,
         'targets' => [
             0 => [
                 'target_model' => 'resources',
@@ -520,13 +568,13 @@ return [
             ],
         ],
     ],
-    17 => [
+    19 => [
         'source' => 'dofusdb',
         'entity' => 'item',
         'mapping_key' => 'rarity',
         'from_path' => 'rarity',
         'from_lang_aware' => false,
-        'characteristic_key' => 'rarity_object',
+        'characteristic_key' => null,
         'formatters' => [
             0 => [
                 'name' => 'defaultRarityByLevel',
@@ -534,7 +582,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 11,
+        'sort_order' => 13,
         'targets' => [
             0 => [
                 'target_model' => 'resources',
@@ -553,7 +601,7 @@ return [
             ],
         ],
     ],
-    18 => [
+    20 => [
         'source' => 'dofusdb',
         'entity' => 'item',
         'mapping_key' => 'recipe_ingredients',
@@ -567,7 +615,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 12,
+        'sort_order' => 14,
         'targets' => [
             0 => [
                 'target_model' => 'resources',
@@ -586,7 +634,7 @@ return [
             ],
         ],
     ],
-    19 => [
+    21 => [
         'source' => 'dofusdb',
         'entity' => 'item',
         'mapping_key' => 'effect',
@@ -600,7 +648,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 13,
+        'sort_order' => 15,
         'targets' => [
             0 => [
                 'target_model' => 'resources',
@@ -619,7 +667,7 @@ return [
             ],
         ],
     ],
-    20 => [
+    22 => [
         'source' => 'dofusdb',
         'entity' => 'item',
         'mapping_key' => 'bonus',
@@ -633,7 +681,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 14,
+        'sort_order' => 16,
         'targets' => [
             0 => [
                 'target_model' => 'items',
@@ -642,7 +690,7 @@ return [
             ],
         ],
     ],
-    21 => [
+    23 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'dofusdb_id',
@@ -665,7 +713,7 @@ return [
             ],
         ],
     ],
-    22 => [
+    24 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'name',
@@ -691,7 +739,7 @@ return [
             ],
         ],
     ],
-    23 => [
+    25 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'description',
@@ -717,7 +765,7 @@ return [
             ],
         ],
     ],
-    24 => [
+    26 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'level',
@@ -740,7 +788,7 @@ return [
             ],
         ],
     ],
-    25 => [
+    27 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'life',
@@ -765,7 +813,7 @@ return [
             ],
         ],
     ],
-    26 => [
+    28 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'strength',
@@ -788,7 +836,7 @@ return [
             ],
         ],
     ],
-    27 => [
+    29 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'intelligence',
@@ -811,7 +859,7 @@ return [
             ],
         ],
     ],
-    28 => [
+    30 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'agility',
@@ -834,7 +882,7 @@ return [
             ],
         ],
     ],
-    29 => [
+    31 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'wisdom',
@@ -857,7 +905,7 @@ return [
             ],
         ],
     ],
-    30 => [
+    32 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'chance',
@@ -880,7 +928,7 @@ return [
             ],
         ],
     ],
-    31 => [
+    33 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'pa',
@@ -903,7 +951,7 @@ return [
             ],
         ],
     ],
-    32 => [
+    34 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'pm',
@@ -926,7 +974,7 @@ return [
             ],
         ],
     ],
-    33 => [
+    35 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'po',
@@ -940,7 +988,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 13,
+        'sort_order' => 12,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -949,7 +997,7 @@ return [
             ],
         ],
     ],
-    34 => [
+    36 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'dodge_pa',
@@ -963,7 +1011,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 14,
+        'sort_order' => 13,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -972,7 +1020,7 @@ return [
             ],
         ],
     ],
-    35 => [
+    37 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'dodge_pm',
@@ -986,7 +1034,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 15,
+        'sort_order' => 14,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -995,7 +1043,53 @@ return [
             ],
         ],
     ],
-    36 => [
+    38 => [
+        'source' => 'dofusdb',
+        'entity' => 'monster',
+        'mapping_key' => 'tackle',
+        'from_path' => 'grades.0.bonusCharacteristics.tackleBlock',
+        'from_lang_aware' => false,
+        'characteristic_key' => 'tackle_creature',
+        'formatters' => [
+            0 => [
+                'name' => 'convertCharacteristic',
+                'args' => [],
+            ],
+        ],
+        'spell_level_aggregation' => null,
+        'sort_order' => 15,
+        'targets' => [
+            0 => [
+                'target_model' => 'creatures',
+                'target_field' => 'tacle',
+                'sort_order' => 0,
+            ],
+        ],
+    ],
+    39 => [
+        'source' => 'dofusdb',
+        'entity' => 'monster',
+        'mapping_key' => 'dodge',
+        'from_path' => 'grades.0.bonusCharacteristics.tackleEvade',
+        'from_lang_aware' => false,
+        'characteristic_key' => 'dodge_creature',
+        'formatters' => [
+            0 => [
+                'name' => 'convertCharacteristic',
+                'args' => [],
+            ],
+        ],
+        'spell_level_aggregation' => null,
+        'sort_order' => 16,
+        'targets' => [
+            0 => [
+                'target_model' => 'creatures',
+                'target_field' => 'fuite',
+                'sort_order' => 0,
+            ],
+        ],
+    ],
+    40 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'ini',
@@ -1009,7 +1103,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 16,
+        'sort_order' => 17,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -1018,7 +1112,7 @@ return [
             ],
         ],
     ],
-    37 => [
+    41 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'vitality',
@@ -1032,7 +1126,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 17,
+        'sort_order' => 18,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -1041,7 +1135,7 @@ return [
             ],
         ],
     ],
-    38 => [
+    42 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'image',
@@ -1058,7 +1152,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 18,
+        'sort_order' => 19,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -1067,7 +1161,7 @@ return [
             ],
         ],
     ],
-    39 => [
+    43 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'size',
@@ -1083,7 +1177,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 19,
+        'sort_order' => 20,
         'targets' => [
             0 => [
                 'target_model' => 'monsters',
@@ -1092,7 +1186,7 @@ return [
             ],
         ],
     ],
-    40 => [
+    44 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'race',
@@ -1106,7 +1200,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 20,
+        'sort_order' => 21,
         'targets' => [
             0 => [
                 'target_model' => 'monsters',
@@ -1115,7 +1209,7 @@ return [
             ],
         ],
     ],
-    41 => [
+    45 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'res_neutre',
@@ -1129,7 +1223,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 21,
+        'sort_order' => 22,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -1138,7 +1232,7 @@ return [
             ],
         ],
     ],
-    42 => [
+    46 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'res_terre',
@@ -1152,7 +1246,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 22,
+        'sort_order' => 23,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -1161,7 +1255,7 @@ return [
             ],
         ],
     ],
-    43 => [
+    47 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'res_feu',
@@ -1175,7 +1269,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 23,
+        'sort_order' => 24,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -1184,7 +1278,7 @@ return [
             ],
         ],
     ],
-    44 => [
+    48 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'res_air',
@@ -1198,7 +1292,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 24,
+        'sort_order' => 25,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -1207,7 +1301,7 @@ return [
             ],
         ],
     ],
-    45 => [
+    49 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'res_eau',
@@ -1221,7 +1315,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 25,
+        'sort_order' => 26,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -1230,53 +1324,7 @@ return [
             ],
         ],
     ],
-    46 => [
-        'source' => 'dofusdb',
-        'entity' => 'monster',
-        'mapping_key' => 'tackle',
-        'from_path' => 'grades.0.bonusCharacteristics.tackleBlock',
-        'from_lang_aware' => false,
-        'characteristic_key' => 'tackle_creature',
-        'formatters' => [
-            0 => [
-                'name' => 'convertCharacteristic',
-                'args' => [],
-            ],
-        ],
-        'spell_level_aggregation' => null,
-        'sort_order' => 26,
-        'targets' => [
-            0 => [
-                'target_model' => 'creatures',
-                'target_field' => 'tacle',
-                'sort_order' => 0,
-            ],
-        ],
-    ],
-    47 => [
-        'source' => 'dofusdb',
-        'entity' => 'monster',
-        'mapping_key' => 'dodge',
-        'from_path' => 'grades.0.bonusCharacteristics.tackleEvade',
-        'from_lang_aware' => false,
-        'characteristic_key' => 'dodge_creature',
-        'formatters' => [
-            0 => [
-                'name' => 'convertCharacteristic',
-                'args' => [],
-            ],
-        ],
-        'spell_level_aggregation' => null,
-        'sort_order' => 27,
-        'targets' => [
-            0 => [
-                'target_model' => 'creatures',
-                'target_field' => 'fuite',
-                'sort_order' => 0,
-            ],
-        ],
-    ],
-    48 => [
+    50 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'critical_hit',
@@ -1290,7 +1338,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 28,
+        'sort_order' => 27,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -1299,7 +1347,7 @@ return [
             ],
         ],
     ],
-    49 => [
+    51 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'heal_bonus',
@@ -1313,7 +1361,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 29,
+        'sort_order' => 28,
         'targets' => [
             0 => [
                 'target_model' => 'creatures',
@@ -1322,19 +1370,7 @@ return [
             ],
         ],
     ],
-    50 => [
-        'source' => 'dofusdb',
-        'entity' => 'monster-race',
-        'mapping_key' => 'id',
-        'from_path' => 'id',
-        'from_lang_aware' => false,
-        'characteristic_key' => null,
-        'formatters' => [],
-        'spell_level_aggregation' => null,
-        'sort_order' => 0,
-        'targets' => [],
-    ],
-    51 => [
+    52 => [
         'source' => 'dofusdb',
         'entity' => 'panoply',
         'mapping_key' => 'dofusdb_id',
@@ -1357,7 +1393,7 @@ return [
             ],
         ],
     ],
-    52 => [
+    53 => [
         'source' => 'dofusdb',
         'entity' => 'panoply',
         'mapping_key' => 'name',
@@ -1383,7 +1419,7 @@ return [
             ],
         ],
     ],
-    53 => [
+    54 => [
         'source' => 'dofusdb',
         'entity' => 'panoply',
         'mapping_key' => 'description',
@@ -1409,7 +1445,7 @@ return [
             ],
         ],
     ],
-    54 => [
+    55 => [
         'source' => 'dofusdb',
         'entity' => 'panoply',
         'mapping_key' => 'bonus',
@@ -1432,7 +1468,7 @@ return [
             ],
         ],
     ],
-    55 => [
+    56 => [
         'source' => 'dofusdb',
         'entity' => 'panoply',
         'mapping_key' => 'item_dofusdb_ids',
@@ -1455,7 +1491,7 @@ return [
             ],
         ],
     ],
-    56 => [
+    57 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'dofusdb_id',
@@ -1478,7 +1514,7 @@ return [
             ],
         ],
     ],
-    57 => [
+    58 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'name',
@@ -1504,7 +1540,7 @@ return [
             ],
         ],
     ],
-    58 => [
+    59 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'description',
@@ -1536,7 +1572,7 @@ return [
             ],
         ],
     ],
-    59 => [
+    60 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'image',
@@ -1562,7 +1598,7 @@ return [
             ],
         ],
     ],
-    60 => [
+    61 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'pa',
@@ -1591,39 +1627,6 @@ return [
             ],
         ],
     ],
-    61 => [
-        'source' => 'dofusdb',
-        'entity' => 'spell',
-        'mapping_key' => 'po',
-        'from_path' => 'spell_global.range',
-        'from_lang_aware' => false,
-        'characteristic_key' => null,
-        'formatters' => [
-            0 => [
-                'name' => 'toInt',
-                'args' => [],
-            ],
-            1 => [
-                'name' => 'clampToCharacteristic',
-                'args' => [
-                    'characteristicId' => 'spell_range_min_spell',
-                ],
-            ],
-            2 => [
-                'name' => 'toString',
-                'args' => [],
-            ],
-        ],
-        'spell_level_aggregation' => null,
-        'sort_order' => 5,
-        'targets' => [
-            0 => [
-                'target_model' => 'spells',
-                'target_field' => 'po_min',
-                'sort_order' => 0,
-            ],
-        ],
-    ],
     62 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
@@ -1644,7 +1647,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 6,
+        'sort_order' => 5,
         'targets' => [
             0 => [
                 'target_model' => 'spells',
@@ -1673,7 +1676,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 7,
+        'sort_order' => 6,
         'targets' => [
             0 => [
                 'target_model' => 'spells',
@@ -1685,35 +1688,8 @@ return [
     64 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
-        'mapping_key' => 'area',
-        'from_path' => 'spell_global.area',
-        'from_lang_aware' => false,
-        'characteristic_key' => 'area_spell',
-        'formatters' => [
-            0 => [
-                'name' => 'zoneDescrToNotation',
-                'args' => [],
-            ],
-            1 => [
-                'name' => 'toString',
-                'args' => [],
-            ],
-        ],
-        'spell_level_aggregation' => null,
-        'sort_order' => 8,
-        'targets' => [
-            0 => [
-                'target_model' => 'spells',
-                'target_field' => 'area',
-                'sort_order' => 0,
-            ],
-        ],
-    ],
-    65 => [
-        'source' => 'dofusdb',
-        'entity' => 'spell',
         'mapping_key' => 'level',
-        'from_path' => 'spell_global.grade',
+        'from_path' => 'spell_global.minPlayerLevel',
         'from_lang_aware' => false,
         'characteristic_key' => 'level_spell',
         'formatters' => [
@@ -1722,10 +1698,8 @@ return [
                 'args' => [],
             ],
             1 => [
-                'name' => 'clampToCharacteristic',
-                'args' => [
-                    'characteristicId' => 'level_spell',
-                ],
+                'name' => 'convertCharacteristic',
+                'args' => [],
             ],
             2 => [
                 'name' => 'toString',
@@ -1733,7 +1707,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 9,
+        'sort_order' => 7,
         'targets' => [
             0 => [
                 'target_model' => 'spells',
@@ -1742,7 +1716,7 @@ return [
             ],
         ],
     ],
-    66 => [
+    65 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'cast_per_turn',
@@ -1766,7 +1740,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 10,
+        'sort_order' => 8,
         'targets' => [
             0 => [
                 'target_model' => 'spells',
@@ -1775,7 +1749,7 @@ return [
             ],
         ],
     ],
-    67 => [
+    66 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'cast_per_target',
@@ -1799,7 +1773,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 11,
+        'sort_order' => 9,
         'targets' => [
             0 => [
                 'target_model' => 'spells',
@@ -1808,7 +1782,7 @@ return [
             ],
         ],
     ],
-    68 => [
+    67 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'sight_line',
@@ -1828,7 +1802,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 12,
+        'sort_order' => 10,
         'targets' => [
             0 => [
                 'target_model' => 'spells',
@@ -1837,7 +1811,141 @@ return [
             ],
         ],
     ],
+    68 => [
+        'source' => 'dofusdb',
+        'entity' => 'spell',
+        'mapping_key' => 'cast_in_line',
+        'from_path' => 'spell_global.castInLine',
+        'from_lang_aware' => false,
+        'characteristic_key' => 'cast_in_line_spell',
+        'formatters' => [
+            0 => [
+                'name' => 'toInt',
+                'args' => [],
+            ],
+            1 => [
+                'name' => 'clampToCharacteristic',
+                'args' => [
+                    'characteristicId' => 'cast_in_line_spell',
+                ],
+            ],
+        ],
+        'spell_level_aggregation' => null,
+        'sort_order' => 11,
+        'targets' => [
+            0 => [
+                'target_model' => 'spells',
+                'target_field' => 'cast_in_line',
+                'sort_order' => 0,
+            ],
+        ],
+    ],
     69 => [
+        'source' => 'dofusdb',
+        'entity' => 'spell',
+        'mapping_key' => 'cast_in_diagonal',
+        'from_path' => 'spell_global.castInDiagonal',
+        'from_lang_aware' => false,
+        'characteristic_key' => 'cast_in_diagonal_spell',
+        'formatters' => [
+            0 => [
+                'name' => 'toInt',
+                'args' => [],
+            ],
+            1 => [
+                'name' => 'clampToCharacteristic',
+                'args' => [
+                    'characteristicId' => 'cast_in_diagonal_spell',
+                ],
+            ],
+        ],
+        'spell_level_aggregation' => null,
+        'sort_order' => 12,
+        'targets' => [
+            0 => [
+                'target_model' => 'spells',
+                'target_field' => 'cast_in_diagonal',
+                'sort_order' => 0,
+            ],
+        ],
+    ],
+    70 => [
+        'source' => 'dofusdb',
+        'entity' => 'spell',
+        'mapping_key' => 'target_type',
+        'from_path' => 'spell_global.targetType',
+        'from_lang_aware' => false,
+        'characteristic_key' => 'target_type_spell',
+        'formatters' => [],
+        'spell_level_aggregation' => null,
+        'sort_order' => 13,
+        'targets' => [
+            0 => [
+                'target_model' => 'spells',
+                'target_field' => 'target_type',
+                'sort_order' => 0,
+            ],
+        ],
+    ],
+    71 => [
+        'source' => 'dofusdb',
+        'entity' => 'spell',
+        'mapping_key' => 'max_stack',
+        'from_path' => 'spell_global.maxStack',
+        'from_lang_aware' => false,
+        'characteristic_key' => 'max_stack_spell',
+        'formatters' => [
+            0 => [
+                'name' => 'toInt',
+                'args' => [],
+            ],
+            1 => [
+                'name' => 'clampToCharacteristic',
+                'args' => [
+                    'characteristicId' => 'max_stack_spell',
+                ],
+            ],
+        ],
+        'spell_level_aggregation' => null,
+        'sort_order' => 14,
+        'targets' => [
+            0 => [
+                'target_model' => 'spells',
+                'target_field' => 'max_stack',
+                'sort_order' => 0,
+            ],
+        ],
+    ],
+    72 => [
+        'source' => 'dofusdb',
+        'entity' => 'spell',
+        'mapping_key' => 'global_cooldown',
+        'from_path' => 'spell_global.globalCooldown',
+        'from_lang_aware' => false,
+        'characteristic_key' => 'global_cooldown_spell',
+        'formatters' => [
+            0 => [
+                'name' => 'toInt',
+                'args' => [],
+            ],
+            1 => [
+                'name' => 'clampToCharacteristic',
+                'args' => [
+                    'characteristicId' => 'global_cooldown_spell',
+                ],
+            ],
+        ],
+        'spell_level_aggregation' => null,
+        'sort_order' => 15,
+        'targets' => [
+            0 => [
+                'target_model' => 'spells',
+                'target_field' => 'global_cooldown',
+                'sort_order' => 0,
+            ],
+        ],
+    ],
+    73 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'number_between_two_cast',
@@ -1861,7 +1969,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 13,
+        'sort_order' => 16,
         'targets' => [
             0 => [
                 'target_model' => 'spells',
@@ -1870,7 +1978,7 @@ return [
             ],
         ],
     ],
-    70 => [
+    74 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'po_editable',
@@ -1890,7 +1998,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 15,
+        'sort_order' => 17,
         'targets' => [
             0 => [
                 'target_model' => 'spells',
@@ -1899,36 +2007,7 @@ return [
             ],
         ],
     ],
-    71 => [
-        'source' => 'dofusdb',
-        'entity' => 'spell',
-        'mapping_key' => 'element',
-        'from_path' => 'spell_global.elementId',
-        'from_lang_aware' => false,
-        'characteristic_key' => 'element_spell',
-        'formatters' => [
-            0 => [
-                'name' => 'nullableInt',
-                'args' => [],
-            ],
-            1 => [
-                'name' => 'clampToCharacteristic',
-                'args' => [
-                    'characteristicId' => 'element',
-                ],
-            ],
-        ],
-        'spell_level_aggregation' => null,
-        'sort_order' => 16,
-        'targets' => [
-            0 => [
-                'target_model' => 'spells',
-                'target_field' => 'element',
-                'sort_order' => 0,
-            ],
-        ],
-    ],
-    72 => [
+    75 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'category',
@@ -1948,7 +2027,7 @@ return [
             ],
         ],
         'spell_level_aggregation' => null,
-        'sort_order' => 17,
+        'sort_order' => 18,
         'targets' => [
             0 => [
                 'target_model' => 'spells',
@@ -1957,36 +2036,7 @@ return [
             ],
         ],
     ],
-    73 => [
-        'source' => 'dofusdb',
-        'entity' => 'spell',
-        'mapping_key' => 'is_magic',
-        'from_path' => 'spell_global.isMagic',
-        'from_lang_aware' => false,
-        'characteristic_key' => 'is_magic_spell',
-        'formatters' => [
-            0 => [
-                'name' => 'toInt',
-                'args' => [],
-            ],
-            1 => [
-                'name' => 'clampToCharacteristic',
-                'args' => [
-                    'characteristicId' => 'is_magic_spell',
-                ],
-            ],
-        ],
-        'spell_level_aggregation' => null,
-        'sort_order' => 18,
-        'targets' => [
-            0 => [
-                'target_model' => 'spells',
-                'target_field' => 'is_magic',
-                'sort_order' => 0,
-            ],
-        ],
-    ],
-    74 => [
+    76 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'powerful',

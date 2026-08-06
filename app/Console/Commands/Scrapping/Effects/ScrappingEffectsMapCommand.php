@@ -35,31 +35,27 @@ class ScrappingEffectsMapCommand extends Command
 
     private const BASE_URL = 'https://api.dofusdb.fr/effects';
 
-    /** Sous-effets Krosmoz connus (slug). */
-    private const SUB_EFFECTS = [
-        'frapper', 'soigner', 'protéger', 'booster', 'retirer',
-        'voler-caracteristiques', 'invoquer', 'déplacer', 'autre',
-    ];
-
     /**
      * DofusDB characteristic id → characteristic_key Krosmoz (effets de sorts / créature).
      * Source : DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md, CARACTERISTIQUES_EFFETS_PAR_ACTION.md.
      * Les clés sont en format court (spell/creature) ; ajoute _spell ou _creature si ta BDD l’exige.
      */
     private const DOFUSDB_CHARACTERISTIC_ID_TO_KROSMOZ_KEY = [
-        0 => 'pv',
         1 => 'pa',
-        5 => 'level',
         10 => 'strong',
         11 => 'vitality',
         12 => 'sagesse',
         13 => 'chance',
         14 => 'agi',
         15 => 'intel',
+        16 => 'do_fixe_multiple',
         18 => 'critical',
         19 => 'po',
         23 => 'pm',
+        25 => 'power_spell',
         26 => 'invocation',
+        27 => 'esquive_pa',
+        28 => 'esquive_pm',
         33 => 'res_terre',
         34 => 'res_feu',
         35 => 'res_eau',
@@ -67,14 +63,36 @@ class ScrappingEffectsMapCommand extends Command
         37 => 'res_neutre',
         44 => 'ini',
         49 => 'heal_bonus',
+        54 => 'res_fixe_terre',
+        55 => 'res_fixe_feu',
+        56 => 'res_fixe_eau',
+        57 => 'res_fixe_air',
+        58 => 'res_fixe_neutre',
         78 => 'fuite',
         79 => 'tacle',
+        85 => 'poussée',
+        87 => 'critiques',
         88 => 'do_terre',
         89 => 'do_feu',
         90 => 'do_eau',
         91 => 'do_air',
         92 => 'do_neutre',
-        103 => 'do_fixe_multiple',
+        // Jouables Krosmoz sans équivalent exact Dofus→échelle, mais utiles en effets de sort.
+        98 => 'mastery_bonus',
+        132 => 'tacle',
+        133 => 'fuite',
+    ];
+
+    /**
+     * Caractéristiques Dofus sans équivalent Krosmoz (hors périmètre conversion).
+     * On conserve l’effet en revue manuelle (`autre` / none) plutôt qu’un booster sans clé.
+     *
+     * @var list<int>
+     */
+    private const OUT_OF_SCOPE_CHARACTERISTIC_IDS = [
+        20, 21, 24, 38, 39, 48, 52, 71, 72, 73, 74, 75,
+        99, 100, 101, 103, 106, 110, 121, 124,
+        126, 127, 128, 129, 130, 131, 140, 141, 142,
     ];
 
     public function handle(DofusDbClient $client): int
@@ -152,7 +170,7 @@ class ScrappingEffectsMapCommand extends Command
     }
 
     /**
-     * @param  list<array{id: int, category: int, elementId: int, description_fr: string, boost: bool}>  $effects
+     * @param  list<array{id: int, category: int, elementId: int, characteristic: int, description_fr: string, boost: bool}>  $effects
      * @return array<int, array{0: string, 1: string, 2: string|null}>
      */
     private function buildMappingsFromEffects(array $effects): array
@@ -165,9 +183,45 @@ class ScrappingEffectsMapCommand extends Command
             $category = $e['category'];
             $elementId = $e['elementId'];
             $boost = $e['boost'];
+            $characteristicId = (int) ($e['characteristic'] ?? 0);
+
+            // États : laissés hors mapping pour que la conversion utilise appliquer-etat via le catalogue.
+            if (str_contains($desc, 'état #') || str_contains($desc, 'etat #') || str_contains($desc, 'state #')) {
+                continue;
+            }
+
+            // Dissipation / nettoyage d’états, sans caractéristique convertible.
+            if (str_contains($desc, 'envoûtement') || str_contains($desc, 'envoutement')
+                || str_contains($desc, 'enlève les') && str_contains($desc, 'état')) {
+                $mappings[$id] = ['autre', 'none', null];
+
+                continue;
+            }
+
+            // Caractéristiques hors périmètre Krosmoz : revue manuelle, pas de clé inventée.
+            if ($characteristicId > 0 && in_array($characteristicId, self::OUT_OF_SCOPE_CHARACTERISTIC_IDS, true)) {
+                $mappings[$id] = ['autre', 'none', null];
+
+                continue;
+            }
+
+            // Déplacement avant les dommages : « Repousse … (sans dommages) » contient le mot dommages.
+            if (str_contains($desc, 'repousse') || str_contains($desc, 'pousse') || str_contains($desc, 'attire')
+                || str_contains($desc, 'téléporte') || str_contains($desc, 'teleporte')
+                || str_contains($desc, 'avance de') || str_contains($desc, 'recule de')
+                || (str_contains($desc, 'case') && (str_contains($desc, 'de ') || preg_match('/#\d+\s*case/', $desc) === 1)
+                    && (str_contains($desc, 'repouss') || str_contains($desc, 'attir') || str_contains($desc, 'pouss')
+                        || str_contains($desc, 'avance') || str_contains($desc, 'recule') || str_contains($desc, 'téléport')
+                        || str_contains($desc, 'teleport') || str_contains($desc, 'saute') || str_contains($desc, 'bond')))) {
+                $mappings[$id] = ['déplacer', 'none', null];
+
+                continue;
+            }
 
             // Dommages élémentaires (category 2, elementId 0–4) ou description "dommage"
-            if (($category === 2 && $elementId >= 0 && $elementId <= 4) || str_contains($desc, 'dommage') || str_contains($desc, 'dégât')) {
+            // « sans dommages » est un déplacement, déjà traité ci-dessus.
+            if (($category === 2 && $elementId >= 0 && $elementId <= 4)
+                || ((str_contains($desc, 'dommage') || str_contains($desc, 'dégât')) && ! str_contains($desc, 'sans dommage'))) {
                 $mappings[$id] = ['frapper', 'element', null];
 
                 continue;
@@ -187,15 +241,6 @@ class ScrappingEffectsMapCommand extends Command
                 continue;
             }
 
-            // Déplacement : repousse, attire, téléporte (case), pousse
-            if (str_contains($desc, 'repousse') || str_contains($desc, 'pousse') || str_contains($desc, 'attire')
-                || (str_contains($desc, 'téléporte') && str_contains($desc, 'case'))
-                || str_contains($desc, 'case') && (str_contains($desc, 'de ') || preg_match('/#\d+\s*case/', $desc))) {
-                $mappings[$id] = ['déplacer', 'none', null];
-
-                continue;
-            }
-
             // Invocation
             if (str_contains($desc, 'invocation') || str_contains($desc, 'invoque') || str_contains($desc, 'invoc')) {
                 $mappings[$id] = ['invoquer', 'none', null];
@@ -203,31 +248,54 @@ class ScrappingEffectsMapCommand extends Command
                 continue;
             }
 
+            // Vol de caractéristiques (PA, PM, PO)
+            if ((str_contains($desc, 'vol') || str_contains($desc, 'vole'))
+                && (str_contains($desc, 'pa') || str_contains($desc, 'pm') || str_contains($desc, 'portée') || str_contains($desc, 'point'))) {
+                $mappings[$id] = $this->mappingWithOptionalCharacteristic(
+                    'voler-caracteristiques',
+                    $this->resolveCharacteristicKeyForEffect($e, $desc)
+                );
+
+                continue;
+            }
+
+            // PV temporaires (charac 95 maxLifePoints) — avant bouclier / boost.
+            if ($characteristicId === 95
+                || str_contains($desc, 'vie temporaire')
+                || str_contains($desc, 'pv temporaire')
+                || str_contains($desc, 'points de vie temporaire')
+                || str_contains($desc, 'maxlifepoints')
+                || (str_contains($desc, 'n\'enlève pas') && str_contains($desc, 'vie'))) {
+                $mappings[$id] = ['donner-pv-temporaires', 'none', null];
+
+                continue;
+            }
+
+            // Protection / bouclier. Avant `boost` : DofusDB marque aussi ces effets avec boost=true.
+            if (str_contains($desc, 'protège') || str_contains($desc, 'bouclier') || str_contains($desc, 'absorption')) {
+                $mappings[$id] = ['protéger', 'none', null];
+
+                continue;
+            }
+
+            // Retrait / malus. À tester avant `boost` : DofusDB marque aussi les variantes négatives comme boost.
+            if (str_contains($desc, 'retrait') || str_contains($desc, 'retire') || str_contains($desc, 'enlève')
+                || $this->isNegativeCharacteristicDescription($desc, (int) ($e['characteristic'] ?? 0))) {
+                $mappings[$id] = $this->mappingWithOptionalCharacteristic(
+                    'retirer',
+                    $this->resolveCharacteristicKeyForEffect($e, $desc)
+                );
+
+                continue;
+            }
+
             // Boost (ajout de caractéristique)
             if ($boost || str_contains($desc, 'ajout') && (str_contains($desc, 'pa') || str_contains($desc, 'pm') || str_contains($desc, 'caractéristique'))
                 || str_contains($desc, 'bonus') && str_contains($desc, 'portée')) {
-                $mappings[$id] = ['booster', 'characteristic', $this->resolveCharacteristicKey($e['characteristic'] ?? 0)];
-
-                continue;
-            }
-
-            // Retrait (PA, PM, etc.)
-            if (str_contains($desc, 'retrait') || str_contains($desc, 'retire') || str_contains($desc, 'enlève')) {
-                $mappings[$id] = ['retirer', 'characteristic', $this->resolveCharacteristicKey($e['characteristic'] ?? 0)];
-
-                continue;
-            }
-
-            // Vol de caractéristiques (PA, PM)
-            if (str_contains($desc, 'vol') && (str_contains($desc, 'pa') || str_contains($desc, 'pm') || str_contains($desc, 'point'))) {
-                $mappings[$id] = ['voler-caracteristiques', 'characteristic', $this->resolveCharacteristicKey($e['characteristic'] ?? 0)];
-
-                continue;
-            }
-
-            // Protection / bouclier
-            if (str_contains($desc, 'protège') || str_contains($desc, 'bouclier') || str_contains($desc, 'absorption')) {
-                $mappings[$id] = ['protéger', 'none', null];
+                $mappings[$id] = $this->mappingWithOptionalCharacteristic(
+                    'booster',
+                    $this->resolveCharacteristicKeyForEffect($e, $desc)
+                );
 
                 continue;
             }
@@ -239,6 +307,60 @@ class ScrappingEffectsMapCommand extends Command
         ksort($mappings, SORT_NUMERIC);
 
         return $mappings;
+    }
+
+    /**
+     * Détecte les variantes négatives DofusDB (`-#1...`) qui partagent le flag boost des bonus.
+     */
+    private function isNegativeCharacteristicDescription(string $description, int $characteristicId): bool
+    {
+        if ($characteristicId <= 0) {
+            return false;
+        }
+
+        return str_contains($description, '-#')
+            || str_contains($description, 'réduit')
+            || str_contains($description, 'diminue')
+            || str_contains($description, 'malus');
+    }
+
+    /**
+     * @param  array{characteristic?: int}  $effect
+     */
+    private function resolveCharacteristicKeyForEffect(array $effect, string $description): ?string
+    {
+        $resolved = $this->resolveCharacteristicKey((int) ($effect['characteristic'] ?? 0));
+        if ($resolved !== null) {
+            return $resolved;
+        }
+        if (preg_match('/\bpa\b/u', $description) === 1) {
+            return 'pa';
+        }
+        if (preg_match('/\bpm\b/u', $description) === 1) {
+            return 'pm';
+        }
+        if (str_contains($description, 'portée') || str_contains($description, 'portee')) {
+            return 'po';
+        }
+        if (str_contains($description, 'critique')) {
+            return 'critical';
+        }
+
+        return null;
+    }
+
+    /**
+     * Sans clé convertible, l’effet passe en revue manuelle (`autre`) pour ne pas polluer l’audit.
+     *
+     * @return array{0: string, 1: string, 2: string|null}
+     */
+    private function mappingWithOptionalCharacteristic(string $slug, ?string $characteristicKey): array
+    {
+        if ($characteristicKey === null || $characteristicKey === '') {
+            return ['autre', 'none', null];
+        }
+
+        return [$slug, 'characteristic', $characteristicKey];
     }
 
     /** Retourne la characteristic_key Krosmoz pour un id caractéristique DofusDB, ou null si inconnu. */
@@ -300,6 +422,6 @@ class ScrappingEffectsMapCommand extends Command
 
         $lines[] = '];';
 
-        return implode("\n", $lines);
+        return implode("\n", $lines)."\n";
     }
 }

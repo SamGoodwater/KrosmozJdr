@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 72,
+        "sort_order": 89,
         "group": "spell",
         "linked_to_key": null
     },
@@ -32,44 +32,7 @@
             "conversion_function": null,
             "conversion_dofus_sample": null,
             "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": null
-                }
-            ],
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -157,7 +120,7 @@
                     5,
                     5,
                     6,
-                    8
+                    6
                 ],
                 "very_strong": [
                     0,
@@ -176,10 +139,10 @@
                     5,
                     5,
                     6,
-                    7,
-                    7,
-                    8,
-                    10
+                    6,
+                    6,
+                    6,
+                    6
                 ]
             },
             "norms_conditions": null,

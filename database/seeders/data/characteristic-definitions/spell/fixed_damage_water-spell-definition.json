@@ -5,7 +5,7 @@
         "name": "Dégâts fixe Eau",
         "short_name": "Do E",
         "helper": "Bonus dégâts Eau appliqué par les sous-effets de sort.",
-        "descriptions": "Bonus dégâts fixe Eau via sous-effet (2.2.2). S'ajoute aux dégâts Eau. Équipement 0–10, sort ~moitié. Max 5.",
+        "descriptions": "Bonus temporaire de dégâts fixes pour cet élément, compris entre 0 et 5.",
         "icon": "dmgWater.webp",
         "icon_false": null,
         "color": "blue",
@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 72,
+        "sort_order": 46,
         "group": "spell",
         "linked_to_key": null
     },
@@ -28,7 +28,7 @@
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "round(min(5,max(0,0.28*pow(max(1,[d]),0.5))))",
+            "conversion_formula": "ceil(min(5,max(0,0.28*pow(max(0,[d]),0.5))))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "5": 1,
@@ -39,8 +39,8 @@
             "conversion_krosmoz_sample": {
                 "5": 1,
                 "15": 1,
-                "30": 2,
-                "60": 2
+                "30": 1,
+                "60": 1
             },
             "conversion_sample_rows": [
                 {
@@ -53,7 +53,7 @@
                     "dofus_level": 15,
                     "dofus_value": 15,
                     "krosmoz_level": 15,
-                    "krosmoz_value": 1
+                    "krosmoz_value": 2
                 },
                 {
                     "dofus_level": 30,
@@ -65,7 +65,7 @@
                     "dofus_level": 60,
                     "dofus_value": 60,
                     "krosmoz_level": 60,
-                    "krosmoz_value": 2
+                    "krosmoz_value": 3
                 }
             ],
             "norms_grid": {

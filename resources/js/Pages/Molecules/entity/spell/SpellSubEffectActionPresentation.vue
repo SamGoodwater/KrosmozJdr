@@ -98,6 +98,21 @@ const shieldBlock = computed(() => {
     };
 });
 
+const tempHpDef = computed(() =>
+    resolveDef("pv_temporaires_spell", undefined, {
+        sourceGroups: [...SPELL_EFFECT_CHIP_SOURCE_GROUPS],
+    }),
+);
+
+const tempHpBlock = computed(() => {
+    const d = tempHpDef.value;
+    return {
+        icon: d?._resolvedIcon ?? d?.icon ?? "lifeTemp.webp",
+        color: d?._resolvedColor ?? d?.color,
+        label: "PV temporaires",
+    };
+});
+
 const elementNum = computed(() => {
     const el = m.value.element;
     if (el === null || el === undefined || el === "") {
@@ -171,6 +186,7 @@ const KNOWN_ACTIONS = new Set([
     "soigner",
     "invoquer",
     "protéger",
+    "donner-pv-temporaires",
     "retirer",
     "voler-caracteristiques",
 ]);
@@ -445,6 +461,43 @@ const isKnownAction = computed(() => KNOWN_ACTIONS.has(action.value));
                     class="shrink-0"
                 />
                 <span>{{ shieldBlock.label }}</span>
+            </span>
+            <template v-if="hasDuration">
+                <span class="text-base-content/70">—</span>
+                <span class="text-base-content/80">Durée {{ durationSeg }}</span>
+            </template>
+            <template v-if="hasArea">
+                <span class="shrink-0 text-base-content/40" aria-hidden="true">|</span>
+                <AreaDisplay :area="m.area" icon-only icon-size="sm" class="shrink-0" />
+            </template>
+        </template>
+
+        <!-- donner-pv-temporaires -->
+        <template v-if="action === 'donner-pv-temporaires'">
+            <span class="font-bold">Gain de</span>
+            <span
+                v-if="valueBadge"
+                class="badge badge-sm shrink-0 border-0 bg-primary-300/20 font-medium text-primary-100 tabular-nums"
+                >{{ valueBadge }}</span
+            >
+            <template v-if="showCritInline">
+                <Icon source="fa-solid fa-bolt" alt="Critique" size="xs" class="shrink-0 text-warning" />
+                <span
+                    class="badge badge-sm shrink-0 border-warning/50 tabular-nums font-medium text-warning badge-outline"
+                    >{{ critBadge }}</span
+                >
+            </template>
+            <span
+                class="inline-flex items-center gap-1 font-medium"
+                :style="tempHpBlock.color ? getCharacteristicColorStyle(tempHpBlock.color) : undefined"
+            >
+                <Icon
+                    :source="tempHpBlock.icon"
+                    :alt="tempHpBlock.label"
+                    size="xs"
+                    class="shrink-0"
+                />
+                <span>{{ tempHpBlock.label }}</span>
             </span>
             <template v-if="hasDuration">
                 <span class="text-base-content/70">—</span>

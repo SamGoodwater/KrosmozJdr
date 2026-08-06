@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 70,
+        "sort_order": 25,
         "group": "spell",
         "linked_to_key": null
     },
@@ -24,52 +24,15 @@
             "dofusdb_characteristic_id": null,
             "db_column": "cast_per_target",
             "min": "0",
-            "max": "99",
+            "max": "4",
             "formula": null,
             "formula_display": null,
             "default_value": "1",
-            "conversion_formula": "[d]",
+            "conversion_formula": "round(min(4,max(0,[d])))",
             "conversion_function": null,
             "conversion_dofus_sample": null,
             "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": [
-                {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 40,
-                    "dofus_value": null,
-                    "krosmoz_level": 4,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": null
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": null
-                }
-            ],
+            "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [
                     1,
@@ -192,7 +155,7 @@
                     "comment": "Sort peu cher → plus de lancers par cible autorisés"
                 }
             ],
-            "norms_description": "Nombre de fois où le sort peut cibler la même cible par tour. Majorité des sorts = 1.",
+            "norms_description": "Lancers par cible et par tour : 0 signifie illimité, 1 est la norme et 4 le plafond jouable.",
             "norms_help_section_id": null,
             "value_available": null
         }

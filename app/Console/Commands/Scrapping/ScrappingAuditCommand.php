@@ -43,8 +43,10 @@ final class ScrappingAuditCommand extends Command
             try {
                 $config = $loader->loadEntity($source, $entity);
                 $mapping = $config['mapping'] ?? [];
-                $errors = $validator->validate($entity, $mapping);
-                $reviews = $this->missingFormulaReviews($entity, $mapping, $characteristics);
+                $catalogOnly = (bool) (($config['meta']['catalogOnly'] ?? false) === true);
+                // Catalogue-only (ex. monster-race) : pas d'intégration, mapping cible optionnel.
+                $errors = $catalogOnly ? [] : $validator->validate($entity, $mapping);
+                $reviews = $catalogOnly ? [] : $this->missingFormulaReviews($entity, $mapping, $characteristics);
             } catch (\Throwable $exception) {
                 $errors = [['path' => 'config', 'message' => $exception->getMessage()]];
                 $reviews = [];

@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 72,
+        "sort_order": 39,
         "group": "spell",
         "linked_to_key": null
     },
@@ -28,7 +28,7 @@
             "formula": null,
             "formula_display": null,
             "default_value": "0",
-            "conversion_formula": "round(min(5,max(0,0.45*pow(max(1,abs([d])),0.78))))",
+            "conversion_formula": "round(min(5,max(0,0.45*pow(max(0,abs([d])),0.78))))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "8": 2,
@@ -45,40 +45,10 @@
             },
             "conversion_sample_rows": [
                 {
-                    "dofus_level": 1,
-                    "dofus_value": null,
-                    "krosmoz_level": 1,
-                    "krosmoz_value": 0
-                },
-                {
                     "dofus_level": 40,
                     "dofus_value": 5,
                     "krosmoz_level": 4,
-                    "krosmoz_value": 1
-                },
-                {
-                    "dofus_level": 80,
-                    "dofus_value": null,
-                    "krosmoz_level": 8,
                     "krosmoz_value": 2
-                },
-                {
-                    "dofus_level": 120,
-                    "dofus_value": null,
-                    "krosmoz_level": 12,
-                    "krosmoz_value": 3
-                },
-                {
-                    "dofus_level": 160,
-                    "dofus_value": null,
-                    "krosmoz_level": 16,
-                    "krosmoz_value": 4
-                },
-                {
-                    "dofus_level": 200,
-                    "dofus_value": null,
-                    "krosmoz_level": 20,
-                    "krosmoz_value": 5
                 }
             ],
             "norms_grid": {

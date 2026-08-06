@@ -12,11 +12,12 @@ namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
  */
 final class SpellEffectConversionFormulaResolver
 {
-    /** Mapping action (sub_effect_slug) → characteristic_key pour les Type 2 action (dommages, soin, bouclier). */
+    /** Mapping action (sub_effect_slug) → characteristic_key pour les Type 2 action (dommages, soin, bouclier, PV temp). */
     private const ACTION_TO_CHARACTERISTIC = [
         'frapper' => 'dommages_spell',
         'soigner' => 'soin_spell',
         'protéger' => 'bouclier_spell',
+        'donner-pv-temporaires' => 'pv_temporaires_spell',
     ];
 
     /** Mapping type de déplacement → characteristic_key pour convertir les cases. */
@@ -56,6 +57,10 @@ final class SpellEffectConversionFormulaResolver
      */
     public function resolveCharacteristicKeyForConversion(string $subEffectSlug, array $params): ?string
     {
+        if ($subEffectSlug === 'frapper' && $this->resolveLifeStealCharacteristicKeyForConversion($params) !== null) {
+            return self::LIFE_STEAL_CHARACTERISTIC_KEY;
+        }
+
         if (isset(self::ACTION_TO_CHARACTERISTIC[$subEffectSlug])) {
             return self::ACTION_TO_CHARACTERISTIC[$subEffectSlug];
         }
@@ -101,12 +106,6 @@ final class SpellEffectConversionFormulaResolver
 
         return self::LIFE_STEAL_CHARACTERISTIC_KEY;
     }
-
-    /** characteristic_keys désactivées (retirées du groupe spell : echec_critique, prospection). */
-    private const IGNORED_CHARACTERISTIC_KEYS = [
-        'echec_critique_spell',
-        'magic_find_spell',
-    ];
 
     /** Mapping clés courtes (mapping DofusDB) → characteristic_key du groupe spell en BDD. */
     private const SPELL_KEY_ALIASES = [
@@ -170,6 +169,27 @@ final class SpellEffectConversionFormulaResolver
         'save_agility' => 'save_agility_spell',
         'wakfu_reserve' => 'wakfu_reserve_spell',
         'mastery_bonus' => 'mastery_bonus_spell',
+        'pv_temporaires' => 'pv_temporaires_spell',
+        'maxLifePoints' => 'pv_temporaires_spell',
+        // Compétences actives (miroir object → spell)
+        'acrobatics' => 'acrobatics_spell',
+        'animal_handling' => 'animal_handling_spell',
+        'arcana' => 'arcana_spell',
+        'athletics' => 'athletics_spell',
+        'deception' => 'deception_spell',
+        'history' => 'history_spell',
+        'insight' => 'insight_spell',
+        'intimidation' => 'intimidation_spell',
+        'investigation' => 'investigation_spell',
+        'medicine' => 'medicine_spell',
+        'nature' => 'nature_spell',
+        'perception' => 'perception_spell',
+        'performance' => 'performance_spell',
+        'persuasion' => 'persuasion_spell',
+        'religion' => 'religion_spell',
+        'sleight_of_hand' => 'sleight_of_hand_spell',
+        'stealth' => 'stealth_spell',
+        'survival' => 'survival_spell',
     ];
 
     /**

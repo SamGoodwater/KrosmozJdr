@@ -30,6 +30,14 @@ Référence exhaustive des champs par entité : `docs/features/entities/README.m
 
 Note : la table des classes est `breeds` (et la FK `breed_id`) pour éviter le mot réservé `class`.
 
+### Métadonnées globales des sorts
+
+Les fiches de sort stockent indépendamment des effets détaillés les contraintes globales de lancement :
+`cast_in_line`, `cast_in_diagonal`, `target_type` (`direct`, `trap`, `glyph`), `max_stack` et
+`global_cooldown`. Les deux limites numériques vont de 0 à 10 ; `max_stack = 0` signifie « non limité ».
+Lors d'un import DofusDB, ces valeurs viennent du premier niveau du sort et `target_type` est déduit de ses
+triggers. Cette couche descriptive ne modifie pas l'exécution ni la résolution des effets.
+
 ## Droits
 
 La logique est centralisée dans `app/Policies/Entity/BaseEntityPolicy.php`. Pour la lecture (`view`) :

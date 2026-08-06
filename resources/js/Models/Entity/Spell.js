@@ -171,6 +171,26 @@ export class Spell extends BaseModel {
         return Boolean(v);
     }
 
+    get castInLine() {
+        return Boolean(this._data.cast_in_line);
+    }
+
+    get castInDiagonal() {
+        return Boolean(this._data.cast_in_diagonal);
+    }
+
+    get targetType() {
+        return this._data.target_type || null;
+    }
+
+    get maxStack() {
+        return Number(this._data.max_stack ?? 0);
+    }
+
+    get globalCooldown() {
+        return Number(this._data.global_cooldown ?? 0);
+    }
+
     get numberBetweenTwoCast() {
         return this._data.number_between_two_cast || null;
     }
@@ -1192,6 +1212,11 @@ export class Spell extends BaseModel {
             cast_per_turn: this.castPerTurn,
             cast_per_target: this.castPerTarget,
             sight_line: this.sightLine,
+            cast_in_line: this.castInLine,
+            cast_in_diagonal: this.castInDiagonal,
+            target_type: this.targetType,
+            max_stack: this.maxStack,
+            global_cooldown: this.globalCooldown,
             number_between_two_cast: this.numberBetweenTwoCast,
             element: this._data.element === undefined ? null : this._data.element,
             spellTypes: (this.spellTypes || []).map((t) => Number(t.id ?? t)).filter((n) => Number.isFinite(n)),

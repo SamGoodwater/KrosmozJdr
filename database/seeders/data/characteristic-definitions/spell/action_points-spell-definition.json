@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 70,
+        "sort_order": 13,
         "group": "spell",
         "linked_to_key": null
     },
@@ -23,12 +23,12 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": "pa",
-            "min": "1",
+            "min": "0",
             "max": "12",
             "formula": null,
             "formula_display": null,
             "default_value": "3",
-            "conversion_formula": "round(min(12,max(1,[d])))",
+            "conversion_formula": "round(min(12,max(0,[d])))",
             "conversion_function": null,
             "conversion_dofus_sample": {
                 "1": 1,
@@ -181,7 +181,7 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Coût PA du sort. Actions simples 3-4 PA, fortes 5+ PA (5.2.3.1).",
+            "norms_description": "Coût PA du sort : 0 pour un passif ou une exception, 3–4 en standard, 5 pour un sort puissant, jusqu’à 12 exceptionnellement.",
             "norms_help_section_id": null,
             "value_available": null
         }

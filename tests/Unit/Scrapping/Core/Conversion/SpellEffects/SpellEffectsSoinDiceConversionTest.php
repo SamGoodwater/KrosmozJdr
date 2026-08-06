@@ -20,11 +20,11 @@ use Tests\TestCase;
 
 /**
  * Verrouille la conversion soin (sous-effet soigner, clé soin_spell) : valeur réduite + notation dés
- * à partir des bornes min/max Dofus (diceNum × diceSide), comme pour les dommages.
+ * à partir des bornes min/max Dofus (`diceNum`–`diceSide`), comme pour les dommages.
  *
  * Les sorts de soin DofusDB utilisent les mêmes champs {@see diceNum} / {@see diceSide} que les dégâts
- * sur les instances d’effet (ex. effet « Rend des PV » id 110). Plages typiques : faible 2d4–3d5,
- * moyen 5d6–8d6, fort 10d8+.
+ * sur les instances d’effet (ex. effet « Rend des PV » id 110). Malgré leur nom historique,
+ * ces champs contiennent une plage, et non une notation NdX.
  *
  * @see SpellEffectsConversionService
  */
@@ -69,7 +69,7 @@ class SpellEffectsSoinDiceConversionTest extends TestCase
     }
 
     /**
-     * Faible soin : plage étroite (ex. 2d4 → 2–8 PV en Dofus), notation proche d’un fixe ou petit ndX.
+     * Faible soin : plage Dofus 2–4, notation proche d’un fixe ou petit ndX.
      */
     public function test_soin_faible_plage_etroite_produit_valeur_reduite_et_dice_formula(): void
     {
@@ -92,14 +92,16 @@ class SpellEffectsSoinDiceConversionTest extends TestCase
         $params = $result->getEffects()[0]['sub_effects'][0]['params'] ?? [];
         $this->assertSame('soigner', $result->getEffects()[0]['sub_effects'][0]['sub_effect_slug'] ?? null);
         $this->assertArrayHasKey('value_converted', $params);
-        $this->assertLessThanOrEqual(96, $params['value_converted']);
+        $this->assertSame('(2 + 4) / 2', $params['dofus_value_formula']);
+        $this->assertLessThanOrEqual(4, $params['value_converted']);
         $this->assertGreaterThanOrEqual(1, $params['value_converted']);
         $this->assertArrayHasKey('dice_formula', $params);
+        $this->assertSame($params['dice_formula'], $params['value_formula']);
         $this->assertMatchesRegularExpression('/^(\d+d\d+(?:\+\d+)?|\d+)$/', (string) $params['dice_formula']);
     }
 
     /**
-     * Soin moyen : écart relatif modéré → souvent ndX sans modificateur énorme (courbe « medium spread »).
+     * Soin moyen : plage étroite 5–6, convertie sans multiplication artificielle.
      */
     public function test_soin_moyen_5d6_produit_notation_sans_gros_modificateur(): void
     {
@@ -122,11 +124,11 @@ class SpellEffectsSoinDiceConversionTest extends TestCase
         $dice = (string) ($result->getEffects()[0]['sub_effects'][0]['params']['dice_formula'] ?? '');
         $this->assertStringNotContainsString('+26', $dice);
         $this->assertStringNotContainsString('+30', $dice);
-        $this->assertMatchesRegularExpression('/^\d+d\d+$/', $dice);
+        $this->assertMatchesRegularExpression('/^(\d+d\d+(?:\+\d+)?|\d+)$/', $dice);
     }
 
     /**
-     * Gros soin : min/max très éloignés → petit n, grand X (forte variance), sans « +y » massif.
+     * Les bornes sont triées lorsque DofusDB les fournit dans l’ordre inverse.
      */
     public function test_soin_fort_large_plage_produit_nd_x_seul(): void
     {
@@ -146,9 +148,10 @@ class SpellEffectsSoinDiceConversionTest extends TestCase
             ['lang' => 'fr']
         );
 
-        $dice = (string) ($result->getEffects()[0]['sub_effects'][0]['params']['dice_formula'] ?? '');
-        $this->assertMatchesRegularExpression('/^\d+d\d+$/', $dice);
-        $this->assertStringNotContainsString('+', $dice);
+        $params = $result->getEffects()[0]['sub_effects'][0]['params'] ?? [];
+        $dice = (string) ($params['dice_formula'] ?? '');
+        $this->assertSame('(8 + 10) / 2', $params['dofus_value_formula']);
+        $this->assertMatchesRegularExpression('/^(\d+d\d+(?:\+\d+)?|\d+)$/', $dice);
     }
 
     /**

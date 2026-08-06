@@ -5,7 +5,7 @@
         "name": "Niveau du sort",
         "short_name": "Niv.",
         "helper": "Niveau du sort.",
-        "descriptions": "Niveau du sort (échelle Dofus 1–200 possible en base brute ; conversion vers le palier Krosmoz 1–20 comme pour les créatures — voir `level_creature`).",
+        "descriptions": "Niveau requis Krosmoz du sort, compris entre 1 et 20 et obtenu depuis le niveau minimal Dofus.",
         "icon": "level.webp",
         "icon_false": null,
         "color": "gray",
@@ -15,7 +15,7 @@
         "unit": null,
         "type": "int",
         "status": "validee",
-        "sort_order": 65,
+        "sort_order": 2,
         "group": "spell",
         "linked_to_key": "level_creature"
     },
@@ -24,7 +24,7 @@
             "dofusdb_characteristic_id": null,
             "db_column": "level",
             "min": "1",
-            "max": "200",
+            "max": "20",
             "formula": null,
             "formula_display": null,
             "default_value": "1",
@@ -86,7 +86,7 @@
             ],
             "norms_grid": null,
             "norms_conditions": null,
-            "norms_description": "Le niveau du sort est converti vers l’échelle Krosmoz 1–20 comme `level_creature` ; la grille 5×20 ne s’applique pas à cette donnée (axe niveau global).",
+            "norms_description": "Niveau Krosmoz 1–20, obtenu depuis le niveau minimal Dofus par division par 10 puis bornage.",
             "norms_help_section_id": null,
             "value_available": null
         }

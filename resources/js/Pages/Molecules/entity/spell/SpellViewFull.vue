@@ -291,8 +291,14 @@ const usageFieldKeys = Object.freeze([
     'cast_per_turn',
     'cast_per_target',
     'sight_line',
+    'cast_in_line',
+    'cast_in_diagonal',
+    'target_type',
+    'max_stack',
+    'global_cooldown',
     'number_between_two_cast',
     'po_editable',
+    'casting_time',
 ]);
 
 const handleAction = async (actionKey) => {

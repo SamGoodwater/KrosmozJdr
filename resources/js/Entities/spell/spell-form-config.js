@@ -5,7 +5,7 @@
  */
 
 import { getEntityStateOptions, getUserRoleOptions, getSpellCategoryOptions } from '@/Utils/Entity/SharedConstants';
-import { SPELL_RESOLUTION_MODE_OPTIONS } from '@/Entities/spell/spell-descriptors';
+import { SPELL_RESOLUTION_MODE_OPTIONS, SPELL_TARGET_TYPE_OPTIONS } from '@/Entities/spell/spell-descriptors';
 import { resolveSpellAttackSaveCharacteristicOptions } from '@/Entities/spell/spell-resolution-characteristic-options';
 
 /**
@@ -99,6 +99,38 @@ export function buildSpellFormFieldsConfig(options = {}) {
             type: 'checkbox',
             label: 'Ligne de vue requise',
             required: false,
+        },
+        cast_in_line: {
+            type: 'checkbox',
+            label: 'Lancer uniquement en ligne',
+            required: false,
+        },
+        cast_in_diagonal: {
+            type: 'checkbox',
+            label: 'Lancer en diagonale',
+            required: false,
+        },
+        target_type: {
+            type: 'select',
+            label: 'Type de ciblage',
+            required: false,
+            options: SPELL_TARGET_TYPE_OPTIONS(),
+            help: 'Déduit des triggers DofusDB lors du scraping.',
+        },
+        max_stack: {
+            type: 'number',
+            label: 'Cumul maximal',
+            required: false,
+            min: 0,
+            max: 10,
+            help: '0 = non limité.',
+        },
+        global_cooldown: {
+            type: 'number',
+            label: 'Temps de relance global',
+            required: false,
+            min: 0,
+            max: 10,
         },
         allows_reaction: {
             type: 'checkbox',
@@ -296,6 +328,11 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
         fieldKeys: [
             'is_magic',
             'sight_line',
+            'cast_in_line',
+            'cast_in_diagonal',
+            'target_type',
+            'max_stack',
+            'global_cooldown',
             'allows_reaction',
             'casting_time',
             'ritual_available',
@@ -380,6 +417,11 @@ export function getSpellCreateDefaultEntity() {
         cast_per_turn: '1',
         cast_per_target: '0',
         sight_line: true,
+        cast_in_line: false,
+        cast_in_diagonal: false,
+        target_type: null,
+        max_stack: 0,
+        global_cooldown: 0,
         allows_reaction: false,
         casting_time: '',
         ritual_available: false,

@@ -1313,6 +1313,11 @@ erDiagram
     cast_per_turn : varchar(255)
     cast_per_target : varchar(255)
     sight_line : tinyint(1)
+    cast_in_line : tinyint(1)
+    cast_in_diagonal : tinyint(1)
+    target_type : varchar(16)
+    max_stack : tinyint(3) unsigned
+    global_cooldown : tinyint(3) unsigned
     number_between_two_cast : varchar(255)
     duration : varchar(255)
     element : int(11)
