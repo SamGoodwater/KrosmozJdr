@@ -594,10 +594,17 @@
   },
   {
     "name": "AlmanaxHeaderBadge",
-    "description": "AlmanaxHeaderBadge",
+    "description": "Badge header Almanax (jour + mois Dofus) avec tooltip et calendrier au clic",
     "props": [],
     "slots": [],
     "file": "header/AlmanaxHeaderBadge.vue"
+  },
+  {
+    "name": "AlmanaxMiniCalendar",
+    "description": "Mini-calendrier Almanax pour le popover du header",
+    "props": [],
+    "slots": [],
+    "file": "header/AlmanaxMiniCalendar.vue"
   },
   {
     "name": "NotificationToast",
