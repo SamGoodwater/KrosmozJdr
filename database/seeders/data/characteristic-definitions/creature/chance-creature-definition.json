@@ -30,22 +30,8 @@
             "default_value": "8",
             "conversion_formula": "[d]",
             "conversion_function": null,
-            "conversion_dofus_sample": {
-                "1": 34,
-                "40": 222,
-                "80": 192,
-                "120": 361,
-                "160": 717,
-                "200": 607
-            },
-            "conversion_krosmoz_sample": {
-                "1": 8,
-                "4": 12,
-                "8": 16,
-                "12": 20,
-                "16": 22,
-                "20": 24
-            },
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
             "conversion_sample_rows": [
                 {
                     "dofus_level": 1,

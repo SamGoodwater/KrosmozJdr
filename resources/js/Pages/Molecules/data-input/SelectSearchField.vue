@@ -147,11 +147,28 @@ function chipHasVisual(item) {
     return Boolean(item?.color || item?.hex || item?.iconUrl || item?.icon);
 }
 
+/**
+ * URL affichable pour <img> : chemins logiques `icons/...` → `/storage/images/...`
+ * (évite la résolution relative `/entities/icons/...` sur les pages entités).
+ *
+ * @param {string|null|undefined} url
+ * @returns {string}
+ */
+function resolvePublicIconUrl(url) {
+    if (url == null || typeof url !== 'string') return '';
+    const s = url.trim();
+    if (!s || s.startsWith('fa-')) return '';
+    if (s.startsWith('http://') || s.startsWith('https://') || s.startsWith('/')) return s;
+    return `/storage/images/${s.replace(/^\/+/, '')}`;
+}
+
 function chipIconUrl(item) {
-    if (item?.iconUrl) return item.iconUrl;
+    if (item?.iconUrl) return resolvePublicIconUrl(item.iconUrl);
     if (item?.icon && typeof item.icon === 'string') {
         const s = item.icon.trim();
-        if (s.startsWith('http') || s.startsWith('/') || s.includes('.')) return s;
+        if (s.startsWith('http') || s.startsWith('/') || s.includes('.')) {
+            return resolvePublicIconUrl(s);
+        }
     }
     return null;
 }
@@ -395,7 +412,7 @@ defineExpose({ enableValidation, disableValidation, resetValidation, focus, vali
                     >
                         <img
                             v-if="selectedOption.iconUrl"
-                            :src="selectedOption.iconUrl"
+                            :src="resolvePublicIconUrl(selectedOption.iconUrl)"
                             :alt="selectedLabel"
                             class="h-5 w-5 shrink-0 object-contain opacity-95"
                         />
@@ -554,7 +571,7 @@ defineExpose({ enableValidation, disableValidation, resetValidation, focus, vali
                                     <template v-if="row.badge">
                                         <img
                                             v-if="row.raw.iconUrl"
-                                            :src="row.raw.iconUrl"
+                                            :src="resolvePublicIconUrl(row.raw.iconUrl)"
                                             :alt="String(optionLabel(row.raw))"
                                             class="h-5 w-5 shrink-0 object-contain opacity-95"
                                         />

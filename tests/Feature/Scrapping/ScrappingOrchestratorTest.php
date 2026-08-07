@@ -247,20 +247,21 @@ class ScrappingOrchestratorTest extends TestCase
 
     public function test_run_many_isolates_invalid_source_items(): void
     {
-        Http::fake([
-            'api.dofusdb.fr/monsters*' => Http::response([
+        Http::fake(function ($request) {
+            return Http::response([
                 'data' => [ScrappingEntityFixtures::monster(), 'invalid'],
                 'total' => 2,
                 'limit' => 2,
                 'skip' => 0,
-            ]),
-        ]);
+            ], 200);
+        });
 
         $result = $this->orchestrator->runMany('dofusdb', 'monster', [], [
             'convert' => true,
             'validate' => true,
             'integrate' => false,
             'limit' => 2,
+            'skip_cache' => true,
         ]);
 
         $this->assertTrue($result->isSuccess());

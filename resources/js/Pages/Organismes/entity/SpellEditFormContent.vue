@@ -16,6 +16,7 @@ import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import SpellEffectsUnifiedSection from "@/Pages/Organismes/entity/SpellEffectsUnifiedSection.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
+import Collapse from "@/Pages/Atoms/data-display/Collapse.vue";
 import {
     buildSpellFormFieldsConfig,
     SPELL_FORM_FIELD_SECTIONS_EDIT,
@@ -165,17 +166,20 @@ function confirmDelete() {
             @submit="emit('saved')"
         />
 
-        <div class="space-y-6">
-            <SpellEffectsUnifiedSection
-                ref="spellEffectsSectionRef"
-                hide-effect-group-submit-button
-                :available-effects="availableEffects"
-                :effect-form-options="effectFormOptions"
-                :spell-effect-groups="spellEffectGroups"
-                :entity-type="effectEntityType"
-                :entity-id="spellModel.id"
-                :embedded-in-modal="embeddedInModal"
-            />
-        </div>
+        <Collapse arrow :default-open="true" bg-off="bg-base-100" class="border border-base-300">
+            <template #title>Effets du sort</template>
+            <template #content>
+                <SpellEffectsUnifiedSection
+                    ref="spellEffectsSectionRef"
+                    hide-effect-group-submit-button
+                    :available-effects="availableEffects"
+                    :effect-form-options="effectFormOptions"
+                    :spell-effect-groups="spellEffectGroups"
+                    :entity-type="effectEntityType"
+                    :entity-id="spellModel.id"
+                    :embedded-in-modal="embeddedInModal"
+                />
+            </template>
+        </Collapse>
     </div>
 </template>

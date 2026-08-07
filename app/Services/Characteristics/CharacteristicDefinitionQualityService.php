@@ -51,7 +51,12 @@ final class CharacteristicDefinitionQualityService
         }
 
         if (is_array($star)) {
-            $issues = array_merge($issues, $this->issuesForEntityRow($parsed, $type, $helper, $star));
+            $issues = array_merge($issues, $this->issuesForEntityRow($parsed, $type, $helper, '*', $star));
+        }
+
+        $monster = $entities['monster'] ?? null;
+        if (is_array($monster)) {
+            $issues = array_merge($issues, $this->issuesForEntityRow($parsed, $type, $helper, 'monster', $monster));
         }
 
         return $issues;
@@ -62,20 +67,21 @@ final class CharacteristicDefinitionQualityService
      * @param  array<string, mixed>  $row
      * @return list<string>
      */
-    private function issuesForEntityRow(array $parsed, string $type, string $helper, array $row): array
+    private function issuesForEntityRow(array $parsed, string $type, string $helper, string $entityKey, array $row): array
     {
         $issues = [];
         $stem = $parsed['stem'];
         $group = $parsed['group'];
 
-        if ($this->requiresNormsGrid($group, $type, $stem)) {
+        // La grille de normes est portée par `*` (référence éditoriale), pas par chaque overlay.
+        if ($entityKey === '*' && $this->requiresNormsGrid($group, $type, $stem)) {
             $grid = $row['norms_grid'] ?? null;
             if ($grid === null || $grid === [] || $grid === '') {
                 $issues[] = 'norms_grid manquant';
             }
         }
 
-        if ($group === 'object' && $this->helperImpliesItemTypeRestriction($helper)) {
+        if ($entityKey === '*' && $group === 'object' && $this->helperImpliesItemTypeRestriction($helper)) {
             $dofus = $row['item_type_dofus_ids'] ?? null;
             $ids = $row['item_type_ids'] ?? null;
             $hasRestriction = is_array($dofus) && $dofus !== [] || is_array($ids) && $ids !== [];
@@ -84,10 +90,12 @@ final class CharacteristicDefinitionQualityService
             }
         }
 
-        if ($this->expectsConversion($group, $type, $stem)) {
+        if ($this->expectsConversion($group, $type, $stem, $entityKey)) {
             $formula = $row['conversion_formula'] ?? null;
             if ($formula === null || $formula === '') {
-                $issues[] = 'conversion_formula vide';
+                $issues[] = $entityKey === 'monster'
+                    ? 'conversion_formula vide (overlay monster)'
+                    : 'conversion_formula vide';
             }
         }
 
@@ -126,7 +134,7 @@ final class CharacteristicDefinitionQualityService
         return in_array($group, ['creature', 'object', 'spell'], true);
     }
 
-    private function expectsConversion(string $group, string $type, string $stem): bool
+    private function expectsConversion(string $group, string $type, string $stem, string $entityKey = '*'): bool
     {
         if (in_array($type, ['string', 'bool'], true)) {
             return false;
@@ -137,6 +145,13 @@ final class CharacteristicDefinitionQualityService
 
         if ($group === 'object' && $this->isObjectCompetenceBonusStem($stem)) {
             return true;
+        }
+
+        // Import monstre : la courbe jouable est sur l’overlay `monster`.
+        if ($group === 'creature' && $entityKey === 'monster') {
+            return ! str_starts_with($stem, 'modifier_')
+                && ! str_starts_with($stem, 'save_')
+                && ! $this->isCreatureCompetenceStem($stem);
         }
 
         return $group === 'spell' || ($group === 'object' && ! str_contains($stem, 'passive'));
@@ -201,14 +216,35 @@ final class CharacteristicDefinitionQualityService
         if (str_contains($h, 'bouclier')) {
             $ids[] = 82;
         }
-        if (str_contains($h, 'arme') || str_contains($h, 'arc') || str_contains($h, 'baguette')
-            || str_contains($h, 'bâton') || str_contains($h, 'baton') || str_contains($h, 'dague')
-            || str_contains($h, 'épée') || str_contains($h, 'epee') || str_contains($h, 'marteau')
-            || str_contains($h, 'pelle') || str_contains($h, 'hache') || str_contains($h, 'pioche')
-            || str_contains($h, 'faux') || str_contains($h, 'lance')) {
+        if ($this->helperMentionsWeapons($h)) {
             $ids = array_merge($ids, [2, 3, 4, 5, 6, 7, 8, 19, 21, 22, 114, 271]);
         }
 
         return array_values(array_unique($ids));
+    }
+
+    /**
+     * Détecte une mention d'arme dans l'aide (évite le faux positif « arc » ⊂ « Arcanes »).
+     */
+    private function helperMentionsWeapons(string $helperLower): bool
+    {
+        if (str_contains($helperLower, 'arme')
+            || str_contains($helperLower, 'baguette')
+            || str_contains($helperLower, 'bâton')
+            || str_contains($helperLower, 'baton')
+            || str_contains($helperLower, 'dague')
+            || str_contains($helperLower, 'épée')
+            || str_contains($helperLower, 'epee')
+            || str_contains($helperLower, 'marteau')
+            || str_contains($helperLower, 'pelle')
+            || str_contains($helperLower, 'hache')
+            || str_contains($helperLower, 'pioche')
+            || str_contains($helperLower, 'faux')
+            || str_contains($helperLower, 'lance')) {
+            return true;
+        }
+
+        // Mot entier « arc » / « arcs » uniquement (pas « arcanes »).
+        return (bool) preg_match('/\barcs?\b/u', $helperLower);
     }
 }

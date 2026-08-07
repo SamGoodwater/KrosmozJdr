@@ -16,6 +16,7 @@ import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsMan
 import EffectUsagesManager from '@/Pages/Organismes/entity/EffectUsagesManager.vue';
 import ObjectEffectsManager from '@/Pages/Organismes/entity/ObjectEffectsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import ItemPriceEditSection from '@/Pages/Molecules/entity/item/ItemPriceEditSection.vue';
@@ -114,39 +115,49 @@ setPageTitle(`Modifier l'item : ${item.value.name || 'Nouvel item'}`);
             :price-calculated="item.priceCalculated"
             :price-custom="item.priceCustom"
         />
-        
-        <!-- Gestion des usages d'effets (système unifié) -->
-        <EffectUsagesManager
-            :effect-usages="effectUsages"
-            :available-effects="availableEffects"
-            :entity-type="effectEntityType"
-            :entity-id="item.id"
-        />
 
-        <ObjectEffectsManager
-            :object-effects="objectEffects"
-            :object-effect-characteristics="objectEffectCharacteristics"
-            :object-effect-monsters="objectEffectMonsters"
-            :entity-type="effectEntityType"
-            :entity-id="item.id"
-        />
+        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
+            <template #title>Effets &amp; usages</template>
+            <template #content>
+                <div class="space-y-4">
+                    <EffectUsagesManager
+                        :effect-usages="effectUsages"
+                        :available-effects="availableEffects"
+                        :entity-type="effectEntityType"
+                        :entity-id="item.id"
+                    />
 
-        <!-- Gestion des ressources de l'item (recette de craft avec quantités) -->
-        <EntityRelationsManager
-            :relations="item.resources || []"
-            :available-items="availableResources"
-            :entity-id="item.id"
-            entity-type="items"
-            relation-type="resources"
-            relation-name="Ressources nécessaires (recette de craft)"
-            :config="{
-                displayFields: ['name', 'description', 'level'],
-                searchFields: ['name', 'description'],
-                pivotFields: ['quantity'],
-                itemLabel: 'ressource',
-                itemLabelPlural: 'ressources'
-            }"
-        />
+                    <ObjectEffectsManager
+                        :object-effects="objectEffects"
+                        :object-effect-characteristics="objectEffectCharacteristics"
+                        :object-effect-monsters="objectEffectMonsters"
+                        :entity-type="effectEntityType"
+                        :entity-id="item.id"
+                    />
+                </div>
+            </template>
+        </Collapse>
+
+        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
+            <template #title>Recette de craft</template>
+            <template #content>
+                <EntityRelationsManager
+                    :relations="item.resources || []"
+                    :available-items="availableResources"
+                    :entity-id="item.id"
+                    entity-type="items"
+                    relation-type="resources"
+                    relation-name="Ressources nécessaires (recette de craft)"
+                    :config="{
+                        displayFields: ['name', 'description', 'level'],
+                        searchFields: ['name', 'description'],
+                        pivotFields: ['quantity'],
+                        itemLabel: 'ressource',
+                        itemLabelPlural: 'ressources'
+                    }"
+                />
+            </template>
+        </Collapse>
     </Container>
 </template>
 

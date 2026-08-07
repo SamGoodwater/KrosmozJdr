@@ -194,7 +194,7 @@ onMounted(() => {
                         label="Filtrer"
                         placeholder="effectId, slug, source…"
                     />
-                    <Btn variant="primary" size="sm" @click="openCreate">Ajouter un mapping</Btn>
+                    <Btn color="primary" size="sm" @click="openCreate">Ajouter un mapping</Btn>
                 </div>
             </div>
 

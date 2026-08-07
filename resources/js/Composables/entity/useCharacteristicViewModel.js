@@ -173,7 +173,70 @@ export function mergeRuntimeIntoViewModel(vm, rc) {
     if (rc.formula_display != null && String(rc.formula_display).trim() !== "") {
         next.formulaDisplay = String(rc.formula_display);
     }
+    if (rc.value != null || rc.total != null) {
+        const total = rc.total ?? rc.value;
+        next.rawValue = total;
+        next.displayValue = String(total);
+        next.total = total;
+    }
+    if (rc.base != null) next.base = rc.base;
+    if (rc.object != null) next.object = rc.object;
+    if (rc.context != null) next.context = rc.context;
+    if (rc.source != null) next.source = rc.source;
+    if (rc.context_raw != null) next.contextRaw = rc.context_raw;
+    if (Array.isArray(rc.levelTable)) next.levelTable = rc.levelTable;
+    if (Array.isArray(rc.itemContributions)) next.itemContributions = rc.itemContributions;
+
     return next;
+}
+
+/**
+ * Construit la table niveau → valeurs à partir du payload `levels` du resolved-stats.
+ *
+ * @param {object|null|undefined} runtime
+ * @param {string} characteristicKey
+ * @returns {Array<{level:number,value:*,total:*,base:*,context:*,object:*}>}
+ */
+export function levelTableFromRuntime(runtime, characteristicKey) {
+    const levels = runtime?.levels;
+    if (!Array.isArray(levels) || !characteristicKey) return [];
+    return levels
+        .map((entry) => {
+            const row = entry?.characteristics?.[characteristicKey];
+            if (!row) return null;
+            return {
+                level: entry.level,
+                value: row.total,
+                total: row.total,
+                base: row.base,
+                context: row.context,
+                object: row.object,
+            };
+        })
+        .filter(Boolean);
+}
+
+/**
+ * Entrée caractéristique pour un niveau effectif donné.
+ *
+ * @param {object|null|undefined} runtime
+ * @param {number|string|null} levelEffective
+ * @param {string} characteristicKey
+ * @returns {object|null}
+ */
+export function characteristicAtLevel(runtime, levelEffective, characteristicKey) {
+    if (!runtime || !characteristicKey) return null;
+    const levels = Array.isArray(runtime.levels) ? runtime.levels : [];
+    if (levels.length > 0 && levelEffective != null && levelEffective !== "") {
+        const match = levels.find((entry) => Number(entry.level) === Number(levelEffective));
+        if (match?.characteristics?.[characteristicKey]) {
+            return match.characteristics[characteristicKey];
+        }
+        if (levels[0]?.characteristics?.[characteristicKey]) {
+            return levels[0].characteristics[characteristicKey];
+        }
+    }
+    return runtime.computed?.[characteristicKey] ?? null;
 }
 
 /**

@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le socle d'import Dofus a été simplifié pour rendre les imports massifs plus sûrs :"
+    "description": "Les fiches de créatures peuvent désormais composer une caractéristique à partir de sa formule"
   },
   {
     "path": "backend/_ai.md",
@@ -77,7 +77,12 @@
   {
     "path": "features/characteristics/_ai.md",
     "title": "Caractéristiques — IA",
-    "description": "`app/Services/Characteristics/`"
+    "description": "Modifier une formule, une limite ou une norme de caractéristique."
+  },
+  {
+    "path": "features/characteristics/COMPUTED_VALUES.md",
+    "title": "Valeurs calculées des caractéristiques",
+    "description": "Une caractéristique d’entité (créature, plus tard équipement) peut être un **total explicite**"
   },
   {
     "path": "features/characteristics/README.md",
@@ -165,6 +170,11 @@
     "description": "Le scrapping importe des données du jeu Dofus depuis l'API **DofusDB** et les convertit en entités KrosmozJDR (sorts, objets, ressources, consommables, monstres, classes, panoplies…). Le système est **config-driven** : la source de vérité du mapping est en base de données (bootstrappée depuis des fichiers JSON), pas dans le code."
   },
   {
+    "path": "features/scrapping/SERVER_MASS_SCRAP.md",
+    "title": "Checklist — scrap massif serveur",
+    "description": "Procédure pour récupérer **tout** le catalogue DofusDB d’un coup, avec conversion et"
+  },
+  {
     "path": "frontend/_ai.md",
     "title": "Frontend — IA",
     "description": "Pas de TypeScript généralisé."
@@ -172,7 +182,7 @@
   {
     "path": "frontend/atomic-design/_ai.md",
     "title": "Atomic Design — IA",
-    "description": "`resources/js/Pages/Atoms/atoms.index.json`"
+    "description": "`Btn` : `color` = teinte DaisyUI, `variant` = style (`glass`/`ghost`/`outline`/…). Une couleur passée en `variant` (`variant=\"primary\"`) est remappée vers `color` + `glass` (compat) — les usages corrects ne changent pas."
   },
   {
     "path": "frontend/atomic-design/README.md",

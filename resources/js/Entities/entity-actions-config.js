@@ -10,6 +10,8 @@
  * const viewAction = ENTITY_ACTIONS_CONFIG.common.view;
  */
 
+import { getEntityDofusDbId } from '@/Utils/dofusdb/buildDofusDbEntityUrl';
+
 /**
  * @typedef {Object} EntityActionConfig
  * @property {string} key - Identifiant unique de l'action
@@ -18,7 +20,8 @@
  * @property {string} icon - Icône Font Awesome (ex: 'fa-solid fa-eye')
  * @property {string|null} permission - Permission requise (ex: 'canView', 'canUpdate', 'canDelete', 'canManage') ou null si toujours disponible
  * @property {boolean} requiresEntity - Si true, nécessite une entité (ne peut pas être utilisé sans entity)
- * @property {string} [variant] - Variant du bouton (ex: 'error' pour delete)
+ * @property {string} [color] - Couleur DaisyUI du bouton (ex: 'error' pour delete)
+ * @property {string} [variant] - Variant DaisyUI (ghost, outline…) — historique : pouvait porter une couleur
  * @property {string} [group] - Groupe d'actions (pour séparateurs dans le menu)
  * @property {Function} [getLabel] - Fonction pour obtenir le label selon le contexte
  * @property {Function} [getTooltip] - Fonction pour obtenir le tooltip selon le contexte
@@ -41,10 +44,13 @@ export const SCRAPPABLE_ENTITY_TYPES = Object.freeze([
 
 export const ENTITY_ACTION_CONTEXT_PRESETS = Object.freeze({
   minimalLine: ["state", "pin", "favorite", "copy-link", "quick-view", "quick-edit"],
-  modalDetail: ["state", "favorite", "copy-link", "view", "edit", "quick-edit", "refresh", "delete"],
-  pageDetail: ["state", "favorite", "copy-link", "view", "edit", "refresh", "delete"],
+  modalDetail: ["state", "favorite", "copy-link", "view", "view-dofusdb", "edit", "quick-edit", "refresh", "delete"],
+  pageDetail: ["state", "favorite", "copy-link", "view", "view-dofusdb", "edit", "refresh", "delete"],
   tableDropdown: ["state", "pin", "favorite", "copy-link", "quick-view", "quick-edit"],
 });
+
+/** Icône action « Voir sur DofusDB » — servi depuis `public/` (évite les 403 /storage). */
+export const DOFUSDB_ACTION_ICON = "/images/logos/dofus.png";
 
 export function normalizeActionEntityType(entityType = "") {
   const raw = String(entityType || "").trim();
@@ -232,6 +238,21 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     group: "tools",
     visibleIf: () => false,
   },
+  "view-dofusdb": {
+    key: "view-dofusdb",
+    label: "DofusDB",
+    tooltip: "Ouvrir la fiche DofusDB (panneau de référence)",
+    icon: DOFUSDB_ACTION_ICON,
+    permission: null,
+    requiresEntity: true,
+    group: "tools",
+    visibleIf: (context, entity) => {
+      if (context?.inMinimal || context?.inLine) return false;
+      if (context?.viewMode === "minimal" || context?.viewMode === "line") return false;
+      if (!(context?.inModal || context?.inPage)) return false;
+      return Boolean(getEntityDofusDbId(entity));
+    },
+  },
   refresh: {
     key: "refresh",
     label: "Rafraîchir",
@@ -262,7 +283,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     icon: "fa-solid fa-trash",
     permission: "canDelete",
     requiresEntity: true,
-    variant: "error", // Style spécial pour action destructive
+    color: "error",
     group: "destructive",
     visibleIf: (context) => Boolean(context?.inModal || context?.inPage),
   },

@@ -245,6 +245,7 @@ const statePropertyTextSizeClass = computed(() => {
 </script>
 
 <template>
+    <span class="entity-property-display inline-flex min-w-0 max-w-full items-center">
     <ElementDisplay v-if="isElementField" :element="elementValue" :size="size" />
 
     <CharacteristicProperty
@@ -348,4 +349,5 @@ const statePropertyTextSizeClass = computed(() => {
         :label-image-alt="characteristicLabelImageAlt"
         :value-text-class="characteristicValueTextClass"
     />
+    </span>
 </template>

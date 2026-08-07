@@ -14,7 +14,7 @@
  * });
  */
 
-import { computed } from "vue";
+import { computed, toValue } from "vue";
 import {
   ACTION_GROUPS_ORDER,
   ENTITY_ACTION_CONTEXT_PRESETS,
@@ -25,29 +25,30 @@ import {
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 /**
- * @param {string} entityType - Type d'entité (ex: 'spells', 'items')
- * @param {Object|null} entity - Entité (peut être null pour certaines actions)
+ * @param {string|import('vue').MaybeRefOrGetter<string>} entityType - Type d'entité (ex: 'spells', 'items')
+ * @param {Object|null|import('vue').MaybeRefOrGetter<Object|null>} [entity] - Entité
  * @param {Object} [options] - Options de filtrage
- * @param {string[]} [options.whitelist] - Liste d'actions à inclure uniquement
- * @param {string[]} [options.blacklist] - Liste d'actions à exclure
- * @param {Object} [options.context] - Contexte supplémentaire (ex: { inPanel: true } pour minimize)
- * @returns {{ availableActions: ComputedRef<EntityActionConfig[]>, groupedActions: ComputedRef<Object> }}
+ * @param {string[]|null|import('vue').MaybeRefOrGetter<string[]|null>} [options.whitelist]
+ * @param {string[]|null|import('vue').MaybeRefOrGetter<string[]|null>} [options.blacklist]
+ * @param {Object|import('vue').MaybeRefOrGetter<Object>} [options.context]
+ * @returns {{ availableActions: import('vue').ComputedRef, groupedActions: import('vue').ComputedRef, actionsConfig: import('vue').ComputedRef, context: import('vue').ComputedRef }}
  */
 export function useEntityActions(entityType, entity = null, options = {}) {
   const { can, canViewAny, canUpdateAny, canDeleteAny, isAdmin, authUser } = usePermissions();
-  
-  const {
-    whitelist = null,
-    blacklist = null,
-    context = {},
-  } = options;
 
-  const normalizedEntityType = computed(() => normalizeActionEntityType(entityType));
+  const normalizedEntityType = computed(() =>
+    normalizeActionEntityType(toValue(entityType)),
+  );
+  const resolvedEntity = computed(() => toValue(entity) ?? null);
+  const whitelist = computed(() => toValue(options.whitelist) ?? null);
+  const blacklist = computed(() => toValue(options.blacklist) ?? null);
+  const contextOption = computed(() => toValue(options.context) ?? {});
 
   const resolvedContext = computed(() => {
+    const ctxIn = contextOption.value || {};
     const ctx = {
-      ...context,
-      entityType: normalizeActionEntityType(context?.entityType || entityType),
+      ...ctxIn,
+      entityType: normalizeActionEntityType(ctxIn?.entityType || toValue(entityType)),
     };
 
     if (ctx.viewMode === "minimal" || ctx.viewMode === "line" || ctx.inMinimal || ctx.inLine) {
@@ -61,12 +62,12 @@ export function useEntityActions(entityType, entity = null, options = {}) {
     }
     return { ...ctx, preset: ctx.preset || "tableDropdown" };
   });
-  
+
   // Récupère la config des actions pour ce type d'entité
   const actionsConfig = computed(() => {
     return getActionsForEntityType(normalizedEntityType.value);
   });
-  
+
   /**
    * Vérifie si une permission est accordée pour une action.
    *
@@ -85,14 +86,14 @@ export function useEntityActions(entityType, entity = null, options = {}) {
 
   const isEntityOwner = computed(() => {
     const currentUserId = Number(authUser.value?.id ?? 0);
-    const ownerId = getEntityOwnerId(entity);
+    const ownerId = getEntityOwnerId(resolvedEntity.value);
     if (!currentUserId || !ownerId) return false;
     return currentUserId === ownerId;
   });
 
   const checkPermission = (permission) => {
     if (!permission) return true; // Pas de permission requise
-    
+
     // Mapping des permissions vers les méthodes usePermissions
     const permissionMap = {
       canView: () => {
@@ -110,41 +111,44 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         return can(normalizedEntityType.value, "manageAny") || isAdmin.value;
       },
     };
-    
+
     const checkFn = permissionMap[permission];
     return checkFn ? checkFn() : false;
   };
-  
+
   // Filtre les actions selon les permissions et les options
   const availableActions = computed(() => {
     const config = actionsConfig.value;
     const actions = Object.values(config);
     const ctx = resolvedContext.value;
+    const entityValue = resolvedEntity.value;
+    const whitelistValue = whitelist.value;
+    const blacklistValue = blacklist.value;
     const presetKeys = Array.isArray(ENTITY_ACTION_CONTEXT_PRESETS[ctx.preset])
       ? ENTITY_ACTION_CONTEXT_PRESETS[ctx.preset]
       : null;
-    
+
     return actions
       .filter((action) => {
         // Whitelist : n'inclure que les actions listées
-        if (whitelist && !whitelist.includes(action.key)) {
-          return false;
-        }
-        
-        // Blacklist : exclure les actions listées
-        if (blacklist && blacklist.includes(action.key)) {
+        if (whitelistValue && !whitelistValue.includes(action.key)) {
           return false;
         }
 
-        if (!whitelist && presetKeys && !presetKeys.includes(action.key)) {
+        // Blacklist : exclure les actions listées
+        if (blacklistValue && blacklistValue.includes(action.key)) {
           return false;
         }
-        
+
+        if (!whitelistValue && presetKeys && !presetKeys.includes(action.key)) {
+          return false;
+        }
+
         // Vérifier si l'entité est requise
-        if (action.requiresEntity && !entity) {
+        if (action.requiresEntity && !entityValue) {
           return false;
         }
-        
+
         // Minimize : seulement disponible dans un panel (context.inPanel)
         if (action.key === "minimize" && !ctx.inPanel) {
           return false;
@@ -153,28 +157,28 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         if (action.key === "refresh" && !isScrappableEntityType(normalizedEntityType.value)) {
           return false;
         }
-        
+
         // Vérifier les permissions
         if (action.permission && !checkPermission(action.permission)) {
           return false;
         }
-        
+
         // Vérifier visibleIf si défini
-        if (typeof action.visibleIf === "function" && !action.visibleIf(ctx, entity)) {
+        if (typeof action.visibleIf === "function" && !action.visibleIf(ctx, entityValue)) {
           return false;
         }
-        
+
         return true;
       })
       .map((action) => {
         // Enrichir l'action avec label et tooltip dynamiques selon le contexte
         const enrichedAction = { ...action };
-        
+
         // Label dynamique
         if (typeof action.getLabel === "function") {
           enrichedAction.label = action.getLabel(ctx) || action.label;
         }
-        
+
         // Tooltip dynamique
         if (typeof action.getTooltip === "function") {
           enrichedAction.tooltip = action.getTooltip(ctx) || action.tooltip || action.label;
@@ -190,21 +194,21 @@ export function useEntityActions(entityType, entity = null, options = {}) {
 
         if (action.key === "state") {
           enrichedAction.canUpdateState = checkPermission("canUpdate");
-          enrichedAction.stateValue = (entity?._data ?? entity)?.state ?? null;
+          enrichedAction.stateValue = (entityValue?._data ?? entityValue)?.state ?? null;
           enrichedAction.showStateLabel = shouldShowStateLabel(ctx);
         }
-        
+
         return enrichedAction;
       });
   });
-  
+
   /**
    * Actions groupées par groupe pour les séparateurs dans les menus.
    */
   const groupedActions = computed(() => {
     const actions = availableActions.value;
     const groups = {};
-    
+
     actions.forEach((action) => {
       const group = action.group || "other";
       if (!groups[group]) {
@@ -212,7 +216,7 @@ export function useEntityActions(entityType, entity = null, options = {}) {
       }
       groups[group].push(action);
     });
-    
+
     // Trier les groupes selon l'ordre recommandé
     const orderedGroups = {};
     ACTION_GROUPS_ORDER.forEach((groupKey) => {
@@ -220,17 +224,17 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         orderedGroups[groupKey] = groups[groupKey];
       }
     });
-    
+
     // Ajouter les groupes non listés à la fin
     Object.keys(groups).forEach((groupKey) => {
       if (!ACTION_GROUPS_ORDER.includes(groupKey)) {
         orderedGroups[groupKey] = groups[groupKey];
       }
     });
-    
+
     return orderedGroups;
   });
-  
+
   return {
     availableActions,
     groupedActions,
@@ -254,6 +258,7 @@ function resolveActionIntent(actionKey, context) {
   if (actionKey === "pin") return "pin";
   if (actionKey === "favorite") return "favorite";
   if (actionKey === "state") return "state";
+  if (actionKey === "view-dofusdb") return "view-dofusdb";
   return actionKey;
 }
 
@@ -264,4 +269,3 @@ function shouldShowStateLabel(context) {
   if (context?.inModal || context?.inPage) return true;
   return false;
 }
-

@@ -55,10 +55,14 @@ final class FormulaResolutionService
      *
      * @param  string|null  $formula  Formule (ex. [vitality]*10+[level]*2) ou JSON table
      * @param  array<string, int|float>  $variables  Map id => valeur (ex. level => 5, vitality => 12)
+     * @param  string  $diceMode  Résolution des dés (voir SafeExpressionEvaluator::DICE_MODES)
      * @return float|null Résultat ou null si formule invalide / vide
      */
-    public function evaluate(?string $formula, array $variables): ?float
-    {
+    public function evaluate(
+        ?string $formula,
+        array $variables,
+        string $diceMode = SafeExpressionEvaluator::DICE_MODE_ROLL
+    ): ?float {
         if ($formula === null || trim($formula) === '') {
             return null;
         }
@@ -66,10 +70,10 @@ final class FormulaResolutionService
         $decoded = FormulaConfigDecoder::decode($formula);
 
         if ($decoded['type'] === 'table') {
-            return $this->evaluateTable($decoded, $variables);
+            return $this->evaluateTable($decoded, $variables, $diceMode);
         }
 
-        return $this->evaluateExpression($decoded['expression'], $variables);
+        return $this->evaluateExpression($decoded['expression'], $variables, $diceMode);
     }
 
     /**
@@ -273,8 +277,11 @@ final class FormulaResolutionService
      * @param  array{type: 'table', characteristic: string, entries: list<array{from: int, value: int|float|string}>}  $decoded
      * @param  array<string, int|float>  $variables
      */
-    private function evaluateTable(array $decoded, array $variables): ?float
-    {
+    private function evaluateTable(
+        array $decoded,
+        array $variables,
+        string $diceMode = SafeExpressionEvaluator::DICE_MODE_ROLL
+    ): ?float {
         $char = $decoded['characteristic'];
         $entries = $decoded['entries'];
         if ($entries === []) {
@@ -300,7 +307,7 @@ final class FormulaResolutionService
             return (float) $value;
         }
 
-        return $this->evaluateExpression((string) $value, $variables);
+        return $this->evaluateExpression((string) $value, $variables, $diceMode);
     }
 
     /**
@@ -326,14 +333,17 @@ final class FormulaResolutionService
      *
      * @param  array<string, int|float>  $variables
      */
-    private function evaluateExpression(string $expression, array $variables): ?float
-    {
+    private function evaluateExpression(
+        string $expression,
+        array $variables,
+        string $diceMode = SafeExpressionEvaluator::DICE_MODE_ROLL
+    ): ?float {
         if (trim($expression) === '') {
             return null;
         }
 
         $substituted = $this->substituteVariables($expression, $variables);
 
-        return $this->expressionEvaluator->evaluate($substituted);
+        return $this->expressionEvaluator->evaluate($substituted, $diceMode);
     }
 }

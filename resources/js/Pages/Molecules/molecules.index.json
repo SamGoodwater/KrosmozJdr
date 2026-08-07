@@ -593,18 +593,18 @@
     "file": "header/LoggedHeaderContainer.vue"
   },
   {
-    "name": "AlmanaxHeaderBadge",
-    "description": "Badge header Almanax (jour + mois Dofus) avec tooltip et calendrier au clic",
-    "props": [],
-    "slots": [],
-    "file": "header/AlmanaxHeaderBadge.vue"
-  },
-  {
     "name": "AlmanaxMiniCalendar",
-    "description": "Mini-calendrier Almanax pour le popover du header",
+    "description": "AlmanaxMiniCalendar",
     "props": [],
     "slots": [],
     "file": "header/AlmanaxMiniCalendar.vue"
+  },
+  {
+    "name": "AlmanaxHeaderBadge",
+    "description": "AlmanaxHeaderBadge",
+    "props": [],
+    "slots": [],
+    "file": "header/AlmanaxHeaderBadge.vue"
   },
   {
     "name": "NotificationToast",
@@ -801,6 +801,13 @@
     "props": [],
     "slots": [],
     "file": "entity/EntityActionMenuList.vue"
+  },
+  {
+    "name": "DofusDbReferencePanel",
+    "description": "DofusDbReferencePanel Molecule",
+    "props": [],
+    "slots": [],
+    "file": "entity/DofusDbReferencePanel.vue"
   },
   {
     "name": "SpellZonePreview",
@@ -2504,6 +2511,13 @@
     "file": "data-input/CheckboxField.vue"
   },
   {
+    "name": "CharacteristicFormulaField",
+    "description": "Champ de saisie pour un total explicite ou un bonus contextuel (nombre ou formule `{...}`).",
+    "props": [],
+    "slots": [],
+    "file": "data-input/CharacteristicFormulaField.vue"
+  },
+  {
     "name": "RichTextReadonlyView",
     "description": "Affichage HTML TipTap en lecture seule (mêmes extensions que l’éditeur, dont références kref).",
     "props": [],
@@ -2637,7 +2651,7 @@
       {
         "name": "levelEffective",
         "type": "number|null",
-        "desc": "- Level effectif pour les formules (optionnel)"
+        "desc": "- Level effectif pour les formules"
       },
       {
         "name": "title",
@@ -2672,6 +2686,19 @@
     ],
     "slots": [],
     "file": "data-display/CharacteristicEffectsGrid.vue"
+  },
+  {
+    "name": "CharacteristicDecompositionBody",
+    "description": "Corps de décomposition d'une caractéristique (base / objets / contexte / total + table niveaux).",
+    "props": [
+      {
+        "name": "model",
+        "type": "Object",
+        "desc": "— viewModel enrichi (base, object, context, total, source, levelTable…)"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/CharacteristicDecompositionBody.vue"
   },
   {
     "name": "AvatarGroup",
@@ -2834,6 +2861,13 @@
       }
     ],
     "file": "action/Modal.vue"
+  },
+  {
+    "name": "FloatingPanel",
+    "description": "FloatingPanel Molecule",
+    "props": [],
+    "slots": [],
+    "file": "action/FloatingPanel.vue"
   },
   {
     "name": "EditActionDock",

@@ -295,7 +295,7 @@ onMounted(() => {
                             label="Filtrer les règles"
                             placeholder="mapping_key, from_path, cible…"
                         />
-                        <Btn variant="primary" size="sm" @click="openCreate">Ajouter une règle</Btn>
+                        <Btn color="primary" size="sm" @click="openCreate">Ajouter une règle</Btn>
                     </div>
                 </div>
 

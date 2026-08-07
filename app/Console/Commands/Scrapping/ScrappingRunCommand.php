@@ -33,6 +33,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
  * php artisan scrapping:run --entity=monster --id=31
  * php artisan scrapping:run --entity=monster,item --levelMin=1 --levelMax=50 --simulate
  * php artisan scrapping:run --entity=resource --type-name=Ressource --limit=100
+ * php artisan scrapping:run --entity=spell --max-items=0 --no-quality-gate
  */
 class ScrappingRunCommand extends Command
 {
@@ -46,7 +47,8 @@ class ScrappingRunCommand extends Command
         {--update-mode= : ignore|draft_raw_auto_update|auto_update|force (prioritaire sur replace-existing)}
         {--skip-existing : Ne pas appeler l\'API pour les entités déjà en base qu\'on n\'écraserait pas (true sauf --update-mode=force / --replace-existing)}
         {--no-validate : Désactiver la validation}
-        {--quality-gate : Bloquer avant import si l\'audit détecte une erreur ou une revue manuelle}
+        {--quality-gate : (compat) Quality gate pré-import — déjà active par défaut hors --simulate}
+        {--no-quality-gate : Désactiver le frein d\'audit pré-import et la gate effets post-import sorts}
         {--exclude-from-update= : Champs à ne pas écraser (ex: name,image,level)}
         {--ignore-unvalidated : Ignorer objets dont race/type non validé}
         {--lang=fr : Langue (pickLang)}
@@ -117,7 +119,9 @@ class ScrappingRunCommand extends Command
 
             return Command::FAILURE;
         }
-        if ((bool) $this->option('quality-gate') && ! (bool) $this->option('simulate')) {
+        $doSave = ! (bool) $this->option('simulate');
+        $qualityGateEnabled = $doSave && ! (bool) $this->option('no-quality-gate');
+        if ($qualityGateEnabled) {
             foreach ($entities as $entity) {
                 $entityForConfig = $entity === 'class' ? 'breed' : $entity;
                 $exitCode = $this->call('scrapping:audit', [
@@ -131,8 +135,6 @@ class ScrappingRunCommand extends Command
                 }
             }
         }
-
-        $doSave = ! (bool) $this->option('simulate');
         $outputMode = (string) $this->option('output');
         if ($outputMode !== '' && ! in_array($outputMode, ['raw', 'useful', 'summary'], true)) {
             $this->error("Option --output invalide: {$outputMode}. Valeurs: raw, useful, summary.");
@@ -527,6 +529,19 @@ class ScrappingRunCommand extends Command
             $results['entities'][] = $entityResult;
         }
 
+        if ($qualityGateEnabled && $this->entityListIncludesSpell($entities)) {
+            $gateCode = $this->call('scrapping:effects:quality-gate', [
+                '--min-coverage' => 99,
+                '--max-missing-mappings' => 0,
+                '--max-missing-value-converted' => 0,
+            ]);
+            if ($gateCode !== Command::SUCCESS) {
+                $this->error('Import terminé mais quality gate effets de sorts en échec.');
+
+                return Command::FAILURE;
+            }
+        }
+
         if ($outputAsJson) {
             $this->line(json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         } else {
@@ -534,6 +549,20 @@ class ScrappingRunCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * @param  list<string>  $entities
+     */
+    private function entityListIncludesSpell(array $entities): bool
+    {
+        foreach ($entities as $entity) {
+            if ($this->normalizeEntity((string) $entity) === 'spell') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

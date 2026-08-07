@@ -15,7 +15,6 @@ import { router } from '@inertiajs/vue3';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
-import CellRenderer from '@/Pages/Atoms/data-display/CellRenderer.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';

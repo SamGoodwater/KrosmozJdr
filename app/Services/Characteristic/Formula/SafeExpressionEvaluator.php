@@ -14,6 +14,10 @@ namespace App\Services\Characteristic\Formula;
  * Notation dés (JDR) : NdX = somme de N dés à X faces (ex. 2d6 = entre 2 et 12, 1d8 = entre 1 et 8).
  * N et X peuvent être des expressions numériques (souvent des variables substituées : [level]d[life_dice]).
  *
+ * Les dés sont tirés au hasard par défaut. Pour obtenir un résultat reproductible (tableaux de valeurs
+ * possibles, aperçus, tests), passer un mode déterministe à evaluate() : DICE_MODE_MIN, DICE_MODE_MAX
+ * ou DICE_MODE_AVERAGE.
+ *
  * Opérateur puissance : ** (ex. 2**3 = 8, [level]**2). Associatif à droite (2**3**2 = 2**(3**2)).
  * Fonctions autorisées (1 argument) : floor, ceil, round, sqrt, abs, exp, log, cos, sin, tan, asin, acos, atan.
  * Fonctions autorisées (2 arguments) : pow, min, max.
@@ -22,8 +26,31 @@ namespace App\Services\Characteristic\Formula;
  */
 final class SafeExpressionEvaluator
 {
+    /** Tirage aléatoire (comportement de jeu par défaut). */
+    public const DICE_MODE_ROLL = 'roll';
+
+    /** Résultat minimal d'un dé (NdX => N). */
+    public const DICE_MODE_MIN = 'min';
+
+    /** Résultat maximal d'un dé (NdX => N*X). */
+    public const DICE_MODE_MAX = 'max';
+
+    /** Espérance d'un dé (NdX => N*(X+1)/2). */
+    public const DICE_MODE_AVERAGE = 'average';
+
+    /** @var list<string> */
+    public const DICE_MODES = [
+        self::DICE_MODE_ROLL,
+        self::DICE_MODE_MIN,
+        self::DICE_MODE_MAX,
+        self::DICE_MODE_AVERAGE,
+    ];
+
     /** Caractères autorisés : chiffres, opérateurs, parenthèses, virgule, lettres pour noms de fonctions */
     private const PATTERN_ALLOWED = '/^[\d\s+\-*\/().eE,a-zA-Z]+$/';
+
+    /** Mode de résolution des dés pour l'évaluation en cours. */
+    private string $diceMode = self::DICE_MODE_ROLL;
 
     /** Noms de fonctions autorisées (sans espaces, en minuscules pour comparaison) */
     private const ALLOWED_FUNCTIONS = [
@@ -84,10 +111,13 @@ final class SafeExpressionEvaluator
      * Évalue l'expression (sans eval).
      *
      * @param  string  $expression  Expression après remplacement des variables (ex. "floor(3.7)+2*10")
+     * @param  string  $diceMode  Résolution des dés : DICE_MODE_ROLL (défaut), MIN, MAX ou AVERAGE
      * @return float|null Résultat ou null si invalide
      */
-    public function evaluate(string $expression): ?float
+    public function evaluate(string $expression, string $diceMode = self::DICE_MODE_ROLL): ?float
     {
+        $this->diceMode = in_array($diceMode, self::DICE_MODES, true) ? $diceMode : self::DICE_MODE_ROLL;
+
         $expr = preg_replace('/\s+/', ' ', trim($expression));
         if ($expr === '' || $this->validate($expr) !== []) {
             return null;
@@ -312,13 +342,26 @@ final class SafeExpressionEvaluator
                     return null; // "Nd" sans nombre après d = invalide
                 }
 
-                return (float) $this->rollDice((int) max(1, $n), (int) max(1, $x));
+                return $this->resolveDice((int) max(1, $n), (int) max(1, $x));
             }
 
             return $n;
         }
 
         return null;
+    }
+
+    /**
+     * Résout N dés à X faces selon le mode courant (tirage, borne minimale, maximale ou espérance).
+     */
+    private function resolveDice(int $n, int $x): float
+    {
+        return match ($this->diceMode) {
+            self::DICE_MODE_MIN => (float) $n,
+            self::DICE_MODE_MAX => (float) ($n * $x),
+            self::DICE_MODE_AVERAGE => $n * ($x + 1) / 2,
+            default => (float) $this->rollDice($n, $x),
+        };
     }
 
     /**

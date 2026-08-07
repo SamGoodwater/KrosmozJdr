@@ -334,10 +334,9 @@ final class CollectService
                 if ($remaining <= 0) {
                     break;
                 }
-                if (is_array($item)) {
-                    $allItems[] = $item;
-                    $remaining--;
-                }
+                // Conserver les entrées non-tableaux pour que l'orchestrateur les isole en erreur.
+                $allItems[] = $item;
+                $remaining--;
             }
 
             if (count($dataList) < $effectiveLimit) {
@@ -371,8 +370,8 @@ final class CollectService
      * Applique une stratégie de post-traitement sur les items collectés (ex. groupement par superTypeId).
      *
      * @param  array<string, mixed>  $entityConfig
-     * @param  list<array<string, mixed>>  $items
-     * @return list<array<string, mixed>>
+     * @param  list<mixed>  $items
+     * @return list<mixed>
      */
     private function applyCollectStrategy(array $entityConfig, array $items, string $lang): array
     {
@@ -651,11 +650,10 @@ final class CollectService
                 $debugCb("  page {$page} : +{$pageCount} items, cumul={$cumul}".($total > 0 ? ", total API={$total}" : ''));
             }
             foreach ($dataList as $item) {
-                if (is_array($item)) {
-                    $allItems[] = $item;
-                    if (count($allItems) >= $maxItems) {
-                        break 2;
-                    }
+                // Conserver les entrées non-tableaux pour que l'orchestrateur les isole en erreur.
+                $allItems[] = $item;
+                if (count($allItems) >= $maxItems) {
+                    break 2;
                 }
             }
             $skip += $effectiveLimit;

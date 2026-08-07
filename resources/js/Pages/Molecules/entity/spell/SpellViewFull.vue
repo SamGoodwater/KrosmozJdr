@@ -470,7 +470,7 @@ const handleAction = async (actionKey) => {
                         display="icon-only"
                         size="sm"
                         color="primary"
-                        :context="{ inPanel: false, inPage: true }"
+                        :context="{ inPanel: false, inPage: true, viewMode: 'full' }"
                         @action="handleAction"
                     />
                 </div>
@@ -601,6 +601,7 @@ const handleAction = async (actionKey) => {
                         <div class="inline-flex items-center gap-2 min-w-0">
                             <Icon
                                 :source="getFieldIcon(fieldKey)"
+                                :alt="getFieldLabel(fieldKey)"
                                 size="xs"
                                 class="text-primary-300 flex-shrink-0"
                                 :style="getFieldIconStyle(fieldKey)"
@@ -622,6 +623,7 @@ const handleAction = async (actionKey) => {
                             <div class="inline-flex items-center gap-2 min-w-0">
                                 <Icon
                                     :source="getFieldIcon(fieldKey)"
+                                    :alt="getFieldLabel(fieldKey)"
                                     size="xs"
                                     class="text-primary-300 flex-shrink-0"
                                     :style="getFieldIconStyle(fieldKey)"

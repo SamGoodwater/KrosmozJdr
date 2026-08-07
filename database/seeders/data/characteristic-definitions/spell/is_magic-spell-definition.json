@@ -20,7 +20,7 @@
                 "value": false,
                 "color": "brown",
                 "subtitle": "Nature physique.",
-                "icon": "physical.webp"
+                "icon": "spellPhysic.webp"
             }
         ],
         "hide_when_empty": false,

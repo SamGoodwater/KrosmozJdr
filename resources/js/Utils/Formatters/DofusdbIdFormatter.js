@@ -7,6 +7,7 @@
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
+import { buildDofusDbEntityUrl, DOFUSDB_SITE_BASE } from '@/Utils/dofusdb/buildDofusDbEntityUrl';
 
 export class DofusdbIdFormatter extends BaseFormatter {
   static name = 'DofusdbIdFormatter';
@@ -45,8 +46,11 @@ export class DofusdbIdFormatter extends BaseFormatter {
     const strValue = String(value);
 
     if (asLink) {
-      // Générer un lien externe vers DofusDB (exemple d'URL)
-      const href = `https://www.dofusdb.fr/fr/database/${strValue}`;
+      const entityType = options.entityType || options.entity_type || null;
+      const typedHref = entityType
+        ? buildDofusDbEntityUrl(entityType, strValue)
+        : null;
+      const href = typedHref || `${DOFUSDB_SITE_BASE}/${encodeURIComponent(strValue)}`;
       return {
         type: 'routeExternal',
         value: strValue,

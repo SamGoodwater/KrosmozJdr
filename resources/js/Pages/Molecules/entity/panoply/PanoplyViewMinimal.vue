@@ -14,7 +14,6 @@ import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import PanoplyEquipmentTextList from "@/Pages/Molecules/entity/panoply/PanoplyEquipmentTextList.vue";
 

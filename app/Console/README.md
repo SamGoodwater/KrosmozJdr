@@ -268,7 +268,7 @@ Voir aussi : **`php artisan project:schedule:sync`**, **`php artisan schedule:li
 
 | Commande | Rôle |
 |----------|------|
-| `scrapping:run` (`scrapping`) | Import principal (monstres, items, sorts, ressources, …) — **`--help`** |
+| `scrapping:run` (`scrapping`) | Import principal (monstres, items, sorts, ressources, …) — **`--help`** ; gate pré-import **active par défaut** (désactiver : `--no-quality-gate`) |
 | `scrapping:setup` | Socle scrapping (migrations + caractéristiques + mappings) |
 | `scrapping:seeders:export` | Export BDD → `database/seeders/data/` |
 | `scrapping:types:seed` | Types d’objets API → BDD + seeders (`--only=…`) |

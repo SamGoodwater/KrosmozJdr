@@ -8,72 +8,47 @@
  *
  * @example
  * Format buttons: entity-type="spells" :entity="entity" format="buttons" display="icon-only"
- * Format dropdown: entity-type="spells" :entity="row.entity" format="dropdown" display="icon-text"
- * Format context: entity-type="spells" :entity="contextEntity" format="context" display="icon-text" :context="{ inPanel: false }"
  */
 
 <script setup>
 import { computed } from "vue";
 import { useEntityActions } from "@/Composables/entity/useEntityActions";
+import { useDofusDbReferenceStore } from "@/Composables/store/useDofusDbReferenceStore";
 import EntityActionsList from "@/Pages/Molecules/entity/EntityActionsList.vue";
 import EntityActionsDropdown from "@/Pages/Molecules/entity/EntityActionsDropdown.vue";
 import EntityActionMenuList from "@/Pages/Molecules/entity/EntityActionMenuList.vue";
 
 const props = defineProps({
-  /**
-   * Type d'entité (ex: 'spells', 'items')
-   */
   entityType: {
     type: String,
     required: true,
   },
-  /**
-   * Entité (peut être null pour certaines actions comme minimize)
-   */
   entity: {
     type: Object,
     default: null,
   },
-  /**
-   * Format d'affichage : 'buttons' (liste horizontale), 'dropdown' (menu dropdown), 'context' (menu contextuel)
-   */
   format: {
     type: String,
     default: "dropdown",
     validator: (v) => ["buttons", "dropdown", "context"].includes(v),
   },
-  /**
-   * Mode d'affichage : 'icon-only' ou 'icon-text'
-   */
   display: {
     type: String,
     default: "icon-text",
     validator: (v) => ["icon-only", "icon-text"].includes(v),
   },
-  /**
-   * Whitelist d'actions à inclure uniquement
-   */
   whitelist: {
     type: Array,
     default: null,
   },
-  /**
-   * Blacklist d'actions à exclure
-   */
   blacklist: {
     type: Array,
     default: null,
   },
-  /**
-   * Contexte supplémentaire (ex: { inPanel: true } pour minimize)
-   */
   context: {
     type: Object,
     default: () => ({}),
   },
-  /**
-   * Options UI
-   */
   size: {
     type: String,
     default: "sm",
@@ -82,36 +57,22 @@ const props = defineProps({
     type: String,
     default: "primary",
   },
-  /**
-   * Position du dropdown (pour format 'dropdown' ou 'context')
-   */
   placement: {
     type: String,
     default: "bottom-end",
   },
-  /**
-   * Clés d’actions affichées en raccourcis à côté du menu (si `showInlineShortcuts` et assez de place).
-   * Ordre conservé. Par défaut : épingler, lien, page, édition rapide.
-   */
   inlineActionKeys: {
     type: Array,
     default: () => ["state", "pin", "favorite", "copy-link", "view", "edit", "quick-view", "quick-edit"],
   },
-  /** Activer les raccourcis inline (désactiver ex. barre d’outils déjà chargée). */
   showInlineShortcuts: {
     type: Boolean,
     default: true,
   },
-  /**
-   * Pour le format 'context' : position fixe (x, y)
-   */
   contextPosition: {
     type: Object,
     default: null,
   },
-  /**
-   * Pour le format 'context' : visible ou non
-   */
   contextVisible: {
     type: Boolean,
     default: false,
@@ -119,8 +80,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits([
-  "action", // Émis pour chaque action (actionKey, entity)
-  "close", // Menu contextuel : fermeture (Échap ou parent)
+  "action",
+  "close",
   "view",
   "quick-view",
   "edit",
@@ -131,44 +92,45 @@ const emit = defineEmits([
   "favorite",
   "download-pdf",
   "refresh",
+  "view-dofusdb",
   "minimize",
   "delete",
 ]);
 
+const dofusDbStore = useDofusDbReferenceStore();
+
 const { availableActions, groupedActions } = useEntityActions(
-  props.entityType,
-  props.entity,
+  () => props.entityType,
+  () => props.entity,
   {
-    whitelist: props.whitelist,
-    blacklist: props.blacklist,
-    context: props.context,
+    whitelist: () => props.whitelist,
+    blacklist: () => props.blacklist,
+    context: () => props.context,
   }
 );
 
 const handleAction = (actionKey) => {
-  emit("action", actionKey, props.entity);
-  // Émettre aussi l'événement spécifique pour compatibilité
-  emit(actionKey, props.entity);
+  const key = typeof actionKey === "string" ? actionKey : actionKey?.key;
+  if (key === "view-dofusdb") {
+    dofusDbStore.openPanel(props.entityType, props.entity);
+  }
+  emit("action", key, props.entity);
+  if (typeof key === "string") {
+    emit(key, props.entity);
+  }
 };
 
-/**
- * Récupère le nom de l'entité en gérant les modèles et objets bruts.
- */
 const getEntityName = () => {
   if (!props.entity) return null;
-  
-  // Si c'est une instance de modèle, utiliser le getter name
-  if (props.entity && typeof props.entity._data !== 'undefined') {
+  if (props.entity && typeof props.entity._data !== "undefined") {
     return props.entity.name || props.entity.title || null;
   }
-  // Sinon, accès direct
   return props.entity?.name || props.entity?.title || null;
 };
 
 const entityName = computed(() => getEntityName());
 const showEntityName = computed(() => Boolean(entityName.value));
 
-// Pour le menu contextuel, on utilise un Dropdown positionné de manière absolue
 const contextMenuStyle = computed(() => {
   if (props.format !== "context" || !props.contextPosition) {
     return {};
@@ -183,7 +145,6 @@ const contextMenuStyle = computed(() => {
 </script>
 
 <template>
-  <!-- Format : liste de boutons -->
   <EntityActionsList
     v-if="format === 'buttons'"
     :entity-type="entityType"
@@ -195,7 +156,6 @@ const contextMenuStyle = computed(() => {
     @action="handleAction"
   />
 
-  <!-- Format : dropdown (colonne Actions) -->
   <EntityActionsDropdown
     v-else-if="format === 'dropdown'"
     :entity-type="entityType"
@@ -212,7 +172,6 @@ const contextMenuStyle = computed(() => {
     @action="handleAction"
   />
 
-  <!-- Format : menu contextuel (clic droit) -->
   <Transition v-else-if="format === 'context'" name="entity-context-menu">
     <div
       v-if="contextVisible"
@@ -257,4 +216,3 @@ const contextMenuStyle = computed(() => {
   transform: scale(1);
 }
 </style>
-

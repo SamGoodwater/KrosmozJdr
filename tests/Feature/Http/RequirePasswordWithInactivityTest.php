@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Http;
 
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -27,10 +28,12 @@ class RequirePasswordWithInactivityTest extends TestCase
     public function test_inertia_visit_redirects_to_password_confirm_instead_of_json(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $inertiaVersion = (string) (app(HandleInertiaRequests::class)->version(request()) ?? '');
 
         $response = $this->actingAs($admin)
             ->withHeaders([
                 'X-Inertia' => 'true',
+                'X-Inertia-Version' => $inertiaVersion,
                 'X-Requested-With' => 'XMLHttpRequest',
                 'Accept' => 'text/html, application/xhtml+xml',
             ])

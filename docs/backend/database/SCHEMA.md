@@ -448,63 +448,63 @@ erDiagram
     location : varchar(255)
     level : varchar(255)
     other_info : varchar(255)
-    life : varchar(255)
-    pa : varchar(255)
-    pm : varchar(255)
-    po : varchar(255)
-    ini : varchar(255)
-    invocation : varchar(255)
-    touch : varchar(255)
-    ca : varchar(255)
-    dodge_pa : varchar(255)
-    dodge_pm : varchar(255)
-    fuite : varchar(255)
-    tacle : varchar(255)
-    critical_hit : varchar(16)
-    heal_bonus : varchar(16)
-    vitality : varchar(255)
-    sagesse : varchar(255)
-    strong : varchar(255)
-    intel : varchar(255)
-    agi : varchar(255)
-    chance : varchar(255)
-    do_fixe_neutre : varchar(255)
-    do_fixe_terre : varchar(255)
-    do_fixe_feu : varchar(255)
-    do_fixe_air : varchar(255)
-    do_fixe_eau : varchar(255)
-    do_sagesse : varchar(255)
-    do_vitalite : varchar(255)
+    life : text
+    pa : text
+    pm : text
+    po : text
+    ini : text
+    invocation : text
+    touch : text
+    ca : text
+    dodge_pa : text
+    dodge_pm : text
+    fuite : text
+    tacle : text
+    critical_hit : text
+    heal_bonus : text
+    vitality : text
+    sagesse : text
+    strong : text
+    intel : text
+    agi : text
+    chance : text
+    do_fixe_neutre : text
+    do_fixe_terre : text
+    do_fixe_feu : text
+    do_fixe_air : text
+    do_fixe_eau : text
+    do_sagesse : text
+    do_vitalite : text
     res_fixe_neutre : text
     res_fixe_terre : text
     res_fixe_feu : text
     res_fixe_air : text
     res_fixe_eau : text
-    res_neutre : varchar(255)
-    res_terre : varchar(255)
-    res_feu : varchar(255)
-    res_air : varchar(255)
-    res_eau : varchar(255)
-    res_sagesse : varchar(255)
-    res_vitalite : varchar(255)
-    acrobatie_bonus : varchar(255)
-    discretion_bonus : varchar(255)
-    escamotage_bonus : varchar(255)
-    athletisme_bonus : varchar(255)
-    intimidation_bonus : varchar(255)
-    arcane_bonus : varchar(255)
-    histoire_bonus : varchar(255)
-    investigation_bonus : varchar(255)
-    nature_bonus : varchar(255)
-    religion_bonus : varchar(255)
-    dressage_bonus : varchar(255)
-    medecine_bonus : varchar(255)
-    perception_bonus : varchar(255)
-    perspicacite_bonus : varchar(255)
-    survie_bonus : varchar(255)
-    persuasion_bonus : varchar(255)
-    representation_bonus : varchar(255)
-    supercherie_bonus : varchar(255)
+    res_neutre : text
+    res_terre : text
+    res_feu : text
+    res_air : text
+    res_eau : text
+    res_sagesse : text
+    res_vitalite : text
+    acrobatie_bonus : text
+    discretion_bonus : text
+    escamotage_bonus : text
+    athletisme_bonus : text
+    intimidation_bonus : text
+    arcane_bonus : text
+    histoire_bonus : text
+    investigation_bonus : text
+    nature_bonus : text
+    religion_bonus : text
+    dressage_bonus : text
+    medecine_bonus : text
+    perception_bonus : text
+    perspicacite_bonus : text
+    survie_bonus : text
+    persuasion_bonus : text
+    representation_bonus : text
+    supercherie_bonus : text
     acrobatie_mastery : tinyint(4)
     discretion_mastery : tinyint(4)
     escamotage_mastery : tinyint(4)
@@ -523,12 +523,12 @@ erDiagram
     persuasion_mastery : tinyint(4)
     representation_mastery : tinyint(4)
     supercherie_mastery : tinyint(4)
-    save_vitality_bonus : tinyint(3) unsigned
-    save_wisdom_bonus : tinyint(3) unsigned
-    save_strength_bonus : tinyint(3) unsigned
-    save_intelligence_bonus : tinyint(3) unsigned
-    save_chance_bonus : tinyint(3) unsigned
-    save_agility_bonus : tinyint(3) unsigned
+    save_vitality_bonus : text
+    save_wisdom_bonus : text
+    save_strength_bonus : text
+    save_intelligence_bonus : text
+    save_chance_bonus : text
+    save_agility_bonus : text
     save_vitality_mastery : tinyint(3) unsigned
     save_wisdom_mastery : tinyint(3) unsigned
     save_strength_mastery : tinyint(3) unsigned
@@ -549,6 +549,69 @@ erDiagram
     updated_at : timestamp
     deleted_at : timestamp
     created_by : bigint(20) unsigned
+    life_context : text
+    pa_context : text
+    pm_context : text
+    po_context : text
+    ini_context : text
+    invocation_context : text
+    touch_context : text
+    ca_context : text
+    dodge_pa_context : text
+    dodge_pm_context : text
+    fuite_context : text
+    tacle_context : text
+    critical_hit_context : text
+    heal_bonus_context : text
+    vitality_context : text
+    sagesse_context : text
+    strong_context : text
+    intel_context : text
+    agi_context : text
+    chance_context : text
+    do_fixe_neutre_context : text
+    do_fixe_terre_context : text
+    do_fixe_feu_context : text
+    do_fixe_air_context : text
+    do_fixe_eau_context : text
+    do_sagesse_context : text
+    do_vitalite_context : text
+    res_fixe_neutre_context : text
+    res_fixe_terre_context : text
+    res_fixe_feu_context : text
+    res_fixe_air_context : text
+    res_fixe_eau_context : text
+    res_neutre_context : text
+    res_terre_context : text
+    res_feu_context : text
+    res_air_context : text
+    res_eau_context : text
+    res_sagesse_context : text
+    res_vitalite_context : text
+    acrobatie_bonus_context : text
+    discretion_bonus_context : text
+    escamotage_bonus_context : text
+    athletisme_bonus_context : text
+    intimidation_bonus_context : text
+    arcane_bonus_context : text
+    histoire_bonus_context : text
+    investigation_bonus_context : text
+    nature_bonus_context : text
+    religion_bonus_context : text
+    dressage_bonus_context : text
+    medecine_bonus_context : text
+    perception_bonus_context : text
+    perspicacite_bonus_context : text
+    survie_bonus_context : text
+    persuasion_bonus_context : text
+    representation_bonus_context : text
+    supercherie_bonus_context : text
+    save_vitality_bonus_context : text
+    save_wisdom_bonus_context : text
+    save_strength_bonus_context : text
+    save_intelligence_bonus_context : text
+    save_chance_bonus_context : text
+    save_agility_bonus_context : text
   }
   DATA_SUBJECT_REQUESTS {
     id : bigint(20) unsigned

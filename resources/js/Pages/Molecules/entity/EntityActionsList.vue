@@ -102,6 +102,8 @@ const handleAction = (actionKey, _event) => {
       v-for="action in resolvedActions.filter((item) => item?.key !== 'state')"
       :key="action.key"
       :action="action"
+      :entity-type="entityType"
+      :entity="entity"
       :display="display"
       :size="size"
       :color="color"

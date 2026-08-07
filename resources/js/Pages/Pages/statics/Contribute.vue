@@ -22,7 +22,7 @@ onMounted(() => {
     <Container>
         <div class="mx-auto prose max-sm:prose-sm lg:prose-lg">
             <div
-                class="absolute inset-0 bg-[url('/storage/logos/logo_project.png')] bg-no-repeat bg-center opacity-10 blur-lg">
+                class="absolute inset-0 bg-[url('/storage/images/logos/logo_project.png')] bg-no-repeat bg-center opacity-10 blur-lg">
             </div>
 
             <!-- Introduction -->
@@ -43,7 +43,7 @@ onMounted(() => {
             <section
                 class="mb-10 flex flex-col md:flex-row items-center relative transition-all duration-200 hover:scale-[1.01]">
                 <div class="relative md:mr-8">
-                    <Image src="/storage/logos/logo_project.png" alt="Logo Nextcloud" size="md"
+                    <Image src="/storage/images/logos/logo_project.png" alt="Logo Nextcloud" size="md"
                         class="w-20 md:w-40 max-sm:hidden mx-auto md:mx-0 drop-shadow-lg transition-transform duration-200 hover:scale-105" />
                 </div>
                 <div class="relative">
@@ -77,7 +77,7 @@ onMounted(() => {
             <section
                 class="mb-10 flex flex-col md:flex-row items-center relative transition-all duration-200 hover:scale-[1.01]">
                 <div class="relative md:mr-8">
-                    <Image src="/storage/logos/autres/discord.png" alt="Logo Discord" size="md"
+                    <Image src="/storage/images/logos/autres/discord_logo.webp" alt="Logo Discord" size="md"
                         class="w-20 md:w-40 max-sm:hidden mx-auto md:mx-0 drop-shadow-lg transition-transform duration-200 hover:scale-105" />
                 </div>
                 <div class="relative">
@@ -99,7 +99,7 @@ onMounted(() => {
             <section
                 class="mb-10 flex flex-col md:flex-row items-center relative transition-all duration-200 hover:scale-[1.01]">
                 <div class="relative md:mr-8">
-                    <Image src="/storage/logos/autres/github.png" alt="Logo GitHub" size="md"
+                    <Image src="/storage/images/logos/autres/github_logo.webp" alt="Logo GitHub" size="md"
                         class="w-20 md:w-40 max-sm:hidden mx-auto md:mx-0 drop-shadow-lg transition-transform duration-200 hover:scale-105" />
                 </div>
                 <div class="relative">

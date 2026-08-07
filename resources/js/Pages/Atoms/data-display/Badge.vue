@@ -36,16 +36,19 @@
  * @props {Boolean} truncate - Tronque le contenu (défaut: true). Mettre à false pour autoriser le multiline.
  * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl'), défaut ''
  * @props {String} variant - Style DaisyUI ('', 'outline', 'dash', 'soft', 'ghost'), défaut ''
+ * @props {String} [title] - Tooltip natif HTML (attribut title)
  * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot default - Contenu du badge (fallback)
  * @slot content - Contenu HTML complexe prioritaire
  *
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
-import { computed, nextTick, onMounted, ref, watch } from "vue"
+import { computed, nextTick, onMounted, ref, watch, useAttrs } from "vue"
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { colorList, sizeXlList, variantList } from '@/Pages/Atoms/atomMap';
 import { isValidColor, getReadableTextColor, getTailwindTokenFromLabel } from '@/Utils/color/Color';
+
+defineOptions({ inheritAttrs: false });
 
 // Fonction pour détecter si une couleur est Tailwind (format 'color-shade')
 // Utilisée dans le computed, pas dans le validator
@@ -113,7 +116,36 @@ const props = defineProps({
     outline: {
         type: Boolean,
         default: false
+    },
+    /** Tooltip natif (HTML title) — déclaré pour ne pas passer dans v-on="$attrs". */
+    title: {
+        type: String,
+        default: '',
+    },
+});
+
+const fallthroughAttrs = useAttrs();
+
+/** Listeners uniquement (onXxx → fonctions), jamais les attrs HTML comme title. */
+const fallthroughListeners = computed(() => {
+    const out = {};
+    for (const [key, value] of Object.entries(fallthroughAttrs)) {
+        if (key.startsWith('on') && typeof value === 'function') {
+            out[key] = value;
+        }
     }
+    return out;
+});
+
+/** Attributs HTML restants (data-*, aria-*, etc.), hors listeners. */
+const fallthroughHtmlAttrs = computed(() => {
+    const out = {};
+    for (const [key, value] of Object.entries(fallthroughAttrs)) {
+        if (!key.startsWith('on')) {
+            out[key] = value;
+        }
+    }
+    return out;
 });
 
 const autoColorToken = computed(() => {
@@ -336,7 +368,14 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <span ref="badgeEl" :class="atomClasses" v-bind="attrs" v-on="$attrs" :style="[inlineStyle, domContrastStyle, forcedTextStyle]">
+    <span
+        ref="badgeEl"
+        :class="atomClasses"
+        :title="title || undefined"
+        v-bind="{ ...fallthroughHtmlAttrs, ...attrs }"
+        v-on="fallthroughListeners"
+        :style="[inlineStyle, domContrastStyle, forcedTextStyle]"
+    >
         <!-- Priorité : content prop > slot content > slot default -->
         <span
             v-if="content && !$slots.content && !$slots.default"

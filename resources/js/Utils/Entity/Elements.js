@@ -2,10 +2,11 @@
  * Référentiel éléments (Spell, Capability) — masque 7 bits, aligné avec App\Support\ElementBitmask.
  *
  * Primaires : 0 Neutre, 1 Terre, 2 Feu, 3 Air, 4 Eau, 5 Sagesse, 6 Vitalité.
- * Icônes : storage/app/public/images/icons/caracteristics/
+ * Icônes : storage/app/public/images/icons/caracteristics/ (URL absolue `/storage/...`).
  */
 
-const ELEMENT_ICON_BASE = 'icons/caracteristics';
+/** Base publique (évite les URL relatives type `/entities/icons/...` sur les pages entités). */
+const ELEMENT_ICON_BASE = '/storage/images/icons/caracteristics';
 
 export const ELEMENT_PRIMARY_COUNT = 7;
 

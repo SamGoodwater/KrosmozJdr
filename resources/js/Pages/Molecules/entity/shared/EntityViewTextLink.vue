@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, markRaw } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
@@ -78,7 +78,7 @@ function handleAltNavigation(event) {
 }
 
 const overlayContent = computed(() => ({
-  component: props.minimalComponent,
+  component: markRaw(props.minimalComponent),
   props: {
     [props.entityProp]: props.entity,
     showActions: props.showActionsOnHover,

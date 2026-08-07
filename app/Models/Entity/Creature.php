@@ -4,6 +4,7 @@ namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
 use App\Models\User;
+use App\Support\Creature\CreatureComposableColumns;
 use Database\Factories\CreatureFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -257,6 +258,132 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomMastery($value)
  * @property-read Collection<int, CreatureTrait> $creatureTraits
  * @property-read int|null $creature_traits_count
+ * @property string|null $life_context
+ * @property string|null $pa_context
+ * @property string|null $pm_context
+ * @property string|null $po_context
+ * @property string|null $ini_context
+ * @property string|null $invocation_context
+ * @property string|null $touch_context
+ * @property string|null $ca_context
+ * @property string|null $dodge_pa_context
+ * @property string|null $dodge_pm_context
+ * @property string|null $fuite_context
+ * @property string|null $tacle_context
+ * @property string|null $critical_hit_context
+ * @property string|null $heal_bonus_context
+ * @property string|null $vitality_context
+ * @property string|null $sagesse_context
+ * @property string|null $strong_context
+ * @property string|null $intel_context
+ * @property string|null $agi_context
+ * @property string|null $chance_context
+ * @property string|null $do_fixe_neutre_context
+ * @property string|null $do_fixe_terre_context
+ * @property string|null $do_fixe_feu_context
+ * @property string|null $do_fixe_air_context
+ * @property string|null $do_fixe_eau_context
+ * @property string|null $do_sagesse_context
+ * @property string|null $do_vitalite_context
+ * @property string|null $res_fixe_neutre_context
+ * @property string|null $res_fixe_terre_context
+ * @property string|null $res_fixe_feu_context
+ * @property string|null $res_fixe_air_context
+ * @property string|null $res_fixe_eau_context
+ * @property string|null $res_neutre_context
+ * @property string|null $res_terre_context
+ * @property string|null $res_feu_context
+ * @property string|null $res_air_context
+ * @property string|null $res_eau_context
+ * @property string|null $res_sagesse_context
+ * @property string|null $res_vitalite_context
+ * @property string|null $acrobatie_bonus_context
+ * @property string|null $discretion_bonus_context
+ * @property string|null $escamotage_bonus_context
+ * @property string|null $athletisme_bonus_context
+ * @property string|null $intimidation_bonus_context
+ * @property string|null $arcane_bonus_context
+ * @property string|null $histoire_bonus_context
+ * @property string|null $investigation_bonus_context
+ * @property string|null $nature_bonus_context
+ * @property string|null $religion_bonus_context
+ * @property string|null $dressage_bonus_context
+ * @property string|null $medecine_bonus_context
+ * @property string|null $perception_bonus_context
+ * @property string|null $perspicacite_bonus_context
+ * @property string|null $survie_bonus_context
+ * @property string|null $persuasion_bonus_context
+ * @property string|null $representation_bonus_context
+ * @property string|null $supercherie_bonus_context
+ * @property string|null $save_vitality_bonus_context
+ * @property string|null $save_wisdom_bonus_context
+ * @property string|null $save_strength_bonus_context
+ * @property string|null $save_intelligence_bonus_context
+ * @property string|null $save_chance_bonus_context
+ * @property string|null $save_agility_bonus_context
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereAcrobatieBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereAgiContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereArcaneBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereAthletismeBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereCaContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereChanceContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereCriticalHitContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDiscretionBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeAirContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeEauContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeFeuContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeNeutreContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeTerreContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoSagesseContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoVitaliteContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDodgePaContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDodgePmContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDressageBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereEscamotageBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereFuiteContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereHealBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereHistoireBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereIniContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereIntelContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereIntimidationBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereInvestigationBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereInvocationContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereLifeContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereMedecineBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereNatureBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature wherePaContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature wherePerceptionBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature wherePerspicaciteBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature wherePersuasionBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature wherePmContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature wherePoContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereReligionBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereRepresentationBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResAirContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResEauContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResFeuContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResFixeAirContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResFixeEauContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResFixeFeuContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResFixeNeutreContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResFixeTerreContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResNeutreContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResSagesseContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResTerreContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereResVitaliteContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSagesseContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveAgilityBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveChanceBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveIntelligenceBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveStrengthBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveVitalityBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereStrongContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSupercherieBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSurvieBonusContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereTacleContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereTouchContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereVitalityContext($value)
  * @mixin \Eloquent
  */
 class Creature extends Model implements HasMedia
@@ -389,6 +516,46 @@ class Creature extends Model implements HasMedia
         'image',
         'created_by',
     ];
+
+    /**
+     * @return list<string>
+     */
+    public function getFillable(): array
+    {
+        return array_values(array_unique([
+            ...$this->fillable,
+            ...CreatureComposableColumns::contextColumns(),
+        ]));
+    }
+
+    /**
+     * Indique si une colonne de total explicite est renseignée (mode « total prioritaire »).
+     */
+    public function hasExplicitTotal(string $column): bool
+    {
+        if (! CreatureComposableColumns::isComposable($column)) {
+            return false;
+        }
+        $value = $this->getAttribute($column);
+
+        return $value !== null && $value !== '';
+    }
+
+    /**
+     * Bonus contextuel brut (nombre ou formule) pour une colonne composable.
+     */
+    public function contextBonusRaw(string $column): ?string
+    {
+        if (! CreatureComposableColumns::isComposable($column)) {
+            return null;
+        }
+        $value = $this->getAttribute(CreatureComposableColumns::contextColumn($column));
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return is_string($value) ? $value : (string) $value;
+    }
 
     /**
      * The conditions that should be cast.

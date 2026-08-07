@@ -291,7 +291,7 @@ const handleAction = async (actionKey) => {
                         display="icon-only"
                         size="sm"
                         color="primary"
-                        :context="{ inPanel: false, inPage: true }"
+                        :context="{ inPanel: false, inPage: true, viewMode: 'full' }"
                         @action="handleAction"
                     />
                 </div>

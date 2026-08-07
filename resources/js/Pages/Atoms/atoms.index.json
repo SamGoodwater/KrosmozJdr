@@ -631,6 +631,13 @@
     "file": "feedback/Progress.vue"
   },
   {
+    "name": "Popover",
+    "description": "Popover — panneau flottant ouvert au clic (Esc / clic extérieur pour fermer).",
+    "props": [],
+    "slots": [],
+    "file": "feedback/Popover.vue"
+  },
+  {
     "name": "Loading",
     "description": "Loading Atom (DaisyUI)",
     "props": [
@@ -1973,7 +1980,7 @@
       {
         "name": "alt",
         "type": "String",
-        "desc": "- Texte alternatif (obligatoire)"
+        "desc": "- Texte alternatif (recommandé pour images ; optionnel si décoratif / FA à côté d'un libellé)"
       },
       {
         "name": "size",
@@ -2619,6 +2626,11 @@
         "desc": "- Style DaisyUI ('', 'outline', 'dash', 'soft', 'ghost'), défaut ''"
       },
       {
+        "name": "title",
+        "type": "String",
+        "desc": "- Tooltip natif HTML (attribut title)"
+      },
+      {
         "name": "id",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex - hérités de commonProps"
@@ -2967,7 +2979,7 @@
       {
         "name": "variant",
         "type": "String",
-        "desc": "- Style DaisyUI ('', 'outline', 'ghost', 'link', 'soft', 'dash', 'glass')"
+        "desc": "- Style DaisyUI ('', 'outline', 'ghost', 'link', 'soft', 'dash', 'glass') ; accepte aussi une couleur DaisyUI (compat legacy, remappée)"
       },
       {
         "name": "size",

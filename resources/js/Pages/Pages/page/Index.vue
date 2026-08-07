@@ -228,7 +228,7 @@ function saveOrder() {
                 <div v-if="hasChanges && localPages.length > 0" class="mb-4 flex items-center gap-3">
                     <Btn
                         type="button"
-                        variant="primary"
+                        color="primary"
                         size="sm"
                         :disabled="saving"
                         @click="saveOrder"
@@ -318,7 +318,7 @@ function saveOrder() {
                                         <Btn
                                             v-if="pageItem.can?.update"
                                             size="xs"
-                                            variant="info"
+                                            color="info"
                                             @click="handleEdit(pageItem)"
                                             title="Modifier"
                                         >
@@ -327,7 +327,7 @@ function saveOrder() {
                                         <Btn
                                             v-if="pageItem.can?.delete"
                                             size="xs"
-                                            variant="error"
+                                            color="error"
                                             @click="handleDelete(pageItem.id, pageItem.title)"
                                             title="Supprimer"
                                         >

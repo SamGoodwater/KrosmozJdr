@@ -87,7 +87,7 @@ const close = () => emit("close");
         </div>
 
         <template #actions>
-            <Btn :size="btnSize" variant="primary" :color="uiColor" @click="close">Fermer</Btn>
+            <Btn :size="btnSize" :color="uiColor" @click="close">Fermer</Btn>
         </template>
     </Modal>
 </template>

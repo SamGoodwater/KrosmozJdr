@@ -7,18 +7,27 @@ namespace App\Services\Creature\Runtime;
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\Entity\Creature;
+use App\Services\Characteristic\Domain\LevelDomainResolver;
+use App\Services\Characteristic\Formula\FormulaExpressionParser;
 use App\Services\Characteristic\Formula\FormulaResolutionService;
 use App\Services\Characteristic\Formula\FormulaVariableResolver;
+use App\Services\Characteristic\Formula\SafeExpressionEvaluator;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Support\Creature\CreatureComposableColumns;
 
 /**
- * Calcule les caractéristiques dérivées d’une créature (formules BDD + bonus objets) et expose une décomposition pour l’API / tooltips.
+ * Calcule les caractéristiques d'une créature niveau par niveau : base + objets + contexte,
+ * avec priorité au total explicite stocké en colonne.
+ *
+ * @see docs/features/characteristics/COMPUTED_VALUES.md
  */
 final class CreatureRuntimeStatsService
 {
     public function __construct(
         private readonly CharacteristicGetterService $getter,
         private readonly FormulaResolutionService $formulas,
+        private readonly FormulaExpressionParser $expressionParser,
+        private readonly LevelDomainResolver $levelDomain,
         private readonly CreatureVariableMapBuilder $variableMapBuilder,
         private readonly CreatureItemBonusAggregator $itemBonusAggregator,
         private readonly CreatureObjectBonusToCreatureVariables $objectBonusMerger
@@ -27,20 +36,12 @@ final class CreatureRuntimeStatsService
     /**
      * @return array{
      *   entity: string,
+     *   default_level: int,
+     *   levels: list<array{level: int, characteristics: array<string, array<string, mixed>>, variables: array<string, float|int>}>,
      *   variables: array<string, float|int>,
-     *   computed: array<string, array{
-     *     key: string,
-     *     value: float,
-     *     formula: string|null,
-     *     formula_display: string|null,
-     *     substituted: string|null,
-     *     placeholders: list<array{id: string, value: float}>
-     *   }>,
+     *   computed: array<string, array<string, mixed>>,
      *   unresolved_computed_keys: list<string>,
-     *   items: array{
-     *     aggregated: array<string, int>,
-     *     lines: list<array{item_id: int, name: string, quantity: int, bonuses: array<string, int>}>
-     *   }
+     *   items: array{aggregated: array<string, int>, lines: list<array{item_id: int, name: string, quantity: int, bonuses: array<string, int>}>}
      * }
      */
     public function resolve(Creature $creature, string $entity = 'monster'): array
@@ -51,39 +52,172 @@ final class CreatureRuntimeStatsService
 
         $creature->loadMissing('items');
 
-        $variables = $this->variableMapBuilder->buildBaseMap($creature, $entity);
+        $levels = $this->levelDomain->resolve($creature->level);
         $itemTotals = $this->itemBonusAggregator->aggregateTotals($creature->items);
-        $this->objectBonusMerger->mergeInto($variables, $entity, $itemTotals);
+        $objectByKey = $this->objectBonusMerger->mapToCharacteristicKeys($entity, $itemTotals);
+        $dbColumnByKey = $this->mapCharacteristicKeysToDbColumns($entity);
 
+        $levelsPayload = [];
+        $lastUnresolved = [];
+
+        foreach ($levels as $level) {
+            $resolved = $this->resolveAtLevel(
+                $creature,
+                $entity,
+                $level,
+                $objectByKey,
+                $dbColumnByKey
+            );
+            $levelsPayload[] = [
+                'level' => $level,
+                'characteristics' => $resolved['characteristics'],
+                'variables' => $resolved['variables'],
+            ];
+            $lastUnresolved = $resolved['unresolved_computed_keys'];
+        }
+
+        $first = $levelsPayload[0] ?? [
+            'level' => 1,
+            'characteristics' => [],
+            'variables' => [],
+        ];
+
+        $computedBc = [];
+        foreach ($first['characteristics'] as $key => $row) {
+            $computedBc[$key] = [
+                'key' => $key,
+                'value' => $row['total'],
+                'base' => $row['base'],
+                'object' => $row['object'],
+                'context' => $row['context'],
+                'source' => $row['source'],
+                'formula' => $row['formula'],
+                'formula_display' => $row['formula_display'],
+                'substituted' => $row['substituted'],
+                'placeholders' => $row['placeholders'],
+                'context_raw' => $row['context_raw'],
+            ];
+        }
+
+        return [
+            'entity' => $entity,
+            'default_level' => $first['level'],
+            'levels' => $levelsPayload,
+            'variables' => $first['variables'],
+            'computed' => $computedBc,
+            'unresolved_computed_keys' => $lastUnresolved,
+            'items' => [
+                'aggregated' => $itemTotals,
+                'lines' => $this->itemBonusAggregator->aggregatePerItemLines($creature->items),
+            ],
+        ];
+    }
+
+    /**
+     * @param  array<string, int>  $objectByKey
+     * @param  array<string, string>  $dbColumnByKey
+     * @return array{
+     *   characteristics: array<string, array<string, mixed>>,
+     *   variables: array<string, float|int>,
+     *   unresolved_computed_keys: list<string>
+     * }
+     */
+    private function resolveAtLevel(
+        Creature $creature,
+        string $entity,
+        int $level,
+        array $objectByKey,
+        array $dbColumnByKey
+    ): array {
+        $variables = $this->variableMapBuilder->buildBaseMap($creature, $entity);
+        $variables = $this->stripContextColumnsFromVariables($variables);
+        $variables['level_creature'] = $level;
+        $variables['level'] = $level;
         $variables = FormulaVariableResolver::withShortNames('creature', $variables);
 
-        $computedKeys = $this->listComputedCharacteristicKeys($entity);
-        $resolved = [];
+        foreach ($objectByKey as $key => $amount) {
+            $variables[$key.'_object'] = (float) $amount;
+        }
+
+        $characteristics = [];
+        $resolvedKeys = [];
+
+        // 1) Totaux explicites (colonnes non nulles) — priorité d'affichage.
+        foreach ($dbColumnByKey as $key => $column) {
+            if (! CreatureComposableColumns::isComposable($column)) {
+                continue;
+            }
+            if (! $creature->hasExplicitTotal($column)) {
+                continue;
+            }
+            $total = $this->parseNumeric($creature->getAttribute($column));
+            $object = (float) ($objectByKey[$key] ?? 0);
+            $contextRaw = $creature->contextBonusRaw($column);
+            $context = $this->evaluateContext($contextRaw, $variables);
+            $base = $this->evaluateBaseFormula($key, $entity, $variables);
+            $characteristics[$key] = $this->buildCharacteristicRow(
+                $key,
+                $entity,
+                $base,
+                $object,
+                $context,
+                $total,
+                'total_column',
+                $contextRaw,
+                $variables
+            );
+            $variables[$key] = $total;
+            $resolvedKeys[$key] = true;
+        }
+        $variables = FormulaVariableResolver::withShortNames('creature', $variables);
+
+        // 2) Caractéristiques calculées / composées (passes itératives).
+        $computedKeys = $this->listComposableAndComputedKeys($entity, $dbColumnByKey);
         $maxPasses = max(32, count($computedKeys) + 5);
         for ($pass = 0; $pass < $maxPasses; $pass++) {
             $progress = false;
             foreach ($computedKeys as $key) {
-                if (array_key_exists($key, $resolved)) {
+                if (isset($resolvedKeys[$key])) {
                     continue;
                 }
+
+                $column = $dbColumnByKey[$key] ?? null;
+                $object = (float) ($objectByKey[$key] ?? 0);
+                $contextRaw = is_string($column) ? $creature->contextBonusRaw($column) : null;
+                $context = $this->evaluateContext($contextRaw, $variables);
+                $base = $this->evaluateBaseFormula($key, $entity, $variables);
+
+                // Si pas de formule de base et pas de contexte/objet, ignorer (sauf si formule pure sans colonne).
                 $def = $this->getter->getDefinition($key, $entity);
-                if ($def === null) {
+                $hasFormula = is_string($def['formula'] ?? null) && trim((string) $def['formula']) !== '';
+                if ($base === null && ! $hasFormula && $object === 0.0 && ($contextRaw === null || $context === 0.0)) {
+                    if ($column === null) {
+                        continue;
+                    }
+                    // Colonne composable sans total ni contexte → 0
+                    $base = 0.0;
+                }
+                if ($base === null && $hasFormula) {
+                    // Formule non encore résolue (dépendances manquantes) → attendre une autre passe.
                     continue;
                 }
-                if ($this->mergedCreatureDbColumn($key, $entity) !== null) {
-                    continue;
-                }
-                $formula = $def['formula'] ?? null;
-                if ($formula === null || trim((string) $formula) === '') {
-                    continue;
-                }
-                $evaluated = $this->formulas->evaluate($formula, $variables);
-                if ($evaluated === null) {
-                    continue;
-                }
-                $resolved[$key] = $evaluated;
-                $variables[$key] = $evaluated;
+
+                $baseValue = $base ?? 0.0;
+                $total = $baseValue + $object + $context;
+                $characteristics[$key] = $this->buildCharacteristicRow(
+                    $key,
+                    $entity,
+                    $baseValue,
+                    $object,
+                    $context,
+                    $total,
+                    'composed',
+                    $contextRaw,
+                    $variables
+                );
+                $variables[$key] = $total;
                 $variables = FormulaVariableResolver::withShortNames('creature', $variables);
+                $resolvedKeys[$key] = true;
                 $progress = true;
             }
             if (! $progress) {
@@ -93,51 +227,170 @@ final class CreatureRuntimeStatsService
 
         $unresolved = [];
         foreach ($computedKeys as $key) {
-            if (! array_key_exists($key, $resolved)) {
+            if (! isset($resolvedKeys[$key])) {
                 $def = $this->getter->getDefinition($key, $entity);
-                if ($def !== null && $this->mergedCreatureDbColumn($key, $entity) === null && ! empty($def['formula'])) {
+                if ($def !== null && ! empty($def['formula'])) {
                     $unresolved[] = $key;
                 }
             }
         }
 
-        $computedPayload = [];
-        foreach ($resolved as $key => $value) {
-            $def = $this->getter->getDefinition($key, $entity);
-            if ($def === null) {
-                continue;
-            }
-            $formula = $def['formula'] ?? null;
-            $ids = $this->formulas->extractVariablePlaceholders($formula);
-            $placeholders = [];
-            foreach ($ids as $id) {
-                $placeholders[] = [
-                    'id' => $id,
-                    'value' => isset($variables[$id]) ? (float) $variables[$id] : 0.0,
-                ];
-            }
-            $computedPayload[$key] = [
-                'key' => $key,
-                'value' => (float) $value,
-                'formula' => is_string($formula) ? $formula : null,
-                'formula_display' => isset($def['formula_display']) && is_string($def['formula_display'])
-                    ? $def['formula_display']
-                    : null,
-                'substituted' => $this->formulas->substitutePlaceholdersForDisplay($formula, $variables),
-                'placeholders' => $placeholders,
+        return [
+            'characteristics' => $characteristics,
+            'variables' => $this->normalizeNumericMap($variables),
+            'unresolved_computed_keys' => $unresolved,
+        ];
+    }
+
+    /**
+     * @param  array<string, float|int>  $variables
+     * @return array<string, mixed>
+     */
+    private function buildCharacteristicRow(
+        string $key,
+        string $entity,
+        float $base,
+        float $object,
+        float $context,
+        float $total,
+        string $source,
+        ?string $contextRaw,
+        array $variables
+    ): array {
+        $def = $this->getter->getDefinition($key, $entity);
+        $formula = is_string($def['formula'] ?? null) ? $def['formula'] : null;
+        $ids = $this->formulas->extractVariablePlaceholders($formula);
+        $placeholders = [];
+        foreach ($ids as $id) {
+            $placeholders[] = [
+                'id' => $id,
+                'value' => isset($variables[$id]) ? (float) $variables[$id] : 0.0,
             ];
         }
 
         return [
-            'entity' => $entity,
-            'variables' => $this->normalizeNumericMap($variables),
-            'computed' => $computedPayload,
-            'unresolved_computed_keys' => $unresolved,
-            'items' => [
-                'aggregated' => $itemTotals,
-                'lines' => $this->itemBonusAggregator->aggregatePerItemLines($creature->items),
-            ],
+            'key' => $key,
+            'base' => $base,
+            'object' => $object,
+            'context' => $context,
+            'total' => $total,
+            'source' => $source,
+            'context_raw' => $contextRaw,
+            'formula' => $formula,
+            'formula_display' => isset($def['formula_display']) && is_string($def['formula_display'])
+                ? $def['formula_display']
+                : null,
+            'substituted' => $this->formulas->substitutePlaceholdersForDisplay($formula, $variables),
+            'placeholders' => $placeholders,
         ];
+    }
+
+    /**
+     * @param  array<string, float|int>  $variables
+     */
+    private function evaluateBaseFormula(string $key, string $entity, array $variables): ?float
+    {
+        $def = $this->getter->getDefinition($key, $entity);
+        if ($def === null) {
+            return null;
+        }
+        $formula = $def['formula'] ?? null;
+        if (! is_string($formula) || trim($formula) === '') {
+            return null;
+        }
+
+        return $this->formulas->evaluate($formula, $variables, SafeExpressionEvaluator::DICE_MODE_MIN);
+    }
+
+    /**
+     * @param  array<string, float|int>  $variables
+     */
+    private function evaluateContext(?string $raw, array $variables): float
+    {
+        if ($raw === null || trim($raw) === '') {
+            return 0.0;
+        }
+        $value = $this->expressionParser->evaluate($raw, $variables, SafeExpressionEvaluator::DICE_MODE_MIN);
+
+        return $value ?? 0.0;
+    }
+
+    /**
+     * @return array<string, string> characteristic_key => db_column
+     */
+    private function mapCharacteristicKeysToDbColumns(string $entity): array
+    {
+        $map = [];
+        $rows = CharacteristicCreature::query()
+            ->whereIn('entity', [CharacteristicCreature::ENTITY_ALL, $entity])
+            ->whereNotNull('db_column')
+            ->with('characteristic')
+            ->get()
+            ->groupBy('characteristic_id');
+
+        foreach ($rows as $group) {
+            $base = $group->firstWhere('entity', CharacteristicCreature::ENTITY_ALL);
+            $overlay = $group->firstWhere('entity', $entity);
+            $row = $overlay ?? $base;
+            if ($row === null || $row->characteristic === null) {
+                continue;
+            }
+            $col = (string) $row->db_column;
+            if ($col === '') {
+                continue;
+            }
+            $map[$row->characteristic->key] = $col;
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param  array<string, string>  $dbColumnByKey
+     * @return list<string>
+     */
+    private function listComposableAndComputedKeys(string $entity, array $dbColumnByKey): array
+    {
+        $keys = [];
+
+        foreach ($dbColumnByKey as $key => $column) {
+            if (CreatureComposableColumns::isComposable($column)) {
+                $keys[$key] = true;
+            }
+        }
+
+        $ids = CharacteristicCreature::query()
+            ->whereIn('entity', [CharacteristicCreature::ENTITY_ALL, $entity])
+            ->whereNotNull('formula')
+            ->distinct()
+            ->pluck('characteristic_id');
+
+        foreach (Characteristic::query()->whereIn('id', $ids)->orderBy('id')->pluck('key') as $key) {
+            if (! is_string($key) || $key === '') {
+                continue;
+            }
+            $def = $this->getter->getDefinition($key, $entity);
+            $formula = $def['formula'] ?? null;
+            if ($def === null || ! is_string($formula) || trim($formula) === '') {
+                continue;
+            }
+            $keys[$key] = true;
+        }
+
+        return array_keys($keys);
+    }
+
+    /**
+     * @param  array<string, float|int>  $variables
+     * @return array<string, float|int>
+     */
+    private function stripContextColumnsFromVariables(array $variables): array
+    {
+        foreach (CreatureComposableColumns::contextColumns() as $contextCol) {
+            unset($variables[$contextCol]);
+        }
+
+        return $variables;
     }
 
     /**
@@ -154,66 +407,15 @@ final class CreatureRuntimeStatsService
         return $out;
     }
 
-    /**
-     * Colonne créature réelle en BDD (fusion * + entité), ou null si la carac est purement calculée.
-     */
-    private function mergedCreatureDbColumn(string $characteristicKey, string $entity): ?string
+    private function parseNumeric(mixed $value): float
     {
-        $characteristic = Characteristic::query()->where('key', $characteristicKey)->first();
-        if ($characteristic === null) {
-            return null;
+        if ($value === null || $value === '') {
+            return 0.0;
         }
-        $effective = $characteristic->effectiveCharacteristic();
-        $rows = CharacteristicCreature::query()
-            ->where('characteristic_id', $effective->id)
-            ->whereIn('entity', [CharacteristicCreature::ENTITY_ALL, $entity])
-            ->get();
-        $base = $rows->firstWhere('entity', CharacteristicCreature::ENTITY_ALL);
-        $overlay = $rows->firstWhere('entity', $entity);
-        $overlayVal = $overlay !== null ? $overlay->db_column : null;
-        if ($overlayVal !== null && $overlayVal !== '') {
-            return $overlayVal;
-        }
-        $baseVal = $base !== null ? $base->db_column : null;
-        if ($baseVal !== null && $baseVal !== '') {
-            return $baseVal;
+        if (is_numeric($value)) {
+            return (float) $value;
         }
 
-        return null;
-    }
-
-    /**
-     * Clés ayant une formule sur characteristic_creature et sans colonne stockée (calcul pur).
-     *
-     * @return list<string>
-     */
-    private function listComputedCharacteristicKeys(string $entity): array
-    {
-        $ids = CharacteristicCreature::query()
-            ->whereIn('entity', [CharacteristicCreature::ENTITY_ALL, $entity])
-            ->whereNotNull('formula')
-            ->distinct()
-            ->pluck('characteristic_id');
-
-        $keys = Characteristic::query()
-            ->whereIn('id', $ids)
-            ->orderBy('id')
-            ->pluck('key')
-            ->all();
-
-        $out = [];
-        foreach ($keys as $key) {
-            if ($this->mergedCreatureDbColumn($key, $entity) !== null) {
-                continue;
-            }
-            $def = $this->getter->getDefinition($key, $entity);
-            $formula = $def['formula'] ?? null;
-            if ($def === null || ! is_string($formula) || trim($formula) === '') {
-                continue;
-            }
-            $out[] = $key;
-        }
-
-        return $out;
+        return 0.0;
     }
 }

@@ -35,6 +35,22 @@ class CharacteristicDefinitionQualityServiceTest extends TestCase
             [2, 3, 4, 5, 6, 7, 8, 19, 21, 22, 114, 271],
             $service->suggestedDofusTypeIdsForHelper('Équipement (armes) : dégâts fixes.')
         );
+        $this->assertSame(
+            [2, 3, 4, 5, 6, 7, 8, 19, 21, 22, 114, 271],
+            $service->suggestedDofusTypeIdsForHelper('Équipement (arc) : bonus.')
+        );
+    }
+
+    public function test_it_does_not_treat_arcanes_as_weapon_arc(): void
+    {
+        $service = new CharacteristicDefinitionQualityService;
+
+        $this->assertSame(
+            [16, 17],
+            $service->suggestedDofusTypeIdsForHelper(
+                'Équipement : bonus à la compétence Arcanes sur chapeau ou cape (2.2.2).'
+            )
+        );
     }
 
     public function test_object_definitions_use_existing_dofusdb_type_ids_and_match_helpers(): void

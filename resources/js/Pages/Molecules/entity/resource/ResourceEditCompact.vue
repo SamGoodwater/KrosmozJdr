@@ -14,7 +14,6 @@
 import { computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import EntityFormField from '@/Pages/Molecules/entity/EntityFormField.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
 import { createFieldsConfigFromDescriptors } from '@/Utils/entity/descriptor-form';
 import { initializeFormFromEntity } from '@/Utils/entity/form-helpers';

@@ -16,7 +16,7 @@ final class CreatureObjectBonusToCreatureVariablesTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    public function test_merge_into_sets_object_totals_and_merges_targets(): void
+    public function test_map_keeps_object_totals_separate_from_base(): void
     {
         $getter = Mockery::mock(CharacteristicDefinitionLookup::class);
         $getter->shouldReceive('getDefinition')->andReturnUsing(static function (string $key, string $entity): ?array {
@@ -27,16 +27,23 @@ final class CreatureObjectBonusToCreatureVariablesTest extends TestCase
         });
 
         $merger = new CreatureObjectBonusToCreatureVariables($getter);
+        $mapped = $merger->mapToCharacteristicKeys('monster', [
+            'action_points' => 2,
+            'acrobatics' => 3,
+        ]);
+
+        $this->assertSame(2, $mapped['action_points_creature']);
+        $this->assertSame(3, $mapped['acrobatie_bonus']);
+
         $variables = ['action_points_creature' => 4.0];
         $merger->mergeInto($variables, 'monster', [
             'action_points' => 2,
             'acrobatics' => 3,
         ]);
 
-        $this->assertArrayNotHasKey('action_points_object', $variables);
-        $this->assertArrayNotHasKey('acrobatics_object', $variables);
-        $this->assertSame(6.0, $variables['action_points_creature']);
-        $this->assertSame(3.0, $variables['acrobatie_bonus']);
+        $this->assertSame(4.0, $variables['action_points_creature']);
+        $this->assertSame(2.0, $variables['action_points_creature_object']);
+        $this->assertSame(3.0, $variables['acrobatie_bonus_object']);
     }
 
     public function test_french_skill_bonus_names_list_is_non_empty(): void

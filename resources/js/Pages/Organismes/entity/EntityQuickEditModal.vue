@@ -166,7 +166,7 @@ onUnmounted(() => {
                 Annuler
             </Btn>
             <Btn 
-                variant="primary" 
+                color="primary" 
                 :disabled="!canSubmit"
                 @click="handleSubmit"
             >

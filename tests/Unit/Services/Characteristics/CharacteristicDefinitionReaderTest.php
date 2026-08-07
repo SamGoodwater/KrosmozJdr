@@ -43,7 +43,7 @@ final class CharacteristicDefinitionReaderTest extends TestCaseNoDatabase
     public function test_all_definitions_match_naming_and_have_entities_or_master_link(): void
     {
         $paths = CharacteristicDefinitionReader::allDefinitionAbsolutePaths();
-        self::assertCount(282, $paths, 'Nombre attendu de définitions JSON (import historique PHP).');
+        self::assertCount(306, $paths, 'Nombre attendu de définitions JSON (import historique PHP).');
 
         foreach ($paths as $path) {
             $def = CharacteristicDefinitionReader::load($path);

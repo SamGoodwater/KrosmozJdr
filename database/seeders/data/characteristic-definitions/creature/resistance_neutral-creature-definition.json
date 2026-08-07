@@ -31,14 +31,7 @@
             "conversion_formula": "[d]",
             "conversion_function": null,
             "conversion_dofus_sample": null,
-            "conversion_krosmoz_sample": {
-                "1": 0,
-                "4": 0,
-                "8": 0,
-                "12": 0,
-                "16": 0,
-                "20": 0
-            },
+            "conversion_krosmoz_sample": null,
             "conversion_sample_rows": null,
             "norms_grid": {
                 "very_weak": [

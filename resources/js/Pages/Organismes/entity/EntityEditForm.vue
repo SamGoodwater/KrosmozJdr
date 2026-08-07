@@ -201,6 +201,14 @@ const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPending
     useEntityActionDispatcher(entitiesPluralSegment);
 const showReadAction = computed(() => props.isUpdating && Boolean(props.entity?.id));
 
+/** Contexte actions : page d’édition ou modal d’édition embarquée. */
+const editActionsContext = computed(() => {
+    if (props.embeddedInModal) {
+        return { inModal: true, modalMode: 'edit' };
+    }
+    return { inPage: true, pageMode: 'edit' };
+});
+
 /**
  * Clé du paramètre de route Laravel (`capability` pour `/capabilities/{capability}`).
  *
@@ -1092,8 +1100,8 @@ async function handleEditPageAction(actionKey) {
                         display="icon-only"
                         size="sm"
                         color="primary"
-                        :whitelist="['view']"
-                        :context="{ inPage: true, pageMode: 'edit' }"
+                        :whitelist="['view', 'view-dofusdb']"
+                        :context="editActionsContext"
                         @action="handleEditPageAction"
                     />
                 </div>

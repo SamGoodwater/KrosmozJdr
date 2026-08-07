@@ -2,13 +2,18 @@
 
 Les caractéristiques décrivent les valeurs numériques et règles de lecture des créatures, objets et sorts : niveaux, dégâts, PA/PM/PO, limites, formules et normes.
 
+Pour le modèle **base + objets + contexte**, les formules saisies et le sélecteur de niveau, voir
+[COMPUTED_VALUES.md](./COMPUTED_VALUES.md).
+
 ## Backend
 
 - Définitions et lecture : `app/Services/Characteristics/`, `app/Support/Characteristics/`.
 - Limites : `app/Services/Characteristic/Limit/CharacteristicLimitService.php`.
-- Formules : services sous `app/Services/Characteristic/`.
+- Formules : services sous `app/Services/Characteristic/` (`FormulaExpressionParser`, `LevelDomainResolver`).
+- Runtime créature : `app/Services/Creature/Runtime/CreatureRuntimeStatsService.php`.
 - Seeders : `CharacteristicSeeder`, `CreatureCharacteristicSeeder`, `ObjectCharacteristicSeeder`, `SpellCharacteristicSeeder`.
 - Qualité des définitions : `app/Services/Characteristics/CharacteristicDefinitionQualityService.php` vérifie notamment les `norms_grid`, formules de conversion et restrictions d'équipement.
+- Reprise des totaux existants : `php artisan creatures:derive-context-bonuses`.
 
 ## Normes
 

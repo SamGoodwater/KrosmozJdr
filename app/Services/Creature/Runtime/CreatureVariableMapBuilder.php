@@ -7,6 +7,7 @@ namespace App\Services\Creature\Runtime;
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\Entity\Creature;
+use App\Support\Creature\CreatureComposableColumns;
 use Illuminate\Support\Collection;
 
 /**
@@ -33,6 +34,9 @@ final class CreatureVariableMapBuilder
         'updated_at',
         'deleted_at',
         'created_by',
+        'read_level',
+        'write_level',
+        'hostility',
     ];
 
     /**
@@ -66,14 +70,26 @@ final class CreatureVariableMapBuilder
                 continue;
             }
             $key = $characteristic->key;
-            $variables[$key] = $this->parseNumeric($creature->getAttribute($col));
+            $raw = $creature->getAttribute($col);
+            // Total explicite absent → ne pas injecter 0 (la composition prendra le relais).
+            if (CreatureComposableColumns::isComposable($col) && ($raw === null || $raw === '')) {
+                continue;
+            }
+            $variables[$key] = $this->parseNumeric($raw);
         }
 
         foreach ($creature->getAttributes() as $attr => $value) {
             if (in_array($attr, self::EXCLUDED_ATTRIBUTES, true)) {
                 continue;
             }
+            // Les colonnes *_context ne sont pas des variables de base.
+            if (str_ends_with((string) $attr, '_context')) {
+                continue;
+            }
             if (isset($variables[$attr])) {
+                continue;
+            }
+            if (CreatureComposableColumns::isComposable((string) $attr) && ($value === null || $value === '')) {
                 continue;
             }
             if (! $this->isLikelyScalarStat($value)) {

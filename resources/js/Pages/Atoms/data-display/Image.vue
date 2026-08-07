@@ -136,13 +136,13 @@ async function resolveImage() {
         if (props.src) {
             if (
                 props.src.startsWith("http://") ||
-                props.src.startsWith("https://")
+                props.src.startsWith("https://") ||
+                props.src.startsWith("/")
             ) {
                 imageUrl.value = props.src;
             } else {
-                imageUrl.value = props.src.startsWith("/")
-                    ? props.src
-                    : `/${props.src}`;
+                // Chemin logique relatif (ex. icons/caracteristics/x.webp) → /storage/images/...
+                imageUrl.value = await ImageService.getImageUrl(props.src);
             }
         } else {
             if (Object.keys(props.transform).length > 0) {

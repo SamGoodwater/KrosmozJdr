@@ -36,6 +36,7 @@ import { useFlashNotifications } from "@/Composables/notifications/useFlashNotif
 import CookieConsentBanner from "@/Pages/Molecules/privacy/CookieConsentBanner.vue";
 import PendingErasureBanner from "@/Pages/Molecules/privacy/PendingErasureBanner.vue";
 import FeedbackFab from "@/Pages/Organismes/feedback/FeedbackFab.vue";
+import DofusDbReferencePanel from "@/Pages/Molecules/entity/DofusDbReferencePanel.vue";
 import { LAYOUT_APP_SIDEBAR_OFFSET_LEFT_CLASS } from "@/Composables/layout/viewport-breakpoints";
 import OverlayHostContainer from "@/Pages/Organismes/overlay/OverlayHostContainer.vue";
 
@@ -215,6 +216,7 @@ onUnmounted(() => {
         <NotificationContainer />
         <OverlayHostContainer />
         <FeedbackFab />
+        <DofusDbReferencePanel />
         <CookieConsentBanner />
     </div>
 </template>

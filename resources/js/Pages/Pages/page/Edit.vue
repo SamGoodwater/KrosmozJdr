@@ -257,7 +257,7 @@ const submit = () => {
                         </Btn>
                         <Btn
                             type="submit"
-                            variant="primary"
+                            color="primary"
                             :disabled="form.processing"
                         >
                             <span v-if="form.processing">Enregistrement...</span>

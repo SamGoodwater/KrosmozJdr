@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed, ref, markRaw } from "vue";
 import { DEFAULT_OVERLAY_OPTIONS, OVERLAY_CONTENT_KIND } from "@/Composables/overlay/overlayConstants";
 
 const cacheStore = new Map();
@@ -15,6 +15,28 @@ function cleanupCache(maxEntries) {
     for (let i = 0; i < extra; i += 1) {
         cacheStore.delete(entries[i][0]);
     }
+}
+
+/**
+ * Empêche Vue de rendre un SFC réactif (warning + coût perf).
+ *
+ * @param {unknown} value
+ * @returns {unknown}
+ */
+function markOverlayComponentValue(value) {
+    if (!value || typeof value !== "object") return value;
+    if (value.component) {
+        return {
+            ...value,
+            component: markRaw(value.component),
+            props: value.props || {},
+        };
+    }
+    // SFC / options API passé tel quel
+    if (value.setup || value.render || value.__name || value.name) {
+        return markRaw(value);
+    }
+    return value;
 }
 
 /**
@@ -53,10 +75,13 @@ export function useOverlayContentResolver(options) {
         if (typeof result === "object" && result.kind && Object.values(OVERLAY_CONTENT_KIND).includes(result.kind)) {
             return {
                 kind: result.kind,
-                value: result.value,
+                value:
+                    result.kind === OVERLAY_CONTENT_KIND.COMPONENT
+                        ? markOverlayComponentValue(result.value)
+                        : result.value,
             };
         }
-        return { kind: OVERLAY_CONTENT_KIND.COMPONENT, value: result };
+        return { kind: OVERLAY_CONTENT_KIND.COMPONENT, value: markOverlayComponentValue(result) };
     }
 
     function getCacheKey() {
@@ -123,10 +148,10 @@ export function useOverlayContentResolver(options) {
         if (typeof content === "object" && content !== null) {
             if (content.component) {
                 resolvedKind.value = OVERLAY_CONTENT_KIND.COMPONENT;
-                resolved.value = {
+                resolved.value = markOverlayComponentValue({
                     component: content.component,
                     props: content.props || {},
-                };
+                });
                 writeToCache({ kind: resolvedKind.value, value: resolved.value });
                 return { kind: resolvedKind.value, value: resolved.value };
             }

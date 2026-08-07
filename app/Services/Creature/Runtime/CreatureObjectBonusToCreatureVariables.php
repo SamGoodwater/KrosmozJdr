@@ -7,11 +7,14 @@ namespace App\Services\Creature\Runtime;
 use App\Contracts\Characteristic\CharacteristicDefinitionLookup;
 
 /**
- * Applique les bonus agrégés d’objets (clés courtes type Dofus→Krosmoz) sur la carte de variables runtime.
+ * Mappe les bonus agrégés d'objets (clés courtes) vers les clés de caractéristiques créature,
+ * **sans** les additionner dans la variable de base.
  *
- * Règles :
- * - Clé `{stat}_object` → `{stat}_creature` si la créature a une carac avec db_column (ex. strength → strength_creature).
- * - Compétences D&D : clé anglaise courte (ex. athletics) → colonne bonus français (athletisme_bonus) — voir mapping explicite.
+ * Les totaux restent séparés pour permettre la décomposition base / objets / contexte.
+ *
+ * @example
+ *   $map = $merger->mapToCharacteristicKeys($entity, ['strength' => 2, 'athletics' => 1]);
+ *   // ['strength_creature' => 2, 'athletisme_bonus' => 1]
  */
 final class CreatureObjectBonusToCreatureVariables
 {
@@ -56,7 +59,38 @@ final class CreatureObjectBonusToCreatureVariables
     }
 
     /**
-     * Fusionne les totaux d’objets dans $variables (modifié en place). Retourne les mêmes totaux pour la payload.
+     * @return array<string, string>
+     */
+    public static function skillShortKeyMap(): array
+    {
+        return self::SKILL_SHORT_KEY_TO_BONUS_VARIABLE;
+    }
+
+    /**
+     * Convertit les totaux d'objets (clés courtes) en map clé caractéristique => montant.
+     *
+     * @param  array<string, int>  $itemTotals
+     * @return array<string, int>
+     */
+    public function mapToCharacteristicKeys(string $entity, array $itemTotals): array
+    {
+        $mapped = [];
+        foreach ($itemTotals as $shortKey => $amount) {
+            if ($amount === 0) {
+                continue;
+            }
+            $target = $this->resolveTargetVariable((string) $shortKey, $entity);
+            if ($target === null) {
+                continue;
+            }
+            $mapped[$target] = ($mapped[$target] ?? 0) + (int) $amount;
+        }
+
+        return $mapped;
+    }
+
+    /**
+     * @deprecated Utiliser mapToCharacteristicKeys() — ne plus fusionner dans la base.
      *
      * @param  array<string, int|float>  $variables
      * @param  array<string, int>  $itemTotals
@@ -64,16 +98,10 @@ final class CreatureObjectBonusToCreatureVariables
      */
     public function mergeInto(array &$variables, string $entity, array $itemTotals): array
     {
-        foreach ($itemTotals as $shortKey => $amount) {
-            if ($amount === 0) {
-                continue;
-            }
-            $target = $this->resolveTargetVariable($shortKey, $entity);
-            if ($target === null) {
-                continue;
-            }
-            $prev = isset($variables[$target]) ? (float) $variables[$target] : 0.0;
-            $variables[$target] = $prev + (float) $amount;
+        $mapped = $this->mapToCharacteristicKeys($entity, $itemTotals);
+        foreach ($mapped as $target => $amount) {
+            $objectKey = $target.'_object';
+            $variables[$objectKey] = (float) $amount;
         }
 
         return $itemTotals;

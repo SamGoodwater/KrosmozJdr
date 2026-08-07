@@ -279,7 +279,7 @@ function handleSectionCreated(data) {
         <div v-if="localSections.length" class="mt-4 flex items-center gap-3">
             <Btn
                 type="button"
-                variant="primary"
+                color="primary"
                 size="sm"
                 :disabled="saving || !hasChanges"
                 @click="saveOrder"

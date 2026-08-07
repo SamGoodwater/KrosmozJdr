@@ -6,7 +6,7 @@
  * Composant atomique pour afficher une icône/image simple.
  * - Support des icônes FontAwesome (fa-solid, fa-brands, fa-regular, fa-duotone)
  * - Support des images via l'atom Image
- * - Props : source (nom logique ou chemin), alt (texte alternatif), size (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl), disabled (hérité de commonProps)
+ * - Props : source (nom logique ou chemin), alt (texte alternatif, optionnel si décoratif), size (xs…6xl), disabled (hérité de commonProps)
  * - La taille contrôle la hauteur (height), la largeur est auto
  * - Si disabled=true, l'icône est affichée en noir et blanc (grayscale)
  *
@@ -18,7 +18,7 @@
  * <Icon source="fa-house" alt="Accueil" size="md" pack="solid" />
  *
  * @props {String} source - Nom logique ou chemin de l'icône (obligatoire)
- * @props {String} alt - Texte alternatif (obligatoire)
+ * @props {String} alt - Texte alternatif (recommandé pour images ; optionnel si décoratif / FA à côté d'un libellé)
  * @props {String} size - Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl), défaut md
  * @props {Boolean} disabled - Affiche l'icône en noir et blanc si true
  * @props {String} pack - Pack FontAwesome (solid, regular, brands, duotone)
@@ -39,7 +39,7 @@ const props = defineProps({
     },
     alt: {
         type: String,
-        required: true,
+        default: "",
     },
     size: {
         type: String,
@@ -153,18 +153,35 @@ const faClasses = computed(() => {
     ], props.class);
 });
 
+/** Texte accessible explicite (alt ou ariaLabel). */
+const accessibleName = computed(() => {
+    const fromAlt = typeof props.alt === "string" ? props.alt.trim() : "";
+    if (fromAlt !== "") return fromAlt;
+    const fromAria = typeof props.ariaLabel === "string" ? props.ariaLabel.trim() : "";
+    return fromAria;
+});
+
 // Gestion des attributs d'accessibilité pour éviter les conflits
 const attrs = computed(() => {
     const commonAttrs = getCommonAttrs(props);
     
     // Si l'icône est dans un contexte interactif (bouton, lien), 
     // on retire tabindex pour éviter les conflits d'accessibilité
+    let next = commonAttrs;
     if (commonAttrs.tabindex !== undefined) {
         const { tabindex, ...rest } = commonAttrs;
-        return rest;
+        next = rest;
     }
-    
-    return commonAttrs;
+
+    // FA décoratif (libellé adjacent) : aria-hidden ; sinon exposer le nom.
+    if (isFontAwesome.value && accessibleName.value === "") {
+        return { ...next, "aria-hidden": "true" };
+    }
+    if (isFontAwesome.value && accessibleName.value !== "" && !next["aria-label"] && !next.ariaLabel) {
+        return { ...next, "aria-label": accessibleName.value };
+    }
+
+    return next;
 });
 </script>
 

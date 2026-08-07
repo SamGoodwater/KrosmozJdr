@@ -8,6 +8,8 @@
  * - Slot par défaut ou slot nommé 'content' : contenu du bouton (texte, icône, etc.)
  * - Prop content : texte simple du bouton (fallback si pas de slot)
  * - Props DaisyUI : color, variant, size, block, wide, square, circle, type, active, checked
+ * - Compat : une couleur passée en `variant` (ex. `variant="primary"`) est remappée vers `color`
+ *   + style par défaut `glass` — les usages corrects `color` + `variant` ne changent pas.
  * - Hérite de commonProps (id, ariaLabel, role, tabindex, etc.)
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
  * - Accessibilité renforcée (role, aria, etc.)
@@ -18,10 +20,12 @@
  * @example
  * <Btn color="primary" size="lg" content="Valider" />
  * <Btn variant="outline" color="error">Supprimer</Btn>
+ * <Btn variant="primary">Équivalent legacy de color="primary"</Btn>
  * <Btn circle><i class="fa fa-plus"></i></Btn>
  *
  * @props {String} color - Couleur DaisyUI ('', 'neutral', 'primary', ...)
- * @props {String} variant - Style DaisyUI ('', 'outline', 'ghost', 'link', 'soft', 'dash', 'glass')
+ * @props {String} variant - Style DaisyUI ('', 'outline', 'ghost', 'link', 'soft', 'dash', 'glass') ;
+ *   accepte aussi une couleur DaisyUI (compat legacy, remappée)
  * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
  * @props {Boolean} block - Pleine largeur (btn-block)
  * @props {Boolean} wide - Largeur augmentée (btn-wide)
@@ -46,8 +50,14 @@ import {
     getCustomUtilityClasses,
     mergeClasses,
 } from "@/Utils/atomic-design/uiHelper";
-import { colorList, variantList, sizeList } from "@/Pages/Atoms/atomMap";
+import { sizeList } from "@/Pages/Atoms/atomMap";
 import { typeList } from "./actionMap";
+import {
+    DEFAULT_BTN_VARIANT,
+    isValidBtnColorProp,
+    isValidBtnVariantProp,
+    resolveBtnAppearance,
+} from "./btnAppearance";
 
 const props = defineProps({
     ...getCommonProps(),
@@ -55,12 +65,14 @@ const props = defineProps({
     color: {
         type: String,
         default: "",
-        validator: (v) => colorList.includes(v),
+        // Souple : couleurs + styles (remap) ; valeurs inconnues ignorées sans warning Vue
+        validator: isValidBtnColorProp,
     },
     variant: {
         type: String,
-        default: "glass",
-        validator: (v) => [...variantList, "link"].includes(v),
+        default: DEFAULT_BTN_VARIANT,
+        // Souple : styles + couleurs legacy (remap)
+        validator: isValidBtnVariantProp,
     },
     size: {
         type: String,
@@ -97,25 +109,29 @@ const props = defineProps({
 
 const $attrs = useAttrs();
 
+const appearance = computed(() => resolveBtnAppearance(props.color, props.variant));
+const resolvedColor = computed(() => appearance.value.color);
+const resolvedVariant = computed(() => appearance.value.variant);
+
 const atomClasses = computed(() =>
     mergeClasses(
         [
             "btn",
             props.animation === "glass" && "btn-animation-glass",
-            props.color === "primary" && "btn-custom-primary",
-            props.color === "secondary" && "btn-custom-secondary",
-            props.color === "accent" && "btn-custom-accent",
-            props.color === "info" && "btn-custom-info",
-            props.color === "success" && "btn-custom-success",
-            props.color === "warning" && "btn-custom-warning",
-            props.color === "error" && "btn-custom-error",
-            props.color === "neutral" && "btn-custom-neutral",
-            props.variant === "outline" && "btn-outline-custom border-glass-lg hover:border-glass-xl",
-            props.variant === "ghost" && "btn-ghost-custom",
-            props.variant === "link" && "btn-link",
-            props.variant === "soft" && "btn-soft",
-            props.variant === "dash" && "btn-dash",
-            props.variant === "glass" && "btn-glass-custom box-glass-sm hover:box-glass-md",
+            resolvedColor.value === "primary" && "btn-custom-primary",
+            resolvedColor.value === "secondary" && "btn-custom-secondary",
+            resolvedColor.value === "accent" && "btn-custom-accent",
+            resolvedColor.value === "info" && "btn-custom-info",
+            resolvedColor.value === "success" && "btn-custom-success",
+            resolvedColor.value === "warning" && "btn-custom-warning",
+            resolvedColor.value === "error" && "btn-custom-error",
+            resolvedColor.value === "neutral" && "btn-custom-neutral",
+            resolvedVariant.value === "outline" && "btn-outline-custom border-glass-lg hover:border-glass-xl",
+            resolvedVariant.value === "ghost" && "btn-ghost-custom",
+            resolvedVariant.value === "link" && "btn-link",
+            resolvedVariant.value === "soft" && "btn-soft",
+            resolvedVariant.value === "dash" && "btn-dash",
+            resolvedVariant.value === "glass" && "btn-glass-custom box-glass-sm hover:box-glass-md",
             props.size === "xs" && "btn-xs",
             props.size === "sm" && "btn-sm",
             props.size === "md" && "btn-md",

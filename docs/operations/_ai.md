@@ -12,3 +12,4 @@
 ## Chemins importants
 
 - Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`.
+- Scrap massif serveur : `docs/features/scrapping/SERVER_MASS_SCRAP.md`.

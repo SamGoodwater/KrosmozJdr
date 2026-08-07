@@ -1,5 +1,33 @@
 # Ce qui a été fait
 
+## Août 2026 — Caractéristiques calculées (base / objets / contexte)
+
+Les fiches de créatures peuvent désormais composer une caractéristique à partir de sa formule
+de base, des bonus d’équipement et d’un bonus contextuel (nombre ou formule). Un total stocké
+reste prioritaire pour ne pas casser le scrap. Le niveau peut être une fourchette ou un dé :
+l’interface affiche la première valeur possible et recalcule toute la fiche via un sélecteur.
+Un popover détaille la décomposition et le tableau par niveau. Les formulaires monstre / objet /
+sort ont été allégés (sections repliables).
+
+## Août 2026 — Gates et préparation scrap serveur
+
+Le pipeline d’import est verrouillé pour un scrap catalogue complet :
+
+- audits live : conversion effets à 100 %, 0 mapping caractéristique manquant ; ~33 % d’effets `autre`
+  surtout glyphes / pièges / placeholders (hors périmètre volontaire) ;
+- 80 écarts qualité objet corrigés (`item_type_dofus_ids` dérivés des aides) ;
+- quality gate **active par défaut** sur `scrapping:run` (hors simulate) + gate effets après import sorts ;
+- samples créature / objet alignés sur les formules + tests automatiques ;
+- mappings téléports / échanges ajoutés ; checklist scrap serveur documentée ;
+- workflow CI dédié aux gates scrapping.
+
+## Août 2026 — Référence DofusDB pendant l’édition
+
+Sur les fiches **Full** et les écrans d’**édition** (page ou modal), une action avec l’icône Dofus
+ouvre un **panneau flottant** de référence lorsque l’entité a un `dofusdb_id`. Le panneau affiche
+le lien profond vers DofusDB et ouvre le site dans une fenêtre séparée (pas d’iframe), sans bloquer
+l’édition de la fiche Krosmoz.
+
 ## Août 2026 — Almanax interactif dans le header
 
 Le badge Almanax du header affiche désormais le **jour** (identique au calendrier réel) avec le mois

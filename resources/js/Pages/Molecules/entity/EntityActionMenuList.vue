@@ -144,7 +144,7 @@ function onKeydown(e) {
             <li
                 v-for="action in getGroupActions(groupKey)"
                 :key="action.key"
-                :class="{ 'text-error': action.variant === 'error' }"
+                :class="{ 'text-error': action.color === 'error' || action.variant === 'error' }"
             >
                 <EntityStateAction
                     v-if="action.key === 'state'"
@@ -162,8 +162,8 @@ function onKeydown(e) {
                     role="menuitem"
                     class="entity-actions-menu-item flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-lg transition-[transform,background-color,box-shadow] duration-150 ease-out outline-none hover:bg-base-200/90 focus-visible:bg-primary/12 focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:scale-[1.02] motion-reduce:transition-none motion-reduce:focus-visible:scale-100"
                     :class="{
-                        'text-error': action.variant === 'error',
-                        'entity-action-local-active text-primary!': action.active && action.variant !== 'error',
+                        'text-error': action.color === 'error' || action.variant === 'error',
+                        'entity-action-local-active text-primary!': action.active && action.color !== 'error' && action.variant !== 'error',
                     }"
                     :title="action.tooltip || action.label"
                     @pointerdown.stop

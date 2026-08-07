@@ -12,6 +12,7 @@
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import EntityThumb from '@/Pages/Molecules/entity/shared/EntityThumb.vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';

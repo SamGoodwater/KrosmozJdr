@@ -1,5 +1,4 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "life_points_max_object",
         "name": "Bonus de points de vie maximum",
@@ -152,7 +151,12 @@
             "base_price_per_unit": 50,
             "rune_price_per_unit": 100,
             "value_available": null,
-            "item_type_dofus_ids": null,
+            "item_type_dofus_ids": [
+                1,
+                9,
+                11,
+                17
+            ],
             "item_type_ids": null
         }
     },

@@ -122,9 +122,14 @@ règles.
 | `php artisan scrapping:types:seed` | Extrait les item-types depuis l'API puis seede les types. |
 | `php artisan scrapping:effects:map` | Propose des mappings effectId → sous-effet. |
 | `php artisan scrapping:audit` | Audite sans écriture les mappings, formules manquantes et mappings d'effets incomplets (`--json`, `--fail-on-review`). Les entités `catalogOnly` (ex. `monster-race`) sont ignorées. |
+| `php artisan scrapping:effects:quality-gate` | Seuils conversion effets (couverture, mappings, `value_converted`). |
+| `php artisan characteristics:audit-definitions` | Structure + qualité des JSON de caractéristiques. |
 
-Pour un import massif, `php artisan scrapping:run --entity=monster --quality-gate` exécute cet audit
-avant toute écriture et annule l'import si une règle nécessite encore une revue.
+Hors `--simulate`, `scrapping:run` exécute **par défaut** `scrapping:audit --fail-on-review`
+avant toute écriture. Si l’import inclut `spell`, `scrapping:effects:quality-gate` tourne ensuite.
+Désactivation explicite : `--no-quality-gate` (diagnostic uniquement).
+
+Checklist scrap serveur : [SERVER_MASS_SCRAP.md](./SERVER_MASS_SCRAP.md).
 
 Les sorts locaux dont le `dofusdb_id` renvoie 404 côté API sont archivés (`state=archived`,
 `auto_update=false`) : ils restent consultables mais ne sont plus candidats aux resync auto.

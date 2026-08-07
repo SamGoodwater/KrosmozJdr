@@ -342,7 +342,7 @@ const handleAction = async (actionKey) => {
                         <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                             <div class="flex items-start justify-between gap-2 min-w-0">
                                 <div class="flex items-center gap-2 min-w-0">
-                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
+                                    <Icon :source="getFieldIcon(fieldKey)" :alt="getFieldLabel(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                                     <span
                                         v-if="!shouldOmitLabelInMeta(fieldKey)"
                                         class="text-xs uppercase font-semibold text-primary-300 truncate"
@@ -389,7 +389,7 @@ const handleAction = async (actionKey) => {
                         display="icon-only"
                         size="sm"
                         color="primary"
-                        :context="{ inPanel: false, inPage: true }"
+                        :context="{ inPanel: false, inPage: true, viewMode: 'full' }"
                         @action="handleAction"
                     />
                 </div>
@@ -434,7 +434,7 @@ const handleAction = async (actionKey) => {
                 <template v-for="fieldKey in technicalFields" :key="fieldKey">
                     <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                         <div class="inline-flex items-center gap-2 min-w-0">
-                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
+                            <Icon :source="getFieldIcon(fieldKey)" :alt="getFieldLabel(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                             <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
                             <span class="min-w-0 break-words">
                                 <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
@@ -450,7 +450,7 @@ const handleAction = async (actionKey) => {
                     <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
                         <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                             <div class="inline-flex items-center gap-2 min-w-0">
-                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
+                                <Icon :source="getFieldIcon(fieldKey)" :alt="getFieldLabel(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                                 <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
                                 <span class="min-w-0 break-words">
                                     <template v-if="fieldKey === 'auto_update'">

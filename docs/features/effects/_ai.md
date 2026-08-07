@@ -9,7 +9,12 @@
 - `app/Services/Scrapping/Core/Conversion/SpellEffects/`
 - `database/seeders/DofusdbEffectMappingSeeder.php`
 
+## Hors périmètre
+
+- Triage `autre` / effectId sans clé : [MAPPINGS_HORS_PERIMETRE.md](./MAPPINGS_HORS_PERIMETRE.md)
+
 ## Liens
 
 - Scrapping : [../scrapping/_ai.md](../scrapping/_ai.md)
 - Caractéristiques : [../characteristics/_ai.md](../characteristics/_ai.md)
+- Scrap serveur : [../scrapping/SERVER_MASS_SCRAP.md](../scrapping/SERVER_MASS_SCRAP.md)

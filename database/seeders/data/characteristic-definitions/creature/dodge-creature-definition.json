@@ -40,11 +40,11 @@
             },
             "conversion_krosmoz_sample": {
                 "1": 0,
-                "4": 2,
-                "8": 5,
-                "12": 8,
-                "16": 12,
-                "20": 15
+                "40": 0,
+                "80": 0,
+                "120": 0,
+                "160": 0,
+                "200": 0
             },
             "conversion_sample_rows": null,
             "norms_grid": {
@@ -185,11 +185,11 @@
             },
             "conversion_krosmoz_sample": {
                 "1": 0,
-                "4": 2,
-                "8": 5,
-                "12": 8,
-                "16": 12,
-                "20": 15
+                "40": 0,
+                "80": 0,
+                "120": 0,
+                "160": 0,
+                "200": 0
             },
             "conversion_sample_rows": null,
             "norms_grid": {

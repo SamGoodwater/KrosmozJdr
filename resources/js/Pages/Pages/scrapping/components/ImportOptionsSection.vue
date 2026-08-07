@@ -3,7 +3,6 @@
  * Section des options d'import globales
  */
 import { ref } from 'vue';
-import Card from '@/Pages/Atoms/data-display/Card.vue';
 import CheckboxField from '@/Pages/Molecules/data-input/CheckboxField.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';

@@ -184,6 +184,12 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
                 return true;
             }
 
+            case "view-dofusdb": {
+                // Ouvert via EntityActionButton / EntityActions → store Pinia.
+                handlers.onViewDofusdb?.(entity, meta);
+                return true;
+            }
+
             case "delete":
                 return deleteEntityWithConfirmation(entity, meta);
 
