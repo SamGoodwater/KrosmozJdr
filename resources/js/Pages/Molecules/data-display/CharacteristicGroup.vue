@@ -10,6 +10,7 @@
  * @props {Array<Object>} characteristics - Liste d'items { type, def, value?, formulaResolved?, formulaRaw?, levelTable?, items? }
  * @props {number|null} [levelEffective] - Level effectif pour les formules
  * @props {string} [title] - Titre optionnel du groupe (ex. "Stats de combat")
+ * @props {'icon'|'labeled'|'spacious'|boolean} [density] - Densité d’affichage (boolean compact BC)
  */
 import { computed } from "vue";
 import CharacteristicProperty from "@/Pages/Atoms/data-display/CharacteristicProperty.vue";
@@ -27,18 +28,60 @@ import {
     CHARACTERISTIC_PROPERTY_DENSITY,
     CHARACTERISTIC_PROPERTY_LAYOUT,
 } from "@/Utils/Entity/Constants";
+import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
 
 const props = defineProps({
     characteristics: { type: Array, default: () => [] },
     levelEffective: { type: [Number, String], default: null },
     title: { type: String, default: "" },
-    /** Mode compact pour les atomes (icône + valeur, padding minimal) */
+    /** @deprecated Préférer density */
     compact: { type: Boolean, default: false },
-    /** Payload runtime (ex. resolved-stats) — enrichit les tooltips / popovers par clé */
+    density: {
+        type: String,
+        default: "",
+        validator: (v) => v === "" || Object.values(CHARACTERISTIC_CARD_DENSITY).includes(v),
+    },
     runtime: { type: Object, default: null },
 });
 
 const list = computed(() => (Array.isArray(props.characteristics) ? props.characteristics : []));
+
+const resolvedDensity = computed(() => {
+    if (props.density && Object.values(CHARACTERISTIC_CARD_DENSITY).includes(props.density)) {
+        return props.density;
+    }
+    return props.compact ? CHARACTERISTIC_CARD_DENSITY.icon : CHARACTERISTIC_CARD_DENSITY.labeled;
+});
+
+const titleClass = computed(() => {
+    const d = resolvedDensity.value;
+    if (d === CHARACTERISTIC_CARD_DENSITY.spacious) {
+        return "text-base font-semibold text-base-content";
+    }
+    if (d === CHARACTERISTIC_CARD_DENSITY.icon) {
+        return "text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/80";
+    }
+    return "text-sm font-semibold text-base-content/90";
+});
+
+const wrapClass = computed(() =>
+    resolvedDensity.value === CHARACTERISTIC_CARD_DENSITY.spacious
+        ? "flex flex-wrap gap-3"
+        : "flex flex-wrap gap-2",
+);
+
+const propertyDensity = computed(() => {
+    const d = resolvedDensity.value;
+    if (d === CHARACTERISTIC_CARD_DENSITY.icon) return CHARACTERISTIC_PROPERTY_DENSITY.iconOnly;
+    if (d === CHARACTERISTIC_CARD_DENSITY.spacious) return CHARACTERISTIC_PROPERTY_DENSITY.full;
+    return CHARACTERISTIC_PROPERTY_DENSITY.short;
+});
+
+const propertyLayout = computed(() =>
+    resolvedDensity.value === CHARACTERISTIC_CARD_DENSITY.icon
+        ? CHARACTERISTIC_PROPERTY_LAYOUT.inline
+        : CHARACTERISTIC_PROPERTY_LAYOUT.card,
+);
 
 function itemContributionsForKey(key) {
     const lines = props.runtime?.items?.lines;
@@ -76,16 +119,16 @@ function formulaViewModel(item) {
 
 <template>
     <div class="characteristic-group space-y-2">
-        <h4 v-if="title" class="text-sm font-semibold text-base-content/90">
+        <h4 v-if="title" :class="titleClass">
             {{ title }}
         </h4>
-        <div class="flex flex-wrap gap-2">
+        <div :class="wrapClass">
             <template v-for="(item, i) in list" :key="item.def?.key ?? i">
                 <CharacteristicProperty
                     v-if="item.type === 'formula' && !shouldHideCharacteristicLine(item.def, formulaViewModel(item).rawValue ?? item.value)"
                     :view-model="formulaViewModel(item)"
-                    :density="compact ? CHARACTERISTIC_PROPERTY_DENSITY.iconOnly : CHARACTERISTIC_PROPERTY_DENSITY.full"
-                    :layout="compact ? CHARACTERISTIC_PROPERTY_LAYOUT.inline : CHARACTERISTIC_PROPERTY_LAYOUT.card"
+                    :density="propertyDensity"
+                    :layout="propertyLayout"
                     :badge="CHARACTERISTIC_PROPERTY_BADGE.none"
                     size="sm"
                     :prefer-decomposition-popover="true"
@@ -94,14 +137,14 @@ function formulaViewModel(item) {
                     v-else-if="item.type === 'boolean'"
                     :def="item.def"
                     :value="item.value"
-                    :compact="compact"
+                    :compact="resolvedDensity === CHARACTERISTIC_CARD_DENSITY.icon"
                 />
                 <CharacteristicBadges
                     v-else-if="item.type === 'badges'"
                     :def="item.def"
                     :items="item.items"
                     :value="item.value"
-                    :compact="compact"
+                    :compact="resolvedDensity === CHARACTERISTIC_CARD_DENSITY.icon"
                 />
             </template>
         </div>

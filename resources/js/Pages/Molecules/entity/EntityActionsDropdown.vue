@@ -107,7 +107,7 @@ const props = defineProps({
      */
     inlineActionKeys: {
         type: Array,
-        default: () => ["state", "pin", "favorite", "copy-link", "view", "edit", "quick-view", "quick-edit"],
+        default: () => ["state", "pin", "quick-view", "quick-edit", "view-dofusdb", "favorite", "copy-link", "view", "edit"],
     },
     showInlineShortcuts: {
         type: Boolean,
@@ -139,8 +139,8 @@ const promotedActions = computed(() => {
 /**
  * @param {string} actionKey
  */
-function handleShortcutClick(actionKey) {
-    if (runLocalAction(actionKey)) {
+async function handleShortcutClick(actionKey) {
+    if (await runLocalAction(actionKey)) {
         emit("action", actionKey);
         return;
     }

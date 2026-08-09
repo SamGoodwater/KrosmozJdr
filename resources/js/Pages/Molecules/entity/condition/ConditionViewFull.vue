@@ -47,6 +47,13 @@ const props = defineProps({
     characteristicRuntime: { type: Object, default: null },
 });
 
+const actionsContext = computed(() =>
+    props.inModal
+        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
+        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+);
+
+
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
@@ -179,7 +186,7 @@ const handleAction = async (actionKey) => {
                             display="icon-only"
                             size="sm"
                             color="primary"
-                            :context="{ inPanel: false, inPage: true, viewMode: 'full' }"
+                            :context="actionsContext"
                             @action="handleAction"
                         />
                     </div>
@@ -199,7 +206,7 @@ const handleAction = async (actionKey) => {
                         <EntityPropertyDisplay
                             :field-key="fieldKey"
                             :entity="condition"
-                            entity-type="condition"
+                            entity-type="conditions"
                             display-mode="extended"
                             :descriptors="descriptors"
                             :table-meta="tableMeta"

@@ -23,6 +23,7 @@ import SpellEffectsJournal from '@/Pages/Molecules/entity/spell/SpellEffectsJour
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
+import { useScrapping } from '@/Composables/utils/useScrapping';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getSpellFieldDescriptors } from '@/Entities/spell/spell-descriptors';
@@ -69,6 +70,13 @@ const props = defineProps({
     },
 });
 
+
+const actionsContext = computed(() =>
+    props.inModal
+        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
+        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+);
+
 const headerMode = computed(() => (props.inModal ? 'compact' : 'full'));
 
 provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
@@ -76,6 +84,7 @@ provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
+const { refreshEntity } = useScrapping();
 const { downloadPdf } = useDownloadPdf('spell');
 const permissions = usePermissions();
 
@@ -330,10 +339,14 @@ const handleAction = async (actionKey) => {
             await downloadPdf(spellId);
             emit('download-pdf', props.spell);
             break;
-        case 'refresh':
-            router.reload({ only: ['spells'] });
+        case 'refresh': {
+            const ok = await refreshEntity('spell', spellId, { forceUpdate: true });
+            if (ok) {
+                router.reload();
+            }
             emit('refresh', props.spell);
             break;
+        }
         case 'delete':
             emit('delete', props.spell);
             break;
@@ -470,7 +483,7 @@ const handleAction = async (actionKey) => {
                         display="icon-only"
                         size="sm"
                         color="primary"
-                        :context="{ inPanel: false, inPage: true, viewMode: 'full' }"
+                        :context="actionsContext"
                         @action="handleAction"
                     />
                 </div>

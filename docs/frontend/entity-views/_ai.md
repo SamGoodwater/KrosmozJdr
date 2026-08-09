@@ -8,7 +8,9 @@
 - `resources/js/Pages/Molecules/entity/<type>/`
 - `resources/js/Pages/Organismes/entity/EntityEditForm.vue`
 - Action `view-dofusdb` → store Pinia `dofusDbReference` + `DofusDbReferencePanel` (layout Main)
-- Caractéristiques runtime : `CharacteristicsCard`, `CharacteristicGroup` (`levelEffective` → `runtime.levels`), popover `CharacteristicDecompositionBody`
+- Favoris BDD → `useFavoriteEntityIds` + `api.favorites.*` ; UI `FavoritesModal` / page `/favoris`
+- Recherche globale / favoris : `GlobalSearchHitRow` (survol → Minimal, clic → `EntityModal` full)
+- Caractéristiques runtime : `CharacteristicsCard` densités `icon|labeled|spacious`, groupes via `creatureCharacteristicGroups.manifest.js`, `CharacteristicGroup` (`levelEffective` → `runtime.levels`), popover `CharacteristicDecompositionBody`
 
 Voir aussi [../../features/entities/_ai.md](../../features/entities/_ai.md) et
 [../../features/characteristics/COMPUTED_VALUES.md](../../features/characteristics/COMPUTED_VALUES.md).

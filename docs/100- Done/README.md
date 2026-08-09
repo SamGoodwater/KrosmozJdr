@@ -1,5 +1,25 @@
 # Ce qui a été fait
 
+## Août 2026 — Favoris en base + modal / page
+
+Les favoris sont enregistrés en base pour chaque compte. Un bouton cœur dans le header ouvre
+un modal (sans quitter la page) avec les fiches groupées par type et une recherche pour en
+ajouter ; « Ouvrir en page » mène à `/favoris`. Sans connexion, un message invite à se connecter.
+L’icône des menus d’options est un cœur plein ou vide. La recherche globale et les pickers
+affichent d’abord les favoris.
+
+## Août 2026 — Refonte vues entités + caractéristiques
+
+Parcours unifié : minimal → overlay → modal → page. Actions réordonnées (presets), DofusDB
+accessible dès le minimal déployé. Caractéristiques : densités `icon` / `labeled` / `spacious`,
+groupes canoniques, résumé 5 stats. Épinglage multi-fenêtres flottantes. Favoris locaux et
+refresh DofusDB (droit d’écriture) branchés côté monstre / entités scrappables.
+
+Extension multi-entités : shell `useEntityMinimalShell` + titre modal sur sorts, objets,
+consommables, ressources, races, panoplies, capacités ; PNJ avec stats créature. Tous les
+Minimal (condition, trait, spé, shop, campagne, scénario, type de ressource…) passent par
+`EntityMinimalCard` (hors `language`).
+
 ## Août 2026 — Caractéristiques calculées (base / objets / contexte)
 
 Les fiches de créatures peuvent désormais composer une caractéristique à partir de sa formule

@@ -7,6 +7,7 @@
 - `database/migrations/`
 - `database/seeders/`
 - `database/seeders/data/`
+- Favoris user : table `user_favorites` (`user_id`, `entity_type`, `entity_id`)
 
 ## Liens
 

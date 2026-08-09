@@ -76,12 +76,11 @@ const { resolvedActions, runLocalAction } = useResolvedEntityActionState(
   sourceActions,
 );
 
-const handleAction = (actionKey, _event) => {
-  if (runLocalAction(actionKey)) {
+const handleAction = async (actionKey, _event) => {
+  if (await runLocalAction(actionKey)) {
     emit("action", actionKey);
     return;
   }
-  // EntityActionButton émet (actionKey, event), on ne garde que actionKey
   emit("action", actionKey);
 };
 </script>

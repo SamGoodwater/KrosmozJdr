@@ -20,6 +20,7 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
+import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
@@ -45,6 +46,13 @@ const props = defineProps({
     characteristicRuntime: { type: Object, default: null },
 });
 
+
+const actionsContext = computed(() =>
+    props.inModal
+        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
+        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+);
+
 const headerMode = computed(() => (props.inModal ? 'compact' : 'full'));
 
 provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
@@ -62,6 +70,7 @@ const emit = defineEmits([
 ]);
 
 const { copyToClipboard } = useCopyToClipboard();
+const { refreshEntity } = useScrapping();
 const { downloadPdf } = useDownloadPdf("panoply");
 const permissions = usePermissions();
 
@@ -199,10 +208,14 @@ const handleAction = async (actionKey) => {
             await downloadPdf(panoplyId);
             emit("download-pdf", props.panoply);
             break;
-        case "refresh":
-            router.reload({ only: ["panoplies"] });
-            emit("refresh", props.panoply);
+        case 'refresh': {
+            const ok = await refreshEntity('panoply', panoplyId, { forceUpdate: true });
+            if (ok) {
+                router.reload();
+            }
+            emit('refresh', props.panoply);
             break;
+        }
         case "delete":
             emit("delete", props.panoply);
             break;
@@ -274,7 +287,7 @@ const handleAction = async (actionKey) => {
                         display="icon-only"
                         size="sm"
                         color="primary"
-                        :context="{ inPanel: false, inPage: true }"
+                        :context="actionsContext"
                         @action="handleAction"
                     />
                 </div>

@@ -1429,6 +1429,14 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  USER_FAVORITES {
+    id : bigint(20) unsigned
+    user_id : bigint(20) unsigned
+    entity_type : varchar(120)
+    entity_id : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   USERS {
     id : bigint(20) unsigned
     name : varchar(255)
@@ -1632,4 +1640,5 @@ erDiagram
   SPELL_TYPES }o--|| USERS : "FK created_by"
   SPELLS }o--|| USERS : "FK created_by"
   TABLE_FILTER_PRESETS }o--|| USERS : "FK user_id"
+  USER_FAVORITES }o--|| USERS : "FK user_id"
 ```

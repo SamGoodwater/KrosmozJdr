@@ -21,6 +21,7 @@ import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.v
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
+import { useScrapping } from '@/Composables/utils/useScrapping';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getItemFieldDescriptors } from '@/Entities/item/item-descriptors';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
@@ -39,6 +40,13 @@ const props = defineProps({
     tableMeta: { type: Object, default: () => ({}) },
 });
 
+
+const actionsContext = computed(() =>
+    props.inModal
+        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
+        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+);
+
 const headerMode = computed(() => (props.inModal ? 'compact' : 'full'));
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
@@ -51,6 +59,7 @@ const effectHtml = computed(() => {
 });
 
 const { copyToClipboard } = useCopyToClipboard();
+const { refreshEntity } = useScrapping();
 const { downloadPdf } = useDownloadPdf('item');
 const permissions = usePermissions();
 
@@ -185,10 +194,14 @@ const handleAction = async (actionKey) => {
             await downloadPdf(itemId);
             emit('download-pdf', props.item);
             break;
-        case 'refresh':
-            router.reload({ only: ['item'] });
+        case 'refresh': {
+            const ok = await refreshEntity('item', itemId, { forceUpdate: true });
+            if (ok) {
+                router.reload();
+            }
             emit('refresh', props.item);
             break;
+        }
         case 'delete':
             emit('delete', props.item);
             break;
@@ -291,7 +304,7 @@ const handleAction = async (actionKey) => {
                         display="icon-only"
                         size="sm"
                         color="primary"
-                        :context="{ inPanel: false, inPage: true, viewMode: 'full' }"
+                        :context="actionsContext"
                         @action="handleAction"
                     />
                 </div>

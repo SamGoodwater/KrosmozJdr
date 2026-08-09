@@ -750,6 +750,16 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     }
 
     /**
+     * Favoris catalogue de l'utilisateur.
+     *
+     * @return HasMany<UserFavorite, $this>
+     */
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(UserFavorite::class);
+    }
+
+    /**
      * Récupère l'utilisateur système (pour les imports automatiques)
      */
     public static function getSystemUser(): ?User

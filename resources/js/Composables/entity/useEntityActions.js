@@ -199,6 +199,13 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         }
 
         return enrichedAction;
+      })
+      .sort((a, b) => {
+        const order = whitelistValue?.length ? whitelistValue : presetKeys;
+        if (!Array.isArray(order) || order.length === 0) return 0;
+        const ia = order.indexOf(a.key);
+        const ib = order.indexOf(b.key);
+        return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
       });
   });
 

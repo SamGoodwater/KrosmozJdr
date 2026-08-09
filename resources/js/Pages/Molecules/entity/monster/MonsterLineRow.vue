@@ -18,6 +18,8 @@ import CharacteristicsCard from "@/Pages/Organismes/data-display/Characteristics
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
+import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
+import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
 import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
@@ -78,13 +80,17 @@ const creature = computed(() => entity.value?.creature ?? entity.value?._data?.c
 /** Groupes de maîtrises regroupés par caractéristique primaire (Force, Agilité, …). */
 const competenceGroups = computed(() => buildCreatureCompetenceGroupsByPrimary(creature.value));
 
-/** Entité minimale pour CharacteristicsCard (sélecteur de niveau éventuel). */
+const summaryCharacteristicGroups = computed(() =>
+    buildCreatureCharacteristicGroups(creature.value, { mode: "summary" }),
+);
+
 const cardEntityForCompetences = computed(() =>
     creature.value ? { level: creature.value.level } : null,
 );
 
-/** Runtime optionnel (tooltips résolus) depuis la meta tableau. */
-const characteristicRuntime = computed(() => props.tableMeta?.characteristicRuntime ?? null);
+const characteristicRuntime = computed(
+    () => props.tableMeta?.characteristicRuntime ?? null,
+);
 
 const getCell = (fieldKey) => {
     const col = props.columns.find((c) => (c.cellId || c.id) === fieldKey);
@@ -103,16 +109,6 @@ const cellForKey = (fieldKey) => {
         }
     );
 };
-
-/** Clés résumé affichées à droite (titres : `CharacteristicGroup` dans `CharacteristicsCard` uniquement). */
-const SUMMARY_CHARACTERISTIC_KEYS = [
-    "creature_summary_combat",
-    "creature_summary_stats",
-    "creature_summary_control",
-    "creature_summary_resistance",
-    "creature_summary_damage",
-];
-
 const levelValue = computed(() => {
     const c = entity.value?.creature ?? entity.value?._data?.creature;
     const lv = c?.level;
@@ -247,21 +243,16 @@ const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
                 </div>
             </div>
 
-            <!-- Caractéristiques : occupe tout l’espace horizontal restant (répartition des colonnes) -->
-            <div
-                class="grid w-full min-h-0 min-w-0 flex-1 grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2 lg:grid-cols-5 lg:gap-2"
-            >
-                <div
-                    v-for="fieldKey in SUMMARY_CHARACTERISTIC_KEYS"
-                    :key="fieldKey"
-                    class="monster-line-char-cell min-w-0 rounded-box border border-base-300/70 bg-base-200/40 p-1.5"
-                >
-                    <CellRenderer
-                        :cell="cellForKey(fieldKey)"
-                        ui-color="primary"
-                        class="leading-tight [&_.characteristics-card]:shadow-none [&_.characteristics-card]:ring-0"
-                    />
-                </div>
+            <!-- Caractéristiques résumé (5 stats clés) -->
+            <div class="w-full min-h-0 min-w-0 flex-1">
+                <CharacteristicsCard
+                    v-if="summaryCharacteristicGroups.length"
+                    :entity="cardEntityForCompetences"
+                    :groups="summaryCharacteristicGroups"
+                    :runtime="characteristicRuntime"
+                    :density="CHARACTERISTIC_CARD_DENSITY.icon"
+                    class="border-0 bg-transparent p-0 shadow-none ring-0"
+                />
             </div>
         </div>
 
@@ -280,7 +271,7 @@ const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
                     :entity="cardEntityForCompetences"
                     :groups="competenceGroups"
                     :runtime="characteristicRuntime"
-                    dense
+                    :density="CHARACTERISTIC_CARD_DENSITY.icon"
                     class="border-0 bg-transparent p-0 shadow-none ring-0"
                 />
             </div>

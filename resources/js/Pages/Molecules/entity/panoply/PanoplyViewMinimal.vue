@@ -9,12 +9,12 @@
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { computed } from "vue";
-import { router } from "@inertiajs/vue3";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
+import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import PanoplyEquipmentTextList from "@/Pages/Molecules/entity/panoply/PanoplyEquipmentTextList.vue";
 
 const props = defineProps({
@@ -37,7 +37,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["edit", "view", "delete", "action"]);
+const emit = defineEmits(["edit", "view", "delete", "action", "quick-view"]);
 
 const entity = computed(() => props.panoply);
 
@@ -61,34 +61,34 @@ const descriptionFull = computed(() => {
     return d && String(d).trim() ? String(d) : "";
 });
 
-const showHref = computed(() =>
-    entity.value?.id ? route("entities.panoplies.show", { panoply: entity.value.id }) : null
-);
+
+
+const {
+    minimalActionsContext,
+    minimalActionWhitelist,
+    openQuickView,
+    handleMinimalAction,
+} = useEntityMinimalShell({
+    entityTypePlural: "panoplies",
+    showRoute: "entities.panoplies.show",
+    editRoute: "entities.panoplies.edit",
+    routeParam: "panoply",
+    emit,
+    getEntity: () => entity.value,
+});
 
 const handleAction = async (actionKey) => {
-    const panoplyId = entity.value?.id;
-    if (!panoplyId) return;
-
-    switch (actionKey) {
-        case "view":
-            router.visit(route("entities.panoplies.show", { panoply: panoplyId }));
-            emit("view", props.panoply);
-            break;
-        case "edit":
-            router.visit(route("entities.panoplies.edit", { panoply: panoplyId }));
-            emit("edit", props.panoply);
-            break;
-        case "delete":
-            emit("delete", props.panoply);
-            break;
-        default:
-            emit("action", actionKey, props.panoply);
-    }
+    await handleMinimalAction(actionKey);
 };
 </script>
 
 <template>
-    <EntityMinimalCard :display-mode="displayMode" pinned-entity-type="panoplies" :pinned-entity-id="entity?.id">
+    <EntityMinimalCard
+        :display-mode="displayMode"
+        pinned-entity-type="panoplies"
+        :pinned-entity-id="entity?.id"
+        @open-quick-view="openQuickView"
+    >
         <template #compact>
             <div
                 data-cy="entity-minimal-card-compact"
@@ -102,29 +102,9 @@ const handleAction = async (actionKey) => {
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <div class="min-w-0 flex-1">
-                                <Route
-                                    v-if="showHref"
-                                    :href="showHref"
-                                    color="neutral"
-                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
-                                >
-                                    {{ entity?.name ?? "—" }}
-                                </Route>
-                                <span v-else class="font-semibold truncate block text-sm">
-                                    {{ entity?.name ?? "—" }}
-                                </span>
+                                <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
-                                <EntityActions
-                                    entity-type="panoplies"
-                                    :entity="entity"
-                                    format="dropdown"
-                                    display="icon-only"
-                                    size="xs"
-                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                                    @action="(k) => handleAction(k)"
-                                />
-                            </div>
+                            
                         </div>
                         <div class="flex flex-col gap-1 text-xs">
                             <div
@@ -180,17 +160,7 @@ const handleAction = async (actionKey) => {
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <div class="min-w-0 flex-1">
-                                <Route
-                                    v-if="showHref"
-                                    :href="showHref"
-                                    color="neutral"
-                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
-                                >
-                                    {{ entity?.name ?? "—" }}
-                                </Route>
-                                <span v-else class="font-semibold truncate block text-sm">
-                                    {{ entity?.name ?? "—" }}
-                                </span>
+                                <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
                             <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
                                 <EntityActions
@@ -199,7 +169,8 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
+                                    :whitelist="minimalActionWhitelist"
+                                    :context="minimalActionsContext"
                                     @action="(k) => handleAction(k)"
                                 />
                             </div>

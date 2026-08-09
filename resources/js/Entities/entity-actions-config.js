@@ -42,12 +42,54 @@ export const SCRAPPABLE_ENTITY_TYPES = Object.freeze([
   "spells",
 ]);
 
+/**
+ * Ordre d’actions par surface (du plus pertinent au moins).
+ * Minimal déployé : état → pin → modal → edit modal → DofusDB → favoris → lien → pages.
+ */
 export const ENTITY_ACTION_CONTEXT_PRESETS = Object.freeze({
-  minimalLine: ["state", "pin", "favorite", "copy-link", "quick-view", "quick-edit"],
-  modalDetail: ["state", "favorite", "copy-link", "view", "view-dofusdb", "edit", "quick-edit", "refresh", "delete"],
-  pageDetail: ["state", "favorite", "copy-link", "view", "view-dofusdb", "edit", "refresh", "delete"],
-  tableDropdown: ["state", "pin", "favorite", "copy-link", "quick-view", "quick-edit"],
+  minimalLine: [
+    "state",
+    "pin",
+    "quick-view",
+    "quick-edit",
+    "view-dofusdb",
+    "favorite",
+    "copy-link",
+    "view",
+    "edit",
+  ],
+  modalDetail: [
+    "state",
+    "favorite",
+    "copy-link",
+    "view",
+    "view-dofusdb",
+    "edit",
+    "refresh",
+    "delete",
+  ],
+  pageDetail: [
+    "state",
+    "favorite",
+    "copy-link",
+    "view-dofusdb",
+    "edit",
+    "refresh",
+    "delete",
+  ],
+  tableDropdown: [
+    "state",
+    "pin",
+    "quick-view",
+    "quick-edit",
+    "view-dofusdb",
+    "favorite",
+    "copy-link",
+  ],
 });
+
+/** Whitelist recommandée pour les cartes minimal (expanded). */
+export const MINIMAL_EXPANDED_ACTION_KEYS = ENTITY_ACTION_CONTEXT_PRESETS.minimalLine;
 
 /** Icône action « Voir sur DofusDB » — servi depuis `public/` (évite les 403 /storage). */
 export const DOFUSDB_ACTION_ICON = "/images/logos/dofus.png";
@@ -99,10 +141,11 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     getTooltip: (context) => (context?.inModal ? "Agrandir" : "Afficher"),
     getIcon: (context) => (context?.inModal ? "fa-solid fa-expand" : "fa-solid fa-eye"),
     visibleIf: (context) => {
-      // En minimal, l'ouverture page se fait via actions dédiées seulement (pas d'ouverture implicite).
-      if (context?.inMinimal) return false;
-      if (context?.inLine || context?.viewMode === "line" || context?.viewMode === "minimal") return false;
-      // Sur une page d'édition, on garde l'action "Afficher" en plus du bouton retour.
+      // Line : ouverture via quick-view (modal), pas la page.
+      if (context?.inLine || context?.viewMode === "line") return false;
+      // Minimal : page en overflow (pas l’entrée principale).
+      if (context?.inMinimal || context?.viewMode === "minimal") return true;
+      // Sur une page d'édition, on garde l'action "Afficher".
       if (context?.inPage) return context?.pageMode === "edit";
       return true;
     },
@@ -137,14 +180,14 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     getTooltip: (context) => (context?.inModal && context?.modalMode === "edit" ? "Agrandir" : "Éditer"),
     getIcon: (context) => (context?.inModal && context?.modalMode === "edit" ? "fa-solid fa-expand" : "fa-solid fa-pen-to-square"),
     visibleIf: (context) => {
-      // En vue minimal, on garde l'édition en modal rapide.
-      if (context?.inMinimal) return false;
-      if (context?.inLine || context?.viewMode === "line" || context?.viewMode === "minimal") return false;
-      // En modal d'édition, ce bouton devient "Agrandir" vers la page d'édition.
-      if (context?.inModal) return context?.modalMode === "edit";
+      // Line : édition via quick-edit (modal).
+      if (context?.inLine || context?.viewMode === "line") return false;
+      // Minimal : édition page en overflow.
+      if (context?.inMinimal || context?.viewMode === "minimal") return true;
+      // Modal : éditer en page (ou agrandir si déjà en modal édition).
+      if (context?.inModal) return true;
       // Sur une page d'édition, l'action utile devient "Afficher".
       if (context?.inPage) return context?.pageMode !== "edit";
-      // Hors modal/page, on privilégie l'édition rapide.
       return false;
     },
   },
@@ -159,9 +202,9 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     getLabel: () => "Éditer",
     getTooltip: () => "Éditer",
     visibleIf: (context) => {
-      // En page complète, on privilégie l'édition page. En modal, on garde l'édition modale.
+      // Page / modal : édition page uniquement (pas de quick-edit).
       if (context?.inPage) return false;
-      if (context?.inModal && context?.modalMode === "edit") return false;
+      if (context?.inModal) return false;
       return true;
     },
   },
@@ -200,8 +243,8 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   favorite: {
     key: "favorite",
     label: "Ajouter aux favoris",
-    tooltip: "Ajouter cette fiche aux favoris (local)",
-    icon: "fa-regular fa-star",
+    tooltip: "Ajouter cette fiche à vos favoris",
+    icon: "fa-regular fa-heart",
     permission: null,
     requiresEntity: true,
     group: "tools",
@@ -247,9 +290,14 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     requiresEntity: true,
     group: "tools",
     visibleIf: (context, entity) => {
-      if (context?.inMinimal || context?.inLine) return false;
-      if (context?.viewMode === "minimal" || context?.viewMode === "line") return false;
-      if (!(context?.inModal || context?.inPage)) return false;
+      // Pas en line (trop dense) ; ok en minimal déployé, modal et page.
+      if (context?.inLine || context?.viewMode === "line") return false;
+      const surfaceOk =
+        context?.inModal ||
+        context?.inPage ||
+        context?.inMinimal ||
+        context?.viewMode === "minimal";
+      if (!surfaceOk) return false;
       return Boolean(getEntityDofusDbId(entity));
     },
   },
@@ -258,7 +306,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     label: "Rafraîchir",
     tooltip: "Rafraîchir les données depuis le serveur (via scrapping)",
     icon: "fa-solid fa-arrow-rotate-right",
-    permission: "canManage",
+    permission: "canUpdate",
     requiresEntity: true,
     group: "tools",
     visibleIf: (context) => {
@@ -310,7 +358,7 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       label: "Rafraîchir",
       tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
       icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canManage",
+      permission: "canUpdate",
       requiresEntity: true,
       group: "tools",
       visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
@@ -324,7 +372,7 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       label: "Rafraîchir",
       tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
       icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canManage",
+      permission: "canUpdate",
       requiresEntity: true,
       group: "tools",
       visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
@@ -338,7 +386,7 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       label: "Rafraîchir",
       tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
       icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canManage",
+      permission: "canUpdate",
       requiresEntity: true,
       group: "tools",
       visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
@@ -352,7 +400,7 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       label: "Rafraîchir",
       tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
       icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canManage",
+      permission: "canUpdate",
       requiresEntity: true,
       group: "tools",
       visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
@@ -366,7 +414,7 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
       label: "Rafraîchir",
       tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
       icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canManage",
+      permission: "canUpdate",
       requiresEntity: true,
       group: "tools",
       visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,

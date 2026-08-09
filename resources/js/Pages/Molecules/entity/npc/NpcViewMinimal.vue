@@ -1,59 +1,55 @@
 <script setup>
 /**
  * NpcViewMinimal — Vue Minimal pour NPC
- * 
+ *
  * @description
- * Petite carte qui s'étend au survol.
- * Utilisée dans des grilles, petites modals ou hovers.
- * 
- * @props {Npc} npc - Instance du modèle NPC
- * @props {Boolean} showActions - Afficher les actions (défaut: true)
+ * Carte EntityMinimalCard : identité + résumé créature (5 stats) en compact ;
+ * groupes complets + méta (race/classe) en déployé. Parcours modal via double-clic / titre.
+ *
+ * @props {Npc} npc
  */
-import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { computed } from "vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
+import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
+import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
+import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
+import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
+import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
+import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { cellHasRenderableContent } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
-    npc: {
-        type: Object,
-        required: true
-    },
-    showActions: {
-        type: Boolean,
-        default: true
-    },
+    npc: { type: Object, required: true },
+    showActions: { type: Boolean, default: true },
     displayMode: {
         type: String,
-        default: 'hover',
-        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+        default: "hover",
+        validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
-    tableMeta: {
-        type: Object,
-        default: () => ({})
-    }
+    tableMeta: { type: Object, default: () => ({}) },
+    characteristicRuntime: { type: Object, default: null },
 });
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits(["edit", "view", "delete", "action", "quick-view"]);
 
-const isHovered = ref(props.displayMode === 'extended');
-const canHoverExpand = computed(() => props.displayMode === 'hover');
 const permissions = usePermissions();
-
-const ctx = computed(() => {
-    const capabilities = {
-        viewAny: permissions.can('npc', 'viewAny'),
-        createAny: permissions.can('npc', 'createAny'),
-        updateAny: permissions.can('npc', 'updateAny'),
-        deleteAny: permissions.can('npc', 'deleteAny'),
-        manageAny: permissions.can('npc', 'manageAny'),
-    };
-    return { capabilities, meta: { capabilities } };
-});
+const ctx = computed(() => ({
+    capabilities: {
+        viewAny: permissions.can("npcs", "viewAny") || permissions.can("npc", "viewAny"),
+        createAny: permissions.can("npcs", "createAny") || permissions.can("npc", "createAny"),
+        updateAny: permissions.can("npcs", "updateAny") || permissions.can("npc", "updateAny"),
+        deleteAny: permissions.can("npcs", "deleteAny") || permissions.can("npc", "deleteAny"),
+        manageAny: permissions.can("npcs", "manageAny") || permissions.can("npc", "manageAny"),
+    },
+    meta: { capabilities: {} },
+}));
 
 const descriptors = computed(() => getNpcFieldDescriptors(ctx.value));
 
@@ -61,184 +57,208 @@ const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
     const visibleIf = desc?.permissions?.visibleIf;
-    if (typeof visibleIf === 'function') {
+    if (typeof visibleIf === "function") {
         try {
             return Boolean(visibleIf(ctx.value));
-        } catch (e) {
-            console.warn('[NpcViewMinimal] visibleIf failed for', fieldKey, e);
+        } catch {
             return false;
         }
     }
     return true;
 };
 
-// Champs importants à afficher
-const importantFields = computed(() => ['creature_name', 'breed', 'specialization'].filter(canShowField));
+const entity = computed(() => props.npc);
+const creatureData = computed(
+    () => entity.value?.creature ?? entity.value?._data?.creature ?? null,
+);
 
-const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
-const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
-const sortExtendedFields = (fields) => {
-    return [...fields].sort((a, b) => {
-        const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
-        const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
+const creatureIdForStats = computed(
+    () =>
+        creatureData.value?.id ??
+        entity.value?.creature_id ??
+        entity.value?._data?.creature_id ??
+        null,
+);
 
-        if (rankA === -1 && rankB === -1) return 0;
-        if (rankA === -1) return -1;
-        if (rankB === -1) return 1;
-        return rankA - rankB;
-    });
-};
+const { runtime: fetchedRuntime } = useCreatureResolvedStats(creatureIdForStats, "npc");
+const effectiveRuntime = computed(
+    () => props.characteristicRuntime ?? fetchedRuntime.value ?? null,
+);
+provideCharacteristicRuntime(effectiveRuntime);
 
-// En mode étendu, afficher toutes les propriétés visibles non principales.
-const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image', 'state']);
-    const fields = Object.keys(descriptors.value || {}).filter((key) => {
-        return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
-    });
-    return sortExtendedFields(fields);
+const summaryCharacteristicGroups = computed(() =>
+    buildCreatureCharacteristicGroups(creatureData.value, {
+        mode: "summary",
+        runtime: effectiveRuntime.value,
+    }),
+);
+
+const fullCharacteristicGroups = computed(() =>
+    buildCreatureCharacteristicGroups(creatureData.value, {
+        mode: "full",
+        runtime: effectiveRuntime.value,
+    }),
+);
+
+const cardEntity = computed(() =>
+    creatureData.value ? { level: creatureData.value.level } : null,
+);
+
+const {
+    minimalActionsContext,
+    minimalActionWhitelist,
+    openQuickView,
+    handleMinimalAction,
+} = useEntityMinimalShell({
+    entityTypePlural: "npcs",
+    showRoute: "entities.npcs.show",
+    editRoute: "entities.npcs.edit",
+    routeParam: "npc",
+    emit,
+    getEntity: () => entity.value,
 });
 
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
-};
-
-const getCell = (fieldKey) => {
-    return props.npc.toCell(fieldKey, {
-        size: 'sm',
-        context: 'minimal',
-    });
-};
-
-const tooltipForField = (fieldKey, cell) => {
-    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
-    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
-    return `${label} : ${value}`;
-};
-
 const handleAction = async (actionKey) => {
-    const npcId = props.npc.id;
-    if (!npcId) return;
-
-    switch (actionKey) {
-        case 'view':
-            router.visit(route('entities.npcs.show', { npc: npcId }));
-            emit('view', props.npc);
-            break;
-        case 'edit':
-            router.visit(route('entities.npcs.edit', { npc: npcId }));
-            emit('edit', props.npc);
-            break;
-        case 'delete':
-            emit('delete', props.npc);
-            break;
-    }
+    await handleMinimalAction(actionKey);
 };
+
+const levelValue = computed(() => {
+    const lv = creatureData.value?.level;
+    if (lv == null || lv === "") return null;
+    const n = Number(lv);
+    return Number.isFinite(n) ? n : null;
+});
+
+const imageUrl = computed(() => {
+    const u = creatureData.value?.image ?? entity.value?.image;
+    return u && String(u).trim() ? String(u) : null;
+});
+
+const displayName = computed(
+    () => creatureData.value?.name ?? entity.value?.name ?? "PNJ",
+);
+
+const cellOpts = () => ({ size: "xs", context: "minimal", ctx: props.tableMeta });
+
+function getCell(fieldKey) {
+    if (entity.value && typeof entity.value.toCell === "function") {
+        return entity.value.toCell(fieldKey, cellOpts());
+    }
+    return { type: "text", value: "—", params: {} };
+}
+
+const breedCell = computed(() => getCell("breed"));
+const specializationCell = computed(() => getCell("specialization"));
+const showBreed = computed(
+    () => canShowField("breed") && cellHasRenderableContent(breedCell.value),
+);
+const showSpecialization = computed(
+    () =>
+        canShowField("specialization") &&
+        cellHasRenderableContent(specializationCell.value),
+);
 </script>
 
 <template>
-    <div 
-        class="relative rounded-box border border-base-300 transition-all duration-300 overflow-hidden"
-        :class="{ 
-            'bg-base-200 shadow-lg': isHovered,
-            'bg-base-100': !isHovered
-        }"
-        :style="{ 
-            width: isHovered ? 'auto' : '150px',
-            minWidth: '150px',
-            maxWidth: isHovered ? '300px' : '200px',
-            height: isHovered ? 'auto' : '100px',
-            minHeight: '80px'
-        }"
-        @mouseenter="canHoverExpand && (isHovered = true)"
-        @mouseleave="canHoverExpand && (isHovered = false)">
-        
-        <div class="p-3">
-            <!-- En-tête avec nom et actions -->
-            <div class="flex items-start justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <Icon source="fa-solid fa-user" :alt="npc.creature?.name || 'NPC'" size="sm" class="flex-shrink-0" />
-                    <Tooltip :content="npc.creature?.name || 'NPC'" placement="top">
-                        <span class="font-semibold text-primary-100 text-sm truncate block">
-                            <CellRenderer
-                                :cell="getCell('creature_name')"
-                                ui-color="primary"
-                            />
-                        </span>
-                    </Tooltip>
-                </div>
-                
-                <div v-if="showActions && isHovered" class="flex-shrink-0">
-                    <EntityActions
-                        entity-type="npc"
-                        :entity="npc"
-                        format="buttons"
-                        display="icon-only"
-                        size="xs"
-                        color="primary"
-                        :context="{ inPanel: false, inMinimal: true }"
-                        @action="handleAction"
-                    />
-                </div>
-            </div>
-
-            <!-- Infos importantes en icônes avec tooltips -->
-            <div class="flex gap-2 flex-wrap">
-                <template v-for="field in importantFields" :key="field">
-                    <Tooltip
-                        :content="tooltipForField(field, getCell(field))"
-                        placement="top"
-                    >
-                        <div class="flex items-center gap-1 px-2 py-1 bg-base-200 rounded">
-                            <Icon
-                                :source="getFieldIcon(field)"
+    <EntityMinimalCard
+        :display-mode="displayMode"
+        pinned-entity-type="npcs"
+        :pinned-entity-id="entity?.id"
+        @open-quick-view="openQuickView"
+    >
+        <template #compact>
+            <div data-cy="entity-minimal-card-compact" class="relative flex flex-col gap-1.5 p-2">
+                <div class="flex gap-2">
+                    <EntityThumb size="compact" :src="imageUrl || ''" :label="displayName" />
+                    <div class="flex min-w-0 flex-1 flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <LevelBadge
+                                v-if="levelValue != null"
+                                :level="levelValue"
                                 size="xs"
-                                class="text-primary-400"
+                                class="shrink-0"
                             />
-                            <span class="text-xs text-primary-300 font-medium">
-                                <CellRenderer
-                                    :cell="getCell(field)"
-                                    ui-color="primary"
-                                />
-                            </span>
-                        </div>
-                    </Tooltip>
-                </template>
-            </div>
-
-            <!-- Contenu supplémentaire au hover -->
-            <div 
-                v-if="isHovered" 
-                class="mt-2 pt-2 border-t border-base-300 space-y-1 text-xs text-primary-300 animate-fade-in">
-                <div
-                    v-for="key in expandedFields"
-                    :key="key"
-                    class="flex items-start gap-2"
-                >
-                    <Tooltip
-                        :content="tooltipForField(key, getCell(key))"
-                        placement="left"
-                    >
-                        <div class="flex items-start gap-2 w-full">
-                            <Icon
-                                :source="getFieldIcon(key)"
-                                size="xs"
-                                class="text-primary-400 flex-shrink-0 mt-0.5"
-                            />
-                            <div class="flex-1 min-w-0">
-                                <div class="font-semibold text-primary-400">
-                                    {{ key }}:
-                                </div>
-                                <div class="text-primary-200 truncate">
-                                    <CellRenderer
-                                        :cell="getCell(key)"
-                                        ui-color="primary"
-                                    />
-                                </div>
+                            <div class="min-w-0 flex-1">
+                                <EntityMinimalTitle :label="displayName" @open="openQuickView" />
                             </div>
                         </div>
-                    </Tooltip>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <CellRenderer
+                                v-if="showBreed"
+                                :cell="breedCell"
+                                class="inline-flex text-[11px]"
+                            />
+                            <CellRenderer
+                                v-if="showSpecialization"
+                                :cell="specializationCell"
+                                class="inline-flex text-[11px]"
+                            />
+                        </div>
+                        <CharacteristicsCard
+                            v-if="summaryCharacteristicGroups.length"
+                            :entity="cardEntity"
+                            :groups="summaryCharacteristicGroups"
+                            :runtime="effectiveRuntime"
+                            :density="CHARACTERISTIC_CARD_DENSITY.icon"
+                            class="mt-0.5 border-0 bg-transparent p-0 shadow-none ring-0"
+                        />
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </template>
+
+        <template #expanded>
+            <div data-cy="entity-minimal-card-expanded" class="relative flex flex-col gap-1.5 p-2">
+                <div class="flex gap-2">
+                    <EntityThumb size="compact" :src="imageUrl || ''" :label="displayName" />
+                    <div class="flex min-w-0 flex-1 flex-col gap-1 pl-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <LevelBadge
+                                v-if="levelValue != null"
+                                :level="levelValue"
+                                size="xs"
+                                class="shrink-0"
+                            />
+                            <div class="min-w-0 flex-1">
+                                <EntityMinimalTitle :label="displayName" @open="openQuickView" />
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="npcs"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="minimalActionWhitelist"
+                                    :context="minimalActionsContext"
+                                    @action="(k) => handleAction(k)"
+                                />
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <CellRenderer
+                                v-if="showBreed"
+                                :cell="breedCell"
+                                class="inline-flex text-[11px]"
+                            />
+                            <CellRenderer
+                                v-if="showSpecialization"
+                                :cell="specializationCell"
+                                class="inline-flex text-[11px]"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <CharacteristicsCard
+                    v-if="fullCharacteristicGroups.length"
+                    :entity="cardEntity"
+                    :groups="fullCharacteristicGroups"
+                    :runtime="effectiveRuntime"
+                    :density="CHARACTERISTIC_CARD_DENSITY.icon"
+                    class="border-0 bg-transparent p-0 shadow-none ring-0 [&_.characteristic-group>h4]:!text-[0.6rem]"
+                />
+            </div>
+        </template>
+    </EntityMinimalCard>
 </template>

@@ -11,12 +11,10 @@
  * @props {Spell} spell - Instance du modèle Spell
  */
 import { computed, ref } from "vue";
-import { router } from "@inertiajs/vue3";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import EntityStateBadge from "@/Pages/Atoms/data-display/EntityStateBadge.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import {
     resolveSpellEffectsDisplayCell,
@@ -24,6 +22,8 @@ import {
 } from "@/Composables/entity/useSpellEffectsDisplayCell";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
+import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import SpellMinimalUsageMetaRow from "@/Pages/Molecules/entity/spell/SpellMinimalUsageMetaRow.vue";
@@ -53,7 +53,7 @@ const props = defineProps({
 
 provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
-const emit = defineEmits(["edit", "view", "delete", "action"]);
+const emit = defineEmits(["edit", "view", "delete", "action", "quick-view"]);
 
 const permissions = usePermissions();
 const ctx = computed(() => ({
@@ -117,9 +117,6 @@ const imageUrl = computed(() => {
     return u && String(u).trim() ? String(u) : null;
 });
 
-const showHref = computed(() =>
-    entity.value?.id ? route("entities.spells.show", { spell: entity.value.id }) : null
-);
 
 /** Force le rafraîchissement de la pastille après PATCH état (mutation in-place sur l’instance). */
 const stateTick = ref(0);
@@ -128,42 +125,39 @@ const entityState = computed(() => {
     return entity.value?.state ?? entity.value?._data?.state ?? null;
 });
 
-const entityActionsContext = computed(() => ({
-    viewMode: props.displayMode === "compact" ? "compact" : "minimal",
-    inMinimal: true,
-}));
+
+
+const {
+    minimalActionsContext,
+    minimalActionWhitelist,
+    openQuickView,
+    handleMinimalAction,
+} = useEntityMinimalShell({
+    entityTypePlural: "spells",
+    showRoute: "entities.spells.show",
+    editRoute: "entities.spells.edit",
+    routeParam: "spell",
+    emit,
+    getEntity: () => entity.value,
+});
 
 const handleAction = async (actionKey) => {
-    const spellId = entity.value?.id;
-    if (!spellId) return;
-
-    switch (actionKey) {
-        case "view":
-            router.visit(route("entities.spells.show", { spell: spellId }));
-            emit("view", props.spell);
-            break;
-        case "quick-view":
-            emit("action", "quick-view", props.spell);
-            break;
-        case "edit":
-            router.visit(route("entities.spells.edit", { spell: spellId }));
-            emit("edit", props.spell);
-            break;
-        case "delete":
-            emit("delete", props.spell);
-            break;
-        case "state":
-            stateTick.value += 1;
-            emit("action", actionKey, props.spell);
-            break;
-        default:
-            emit("action", actionKey, props.spell);
+    if (actionKey === "state") {
+        stateTick.value += 1;
+        emit("action", actionKey, props.spell);
+        return;
     }
+    await handleMinimalAction(actionKey);
 };
 </script>
 
 <template>
-    <EntityMinimalCard :display-mode="displayMode" pinned-entity-type="spells" :pinned-entity-id="entity?.id">
+    <EntityMinimalCard
+        :display-mode="displayMode"
+        pinned-entity-type="spells"
+        :pinned-entity-id="entity?.id"
+        @open-quick-view="openQuickView"
+    >
         <template #compact>
             <div
                 data-cy="entity-minimal-card-compact"
@@ -186,30 +180,9 @@ const handleAction = async (actionKey) => {
                                 class="shrink-0"
                             />
                             <div class="min-w-0 flex-1">
-                                <Route
-                                    v-if="showHref"
-                                    :href="showHref"
-                                    color="neutral"
-                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
-                                >
-                                    {{ entity?.name ?? "—" }}
-                                </Route>
-                                <span v-else class="font-semibold truncate block text-sm">
-                                    {{ entity?.name ?? "—" }}
-                                </span>
+                                <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
-                                <EntityActions
-                                    entity-type="spells"
-                                    :entity="entity"
-                                    :context="entityActionsContext"
-                                    format="dropdown"
-                                    display="icon-only"
-                                    size="xs"
-                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                                    @action="(k) => handleAction(k)"
-                                />
-                            </div>
+                            
                         </div>
                         <SpellMinimalUsageMetaRow
                             :entity="entity"
@@ -263,27 +236,17 @@ const handleAction = async (actionKey) => {
                                 class="shrink-0"
                             />
                             <div class="min-w-0 flex-1">
-                                <Route
-                                    v-if="showHref"
-                                    :href="showHref"
-                                    color="neutral"
-                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
-                                >
-                                    {{ entity?.name ?? "—" }}
-                                </Route>
-                                <span v-else class="font-semibold truncate block text-sm">
-                                    {{ entity?.name ?? "—" }}
-                                </span>
+                                <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
                             <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
                                 <EntityActions
                                     entity-type="spells"
                                     :entity="entity"
-                                    :context="entityActionsContext"
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
+                                    :whitelist="minimalActionWhitelist"
+                                    :context="minimalActionsContext"
                                     @action="(k) => handleAction(k)"
                                 />
                             </div>

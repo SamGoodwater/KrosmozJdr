@@ -37,6 +37,8 @@ import CookieConsentBanner from "@/Pages/Molecules/privacy/CookieConsentBanner.v
 import PendingErasureBanner from "@/Pages/Molecules/privacy/PendingErasureBanner.vue";
 import FeedbackFab from "@/Pages/Organismes/feedback/FeedbackFab.vue";
 import DofusDbReferencePanel from "@/Pages/Molecules/entity/DofusDbReferencePanel.vue";
+import PinnedEntitiesHost from "@/Pages/Organismes/entity/PinnedEntitiesHost.vue";
+import FavoritesModal from "@/Pages/Organismes/entity/FavoritesModal.vue";
 import { LAYOUT_APP_SIDEBAR_OFFSET_LEFT_CLASS } from "@/Composables/layout/viewport-breakpoints";
 import OverlayHostContainer from "@/Pages/Organismes/overlay/OverlayHostContainer.vue";
 
@@ -217,6 +219,8 @@ onUnmounted(() => {
         <OverlayHostContainer />
         <FeedbackFab />
         <DofusDbReferencePanel />
+        <PinnedEntitiesHost />
+        <FavoritesModal />
         <CookieConsentBanner />
     </div>
 </template>

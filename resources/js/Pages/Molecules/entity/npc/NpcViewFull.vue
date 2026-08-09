@@ -20,6 +20,10 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entit
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
 import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
+import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
+import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
+import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
+import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 
 const props = defineProps({
     npc: {
@@ -46,11 +50,33 @@ const props = defineProps({
     }
 });
 
+const actionsContext = computed(() =>
+    props.inModal
+        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
+        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+);
+
+
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('npc');
 const permissions = usePermissions();
+
+const creatureData = computed(() => props.npc?.creature ?? props.npc?._data?.creature ?? null);
+const creatureIdForStats = computed(
+    () => creatureData.value?.id ?? props.npc?.creature_id ?? props.npc?._data?.creature_id ?? null,
+);
+const { runtime: creatureRuntimeStats } = useCreatureResolvedStats(creatureIdForStats, 'npc');
+provideCharacteristicRuntime(creatureRuntimeStats);
+
+const creatureCharacteristicsGroups = computed(() =>
+    buildCreatureCharacteristicGroups(creatureData.value, {
+        runtime: creatureRuntimeStats.value,
+    }),
+);
+const hasCreatureCharacteristics = computed(() => creatureCharacteristicsGroups.value.length > 0);
+const characteristicsDensity = computed(() => (props.inModal ? 'labeled' : 'spacious'));
 
 const ctx = computed(() => {
     const capabilities = {
@@ -176,19 +202,31 @@ const handleAction = async (actionKey) => {
                     <!-- Actions en haut à droite -->
                     <div v-if="showActions" class="flex-shrink-0">
                         <EntityActions
-                            entity-type="npc"
+                            entity-type="npcs"
                             :entity="npc"
                             format="buttons"
                             display="icon-only"
                             size="sm"
                             color="primary"
-                            :context="{ inPanel: false, inPage: true }"
+                            :context="actionsContext"
                             @action="handleAction"
                         />
                     </div>
                 </div>
             </div>
         </div>
+
+        <section v-if="hasCreatureCharacteristics" class="pt-2">
+            <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-primary-300">
+                Caractéristiques
+            </h3>
+            <CharacteristicsCard
+                :entity="creatureData"
+                :groups="creatureCharacteristicsGroups"
+                :density="characteristicsDensity"
+                :runtime="creatureRuntimeStats"
+            />
+        </section>
 
         <!-- Informations principales -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

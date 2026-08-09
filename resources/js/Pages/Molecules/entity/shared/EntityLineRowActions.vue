@@ -21,10 +21,11 @@ const emit = defineEmits(["action"]);
 const LINE_ROW_ACTION_KEYS = Object.freeze([
     "state",
     "pin",
-    "favorite",
-    "copy-link",
     "quick-view",
     "quick-edit",
+    "view-dofusdb",
+    "favorite",
+    "copy-link",
 ]);
 </script>
 

@@ -30,10 +30,44 @@ import SearchInput from "@/Pages/Organismes/data-input/SearchInput.vue";
 import LoginHeaderContainer from "@/Pages/Molecules/header/LoginHeaderContainer.vue";
 import LoggedHeaderContainer from "@/Pages/Molecules/header/LoggedHeaderContainer.vue";
 import AlmanaxHeaderBadge from "@/Pages/Molecules/header/AlmanaxHeaderBadge.vue";
+import Btn from "@/Pages/Atoms/action/Btn.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { useFavoritesUiStore } from "@/Composables/store/useFavoritesUiStore";
+import {
+    ensureFavoritesLoaded,
+    invalidateFavoritesCache,
+} from "@/Composables/entity/useFavoriteEntityIds";
+import { onMounted, watch } from "vue";
+import { usePage } from "@inertiajs/vue3";
 
 // Composables
 const { pageTitle } = usePageTitle();
 const { isAuthenticated } = usePermissions();
+const favoritesUi = useFavoritesUiStore();
+const page = usePage();
+
+function openFavorites() {
+    favoritesUi.open();
+}
+
+onMounted(() => {
+    if (isAuthenticated.value) {
+        ensureFavoritesLoaded(page.props.auth?.user).catch(() => {});
+    }
+});
+
+watch(
+    () => page.props.auth?.user?.id,
+    (id) => {
+        if (id) {
+            ensureFavoritesLoaded(page.props.auth?.user).catch(() => {});
+        } else {
+            invalidateFavoritesCache();
+            ensureFavoritesLoaded(null).catch(() => {});
+        }
+    },
+);
 
 // Props
 defineProps({
@@ -59,6 +93,26 @@ defineProps({
         <template #end>
             <div class="flex gap-2 items-center mr-12">
                 <AlmanaxHeaderBadge />
+                <Tooltip content="Mes favoris" placement="bottom">
+                    <Btn
+                        variant="link"
+                        color="neutral"
+                        square
+                        class="header-favorites-btn text-base-content/45 hover:text-base-content transition-colors duration-200"
+                        aria-label="Mes favoris"
+                        title="Mes favoris"
+                        data-cy="header-favorites-btn"
+                        @click="openFavorites"
+                    >
+                        <Icon
+                            source="fa-heart"
+                            pack="regular"
+                            size="lg"
+                            alt=""
+                            class="transition-colors duration-200"
+                        />
+                    </Btn>
+                </Tooltip>
                 <LoggedHeaderContainer v-if="isAuthenticated" />
                 <LoginHeaderContainer v-else />
             </div>
@@ -81,5 +135,12 @@ defineProps({
 .title-leave-to {
     opacity: 0;
     transform: translateY(10px);
+}
+
+/* Favoris header : icône atténuée → plus claire au survol (comme la cloche). */
+.header-favorites-btn :deep(svg),
+.header-favorites-btn :deep(i) {
+    color: inherit;
+    transition: color 0.2s ease;
 }
 </style>

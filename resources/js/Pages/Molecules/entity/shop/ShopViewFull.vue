@@ -46,6 +46,13 @@ const props = defineProps({
     }
 });
 
+const actionsContext = computed(() =>
+    props.inModal
+        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
+        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+);
+
+
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
@@ -178,13 +185,13 @@ const handleAction = async (actionKey) => {
             <!-- Actions en haut à droite -->
             <div v-if="showActions" class="flex-shrink-0">
                 <EntityActions
-                    entity-type="shop"
+                    entity-type="shops"
                     :entity="shop"
                     format="buttons"
                     display="icon-only"
                     size="sm"
                     color="primary"
-                    :context="{ inPanel: false, inPage: true }"
+                    :context="actionsContext"
                     @action="handleAction"
                 />
             </div>

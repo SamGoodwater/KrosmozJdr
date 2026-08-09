@@ -8,16 +8,16 @@
  * Prix : `EntityPropertyDisplay` (aligné sur ConsumableViewFull).
  */
 import { computed } from "vue";
-import { router } from "@inertiajs/vue3";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
 import { getRarityConfig } from "@/Utils/Entity/SharedConstants";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
+import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
@@ -48,7 +48,7 @@ const props = defineProps({
 
 provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
-const emit = defineEmits(["edit", "view", "delete", "action"]);
+const emit = defineEmits(["edit", "view", "delete", "action", "quick-view"]);
 
 const permissions = usePermissions();
 const ctx = computed(() => ({
@@ -111,34 +111,34 @@ const rarityConfig = computed(() => {
 const imageUrl = computed(() => entity.value?.image ?? entity.value?._data?.image ?? null);
 
 const ingredients = computed(() => entity.value?.resources ?? entity.value?._data?.resources ?? []);
-const showHref = computed(() =>
-    entity.value?.id ? route("entities.consumables.show", { consumable: entity.value.id }) : null
-);
+
+
+const {
+    minimalActionsContext,
+    minimalActionWhitelist,
+    openQuickView,
+    handleMinimalAction,
+} = useEntityMinimalShell({
+    entityTypePlural: "consumables",
+    showRoute: "entities.consumables.show",
+    editRoute: "entities.consumables.edit",
+    routeParam: "consumable",
+    emit,
+    getEntity: () => entity.value,
+});
 
 const handleAction = async (actionKey) => {
-    const consumableId = entity.value?.id;
-    if (!consumableId) return;
-
-    switch (actionKey) {
-        case "view":
-            router.visit(route("entities.consumables.show", { consumable: consumableId }));
-            emit("view", props.consumable);
-            break;
-        case "edit":
-            router.visit(route("entities.consumables.edit", { consumable: consumableId }));
-            emit("edit", props.consumable);
-            break;
-        case "delete":
-            emit("delete", props.consumable);
-            break;
-        default:
-            emit("action", actionKey, props.consumable);
-    }
+    await handleMinimalAction(actionKey);
 };
 </script>
 
 <template>
-    <EntityMinimalCard :display-mode="displayMode" pinned-entity-type="consumables" :pinned-entity-id="entity?.id">
+    <EntityMinimalCard
+        :display-mode="displayMode"
+        pinned-entity-type="consumables"
+        :pinned-entity-id="entity?.id"
+        @open-quick-view="openQuickView"
+    >
         <template #compact>
             <div
                 data-cy="entity-minimal-card-compact"
@@ -154,29 +154,9 @@ const handleAction = async (actionKey) => {
                         <div class="flex items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
                             <div class="min-w-0 flex-1">
-                                <Route
-                                    v-if="showHref"
-                                    :href="showHref"
-                                    color="neutral"
-                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
-                                >
-                                    {{ entity?.name ?? "—" }}
-                                </Route>
-                                <span v-else class="font-semibold truncate block text-sm">
-                                    {{ entity?.name ?? "—" }}
-                                </span>
+                                <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
-                                <EntityActions
-                                    entity-type="consumables"
-                                    :entity="entity"
-                                    format="dropdown"
-                                    display="icon-only"
-                                    size="xs"
-                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                                    @action="(k, e) => handleAction(k)"
-                                />
-                            </div>
+                            
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
                             <Badge v-if="typeName && typeName !== '—'" color="auto" :auto-label="typeName" auto-scheme="labelHash" auto-tone="light" variant="soft" size="xs">
@@ -227,17 +207,7 @@ const handleAction = async (actionKey) => {
                         <div class="flex items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
                             <div class="min-w-0 flex-1">
-                                <Route
-                                    v-if="showHref"
-                                    :href="showHref"
-                                    color="neutral"
-                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
-                                >
-                                    {{ entity?.name ?? "—" }}
-                                </Route>
-                                <span v-else class="font-semibold truncate block text-sm">
-                                    {{ entity?.name ?? "—" }}
-                                </span>
+                                <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
                             <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
                                 <EntityActions
@@ -246,8 +216,9 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                                    @action="(k, e) => handleAction(k)"
+                                    :whitelist="minimalActionWhitelist"
+                                    :context="minimalActionsContext"
+                                    @action="(k) => handleAction(k)"
                                 />
                             </div>
                         </div>

@@ -13,10 +13,6 @@
  * @props displayMode - 'hover' : expansion au survol | 'extended' : toujours étendu | 'compact' : jamais étendu
  */
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import {
-    isEntityPinned,
-    usePinnedEntityVersion,
-} from "@/Composables/entity/usePinnedEntityIds";
 
 const props = defineProps({
     displayMode: {
@@ -24,6 +20,7 @@ const props = defineProps({
         default: "hover",
         validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
+    /** Conservé pour BC API — l’épinglage ouvre désormais une fenêtre flottante (PinnedEntitiesHost). */
     pinnedEntityType: {
         type: String,
         default: "",
@@ -34,24 +31,17 @@ const props = defineProps({
     },
 });
 
+const emit = defineEmits(["open-quick-view"]);
+
 const isHovered = ref(props.displayMode === "extended");
 const isFocusWithin = ref(false);
 const isExpandedLocked = ref(false);
 const cardRef = ref(null);
-const pinVersion = usePinnedEntityVersion();
-
-const isPinnedExpanded = computed(() => {
-    pinVersion.value;
-    const entityType = String(props.pinnedEntityType || "").trim();
-    const entityId = String(props.pinnedEntityId || "").trim();
-    if (!entityType || !entityId) return false;
-    return isEntityPinned(entityType, entityId);
-});
 
 const showExpanded = computed(() => {
     if (props.displayMode === "compact") return false;
     if (props.displayMode === "extended") return true;
-    return isPinnedExpanded.value || isExpandedLocked.value || isHovered.value || isFocusWithin.value;
+    return isExpandedLocked.value || isHovered.value || isFocusWithin.value;
 });
 
 const canHover = computed(() => props.displayMode === "hover");
@@ -79,6 +69,13 @@ function onCardClick() {
     if (!canHover.value) return;
     isExpandedLocked.value = true;
     isHovered.value = true;
+}
+
+/** Double-clic → ouverture modal full (quick-view), hors zone d’actions. */
+function onCardDblClick(event) {
+    if (event.target?.closest?.("[data-entity-actions]")) return;
+    if (event.target?.closest?.("a[href]")) return;
+    emit("open-quick-view");
 }
 
 function unlockExpanded() {
@@ -120,6 +117,7 @@ onUnmounted(() => {
         @focusin="onFocusIn"
         @focusout="onFocusOut"
         @click="onCardClick"
+        @dblclick="onCardDblClick"
     >
         <!-- Compact : définit la taille du slot, ne bouge pas -->
         <div

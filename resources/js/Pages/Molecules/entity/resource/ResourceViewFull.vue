@@ -21,6 +21,7 @@ import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.v
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
+import { useScrapping } from '@/Composables/utils/useScrapping';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
@@ -42,6 +43,13 @@ const props = defineProps({
     characteristicRuntime: { type: Object, default: null },
 });
 
+
+const actionsContext = computed(() =>
+    props.inModal
+        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
+        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+);
+
 const headerMode = computed(() => (props.inModal ? 'compact' : 'full'));
 
 provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
@@ -49,6 +57,7 @@ provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
+const { refreshEntity } = useScrapping();
 const { downloadPdf } = useDownloadPdf('resource');
 const permissions = usePermissions();
 
@@ -211,10 +220,14 @@ const handleAction = async (actionKey) => {
             await downloadPdf(resourceId);
             emit('download-pdf', props.resource);
             break;
-        case 'refresh':
-            router.reload({ only: ['resource'] });
+        case 'refresh': {
+            const ok = await refreshEntity('resource', resourceId, { forceUpdate: true });
+            if (ok) {
+                router.reload();
+            }
             emit('refresh', props.resource);
             break;
+        }
         case 'delete':
             emit('delete', props.resource);
             break;
@@ -325,7 +338,7 @@ const handleAction = async (actionKey) => {
                         display="icon-only"
                         size="sm"
                         color="primary"
-                        :context="{ inPanel: false, inPage: true }"
+                        :context="actionsContext"
                         @action="handleAction"
                     />
                 </div>

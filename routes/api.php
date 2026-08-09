@@ -20,6 +20,7 @@ require __DIR__.'/api/types.php';
 require __DIR__.'/api/entity-table.php';
 require __DIR__.'/api/tables.php';
 require __DIR__.'/api/table-presets.php';
+require __DIR__.'/api/favorites.php';
 require __DIR__.'/api/entities.php';
 require __DIR__.'/api/effects.php';
 require __DIR__.'/api/global-search.php';

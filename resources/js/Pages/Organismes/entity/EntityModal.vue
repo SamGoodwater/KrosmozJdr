@@ -140,6 +140,7 @@ const ENTITY_COMPONENT_MAP = {
     'capabilities': 'Capability',
     'creature-traits': 'CreatureTrait',
     'specializations': 'Specialization',
+    'resource-types': 'ResourceType',
     'shops': 'Shop',
 };
 

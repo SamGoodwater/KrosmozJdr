@@ -9,11 +9,11 @@
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { computed } from "vue";
-import { router } from "@inertiajs/vue3";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
+import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
 import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
@@ -42,7 +42,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["edit", "view", "delete", "action"]);
+const emit = defineEmits(["edit", "view", "delete", "action", "quick-view"]);
 
 const entity = computed(() => props.breed);
 
@@ -89,29 +89,24 @@ const linkedLanguages = computed(() => {
 
 const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
 
-const showHref = computed(() =>
-    entity.value?.id ? route("entities.breeds.show", { breed: entity.value.id }) : null
-);
+
+
+const {
+    minimalActionsContext,
+    minimalActionWhitelist,
+    openQuickView,
+    handleMinimalAction,
+} = useEntityMinimalShell({
+    entityTypePlural: "breeds",
+    showRoute: "entities.breeds.show",
+    editRoute: "entities.breeds.edit",
+    routeParam: "breed",
+    emit,
+    getEntity: () => entity.value,
+});
 
 const handleAction = async (actionKey) => {
-    const breedId = entity.value?.id;
-    if (!breedId) return;
-
-    switch (actionKey) {
-        case "view":
-            router.visit(route("entities.breeds.show", { breed: breedId }));
-            emit("view", props.breed);
-            break;
-        case "edit":
-            router.visit(route("entities.breeds.edit", { breed: breedId }));
-            emit("edit", props.breed);
-            break;
-        case "delete":
-            emit("delete", props.breed);
-            break;
-        default:
-            emit("action", actionKey, props.breed);
-    }
+    await handleMinimalAction(actionKey);
 };
 
 const handleLinkedQuickView = (linkedEntity) => {
@@ -121,7 +116,12 @@ const handleLinkedQuickView = (linkedEntity) => {
 </script>
 
 <template>
-    <EntityMinimalCard :display-mode="displayMode" pinned-entity-type="breeds" :pinned-entity-id="entity?.id">
+    <EntityMinimalCard
+        :display-mode="displayMode"
+        pinned-entity-type="breeds"
+        :pinned-entity-id="entity?.id"
+        @open-quick-view="openQuickView"
+    >
         <template #compact>
             <div
                 data-cy="entity-minimal-card-compact"
@@ -136,29 +136,9 @@ const handleLinkedQuickView = (linkedEntity) => {
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <div class="min-w-0 flex-1">
-                                <Route
-                                    v-if="showHref"
-                                    :href="showHref"
-                                    color="neutral"
-                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
-                                >
-                                    {{ entity?.name ?? "—" }}
-                                </Route>
-                                <span v-else class="font-semibold truncate block text-sm">
-                                    {{ entity?.name ?? "—" }}
-                                </span>
+                                <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
-                                <EntityActions
-                                    entity-type="breeds"
-                                    :entity="entity"
-                                    format="dropdown"
-                                    display="icon-only"
-                                    size="xs"
-                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                                    @action="handleAction"
-                                />
-                            </div>
+                            
                         </div>
                         <BreedElementOrientationsDisplay
                             :orientation-map="orientationMap"
@@ -211,17 +191,7 @@ const handleLinkedQuickView = (linkedEntity) => {
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <div class="min-w-0 flex-1">
-                                <Route
-                                    v-if="showHref"
-                                    :href="showHref"
-                                    color="neutral"
-                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
-                                >
-                                    {{ entity?.name ?? "—" }}
-                                </Route>
-                                <span v-else class="font-semibold truncate block text-sm">
-                                    {{ entity?.name ?? "—" }}
-                                </span>
+                                <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
                             <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
                                 <EntityActions
@@ -230,8 +200,9 @@ const handleLinkedQuickView = (linkedEntity) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                                    @action="handleAction"
+                                    :whitelist="minimalActionWhitelist"
+                                    :context="minimalActionsContext"
+                                    @action="(k) => handleAction(k)"
                                 />
                             </div>
                         </div>

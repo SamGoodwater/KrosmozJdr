@@ -607,11 +607,32 @@
     "file": "entity/SpellEditFormContent.vue"
   },
   {
+    "name": "PinnedEntitiesHost",
+    "description": "PinnedEntitiesHost — Fenêtres flottantes multi-entités (épinglage local).",
+    "props": [],
+    "slots": [],
+    "file": "entity/PinnedEntitiesHost.vue"
+  },
+  {
     "name": "ObjectEffectsManager",
     "description": "Effets d’objet structurés (régénérer, ajouter, retirer, téléporter, invoquer) — hors système « effets de sort ».",
     "props": [],
     "slots": [],
     "file": "entity/ObjectEffectsManager.vue"
+  },
+  {
+    "name": "FavoritesPanel",
+    "description": "FavoritesPanel — Liste des favoris (groupés) + recherche pour en ajouter.",
+    "props": [],
+    "slots": [],
+    "file": "entity/FavoritesPanel.vue"
+  },
+  {
+    "name": "FavoritesModal",
+    "description": "FavoritesModal — Modal global des favoris (ouvert depuis le header).",
+    "props": [],
+    "slots": [],
+    "file": "entity/FavoritesModal.vue"
   },
   {
     "name": "EntityRelationsManager",
@@ -949,17 +970,27 @@
       {
         "name": "entity",
         "type": "Object",
-        "desc": "- Entité (resource, item, monster, spell…) avec au minimum level"
+        "desc": "- Entité avec au minimum level"
       },
       {
         "name": "groups",
         "type": "Array<{title?: string, characteristics: Array}>",
-        "desc": "- Groupes de caractéristiques"
+        "desc": ""
       },
       {
         "name": "levelOptions",
         "type": "Array<number>",
-        "desc": "- Options de level pour le sélecteur (si vide, déduit de entity.level via useCharacteristicLevel)"
+        "desc": ""
+      },
+      {
+        "name": "density",
+        "type": "'icon'|'labeled'|'spacious'",
+        "desc": ""
+      },
+      {
+        "name": "dense",
+        "type": "boolean",
+        "desc": "- Alias BC : true → density icon"
       }
     ],
     "slots": [],

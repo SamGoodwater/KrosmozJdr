@@ -455,6 +455,84 @@ final class GlobalSearchService
         };
     }
 
+    /**
+     * Résout une liste de paires type/id en hits recherche (Gate `view`).
+     *
+     * @param  list<array{entity_type?:string,entityType?:string,entity_id?:int|string,entityId?:int|string,id?:int|string}>  $pairs
+     * @return list<array{id:int|string, entityType:string, group:string, title:string, subtitle:string, href:string, icon:string, iconUrl:string}>
+     */
+    public function resolveHits(?User $user, array $pairs): array
+    {
+        $byType = [];
+        foreach ($pairs as $pair) {
+            $type = (string) ($pair['entity_type'] ?? $pair['entityType'] ?? '');
+            $id = $pair['entity_id'] ?? $pair['entityId'] ?? $pair['id'] ?? null;
+            if ($type === '' || $id === null || $id === '') {
+                continue;
+            }
+            if (! in_array($type, self::ALLOWED_TYPES, true)) {
+                continue;
+            }
+            $byType[$type][(int) $id] = true;
+        }
+
+        $hits = [];
+        foreach (self::SEARCH_TYPE_ORDER as $type) {
+            if (! isset($byType[$type])) {
+                continue;
+            }
+            $ids = array_keys($byType[$type]);
+            $models = $this->fetchModelsByIds($type, $ids);
+            $group = $this->groupLabel($type);
+            foreach ($models as $model) {
+                if (! Gate::forUser($user)->allows('view', $model)) {
+                    continue;
+                }
+                $hits[] = $this->serializeHit($type, $group, $model);
+            }
+        }
+
+        return $hits;
+    }
+
+    /**
+     * @param  list<int>  $ids
+     * @return list<Model>
+     */
+    private function fetchModelsByIds(string $type, array $ids): array
+    {
+        $ids = array_values(array_unique(array_filter($ids, static fn (int $id): bool => $id > 0)));
+        if ($ids === []) {
+            return [];
+        }
+
+        return match ($type) {
+            'pages' => Page::query()->whereIn('id', $ids)->get()->all(),
+            'sections' => Section::query()->with('page')->whereIn('id', $ids)->get()->all(),
+            'monsters' => Monster::query()->with(['creature', 'monsterRace'])->whereIn('id', $ids)->get()->all(),
+            default => $this->fetchRegistryModelsByIds($type, $ids),
+        };
+    }
+
+    /**
+     * @param  list<int>  $ids
+     * @return list<Model>
+     */
+    private function fetchRegistryModelsByIds(string $type, array $ids): array
+    {
+        /** @var array<string, class-string<Model>> $registry */
+        $registry = (array) Config::get('entity-permissions', []);
+        $class = $registry[$type] ?? null;
+        if ($class === null || ! class_exists($class)) {
+            return [];
+        }
+
+        /** @var list<Model> $rows */
+        $rows = $class::query()->whereIn('id', $ids)->get()->all();
+
+        return $rows;
+    }
+
     private function groupLabel(string $type): string
     {
         return match ($type) {

@@ -4,35 +4,60 @@
  *
  * @description
  * Conteneur qui affiche un ou plusieurs CharacteristicGroup. Gère le level effectif (state)
- * et un sélecteur de level quand celui-ci est variable (1d4, [5-8]). Fournit entity et
- * levelEffective aux groupes.
+ * et un sélecteur de level quand celui-ci est variable (1d4, [5-8]).
+ * Densités : `icon` (minimal), `labeled` (modal), `spacious` (page).
  *
- * @props {Object} [entity] - Entité (resource, item, monster, spell…) avec au minimum level
- * @props {Array<{title?: string, characteristics: Array}>} groups - Groupes de caractéristiques
- * @props {Array<number>} [levelOptions] - Options de level pour le sélecteur (si vide, déduit de entity.level via useCharacteristicLevel)
+ * @props {Object} [entity] - Entité avec au minimum level
+ * @props {Array<{title?: string, characteristics: Array}>} groups
+ * @props {Array<number>} [levelOptions]
+ * @props {'icon'|'labeled'|'spacious'} [density]
+ * @props {boolean} [dense] - Alias BC : true → density icon
  */
 import { computed, ref, watch } from "vue";
 import CharacteristicGroup from "@/Pages/Molecules/data-display/CharacteristicGroup.vue";
 import { useCharacteristicLevel } from "@/Utils/Entity/useCharacteristicLevel";
+import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
 
 const props = defineProps({
     entity: { type: Object, default: null },
     groups: { type: Array, default: () => [] },
     levelOptions: { type: Array, default: () => [] },
-    /** Réduit padding et espacements (ex. dans une cellule de tableau) */
+    /** @deprecated Préférer `density`. true → icon */
     dense: { type: Boolean, default: false },
-    /** Runtime backend (ex. resolved-stats) pour tooltips / formules */
+    density: {
+        type: String,
+        default: "",
+        validator: (v) => v === "" || Object.values(CHARACTERISTIC_CARD_DENSITY).includes(v),
+    },
     runtime: { type: Object, default: null },
 });
 
 const emit = defineEmits(["update:levelEffective"]);
 
-const cardClass = computed(() =>
-    props.dense
-        ? "characteristics-card rounded-box border border-base-300 bg-base-100 p-2 shadow-sm"
-        : "characteristics-card rounded-box border border-base-300 bg-base-100 p-4 shadow-sm",
-);
-const spaceClass = computed(() => (props.dense ? "space-y-2" : "space-y-4"));
+const resolvedDensity = computed(() => {
+    if (props.density && Object.values(CHARACTERISTIC_CARD_DENSITY).includes(props.density)) {
+        return props.density;
+    }
+    return props.dense ? CHARACTERISTIC_CARD_DENSITY.icon : CHARACTERISTIC_CARD_DENSITY.labeled;
+});
+
+const cardClass = computed(() => {
+    const d = resolvedDensity.value;
+    if (d === CHARACTERISTIC_CARD_DENSITY.icon) {
+        return "characteristics-card rounded-box border border-base-300 bg-base-100 p-2 shadow-sm";
+    }
+    if (d === CHARACTERISTIC_CARD_DENSITY.spacious) {
+        return "characteristics-card rounded-box border border-base-300 bg-base-100 p-5 shadow-sm";
+    }
+    return "characteristics-card rounded-box border border-base-300 bg-base-100 p-4 shadow-sm";
+});
+
+const spaceClass = computed(() => {
+    const d = resolvedDensity.value;
+    if (d === CHARACTERISTIC_CARD_DENSITY.icon) return "space-y-2";
+    if (d === CHARACTERISTIC_CARD_DENSITY.spacious) return "space-y-5";
+    return "space-y-3";
+});
 
 const levelFromEntity = computed(() => props.entity?.level ?? null);
 const parsedLevel = computed(() => useCharacteristicLevel(levelFromEntity.value));
@@ -65,12 +90,11 @@ watch(levelEffective, (v) => {
     emit("update:levelEffective", v);
 });
 
-const groupsList = computed(() => Array.isArray(props.groups) ? props.groups : []);
+const groupsList = computed(() => (Array.isArray(props.groups) ? props.groups : []));
 </script>
 
 <template>
     <div :class="cardClass">
-        <!-- Sélecteur de level (si level variable) -->
         <div v-if="hasLevelSelector" class="mb-2 flex items-center gap-2">
             <label class="text-xs font-medium opacity-90">Niveau</label>
             <select
@@ -87,7 +111,6 @@ const groupsList = computed(() => Array.isArray(props.groups) ? props.groups : [
             </select>
         </div>
 
-        <!-- Groupes de caractéristiques -->
         <div :class="spaceClass">
             <CharacteristicGroup
                 v-for="(group, i) in groupsList"
@@ -95,7 +118,7 @@ const groupsList = computed(() => Array.isArray(props.groups) ? props.groups : [
                 :title="group.title"
                 :characteristics="group.characteristics"
                 :level-effective="levelEffective"
-                :compact="dense"
+                :density="resolvedDensity"
                 :runtime="runtime"
             />
         </div>

@@ -19,15 +19,15 @@ import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Kbd from "@/Pages/Atoms/data-display/Kbd.vue";
 import EntityLabel from "@/Pages/Atoms/data-display/EntityLabel.vue";
-import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
-import { normalizeEntityThumbLabel } from "@/Utils/entity/entityThumb";
+import GlobalSearchHitRow from "@/Pages/Molecules/entity/shared/GlobalSearchHitRow.vue";
+import EntityModal from "@/Pages/Organismes/entity/EntityModal.vue";
 import {
     useGlobalEntitySearch,
     GLOBAL_SEARCH_TYPE_FILTERS,
     GLOBAL_SEARCH_STATE_FILTERS,
 } from "@/Composables/entity/useGlobalEntitySearch";
+import { useOpenEntityModal } from "@/Composables/entity/useOpenEntityModal";
 import { globalSearchEntityLabelKey } from "@/Utils/entity/globalSearchEntityLabel";
-import { router } from "@inertiajs/vue3";
 
 /** @typedef {InstanceType<typeof InputField> & { focus?: () => void }} SearchInputFieldRef */
 
@@ -70,6 +70,14 @@ const {
     loadMore,
     close,
 } = useGlobalEntitySearch({ selectedTypes, selectedStates });
+
+const {
+    modalOpen,
+    modalEntity,
+    modalEntityType,
+    openHit,
+    closeModal,
+} = useOpenEntityModal();
 
 const showPanel = computed(
     () => isFocused.value && isOpen.value && query.value.trim().length >= 2
@@ -127,10 +135,7 @@ const handleInput = (value) => {
 };
 
 const handleSelectResult = (result) => {
-    if (result?.href) {
-        router.visit(result.href);
-    }
-    blurSearch();
+    openHit(result, { onBeforeOpen: () => blurSearch() });
 };
 
 const focusSearchInput = () => {
@@ -420,30 +425,11 @@ watch([loading, groupedResults], () => {
                                             v-for="result in group.items"
                                             :key="`${result.entityType}-${result.id}`"
                                         >
-                                            <button
-                                                type="button"
-                                                class="global-search-hit flex w-full items-start gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-base-200/70"
-                                                @click="handleSelectResult(result)"
-                                            >
-                                                <EntityThumb
-                                                    size="search"
-                                                    :src="result.iconUrl || ''"
-                                                    :label="normalizeEntityThumbLabel(result.title)"
-                                                    :alt="result.title"
-                                                    aria-hidden="true"
-                                                />
-                                                <span class="min-w-0 flex-1">
-                                                    <span class="block text-sm font-semibold leading-snug text-base-content">
-                                                        {{ result.title }}
-                                                    </span>
-                                                    <span
-                                                        v-if="result.subtitle"
-                                                        class="global-search-excerpt mt-1 block text-xs leading-relaxed text-base-content/75"
-                                                    >
-                                                        {{ result.subtitle }}
-                                                    </span>
-                                                </span>
-                                            </button>
+                                            <GlobalSearchHitRow
+                                                :hit="result"
+                                                density="default"
+                                                @select="handleSelectResult"
+                                            />
                                         </li>
                                     </ul>
                                 </section>
@@ -475,6 +461,16 @@ watch([loading, groupedResults], () => {
             </div>
         </dialog>
     </Teleport>
+
+    <EntityModal
+        v-if="modalEntity"
+        :entity="modalEntity"
+        :entity-type="modalEntityType"
+        view="full"
+        :open="modalOpen"
+        :use-stored-format="false"
+        @close="closeModal"
+    />
 </template>
 
 <style scoped>

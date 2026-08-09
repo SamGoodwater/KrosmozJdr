@@ -24,6 +24,7 @@ import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureC
 import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
+import { useScrapping } from '@/Composables/utils/useScrapping';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
@@ -54,6 +55,13 @@ const props = defineProps({
     characteristicRuntime: { type: Object, default: null },
 });
 
+
+const actionsContext = computed(() =>
+    props.inModal
+        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
+        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+);
+
 const headerMode = computed(() => (props.inModal ? 'compact' : 'full'));
 
 provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
@@ -62,6 +70,7 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('monster');
+const { refreshEntity } = useScrapping();
 const permissions = usePermissions();
 
 const ctx = computed(() => {
@@ -183,7 +192,9 @@ const creatureIdForStats = computed(() => creatureData.value?.id ?? null);
 const { runtime: creatureRuntimeStats } = useCreatureResolvedStats(creatureIdForStats);
 
 const creatureCharacteristicsGroups = computed(() =>
-    buildCreatureCharacteristicGroups(creatureData.value)
+    buildCreatureCharacteristicGroups(creatureData.value, {
+        runtime: creatureRuntimeStats.value,
+    }),
 );
 const hasCreatureCharacteristics = computed(() => !!creatureData.value);
 
@@ -284,10 +295,14 @@ const handleAction = async (actionKey) => {
             await downloadPdf(monsterId);
             emit('download-pdf', props.monster);
             break;
-        case 'refresh':
-            router.reload({ only: ['monsters'] });
+        case 'refresh': {
+            const ok = await refreshEntity('monster', monsterId, { forceUpdate: true });
+            if (ok) {
+                router.reload({ only: ['monster', 'characteristicRuntime'] });
+            }
             emit('refresh', props.monster);
             break;
+        }
         case 'delete':
             emit('delete', props.monster);
             break;
@@ -383,13 +398,13 @@ const handleAction = async (actionKey) => {
             <template #actions>
                 <div v-if="showActions">
                     <EntityActions
-                        entity-type="monster"
+                        entity-type="monsters"
                         :entity="monster"
                         format="buttons"
                         display="icon-only"
                         size="sm"
                         color="primary"
-                        :context="{ inPanel: false, inPage: true, viewMode: 'full' }"
+                        :context="actionsContext"
                         @action="handleAction"
                     />
                 </div>
@@ -424,7 +439,7 @@ const handleAction = async (actionKey) => {
             <CharacteristicsCard
                 :entity="creatureData"
                 :groups="creatureCharacteristicsGroups"
-                :dense="false"
+                :density="inModal ? 'labeled' : 'spacious'"
                 :runtime="creatureRuntimeStats"
             />
         </section>

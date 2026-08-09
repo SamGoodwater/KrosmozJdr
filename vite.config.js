@@ -17,7 +17,12 @@ export default defineConfig({
                 "resources/css/custom.css"
             ],
             ssr: "resources/js/ssr.js",
-            refresh: true,
+            // Éviter les full-reload pendant sync seeders / jobs (sinon ERR_CONNECTION_RESET côté navigateur).
+            refresh: [
+                "resources/views/**",
+                "routes/**",
+                "app/Http/Controllers/**",
+            ],
             hotFile: 'public/hot',
             buildDirectory: 'build',
         }),
@@ -46,25 +51,30 @@ export default defineConfig({
         }
     },
     server: {
-        host: "127.0.0.1",
+        // Aligner host HTTP + HMR (évite WS localhost ↔ HTTP 127.0.0.1 sous WSL).
+        host: "localhost",
         port: 5173,
         strictPort: true,
         hmr: {
-            host: 'localhost',
+            host: "localhost",
+            protocol: "ws",
+            clientPort: 5173,
             overlay: false,
         },
         watch: {
             usePolling: false,
             interval: 1000,
             ignored: [
-                '**/node_modules/**',
-                '**/vendor/**',
-                '**/storage/**',
-                '**/public/build/**',
-                '**/resources/css/app.css',
-                '**/resources/css/custom.css',
-                '**/resources/css/theme.css',
-            ]
+                "**/node_modules/**",
+                "**/vendor/**",
+                "**/storage/**",
+                "**/database/**",
+                "**/public/build/**",
+                "**/public/hot",
+                "**/resources/css/app.css",
+                "**/resources/css/custom.css",
+                "**/resources/css/theme.css",
+            ],
         },
     },
     optimizeDeps: {

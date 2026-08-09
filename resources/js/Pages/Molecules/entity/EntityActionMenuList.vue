@@ -78,8 +78,8 @@ watch(
     { immediate: true },
 );
 
-function handleAction(actionKey) {
-    if (runLocalAction(actionKey)) {
+async function handleAction(actionKey) {
+    if (await runLocalAction(actionKey)) {
         emit("action", actionKey);
         return;
     }

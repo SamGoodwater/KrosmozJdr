@@ -15,6 +15,7 @@ import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
+import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
@@ -46,6 +47,13 @@ const props = defineProps({
     characteristicRuntime: { type: Object, default: null },
 });
 
+
+const actionsContext = computed(() =>
+    props.inModal
+        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
+        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+);
+
 const headerMode = computed(() => (props.inModal ? "compact" : "full"));
 
 provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
@@ -63,6 +71,7 @@ const emit = defineEmits([
 ]);
 
 const { copyToClipboard } = useCopyToClipboard();
+const { refreshEntity } = useScrapping();
 const { downloadPdf } = useDownloadPdf("breed");
 const permissions = usePermissions();
 
@@ -180,10 +189,14 @@ const handleAction = async (actionKey) => {
             await downloadPdf(breedId);
             emit("download-pdf", props.breed);
             break;
-        case "refresh":
-            router.reload({ only: ["breeds"] });
-            emit("refresh", props.breed);
+        case 'refresh': {
+            const ok = await refreshEntity('class', breedId, { forceUpdate: true });
+            if (ok) {
+                router.reload();
+            }
+            emit('refresh', props.breed);
             break;
+        }
         case "delete":
             emit("delete", props.breed);
             break;
@@ -269,7 +282,7 @@ const handleAction = async (actionKey) => {
                         display="icon-only"
                         size="sm"
                         color="primary"
-                        :context="{ inPanel: false, inPage: true }"
+                        :context="actionsContext"
                         @action="handleAction"
                     />
                 </div>

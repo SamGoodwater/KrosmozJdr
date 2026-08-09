@@ -1,249 +1,206 @@
 <script setup>
 /**
  * ScenarioViewMinimal — Vue Minimal pour Scenario
- * 
+ *
  * @description
- * Petite carte qui s'étend au survol.
- * Utilisée dans des grilles, petites modals ou hovers.
- * 
- * @props {Scenario} scenario - Instance du modèle Scenario
- * @props {Boolean} showActions - Afficher les actions (défaut: true)
+ * EntityMinimalCard : identité + méta compacte ; champs étendus en déployé.
  */
-import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
-import EntityThumb from '@/Pages/Molecules/entity/shared/EntityThumb.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { computed } from "vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
+import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getScenarioFieldDescriptors } from "@/Entities/scenario/scenario-descriptors";
 
 const props = defineProps({
-    scenario: {
-        type: Object,
-        required: true
-    },
-    showActions: {
-        type: Boolean,
-        default: true
-    },
+    scenario: { type: Object, required: true },
+    showActions: { type: Boolean, default: true },
     displayMode: {
         type: String,
-        default: 'hover',
-        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+        default: "hover",
+        validator: (v) => ["compact", "hover", "extended"].includes(v),
     },
-    tableMeta: {
-        type: Object,
-        default: () => ({})
-    }
+    tableMeta: { type: Object, default: () => ({}) },
 });
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits([
+    "edit", "copy-link", "download-pdf", "refresh", "view", "quick-view", "quick-edit", "delete", "action",
+]);
 
-const isHovered = ref(props.displayMode === 'extended');
-const canHoverExpand = computed(() => props.displayMode === 'hover');
+const entity = computed(() => props.scenario);
 const permissions = usePermissions();
-
-const ctx = computed(() => {
-    const capabilities = {
-        viewAny: permissions.can('scenario', 'viewAny'),
-        createAny: permissions.can('scenario', 'createAny'),
-        updateAny: permissions.can('scenario', 'updateAny'),
-        deleteAny: permissions.can('scenario', 'deleteAny'),
-        manageAny: permissions.can('scenario', 'manageAny'),
-    };
-    return { capabilities, meta: { capabilities } };
-});
-
+const ctx = computed(() => ({
+    capabilities: {
+        viewAny: permissions.can("scenario", "viewAny"),
+        createAny: permissions.can("scenario", "createAny"),
+        updateAny: permissions.can("scenario", "updateAny"),
+        deleteAny: permissions.can("scenario", "deleteAny"),
+        manageAny: permissions.can("scenario", "manageAny"),
+    },
+    meta: { capabilities: {} },
+}));
 const descriptors = computed(() => getScenarioFieldDescriptors(ctx.value));
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
     const visibleIf = desc?.permissions?.visibleIf;
-    if (typeof visibleIf === 'function') {
+    if (typeof visibleIf === "function") {
         try {
             return Boolean(visibleIf(ctx.value));
-        } catch (e) {
-            console.warn('[ScenarioViewMinimal] visibleIf failed for', fieldKey, e);
+        } catch {
             return false;
         }
     }
     return true;
 };
 
-// Champs importants à afficher
-const importantFields = computed(() => ['name', 'is_public'].filter(canShowField));
+const metaFields = computed(() => ["is_public"].filter(canShowField));
 
-const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
+const technicalFieldsOrder = [
+    "id", "slug", "state", "is_public", "read_level", "write_level", "created_at", "updated_at", "deleted_at",
+];
 const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
-const sortExtendedFields = (fields) => {
+
+const expandedFields = computed(() => {
+    const excluded = new Set(["name", "image", "state", "is_public"]);
+    const fields = Object.keys(descriptors.value || {}).filter(
+        (key) => canShowField(key) && !excluded.has(key),
+    );
     return [...fields].sort((a, b) => {
         const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
         const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
-
         if (rankA === -1 && rankB === -1) return 0;
         if (rankA === -1) return -1;
         if (rankB === -1) return 1;
         return rankA - rankB;
     });
-};
-
-// En mode étendu, afficher toutes les propriétés visibles non principales.
-const expandedFields = computed(() => {
-    const excluded = new Set(['name', 'image', 'state']);
-    const fields = Object.keys(descriptors.value || {}).filter((key) => {
-        return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
-    });
-    return sortExtendedFields(fields);
 });
 
-const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
-};
+const getFieldIcon = (fieldKey) =>
+    descriptors.value?.[fieldKey]?.general?.icon || "fa-solid fa-info-circle";
 
-const getCell = (fieldKey) => {
-    return props.scenario.toCell(fieldKey, {
-        size: 'sm',
-        context: 'minimal',
-    });
-};
+const getCell = (fieldKey) =>
+    props.scenario.toCell(fieldKey, { size: "sm", context: "minimal" });
 
 const tooltipForField = (fieldKey, cell) => {
     const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
-    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
+    const value =
+        cell?.value === null || typeof cell?.value === "undefined" || String(cell?.value) === ""
+            ? "-"
+            : cell.value;
     return `${label} : ${value}`;
 };
 
-const handleAction = async (actionKey) => {
-    const scenarioId = props.scenario.id;
-    if (!scenarioId) return;
+const {
+    minimalActionsContext,
+    minimalActionWhitelist,
+    openQuickView,
+    handleMinimalAction,
+} = useEntityMinimalShell({
+    entityTypePlural: "scenarios",
+    showRoute: "entities.scenarios.show",
+    editRoute: "entities.scenarios.edit",
+    routeParam: "scenario",
+    emit,
+    getEntity: () => entity.value,
+});
 
-    switch (actionKey) {
-        case 'view':
-            router.visit(route('entities.scenarios.show', { scenario: props.scenario.slug || scenarioId }));
-            emit('view', props.scenario);
-            break;
-        case 'edit':
-            router.visit(route('entities.scenarios.edit', { scenario: scenarioId }));
-            emit('edit', props.scenario);
-            break;
-        case 'delete':
-            emit('delete', props.scenario);
-            break;
-    }
+const handleAction = async (actionKey) => {
+    await handleMinimalAction(actionKey);
 };
+
+const displayName = computed(() => props.scenario?.name || "Scénario");
+const imageUrl = computed(() => {
+    const u = props.scenario?.image ?? props.scenario?._data?.image;
+    return u && String(u).trim() ? String(u) : null;
+});
 </script>
 
 <template>
-    <div 
-        class="relative rounded-box border border-base-300 transition-all duration-300 overflow-hidden"
-        :class="{ 
-            'bg-base-200 shadow-lg': isHovered,
-            'bg-base-100': !isHovered
-        }"
-        :style="{ 
-            width: isHovered ? 'auto' : '150px',
-            minWidth: '150px',
-            maxWidth: isHovered ? '300px' : '200px',
-            height: isHovered ? 'auto' : '100px',
-            minHeight: '80px'
-        }"
-        @mouseenter="canHoverExpand && (isHovered = true)"
-        @mouseleave="canHoverExpand && (isHovered = false)">
-        
-        <div class="p-3">
-            <!-- En-tête avec image/icône, nom et actions -->
-            <div class="flex items-start justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <EntityThumb
-                        size="table"
-                        :src="scenario.image || ''"
-                        :label="scenario.name || 'Scénario'"
-                    />
-                    <Tooltip :content="scenario.name || 'Scenario'" placement="top">
-                        <span class="font-semibold text-primary-100 text-sm truncate block">
-                            <CellRenderer
-                                :cell="getCell('name')"
-                                ui-color="primary"
-                            />
-                        </span>
-                    </Tooltip>
-                </div>
-                
-                <div v-if="showActions && isHovered" class="flex-shrink-0">
-                    <EntityActions
-                        entity-type="scenario"
-                        :entity="scenario"
-                        format="buttons"
-                        display="icon-only"
-                        size="xs"
-                        color="primary"
-                        :context="{ inPanel: false, inMinimal: true }"
-                        @action="handleAction"
-                    />
-                </div>
-            </div>
-
-            <!-- Infos importantes en icônes avec tooltips -->
-            <div class="flex gap-2 flex-wrap">
-                <template v-for="field in importantFields" :key="field">
-                    <Tooltip
-                        :content="tooltipForField(field, getCell(field))"
-                        placement="top"
-                    >
-                        <div class="flex items-center gap-1 px-2 py-1 bg-base-200 rounded">
-                            <Icon
-                                :source="getFieldIcon(field)"
-                                size="xs"
-                                class="text-primary-400"
-                            />
-                            <span class="text-xs text-primary-300 font-medium">
-                                <CellRenderer
-                                    :cell="getCell(field)"
-                                    ui-color="primary"
-                                />
-                            </span>
+    <EntityMinimalCard
+        :display-mode="displayMode"
+        pinned-entity-type="scenarios"
+        :pinned-entity-id="entity?.id"
+        @open-quick-view="openQuickView"
+    >
+        <template #compact>
+            <div data-cy="entity-minimal-card-compact" class="flex flex-col gap-1.5 p-2">
+                <div class="flex gap-2">
+                    <EntityThumb size="compact" :src="imageUrl || ''" :label="displayName" />
+                    <div class="min-w-0 flex-1">
+                        <EntityMinimalTitle :label="displayName" @open="openQuickView" />
+                        <div class="mt-1 flex flex-wrap gap-1">
+                            <template v-for="field in metaFields" :key="field">
+                                <Tooltip :content="tooltipForField(field, getCell(field))" placement="top">
+                                    <div class="inline-flex items-center gap-1 rounded bg-base-200 px-1.5 py-0.5">
+                                        <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" />
+                                        <span class="text-[11px] text-primary-300">
+                                            <CellRenderer :cell="getCell(field)" ui-color="primary" />
+                                        </span>
+                                    </div>
+                                </Tooltip>
+                            </template>
                         </div>
-                    </Tooltip>
-                </template>
+                    </div>
+                </div>
             </div>
-
-            <!-- Contenu supplémentaire au hover -->
-            <div 
-                v-if="isHovered" 
-                class="mt-2 pt-2 border-t border-base-300 space-y-1 text-xs text-primary-300 animate-fade-in">
-                <div
-                    v-for="key in expandedFields"
-                    :key="key"
-                    class="flex items-start gap-2"
-                >
-                    <Tooltip
-                        :content="tooltipForField(key, getCell(key))"
-                        placement="left"
-                    >
-                        <div class="flex items-start gap-2 w-full">
-                            <Icon
-                                :source="getFieldIcon(key)"
-                                size="xs"
-                                class="text-primary-400 flex-shrink-0 mt-0.5"
-                            />
-                            <div class="flex-1 min-w-0">
-                                <div class="font-semibold text-primary-400">
-                                    {{ key }}:
-                                </div>
-                                <div class="text-primary-200 truncate">
-                                    <CellRenderer
-                                        :cell="getCell(key)"
-                                        ui-color="primary"
-                                    />
-                                </div>
+        </template>
+        <template #expanded>
+            <div data-cy="entity-minimal-card-expanded" class="flex flex-col gap-1.5 p-2">
+                <div class="flex gap-2">
+                    <EntityThumb size="compact" :src="imageUrl || ''" :label="displayName" />
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-start gap-1.5">
+                            <div class="min-w-0 flex-1">
+                                <EntityMinimalTitle :label="displayName" @open="openQuickView" />
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                                <EntityActions
+                                    entity-type="scenarios"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="minimalActionWhitelist"
+                                    :context="minimalActionsContext"
+                                    @action="(k) => handleAction(k)"
+                                />
                             </div>
                         </div>
-                    </Tooltip>
+                        <div class="mt-1 flex flex-wrap gap-1">
+                            <template v-for="field in metaFields" :key="field">
+                                <Tooltip :content="tooltipForField(field, getCell(field))" placement="top">
+                                    <div class="inline-flex items-center gap-1 rounded bg-base-200 px-1.5 py-0.5">
+                                        <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" />
+                                        <span class="text-[11px] text-primary-300">
+                                            <CellRenderer :cell="getCell(field)" ui-color="primary" />
+                                        </span>
+                                    </div>
+                                </Tooltip>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="expandedFields.length" class="space-y-1 border-t border-base-300/80 pt-1.5 text-xs">
+                    <div v-for="key in expandedFields" :key="key" class="flex items-start gap-2">
+                        <Icon :source="getFieldIcon(key)" size="xs" class="mt-0.5 shrink-0 text-primary-400" />
+                        <div class="min-w-0 flex-1">
+                            <div class="font-semibold text-primary-400">
+                                {{ descriptors?.[key]?.general?.label || key }}
+                            </div>
+                            <div class="truncate text-primary-200">
+                                <CellRenderer :cell="getCell(key)" ui-color="primary" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </template>
+    </EntityMinimalCard>
 </template>

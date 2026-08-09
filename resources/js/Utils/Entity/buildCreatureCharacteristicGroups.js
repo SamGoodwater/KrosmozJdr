@@ -4,20 +4,28 @@ import {
     isPoCac,
     PO_CAC_ICON,
 } from "@/Composables/entity/useCharacteristicDisplay";
+import {
+    CREATURE_CHARACTERISTIC_GROUPS,
+    CREATURE_CHARACTERISTIC_SUMMARY_KEYS,
+} from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
 
 /**
  * Construit les groupes de caractéristiques pour CharacteristicsCard à partir d'une créature.
- * Utilise le store (Inertia share) pour byDbColumn et byComputedKey.
  *
  * @param {Object|null} creature - Données de la créature (life, pa, pm, strong, etc.)
- * @param {Object} [options] - { byDbColumn?, byComputedKey? } Override pour tests
- * @returns {Array<{ title: string, characteristics: Array }>} Groupes au format attendu par CharacteristicsCard
+ * @param {Object} [options]
+ * @param {'summary'|'full'} [options.mode='full'] - summary = 5 stats clés plates ; full = tous les groupes
+ * @param {Object} [options.byDbColumn]
+ * @param {Object} [options.byComputedKey]
+ * @param {Object|null} [options.runtime] - resolved-stats : si présent, privilégie les valeurs mods/saves runtime
+ * @returns {Array<{ title: string, characteristics: Array }>}
  */
 export function buildCreatureCharacteristicGroups(creature, options = {}) {
     if (!creature || typeof creature !== "object") {
         return [];
     }
 
+    const mode = options.mode === "summary" ? "summary" : "full";
     const byDb =
         options?.byDbColumn && typeof options.byDbColumn === "object"
             ? options.byDbColumn
@@ -26,6 +34,8 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
         options?.byComputedKey && typeof options.byComputedKey === "object"
             ? options.byComputedKey
             : getByComputedKeyMap("creature");
+    const runtime = options.runtime && typeof options.runtime === "object" ? options.runtime : null;
+
     const getDef = (dbColumn) => byDb[dbColumn] || { key: dbColumn, name: dbColumn, short_name: dbColumn };
     const getCompDef = (key) => byComp[key] || { key, name: key, short_name: key };
 
@@ -47,24 +57,60 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
         };
     };
 
-    const addFormulas = (dbColumns) =>
-        dbColumns.map(makeFormula).filter(Boolean);
+    const addFormulas = (dbColumns) => dbColumns.map(makeFormula).filter(Boolean);
+
+    if (mode === "summary") {
+        const items = addFormulas([...CREATURE_CHARACTERISTIC_SUMMARY_KEYS]);
+        return items.length > 0 ? [{ title: "", characteristics: items }] : [];
+    }
 
     const groups = [];
 
-    // Combat : PA, PM, PO, PV, Initiative, Invocation
-    const combatItems = addFormulas(["pa", "pm", "po", "life", "ini", "invocation"]);
-    if (combatItems.length > 0) {
-        groups.push({ title: "Combat", characteristics: combatItems });
+    for (const groupDef of CREATURE_CHARACTERISTIC_GROUPS) {
+        let items = [];
+        if (groupDef.kind === "db") {
+            items = addFormulas([...(groupDef.dbColumns || [])]);
+        } else if (groupDef.kind === "modifiers") {
+            items = buildModifierItems(creature, getCompDef, runtime);
+        } else if (groupDef.kind === "resistances") {
+            items = buildResistanceItems(creature, getDef);
+        } else if (groupDef.kind === "damages") {
+            items = buildDamageItems(creature, makeFormula);
+        } else if (groupDef.kind === "saves") {
+            items = buildSaveItems(creature, byDb, runtime);
+        }
+        if (items.length > 0) {
+            groups.push({ title: groupDef.title, characteristics: items });
+        }
     }
 
-    // Stats : Force, Intel, Agi, Chance, Vitalité, Sagesse
-    const statsItems = addFormulas(["strong", "intel", "agi", "chance", "vitality", "sagesse"]);
-    if (statsItems.length > 0) {
-        groups.push({ title: "Stats", characteristics: statsItems });
-    }
+    return groups;
+}
 
-    // Modificateurs : calculés (carac-10)/2, limités par min(floor(niv/2)+1, 7), min -2
+/**
+ * @param {Object|null} runtime
+ * @param {string} key
+ * @returns {string|number|null}
+ */
+function runtimeDisplayValue(runtime, key) {
+    if (!runtime) return null;
+    const levels = runtime.levels;
+    if (Array.isArray(levels) && levels.length > 0) {
+        const row = levels[0]?.characteristics?.[key];
+        if (row && row.total != null && row.total !== "") return row.total;
+        if (row && row.value != null && row.value !== "") return row.value;
+    }
+    const computed = runtime.computed;
+    if (computed && typeof computed === "object") {
+        const row = computed[key];
+        if (row && row.total != null && row.total !== "") return row.total;
+        if (row && row.value != null && row.value !== "") return row.value;
+        if (typeof row === "number" || typeof row === "string") return row;
+    }
+    return null;
+}
+
+function buildModifierItems(creature, getCompDef, runtime) {
     const modifierItems = [];
     const level = parseInt(creature.level, 10) || 1;
     const modMax = Math.min(Math.floor(level / 2) + 1, 7);
@@ -77,23 +123,30 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
         { stat: "agi", key: "modifier_agility_creature" },
     ];
     for (const { stat, key } of statToModKey) {
-        const statVal = parseInt(creature[stat], 10) || 10;
-        const rawMod = Math.floor((statVal - 10) / 2);
-        const mod = Math.max(Math.min(rawMod, modMax), -2);
         const def = getCompDef(key);
+        const fromRuntime = runtimeDisplayValue(runtime, key);
+        let display;
+        if (fromRuntime != null) {
+            const n = Number(fromRuntime);
+            display = Number.isFinite(n) && n >= 0 ? `+${n}` : String(fromRuntime);
+        } else {
+            const statVal = parseInt(creature[stat], 10) || 10;
+            const rawMod = Math.floor((statVal - 10) / 2);
+            const mod = Math.max(Math.min(rawMod, modMax), -2);
+            display = mod >= 0 ? `+${mod}` : String(mod);
+        }
         modifierItems.push({
             type: "formula",
             def: { ...def, key: def.key || key },
-            value: mod >= 0 ? `+${mod}` : String(mod),
+            value: display,
             formulaResolved: "",
             formulaRaw: "",
         });
     }
-    if (modifierItems.length > 0) {
-        groups.push({ title: "Modificateurs", characteristics: modifierItems });
-    }
+    return modifierItems;
+}
 
-    // Résistances (fixe + % par élément)
+function buildResistanceItems(creature, getDef) {
     const els = ["neutre", "terre", "feu", "air", "eau"];
     const resItems = [];
     for (const el of els) {
@@ -117,7 +170,6 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
             formulaRaw: "",
         });
     }
-    // Résistances % Sagesse / Vitalité (éléments JDR, colonnes res_sagesse / res_vitalite)
     for (const percentDb of ["res_sagesse", "res_vitalite"]) {
         const percent = creature[percentDb];
         const hasPercent = percent !== null && percent !== undefined && String(percent) !== "";
@@ -131,11 +183,11 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
             formulaRaw: "",
         });
     }
-    if (resItems.length > 0) {
-        groups.push({ title: "Résistances", characteristics: resItems });
-    }
+    return resItems;
+}
 
-    // Dégâts : touche + do_fixe par élément
+function buildDamageItems(creature, makeFormula) {
+    const els = ["neutre", "terre", "feu", "air", "eau"];
     const dmgItems = [];
     const touchItem = makeFormula("touch");
     if (touchItem) dmgItems.push(touchItem);
@@ -147,17 +199,10 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
         const item = makeFormula(db);
         if (item) dmgItems.push(item);
     }
-    if (dmgItems.length > 0) {
-        groups.push({ title: "Dommages", characteristics: dmgItems });
-    }
+    return dmgItems;
+}
 
-    // Contrôle : CA, esquive PA/PM, fuite, tacle, retrait PA/PM, bonus critique, bonus soin
-    const ctrlItems = addFormulas(["ca", "dodge_pa", "dodge_pm", "fuite", "tacle", "critical_hit", "heal_bonus"]);
-    if (ctrlItems.length > 0) {
-        groups.push({ title: "Contrôle", characteristics: ctrlItems });
-    }
-
-    // Jets de sauvegarde (formule : mod + maîtrise + équip, max 16)
+function buildSaveItems(creature, byDb, runtime) {
     const modSaveItems = [];
     const levelForSave = parseInt(creature.level, 10) || 1;
     const masteryBonus = Math.min(1 + Math.floor(levelForSave / 4), 6);
@@ -171,24 +216,27 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
     ];
     const modMaxForSave = Math.min(Math.floor(levelForSave / 2) + 1, 7);
     for (const { stat, key, label, defKey } of statToKey) {
-        const statVal = parseInt(creature[stat], 10) || 10;
-        const rawMod = Math.floor((statVal - 10) / 2);
-        const mod = Math.max(Math.min(rawMod, modMaxForSave), -2);
-        const bonus = parseInt(creature[`${key}_bonus`], 10) || 0;
-        const mastery = parseInt(creature[`${key}_mastery`], 10) || 0;
-        const saveTotal = mod + masteryBonus * mastery + bonus;
         const def = byDb[`${key}_bonus`] || byDb[defKey] || { key: defKey, name: `Sauv. ${label}`, short_name: label };
+        const fromRuntime = runtimeDisplayValue(runtime, defKey) ?? runtimeDisplayValue(runtime, key);
+        let display;
+        if (fromRuntime != null) {
+            display = String(fromRuntime);
+        } else {
+            const statVal = parseInt(creature[stat], 10) || 10;
+            const rawMod = Math.floor((statVal - 10) / 2);
+            const mod = Math.max(Math.min(rawMod, modMaxForSave), -2);
+            const bonus = parseInt(creature[`${key}_bonus`], 10) || 0;
+            const mastery = parseInt(creature[`${key}_mastery`], 10) || 0;
+            const saveTotal = mod + masteryBonus * mastery + bonus;
+            display = `${saveTotal} (mod ${mod >= 0 ? "+" : ""}${mod}${mastery ? ` +${masteryBonus} maît.` : ""}${bonus ? ` +${bonus} équip.` : ""})`;
+        }
         modSaveItems.push({
             type: "formula",
             def: { ...def, key: def.key || defKey },
-            value: `${saveTotal} (mod ${mod >= 0 ? "+" : ""}${mod}${mastery ? ` +${masteryBonus} maît.` : ""}${bonus ? ` +${bonus} équip.` : ""})`,
+            value: display,
             formulaResolved: "",
             formulaRaw: "",
         });
     }
-    if (modSaveItems.length > 0) {
-        groups.push({ title: "Sauvegardes", characteristics: modSaveItems });
-    }
-
-    return groups;
+    return modSaveItems;
 }

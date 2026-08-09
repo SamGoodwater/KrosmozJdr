@@ -165,6 +165,9 @@ class UserErasureService
         if (Schema::hasTable('table_filter_presets')) {
             DB::table('table_filter_presets')->where('user_id', $userId)->delete();
         }
+        if (Schema::hasTable('user_favorites')) {
+            DB::table('user_favorites')->where('user_id', $userId)->delete();
+        }
         if (Schema::hasTable('scrapping_jobs')) {
             DB::table('scrapping_jobs')->where('requested_by', $userId)->update(['requested_by' => null]);
         }

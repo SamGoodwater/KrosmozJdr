@@ -9,6 +9,8 @@
  * Ce composable est destiné à être utilisé par les pickers d'entités (EntityPickerCore, etc.).
  */
 import { ref, computed, watch } from 'vue';
+import { isEntityFavorite, useFavoriteEntityVersion } from '@/Composables/entity/useFavoriteEntityIds';
+import { rankResultsWithFavoritesFirst } from '@/Utils/entity/rankResultsWithFavoritesFirst';
 
 /**
  * @param {Object} options
@@ -50,6 +52,8 @@ export function useEntitySearch(options = {}) {
 
     const currentWhitelist = ref(whitelist ? [...whitelist] : []);
     const currentBlacklist = ref(blacklist ? [...blacklist] : []);
+
+    const favoriteVersion = useFavoriteEntityVersion();
 
     let debounceTimer = null;
 
@@ -110,7 +114,16 @@ export function useEntitySearch(options = {}) {
             const data = await response.json();
             const meta = data?.meta || {};
 
-            results.value = Array.isArray(data?.entities) ? data.entities : [];
+            const entities = Array.isArray(data?.entities) ? data.entities : [];
+            favoriteVersion.value;
+            results.value = rankResultsWithFavoritesFirst(
+                entities.map((row) => ({
+                    ...row,
+                    entityType: row?.entityType || entityType,
+                    id: row?.id ?? row?._data?.id,
+                })),
+                isEntityFavorite,
+            );
             filterOptions.value = meta.filterOptions || {};
         } catch (e) {
             console.error('[useEntitySearch] Erreur lors de la recherche :', e);

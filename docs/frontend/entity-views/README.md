@@ -12,9 +12,40 @@ Les vues d'entités standardisent l'affichage des fiches JDR.
 
 Ne pas créer `ViewLarge` ni `ViewCompact`. Utiliser `resolveEntityViewComponent(type, 'full')`.
 
+## Parcours d’ouverture
+
+```
+minimal compact → survol : overlay déployé → double-clic / quick-view : modal full → agrandir : page full
+```
+
+- L’overlay (`EntityMinimalCard`) ne décale pas la grille.
+- **Tous** les `*ViewMinimal` (hors `language`) passent par `EntityMinimalCard` : double-clic → modal, whitelist d’actions commune, pin flottant.
+- Shell commun : `useEntityMinimalShell` + `EntityMinimalTitle`.
+- PNJ : mêmes densités de caractéristiques que les monstres (créature liée).
+- La **page** n’est pas l’entrée principale (icône / overflow uniquement).
+- En `line` : même logique → modal full (`EntityLineRowActions`).
+- Actions du minimal : visibles surtout en déployé (haut-droite), overflow automatique.
+- **Favoris** : persistés en BDD (`user_favorites`) pour les comptes connectés. Accès header
+  (cœur) → modal sans changer de page ; page `/favoris`. Invité·e : message pour se connecter.
+  Icône cœur plein/vide dans les menus d’options. Recherche : favoris en tête des résultats.
+
+Presets (`ENTITY_ACTION_CONTEXT_PRESETS` dans `entity-actions-config.js`) :
+
+| Preset | Ordre (extrait) |
+| --- | --- |
+| `minimalLine` | state → pin → quick-view → quick-edit → view-dofusdb → favorite → copy-link → view → edit |
+| `modalDetail` | state → favorite → copy-link → view (agrandir) → view-dofusdb → edit → refresh → delete |
+| `pageDetail` | state → favorite → copy-link → view-dofusdb → edit → refresh → delete |
+
 ## Référence DofusDB
 
-Sur les surfaces **Full** et **édition** (page / modal), l’action `view-dofusdb` (icône
-`/images/logos/dofus.png`) apparaît si l’entité a un `dofusdb_id`. Le clic ouvre le store Pinia
+L’action `view-dofusdb` (icône `/images/logos/dofus.png`) apparaît si l’entité a un
+`dofusdb_id` : en **minimal déployé**, **modal** et **page**. Le clic ouvre le store Pinia
 `dofusDbReference` ; le panneau `DofusDbReferencePanel` (monté dans `Main`) affiche le deep-link
 et un bouton `window.open` (pas d’iframe).
+
+## Caractéristiques
+
+Densités `icon` / `labeled` / `spacious` sur `CharacteristicsCard` — voir
+[COMPUTED_VALUES.md](../../features/characteristics/COMPUTED_VALUES.md).
+Applicable aux **monstres** et **PNJ** (créature liée) ; sorts/objets gardent leurs effets dédiés.

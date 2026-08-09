@@ -47,6 +47,13 @@ const props = defineProps({
     }
 });
 
+const actionsContext = computed(() =>
+    props.inModal
+        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
+        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+);
+
+
 const emit = defineEmits([
     'edit',
     'copy-link',
@@ -188,7 +195,7 @@ const getCell = (fieldKey) => {
                             display="icon-only"
                             size="sm"
                             color="primary"
-                            :context="{ inPanel: false, inPage: true }"
+                            :context="actionsContext"
                             @action="handleAction"
                         />
                     </div>

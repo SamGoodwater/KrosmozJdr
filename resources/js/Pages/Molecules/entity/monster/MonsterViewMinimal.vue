@@ -11,24 +11,27 @@
  *
  * @props {Monster} monster - Instance du modèle Monster
  */
-import { computed } from "vue";
-import { router } from "@inertiajs/vue3";
-import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
-import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
+import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
+import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
+import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 import { cellHasRenderableContent, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
+import { computed } from "vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
+import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
 
 const props = defineProps({
     monster: {
@@ -51,9 +54,21 @@ const props = defineProps({
     characteristicRuntime: { type: Object, default: null },
 });
 
-provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
+const emit = defineEmits(["edit", "view", "delete", "action", "quick-view"]);
 
-const emit = defineEmits(["edit", "view", "delete", "action"]);
+const {
+    minimalActionsContext,
+    minimalActionWhitelist,
+    openQuickView,
+    handleMinimalAction,
+} = useEntityMinimalShell({
+    entityTypePlural: "monsters",
+    showRoute: "entities.monsters.show",
+    editRoute: "entities.monsters.edit",
+    routeParam: "monster",
+    emit,
+    getEntity: () => props.monster,
+});
 
 const permissions = usePermissions();
 const ctx = computed(() => ({
@@ -87,6 +102,32 @@ const entity = computed(() => props.monster);
 
 const creatureData = computed(() => entity.value?.creature ?? entity.value?._data?.creature ?? null);
 
+const creatureIdForStats = computed(
+    () => creatureData.value?.id ?? entity.value?.creature_id ?? entity.value?._data?.creature_id ?? null,
+);
+
+const { runtime: fetchedRuntime } = useCreatureResolvedStats(creatureIdForStats);
+
+const effectiveRuntime = computed(
+    () => props.characteristicRuntime ?? fetchedRuntime.value ?? null,
+);
+
+provideCharacteristicRuntime(effectiveRuntime);
+
+const summaryCharacteristicGroups = computed(() =>
+    buildCreatureCharacteristicGroups(creatureData.value, {
+        mode: "summary",
+        runtime: effectiveRuntime.value,
+    }),
+);
+
+const fullCharacteristicGroups = computed(() =>
+    buildCreatureCharacteristicGroups(creatureData.value, {
+        mode: "full",
+        runtime: effectiveRuntime.value,
+    }),
+);
+
 const levelValue = computed(() => {
     const lv = creatureData.value?.level;
     if (lv == null || lv === "") return null;
@@ -119,14 +160,6 @@ const descriptionFull = computed(() => {
 
 const cellOpts = () => ({ size: "xs", context: "minimal", ctx: props.tableMeta });
 
-const SUMMARY_KEYS = [
-    "creature_summary_combat",
-    "creature_summary_stats",
-    "creature_summary_control",
-    "creature_summary_resistance",
-    "creature_summary_damage",
-];
-
 function getSummaryCell(fieldKey) {
     const m = entity.value;
     if (m && typeof m.toCell === "function") {
@@ -156,10 +189,6 @@ const showSizeCell = computed(() => cellHasRenderableContent(sizeCell.value));
 const hostilityCell = computed(() => getSummaryCell("creature_hostility"));
 const bossPaCell = computed(() => getSummaryCell("boss_pa"));
 
-const showHref = computed(() =>
-    entity.value?.id ? route("entities.monsters.show", { monster: entity.value.id }) : null
-);
-
 const linkedLanguages = computed(() => {
     const raw = entity.value?._data?.languages ?? entity.value?.languages;
     return Array.isArray(raw) ? raw : [];
@@ -177,29 +206,17 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
 const showDescriptionInCompactSlot = computed(() => props.displayMode === "compact");
 
 const handleAction = async (actionKey) => {
-    const monsterId = entity.value?.id;
-    if (!monsterId) return;
-
-    switch (actionKey) {
-        case "view":
-            router.visit(route("entities.monsters.show", { monster: monsterId }));
-            emit("view", props.monster);
-            break;
-        case "edit":
-            router.visit(route("entities.monsters.edit", { monster: monsterId }));
-            emit("edit", props.monster);
-            break;
-        case "delete":
-            emit("delete", props.monster);
-            break;
-        default:
-            emit("action", actionKey, props.monster);
-    }
+    await handleMinimalAction(actionKey);
 };
 </script>
 
 <template>
-    <EntityMinimalCard :display-mode="displayMode" pinned-entity-type="monsters" :pinned-entity-id="entity?.id">
+    <EntityMinimalCard
+        :display-mode="displayMode"
+        pinned-entity-type="monsters"
+        :pinned-entity-id="entity?.id"
+        @open-quick-view="openQuickView"
+    >
         <template #compact>
             <div
                 data-cy="entity-minimal-card-compact"
@@ -221,28 +238,7 @@ const handleAction = async (actionKey) => {
                                 class="shrink-0"
                             />
                             <div class="min-w-0 flex-1">
-                                <Route
-                                    v-if="showHref"
-                                    :href="showHref"
-                                    color="neutral"
-                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
-                                >
-                                    {{ creatureName }}
-                                </Route>
-                                <span v-else class="font-semibold truncate block text-sm">
-                                    {{ creatureName }}
-                                </span>
-                            </div>
-                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
-                                <EntityActions
-                                    entity-type="monsters"
-                                    :entity="entity"
-                                    format="dropdown"
-                                    display="icon-only"
-                                    size="xs"
-                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
-                                    @action="(k) => handleAction(k)"
-                                />
+                                <EntityMinimalTitle :label="creatureName" @open="openQuickView" />
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
@@ -265,6 +261,18 @@ const handleAction = async (actionKey) => {
                                 v-if="isBoss && canShowField('boss_pa') && bossPaCell?.value !== '—'"
                                 :cell="bossPaCell"
                                 class="inline-flex text-[11px]"
+                            />
+                        </div>
+                        <div
+                            v-if="summaryCharacteristicGroups.length"
+                            class="w-full border-t border-primary/20 bg-primary/5 pt-1.5"
+                        >
+                            <CharacteristicsCard
+                                :entity="cardEntityForCompetences"
+                                :groups="summaryCharacteristicGroups"
+                                :runtime="effectiveRuntime"
+                                :density="CHARACTERISTIC_CARD_DENSITY.icon"
+                                class="border-0 bg-transparent p-0 shadow-none ring-0"
                             />
                         </div>
                         <p
@@ -312,17 +320,7 @@ const handleAction = async (actionKey) => {
                                 class="shrink-0"
                             />
                             <div class="min-w-0 flex-1">
-                                <Route
-                                    v-if="showHref"
-                                    :href="showHref"
-                                    color="neutral"
-                                    class="font-semibold truncate block text-sm text-base-content hover:text-base-content no-underline"
-                                >
-                                    {{ creatureName }}
-                                </Route>
-                                <span v-else class="font-semibold truncate block text-sm">
-                                    {{ creatureName }}
-                                </span>
+                                <EntityMinimalTitle :label="creatureName" @open="openQuickView" />
                             </div>
                             <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
                                 <EntityActions
@@ -331,7 +329,8 @@ const handleAction = async (actionKey) => {
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
-                                    :whitelist="['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit']"
+                                    :whitelist="minimalActionWhitelist"
+                                    :context="minimalActionsContext"
                                     @action="(k) => handleAction(k)"
                                 />
                             </div>
@@ -415,20 +414,16 @@ const handleAction = async (actionKey) => {
                 </div>
 
                 <div
-                    v-if="creatureData"
-                    class="grid w-full grid-cols-1 gap-1.5 border-t border-primary/20 bg-primary/5 pt-1.5 sm:grid-cols-2"
+                    v-if="creatureData && fullCharacteristicGroups.length"
+                    class="w-full border-t border-primary/20 bg-primary/5 pt-1.5"
                 >
-                    <div
-                        v-for="fieldKey in SUMMARY_KEYS"
-                        :key="fieldKey"
-                        class="group/ms min-h-0 min-w-0 overflow-hidden rounded-md border border-base-300/60 bg-base-200/30 p-1 transition-[max-height] duration-200 ease-out max-h-[6.25rem] hover:max-h-[min(70vh,28rem)] hover:overflow-y-auto"
-                    >
-                        <CellRenderer
-                            :cell="getSummaryCell(fieldKey)"
-                            ui-color="primary"
-                            class="text-[11px] leading-tight [&_.characteristics-card]:!p-1 [&_.characteristic-group>h4]:!text-[0.6rem]"
-                        />
-                    </div>
+                    <CharacteristicsCard
+                        :entity="cardEntityForCompetences"
+                        :groups="fullCharacteristicGroups"
+                        :runtime="effectiveRuntime"
+                        :density="CHARACTERISTIC_CARD_DENSITY.icon"
+                        class="border-0 bg-transparent p-0 shadow-none ring-0 [&_.characteristic-group>h4]:!text-[0.6rem]"
+                    />
                 </div>
 
                 <!-- Compétences (maîtrises) : bloc long, révélé au survol / focus de la carte -->
@@ -445,8 +440,8 @@ const handleAction = async (actionKey) => {
                         <CharacteristicsCard
                             :entity="cardEntityForCompetences"
                             :groups="competenceGroups"
-                            :runtime="characteristicRuntime"
-                            dense
+                            :runtime="effectiveRuntime"
+                            :density="CHARACTERISTIC_CARD_DENSITY.icon"
                             class="border-0 bg-transparent p-0 shadow-none ring-0 [&_.characteristics-card]:!p-1 [&_.characteristic-group>h4]:!text-[0.6rem]"
                         />
                     </div>

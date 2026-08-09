@@ -65,6 +65,19 @@ Sur les vues `full` / `line` / `minimal`, un **popover** (clic) montre :
 Composants : `Popover.vue`, `CharacteristicDecompositionBody.vue`,
 `CharacteristicsCard` + `CharacteristicGroup` (branchement de `levelEffective`).
 
+## Affichage UI (densités)
+
+`CharacteristicsCard` / `CharacteristicGroup` :
+
+| Densité | Usage | Contenu |
+| --- | --- | --- |
+| `icon` | Minimal, line, pin | Icône + valeur |
+| `labeled` | Modal full | Icône + label + valeur |
+| `spacious` | Page full | Idem + aération |
+
+Groupes canoniques : `creatureCharacteristicGroups.manifest.js` (Combat → … → Sauvegardes).
+Résumé compact : `pa`, `pm`, `po`, `life`, `ini`.
+
 ## Édition
 
 - Champ dédié : `CharacteristicFormulaField.vue` (validation live + aperçu + aide « ? »).

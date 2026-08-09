@@ -10,6 +10,8 @@
 
 import { ref, computed, watch } from "vue";
 import { globalSearchEntityLabelKey } from "@/Utils/entity/globalSearchEntityLabel";
+import { isEntityFavorite, useFavoriteEntityVersion } from "@/Composables/entity/useFavoriteEntityIds";
+import { rankResultsWithFavoritesFirst } from "@/Utils/entity/rankResultsWithFavoritesFirst";
 
 /** Ordre d'affichage des groupes (aligné sur GlobalSearchService::SEARCH_TYPE_ORDER). */
 export const GLOBAL_SEARCH_TYPE_ORDER = Object.freeze([
@@ -99,6 +101,8 @@ export function useGlobalEntitySearch(options = {}) {
         selectedTypes = ref([]),
         selectedStates = ref([]),
     } = options;
+
+    const favoriteVersion = useFavoriteEntityVersion();
 
     const query = ref("");
     const loading = ref(false);
@@ -261,8 +265,8 @@ export function useGlobalEntitySearch(options = {}) {
             const data = await res.json();
             const list = Array.isArray(data?.results) ? data.results : [];
             const filtered = list.filter((row) => row && row.href);
-
-            flatResults.value = filtered;
+            favoriteVersion.value;
+            flatResults.value = rankResultsWithFavoritesFirst(filtered, isEntityFavorite);
             hasMore.value = Boolean(data?.meta?.hasMore);
         } catch (e) {
             if (e?.name === "AbortError") {
@@ -321,6 +325,8 @@ export function useGlobalEntitySearch(options = {}) {
         hasMore,
         setQuery,
         searchNow,
+        debouncedSearch,
+        clearResults,
         loadMore,
         close,
     };
