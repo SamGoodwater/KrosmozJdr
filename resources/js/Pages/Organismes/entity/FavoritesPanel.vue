@@ -1,18 +1,18 @@
 <script setup>
 /**
- * FavoritesPanel — Liste des favoris (Minimal) + recherche (hits texte agrandis).
+ * FavoritesPanel — Liste des favoris (Minimal) + recherche (cards partagées).
  *
  * @description
- * Clic → modal full. Survol d’un hit recherche → aperçu Minimal.
- * Textes utilisateur sans le mot « entité ».
+ * Modal / page `/favoris`. Clic → modal full. Recherche : cards type recherche globale
+ * (plus grandes) avec aperçu Minimal au survol.
  */
-import { computed, onMounted, ref, watch, markRaw } from "vue";
+import { computed, onMounted, ref, shallowRef, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import EntityModal from "@/Pages/Organismes/entity/EntityModal.vue";
-import GlobalSearchHitRow from "@/Pages/Molecules/entity/shared/GlobalSearchHitRow.vue";
+import EntitySearchHitCard from "@/Pages/Molecules/entity/shared/EntitySearchHitCard.vue";
 import {
     FAVORITES_ACCESS_AUTH_REQUIRED_MESSAGE,
     FAVORITES_AUTH_REQUIRED_MESSAGE,
@@ -25,16 +25,16 @@ import {
     GLOBAL_SEARCH_TYPE_ORDER,
     useGlobalEntitySearch,
 } from "@/Composables/entity/useGlobalEntitySearch";
-import { useOpenEntityModal } from "@/Composables/entity/useOpenEntityModal";
+import {
+    entityViewPropName,
+    fetchEntityModelById,
+    fetchEntityModelsByIds,
+    supportsEntityCatalogViews,
+} from "@/Composables/entity/useEntityTableFetch";
+import { resolveEntityViewComponent } from "@/Utils/entity/resolveEntityViewComponent";
+import { resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useUxFeedback } from "@/Composables/utils/useUxFeedback";
-import {
-    canOpenEntityModal,
-    entityPropNameForType,
-    fetchEntityModels,
-} from "@/Utils/entity/fetchEntityModel";
-import { resolveEntityViewComponentSync } from "@/Utils/entity/resolveEntityViewComponent";
-import { normalizeEntityType } from "@/Entities/entity-registry";
 
 const props = defineProps({
     surface: {
@@ -54,20 +54,18 @@ const { isAuthenticated } = usePermissions();
 const { notifySuccess, notifyInfo, notifyError } = useUxFeedback();
 const favoriteVersion = useFavoriteEntityVersion();
 
-const {
-    modalOpen,
-    modalEntity,
-    modalEntityType,
-    openHit,
-    openEntity,
-    closeModal,
-} = useOpenEntityModal();
-
 const loadingFavorites = ref(false);
 const favoriteItems = ref([]);
-/** @type {import('vue').Ref<Array<{ entityType: string, model: object, Minimal: object, prop: string }>>} */
-const favoriteCards = ref([]);
+/** @type {import('vue').ShallowRef<Record<string, object>>} key = `${type}:${id}` */
+const favoriteEntities = shallowRef({});
+/** @type {import('vue').ShallowRef<Record<string, object|null>>} */
+const minimalComponents = shallowRef({});
 const loadError = ref(null);
+
+const entityModalOpen = ref(false);
+const entityModalEntity = ref(null);
+const entityModalEntityType = ref("");
+const entityModalLoading = ref(false);
 
 const {
     query,
@@ -105,19 +103,12 @@ const TYPE_LABELS = Object.freeze({
 
 const favoriteGroups = computed(() => {
     favoriteVersion.value;
-    /** @type {Map<string, typeof favoriteCards.value>} */
+    /** @type {Map<string, typeof favoriteItems.value>} */
     const map = new Map();
-    for (const card of favoriteCards.value) {
-        const type = card.entityType || "unknown";
-        if (!map.has(type)) map.set(type, []);
-        map.get(type).push(card);
-    }
-    // Hits sans modèle (pages…) — affichage fallback
     for (const item of favoriteItems.value) {
-        const type = normalizeEntityType(item.entityType);
-        if (canOpenEntityModal(type)) continue;
+        const type = item.entityType || "unknown";
         if (!map.has(type)) map.set(type, []);
-        map.get(type).push({ entityType: type, hit: item, Minimal: null, model: null, prop: "" });
+        map.get(type).push(item);
     }
     return GLOBAL_SEARCH_TYPE_ORDER.filter((t) => map.has(t))
         .concat([...map.keys()].filter((t) => !GLOBAL_SEARCH_TYPE_ORDER.includes(t)))
@@ -131,45 +122,55 @@ const favoriteGroups = computed(() => {
 
 const showSearchResults = computed(() => String(query.value || "").trim().length >= 2);
 
+function entityKey(type, id) {
+    return `${type}:${id}`;
+}
+
 function onSearchInput(value) {
     setQuery(value);
 }
 
-async function buildFavoriteCards(items) {
-    /** @type {Map<string, string[]>} */
-    const byType = new Map();
+async function hydrateFavoriteEntities(items) {
+    const byType = {};
     for (const item of items) {
-        const type = normalizeEntityType(item.entityType);
-        if (!canOpenEntityModal(type)) continue;
-        if (!byType.has(type)) byType.set(type, []);
-        byType.get(type).push(String(item.id));
+        if (!supportsEntityCatalogViews(item.entityType)) continue;
+        byType[item.entityType] ??= [];
+        byType[item.entityType].push(item.id);
     }
 
-    const cards = [];
+    const nextEntities = { ...favoriteEntities.value };
+    const nextComponents = { ...minimalComponents.value };
+
     await Promise.all(
-        [...byType.entries()].map(async ([type, ids]) => {
-            const Minimal = resolveEntityViewComponentSync(type, "minimal");
-            if (!Minimal) return;
-            const models = await fetchEntityModels(type, ids);
-            const prop = entityPropNameForType(type);
-            for (const model of models) {
-                if (!model?.id) continue;
-                cards.push({
-                    entityType: type,
-                    model,
-                    Minimal: markRaw(Minimal),
-                    prop,
-                });
+        Object.entries(byType).map(async ([type, ids]) => {
+            if (!nextComponents[type]) {
+                try {
+                    nextComponents[type] = await resolveEntityViewComponent(type, "minimal");
+                } catch {
+                    nextComponents[type] = null;
+                }
+            }
+            try {
+                const models = await fetchEntityModelsByIds(type, ids);
+                for (const model of models) {
+                    const id = model?.id ?? model?._data?.id;
+                    if (id == null) continue;
+                    nextEntities[entityKey(type, id)] = model;
+                }
+            } catch {
+                /* ignore per-type failures */
             }
         }),
     );
-    favoriteCards.value = cards;
+
+    favoriteEntities.value = nextEntities;
+    minimalComponents.value = nextComponents;
 }
 
 async function reloadFavorites() {
     if (!isAuthenticated.value) {
         favoriteItems.value = [];
-        favoriteCards.value = [];
+        favoriteEntities.value = {};
         return;
     }
     loadingFavorites.value = true;
@@ -177,11 +178,10 @@ async function reloadFavorites() {
     try {
         const data = await fetchHydratedFavorites();
         favoriteItems.value = data.items || [];
-        await buildFavoriteCards(favoriteItems.value);
+        await hydrateFavoriteEntities(favoriteItems.value);
     } catch {
         loadError.value = "Impossible de charger vos favoris.";
         favoriteItems.value = [];
-        favoriteCards.value = [];
     } finally {
         loadingFavorites.value = false;
     }
@@ -205,9 +205,9 @@ async function onToggleFavorite(row) {
         favoriteItems.value = favoriteItems.value.filter(
             (it) => !(String(it.entityType) === String(type) && String(it.id) === String(id)),
         );
-        favoriteCards.value = favoriteCards.value.filter(
-            (c) => !(String(c.entityType) === String(type) && String(c.model?.id) === String(id)),
-        );
+        const next = { ...favoriteEntities.value };
+        delete next[entityKey(type, id)];
+        favoriteEntities.value = next;
     } else {
         const exists = favoriteItems.value.some(
             (it) => String(it.entityType) === String(type) && String(it.id) === String(id),
@@ -215,22 +215,88 @@ async function onToggleFavorite(row) {
         if (!exists) {
             favoriteItems.value = [{ ...row }, ...favoriteItems.value];
         }
-        await buildFavoriteCards(favoriteItems.value);
+        try {
+            const model = await fetchEntityModelById(type, id);
+            if (model) {
+                favoriteEntities.value = {
+                    ...favoriteEntities.value,
+                    [entityKey(type, id)]: model,
+                };
+            }
+            if (!minimalComponents.value[type]) {
+                minimalComponents.value = {
+                    ...minimalComponents.value,
+                    [type]: await resolveEntityViewComponent(type, "minimal"),
+                };
+            }
+        } catch {
+            /* keep hit-only */
+        }
     }
 }
 
-function onSelectHit(row) {
-    openHit(row);
-}
+async function openEntityModal(payload) {
+    const result = payload?.result || payload;
+    const type = result?.entityType;
+    const id = result?.id;
+    if (!type || id == null) return;
 
-function onQuickViewFromMinimal(entity, entityType) {
-    openEntity(entityType, entity);
-}
-
-function handleMinimalAction(actionKey, entity, entityType) {
-    if (actionKey === "quick-view") {
-        onQuickViewFromMinimal(entity, entityType);
+    if (!supportsEntityCatalogViews(type)) {
+        if (result.href) {
+            emit("close");
+            router.visit(result.href);
+        }
+        return;
     }
+
+    entityModalLoading.value = true;
+    entityModalEntityType.value = type;
+    try {
+        let entity = payload?.entity || favoriteEntities.value[entityKey(type, id)] || null;
+        if (!entity) {
+            entity = await fetchEntityModelById(type, id);
+        }
+        if (!entity) {
+            notifyError("Impossible d’ouvrir cette fiche.");
+            return;
+        }
+        entityModalEntity.value = entity;
+        entityModalOpen.value = true;
+    } catch {
+        notifyError("Impossible d’ouvrir cette fiche.");
+    } finally {
+        entityModalLoading.value = false;
+    }
+}
+
+function closeEntityModal() {
+    entityModalOpen.value = false;
+    entityModalEntity.value = null;
+    entityModalEntityType.value = "";
+}
+
+function onExpandToPage(entity) {
+    const type = entityModalEntityType.value;
+    const id = entity?.id ?? entityModalEntity.value?.id;
+    closeEntityModal();
+    emit("close");
+    if (!id) return;
+    const url = resolveEntityRouteUrl(type, "show", id);
+    if (url) {
+        router.visit(url);
+        return;
+    }
+    const hit = favoriteItems.value.find(
+        (it) => String(it.entityType) === String(type) && String(it.id) === String(id),
+    );
+    if (hit?.href) router.visit(hit.href);
+}
+
+function onMinimalQuickView(entity, entityType) {
+    openEntityModal({
+        result: { entityType, id: entity?.id },
+        entity,
+    });
 }
 
 function openAsPage() {
@@ -249,6 +315,10 @@ function isFav(row) {
     return isEntityFavorite(row.entityType, row.id);
 }
 
+function minimalBind(type, entity) {
+    return { [entityViewPropName(type)]: entity };
+}
+
 onMounted(() => {
     reloadFavorites();
 });
@@ -257,7 +327,7 @@ watch(isAuthenticated, (ok) => {
     if (ok) reloadFavorites();
     else {
         favoriteItems.value = [];
-        favoriteCards.value = [];
+        favoriteEntities.value = {};
         clearResults();
     }
 });
@@ -277,16 +347,14 @@ watch(isAuthenticated, (ok) => {
                 <p class="mt-1 text-sm text-base-content/70">
                     Retrouvez vos fiches préférées, classées par type.
                 </p>
-                <Btn
+                <button
                     v-if="isAuthenticated && showOpenPageButton && surface === 'modal'"
-                    class="mt-1 !px-0"
-                    size="xs"
-                    variant="link"
-                    color="neutral"
+                    type="button"
+                    class="mt-1 text-xs text-base-content/40 transition-colors duration-200 hover:text-base-content/85 hover:underline"
                     @click="openAsPage"
                 >
-                    Voir la page favoris
-                </Btn>
+                    Ouvrir en page
+                </button>
             </div>
         </header>
 
@@ -315,9 +383,11 @@ watch(isAuthenticated, (ok) => {
                     </template>
                 </InputField>
                 <p class="mt-1.5 px-1 text-[11px] text-base-content/55">
-                    Les favoris apparaissent en premier. Survolez un résultat pour l’aperçu ; cliquez pour ouvrir la fiche.
+                    Les favoris apparaissent en premier. Survolez un résultat pour l’aperçu ; cliquez pour la fiche.
                 </p>
             </div>
+
+            <p v-if="entityModalLoading" class="text-xs text-base-content/50">Ouverture de la fiche…</p>
 
             <div v-if="showSearchResults" class="min-h-0 flex-1 space-y-3 overflow-y-auto">
                 <p v-if="searchLoading" class="text-sm text-base-content/60">Recherche…</p>
@@ -330,17 +400,18 @@ watch(isAuthenticated, (ok) => {
                     <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300/90">
                         {{ TYPE_LABELS[group.entityType] || group.group || group.entityType }}
                     </h3>
-                    <ul class="space-y-0.5">
+                    <ul class="space-y-1">
                         <li
                             v-for="row in group.items"
                             :key="`${row.entityType}:${row.id}`"
                         >
-                            <GlobalSearchHitRow
-                                :hit="row"
-                                density="lg"
+                            <EntitySearchHitCard
+                                :result="row"
+                                density="comfortable"
                                 :show-favorite-toggle="true"
                                 :is-favorite="isFav(row)"
-                                @select="onSelectHit"
+                                :preview-on-hover="true"
+                                @open="openEntityModal"
                                 @toggle-favorite="onToggleFavorite"
                             />
                         </li>
@@ -366,30 +437,38 @@ watch(isAuthenticated, (ok) => {
                         {{ group.label }}
                         <span class="ml-1 font-normal text-base-content/50">({{ group.items.length }})</span>
                     </h3>
-                    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                        <template v-for="(card, idx) in group.items" :key="`${group.entityType}:${card.model?.id || card.hit?.id || idx}`">
+
+                    <div class="grid gap-2 sm:grid-cols-1">
+                        <template v-for="row in group.items" :key="`${row.entityType}:${row.id}`">
                             <div
-                                v-if="card.Minimal && card.model"
-                                class="min-w-0"
+                                v-if="minimalComponents[row.entityType] && favoriteEntities[entityKey(row.entityType, row.id)]"
+                                class="relative rounded-box border border-base-300/60 bg-base-100/40 p-1"
                             >
+                                <button
+                                    type="button"
+                                    class="btn btn-ghost btn-square btn-xs absolute right-1 top-1 z-10"
+                                    aria-label="Retirer des favoris"
+                                    @click.stop="onToggleFavorite(row)"
+                                >
+                                    <Icon source="fa-heart" pack="solid" size="sm" class="text-primary" alt="" />
+                                </button>
                                 <component
-                                    :is="card.Minimal"
-                                    v-bind="{
-                                        [card.prop]: card.model,
-                                        displayMode: 'compact',
-                                        showActions: true,
-                                    }"
-                                    @quick-view="(entity) => onQuickViewFromMinimal(entity || card.model, card.entityType)"
-                                    @action="(key, entity) => handleMinimalAction(key, entity || card.model, card.entityType)"
+                                    :is="minimalComponents[row.entityType]"
+                                    v-bind="minimalBind(row.entityType, favoriteEntities[entityKey(row.entityType, row.id)])"
+                                    :show-actions="false"
+                                    display-mode="extended"
+                                    @quick-view="(entity) => onMinimalQuickView(entity || favoriteEntities[entityKey(row.entityType, row.id)], row.entityType)"
+                                    @action="(key, entity) => key === 'quick-view' && onMinimalQuickView(entity, row.entityType)"
                                 />
                             </div>
-                            <GlobalSearchHitRow
-                                v-else-if="card.hit"
-                                :hit="card.hit"
-                                density="lg"
+                            <EntitySearchHitCard
+                                v-else
+                                :result="row"
+                                density="comfortable"
                                 :show-favorite-toggle="true"
                                 :is-favorite="true"
-                                @select="onSelectHit"
+                                :preview-on-hover="supportsEntityCatalogViews(row.entityType)"
+                                @open="openEntityModal"
                                 @toggle-favorite="onToggleFavorite"
                             />
                         </template>
@@ -399,13 +478,13 @@ watch(isAuthenticated, (ok) => {
         </template>
 
         <EntityModal
-            v-if="modalEntity"
-            :entity="modalEntity"
-            :entity-type="modalEntityType"
+            v-if="entityModalEntity"
+            :open="entityModalOpen"
+            :entity="entityModalEntity"
+            :entity-type="entityModalEntityType"
             view="full"
-            :open="modalOpen"
-            :use-stored-format="false"
-            @close="closeModal"
+            @close="closeEntityModal"
+            @expand="onExpandToPage"
         />
     </div>
 </template>

@@ -8,6 +8,9 @@ use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Services\Entity\EntityDeletionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Tests\TestCase;
 
 /**
@@ -51,6 +54,33 @@ class EntityDeletionCycleTest extends TestCase
             ->assertOk();
 
         $this->assertDatabaseMissing('spells', ['id' => $spell->id]);
+    }
+
+    public function test_force_delete_purges_spatie_media_and_disk_file(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create([
+            'name' => 'Sort avec image',
+            'created_by' => $admin->id,
+        ]);
+
+        $media = $spell
+            ->addMedia(UploadedFile::fake()->image('spell.png', 32, 32))
+            ->toMediaCollection('images');
+
+        $relativePath = $media->getPathRelativeToRoot();
+        $this->assertTrue(Storage::disk('public')->exists($relativePath));
+        $this->assertDatabaseHas('media', ['id' => $media->id]);
+
+        $spell->delete();
+        app(EntityDeletionService::class)->forceDelete($spell->fresh(), $admin);
+
+        $this->assertDatabaseMissing('spells', ['id' => $spell->id]);
+        $this->assertDatabaseMissing('media', ['id' => $media->id]);
+        $this->assertFalse(Storage::disk('public')->exists($relativePath));
+        $this->assertSame(0, Media::query()->where('model_type', Spell::class)->where('model_id', $spell->id)->count());
     }
 
     public function test_force_delete_without_trash_is_rejected(): void

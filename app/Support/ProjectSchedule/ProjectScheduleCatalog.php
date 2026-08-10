@@ -91,6 +91,12 @@ final class ProjectScheduleCatalog
                 'command' => 'project:backup',
                 'overlap_minutes' => 180,
             ],
+            'media_clear_orphan_files' => [
+                'label' => 'Nettoyage fichiers Media orphelins',
+                'type' => 'artisan',
+                'command' => 'project:clear-orphan-files --queue --delete',
+                'overlap_minutes' => 180,
+            ],
         ];
     }
 
@@ -154,6 +160,12 @@ final class ProjectScheduleCatalog
                 'task_key' => 'project_backup',
                 'enabled' => (bool) env('PROJECT_BACKUP_ENABLED', false),
                 'cron_expression' => (string) env('PROJECT_BACKUP_CRON', '0 4 * * *'),
+                'without_overlapping' => true,
+            ],
+            [
+                'task_key' => 'media_clear_orphan_files',
+                'enabled' => (bool) env('MEDIA_CLEAR_ORPHAN_FILES_ENABLED', false),
+                'cron_expression' => (string) env('MEDIA_CLEAR_ORPHAN_FILES_CRON', '15 4 * * 0'),
                 'without_overlapping' => true,
             ],
         ];

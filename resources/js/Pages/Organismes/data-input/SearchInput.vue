@@ -19,15 +19,14 @@ import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Kbd from "@/Pages/Atoms/data-display/Kbd.vue";
 import EntityLabel from "@/Pages/Atoms/data-display/EntityLabel.vue";
-import GlobalSearchHitRow from "@/Pages/Molecules/entity/shared/GlobalSearchHitRow.vue";
-import EntityModal from "@/Pages/Organismes/entity/EntityModal.vue";
+import EntitySearchHitCard from "@/Pages/Molecules/entity/shared/EntitySearchHitCard.vue";
 import {
     useGlobalEntitySearch,
     GLOBAL_SEARCH_TYPE_FILTERS,
     GLOBAL_SEARCH_STATE_FILTERS,
 } from "@/Composables/entity/useGlobalEntitySearch";
-import { useOpenEntityModal } from "@/Composables/entity/useOpenEntityModal";
 import { globalSearchEntityLabelKey } from "@/Utils/entity/globalSearchEntityLabel";
+import { router } from "@inertiajs/vue3";
 
 /** @typedef {InstanceType<typeof InputField> & { focus?: () => void }} SearchInputFieldRef */
 
@@ -70,14 +69,6 @@ const {
     loadMore,
     close,
 } = useGlobalEntitySearch({ selectedTypes, selectedStates });
-
-const {
-    modalOpen,
-    modalEntity,
-    modalEntityType,
-    openHit,
-    closeModal,
-} = useOpenEntityModal();
 
 const showPanel = computed(
     () => isFocused.value && isOpen.value && query.value.trim().length >= 2
@@ -135,7 +126,10 @@ const handleInput = (value) => {
 };
 
 const handleSelectResult = (result) => {
-    openHit(result, { onBeforeOpen: () => blurSearch() });
+    if (result?.href) {
+        router.visit(result.href);
+    }
+    blurSearch();
 };
 
 const focusSearchInput = () => {
@@ -425,10 +419,11 @@ watch([loading, groupedResults], () => {
                                             v-for="result in group.items"
                                             :key="`${result.entityType}-${result.id}`"
                                         >
-                                            <GlobalSearchHitRow
-                                                :hit="result"
+                                            <EntitySearchHitCard
+                                                :result="result"
                                                 density="default"
-                                                @select="handleSelectResult"
+                                                :preview-on-hover="true"
+                                                @open="() => handleSelectResult(result)"
                                             />
                                         </li>
                                     </ul>
@@ -461,16 +456,6 @@ watch([loading, groupedResults], () => {
             </div>
         </dialog>
     </Teleport>
-
-    <EntityModal
-        v-if="modalEntity"
-        :entity="modalEntity"
-        :entity-type="modalEntityType"
-        view="full"
-        :open="modalOpen"
-        :use-stored-format="false"
-        @close="closeModal"
-    />
 </template>
 
 <style scoped>

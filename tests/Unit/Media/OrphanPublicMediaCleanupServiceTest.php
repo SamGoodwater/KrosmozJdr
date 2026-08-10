@@ -35,4 +35,17 @@ class OrphanPublicMediaCleanupServiceTest extends TestCase
 
         $this->assertSame(['images/entity/spells/11/old.png'], $orphans);
     }
+
+    public function test_is_path_referenced_uses_ancestor_lookup(): void
+    {
+        $service = new OrphanPublicMediaCleanupService;
+        $set = $service->buildReferencedDirSet([
+            'images/entity/spells/10',
+            'sections/4/44',
+        ]);
+
+        $this->assertTrue($service->isPathReferenced('images/entity/spells/10/fire.png', $set));
+        $this->assertTrue($service->isPathReferenced('images/entity/spells/10/conversions/thumb.jpg', $set));
+        $this->assertFalse($service->isPathReferenced('images/entity/spells/11/old.png', $set));
+    }
 }

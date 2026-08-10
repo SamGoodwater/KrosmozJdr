@@ -1,5 +1,13 @@
 # Ce qui a été fait
 
+## Août 2026 — Nettoyage des images orphelines
+
+Les super-admins peuvent lancer depuis le menu maintenance (**Fichiers orphelins**) un scan
+des fichiers MediaLibrary sans référence en base, suivre la progression, annuler, et recevoir
+une notification du nombre de fichiers supprimés. La suppression définitive d’une entité
+continue de purger ses images ; la mise en corbeille les conserve pour permettre la
+restauration. Une tâche cron optionnelle (désactivée par défaut) peut enfiler le même job.
+
 ## Août 2026 — Favoris en base + modal / page
 
 Les favoris sont enregistrés en base pour chaque compte. Un bouton cœur dans le header ouvre

@@ -193,7 +193,9 @@ onUnmounted(() => {
     pointer-events: none;
     transition:
         max-width 0.15s ease,
-        opacity 0.15s ease;
+        opacity 0.15s ease,
+        background-color 0.15s ease,
+        backdrop-filter 0.15s ease;
 }
 .entity-minimal-card:hover :deep([data-entity-actions]),
 .entity-minimal-card:focus-within :deep([data-entity-actions]),
@@ -204,6 +206,16 @@ onUnmounted(() => {
     opacity: 1;
     pointer-events: auto;
     overflow: visible;
+    /* Fond flou / sombre : les icônes restent lisibles au-dessus du nom */
+    padding: 0.15rem 0.2rem;
+    margin: -0.15rem -0.2rem;
+    border-radius: var(--rounded-box, 0.35rem);
+    background: color-mix(in srgb, var(--color-base-300, #1e293b) 42%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--color-base-content, #fff) 8%, transparent) inset,
+        0 4px 14px rgb(0 0 0 / 0.28);
 }
 
 .entity-minimal-expand-enter-active,

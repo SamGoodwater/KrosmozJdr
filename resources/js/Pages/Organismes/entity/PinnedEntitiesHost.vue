@@ -16,6 +16,7 @@ import {
 } from "@/Composables/entity/usePinnedEntityIds";
 import { resolveEntityViewComponent } from "@/Utils/entity/resolveEntityViewComponent";
 import { normalizeActionEntityType } from "@/Entities/entity-actions-config";
+import { getEntityConfig } from "@/Entities/entity-registry";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 
@@ -128,8 +129,18 @@ function closeWindow(win) {
 
 function viewProps(win) {
     const prop = entityPropName(win.entityType);
+    let entity = win.entity || { id: Number(win.id) || win.id };
+    // Rehydrate en modèle (toCell, effets de sort, etc.) — le pin stocke du JSON plat.
+    const config = getEntityConfig(win.entityType);
+    if (entity && config?.model && typeof config.model.fromArray === "function") {
+        try {
+            entity = config.model.fromArray([entity])[0] ?? entity;
+        } catch {
+            /* garder le payload brut */
+        }
+    }
     return {
-        [prop]: win.entity || { id: Number(win.id) || win.id },
+        [prop]: entity,
         displayMode: "extended",
         showActions: true,
     };

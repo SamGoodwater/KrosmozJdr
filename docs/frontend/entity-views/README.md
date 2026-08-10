@@ -27,7 +27,8 @@ minimal compact → survol : overlay déployé → double-clic / quick-view : mo
 - Actions du minimal : visibles surtout en déployé (haut-droite), overflow automatique.
 - **Favoris** : persistés en BDD (`user_favorites`) pour les comptes connectés. Accès header
   (cœur) → modal sans changer de page ; page `/favoris`. Invité·e : message pour se connecter.
-  Icône cœur plein/vide dans les menus d’options. Recherche : favoris en tête des résultats.
+  Icône cœur plein/vide dans les menus d’options. Liste en vue Minimal ; recherche via
+  `EntitySearchHitCard` (aperçu Minimal au survol, clic → modal full). Favoris en tête des résultats.
 
 Presets (`ENTITY_ACTION_CONTEXT_PRESETS` dans `entity-actions-config.js`) :
 

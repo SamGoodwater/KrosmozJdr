@@ -86,6 +86,13 @@ const adminNavItems = computed(() => {
                 show: true,
             },
             {
+                title: 'Fichiers orphelins',
+                href: 'admin.orphan-files.index',
+                path: '/admin/orphan-files',
+                icon: 'fa-broom',
+                show: true,
+            },
+            {
                 title: 'Mise à jour stack',
                 href: 'admin.project-update.index',
                 path: '/admin/project-update',

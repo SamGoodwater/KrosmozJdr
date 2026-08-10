@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
+use App\Models\MediaCleanupJob;
+use App\Services\Media\MediaCleanupDispatcher;
 use App\Services\Media\OrphanPublicMediaCleanupService;
 use Illuminate\Console\Command;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -14,26 +17,65 @@ use Throwable;
  *
  * @example php artisan project:clear-orphan-files
  * @example php artisan project:clear-orphan-files --delete
+ * @example php artisan project:clear-orphan-files --queue --delete
  */
 class ProjectClearOrphanFilesCommand extends Command
 {
     public function __construct(
-        private readonly OrphanPublicMediaCleanupService $cleanupService
+        private readonly OrphanPublicMediaCleanupService $cleanupService,
+        private readonly MediaCleanupDispatcher $dispatcher,
     ) {
         parent::__construct();
     }
 
     protected $signature = 'project:clear-orphan-files
         {--delete : Supprime réellement les fichiers candidats. Sans cette option, dry-run uniquement}
-        {--limit=200 : Nombre maximum de candidats affichés dans le rapport}';
+        {--limit=200 : Nombre maximum de candidats affichés dans le rapport (mode synchrone)}
+        {--queue : Enfile un job suivi (MediaCleanupJob) au lieu d’exécuter en synchrone}
+        {--skip-notify : N’envoie pas de notification admin en fin de job (mode --queue)}';
 
     protected $description = 'Liste ou supprime les fichiers MediaLibrary publics sans référence en base (dry-run par défaut)';
 
     public function handle(): int
     {
         $delete = (bool) $this->option('delete');
+        $queue = (bool) $this->option('queue');
+        $skipNotify = (bool) $this->option('skip-notify');
         $limit = max(1, (int) $this->option('limit'));
 
+        if ($queue) {
+            return $this->dispatchQueued($delete, $skipNotify);
+        }
+
+        return $this->runSynchronous($delete, $limit);
+    }
+
+    private function dispatchQueued(bool $delete, bool $skipNotify): int
+    {
+        $mode = $delete ? MediaCleanupJob::MODE_DELETE : MediaCleanupJob::MODE_DRY_RUN;
+
+        if ($delete) {
+            $this->warn('Mode file d’attente + suppression : un worker doit traiter ProcessMediaCleanupJob.');
+        } else {
+            $this->info('Mode file d’attente + dry-run : aucun fichier ne sera supprimé.');
+        }
+
+        try {
+            $job = $this->dispatcher->dispatch($mode, null, [], $skipNotify);
+        } catch (RuntimeException $e) {
+            $this->error($e->getMessage());
+
+            return ArtisanExitCode::FAILURE;
+        }
+
+        $this->info('Job enfilé : '.$job->id);
+        $this->line('Statut : '.$job->status.' | Mode : '.$job->mode);
+
+        return ArtisanExitCode::SUCCESS;
+    }
+
+    private function runSynchronous(bool $delete, int $limit): int
+    {
         if ($delete) {
             $this->warn('Mode suppression actif : seuls les chemins MediaLibrary autorisés sont concernés.');
         } else {

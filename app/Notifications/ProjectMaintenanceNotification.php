@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notification;
 /**
  * Notification envoyée aux admin/super_admin après une maintenance projet.
  *
- * @property string $command 'init'|'update'|'backup'
+ * @property string $command 'init'|'update'|'backup'|'clear-orphan-files'
  * @property bool $success
  * @property float $durationSeconds
  * @property string $finishedAt Formatted datetime
@@ -83,6 +83,7 @@ class ProjectMaintenanceNotification extends Notification implements ShouldQueue
         return match ($this->command) {
             'init' => 'Initialisation',
             'backup' => 'Sauvegarde',
+            'clear-orphan-files' => 'Nettoyage fichiers orphelins',
             default => 'Mise à jour',
         };
     }

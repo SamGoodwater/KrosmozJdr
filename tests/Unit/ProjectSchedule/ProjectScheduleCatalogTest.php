@@ -23,6 +23,7 @@ class ProjectScheduleCatalogTest extends TestCase
             'project_data_sync',
             'scrap_resources_catalog',
             'project_backup',
+            'media_clear_orphan_files',
             'privacy_process_deletion_requests',
             'notification_digest_daily',
             'notification_digest_weekly',

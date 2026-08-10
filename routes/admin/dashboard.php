@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminActivityLogController;
 use App\Http\Controllers\Admin\FeedbackThreadController;
 use App\Http\Controllers\Admin\ProjectBackupWebController;
 use App\Http\Controllers\Admin\ProjectDepsWebController;
+use App\Http\Controllers\Admin\ProjectOrphanFilesWebController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -59,6 +60,21 @@ Route::prefix('admin/backup')
         Route::post('/run', [ProjectBackupWebController::class, 'store'])
             ->middleware(['password.confirm', 'throttle:6,1'])
             ->name('run');
+    });
+
+Route::prefix('admin/orphan-files')
+    ->name('admin.orphan-files.')
+    ->middleware(['auth', 'role:super_admin'])
+    ->group(function () {
+        Route::get('/', [ProjectOrphanFilesWebController::class, 'index'])->name('index');
+        Route::post('/run', [ProjectOrphanFilesWebController::class, 'store'])
+            ->middleware(['password.confirm', 'throttle:6,1'])
+            ->name('run');
+        Route::get('/jobs/{jobId}', [ProjectOrphanFilesWebController::class, 'status'])
+            ->name('status');
+        Route::post('/jobs/{jobId}/cancel', [ProjectOrphanFilesWebController::class, 'cancel'])
+            ->middleware(['password.confirm', 'throttle:12,1'])
+            ->name('cancel');
     });
 
 Route::prefix('admin/project-update')
