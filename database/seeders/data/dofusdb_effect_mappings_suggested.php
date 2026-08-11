@@ -47,6 +47,8 @@ return [
     117 => ['booster', 'characteristic', 'po'],
     118 => ['booster', 'characteristic', 'strong'],
     119 => ['booster', 'characteristic', 'agi'],
+    // Rembourse PA (économie d’action) — aligné sur un gain de PA jouable.
+    120 => ['booster', 'characteristic', 'pa'],
     121 => ['frapper', 'element', null],
     122 => ['autre', 'none', null],
     123 => ['booster', 'characteristic', 'chance'],

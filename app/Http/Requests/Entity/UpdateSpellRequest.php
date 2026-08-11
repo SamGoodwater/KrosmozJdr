@@ -3,12 +3,14 @@
 namespace App\Http\Requests\Entity;
 
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
+use App\Models\Entity\Spell;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * FormRequest pour la mise à jour d'un Spell.
  *
+ * Autorisation déléguée à {@see \App\Policies\Entity\SpellPolicy::update} (auteur|admin).
  * Les min/max des champs liés aux caractéristiques (area, element, powerful, etc.)
  * sont dérivés de CharacteristicGetterService (entity spell).
  */
@@ -21,7 +23,9 @@ class UpdateSpellRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $spell = $this->route('spell');
+
+        return $spell instanceof Spell && ($this->user()?->can('update', $spell) ?? false);
     }
 
     /**

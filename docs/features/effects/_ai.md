@@ -7,6 +7,12 @@
 - `app/Models/Effect*.php`, `app/Models/ObjectEffect.php`
 - `app/Services/Effect/`
 - `app/Services/Scrapping/Core/Conversion/SpellEffects/`
+- `app/Support/DofusHyperlinkText.php` (libellés d’états `{{spell,…::Nom}}`)
+- `Spell::visibleToUser` / `EntityDisplayVisibilityService::constrainQueryToViewer` (listes)
+- `GET /api/effects/definitions` — recherche defs pour liaison sort (payload edit allégé)
+- `GET /api/effects/effects?q=&per_page=` — index paginé (plus de dump massif)
+- `scrapping:effects:reapply-mappings` — reclasse les `autre` déjà mappés (ex. téléports)
+- Canal sorts : `effects_definitions` (table legacy `spell_effects` droppée)
 - `database/seeders/DofusdbEffectMappingSeeder.php`
 
 ## Hors périmètre

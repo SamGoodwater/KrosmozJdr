@@ -7,6 +7,7 @@ namespace App\Services\Effect;
 use App\Models\Effect;
 use App\Models\Entity\Condition;
 use App\Models\Entity\Monster;
+use App\Support\DofusHyperlinkText;
 use Illuminate\Support\Collection;
 
 /**
@@ -192,7 +193,7 @@ final class SpellEffectDefinitionsSerializer
                 'id' => $id,
                 'dofusdb_id' => is_numeric($params['condition_dofusdb_id'] ?? null) ? (int) $params['condition_dofusdb_id'] : null,
                 'name' => isset($params['condition_name']) && trim((string) $params['condition_name']) !== ''
-                    ? trim((string) $params['condition_name'])
+                    ? DofusHyperlinkText::toDisplayLabel(trim((string) $params['condition_name']))
                     : 'Condition #'.$id,
                 'icon' => null,
             ];
@@ -213,7 +214,7 @@ final class SpellEffectDefinitionsSerializer
             'id' => null,
             'dofusdb_id' => $dofusdbId,
             'name' => isset($params['condition_name']) && trim((string) $params['condition_name']) !== ''
-                ? trim((string) $params['condition_name'])
+                ? DofusHyperlinkText::toDisplayLabel(trim((string) $params['condition_name']))
                 : 'Condition DofusDB #'.$dofusdbId,
             'icon' => null,
         ];
@@ -224,7 +225,7 @@ final class SpellEffectDefinitionsSerializer
      */
     private function conditionBriefFromModel(Condition $state): array
     {
-        $name = is_string($state->name) ? trim($state->name) : '';
+        $name = is_string($state->name) ? DofusHyperlinkText::toDisplayLabel(trim($state->name)) : '';
 
         return [
             'id' => $state->id,

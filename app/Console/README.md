@@ -281,6 +281,7 @@ Voir aussi : **`php artisan project:schedule:sync`**, **`php artisan schedule:li
 | `scrapping:effects:pipeline` | Import sorts + quality gate effets |
 | `scrapping:effects:audit-quality` | Audit qualité pipeline / conversions |
 | `scrapping:effects:audit-autre` | Audit sous-effets « autre » |
+| `scrapping:effects:reapply-mappings` | Reclasse les `autre` déjà mappés (sans re-import) |
 | `scrapping:effects:quality-gate` | Seuils type CI |
 | `scrapping:effects:report-missing-characteristics` | Rapport mappings sans `characteristic_key` |
 | `scrapping:effects:backfill-characteristics` | Backfill `characteristic_key` |

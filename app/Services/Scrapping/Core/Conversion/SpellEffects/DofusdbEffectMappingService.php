@@ -55,6 +55,16 @@ final class DofusdbEffectMappingService
     }
 
     /**
+     * Tous les mappings indexés par effectId DofusDB (cache).
+     *
+     * @return array<int, array{sub_effect_slug: string, characteristic_source: string, characteristic_key: string|null}>
+     */
+    public function all(): array
+    {
+        return $this->getAllMappingsIndexedById();
+    }
+
+    /**
      * Cache sérialisable (pas de modèles Eloquent) — évite __PHP_Incomplete_Class après unserialize.
      *
      * @return array<int, array{sub_effect_slug: string, characteristic_source: string, characteristic_key: string|null}>

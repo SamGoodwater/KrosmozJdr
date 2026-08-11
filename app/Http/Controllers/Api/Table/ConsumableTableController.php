@@ -54,6 +54,7 @@ class ConsumableTableController extends Controller
         }
 
         $query = Consumable::query()
+            ->visibleToUser($request->user())
             ->with(['createdBy', 'consumableType', 'resources'])
             ->withCount(['resources', 'creatures', 'campaigns', 'scenarios', 'shops']);
 

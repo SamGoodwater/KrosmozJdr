@@ -19,6 +19,7 @@ import {
     subEffectDurationSegment,
 } from "@/Composables/entity/useSpellSubEffectPresentation";
 import { formatDisplacementForDisplay } from "@/Utils/Entity/displacementFormat";
+import { toDisplayLabel } from "@/Utils/dofus/dofusHyperlinkText";
 import SpellZonePreview from "@/Pages/Molecules/entity/spell/SpellZonePreview.vue";
 
 const props = defineProps({
@@ -187,7 +188,7 @@ const durationBesideValue = computed(() =>
 const conditionLine = computed(() => {
     const n = m.value.conditionName;
     if (typeof n === "string" && n.trim() !== "") {
-        return n.trim();
+        return toDisplayLabel(n);
     }
     return "";
 });

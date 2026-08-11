@@ -1,5 +1,38 @@
 # Ce qui a été fait
 
+## Août 2026 — Qualité effets « autre » + listes sécurisées
+
+Les téléports déjà mappés en `déplacer` mais restés en `autre` se reclasse via
+`scrapping:effects:reapply-mappings` (sans re-import). Le remboursement de PA
+(Dofus 120) est mappé en booster PA. L’API des définitions d’effet est paginée.
+La table legacy `spell_effects` est retirée. Les tableaux d’entités appliquent
+le même filtre de visibilité que les sorts.
+
+## Août 2026 — Polish UI sorts (usage unifié)
+
+Minimal et Line partagent `SpellUsageBlock` (méta, résolution, chips). La fiche Full
+aligne l’utilisation sur cette méta, ajoute un bandeau d’effets au-dessus du journal,
+et clarifie les empty states. L’éditeur d’effets signale les modifications non
+enregistrées (badge dirty).
+
+## Août 2026 — Visibilité liste sorts + perf area
+
+L’API tableau des sorts (et l’index / PDF multi) ne renvoie plus les brouillons
+ou contenus hors droits : filtre aligné sur la policy `view`. La zone (`area`)
+d’un sort réutilise les effets déjà chargés, sans requête SQL par ligne.
+L’édition des champs suit la policy (auteur ou admin). Le tri `po`/`area` utilise
+des colonnes ou une sous-requête valides. La sync des classes conserve les
+emplacements pivot existants. L’éditeur de sort ne charge plus toutes les
+définitions d’effet : recherche via API. Le legacy `spellEffects` n’est plus
+exposé dans la resource sort.
+
+## Août 2026 — Affichage des états de sorts
+
+Les noms d’états issus de DofusDB qui arrivaient sous forme d’hyperlien
+(`{{spell,…::Évadé}}`) s’affichent désormais avec le libellé lisible uniquement.
+Nettoyage à l’import, à la résolution des effets, côté interface, et commande de
+maintenance pour les données déjà en base.
+
 ## Août 2026 — Nettoyage des images orphelines
 
 Les super-admins peuvent lancer depuis le menu maintenance (**Fichiers orphelins**) un scan

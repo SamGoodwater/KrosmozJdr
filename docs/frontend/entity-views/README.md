@@ -12,6 +12,13 @@ Les vues d'entités standardisent l'affichage des fiches JDR.
 
 Ne pas créer `ViewLarge` ni `ViewCompact`. Utiliser `resolveEntityViewComponent(type, 'full')`.
 
+## Sorts (usage unifié)
+
+`SpellUsageBlock` factorise méta PA/PO + résolution + chips d’effets pour Minimal,
+Line et le bandeau Full. Props `parts` : `meta` | `effects` | `all` (méta sous le
+titre, effets en pleine largeur). Full : section Utilisation via la même méta ;
+bandeau chips au-dessus du journal ; empty states structurés vs texte libre.
+
 ## Parcours d’ouverture
 
 ```

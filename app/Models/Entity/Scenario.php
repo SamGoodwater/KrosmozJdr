@@ -3,6 +3,7 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\VisibleToViewer;
 use App\Models\Page;
 use App\Models\Type\ScenarioLink;
 use App\Models\User;
@@ -84,7 +85,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Scenario extends Model implements HasMedia
 {
     /** @use HasFactory<\\Database\\Factories\\ScenarioFactory> */
-    use HasEntityImageMedia, HasFactory, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, SoftDeletes, VisibleToViewer;
 
     public const STATE_RAW = 'raw';
 

@@ -56,6 +56,7 @@ class NpcTableController extends Controller
         }
 
         $query = Npc::query()
+            ->visibleToUser($request->user())
             ->with(['creature', 'breed', 'specialization'])
             ->withCount(['panoplies', 'campaigns', 'scenarios'])
             ->withExists('shop');

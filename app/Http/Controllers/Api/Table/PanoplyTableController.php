@@ -46,6 +46,7 @@ class PanoplyTableController extends Controller
         }
 
         $query = Panoply::query()
+            ->visibleToUser($request->user())
             ->with([
                 'createdBy',
                 'items' => static fn ($q) => $q->select(['items.id', 'items.name', 'items.level']),

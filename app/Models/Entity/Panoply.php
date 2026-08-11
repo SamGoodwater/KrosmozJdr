@@ -2,6 +2,7 @@
 
 namespace App\Models\Entity;
 
+use App\Models\Concerns\VisibleToViewer;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -57,7 +58,7 @@ use Illuminate\Support\Carbon;
 class Panoply extends Model
 {
     /** @use HasFactory<\\Database\\Factories\\PanoplyFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, VisibleToViewer;
 
     public const STATE_RAW = 'raw';
 

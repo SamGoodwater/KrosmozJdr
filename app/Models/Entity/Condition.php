@@ -3,7 +3,9 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\VisibleToViewer;
 use App\Models\User;
+use App\Support\DofusHyperlinkText;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -93,7 +95,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Condition extends Model implements HasMedia
 {
     /** @use HasFactory<\\Database\\Factories\\Entity\\ConditionFactory> */
-    use HasEntityImageMedia, HasFactory, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, SoftDeletes, VisibleToViewer;
 
     public const STATE_RAW = 'raw';
 
@@ -126,5 +128,13 @@ class Condition extends Model implements HasMedia
     public function spells()
     {
         return $this->belongsToMany(Spell::class, 'condition_spell')->withPivot(['application_mode', 'dofus_effect_id', 'duration', 'dispellable', 'target_mask'])->withTimestamps();
+    }
+
+    /**
+     * Nettoie les hyperliens DofusDB (`{{spell,…::Libellé}}`) à l’écriture.
+     */
+    public function setNameAttribute(?string $value): void
+    {
+        $this->attributes['name'] = DofusHyperlinkText::toDisplayLabel($value);
     }
 }

@@ -2,6 +2,8 @@
  * Helpers d'affichage unifiés pour les états (entité Condition) et paramètres d’effets.
  */
 
+import { toDisplayLabel } from "@/Utils/dofus/dofusHyperlinkText";
+
 export const CONDITION_DISPELLABLE_ICON = "icons/caracteristics/unenchantable.webp";
 export const CONDITION_NOT_DISPELLABLE_ICON = "icons/caracteristics/notUnenchantable.webp";
 
@@ -88,7 +90,7 @@ export function formatConditionMask(value) {
  * @returns {string}
  */
 export function formatConditionIdentity(name, id) {
-    const stateName = typeof name === "string" ? name.trim() : "";
+    const stateName = toDisplayLabel(typeof name === "string" ? name : "");
     const num = Number(id);
     const hasId = Number.isFinite(num);
     if (stateName && hasId) return `${stateName} (#${num})`;

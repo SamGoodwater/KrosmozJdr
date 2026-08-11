@@ -27,6 +27,11 @@ class EffectController extends Controller
         private readonly EffectResolutionService $effectResolutionService
     ) {}
 
+    /**
+     * Liste paginée / filtrée des définitions d’effet (évite le dump massif).
+     *
+     * Query : `q` (nom/slug), `per_page` (1–100, défaut 30).
+     */
     public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
@@ -34,9 +39,84 @@ class EffectController extends Controller
             abort(403);
         }
 
-        $list = Effect::with('degrees')->orderBy('name')->get();
+        $validated = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
 
-        return EffectResource::collection($list);
+        $q = trim((string) ($validated['q'] ?? ''));
+        $perPage = (int) ($validated['per_page'] ?? 30);
+
+        $query = Effect::query()->with('degrees')->orderBy('name');
+        if ($q !== '') {
+            $like = '%'.$q.'%';
+            $query->where(function ($builder) use ($like): void {
+                $builder->where('name', 'like', $like)
+                    ->orWhere('slug', 'like', $like);
+            });
+        }
+
+        return EffectResource::collection($query->paginate($perPage));
+    }
+
+    /**
+     * Recherche légère de définitions d’effet (liaison sort / pickers).
+     * Évite d’embarquer ~10k+ effets dans le payload d’édition.
+     */
+    public function searchDefinitions(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if ($user === null) {
+            abort(401);
+        }
+
+        $validated = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:50'],
+            'exclude_spell_id' => ['nullable', 'integer', 'min:1'],
+        ]);
+
+        $q = trim((string) ($validated['q'] ?? ''));
+        $limit = (int) ($validated['limit'] ?? 30);
+
+        $query = Effect::query()->orderBy('name');
+
+        if ($q !== '') {
+            $like = '%'.$q.'%';
+            $query->where(function ($builder) use ($like): void {
+                $builder->where('name', 'like', $like)
+                    ->orWhere('slug', 'like', $like);
+            });
+        }
+
+        $excludeSpellId = isset($validated['exclude_spell_id']) ? (int) $validated['exclude_spell_id'] : 0;
+        if ($excludeSpellId > 0) {
+            $spell = Spell::query()->find($excludeSpellId);
+            if ($spell === null || ! $user->can('update', $spell)) {
+                abort(403);
+            }
+            $query->whereDoesntHave('spells', function ($builder) use ($excludeSpellId): void {
+                $builder->where('spells.id', $excludeSpellId);
+            });
+        }
+
+        $rows = $query
+            ->limit($limit)
+            ->get(['id', 'name', 'slug', 'target_type']);
+
+        return response()->json([
+            'data' => $rows->map(static function (Effect $e): array {
+                return [
+                    'id' => $e->id,
+                    'effect_definition_id' => $e->id,
+                    'name' => $e->name ?? $e->slug ?? ('Effet #'.$e->id),
+                    'slug' => $e->slug,
+                    'target_type' => $e->target_type ?? Effect::TARGET_DIRECT,
+                    'degree' => null,
+                    'area' => null,
+                ];
+            })->values()->all(),
+        ]);
     }
 
     public function store(StoreEffectRequest $request): JsonResponse

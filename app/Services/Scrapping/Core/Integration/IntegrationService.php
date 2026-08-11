@@ -25,6 +25,7 @@ use App\Models\User;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Support\DofusDbElementId;
+use App\Support\DofusHyperlinkText;
 use App\Support\ElementBitmask;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -734,6 +735,10 @@ final class IntegrationService
                     $params['condition_dofusdb_id'] = $condition->dofusdb_id;
                     if (! isset($params['condition_name']) || trim((string) $params['condition_name']) === '') {
                         $params['condition_name'] = $condition->name;
+                    } else {
+                        $params['condition_name'] = DofusHyperlinkText::toDisplayLabel(
+                            trim((string) $params['condition_name'])
+                        );
                     }
                 }
 
@@ -1075,8 +1080,11 @@ final class IntegrationService
 
         $flags = is_array($params['condition_flags'] ?? null) ? $params['condition_flags'] : [];
         $conditionName = isset($params['condition_name']) && is_string($params['condition_name']) && trim($params['condition_name']) !== ''
-            ? trim($params['condition_name'])
+            ? DofusHyperlinkText::toDisplayLabel(trim($params['condition_name']))
             : 'Condition DofusDB #'.$stateDofusdbId;
+        if ($conditionName === '') {
+            $conditionName = 'Condition DofusDB #'.$stateDofusdbId;
+        }
 
         $condition = Condition::query()->updateOrCreate(
             ['dofusdb_id' => $stateDofusdbId],

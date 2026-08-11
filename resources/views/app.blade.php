@@ -24,8 +24,10 @@
             50% { transform: scale(1.55); }
         }
         @keyframes site-loading-boot-content-enter {
-            from { opacity: 0; transform: translateY(1.25rem) scale(0.88); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            0% { opacity: 0; transform: scale(0.9); }
+            40% { opacity: 0.45; transform: scale(1.04); }
+            62% { transform: scale(1); }
+            100% { opacity: 1; transform: scale(1); }
         }
         @keyframes site-loading-boot-dot {
             0%, 80%, 100% { opacity: 0.35; transform: scale(0.85); }
@@ -42,7 +44,7 @@
             position: absolute;
             inset: 0;
             transform-origin: center center;
-            animation: site-loading-boot-pulse 10s ease-in-out infinite;
+            animation: site-loading-boot-pulse 40s ease-in-out infinite;
         }
         #site-loading-boot img {
             width: 100%;
@@ -62,7 +64,8 @@
             color: #fff;
             pointer-events: none;
             line-height: 1;
-            animation: site-loading-boot-content-enter 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: site-loading-boot-content-enter 2.8s ease-out forwards;
+            transform-origin: center center;
         }
         #site-loading-boot .site-loading-boot__title-krosmoz {
             font-size: clamp(3.5rem, 14vw, 6.5rem);

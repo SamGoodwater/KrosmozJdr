@@ -12,23 +12,17 @@
  */
 import { computed, ref } from "vue";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import EntityStateBadge from "@/Pages/Atoms/data-display/EntityStateBadge.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
-import {
-    resolveSpellEffectsDisplayCell,
-    spellEffectsCellHasContent,
-} from "@/Composables/entity/useSpellEffectsDisplayCell";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
 import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import SpellMinimalUsageMetaRow from "@/Pages/Molecules/entity/spell/SpellMinimalUsageMetaRow.vue";
+import SpellUsageBlock from "@/Pages/Molecules/entity/spell/SpellUsageBlock.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
-import { buildResolutionSummary } from "@/Utils/Entity/spellMinimalUsageDisplay";
 
 const props = defineProps({
     spell: {
@@ -99,18 +93,6 @@ const levelValue = computed(() => {
 const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
 );
-
-const effectDisplayCell = computed(() =>
-    resolveSpellEffectsDisplayCell(entity.value, {
-        size: "xs",
-        context: "minimal",
-        ctx: props.tableMeta,
-        maxEffectRows: 3,
-    }),
-);
-const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
-
-const resolutionUsage = computed(() => buildResolutionSummary(entity.value));
 
 const imageUrl = computed(() => {
     const u = entity.value?.image ?? entity.value?._data?.image;
@@ -184,7 +166,8 @@ const handleAction = async (actionKey) => {
                             </div>
                             
                         </div>
-                        <SpellMinimalUsageMetaRow
+                        <SpellUsageBlock
+                            parts="meta"
                             :entity="entity"
                             :descriptors="descriptors"
                             :table-meta="tableMeta"
@@ -195,23 +178,14 @@ const handleAction = async (actionKey) => {
                         />
                     </div>
                 </div>
-                <div
-                    v-if="hasEffects || resolutionUsage.show"
-                    class="spell-effects-minimal w-full pt-1.5 mt-1 border-t border-base-300"
-                >
-                    <p
-                        v-if="resolutionUsage.show"
-                        class="mb-1 text-xs text-base-content/75"
-                    >
-                        {{ resolutionUsage.text }}
-                    </p>
-                    <CellRenderer
-                        v-if="hasEffects"
-                        :cell="effectDisplayCell"
-                        ui-color="primary"
-                        class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
-                    />
-                </div>
+                <SpellUsageBlock
+                    parts="effects"
+                    :entity="entity"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    :can-show-field="canShowField"
+                    :max-effect-rows="3"
+                />
             </div>
         </template>
         <template #expanded>
@@ -251,7 +225,8 @@ const handleAction = async (actionKey) => {
                                 />
                             </div>
                         </div>
-                        <SpellMinimalUsageMetaRow
+                        <SpellUsageBlock
+                            parts="meta"
                             :entity="entity"
                             :descriptors="descriptors"
                             :table-meta="tableMeta"
@@ -269,23 +244,14 @@ const handleAction = async (actionKey) => {
                         </p>
                     </div>
                 </div>
-                <div
-                    v-if="hasEffects || resolutionUsage.show"
-                    class="spell-effects-minimal w-full pt-1.5 mt-1 border-t border-base-300"
-                >
-                    <p
-                        v-if="resolutionUsage.show"
-                        class="mb-1 text-xs text-base-content/75"
-                    >
-                        {{ resolutionUsage.text }}
-                    </p>
-                    <CellRenderer
-                        v-if="hasEffects"
-                        :cell="effectDisplayCell"
-                        ui-color="primary"
-                        class="text-xs leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
-                    />
-                </div>
+                <SpellUsageBlock
+                    parts="effects"
+                    :entity="entity"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    :can-show-field="canShowField"
+                    :max-effect-rows="3"
+                />
             </div>
         </template>
     </EntityMinimalCard>

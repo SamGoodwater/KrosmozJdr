@@ -75,7 +75,8 @@ class ConditionTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Condition::query()->with(['createdBy']);
+        $query = Condition::query()
+            ->visibleToUser($request->user())->with(['createdBy']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

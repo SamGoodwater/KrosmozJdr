@@ -11,6 +11,7 @@ use App\Services\Effect\SpellActionBudgetService;
 use App\Services\Jdr\DiceNotationService;
 use App\Services\Scrapping\Config\DofusDbConditionCatalog;
 use App\Services\Scrapping\Config\DofusDbEffectCatalog;
+use App\Support\DofusHyperlinkText;
 use Illuminate\Support\Str;
 
 /**
@@ -428,7 +429,9 @@ final class SpellEffectsConversionService
     {
         $params = [
             'condition_dofusdb_id' => (int) ($stateData['id'] ?? 0),
-            'condition_name' => $this->extractLocalizedValue($stateData['name'] ?? null, 'fr'),
+            'condition_name' => DofusHyperlinkText::toDisplayLabel(
+                $this->extractLocalizedValue($stateData['name'] ?? null, 'fr')
+            ) ?: null,
             'condition_icon' => isset($stateData['icon']) ? (string) $stateData['icon'] : null,
             'condition_image' => isset($stateData['img']) ? (string) $stateData['img'] : null,
             'dispellable' => isset($instance['dispellable']) ? (bool) $instance['dispellable'] : null,

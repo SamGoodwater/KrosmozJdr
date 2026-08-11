@@ -4,6 +4,7 @@ namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
 use App\Models\Concerns\HasLeveledSections;
+use App\Models\Concerns\VisibleToViewer;
 use App\Models\Section;
 use App\Models\User;
 use Database\Factories\Entity\SpecializationFactory;
@@ -72,7 +73,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Specialization extends Model implements HasMedia
 {
     /** @use HasFactory<SpecializationFactory> */
-    use HasEntityImageMedia, HasFactory, HasLeveledSections, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, HasLeveledSections, SoftDeletes, VisibleToViewer;
 
     protected function sectionsPivotTable(): string
     {

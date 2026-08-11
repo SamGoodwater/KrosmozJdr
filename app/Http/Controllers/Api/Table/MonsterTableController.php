@@ -78,6 +78,7 @@ class MonsterTableController extends Controller
         }
 
         $query = Monster::query()
+            ->visibleToUser($request->user())
             ->with([
                 'languages',
                 'creature' => fn ($q) => $q
@@ -86,7 +87,6 @@ class MonsterTableController extends Controller
                             ->orderBy('name')
                             ->with([
                                 'spellTypes',
-                                'spellEffects.spellEffectType',
                                 'effects.degrees.effectSubEffects.subEffect',
                             ]),
                     ])

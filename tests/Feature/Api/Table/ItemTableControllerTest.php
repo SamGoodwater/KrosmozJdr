@@ -15,7 +15,7 @@ use Tests\TestCase;
  * Vérifie que :
  * - Le format `entities` retourne les données brutes
  * - Le format par défaut (`cells`) retourne les cellules formatées
- * - Les permissions sont respectées
+ * - Les permissions / visibilité sont respectées
  * - La structure des données est correcte
  */
 class ItemTableControllerTest extends TestCase
@@ -29,16 +29,29 @@ class ItemTableControllerTest extends TestCase
     }
 
     /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    private function playableAttrs(array $overrides = []): array
+    {
+        return array_merge([
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ], $overrides);
+    }
+
+    /**
      * Test : Le format `entities` retourne les données brutes
      */
     public function test_format_entities_returns_raw_data(): void
     {
         $user = User::factory()->create();
-        $item = Item::factory()->create([
+        Item::factory()->create($this->playableAttrs([
             'name' => 'Test Item',
             'level' => '10',
             'rarity' => 1,
-        ]);
+        ]));
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/items?format=entities&limit=10');
@@ -75,10 +88,10 @@ class ItemTableControllerTest extends TestCase
     public function test_format_cells_returns_formatted_cells(): void
     {
         $user = User::factory()->create();
-        $item = Item::factory()->create([
+        Item::factory()->create($this->playableAttrs([
             'name' => 'Test Item',
             'level' => '10',
-        ]);
+        ]));
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/items?limit=10');
@@ -114,9 +127,9 @@ class ItemTableControllerTest extends TestCase
     public function test_entities_format_includes_relations(): void
     {
         $user = User::factory()->create();
-        $item = Item::factory()->create([
+        Item::factory()->create($this->playableAttrs([
             'created_by' => $user->id,
-        ]);
+        ]));
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/items?format=entities&limit=10');
@@ -136,7 +149,7 @@ class ItemTableControllerTest extends TestCase
     public function test_entities_format_respects_permissions(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
-        Item::factory()->create();
+        Item::factory()->create($this->playableAttrs());
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/items?format=entities&limit=10');
@@ -150,12 +163,46 @@ class ItemTableControllerTest extends TestCase
     }
 
     /**
+     * Invité / user : brouillon d’autrui masqué ; playable visible.
+     */
+    public function test_table_hides_foreign_draft_from_guest_and_user(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $viewer = User::factory()->create(['role' => User::ROLE_USER]);
+
+        $draft = Item::factory()->create([
+            'name' => 'Draft Secret',
+            'state' => Item::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $playable = Item::factory()->create($this->playableAttrs([
+            'name' => 'Playable Public',
+            'created_by' => $author->id,
+        ]));
+
+        $guestResponse = $this->getJson('/api/tables/items?format=entities&limit=50');
+        $guestResponse->assertOk();
+        $guestIds = collect($guestResponse->json('entities'))->pluck('id')->all();
+        $this->assertNotContains($draft->id, $guestIds);
+        $this->assertContains($playable->id, $guestIds);
+
+        $userResponse = $this->actingAs($viewer)
+            ->getJson('/api/tables/items?format=entities&limit=50');
+        $userResponse->assertOk();
+        $userIds = collect($userResponse->json('entities'))->pluck('id')->all();
+        $this->assertNotContains($draft->id, $userIds);
+        $this->assertContains($playable->id, $userIds);
+    }
+
+    /**
      * Test : Le format `entities` gère la pagination/limite
      */
     public function test_entities_format_respects_limit(): void
     {
         $user = User::factory()->create();
-        Item::factory()->count(15)->create();
+        Item::factory()->count(15)->create($this->playableAttrs());
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/items?format=entities&limit=5');
@@ -173,9 +220,9 @@ class ItemTableControllerTest extends TestCase
     public function test_entities_format_supports_search(): void
     {
         $user = User::factory()->create();
-        Item::factory()->create(['name' => 'Sword']);
-        Item::factory()->create(['name' => 'Shield']);
-        Item::factory()->create(['name' => 'Bow']);
+        Item::factory()->create($this->playableAttrs(['name' => 'Sword']));
+        Item::factory()->create($this->playableAttrs(['name' => 'Shield']));
+        Item::factory()->create($this->playableAttrs(['name' => 'Bow']));
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/items?format=entities&search=Sword&limit=10');
@@ -195,8 +242,8 @@ class ItemTableControllerTest extends TestCase
     public function test_entities_format_supports_sorting(): void
     {
         $user = User::factory()->create();
-        Item::factory()->create(['name' => 'Z Item', 'level' => '1']);
-        Item::factory()->create(['name' => 'A Item', 'level' => '10']);
+        Item::factory()->create($this->playableAttrs(['name' => 'Z Item', 'level' => '1']));
+        Item::factory()->create($this->playableAttrs(['name' => 'A Item', 'level' => '10']));
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/items?format=entities&sort=name&order=asc&limit=10');

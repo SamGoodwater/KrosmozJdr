@@ -54,6 +54,7 @@ class ItemTableController extends Controller
         }
 
         $query = Item::query()
+            ->visibleToUser($request->user())
             ->with(['createdBy', 'itemType', 'resources'])
             ->withCount(['resources', 'panoplies', 'shops', 'campaigns', 'scenarios']);
 

@@ -3,12 +3,14 @@
 namespace App\Http\Requests\Entity;
 
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
+use App\Models\Entity\Spell;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * FormRequest pour la création d'un Spell.
  *
+ * Autorisation déléguée à la policy `create` (admin, via BaseEntityPolicy).
  * Valide les champs principaux d'un sort.
  * Les min/max des champs liés aux caractéristiques sont dérivés de CharacteristicGetterService.
  */
@@ -21,7 +23,7 @@ class StoreSpellRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->can('create', Spell::class) ?? false;
     }
 
     /**

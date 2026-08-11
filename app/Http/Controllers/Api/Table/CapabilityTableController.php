@@ -106,6 +106,7 @@ class CapabilityTableController extends Controller
         }
 
         $query = Capability::query()
+            ->visibleToUser($request->user())
             ->with(['createdBy'])
             ->withCount(['specializations', 'creatures']);
 

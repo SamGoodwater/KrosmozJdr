@@ -353,8 +353,12 @@ export class Spell extends BaseModel {
         return this._data.spellTypes || [];
     }
 
+    /**
+     * @deprecated Legacy `spell_effects` — toujours vide. Utiliser {@link effectsDefinitions}.
+     * @returns {array}
+     */
     get spellEffects() {
-        return this._data.spellEffects || [];
+        return [];
     }
 
     get monsters() {

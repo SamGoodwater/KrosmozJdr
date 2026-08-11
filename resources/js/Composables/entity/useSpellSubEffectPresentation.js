@@ -4,6 +4,8 @@
  * @see docs/features/effects/README.md
  */
 
+import { toDisplayLabel } from "@/Utils/dofus/dofusHyperlinkText";
+
 /** @typedef {'large'|'compact'|'line'|'minimal'} SubEffectLayout */
 
 /**
@@ -191,7 +193,7 @@ export function buildUnifiedSubEffectModel(input) {
                     : null,
             conditionName:
                 typeof params.condition_name === "string" && params.condition_name.trim() !== ""
-                    ? params.condition_name.trim()
+                    ? toDisplayLabel(params.condition_name)
                     : null,
             cellsFormula: cellsF !== "" ? cellsF : null,
             cellsDisplay: null,
@@ -210,8 +212,9 @@ export function buildUnifiedSubEffectModel(input) {
     const elRaw = chip.element;
     const elNum =
         elRaw != null && elRaw !== "" && Number.isFinite(Number(elRaw)) ? Number(elRaw) : null;
-    const rawText =
-        chip.value != null && String(chip.value).trim() !== "" ? String(chip.value).trim() : "";
+    const rawText = toDisplayLabel(
+        chip.value != null && String(chip.value).trim() !== "" ? String(chip.value).trim() : "",
+    );
     const vf =
         typeof chip.value_formula === "string" && chip.value_formula.trim() !== ""
             ? chip.value_formula.trim()
@@ -276,17 +279,17 @@ export function buildUnifiedSubEffectModel(input) {
                       name:
                           typeof chip.condition_context.condition_name === "string" &&
                           chip.condition_context.condition_name.trim() !== ""
-                              ? chip.condition_context.condition_name.trim()
+                              ? toDisplayLabel(chip.condition_context.condition_name)
                               : null,
                       icon: null,
                   }
                 : null,
         conditionName:
             typeof chip.condition_name === "string" && chip.condition_name.trim() !== ""
-                ? chip.condition_name.trim()
+                ? toDisplayLabel(chip.condition_name)
                 : typeof chip.condition_context?.condition_name === "string" &&
                     chip.condition_context.condition_name.trim() !== ""
-                  ? chip.condition_context.condition_name.trim()
+                  ? toDisplayLabel(chip.condition_context.condition_name)
                 : null,
         cellsFormula: null,
         cellsDisplay: cd !== "" ? cd : null,

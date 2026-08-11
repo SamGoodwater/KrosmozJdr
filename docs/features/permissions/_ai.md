@@ -24,7 +24,7 @@
 - `app/Http/Controllers/Auth/*`, `app/Http/Controllers/Auth/OAuthController.php`, `app/Support/OAuthConfig.php`.
 - `app/Http/Middleware/CheckRole.php`, `EnsureAdminAreaAccess.php`, `EnsureContentManagementAccess.php`, `RequirePasswordWithInactivity.php`, `HandleInertiaRequests.php`.
 - `app/Policies/Entity/BaseEntityPolicy.php`, `app/Policies/UserPolicy.php`.
-- `app/Support/EntityPermissions/EntityPermissionService.php`, `app/Services/EntityDisplay/EntityDisplayVisibilityService.php`.
+- `app/Support/EntityPermissions/EntityPermissionService.php`, `app/Services/EntityDisplay/EntityDisplayVisibilityService.php` (`constrainQueryToViewer` pour listes).
 - `config/entity-permissions.php`, `config/access-permissions.php`, `config/auth.php`.
 - `resources/js/Composables/permissions/usePermissions.js`, `Composables/auth/useProtectedAdminAction.js`, `Pages/Molecules/action/ConfirmPasswordModal.vue`.
 

@@ -4,7 +4,8 @@ const SESSION_DISMISS_KEY = "krosmoz-site-loading-dismissed";
 const MIN_VISIBLE_MS = 1400;
 const READY_HOLD_MS = 900;
 const MAX_VISIBLE_MS = 22000;
-const EXIT_MS = 520;
+/** Durée de la sortie zoom-through (doit matcher l’anim CSS `--exiting`). */
+const EXIT_MS = 500;
 
 /** @type {import('vue').Ref<'loading'|'ready'>} */
 export const siteLoadingPhase = ref("loading");

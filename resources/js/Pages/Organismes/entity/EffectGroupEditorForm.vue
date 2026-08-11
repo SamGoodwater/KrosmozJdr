@@ -58,6 +58,8 @@ const props = defineProps({
     saveWithoutInertia: { type: Boolean, default: false },
 });
 
+const emit = defineEmits(['dirty-change']);
+
 const notificationStore = useNotificationStore();
 const localConditions = ref([]);
 
@@ -77,6 +79,8 @@ const common = reactive({
 
 const degreeForms = ref([]);
 const activeTab = ref(0);
+/** Snapshot JSON après hydrate / save réussie — pour badge « non enregistré ». */
+const savedSnapshot = ref('');
 
 const groupSaveForm = useForm({
     common: {},
@@ -492,9 +496,27 @@ function mapSubEffectsFromApi(subEffects) {
     return rows;
 }
 
+function currentEditorSnapshot() {
+    return JSON.stringify({
+        common: {
+            name: common.name,
+            description: common.description,
+            target_type: common.target_type,
+        },
+        degrees: degreeForms.value,
+    });
+}
+
+function captureSavedSnapshot() {
+    savedSnapshot.value = currentEditorSnapshot();
+}
+
 function initDegreeFormsFromProps() {
     const list = props.groupEffects;
-    if (!list?.length) return;
+    if (!list?.length) {
+        savedSnapshot.value = '';
+        return;
+    }
     const first = list[0];
     common.name = first.name ?? '';
     common.description = first.description ?? '';
@@ -512,7 +534,23 @@ function initDegreeFormsFromProps() {
     }));
     const idx = list.findIndex((e) => e.id === props.selectedEffectId);
     activeTab.value = idx >= 0 ? idx : 0;
+    captureSavedSnapshot();
 }
+
+const isDirty = ref(false);
+
+function refreshDirtyState() {
+    const dirty = savedSnapshot.value !== '' && currentEditorSnapshot() !== savedSnapshot.value;
+    if (isDirty.value !== dirty) {
+        isDirty.value = dirty;
+        emit('dirty-change', dirty);
+    }
+}
+
+watch([common, degreeForms, savedSnapshot], () => refreshDirtyState(), {
+    deep: true,
+    flush: 'post',
+});
 
 watch(
     () => [props.groupEffects, props.selectedEffectId],
@@ -646,6 +684,7 @@ async function patchEffectGroupJson() {
                 ...csrfHeaders(),
             },
         });
+        captureSavedSnapshot();
         notificationStore.success('Effets du groupe enregistrés.');
     } catch (e) {
         const errs = e?.response?.data?.errors;
@@ -679,6 +718,7 @@ function submitGroup() {
     groupSaveForm.patch(props.patchUrl, {
         preserveScroll: true,
         preserveState: true,
+        onSuccess: () => captureSavedSnapshot(),
     });
 }
 
@@ -709,7 +749,10 @@ function submitGroupAsync() {
         groupSaveForm.patch(props.patchUrl, {
             preserveScroll: true,
             preserveState: true,
-            onSuccess: () => resolve({ ok: true }),
+            onSuccess: () => {
+                captureSavedSnapshot();
+                resolve({ ok: true });
+            },
             onError: (errors) => {
                 const err = new Error('Effect group validation failed');
                 err.errors = errors;
@@ -773,7 +816,15 @@ const activeAreaValidation = computed(() => {
         : { state: 'error', message: `Notation invalide. ${AREA_NOTATION_HELP}` };
 });
 
-defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, submitGroupAsync });
+defineExpose({
+    getActiveEffectId,
+    degreeForms,
+    activeTab,
+    saving,
+    isDirty,
+    submitGroup,
+    submitGroupAsync,
+});
 </script>
 
 <template>
@@ -787,6 +838,13 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
             >
                 {{ targetTypeLabel(common.target_type) }}
             </span>
+            <span
+                v-if="isDirty"
+                class="badge badge-sm badge-warning shrink-0"
+                title="Modifications non enregistrées dans ce groupe d’effets"
+            >
+                Non enregistré
+            </span>
         </div>
         <form class="space-y-6" @submit.prevent="submitGroup">
             <div class="card bg-base-100 shadow border border-base-300">
@@ -799,6 +857,13 @@ defineExpose({ getActiveEffectId, degreeForms, activeTab, saving, submitGroup, s
                             :title="'Type de cible : ' + targetTypeLabel(common.target_type)"
                         >
                             {{ targetTypeLabel(common.target_type) }}
+                        </span>
+                        <span
+                            v-if="!heading && isDirty"
+                            class="badge badge-sm badge-warning shrink-0"
+                            title="Modifications non enregistrées dans ce groupe d’effets"
+                        >
+                            Non enregistré
                         </span>
                     </div>
                     <p class="text-sm text-base-content/70 mb-2">

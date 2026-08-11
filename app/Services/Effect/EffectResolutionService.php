@@ -12,6 +12,7 @@ use App\Models\Entity\Condition;
 use App\Models\Entity\Monster;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Support\DofusDbElementId;
+use App\Support\DofusHyperlinkText;
 
 /**
  * Moteur de résolution des effects.
@@ -357,7 +358,9 @@ final class EffectResolutionService
     {
         $existing = isset($displayCtx['condition_name']) ? trim((string) $displayCtx['condition_name']) : '';
         if ($existing !== '') {
-            return $existing;
+            $label = DofusHyperlinkText::toDisplayLabel($existing);
+
+            return $label !== '' ? $label : null;
         }
 
         $sid = $params['condition_id'] ?? null;
@@ -366,7 +369,9 @@ final class EffectResolutionService
             if ($id > 0) {
                 if (! array_key_exists($id, $this->conditionNameByIdCache)) {
                     $n = Condition::query()->whereKey($id)->value('name');
-                    $this->conditionNameByIdCache[$id] = ($n !== null && $n !== '') ? (string) $n : '';
+                    $this->conditionNameByIdCache[$id] = ($n !== null && $n !== '')
+                        ? DofusHyperlinkText::toDisplayLabel((string) $n)
+                        : '';
                 }
                 $resolved = $this->conditionNameByIdCache[$id];
 
@@ -380,7 +385,9 @@ final class EffectResolutionService
             if ($dId > 0) {
                 if (! array_key_exists($dId, $this->conditionNameByDofusdbIdCache)) {
                     $n = Condition::query()->where('dofusdb_id', $dId)->value('name');
-                    $this->conditionNameByDofusdbIdCache[$dId] = ($n !== null && $n !== '') ? (string) $n : '';
+                    $this->conditionNameByDofusdbIdCache[$dId] = ($n !== null && $n !== '')
+                        ? DofusHyperlinkText::toDisplayLabel((string) $n)
+                        : '';
                 }
                 $resolved = $this->conditionNameByDofusdbIdCache[$dId];
 

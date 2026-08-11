@@ -3,8 +3,9 @@
  * SiteLoadingOverlay — Écran de chargement plein page (effet tunnel / zoom).
  *
  * @description
- * Pendant le chargement : zoom lent 5 s puis dézoom (boucle). À la fin du chargement :
- * zoom infini linéaire avant fondu de sortie. Titre Krosmoz / JDR, « Chargement » + dots DaisyUI.
+ * Pendant le chargement : zoom lent 20 s puis dézoom 20 s (boucle). Entrée du texte :
+ * fondu d’opacité long (police) + léger zoom. Sortie : plongée rapide (~500 ms) avec
+ * opacité à 0 avant la fin du zoom pour révéler le site. Titre Krosmoz / JDR + dots.
  *
  * @see useSiteLoadingOverlay
  * @example
@@ -27,9 +28,6 @@ const { dismissManual, initSiteLoadingReadyWatcher, markControlsVisible, markSit
     useSiteLoadingOverlay();
 
 const stageZoomClass = computed(() => {
-    if (siteLoadingExiting.value) {
-        return "";
-    }
     if (siteLoadingPhase.value === "ready") {
         return "site-loading-overlay__stage--infinite";
     }
@@ -118,6 +116,8 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .site-loading-overlay {
     z-index: 10050;
+    transform-origin: center center;
+    will-change: transform, opacity;
 }
 
 .site-loading-overlay__stage {
@@ -126,11 +126,17 @@ onUnmounted(() => {
 }
 
 .site-loading-overlay__stage--pulse {
-    animation: site-loading-pulse 10s ease-in-out infinite;
+    animation: site-loading-pulse 40s ease-in-out infinite;
 }
 
 .site-loading-overlay__stage--infinite {
-    animation: site-loading-infinite 5s linear infinite;
+    animation: site-loading-infinite 20s linear infinite;
+}
+
+/** Sortie : plongée rapide ; le stage reste figé (échelle courante) pendant que l’overlay scale. */
+.site-loading-overlay--exiting {
+    pointer-events: none;
+    animation: site-loading-exit 500ms cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
 .site-loading-overlay--exiting .site-loading-overlay__stage--pulse,
@@ -138,7 +144,15 @@ onUnmounted(() => {
     animation-play-state: paused;
 }
 
-/** 5 s zoom in, 5 s zoom out — boucle tant que le document charge. */
+.site-loading-overlay--exiting .site-loading-overlay__content {
+    animation: site-loading-content-exit 280ms ease-in forwards;
+}
+
+.site-loading-overlay--exiting .site-loading-overlay__close {
+    animation: site-loading-content-exit 220ms ease-in forwards;
+}
+
+/** 20 s zoom in, 20 s zoom out — boucle tant que le document charge. */
 @keyframes site-loading-pulse {
     0%,
     100% {
@@ -149,7 +163,7 @@ onUnmounted(() => {
     }
 }
 
-/** Zoom continu une fois le site prêt (avant le fondu de sortie). */
+/** Zoom continu 20 s une fois le site prêt (avant le fondu de sortie). */
 @keyframes site-loading-infinite {
     0% {
         transform: scale(1);
@@ -159,25 +173,65 @@ onUnmounted(() => {
     }
 }
 
-.site-loading-overlay__content {
-    opacity: 0;
-    transform: translateY(1.25rem) scale(0.88);
-}
-
-.site-loading-overlay__content--visible {
-    animation: site-loading-content-enter 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-@keyframes site-loading-content-enter {
-    to {
+/**
+ * Plongée : opacité à 0 vers ~65 % pour révéler le site avant la fin du zoom.
+ */
+@keyframes site-loading-exit {
+    0% {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: scale(1);
+    }
+    65% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(2.45);
     }
 }
 
+.site-loading-overlay__content {
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: center center;
+}
+
+/**
+ * Entrée texte : fondu long (masque le swap de police) + léger zoom / dézoom.
+ */
+.site-loading-overlay__content--visible {
+    animation: site-loading-content-enter 2.8s ease-out forwards;
+}
+
+@keyframes site-loading-content-enter {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    40% {
+        opacity: 0.45;
+        transform: scale(1.04);
+    }
+    62% {
+        transform: scale(1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes site-loading-content-exit {
+    to {
+        opacity: 0;
+        transform: scale(1.28);
+    }
+}
+
+/** Retrait DOM après sortie CSS : pas de second fondu. */
 .site-loading-fade-enter-active,
 .site-loading-fade-leave-active {
-    transition: opacity 0.52s ease;
+    transition: none;
 }
 
 .site-loading-fade-enter-from,
@@ -192,8 +246,29 @@ onUnmounted(() => {
         transform: scale(1.06);
     }
 
-    .site-loading-overlay__content--visible {
+    .site-loading-overlay--exiting {
+        animation: site-loading-exit-reduced 320ms ease forwards;
+    }
+
+    .site-loading-overlay--exiting .site-loading-overlay__content,
+    .site-loading-overlay--exiting .site-loading-overlay__close {
         animation: none;
+        opacity: 0;
+    }
+
+    .site-loading-overlay__content--visible {
+        animation: site-loading-content-enter-reduced 1.6s ease-out forwards;
+    }
+}
+
+@keyframes site-loading-exit-reduced {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes site-loading-content-enter-reduced {
+    to {
         opacity: 1;
         transform: none;
     }

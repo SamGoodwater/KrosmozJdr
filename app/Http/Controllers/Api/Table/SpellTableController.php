@@ -10,6 +10,7 @@ use App\Services\Effect\SpellEffectDefinitionsSerializer;
 use App\Services\Effect\SpellEffectUsagesDataService;
 use App\Support\AreaConstants;
 use App\Support\ElementBitmask;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -58,6 +59,84 @@ class SpellTableController extends Controller
             'save_success_note' => $spell->save_success_note,
             'auto_success_if_willing_target' => (bool) ($spell->auto_success_if_willing_target ?? false),
         ];
+    }
+
+    /**
+     * Tri tableau sorts : colonnes SQL + alias `po` (po_min/po_max) et `area` (sous-requête degré).
+     *
+     * @param  Builder<Spell>  $query
+     */
+    private function applySpellTableSort(Builder $query, Request $request): void
+    {
+        $allowedSort = [
+            'id', 'name', 'description', 'level', 'pa', 'po', 'area', 'element', 'category',
+            'is_magic', 'allows_reaction', 'casting_time', 'ritual_available', 'cast_per_turn',
+            'cast_per_target', 'number_between_two_cast', 'duration', 'sight_line', 'po_editable',
+            'state', 'auto_update', 'read_level', 'write_level', 'dofusdb_id', 'created_at', 'updated_at',
+        ];
+
+        $sorts = $request->input('sorts');
+        if (is_array($sorts) && $sorts !== []) {
+            $applied = false;
+            foreach ($sorts as $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+                $field = $item['field'] ?? $item['column'] ?? null;
+                $dir = strtolower((string) ($item['dir'] ?? $item['order'] ?? 'asc'));
+                if (! is_string($field) || ! in_array($field, $allowedSort, true)) {
+                    continue;
+                }
+                if (! in_array($dir, ['asc', 'desc'], true)) {
+                    $dir = 'asc';
+                }
+                $this->applyOneSpellSortColumn($query, $field, $dir);
+                $applied = true;
+            }
+            if ($applied) {
+                return;
+            }
+        }
+
+        $sort = (string) $request->get('sort', 'id');
+        $order = strtolower((string) $request->get('order', 'desc'));
+        if (! in_array($order, ['asc', 'desc'], true)) {
+            $order = 'desc';
+        }
+        if (in_array($sort, $allowedSort, true)) {
+            $this->applyOneSpellSortColumn($query, $sort, $order);
+
+            return;
+        }
+
+        $query->latest();
+    }
+
+    /**
+     * @param  Builder<Spell>  $query
+     */
+    private function applyOneSpellSortColumn(Builder $query, string $field, string $dir): void
+    {
+        if ($field === 'po') {
+            $query->orderBy('po_min', $dir)->orderBy('po_max', $dir);
+
+            return;
+        }
+
+        if ($field === 'area') {
+            // Premier degré (ORDER BY degree) du premier effet lié — aligné sur getAreaAttribute.
+            $query->orderByRaw(
+                '(SELECT ed.area FROM effect_degrees ed
+                    INNER JOIN effect_spell es ON es.effect_id = ed.effect_id
+                    WHERE es.spell_id = spells.id
+                    ORDER BY ed.degree ASC
+                    LIMIT 1) '.$dir
+            );
+
+            return;
+        }
+
+        $query->orderBy($field, $dir);
     }
 
     /** Construit la cellule area (chips avec icône) pour le format cells. */
@@ -126,6 +205,7 @@ class SpellTableController extends Controller
         }
 
         $query = Spell::query()
+            ->visibleToUser($request->user())
             ->with(['createdBy', 'spellTypes', 'effects.degrees.effectSubEffects.subEffect'])
             ->withCount(['spellTypes', 'breeds', 'creatures', 'monsters']);
 
@@ -176,8 +256,7 @@ class SpellTableController extends Controller
             $query->where('auto_update', (int) $filters['auto_update']);
         }
 
-        $allowedSort = ['id', 'name', 'description', 'level', 'pa', 'po', 'area', 'element', 'category', 'is_magic', 'allows_reaction', 'casting_time', 'ritual_available', 'cast_per_turn', 'cast_per_target', 'number_between_two_cast', 'duration', 'sight_line', 'po_editable', 'state', 'auto_update', 'read_level', 'write_level', 'dofusdb_id', 'created_at', 'updated_at'];
-        $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
+        $this->applySpellTableSort($query, $request);
 
         $total = $query->count();
         $lastPage = (int) max(1, ceil($total / $limit));

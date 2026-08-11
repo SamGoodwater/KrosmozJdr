@@ -14,6 +14,7 @@ import {
     getConditionDispellableIcon,
     resolveEntityDissipable,
 } from "@/Composables/condition/conditionDisplay";
+import { toDisplayLabel } from "@/Utils/dofus/dofusHyperlinkText";
 
 const props = defineProps({
     condition: {
@@ -29,9 +30,10 @@ const props = defineProps({
 const displayName = computed(() => {
     const st = props.condition;
     if (st && typeof st === "object" && st.name != null && String(st.name).trim() !== "") {
-        return String(st.name).trim();
+        const n = toDisplayLabel(String(st.name));
+        if (n !== "") return n;
     }
-    const f = props.nameFallback != null ? String(props.nameFallback).trim() : "";
+    const f = props.nameFallback != null ? toDisplayLabel(String(props.nameFallback)) : "";
     return f !== "" ? f : "État";
 });
 

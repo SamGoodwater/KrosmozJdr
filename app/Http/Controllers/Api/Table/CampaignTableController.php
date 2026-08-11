@@ -60,7 +60,8 @@ class CampaignTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Campaign::query()->with(['createdBy']);
+        $query = Campaign::query()
+            ->visibleToUser($request->user())->with(['createdBy']);
 
         $user = $request->user();
         $userRole = $user?->role ?? User::ROLE_GUEST;

@@ -3,6 +3,7 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\VisibleToViewer;
 use App\Models\EffectUsage;
 use App\Models\ObjectEffect;
 use App\Models\Type\ConsumableType;
@@ -90,7 +91,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Consumable extends Model implements HasMedia
 {
     /** @use HasFactory<ConsumableFactory> */
-    use HasEntityImageMedia, HasFactory, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, SoftDeletes, VisibleToViewer;
 
     public const STATE_RAW = 'raw';
 

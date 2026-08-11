@@ -2,6 +2,7 @@
 
 namespace App\Models\Entity;
 
+use App\Models\Concerns\VisibleToViewer;
 use App\Models\Type\MonsterRace;
 use Database\Factories\MonsterFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -65,7 +66,7 @@ use Illuminate\Support\Carbon;
 class Monster extends Model
 {
     /** @use HasFactory<MonsterFactory> */
-    use HasFactory;
+    use HasFactory, VisibleToViewer;
     use SoftDeletes;
 
     const SIZE = [

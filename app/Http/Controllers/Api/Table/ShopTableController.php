@@ -46,6 +46,7 @@ class ShopTableController extends Controller
         }
 
         $query = Shop::query()
+            ->visibleToUser($request->user())
             ->with(['createdBy', 'npc.creature'])
             ->withCount('items');
 

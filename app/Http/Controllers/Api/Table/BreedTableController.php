@@ -38,6 +38,7 @@ class BreedTableController extends Controller
         }
 
         $query = Breed::query()
+            ->visibleToUser($request->user())
             ->with(['createdBy', 'elementOrientations', 'languages'])
             ->withCount(['spells']);
 

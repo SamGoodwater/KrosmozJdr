@@ -2,7 +2,7 @@
 /**
  * Panneau unifié « effets du sort » : liaison pivot effect_spell, édition par définition (degrés + seuils).
  */
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import axios from 'axios';
 import { Link, router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
@@ -23,6 +23,9 @@ import {
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 
 const props = defineProps({
+    /**
+     * @deprecated Non utilisé pour la liaison — recherche via GET /api/effects/definitions.
+     */
     availableEffects: { type: Array, default: () => [] },
     effectFormOptions: { type: Object, default: () => ({}) },
     spellEffectGroups: { type: Array, default: () => [] },
@@ -49,6 +52,10 @@ const attachLoading = ref(false);
 const detachLoading = ref(false);
 const errorMessage = ref('');
 const lastAttachedDefinitionId = ref(null);
+const definitionSearchResults = ref([]);
+const definitionSearchLoading = ref(false);
+let definitionSearchTimer = null;
+let definitionSearchSeq = 0;
 
 const previewLevel = ref(1);
 const previewData = ref(null);
@@ -71,6 +78,7 @@ watch(
     (groups) => {
         if (!groups?.length) {
             selectedAnchorId.value = null;
+            effectsEditorDirty.value = false;
             return;
         }
         const ids = groups.map((g) => g.anchor_effect_id);
@@ -93,44 +101,85 @@ const linkedDefinitionIds = computed(
     () => new Set((props.spellEffectGroups || []).map((g) => g.anchor_effect_id))
 );
 
-const availableDefinitionsForAttach = computed(() => {
-    const seen = new Set();
-    const out = [];
-    for (const e of props.availableEffects || []) {
-        const defId = e.effect_definition_id;
-        if (defId == null || seen.has(defId)) {
-            continue;
-        }
-        seen.add(defId);
-        out.push(e);
-    }
-    return out;
-});
-
-const filteredEffectsForAttach = computed(() => {
-    const q = effectLinkSearch.value.trim().toLowerCase();
-    return availableDefinitionsForAttach.value.filter((e) => {
-        if (linkedDefinitionIds.value.has(e.effect_definition_id)) {
-            return false;
-        }
-        if (!q) {
-            return true;
-        }
-        const name = (e.name || '').toLowerCase();
-        const slug = (e.slug || '').toLowerCase();
-        const deg = String(e.degree ?? '');
-        return name.includes(q) || slug.includes(q) || deg.includes(q);
-    });
-});
+const filteredEffectsForAttach = computed(() =>
+    (definitionSearchResults.value || []).filter(
+        (e) => e?.effect_definition_id != null && !linkedDefinitionIds.value.has(e.effect_definition_id),
+    ),
+);
 
 function effectOptionLabel(e) {
-    const base = e.name || e.slug || `Effet #${e.effect_definition_id}`;
-    const deg = e.degree != null && e.degree !== '' ? ` · D${e.degree}` : '';
-    return base + deg;
+    return e.name || e.slug || `Effet #${e.effect_definition_id}`;
 }
 
+/**
+ * Recherche serveur des définitions non liées (évite le payload massif d’édition).
+ */
+async function searchEffectDefinitions() {
+    if (!props.entityId) {
+        definitionSearchResults.value = [];
+        return;
+    }
+    const seq = ++definitionSearchSeq;
+    definitionSearchLoading.value = true;
+    try {
+        const { data } = await axios.get('/api/effects/definitions', {
+            params: {
+                q: effectLinkSearch.value.trim(),
+                limit: 30,
+                exclude_spell_id: props.entityId,
+            },
+        });
+        if (seq !== definitionSearchSeq) {
+            return;
+        }
+        definitionSearchResults.value = Array.isArray(data?.data) ? data.data : [];
+    } catch (err) {
+        if (seq !== definitionSearchSeq) {
+            return;
+        }
+        definitionSearchResults.value = [];
+        errorMessage.value =
+            err.response?.data?.message || 'Impossible de rechercher les définitions d’effet.';
+    } finally {
+        if (seq === definitionSearchSeq) {
+            definitionSearchLoading.value = false;
+        }
+    }
+}
+
+function scheduleDefinitionSearch() {
+    if (definitionSearchTimer) {
+        clearTimeout(definitionSearchTimer);
+    }
+    definitionSearchTimer = setTimeout(() => {
+        definitionSearchTimer = null;
+        searchEffectDefinitions();
+    }, 250);
+}
+
+watch(effectLinkSearch, () => {
+    effectToAttach.value = 0;
+    scheduleDefinitionSearch();
+});
+
+watch(
+    () => props.entityId,
+    () => {
+        effectToAttach.value = 0;
+        scheduleDefinitionSearch();
+    },
+    { immediate: true },
+);
+
+onBeforeUnmount(() => {
+    if (definitionSearchTimer) {
+        clearTimeout(definitionSearchTimer);
+    }
+});
+
 async function reloadSpellEffectData() {
-    await router.reload({ only: ['spellEffectGroups', 'spell', 'availableEffects'] });
+    await router.reload({ only: ['spellEffectGroups', 'spell'] });
+    await searchEffectDefinitions();
 }
 
 async function attachEffect() {
@@ -281,13 +330,31 @@ async function flushEffectGroupSave() {
     }
 }
 
-defineExpose({ flushEffectGroupSave });
+const effectsEditorDirty = ref(false);
+
+function onEffectGroupDirtyChange(dirty) {
+    effectsEditorDirty.value = Boolean(dirty);
+}
+
+defineExpose({
+    flushEffectGroupSave,
+    isDirty: effectsEditorDirty,
+});
 </script>
 
 <template>
     <Container>
         <div class="mb-4">
-            <h2 class="text-xl font-semibold border-b border-base-300 pb-2">Effets du sort</h2>
+            <div class="flex flex-wrap items-center gap-2 border-b border-base-300 pb-2">
+                <h2 class="text-xl font-semibold">Effets du sort</h2>
+                <span
+                    v-if="effectsEditorDirty"
+                    class="badge badge-sm badge-warning"
+                    title="Le groupe d’effets sélectionné a des changements non enregistrés"
+                >
+                    Modifications en attente
+                </span>
+            </div>
             <p class="text-sm text-base-content/70 mt-2">
                 Liez une ou plusieurs <strong>définitions</strong> d’effet (pivot <code class="text-xs">effect_spell</code>). Chaque
                 définition porte ses degrés : zone, seuil de niveau créature et sous-effets s’éditent dans le bloc ci-dessous.
@@ -298,6 +365,9 @@ defineExpose({ flushEffectGroupSave });
             >
                 Les changements du bloc d’effets sélectionné sont enregistrés avec le bouton
                 <strong>Mettre à jour</strong> du formulaire du sort (pied de page, au-dessus de cette section).
+                <span v-if="effectsEditorDirty" class="mt-1 block font-medium text-warning">
+                    Des modifications d’effets sont en attente d’enregistrement.
+                </span>
             </p>
         </div>
 
@@ -307,7 +377,7 @@ defineExpose({ flushEffectGroupSave });
             <div class="card-body py-4 gap-3">
                 <h3 class="card-title text-base">Rechercher et lier une définition d’effet</h3>
                 <p class="text-sm text-base-content/70">
-                    La liste est dédupliquée par définition ; les blocs déjà liés au sort sont masqués.
+                    Recherche serveur (30 résultats max) ; les blocs déjà liés au sort sont exclus.
                 </p>
                 <div class="flex flex-wrap gap-3 items-end">
                     <div class="flex-1 min-w-[200px]">
@@ -316,15 +386,31 @@ defineExpose({ flushEffectGroupSave });
                             v-model="effectLinkSearch"
                             type="search"
                             class="input input-bordered input-sm w-full"
-                            placeholder="Nom, slug, degré…"
+                            placeholder="Nom ou slug de définition…"
                             autocomplete="off"
                         />
                     </div>
                     <div class="flex-1 min-w-[220px]">
                         <label class="label text-xs">Définition à lier</label>
-                        <select v-model.number="effectToAttach" class="select select-bordered select-sm w-full">
-                            <option :value="0">— Choisir —</option>
-                            <option v-for="e in filteredEffectsForAttach" :key="e.effect_definition_id" :value="e.effect_definition_id">
+                        <select
+                            v-model.number="effectToAttach"
+                            class="select select-bordered select-sm w-full"
+                            :disabled="definitionSearchLoading"
+                        >
+                            <option :value="0">
+                                {{
+                                    definitionSearchLoading
+                                        ? 'Recherche…'
+                                        : filteredEffectsForAttach.length
+                                          ? '— Choisir —'
+                                          : 'Aucun résultat'
+                                }}
+                            </option>
+                            <option
+                                v-for="e in filteredEffectsForAttach"
+                                :key="e.effect_definition_id"
+                                :value="e.effect_definition_id"
+                            >
                                 {{ effectOptionLabel(e) }}
                             </option>
                         </select>
@@ -370,6 +456,7 @@ defineExpose({ flushEffectGroupSave });
             :hide-submit-button="hideEffectGroupSubmitButton"
             :save-without-inertia="embeddedInModal"
             :embedded-in-modal="embeddedInModal"
+            @dirty-change="onEffectGroupDirtyChange"
         />
 
         <div v-if="selectedGroup && patchUrlForSelectedGroup" class="mt-3">
@@ -383,11 +470,16 @@ defineExpose({ flushEffectGroupSave });
             </button>
         </div>
 
-        <div v-else-if="!spellEffectGroups.length" class="alert alert-info text-sm">
-            <span>
-                Aucun effet lié à ce sort pour l’instant. Utilisez la zone « Rechercher et lier » ci-dessus, ou créez une définition
-                dans l’admin puis rattachez-la ici.
-            </span>
+        <div
+            v-else-if="!spellEffectGroups.length"
+            class="rounded-box border border-dashed border-base-300 bg-base-200/40 p-4 text-sm space-y-1"
+        >
+            <p class="font-medium text-base-content">Aucun effet lié</p>
+            <p class="text-base-content/70">
+                Utilisez « Rechercher et lier » ci-dessus pour rattacher une définition existante
+                (pivot <code class="text-xs">effect_spell</code>). Les admins peuvent aussi créer une
+                définition vide puis la lier ici.
+            </p>
         </div>
 
         <details class="collapse collapse-arrow bg-base-200/40 border border-base-300 rounded-box mt-8">

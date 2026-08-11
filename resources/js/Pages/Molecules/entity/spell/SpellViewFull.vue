@@ -20,6 +20,7 @@ import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.v
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import SpellEffectsJournal from '@/Pages/Molecules/entity/spell/SpellEffectsJournal.vue';
+import SpellUsageBlock from '@/Pages/Molecules/entity/spell/SpellUsageBlock.vue';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
@@ -31,7 +32,7 @@ import { getByCharacteristicKey } from '@/Composables/store/useCharacteristicsSt
 import { getCharacteristicColorStyle, resolveDef } from '@/Composables/entity/useCharacteristicDisplay';
 import { resolveSpellCharacteristicKey } from '@/Composables/entity/useSpellAbilityCharacteristic';
 import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
-import { PROPERTY_DISPLAY_MODES } from '@/Utils/Entity/Constants';
+import { spellTypesCellHasRenderableContent } from '@/Utils/Entity/spellTypeVisual.js';
 
 const RESOLUTION_LABELS = Object.freeze({
     attack_roll: "Jet d'attaque (vs CA)",
@@ -223,11 +224,6 @@ const saveCharDef = computed(() => {
     return k ? getByCharacteristicKey('spell', k) : null;
 });
 
-const poEditableDef = computed(() => {
-    const val = props.spell?._data?.po_editable ?? props.spell?.poEditable;
-    return resolveDef('range_editable_spell', val, { sourceGroups: ['spell'] });
-});
-
 const ritualDef = computed(() =>
     resolveDef('ritual_available_spell', props.spell?.isRitual, { sourceGroups: ['spell'] }),
 );
@@ -293,22 +289,14 @@ function characteristicTooltipText(meta) {
     );
 }
 
-const usageFieldKeys = Object.freeze([
-    'pa',
-    'po_range',
-    'duration',
-    'cast_per_turn',
-    'cast_per_target',
-    'sight_line',
-    'cast_in_line',
-    'cast_in_diagonal',
-    'target_type',
-    'max_stack',
-    'global_cooldown',
-    'number_between_two_cast',
-    'po_editable',
-    'casting_time',
-]);
+const showSpellTypesCell = computed(() =>
+    spellTypesCellHasRenderableContent(getCell('spell_types')),
+);
+
+const hasStructuredEffects = computed(() => effectsDefinitions.value.length > 0);
+const hasLegacyEffectText = computed(
+    () => props.spell?.effect != null && String(props.spell.effect).trim() !== '',
+);
 
 const handleAction = async (actionKey) => {
     const spellId = props.spell.id;
@@ -497,36 +485,18 @@ const handleAction = async (actionKey) => {
 
         <section class="space-y-3">
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Utilisation</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                <div
-                    v-for="fieldKey in usageFieldKeys"
-                    :key="fieldKey"
-                    class="p-3 bg-base-200 entity-radius-box min-w-0"
-                >
-                    <EntityPropertyDisplay
-                        :field-key="fieldKey"
-                        :entity="spell"
-                        entity-type="spell"
-                        :display-mode="PROPERTY_DISPLAY_MODES.extended"
-                        :descriptors="descriptors"
-                        :table-meta="tableMeta"
-                        size="sm"
-                        class="text-primary-100"
-                    />
-                </div>
-
-                <div v-if="poEditableDef" class="p-3 bg-base-200 entity-radius-box min-w-0">
-                    <EntityPropertyDisplay
-                        field-key="po_editable"
-                        :entity="spell"
-                        entity-type="spell"
-                        :display-mode="PROPERTY_DISPLAY_MODES.extended"
-                        :descriptors="descriptors"
-                        :table-meta="tableMeta"
-                        size="sm"
-                        class="text-primary-100"
-                    />
-                </div>
+            <div class="p-3 bg-base-200 entity-radius-box min-w-0">
+                <SpellUsageBlock
+                    parts="meta"
+                    :entity="spell"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    :can-show-field="canShowField"
+                    :show-spell-types-cell="showSpellTypesCell"
+                    property-size="sm"
+                    row-class="gap-2 text-sm text-primary-100"
+                    hover-inner-gap-class="gap-2"
+                />
             </div>
         </section>
 
@@ -593,18 +563,54 @@ const handleAction = async (actionKey) => {
 
         <section class="space-y-3">
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
+            <div
+                v-if="hasStructuredEffects || hasLegacyEffectText"
+                class="p-3 bg-base-200/70 entity-radius-box space-y-2"
+            >
+                <SpellUsageBlock
+                    parts="effects"
+                    :entity="spell"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    :can-show-field="canShowField"
+                    :max-effect-rows="6"
+                    flush-effects
+                    resolution-class="mb-1 text-sm text-primary-200/80"
+                    cell-class="text-sm leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
+                />
+                <p
+                    v-if="hasStructuredEffects"
+                    class="text-xs text-primary-400"
+                >
+                    Détail par degré ci-dessous.
+                </p>
+            </div>
             <SpellEffectsJournal
-                v-if="effectsDefinitions.length > 0"
+                v-if="hasStructuredEffects"
                 :definitions="effectsDefinitions"
                 sub-effect-layout="large"
             />
-            <p
-                v-else-if="spell.effect && String(spell.effect).trim() !== ''"
-                class="text-sm text-primary-200 whitespace-pre-wrap wrap-break-word"
+            <div
+                v-else-if="hasLegacyEffectText"
+                class="rounded-box border border-dashed border-base-300 bg-base-200/40 p-3 space-y-1"
             >
-                {{ spell.effect }}
-            </p>
-            <p v-else class="text-sm text-primary-400 italic">Aucun effet structuré ni texte associé.</p>
+                <p class="text-xs font-medium text-primary-300">
+                    Texte d’effet libre (non structuré)
+                </p>
+                <p class="text-sm text-primary-200 whitespace-pre-wrap wrap-break-word">
+                    {{ spell.effect }}
+                </p>
+            </div>
+            <div
+                v-else
+                class="rounded-box border border-dashed border-base-300 bg-base-200/30 p-4 text-sm text-primary-400"
+            >
+                <p class="font-medium text-primary-300">Aucun effet renseigné</p>
+                <p class="mt-1 text-xs leading-relaxed">
+                    Pas de définition liée (pivot effets) ni de texte libre. Liez une définition
+                    depuis l’édition du sort, ou saisissez un résumé dans le champ effet.
+                </p>
+            </div>
         </section>
 
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">

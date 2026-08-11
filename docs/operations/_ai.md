@@ -8,6 +8,7 @@
 - `app/Console/Commands/Project/ProjectDataImportRulesTocCommand.php`
 - `app/Console/Commands/Project/ProjectClearOrphanFilesCommand.php`
 - `app/Console/Commands/Pages/PagesImportRulesTocCommand.php`
+- `app/Console/Commands/Effects/ConditionsStripDofusHyperlinksCommand.php`
 - `app/Console/Commands/Scrapping/`
 - `app/Services/Media/OrphanPublicMediaCleanupService.php`
 - `app/Services/Media/MediaCleanupDispatcher.php`

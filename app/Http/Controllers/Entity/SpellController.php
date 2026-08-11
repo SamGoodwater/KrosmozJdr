@@ -34,7 +34,9 @@ class SpellController extends Controller
     {
         $this->authorize('viewAny', Spell::class);
 
-        $query = Spell::with(['createdBy', 'creatures', 'breeds', 'spellTypes']);
+        $query = Spell::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'creatures', 'breeds', 'spellTypes']);
 
         // Recherche
         if (request()->has('search') && request()->search) {
@@ -59,11 +61,24 @@ class SpellController extends Controller
             $query->whereHas('spellTypes', fn ($q) => $q->where('spell_types.id', $spellTypeId));
         }
 
-        // Tri
-        $sortColumn = request()->get('sort', 'id');
-        $sortOrder = request()->get('order', 'desc');
+        // Tri (po / area = accessors → colonnes ou sous-requête, pas orderBy direct)
+        $sortColumn = (string) request()->get('sort', 'id');
+        $sortOrder = strtolower((string) request()->get('order', 'desc'));
+        if (! in_array($sortOrder, ['asc', 'desc'], true)) {
+            $sortOrder = 'desc';
+        }
 
-        if (in_array($sortColumn, ['id', 'name', 'level', 'pa', 'po', 'area', 'dofusdb_id', 'created_at'])) {
+        if ($sortColumn === 'po') {
+            $query->orderBy('po_min', $sortOrder)->orderBy('po_max', $sortOrder);
+        } elseif ($sortColumn === 'area') {
+            $query->orderByRaw(
+                '(SELECT ed.area FROM effect_degrees ed
+                    INNER JOIN effect_spell es ON es.effect_id = ed.effect_id
+                    WHERE es.spell_id = spells.id
+                    ORDER BY ed.degree ASC
+                    LIMIT 1) '.$sortOrder
+            );
+        } elseif (in_array($sortColumn, ['id', 'name', 'level', 'pa', 'dofusdb_id', 'created_at'], true)) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
@@ -167,22 +182,8 @@ class SpellController extends Controller
             ->orderBy('name')
             ->get();
 
-        $availableEffects = Effect::with('degrees')
-            ->orderBy('name')
-            ->get()
-            ->flatMap(function (Effect $e) {
-                return $e->degrees->map(fn ($d) => [
-                    'id' => $d->id,
-                    'name' => ($e->name ?? $e->slug ?? 'Effet #'.$e->id).' · D'.$d->degree,
-                    'slug' => $d->slug,
-                    'degree' => $d->degree,
-                    'target_type' => $e->target_type ?? Effect::TARGET_DIRECT,
-                    'area' => $d->area,
-                    'effect_definition_id' => $e->id,
-                ]);
-            })
-            ->values()
-            ->all();
+        // Liste complète non embarquée : recherche via GET /api/effects/definitions (SpellEffectsUnifiedSection).
+        $availableEffects = [];
 
         $editorData = app(EffectGroupEditorDataService::class);
 
@@ -308,7 +309,29 @@ class SpellController extends Controller
             'breeds.*' => 'exists:breeds,id',
         ]);
 
-        $spell->breeds()->sync($request->breeds);
+        /** @var list<int|string> $breedIds */
+        $breedIds = $request->input('breeds', []);
+        $existingPivots = $spell->breeds()
+            ->whereIn('breeds.id', $breedIds)
+            ->get()
+            ->keyBy('id');
+
+        $syncPayload = [];
+        foreach ($breedIds as $breedId) {
+            $id = (int) $breedId;
+            $existing = $existingPivots->get($id);
+            if ($existing !== null) {
+                $syncPayload[$id] = [
+                    'character_level' => (int) ($existing->pivot->character_level ?? 1),
+                    'slot_index' => (int) ($existing->pivot->slot_index ?? 0),
+                    'choice_order' => (int) ($existing->pivot->choice_order ?? 0),
+                ];
+            } else {
+                $syncPayload[$id] = [];
+            }
+        }
+
+        $spell->breeds()->sync($syncPayload);
 
         $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes']);
 
@@ -366,8 +389,11 @@ class SpellController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $spells = Spell::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Spell::class);
+                $spells = Spell::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($spells, 'spell');
                 $filename = 'spells-'.now()->format('Y-m-d-His').'.pdf';

@@ -3,6 +3,7 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\VisibleToViewer;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -59,7 +60,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class CreatureTrait extends Model implements HasMedia
 {
     /** @use HasFactory<\\Database\\Factories\\Entity\\CreatureTraitFactory> */
-    use HasEntityImageMedia, HasFactory, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, SoftDeletes, VisibleToViewer;
 
     public const STATE_RAW = 'raw';
 

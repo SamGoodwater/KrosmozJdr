@@ -66,7 +66,7 @@ Interprétation :
 - Taux `autre` élevé est **normal** tant que glyphes / pièges / placeholders `#1` restent hors périmètre
   (voir [MAPPINGS_HORS_PERIMETRE.md](../effects/MAPPINGS_HORS_PERIMETRE.md)).
 - Les téléports / échanges déjà mappés (`déplacer`) ne doivent plus rester en `autre` après **re-seed**
-  des mappings + **re-import** des sorts concernés.
+  des mappings + `scrapping:effects:reapply-mappings` (ou re-import des sorts concernés).
 
 ## Re-sync ciblé
 
@@ -74,5 +74,7 @@ Si seuls les mappings d’effets ont changé :
 
 ```bash
 php artisan db:seed --class=Database\\Seeders\\DofusdbEffectMappingSeeder --force
-php artisan scrapping:run --entity=spell --update-mode=force --max-items=0
+php artisan scrapping:effects:reapply-mappings
+# Optionnel si les params doivent être recalculés depuis DofusDB :
+# php artisan scrapping:run --entity=spell --update-mode=force --max-items=0
 ```

@@ -7,6 +7,10 @@ Le système d'effets décrit les effets de sorts et d'objets : effets principaux
 - Modèles : `Effect`, `SubEffect`, `EffectDegree`, `EffectUsage`, `ObjectEffect`, `DofusdbEffectMapping`.
 - Services : `app/Services/Effect/`, `app/Services/Scrapping/Core/Conversion/SpellEffects/`.
 - Admin/API : contrôleurs sous `app/Http/Controllers/Admin/` et `app/Http/Controllers/Api/Effect/`.
+- Canal canon pour les sorts : pivot `effect_spell` + `effects_definitions` (resource). L’ancien
+  `spell_effects` / `SpellEffect` n’est plus exposé dans `SpellResource`.
+- Liaison depuis la fiche sort : `GET /api/effects/definitions?q=&exclude_spell_id=` (pas de liste
+  complète dans le payload d’édition).
 
 ## Données
 
@@ -35,7 +39,10 @@ La durée numérique importée est également copiée dans `effect_sub_effect.du
 la valeur commune au moteur de résolution, à l’éditeur et à l’affichage. Un réimport met à jour les pivots
 existants (durée, params, condition liée) au lieu de les ignorer. Les états DofusDB créent/mettent à jour
 l’entité `Condition` et la liaison `condition_spell` ; les flags restent en snake_case
-(`cant_be_moved`, `cant_switch_position`, etc.). Les identifiants élémentaires DofusDB utilisent une
+(`cant_be_moved`, `cant_switch_position`, etc.). Les noms d’états DofusDB parfois fournis sous forme
+d’hyperlien Ankama (`{{spell,id,level::Libellé}}`) sont normalisés vers le libellé affichable à
+l’import, à la résolution et à l’affichage (`App\Support\DofusHyperlinkText`). Maintenance ponctuelle :
+`php artisan conditions:strip-dofus-hyperlinks`. Les identifiants élémentaires DofusDB utilisent une
 correspondance centralisée : 0 neutre, 1 feu, 2 eau, 3 terre et 4 air.
 
 Les effets « Bouclier » DofusDB (`1020`, `1039`, `1040`) sont mappés vers `protéger`, même lorsqu’ils

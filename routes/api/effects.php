@@ -25,6 +25,11 @@ Route::prefix('effects')->group(function () {
     Route::get('effects', [EffectController::class, 'index'])->name('effects.effects.index');
     Route::get('effects/{effect}', [EffectController::class, 'show'])->name('effects.effects.show');
 
+    // Recherche définitions (éditeurs sort) — session requise
+    Route::middleware(['web', 'auth'])->group(function () {
+        Route::get('definitions', [EffectController::class, 'searchDefinitions'])->name('effects.definitions.search');
+    });
+
     // ——— Écriture (game_master) ———
     Route::middleware(['web', 'auth', 'role:game_master'])->group(function () {
         Route::post('sub-effects', [SubEffectController::class, 'store'])->name('effects.sub-effects.store');

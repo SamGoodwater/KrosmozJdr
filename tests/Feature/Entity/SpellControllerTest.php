@@ -49,6 +49,86 @@ class SpellControllerTest extends TestCase
         $this->assertSame(6, $spell->global_cooldown);
     }
 
+    /**
+     * Auteur : peut mettre à jour les champs (FormRequest aligné sur SpellPolicy).
+     */
+    public function test_author_can_update_own_spell_fields(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_USER]);
+        $spell = Spell::factory()->create([
+            'created_by' => $author->id,
+            'name' => 'Ancien nom',
+        ]);
+
+        $response = $this->actingAs($author)
+            ->from(route('entities.spells.edit', $spell))
+            ->patch(route('entities.spells.update', $spell), [
+                'name' => 'Nouveau nom auteur',
+            ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame('Nouveau nom auteur', $spell->fresh()->name);
+    }
+
+    /**
+     * Non-auteur non-admin : refus de mise à jour des champs.
+     */
+    public function test_non_author_cannot_update_foreign_spell_fields(): void
+    {
+        $owner = User::factory()->create(['role' => User::ROLE_USER]);
+        $other = User::factory()->create(['role' => User::ROLE_USER]);
+        $spell = Spell::factory()->create([
+            'created_by' => $owner->id,
+            'name' => 'Sort verrouillé',
+        ]);
+
+        $response = $this->actingAs($other)
+            ->from(route('entities.spells.edit', $spell))
+            ->patch(route('entities.spells.update', $spell), [
+                'name' => 'Tentative',
+            ]);
+
+        $response->assertForbidden();
+        $this->assertSame('Sort verrouillé', $spell->fresh()->name);
+    }
+
+    /**
+     * updateBreeds conserve character_level / slot_index / choice_order des liaisons existantes.
+     */
+    public function test_update_breeds_preserves_existing_pivot_slots(): void
+    {
+        $user = User::factory()->create();
+        $spell = Spell::factory()->create(['created_by' => $user->id]);
+        $breedKeep = Breed::factory()->create();
+        $breedDrop = Breed::factory()->create();
+
+        $spell->breeds()->attach([
+            $breedKeep->id => [
+                'character_level' => 7,
+                'slot_index' => 2,
+                'choice_order' => 3,
+            ],
+            $breedDrop->id => [
+                'character_level' => 1,
+                'slot_index' => 0,
+                'choice_order' => 0,
+            ],
+        ]);
+
+        $response = $this->actingAs($user)
+            ->from(route('entities.spells.edit', $spell))
+            ->patch(route('entities.spells.updateBreeds', $spell), [
+                'breeds' => [$breedKeep->id],
+            ]);
+
+        $response->assertRedirect();
+        $pivot = $spell->fresh()->breeds()->where('breeds.id', $breedKeep->id)->first()?->pivot;
+        $this->assertNotNull($pivot);
+        $this->assertSame(7, (int) $pivot->character_level);
+        $this->assertSame(2, (int) $pivot->slot_index);
+        $this->assertSame(3, (int) $pivot->choice_order);
+    }
+
     public function test_spell_global_metadata_validation_rejects_out_of_range_values(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
@@ -596,6 +676,9 @@ class SpellControllerTest extends TestCase
             'spellEffectGroups',
         ]);
         $response->assertJsonPath('effectEntityType', 'spell');
+        // Payload allégé : pas de dump massif des définitions (recherche API dédiée).
+        $this->assertSame([], $response->json('availableEffects'));
+        $this->assertArrayNotHasKey('spellEffects', $response->json('spell'));
     }
 
     /**

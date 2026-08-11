@@ -75,7 +75,8 @@ class CreatureTraitTableController extends Controller
             $order = 'desc';
         }
 
-        $query = CreatureTrait::query()->with(['createdBy']);
+        $query = CreatureTrait::query()
+            ->visibleToUser($request->user())->with(['createdBy']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

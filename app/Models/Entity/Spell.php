@@ -3,9 +3,9 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\VisibleToViewer;
 use App\Models\Effect;
 use App\Models\Pivots\BreedSpellPivot;
-use App\Models\SpellEffect;
 use App\Models\Type\SpellType;
 use App\Models\User;
 use App\Support\AreaConstants;
@@ -13,7 +13,6 @@ use Database\Factories\Entity\SpellFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
@@ -79,6 +78,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell query()
+ * @method static Builder<static>|Spell visibleToUser(?User $user)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereArea($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAutoUpdate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastPerTarget($value)
@@ -144,7 +144,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Spell extends Model implements HasMedia
 {
     /** @use HasFactory<SpellFactory> */
-    use HasEntityImageMedia, HasFactory, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, SoftDeletes, VisibleToViewer;
 
     public const STATE_RAW = 'raw';
 
@@ -353,16 +353,6 @@ class Spell extends Model implements HasMedia
     }
 
     /**
-     * Les effets de ce sort (instances liées aux types d'effet).
-     *
-     * @return HasMany<SpellEffect, $this>
-     */
-    public function spellEffects()
-    {
-        return $this->hasMany(SpellEffect::class);
-    }
-
-    /**
      * Les monstres invoqués par ce sort.
      */
     public function monsters()
@@ -420,12 +410,28 @@ class Spell extends Model implements HasMedia
     /**
      * Zone d’impact affichée (premier degré du premier effet lié).
      *
+     * Réutilise la relation `effects` déjà eager-loadée quand elle est présente
+     * (évite un N+1 sur les listes / API tableau).
+     *
      * @return string|null Notation zone (point, line-1x9, …) ou null
      */
     public function getAreaAttribute(): ?string
     {
-        $effect = $this->effects()->with('degrees')->first();
-        $deg = $effect?->degrees->sortBy('degree')->first();
+        if ($this->relationLoaded('effects')) {
+            $effect = $this->effects->first();
+            if ($effect !== null && ! $effect->relationLoaded('degrees')) {
+                $effect->load('degrees');
+            }
+        } else {
+            $effect = $this->effects()->with('degrees')->first();
+        }
+
+        $degrees = $effect?->degrees;
+        if ($degrees === null || $degrees->isEmpty()) {
+            return null;
+        }
+
+        $deg = $degrees->sortBy('degree')->first();
 
         return $deg?->area;
     }

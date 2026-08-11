@@ -6,6 +6,7 @@ namespace App\Services\Effect;
 
 use App\Models\Entity\Spell;
 use App\Support\AreaNotation;
+use App\Support\DofusHyperlinkText;
 
 /**
  * Résumé texte et chips structurés des usages d’effets d’un sort (aligné tableau sorts / tooltips).
@@ -153,7 +154,9 @@ final class SpellEffectUsagesDataService
                         'life_steal_formula' => is_string($sub['life_steal_formula'] ?? null) ? trim((string) $sub['life_steal_formula']) : null,
                         'condition_id' => isset($sub['context']['condition_id']) && is_numeric($sub['context']['condition_id']) ? (int) $sub['context']['condition_id'] : null,
                         'condition_dofusdb_id' => isset($sub['context']['condition_dofusdb_id']) && is_numeric($sub['context']['condition_dofusdb_id']) ? (int) $sub['context']['condition_dofusdb_id'] : null,
-                        'condition_name' => is_string($sub['condition_name'] ?? null) && trim((string) $sub['condition_name']) !== '' ? trim((string) $sub['condition_name']) : null,
+                        'condition_name' => is_string($sub['condition_name'] ?? null) && trim((string) $sub['condition_name']) !== ''
+                            ? DofusHyperlinkText::toDisplayLabel(trim((string) $sub['condition_name']))
+                            : null,
                         'condition_context' => $this->conditionContextForChip($sub),
                         'cells_display' => is_string($sub['cells_display'] ?? null) && trim((string) $sub['cells_display']) !== '' ? trim((string) $sub['cells_display']) : null,
                         'movement_kind' => is_string($sub['movement_kind'] ?? null) && trim((string) $sub['movement_kind']) !== '' ? trim((string) $sub['movement_kind']) : null,
@@ -224,7 +227,9 @@ final class SpellEffectUsagesDataService
         return [
             'condition_id' => isset($ctx['condition_id']) && is_numeric($ctx['condition_id']) ? (int) $ctx['condition_id'] : null,
             'condition_dofusdb_id' => isset($ctx['condition_dofusdb_id']) && is_numeric($ctx['condition_dofusdb_id']) ? (int) $ctx['condition_dofusdb_id'] : null,
-            'condition_name' => is_string($ctx['condition_name'] ?? null) && trim((string) $ctx['condition_name']) !== '' ? trim((string) $ctx['condition_name']) : null,
+            'condition_name' => is_string($ctx['condition_name'] ?? null) && trim((string) $ctx['condition_name']) !== ''
+                ? DofusHyperlinkText::toDisplayLabel(trim((string) $ctx['condition_name']))
+                : null,
             'duration' => isset($ctx['duration']) && is_numeric($ctx['duration']) ? (int) $ctx['duration'] : null,
             'dispellable' => is_bool($ctx['dispellable'] ?? null) ? $ctx['dispellable'] : null,
             'target_mask' => is_string($ctx['target_mask'] ?? null) && trim((string) $ctx['target_mask']) !== '' ? trim((string) $ctx['target_mask']) : null,

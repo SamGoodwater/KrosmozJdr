@@ -3,29 +3,21 @@
  * SpellLineRow — Une ligne de la vue Line pour Spell
  *
  * @description
- * Effets via `resolveSpellEffectsDisplayCell` : résumé API (`SpellEffectChips`) ou fallback `effect` (chips).
- * Invocations : dans les chips / sous-effets uniquement (pas de section texte séparée).
- * Méta : `SpellMinimalUsageMetaRow` ; résolution au-dessus des effets.
+ * Méta / résolution / effets via {@link SpellUsageBlock} (même bloc que Minimal).
  */
 import { computed } from "vue";
 import { Link } from "@inertiajs/vue3";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
-import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
-import {
-    resolveSpellEffectsDisplayCell,
-    spellEffectsCellHasContent,
-} from "@/Composables/entity/useSpellEffectsDisplayCell";
 import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisual.js";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
-import SpellMinimalUsageMetaRow from "@/Pages/Molecules/entity/spell/SpellMinimalUsageMetaRow.vue";
+import SpellUsageBlock from "@/Pages/Molecules/entity/spell/SpellUsageBlock.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
-import { buildResolutionSummary } from "@/Utils/Entity/spellMinimalUsageDisplay";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -92,21 +84,7 @@ const spellTypesCell = computed(() => getCell("spell_types"));
 
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
 
-/** Effets : `effect_summary` (SpellEffectChips) si dispo, sinon fallback `effect` */
-const effectDisplayCell = computed(() =>
-    resolveSpellEffectsDisplayCell(entity.value, {
-        size: "xs",
-        context: "minimal",
-        ctx: props.tableMeta,
-        maxEffectRows: 5,
-    }),
-);
-const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
-
-const resolutionUsage = computed(() => buildResolutionSummary(entity.value));
-
 const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spellTypesCell.value));
-
 </script>
 
 <template>
@@ -166,7 +144,8 @@ const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spe
                         />
                     </div>
                 </div>
-                <SpellMinimalUsageMetaRow
+                <SpellUsageBlock
+                    parts="meta"
                     :entity="entity"
                     :descriptors="descriptors"
                     :table-meta="tableMeta"
@@ -185,23 +164,16 @@ const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spe
                 </p>
             </div>
         </div>
-        <div
-            v-if="hasEffects || resolutionUsage.show"
-            class="spell-effects-line w-full pt-2 mt-1 border-t border-base-300"
-        >
-            <p
-                v-if="resolutionUsage.show"
-                class="mb-1 text-sm text-base-content/75"
-            >
-                {{ resolutionUsage.text }}
-            </p>
-            <CellRenderer
-                v-if="hasEffects"
-                :cell="effectDisplayCell"
-                ui-color="primary"
-                class="leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
-            />
-        </div>
-
+        <SpellUsageBlock
+            parts="effects"
+            :entity="entity"
+            :descriptors="descriptors"
+            :table-meta="tableMeta"
+            :can-show-field="canShowField"
+            :max-effect-rows="5"
+            resolution-class="mb-1 text-sm text-base-content/75"
+            effects-wrapper-class="spell-effects-line w-full pt-2 mt-1 border-t border-base-300"
+            cell-class="leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
+        />
     </div>
 </template>

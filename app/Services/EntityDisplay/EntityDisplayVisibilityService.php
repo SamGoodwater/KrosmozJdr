@@ -8,6 +8,7 @@ use App\Models\ApplicationSetting;
 use App\Models\Entity\Creature;
 use App\Models\Page;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -169,6 +170,68 @@ final class EntityDisplayVisibilityService
         $level = $user !== null ? (int) ($user->role ?? 0) : User::ROLE_GUEST;
 
         return $level >= $this->minimumRoleForView($entityPermissionKey, $state);
+    }
+
+    /**
+     * Restreint une requête liste pour qu’elle ne renvoie que les lignes visibles
+     * selon {@see \App\Policies\Entity\BaseEntityPolicy::view} (admin, auteur, matrice, read/write_level).
+     *
+     * @param  Builder<Model>  $query
+     *
+     * @example
+     * $svc->constrainQueryToViewer(Spell::query(), $request->user(), 'spells');
+     */
+    public function constrainQueryToViewer(Builder $query, ?User $user, string $entityPermissionKey): void
+    {
+        if ($user?->isAdmin()) {
+            return;
+        }
+
+        $role = $user !== null ? (int) ($user->role ?? 0) : User::ROLE_GUEST;
+        $minRaw = $this->minimumRoleForView($entityPermissionKey, 'raw');
+        $minDraft = $this->minimumRoleForView($entityPermissionKey, 'draft');
+        $minPlayable = $this->minimumRoleForView($entityPermissionKey, 'playable');
+        $minArchived = $this->minimumRoleForView($entityPermissionKey, 'archived');
+
+        // Monstres / PNJ : pas de created_by sur la table (auteur via créature liée).
+        $hasCreatedBy = $query->getModel()->isFillable('created_by');
+
+        $query->where(function (Builder $outer) use ($user, $role, $minRaw, $minDraft, $minPlayable, $minArchived, $hasCreatedBy): void {
+            // Base fausse : sans branche OR, aucune ligne ne fuit.
+            $outer->whereRaw('0 = 1');
+
+            if ($user !== null && $hasCreatedBy) {
+                $outer->orWhere('created_by', $user->id);
+            }
+
+            if ($role >= $minPlayable) {
+                $outer->orWhere(function (Builder $q) use ($role): void {
+                    $q->where('state', 'playable')
+                        ->where('read_level', '<=', $role);
+                });
+            }
+
+            if ($role >= $minArchived) {
+                $outer->orWhere(function (Builder $q) use ($role): void {
+                    $q->where('state', 'archived')
+                        ->where('read_level', '<=', $role);
+                });
+            }
+
+            if ($user !== null && $role >= $minRaw) {
+                $outer->orWhere(function (Builder $q) use ($role): void {
+                    $q->where('state', 'raw')
+                        ->where('write_level', '<=', $role);
+                });
+            }
+
+            if ($user !== null && $role >= $minDraft) {
+                $outer->orWhere(function (Builder $q) use ($role): void {
+                    $q->where('state', 'draft')
+                        ->where('write_level', '<=', $role);
+                });
+            }
+        });
     }
 
     /**

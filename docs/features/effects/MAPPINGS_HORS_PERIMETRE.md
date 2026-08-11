@@ -9,12 +9,14 @@ mais sans `characteristic_key` convertible, et des effectId fréquents volontair
 | --- | --- | --- |
 | 95 | maxLifePoints / PV temporaires | `pv_temporaires` (`donner-pv-temporaires`) |
 | 98 | Puissance sorts | `mastery_bonus` |
+| 120 | Rembourse PA | `pa` (`booster`) |
 | 132 | % Tacle | `tacle` |
 | 133 | % Fuite | `fuite` |
 
 ## Déplacements convertibles (`déplacer`)
 
-Ces effectId ne doivent plus rester en `autre` après seed + re-import sorts :
+Ces effectId ne doivent plus rester en `autre` après seed des mappings +
+`php artisan scrapping:effects:reapply-mappings` (ou re-import sorts) :
 
 | ID Dofus | Concept |
 | --- | --- |
@@ -34,10 +36,14 @@ Ces effets restent importables pour diagnostic, mais ne reçoivent pas de clé i
 - % de caractéristiques principales (échelle différente de Krosmoz) ;
 - réductions magique/physique anciennes ;
 - puissance armes / **glyphes** / **pièges** / runes (ex. 400–402, 1091, 1026, 2160) ;
-- placeholders d’état `#1` (ex. 1160, 2960) ;
+- placeholders `#1` sans libellé utile (ex. **792** ~10k lignes, 1160, 2792/2794, 2960) ;
 - kill / purge d’effets / durée générique (ex. 141, 406, 1075) ;
 - échecs critiques (retiré du groupe spell) ;
 - états (`État #N`) : convertis via `appliquer-etat`, pas via booster.
+
+Le volume `autre` (~40 %) est donc **attendu** tant que glyphes / pièges / `#1`
+restent hors périmètre ; l’audit `scrapping:effects:audit-autre` mesure surtout
+les fuites convertibles (téléports mal reclassés, etc.).
 
 La liste machine est dans `ScrappingEffectsMapCommand::OUT_OF_SCOPE_CHARACTERISTIC_IDS`,
 `dofusdb_characteristic_to_krosmoz_spell.json` (`out_of_scope_ids`) et

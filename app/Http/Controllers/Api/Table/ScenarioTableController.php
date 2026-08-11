@@ -53,7 +53,8 @@ class ScenarioTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Scenario::query()->with(['createdBy']);
+        $query = Scenario::query()
+            ->visibleToUser($request->user())->with(['createdBy']);
 
         $user = $request->user();
         $userRole = $user?->role ?? User::ROLE_GUEST;

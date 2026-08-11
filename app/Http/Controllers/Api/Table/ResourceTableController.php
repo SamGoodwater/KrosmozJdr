@@ -78,6 +78,7 @@ class ResourceTableController extends Controller
         }
 
         $query = Resource::query()
+            ->visibleToUser($request->user())
             ->with(['createdBy', 'resourceType', 'recipeIngredients'])
             ->withCount(['recipeIngredients']);
 

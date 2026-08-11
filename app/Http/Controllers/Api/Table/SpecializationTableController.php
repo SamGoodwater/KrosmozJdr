@@ -46,6 +46,7 @@ class SpecializationTableController extends Controller
         }
 
         $query = Specialization::query()
+            ->visibleToUser($request->user())
             ->with([
                 'createdBy',
                 'capabilities' => fn ($q) => $q->orderBy('name'),

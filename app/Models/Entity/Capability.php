@@ -3,6 +3,7 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\VisibleToViewer;
 use App\Models\User;
 use Database\Factories\CapabilityFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -86,7 +87,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Capability extends Model implements HasMedia
 {
     /** @use HasFactory<CapabilityFactory> */
-    use HasEntityImageMedia, HasFactory, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, SoftDeletes, VisibleToViewer;
 
     public const STATE_RAW = 'raw';
 
