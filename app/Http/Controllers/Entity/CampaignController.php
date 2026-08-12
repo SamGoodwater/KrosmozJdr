@@ -389,8 +389,11 @@ class CampaignController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $campaigns = Campaign::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Campaign::class);
+                $campaigns = Campaign::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($campaigns, 'campaign');
                 $filename = 'campaigns-'.now()->format('Y-m-d-His').'.pdf';

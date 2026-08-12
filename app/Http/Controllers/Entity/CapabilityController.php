@@ -232,8 +232,11 @@ class CapabilityController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $capabilities = Capability::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Capability::class);
+                $capabilities = Capability::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($capabilities, 'capability');
                 $filename = 'capabilities-'.now()->format('Y-m-d-His').'.pdf';

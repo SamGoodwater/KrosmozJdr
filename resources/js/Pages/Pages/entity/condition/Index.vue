@@ -12,6 +12,7 @@ import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Condition } from "@/Models/Entity/Condition";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
+import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useScrapping } from "@/Composables/utils/useScrapping";
@@ -71,7 +72,8 @@ const tableConfig = computed(() => {
     const config = TableConfig.fromDescriptors(descriptors, ctx);
     return config.build(ctx);
 });
-const serverUrl = computed(() => `${route('api.tables.conditions')}?format=entities&limit=5000&_t=${refreshToken.value}`);
+const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters || {}));
+const serverBaseUrl = computed(() => route('api.tables.conditions'));
 
 // Fields config pour les formulaires (généré depuis les descriptors)
 const fieldsConfig = computed(() => {
@@ -304,7 +306,10 @@ const handleQuickEditSubmit = async (payload) => {
                 <EntityTanStackTable
                     entity-type="conditions"
                     :config="tableConfig"
-                    :server-url="serverUrl"
+                    server-side
+                    :server-base-url="serverBaseUrl"
+                    :refresh-token="refreshToken"
+                    :initial-filter-values="indexTableFilters"
                     :response-adapter="getEntityResponseAdapter('conditions')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"

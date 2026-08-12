@@ -433,8 +433,11 @@ class ResourceController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $resources = Resource::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Resource::class);
+                $resources = Resource::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($resources, 'resource');
                 $filename = 'resources-'.now()->format('Y-m-d-His').'.pdf';

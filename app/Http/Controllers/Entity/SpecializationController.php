@@ -298,8 +298,11 @@ class SpecializationController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $specializations = Specialization::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Specialization::class);
+                $specializations = Specialization::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($specializations, 'specialization');
                 $filename = 'specializations-'.now()->format('Y-m-d-His').'.pdf';

@@ -4,7 +4,8 @@
  *
  * @description
  * Affiche une liste compacte : icône / vignette + nom ; au survol, `SpellViewMinimal`.
- * Données attendues : `creature.spells[]` au format API table (SpellResource + usages d’effets), pour PA/PO/effets dans le tooltip.
+ * Données attendues : `creature.spells[]` (payload table allégé : id, nom, PA/PO, types…).
+ * L’aperçu Minimal fonctionne sans arbre d’effets ; les chips d’usages restent optionnelles.
  *
  * @props {Object|null} creature - Créature (souvent `monster.creature`) avec relation `spells`
  * @props {Object} [tableMeta] - Meta tableau / contexte pour les cellules

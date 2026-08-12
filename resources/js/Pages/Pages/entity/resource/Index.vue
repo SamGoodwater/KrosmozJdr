@@ -31,10 +31,7 @@ import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
-import {
-    normalizeIndexTableFilters,
-    useEntityIndexTableApiUrl,
-} from "@/Composables/entity/useEntityIndexTableFilters";
+import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 
 const props = defineProps({
     resources: {
@@ -99,7 +96,7 @@ const tableConfig = computed(() => {
 });
 
 const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
-const serverUrl = useEntityIndexTableApiUrl("api.tables.resources", () => props.filters, refreshToken);
+const serverBaseUrl = computed(() => route('api.tables.resources'));
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
@@ -336,7 +333,9 @@ const handleQuickEditSubmit = async (payload) => {
                 <EntityTanStackTable
                     entity-type="resources"
                     :config="tableConfig"
-                    :server-url="serverUrl"
+                    server-side
+                    :server-base-url="serverBaseUrl"
+                    :refresh-token="refreshToken"
                     :initial-filter-values="indexTableFilters"
                     :response-adapter="getEntityResponseAdapter('resources')"
                     v-model:selected-ids="selectedIds"

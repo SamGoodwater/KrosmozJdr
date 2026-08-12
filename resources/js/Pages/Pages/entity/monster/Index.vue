@@ -30,10 +30,7 @@ import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
-import {
-    normalizeIndexTableFilters,
-    useEntityIndexTableApiUrl,
-} from "@/Composables/entity/useEntityIndexTableFilters";
+import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 
 const props = defineProps({
     monsters: {
@@ -95,7 +92,7 @@ const tableConfig = computed(() => {
 });
 
 const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
-const serverUrl = useEntityIndexTableApiUrl("api.tables.monsters", () => props.filters, refreshToken);
+const serverBaseUrl = computed(() => route('api.tables.monsters'));
 
 const filteredIds = computed(() => selectedIds.value || []);
 
@@ -348,7 +345,9 @@ const handleQuickEditSubmit = async (payload) => {
                 <EntityTanStackTable
                     entity-type="monsters"
                     :config="tableConfig"
-                    :server-url="serverUrl"
+                    server-side
+                    :server-base-url="serverBaseUrl"
+                    :refresh-token="refreshToken"
                     :initial-filter-values="indexTableFilters"
                     :response-adapter="getEntityResponseAdapter('monsters')"
                     v-model:selected-ids="selectedIds"

@@ -4,6 +4,7 @@ namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
 use App\Models\Concerns\HasLeveledSections;
+use App\Models\Concerns\VisibleToViewer;
 use App\Models\Pivots\BreedSpellPivot;
 use App\Models\Section;
 use App\Models\User;
@@ -95,7 +96,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Breed extends Model implements HasMedia
 {
     /** @use HasFactory<BreedFactory> */
-    use HasEntityImageMedia, HasFactory, HasLeveledSections, SoftDeletes;
+    use HasEntityImageMedia, HasFactory, HasLeveledSections, SoftDeletes, VisibleToViewer;
 
     protected function sectionsPivotTable(): string
     {

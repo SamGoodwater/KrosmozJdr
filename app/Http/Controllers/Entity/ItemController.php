@@ -261,8 +261,11 @@ class ItemController extends Controller
 
             if (is_array($ids) && count($ids) > 0) {
                 // Génération pour plusieurs items
-                $items = Item::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Item::class);
+                $items = Item::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($items, 'item');
                 $filename = 'items-'.now()->format('Y-m-d-His').'.pdf';

@@ -282,8 +282,11 @@ class BreedController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $breeds = Breed::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Breed::class);
+                $breeds = Breed::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($breeds, 'breed');
                 $filename = 'breeds-'.now()->format('Y-m-d-His').'.pdf';

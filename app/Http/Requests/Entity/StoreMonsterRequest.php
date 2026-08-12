@@ -39,7 +39,7 @@ class StoreMonsterRequest extends FormRequest
             'size' => ['nullable', 'integer', 'min:0', 'max:5'],
             'is_boss' => ['nullable', 'boolean'],
             'boss_pa' => ['nullable', 'integer', 'min:0'],
-            'monster_race_id' => ['nullable', 'integer', 'exists:type_monster_races,id'],
+            'monster_race_id' => ['nullable', 'integer', 'exists:monster_races,id'],
             'state' => ['nullable', 'string', 'max:255'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:4'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:4'],

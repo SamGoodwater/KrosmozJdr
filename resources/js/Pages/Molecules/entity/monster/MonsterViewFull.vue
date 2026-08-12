@@ -32,6 +32,7 @@ import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, 
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
+import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 
 const props = defineProps({
     monster: {
@@ -211,6 +212,20 @@ const linkedCreatureTraits = computed(() => {
 });
 
 const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
+
+const linkedSpells = computed(() => {
+    const raw = creatureData.value?.spells;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedSpells = computed(() => linkedSpells.value.length > 0);
+
+const linkedSpellInvocations = computed(() => {
+    const raw = props.monster?._data?.spellInvocations ?? props.monster?.spellInvocations;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasSpellInvocations = computed(() => linkedSpellInvocations.value.length > 0);
 
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
@@ -420,6 +435,13 @@ const handleAction = async (actionKey) => {
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Traits</h3>
             <CreatureTraitBadges :traits="linkedCreatureTraits" size="sm" />
         </div>
+        <div
+            v-else
+            class="rounded-box border border-dashed border-base-300/70 bg-base-100/20 px-4 py-3 text-sm text-primary-300/80"
+            role="status"
+        >
+            Aucun trait renseigné pour ce monstre.
+        </div>
 
         <div
             v-if="hasLinkedLanguages"
@@ -429,6 +451,13 @@ const handleAction = async (actionKey) => {
         >
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Langues</h3>
             <EntityLanguagesInline :languages="linkedLanguages" :show-label="false" />
+        </div>
+        <div
+            v-else
+            class="rounded-box border border-dashed border-base-300/70 bg-base-100/20 px-4 py-3 text-sm text-primary-300/80"
+            role="status"
+        >
+            Aucune langue renseignée.
         </div>
 
         <!-- Carte caractéristiques complète (mode étendu) -->
@@ -442,6 +471,59 @@ const handleAction = async (actionKey) => {
                 :density="inModal ? 'labeled' : 'spacious'"
                 :runtime="creatureRuntimeStats"
             />
+        </section>
+        <section
+            v-else
+            class="pt-4 border-t border-base-300"
+            role="status"
+        >
+            <p class="text-sm text-primary-300/80">
+                Pas de créature associée — les caractéristiques ne peuvent pas être affichées.
+            </p>
+        </section>
+
+        <section
+            class="pt-4 border-t border-base-300 space-y-3"
+            role="region"
+            aria-label="Sorts de la créature"
+        >
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">
+                Sorts
+            </h3>
+            <MonsterCreatureSpellsList
+                v-if="hasLinkedSpells"
+                :creature="creatureData"
+                :table-meta="tableMeta"
+                :characteristic-runtime="characteristicRuntime || creatureRuntimeStats"
+                section-class="rounded-box border border-base-300 bg-base-100/40 p-4"
+            />
+            <p
+                v-else
+                class="rounded-box border border-dashed border-base-300/70 bg-base-100/20 px-4 py-3 text-sm text-primary-300/80"
+                role="status"
+            >
+                Aucun sort lié à la créature de ce monstre.
+            </p>
+        </section>
+
+        <section
+            v-if="hasSpellInvocations"
+            class="pt-2 space-y-2"
+            role="region"
+            aria-label="Invocations"
+        >
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">
+                Sorts d’invocation
+            </h3>
+            <ul class="flex list-none flex-wrap gap-2 p-0 m-0">
+                <li
+                    v-for="spell in linkedSpellInvocations"
+                    :key="spell.id"
+                    class="rounded-badge border border-base-300 bg-base-100/50 px-2.5 py-1 text-xs text-primary-100"
+                >
+                    {{ spell.name || `Sort #${spell.id}` }}
+                </li>
+            </ul>
         </section>
 
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">

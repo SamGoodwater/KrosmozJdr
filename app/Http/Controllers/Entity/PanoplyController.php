@@ -174,8 +174,11 @@ class PanoplyController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $panoplies = Panoply::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Panoply::class);
+                $panoplies = Panoply::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($panoplies, 'panoply');
                 $filename = 'panoplies-'.now()->format('Y-m-d-His').'.pdf';

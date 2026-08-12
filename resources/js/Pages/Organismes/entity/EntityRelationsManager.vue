@@ -63,7 +63,9 @@ const props = defineProps({
             relatedEntityType: null, // Type de l'entité liée (fallback: relationType)
             itemLabel: 'élément',
             itemLabelPlural: 'éléments',
-            pivotFields: null // Array de champs de pivot (ex: ['quantity'] ou ['quantity', 'price', 'comment'])
+            pivotFields: null, // Array de champs de pivot (ex: ['quantity'] ou ['quantity', 'price', 'comment'])
+            /** Si défini (ex: `spells`), complète la recherche locale via `api.tables.{type}`. */
+            searchApiEntityType: null,
         })
     }
 });
@@ -224,26 +226,96 @@ initializePivotValues();
 
 // Recherche
 const searchQuery = ref('');
+const remoteSearchItems = ref([]);
+const remoteSearchLoading = ref(false);
+let remoteSearchAbort = null;
 
-// Éléments filtrés selon la recherche
+const searchApiEntityType = computed(() => {
+    const raw = props.config?.searchApiEntityType;
+    return raw ? normalizeEntityType(raw) : null;
+});
+
+let remoteSearchTimer = null;
+
+async function runRemoteSearch(query) {
+    const entityKey = searchApiEntityType.value;
+    if (!entityKey || String(query || '').trim().length < 2) {
+        remoteSearchItems.value = [];
+        return;
+    }
+    remoteSearchAbort?.abort();
+    remoteSearchAbort = new AbortController();
+    remoteSearchLoading.value = true;
+    try {
+        const params = new URLSearchParams({
+            format: 'entities',
+            limit: '40',
+            search: String(query).trim(),
+        });
+        const res = await fetch(`${route(`api.tables.${entityKey}`)}?${params}`, {
+            headers: { Accept: 'application/json' },
+            credentials: 'same-origin',
+            signal: remoteSearchAbort.signal,
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const payload = await res.json();
+        const adapter = getEntityResponseAdapter(entityKey);
+        const adapted = typeof adapter === 'function' ? adapter(payload) : payload;
+        const rows = Array.isArray(adapted?.rows)
+            ? adapted.rows.map((r) => r?.rowParams?.entity || r).filter(Boolean)
+            : Array.isArray(payload?.entities)
+                ? payload.entities
+                : [];
+        remoteSearchItems.value = rows.map((row) => (row?._data ? row._data : row));
+    } catch (e) {
+        if (e?.name === 'AbortError') return;
+        warnDev('[EntityRelationsManager] remote search failed', e);
+        remoteSearchItems.value = [];
+    } finally {
+        remoteSearchLoading.value = false;
+    }
+}
+
+watch(searchQuery, (q) => {
+    if (!searchApiEntityType.value) {
+        remoteSearchItems.value = [];
+        return;
+    }
+    if (remoteSearchTimer) clearTimeout(remoteSearchTimer);
+    remoteSearchTimer = setTimeout(() => {
+        runRemoteSearch(q);
+    }, 250);
+});
+
+// Éléments filtrés selon la recherche (local + API optionnelle)
 const filteredAvailableItems = computed(() => {
-    if (!searchQuery.value || !props.availableItems.length) {
+    if (!searchQuery.value) {
         return [];
     }
     const query = searchQuery.value.toLowerCase();
     const searchFields = props.config.searchFields || ['name', 'description'];
-    
-    return props.availableItems.filter(item => {
-        const isAlreadySelected = localRelations.value.some(
-            selectedItem => selectedItem.id === item.id
-        );
-        if (isAlreadySelected) return false;
-        
-        return searchFields.some(field => {
+    const selectedIds = new Set(localRelations.value.map((item) => Number(item.id)));
+
+    const matchesLocal = (props.availableItems || []).filter((item) => {
+        if (selectedIds.has(Number(item.id))) return false;
+        return searchFields.some((field) => {
             const value = item[field];
             return value && String(value).toLowerCase().includes(query);
         });
     });
+
+    if (!searchApiEntityType.value) {
+        return matchesLocal;
+    }
+
+    const localIds = new Set(matchesLocal.map((item) => Number(item.id)));
+    const fromRemote = (remoteSearchItems.value || []).filter((item) => {
+        const id = Number(item?.id);
+        if (!Number.isFinite(id) || selectedIds.has(id) || localIds.has(id)) return false;
+        return true;
+    });
+
+    return [...matchesLocal, ...fromRemote];
 });
 
 // Construire le nom de la route

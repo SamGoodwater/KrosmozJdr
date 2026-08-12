@@ -310,8 +310,11 @@ class ShopController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $shops = Shop::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Shop::class);
+                $shops = Shop::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($shops, 'shop');
                 $filename = 'shops-'.now()->format('Y-m-d-His').'.pdf';

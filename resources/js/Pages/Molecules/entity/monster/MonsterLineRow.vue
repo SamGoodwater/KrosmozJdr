@@ -24,6 +24,7 @@ import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
+import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { cellHasRenderableContent, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
@@ -125,6 +126,10 @@ const sizeCell = computed(() => cellForKey("size"));
 const showSizeCell = computed(() => cellHasRenderableContent(sizeCell.value));
 const hostilityCell = computed(() => cellForKey("creature_hostility"));
 const showHostilityCell = computed(() => cellHasRenderableContent(hostilityCell.value));
+const bossPaCell = computed(() => cellForKey("boss_pa"));
+const showBossPaCell = computed(
+    () => isBossMonster.value && cellHasRenderableContent(bossPaCell.value),
+);
 
 const descriptionFull = computed(
     () =>
@@ -139,6 +144,16 @@ const linkedLanguages = computed(() => {
 });
 
 const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
+
+const linkedCreatureTraits = computed(() => {
+    const raw =
+        entity.value?._data?.creature?.creatureTraits ??
+        entity.value?.creature?.creatureTraits ??
+        [];
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
 
 </script>
 
@@ -219,6 +234,19 @@ const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
                             :cell="hostilityCell"
                             class="inline-flex text-xs font-medium text-base-content/85"
                         />
+                        <CellRenderer
+                            v-if="showBossPaCell"
+                            :cell="bossPaCell"
+                            class="inline-flex text-xs font-medium text-warning"
+                        />
+                    </div>
+                    <div
+                        v-if="hasLinkedCreatureTraits"
+                        class="flex flex-wrap gap-1"
+                        role="region"
+                        aria-label="Traits"
+                    >
+                        <CreatureTraitBadges :traits="linkedCreatureTraits" size="xs" />
                     </div>
                     <p
                         v-if="descriptionFull"

@@ -128,7 +128,8 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
                         displayFields: ['name', 'description'],
                         searchFields: ['name', 'description'],
                         itemLabel: 'scénario',
-                        itemLabelPlural: 'scénarios'
+                        itemLabelPlural: 'scénarios',
+                        searchApiEntityType: 'scenarios',
                     }"
                 />
             </template>
@@ -148,7 +149,8 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
                         displayFields: ['name', 'description'],
                         searchFields: ['name', 'description'],
                         itemLabel: 'campagne',
-                        itemLabelPlural: 'campagnes'
+                        itemLabelPlural: 'campagnes',
+                        searchApiEntityType: 'campaigns',
                     }"
                 />
             </template>
@@ -169,7 +171,9 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
                         searchFields: ['name', 'description'],
                         routeName: 'entities.monsters.updateSpellInvocations',
                         itemLabel: 'sort',
-                        itemLabelPlural: 'sorts'
+                        itemLabelPlural: 'sorts',
+                        relatedEntityType: 'spells',
+                        searchApiEntityType: 'spells',
                     }"
                 />
             </template>
@@ -189,7 +193,7 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
 
                     <CreatureTraitsEditor
                         v-if="monster.id"
-                        :relations="monster.creatureTraits || []"
+                        :relations="monster.creature?.creatureTraits || monster.creatureTraits || []"
                         :available-items="availableCreatureTraits"
                         :entity-id="monster.id"
                         route-name="entities.monsters.updateCreatureTraits"

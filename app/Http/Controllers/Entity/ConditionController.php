@@ -181,8 +181,11 @@ class ConditionController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $conditions = Condition::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Condition::class);
+                $conditions = Condition::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($conditions, 'condition');
                 $filename = 'conditions-'.now()->format('Y-m-d-His').'.pdf';

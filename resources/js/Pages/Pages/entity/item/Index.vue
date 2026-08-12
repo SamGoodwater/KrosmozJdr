@@ -30,10 +30,7 @@ import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors }
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
-import {
-    normalizeIndexTableFilters,
-    useEntityIndexTableApiUrl,
-} from "@/Composables/entity/useEntityIndexTableFilters";
+import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 
 // Props Inertia (gardées à titre documentaire, même si non utilisées directement ici)
 const props = defineProps({
@@ -70,7 +67,7 @@ const tableRows = ref([]);
 const refreshToken = ref(0);
 
 const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
-const serverUrl = useEntityIndexTableApiUrl("api.tables.items", () => props.filters, refreshToken);
+const serverBaseUrl = computed(() => route('api.tables.items'));
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
@@ -327,7 +324,9 @@ const clearSelection = () => {
                 <EntityTanStackTable
                     entity-type="items"
                     :config="tableConfig"
-                    :server-url="serverUrl"
+                    server-side
+                    :server-base-url="serverBaseUrl"
+                    :refresh-token="refreshToken"
                     :initial-filter-values="indexTableFilters"
                     :response-adapter="getEntityResponseAdapter('items')"
                     v-model:selected-ids="selectedIds"

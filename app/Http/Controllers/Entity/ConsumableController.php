@@ -234,8 +234,11 @@ class ConsumableController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $consumables = Consumable::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Consumable::class);
+                $consumables = Consumable::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($consumables, 'consumable');
                 $filename = 'consumables-'.now()->format('Y-m-d-His').'.pdf';

@@ -117,6 +117,14 @@ class MonsterTableControllerTest extends TestCase
         // Monster n'a pas createdBy directement, mais via creature
         $this->assertArrayHasKey('creature', $entity);
         $this->assertNotNull($entity['creature']);
+        $this->assertArrayHasKey('spells', $entity['creature']);
+        $this->assertIsArray($entity['creature']['spells']);
+        // Payload allégé : pas d’arbre effects / usages dans la table.
+        foreach ($entity['creature']['spells'] as $spellRow) {
+            $this->assertArrayNotHasKey('effects', $spellRow);
+            $this->assertArrayNotHasKey('effect_usages_chips', $spellRow);
+            $this->assertArrayNotHasKey('effect_usages_summary', $spellRow);
+        }
     }
 
     /**

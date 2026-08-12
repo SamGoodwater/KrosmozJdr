@@ -216,8 +216,11 @@ class NpcController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $npcs = Npc::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Npc::class);
+                $npcs = Npc::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($npcs, 'npc');
                 $filename = 'npcs-'.now()->format('Y-m-d-His').'.pdf';

@@ -308,8 +308,11 @@ class ScenarioController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $scenarios = Scenario::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Scenario::class);
+                $scenarios = Scenario::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($scenarios, 'scenario');
                 $filename = 'scenarios-'.now()->format('Y-m-d-His').'.pdf';

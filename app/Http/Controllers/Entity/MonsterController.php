@@ -143,7 +143,12 @@ class MonsterController extends Controller
         $this->authorize('view', $monster);
 
         $monster->load([
-            'creature.creatureTraits',
+            'creature' => fn ($q) => $q->with([
+                'creatureTraits',
+                'spells' => fn ($sq) => $sq
+                    ->orderBy('name')
+                    ->with(['spellTypes']),
+            ]),
             'monsterRace',
             'scenarios',
             'campaigns',
@@ -159,31 +164,44 @@ class MonsterController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Monster $monster)
+    public function edit(Request $request, Monster $monster)
     {
         $this->authorize('update', $monster);
 
         $monster->load(['creature.creatureTraits', 'monsterRace', 'scenarios', 'campaigns', 'spellInvocations', 'languages']);
 
-        // Charger toutes les entités disponibles pour la recherche
-        $availableScenarios = Scenario::select('id', 'name', 'description')
+        // Catalogues bornés (évite Spell::all / dumps 5k) ; la recherche locale reste utilisable sur ce sous-ensemble.
+        $availableScenarios = Scenario::query()
+            ->visibleToUser($request->user())
+            ->select('id', 'name', 'description')
             ->orderBy('name')
+            ->limit(200)
             ->get();
 
-        $availableCampaigns = Campaign::select('id', 'name', 'description')
+        $availableCampaigns = Campaign::query()
+            ->visibleToUser($request->user())
+            ->select('id', 'name', 'description')
             ->orderBy('name')
+            ->limit(200)
             ->get();
 
-        $availableSpells = Spell::select('id', 'name', 'description', 'level')
+        $availableSpells = Spell::query()
+            ->visibleToUser($request->user())
+            ->select('id', 'name', 'description', 'level')
             ->orderBy('name')
+            ->limit(100)
             ->get();
 
         $availableLanguages = LanguageResource::collection(
-            Language::query()->orderBy('name')->limit(5000)->get()
+            Language::query()->orderBy('name')->limit(500)->get()
         )->toArray(request());
 
         $availableCreatureTraits = CreatureTraitResource::collection(
-            CreatureTrait::query()->orderBy('name')->limit(5000)->get()
+            CreatureTrait::query()
+                ->visibleToUser($request->user())
+                ->orderBy('name')
+                ->limit(500)
+                ->get()
         )->toArray(request());
 
         return Inertia::render('Pages/entity/monster/Edit', [
@@ -323,8 +341,11 @@ class MonsterController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $monsters = Monster::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', Monster::class);
+                $monsters = Monster::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($monsters, 'monster');
                 $filename = 'monsters-'.now()->format('Y-m-d-His').'.pdf';

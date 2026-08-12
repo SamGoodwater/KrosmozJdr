@@ -131,8 +131,14 @@ class PdfService
             'name' => $entity->name ?? $entity->title ?? 'Sans nom',
             'description' => $entity->description ?? null,
             'created_at' => $entity->created_at?->format('d/m/Y H:i'),
-            'created_by' => $entity->createdBy?->name ?? 'Système',
+            'created_by' => self::resolveCreatedByLabel($entity, $entityType),
         ];
+
+        // Monstre / PNJ : le nom jouable est sur la créature liée.
+        if (in_array($entityType, ['monster', 'npc'], true) && $entity->relationLoaded('creature') && $entity->creature) {
+            $data['name'] = $entity->creature->name ?: $data['name'];
+            $data['description'] = $entity->creature->description ?? $data['description'];
+        }
 
         // Ajouter les données spécifiques selon le type
         $data = array_merge($data, self::getSpecificData($entity, $entityType));
@@ -151,8 +157,8 @@ class PdfService
         return match ($entityType) {
             'item' => ['itemType', 'createdBy', 'resources', 'panoplies'],
             'spell' => ['spellType', 'createdBy', 'breeds'],
-            'monster' => ['monsterRace', 'createdBy', 'creature'],
-            'npc' => ['creature', 'breed', 'specialization', 'createdBy'],
+            'monster' => ['monsterRace', 'creature.createdBy', 'creature'],
+            'npc' => ['creature.createdBy', 'creature', 'breed', 'specialization'],
             'breed' => ['createdBy', 'npcs', 'spells'],
             'panoply' => ['createdBy', 'items'],
             'campaign' => ['createdBy', 'users', 'scenarios'],
@@ -166,6 +172,20 @@ class PdfService
             'shop' => ['createdBy', 'npc', 'items', 'consumables', 'resources'],
             default => ['createdBy'],
         };
+    }
+
+    /**
+     * Libellé auteur : relation directe ou via créature (monstre / PNJ).
+     */
+    protected static function resolveCreatedByLabel(Model $entity, string $entityType): string
+    {
+        if (in_array($entityType, ['monster', 'npc'], true)) {
+            return $entity->creature?->createdBy?->name
+                ?? $entity->creature?->createdBy?->email
+                ?? 'Système';
+        }
+
+        return $entity->createdBy?->name ?? $entity->createdBy?->email ?? 'Système';
     }
 
     /**
@@ -195,8 +215,8 @@ class PdfService
                 'dofusdb_id' => $entity->dofusdb_id,
             ],
             'monster' => [
-                'level' => $entity->level,
-                'life' => $entity->life,
+                'level' => $entity->creature?->level ?? null,
+                'life' => $entity->creature?->life ?? null,
                 'size' => $entity->size,
                 'is_boss' => $entity->is_boss ?? false,
                 'monster_race' => $entity->monsterRace?->name ?? null,

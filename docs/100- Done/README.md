@@ -1,5 +1,18 @@
 # Ce qui a été fait
 
+## Août 2026 — PDF multi + index server-side (gros volumes)
+
+Les exports PDF multi-entités respectent la même visibilité que les listes
+(`visibleToUser`). Les index items / monstres / ressources / consommables /
+conditions paginent côté serveur (plus de plafond silencieux à 5000).
+
+## Août 2026 — Optimisation & polish monstres
+
+Pass type « sorts » côté monstres : validation race (`monster_races`), PDF multi
+filtré par visibilité, API tableau allégée (plus d’arbre d’effets de sorts par
+ligne), catalogues d’édition bornés + recherche API relations, vue Full enrichie
+(sorts, empty states), Line alignée (traits / PA boss).
+
 ## Août 2026 — Bibliothèques : plus de plafond à 50 fiches
 
 Les tableaux embarqués dans les pages Bibliothèque (CMS) paginent côté serveur :

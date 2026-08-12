@@ -181,8 +181,11 @@ class CreatureTraitController extends Controller
             }
 
             if (is_array($ids) && count($ids) > 0) {
-                $creatureTraits = CreatureTrait::whereIn('id', $ids)->get();
                 $this->authorize('viewAny', CreatureTrait::class);
+                $creatureTraits = CreatureTrait::query()
+                    ->visibleToUser(request()->user())
+                    ->whereIn('id', $ids)
+                    ->get();
 
                 $pdf = PdfService::generateForEntities($creatureTraits, 'creatureTrait');
                 $filename = 'creatureTraits-'.now()->format('Y-m-d-His').'.pdf';
