@@ -82,6 +82,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsPassive($value)
  * @property-read Collection<int, Condition> $conditions
  * @property-read int|null $conditions_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class Capability extends Model implements HasMedia

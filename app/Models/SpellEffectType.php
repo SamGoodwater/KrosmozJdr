@@ -11,7 +11,6 @@ use Illuminate\Support\Carbon;
 
 /**
  * @deprecated Table droppée — utiliser {@see SubEffect}. Conservé pour rollback / archives.
- *
  * @property int $id
  * @property string $name
  * @property string $slug

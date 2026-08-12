@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Les fiches de créatures peuvent désormais composer une caractéristique à partir de sa formule"
+    "description": "Les tableaux embarqués dans les pages Bibliothèque (CMS) paginent côté serveur :"
   },
   {
     "path": "backend/_ai.md",

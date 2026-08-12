@@ -12,7 +12,6 @@ use Illuminate\Support\Carbon;
 
 /**
  * @deprecated Table droppée — canal canon = Effect / effect_spell.
- *
  * @property int $id
  * @property int $spell_id
  * @property int $spell_effect_type_id

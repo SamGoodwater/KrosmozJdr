@@ -92,6 +92,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $object_effects_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePriceCalculated($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePriceCustom($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class Item extends Model implements HasMedia

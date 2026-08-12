@@ -86,6 +86,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $media_count
  * @property-read Collection<int, ObjectEffect> $objectEffects
  * @property-read int|null $object_effects_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class Consumable extends Model implements HasMedia

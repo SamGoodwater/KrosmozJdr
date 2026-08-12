@@ -851,6 +851,22 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  MEDIA_CLEANUP_JOBS {
+    id : char(36)
+    status : varchar(32)
+    mode : varchar(16)
+    requested_by : bigint(20) unsigned
+    payload : longtext
+    summary : longtext
+    progress_done : int(10) unsigned
+    progress_total : int(10) unsigned
+    error : text
+    started_at : timestamp
+    finished_at : timestamp
+    cancelled_at : timestamp
+    created_at : timestamp
+    updated_at : timestamp
+  }
   MIGRATIONS {
     id : int(10) unsigned
     migration : varchar(255)
@@ -1304,39 +1320,6 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
-  SPELL_EFFECT_TYPES {
-    id : bigint(20) unsigned
-    name : varchar(255)
-    slug : varchar(64)
-    category : varchar(32)
-    description : text
-    value_type : varchar(16)
-    element : varchar(16)
-    unit : varchar(32)
-    is_positive : tinyint(1)
-    sort_order : smallint(5) unsigned
-    dofusdb_effect_id : int(10) unsigned
-    created_at : timestamp
-    updated_at : timestamp
-  }
-  SPELL_EFFECTS {
-    id : bigint(20) unsigned
-    spell_id : bigint(20) unsigned
-    spell_effect_type_id : bigint(20) unsigned
-    value_min : int(11)
-    value_max : int(11)
-    dice_num : tinyint(3) unsigned
-    dice_side : tinyint(3) unsigned
-    duration : smallint(5) unsigned
-    target_scope : varchar(16)
-    zone_shape : varchar(32)
-    dispellable : tinyint(1)
-    order : smallint(5) unsigned
-    raw_description : text
-    summon_monster_id : bigint(20) unsigned
-    created_at : timestamp
-    updated_at : timestamp
-  }
   SPELL_INVOCATION {
     spell_id : bigint(20) unsigned
     monster_id : bigint(20) unsigned
@@ -1552,6 +1535,7 @@ erDiagram
   ITEM_TYPES }o--|| USERS : "FK created_by"
   ITEMS }o--|| USERS : "FK created_by"
   ITEMS }o--|| ITEM_TYPES : "FK item_type_id"
+  MEDIA_CLEANUP_JOBS }o--|| USERS : "FK requested_by"
   MONSTER_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   MONSTER_CAMPAIGN }o--|| MONSTERS : "FK monster_id"
   MONSTER_LANGUAGE }o--|| LANGUAGES : "FK language_id"
@@ -1630,9 +1614,6 @@ erDiagram
   SPECIALIZATION_SPELL }o--|| SPECIALIZATIONS : "FK specialization_id"
   SPECIALIZATION_SPELL }o--|| SPELLS : "FK spell_id"
   SPECIALIZATIONS }o--|| USERS : "FK created_by"
-  SPELL_EFFECTS }o--|| SPELL_EFFECT_TYPES : "FK spell_effect_type_id"
-  SPELL_EFFECTS }o--|| SPELLS : "FK spell_id"
-  SPELL_EFFECTS }o--|| MONSTERS : "FK summon_monster_id"
   SPELL_INVOCATION }o--|| MONSTERS : "FK monster_id"
   SPELL_INVOCATION }o--|| SPELLS : "FK spell_id"
   SPELL_TYPE }o--|| SPELLS : "FK spell_id"

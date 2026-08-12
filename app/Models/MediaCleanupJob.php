@@ -27,8 +27,25 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User|null $user
- *
  * @example MediaCleanupJob::query()->create(['status' => MediaCleanupJob::STATUS_QUEUED, 'mode' => MediaCleanupJob::MODE_DRY_RUN]);
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereCancelledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereError($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereFinishedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob wherePayload($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereProgressDone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereProgressTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereRequestedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereStartedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereSummary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaCleanupJob whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class MediaCleanupJob extends Model
 {

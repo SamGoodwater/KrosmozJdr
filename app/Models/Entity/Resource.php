@@ -91,6 +91,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $object_effects_count
  * @property-read Collection<int, resource> $recipeIngredients
  * @property-read int|null $recipe_ingredients_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class Resource extends Model implements HasMedia

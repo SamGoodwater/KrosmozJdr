@@ -148,6 +148,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsSystem($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastLoginAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNotificationPreferences($value)
+ * @property-read Collection<int, \App\Models\UserFavorite> $favorites
+ * @property-read int|null $favorites_count
  * @mixin \Eloquent
  */
 class User extends Authenticatable implements HasMedia, MustVerifyEmail

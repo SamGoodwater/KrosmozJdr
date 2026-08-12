@@ -55,6 +55,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class CreatureTrait extends Model implements HasMedia

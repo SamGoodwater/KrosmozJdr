@@ -2712,16 +2712,16 @@
         },
         {
             "name": "laravel-lang/lang",
-            "version": "15.34.0",
+            "version": "15.34.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laravel-Lang/lang.git",
-                "reference": "333718a7ce92c92bfb9f1625467792b048cfcfbd"
+                "reference": "3149a2cea69aa16469ebf44bcb58f3d25920a620"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laravel-Lang/lang/zipball/333718a7ce92c92bfb9f1625467792b048cfcfbd",
-                "reference": "333718a7ce92c92bfb9f1625467792b048cfcfbd",
+                "url": "https://api.github.com/repos/Laravel-Lang/lang/zipball/3149a2cea69aa16469ebf44bcb58f3d25920a620",
+                "reference": "3149a2cea69aa16469ebf44bcb58f3d25920a620",
                 "shasum": ""
             },
             "require": {
@@ -2782,7 +2782,7 @@
                     "type": "yoomoney"
                 }
             ],
-            "time": "2026-08-03T21:33:23+00:00"
+            "time": "2026-08-11T18:30:36+00:00"
         },
         {
             "name": "laravel-lang/locale-list",
@@ -3608,20 +3608,20 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v13.24.0",
+            "version": "v13.25.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "6d481710375d2aa67656922ef760cdd2b18bcfe0"
+                "reference": "ed36fe882bd4eed4e6ff75343cbad8dbda03fdba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/6d481710375d2aa67656922ef760cdd2b18bcfe0",
-                "reference": "6d481710375d2aa67656922ef760cdd2b18bcfe0",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/ed36fe882bd4eed4e6ff75343cbad8dbda03fdba",
+                "reference": "ed36fe882bd4eed4e6ff75343cbad8dbda03fdba",
                 "shasum": ""
             },
             "require": {
-                "brick/math": "^0.14.2 || ^0.15 || ^0.16 || ^0.17 || ^0.18",
+                "brick/math": "^0.14.2 || ^0.15 || ^0.16 || ^0.17 || ^0.18 || ^0.19",
                 "composer-runtime-api": "^2.2",
                 "doctrine/inflector": "^2.0.5",
                 "dragonmantank/cron-expression": "^3.4",
@@ -3831,7 +3831,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-08-04T15:54:59+00:00"
+            "time": "2026-08-11T13:56:22+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -4159,16 +4159,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.9.1",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "73cb188c785abfa7a7bec73487148202968274c6"
+                "reference": "d2d1aa8b35e072966c89bc0c66cf926e56767dc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/73cb188c785abfa7a7bec73487148202968274c6",
-                "reference": "73cb188c785abfa7a7bec73487148202968274c6",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/d2d1aa8b35e072966c89bc0c66cf926e56767dc4",
+                "reference": "d2d1aa8b35e072966c89bc0c66cf926e56767dc4",
                 "shasum": ""
             },
             "require": {
@@ -4205,7 +4205,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.10-dev"
+                    "dev-main": "2.11-dev"
                 }
             },
             "autoload": {
@@ -4262,7 +4262,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-09T14:10:38+00:00"
+            "time": "2026-08-11T16:06:25+00:00"
         },
         {
             "name": "league/config",
@@ -6904,16 +6904,16 @@
         },
         {
             "name": "spatie/laravel-medialibrary",
-            "version": "11.23.4",
+            "version": "11.23.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-medialibrary.git",
-                "reference": "9f28da2b45ba5330887b307140c7a00dd2b0adcf"
+                "reference": "8ca16954d607de1853c9609e88eb91eab43d67b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/9f28da2b45ba5330887b307140c7a00dd2b0adcf",
-                "reference": "9f28da2b45ba5330887b307140c7a00dd2b0adcf",
+                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/8ca16954d607de1853c9609e88eb91eab43d67b9",
+                "reference": "8ca16954d607de1853c9609e88eb91eab43d67b9",
                 "shasum": ""
             },
             "require": {
@@ -6998,7 +6998,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-medialibrary/issues",
-                "source": "https://github.com/spatie/laravel-medialibrary/tree/11.23.4"
+                "source": "https://github.com/spatie/laravel-medialibrary/tree/11.23.5"
             },
             "funding": [
                 {
@@ -7010,7 +7010,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-07T08:08:26+00:00"
+            "time": "2026-08-10T08:15:27+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
@@ -10810,16 +10810,16 @@
         },
         {
             "name": "laravel/pao",
-            "version": "v1.1.3",
+            "version": "v1.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pao.git",
-                "reference": "322f22095f3639551b64db9a13dfd8ab09c8206b"
+                "reference": "5aee99c8c37565e9c457c33f4d36aa363a389dc8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pao/zipball/322f22095f3639551b64db9a13dfd8ab09c8206b",
-                "reference": "322f22095f3639551b64db9a13dfd8ab09c8206b",
+                "url": "https://api.github.com/repos/laravel/pao/zipball/5aee99c8c37565e9c457c33f4d36aa363a389dc8",
+                "reference": "5aee99c8c37565e9c457c33f4d36aa363a389dc8",
                 "shasum": ""
             },
             "require": {
@@ -10833,15 +10833,15 @@
                 "phpunit/phpunit": "<12.5.23 || >=13.0.0 <13.1.7 || >=14.0.0"
             },
             "require-dev": {
-                "brianium/paratest": "^7.23.0",
-                "laravel/pint": "^1.30.0",
+                "brianium/paratest": "^7.20.0",
+                "laravel/pint": "^1.30.5",
                 "orchestra/testbench": "^10.11.0 || ^11.1.0",
-                "pestphp/pest": "^4.7.2 || ^5.0.1",
-                "pestphp/pest-plugin-type-coverage": "^4.0.4 || ^5.0.0",
-                "phpstan/phpstan": "^2.2.7",
-                "rector/rector": "^2.5.8",
-                "symfony/process": "^7.4.8 || ^8.1.0",
-                "symfony/var-dumper": "^7.4.8 || ^8.1.2"
+                "pestphp/pest": "^4.7.8 || ^5.1.0",
+                "pestphp/pest-plugin-type-coverage": "^4.0.4 || ^5.0.2",
+                "phpstan/phpstan": "^2.2.8",
+                "rector/rector": "^2.6.1",
+                "symfony/process": "^7.4.13 || ^8.1.0",
+                "symfony/var-dumper": "^7.4.15 || ^8.1.2"
             },
             "type": "library",
             "extra": {
@@ -10891,20 +10891,20 @@
                 "issues": "https://github.com/laravel/pao/issues",
                 "source": "https://github.com/laravel/pao"
             },
-            "time": "2026-07-29T18:38:14+00:00"
+            "time": "2026-08-10T23:45:44+00:00"
         },
         {
             "name": "laravel/pint",
-            "version": "v1.30.4",
+            "version": "v1.30.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "a96cb6eee2961905d2fce7207aefb80945bf6b28"
+                "reference": "fe4148c503a0e266353d61396b79bbf7f35122df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/a96cb6eee2961905d2fce7207aefb80945bf6b28",
-                "reference": "a96cb6eee2961905d2fce7207aefb80945bf6b28",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/fe4148c503a0e266353d61396b79bbf7f35122df",
+                "reference": "fe4148c503a0e266353d61396b79bbf7f35122df",
                 "shasum": ""
             },
             "require": {
@@ -10912,19 +10912,19 @@
                 "ext-mbstring": "*",
                 "ext-tokenizer": "*",
                 "ext-xml": "*",
-                "php": "^8.2.0"
+                "php": "^8.3.0"
             },
             "require-dev": {
                 "composer/semver": "^3.4.4",
                 "friendsofphp/php-cs-fixer": "^3.95.18",
-                "illuminate/view": "^12.65.0",
+                "illuminate/view": "^13.24.0",
                 "larastan/larastan": "^3.10.0",
-                "laravel-zero/framework": "^12.1.0",
+                "laravel-zero/framework": "^13.0.0",
                 "laravel/agent-detector": "^2.0.2",
                 "laravel/prompts": "^0.3.22",
                 "mockery/mockery": "^1.6.12",
                 "nunomaduro/termwind": "^2.4.0",
-                "pestphp/pest": "^3.8.7"
+                "pestphp/pest": "^4.7.8"
             },
             "bin": [
                 "builds/pint"
@@ -10961,20 +10961,20 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2026-08-05T16:47:22+00:00"
+            "time": "2026-08-10T15:35:50+00:00"
         },
         {
             "name": "laravel/sail",
-            "version": "v1.65.0",
+            "version": "v1.66.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sail.git",
-                "reference": "d4b92139858d2a189a6302ca133e494f58afe20b"
+                "reference": "ebf286104306c50c8fd060cbc57de35b9dffa779"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sail/zipball/d4b92139858d2a189a6302ca133e494f58afe20b",
-                "reference": "d4b92139858d2a189a6302ca133e494f58afe20b",
+                "url": "https://api.github.com/repos/laravel/sail/zipball/ebf286104306c50c8fd060cbc57de35b9dffa779",
+                "reference": "ebf286104306c50c8fd060cbc57de35b9dffa779",
                 "shasum": ""
             },
             "require": {
@@ -11024,7 +11024,7 @@
                 "issues": "https://github.com/laravel/sail/issues",
                 "source": "https://github.com/laravel/sail"
             },
-            "time": "2026-08-03T18:00:17+00:00"
+            "time": "2026-08-10T13:09:27+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -11111,20 +11111,20 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.13.4",
+            "version": "1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "07d290f0c47959fd5eed98c95ee5602db07e0b6a"
+                "reference": "8680aa248f8e07bc8fb43f56f0f5fc77a0c96aae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/07d290f0c47959fd5eed98c95ee5602db07e0b6a",
-                "reference": "07d290f0c47959fd5eed98c95ee5602db07e0b6a",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/8680aa248f8e07bc8fb43f56f0f5fc77a0c96aae",
+                "reference": "8680aa248f8e07bc8fb43f56f0f5fc77a0c96aae",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0"
+                "php": "^8.0"
             },
             "conflict": {
                 "doctrine/collections": "<1.6.8",
@@ -11159,15 +11159,15 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/DeepCopy/issues",
-                "source": "https://github.com/myclabs/DeepCopy/tree/1.13.4"
+                "source": "https://github.com/myclabs/DeepCopy/tree/1.14.0"
             },
             "funding": [
                 {
-                    "url": "https://tidelift.com/funding/github/packagist/myclabs/deep-copy",
-                    "type": "tidelift"
+                    "url": "https://github.com/mnapoli",
+                    "type": "github"
                 }
             ],
-            "time": "2025-08-01T08:46:24+00:00"
+            "time": "2026-08-11T10:17:44+00:00"
         },
         {
             "name": "nunomaduro/collision",

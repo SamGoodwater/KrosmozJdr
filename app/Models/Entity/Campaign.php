@@ -78,6 +78,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class Campaign extends Model implements HasMedia

@@ -80,6 +80,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class Scenario extends Model implements HasMedia

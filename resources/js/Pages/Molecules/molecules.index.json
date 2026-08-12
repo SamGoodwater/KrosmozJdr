@@ -868,6 +868,13 @@
     "file": "entity/spell/SpellUsageCharacteristicTooltipPanel.vue"
   },
   {
+    "name": "SpellUsageBlock",
+    "description": "Bloc usage unifié (Minimal / Line / bandeau Full) : méta PA-PO + résolution + chips d’effets.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellUsageBlock.vue"
+  },
+  {
     "name": "SpellTypesMultiField",
     "description": "Multi-sélection des types de sort (pivot) — `v-model` : tableau d'IDs. Utilise SelectSearchField en mode multiple pour un affichage compact.",
     "props": [],
@@ -1095,18 +1102,7 @@
   {
     "name": "SpecializationViewMinimal",
     "description": "SpecializationViewMinimal — Vue Minimal pour Specialization",
-    "props": [
-      {
-        "name": "specialization",
-        "type": "Specialization",
-        "desc": "- Instance du modèle Specialization"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/specialization/SpecializationViewMinimal.vue"
   },
@@ -1151,18 +1147,7 @@
   {
     "name": "ShopViewMinimal",
     "description": "ShopViewMinimal — Vue Minimal pour Shop",
-    "props": [
-      {
-        "name": "shop",
-        "type": "Shop",
-        "desc": "- Instance du modèle Shop"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/shop/ShopViewMinimal.vue"
   },
@@ -1246,6 +1231,13 @@
     "props": [],
     "slots": [],
     "file": "entity/shared/EntityThumb.vue"
+  },
+  {
+    "name": "EntitySearchHitCard",
+    "description": "EntitySearchHitCard — Ligne résultat recherche (thumb + titre + sous-titre).",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntitySearchHitCard.vue"
   },
   {
     "name": "EntityPropertyDisplay",
@@ -1351,6 +1343,13 @@
     "file": "entity/shared/EntityPropertyDisplay.vue"
   },
   {
+    "name": "EntityMinimalTitle",
+    "description": "EntityMinimalTitle — Titre cliquable des cartes Minimal (ouvre la modal, pas la page).",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityMinimalTitle.vue"
+  },
+  {
     "name": "EntityMinimalCard",
     "description": "EntityMinimalCard — Composant de base pour les cartes Minimal.",
     "props": [
@@ -1395,18 +1394,7 @@
   {
     "name": "ScenarioViewMinimal",
     "description": "ScenarioViewMinimal — Vue Minimal pour Scenario",
-    "props": [
-      {
-        "name": "scenario",
-        "type": "Scenario",
-        "desc": "- Instance du modèle Scenario"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/scenario/ScenarioViewMinimal.vue"
   },
@@ -1444,18 +1432,7 @@
   {
     "name": "ResourceTypeViewMinimal",
     "description": "ResourceTypeViewMinimal — Vue Minimal pour ResourceType",
-    "props": [
-      {
-        "name": "resourceType",
-        "type": "ResourceType",
-        "desc": "- Instance du modèle ResourceType"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/resource-type/ResourceTypeViewMinimal.vue"
   },
@@ -1667,12 +1644,7 @@
       {
         "name": "npc",
         "type": "Npc",
-        "desc": "- Instance du modèle NPC"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
+        "desc": ""
       }
     ],
     "slots": [],
@@ -1903,18 +1875,7 @@
   {
     "name": "CreatureTraitViewMinimal",
     "description": "CreatureTraitViewMinimal — Vue minimal (CreatureTrait)",
-    "props": [
-      {
-        "name": "creatureTrait",
-        "type": "Object",
-        "desc": "- Instance CreatureTrait (facade toCell)"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/creature-trait/CreatureTraitViewMinimal.vue"
   },
@@ -2004,18 +1965,7 @@
   {
     "name": "ConditionViewMinimal",
     "description": "ConditionViewMinimal — Vue minimal (Condition)",
-    "props": [
-      {
-        "name": "condition",
-        "type": "Object",
-        "desc": "- Instance Condition (facade toCell)"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/condition/ConditionViewMinimal.vue"
   },
@@ -2159,18 +2109,7 @@
   {
     "name": "CampaignViewMinimal",
     "description": "CampaignViewMinimal — Vue Minimal pour Campaign",
-    "props": [
-      {
-        "name": "campaign",
-        "type": "Campaign",
-        "desc": "- Instance du modèle Campaign"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/campaign/CampaignViewMinimal.vue"
   },
@@ -2657,6 +2596,11 @@
         "name": "title",
         "type": "string",
         "desc": "- Titre optionnel du groupe (ex. \"Stats de combat\")"
+      },
+      {
+        "name": "density",
+        "type": "'icon'|'labeled'|'spacious'|boolean",
+        "desc": "- Densité d’affichage (boolean compact BC)"
       }
     ],
     "slots": [],

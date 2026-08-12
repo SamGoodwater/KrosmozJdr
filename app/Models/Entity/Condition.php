@@ -90,6 +90,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class Condition extends Model implements HasMedia

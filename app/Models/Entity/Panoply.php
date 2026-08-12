@@ -53,6 +53,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withoutTrashed()
  * @property string|null $dofusdb_id
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereDofusdbId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class Panoply extends Model

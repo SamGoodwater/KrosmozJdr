@@ -66,6 +66,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withoutTrashed()
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class Shop extends Model implements HasMedia

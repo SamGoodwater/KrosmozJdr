@@ -68,6 +68,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereShortDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization visibleToUser(?\App\Models\User $user)
  * @mixin \Eloquent
  */
 class Specialization extends Model implements HasMedia
