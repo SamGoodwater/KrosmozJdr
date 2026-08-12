@@ -3,13 +3,15 @@
  * SectionEntityTableRead Template
  *
  * Rend un vrai TanStack Table d'entités via EntityTanStackTable.
- * Source: API Table v2 (`api.tables.{entity}`) au format `entities`.
+ * Source: API Table v2 (`api.tables.{entity}`) au format `entities`,
+ * en pagination serveur (évite le plafond historique `limit: 50` → 2 pages).
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityConfig, getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getEntitySingularRouteKey } from "@/Composables/entity/entityRouteRegistry";
+import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vue";
 
 /**
@@ -42,11 +44,7 @@ const filters = computed(() => {
     return typeof raw === "object" && raw !== null ? raw : {};
 });
 
-const limit = computed(() => {
-    const n = props.settings?.limit ?? props.data?.limit ?? 50;
-    const num = Number(n);
-    return Number.isFinite(num) ? Math.min(500, Math.max(1, num)) : 50;
-});
+const initialFilterValues = computed(() => normalizeIndexTableFilters(filters.value));
 
 const entityConfig = computed(() => getEntityConfig(entityType.value));
 
@@ -78,28 +76,14 @@ const tableConfig = computed(() => {
 
 const responseAdapter = computed(() => getEntityResponseAdapter(entityType.value));
 
-const serverUrl = computed(() => {
+const serverBaseUrl = computed(() => {
     if (!entityConfig.value) return "";
 
-    let baseUrl = "";
     try {
-        baseUrl = route(`api.tables.${entityType.value}`);
+        return route(`api.tables.${entityType.value}`);
     } catch {
         return "";
     }
-
-    const params = new URLSearchParams();
-    params.set("format", "entities");
-    params.set("limit", String(limit.value));
-
-    for (const [key, value] of Object.entries(filters.value || {})) {
-        if (value === null || typeof value === "undefined" || value === "") continue;
-        const normalized = typeof value === "boolean" ? (value ? "1" : "0") : String(value);
-        params.append(`filters[${key}]`, normalized);
-        params.append(key, normalized);
-    }
-
-    return `${baseUrl}?${params.toString()}`;
 });
 
 /**
@@ -163,7 +147,7 @@ const handleRowDoubleClick = (row) => {
 
 <template>
     <div class="section-entity-table-content">
-        <div v-if="!entityConfig || !tableConfig || !responseAdapter" class="alert alert-warning">
+        <div v-if="!entityConfig || !tableConfig || !responseAdapter || !serverBaseUrl" class="alert alert-warning">
             <i class="fa-solid fa-triangle-exclamation"></i>
             <span>Type d'entité non supporté pour ce tableau.</span>
         </div>
@@ -172,7 +156,9 @@ const handleRowDoubleClick = (row) => {
             v-else
             :entity-type="entityType"
             :config="tableConfig"
-            :server-url="serverUrl"
+            server-side
+            :server-base-url="serverBaseUrl"
+            :initial-filter-values="initialFilterValues"
             :response-adapter="responseAdapter"
             @action="handleTableAction"
             @row-dblclick="handleRowDoubleClick"

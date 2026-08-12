@@ -25,7 +25,9 @@ class PanoplyController extends Controller
     {
         $this->authorize('viewAny', Panoply::class);
 
-        $query = Panoply::with(['createdBy', 'items']);
+        $query = Panoply::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'items']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

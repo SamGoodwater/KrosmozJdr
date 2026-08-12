@@ -27,7 +27,9 @@ class ShopController extends Controller
     {
         $this->authorize('viewAny', Shop::class);
 
-        $query = Shop::with(['createdBy', 'npc', 'items']);
+        $query = Shop::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'npc', 'items']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

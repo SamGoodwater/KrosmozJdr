@@ -7,10 +7,12 @@ Le système d'effets décrit les effets de sorts et d'objets : effets principaux
 - Modèles : `Effect`, `SubEffect`, `EffectDegree`, `EffectUsage`, `ObjectEffect`, `DofusdbEffectMapping`.
 - Services : `app/Services/Effect/`, `app/Services/Scrapping/Core/Conversion/SpellEffects/`.
 - Admin/API : contrôleurs sous `app/Http/Controllers/Admin/` et `app/Http/Controllers/Api/Effect/`.
-- Canal canon pour les sorts : pivot `effect_spell` + `effects_definitions` (resource). L’ancien
-  `spell_effects` / `SpellEffect` n’est plus exposé dans `SpellResource`.
+- Canal canon pour les sorts : pivot `effect_spell` + `effects_definitions` (resource). Les tables
+  legacy `spell_effects` / `spell_effect_types` sont droppées.
 - Liaison depuis la fiche sort : `GET /api/effects/definitions?q=&exclude_spell_id=` (pas de liste
   complète dans le payload d’édition).
+- Index API : `GET /api/effects/effects?q=&per_page=` (paginé).
+- Reclassement post-import : `php artisan scrapping:effects:reapply-mappings`.
 
 ## Données
 

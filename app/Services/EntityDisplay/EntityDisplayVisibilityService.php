@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Rôle minimal (valeur {@see User::$role}) pour voir une entité dans un état donné,
@@ -193,8 +194,9 @@ final class EntityDisplayVisibilityService
         $minPlayable = $this->minimumRoleForView($entityPermissionKey, 'playable');
         $minArchived = $this->minimumRoleForView($entityPermissionKey, 'archived');
 
+        // Ne pas utiliser isFillable(): Model::unguard() le rend toujours vrai.
         // Monstres / PNJ : pas de created_by sur la table (auteur via créature liée).
-        $hasCreatedBy = $query->getModel()->isFillable('created_by');
+        $hasCreatedBy = Schema::hasColumn($query->getModel()->getTable(), 'created_by');
 
         $query->where(function (Builder $outer) use ($user, $role, $minRaw, $minDraft, $minPlayable, $minArchived, $hasCreatedBy): void {
             // Base fausse : sans branche OR, aucune ligne ne fuit.

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Type d'effet de sort (référentiel).
+ * @deprecated Table droppée — utiliser {@see SubEffect}. Conservé pour rollback / archives.
  *
  * @property int $id
  * @property string $name

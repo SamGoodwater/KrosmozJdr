@@ -34,7 +34,9 @@ class CampaignController extends Controller
     {
         $this->authorize('viewAny', Campaign::class);
 
-        $query = Campaign::with(['createdBy', 'users', 'scenarios']);
+        $query = Campaign::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'users', 'scenarios']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

@@ -34,6 +34,16 @@ final class SpellEffectsConversionService
 
     private const SUB_EFFECT_SLUG_SELF_APPLY_STATE = 's-appliquer-etat';
 
+    /**
+     * effectId Dofus → stateId Dofus (catalogue conditions) quand la description
+     * n’est pas « État #N » mais l’effet applique quand même un état fixe.
+     *
+     * @var array<int, int>
+     */
+    private const FORCED_STATE_ID_BY_EFFECT_ID = [
+        150 => 250, // Rend la cible invisible → Invisible
+    ];
+
     private SpellActionBudgetService $actionBudgetService;
 
     private SpellResolutionInferenceService $resolutionInferenceService;
@@ -123,7 +133,8 @@ final class SpellEffectsConversionService
             }
 
             $definition = $this->effectCatalog->get($effectId, $lang);
-            $stateData = $this->resolveConditionData($instance, $definition, $lang);
+            $stateData = $this->resolveConditionData($instance, $definition, $lang)
+                ?? $this->resolveForcedStateData($effectId, $lang);
 
             if ($stateData !== null) {
                 $subEffects[] = [
@@ -632,6 +643,26 @@ final class SpellEffectsConversionService
 
         $stateId = $this->extractStateIdFromInstance($instance);
         if ($stateId <= 0) {
+            return null;
+        }
+
+        $state = $this->conditionCatalog->get($stateId, $lang);
+        if ($state === []) {
+            return ['id' => $stateId, 'name' => null];
+        }
+
+        return $state;
+    }
+
+    /**
+     * États forcés pour des effectId connus (ex. invisibilité 150 → state 250).
+     *
+     * @return array<string, mixed>|null
+     */
+    private function resolveForcedStateData(int $effectId, string $lang): ?array
+    {
+        $stateId = self::FORCED_STATE_ID_BY_EFFECT_ID[$effectId] ?? null;
+        if ($stateId === null || $stateId <= 0) {
             return null;
         }
 

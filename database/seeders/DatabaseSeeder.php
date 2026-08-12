@@ -31,7 +31,6 @@ class DatabaseSeeder extends Seeder
             ObjectCharacteristicSeeder::class,
             DofusdbCharacteristicIdSeeder::class,
             SpellCharacteristicSeeder::class,
-            SpellEffectTypeSeeder::class,
             SubEffectSeeder::class,
             ScrappingEntityMappingSeeder::class,
             ScrappingEntityMappingCharacteristicSeeder::class,

@@ -1,12 +1,19 @@
 # Ce qui a été fait
 
+## Août 2026 — Bibliothèques : plus de plafond à 50 fiches
+
+Les tableaux embarqués dans les pages Bibliothèque (CMS) paginent côté serveur :
+on voit l’ensemble du scrap (milliers de sorts / objets / etc.), plus seulement
+les 50 premières lignes (qui donnaient l’impression de n’avoir que 2 pages).
+
 ## Août 2026 — Qualité effets « autre » + listes sécurisées
 
 Les téléports déjà mappés en `déplacer` mais restés en `autre` se reclasse via
 `scrapping:effects:reapply-mappings` (sans re-import). Le remboursement de PA
-(Dofus 120) est mappé en booster PA. L’API des définitions d’effet est paginée.
-La table legacy `spell_effects` est retirée. Les tableaux d’entités appliquent
-le même filtre de visibilité que les sorts.
+(Dofus 120) est mappé en booster PA. L’invisibilité (150) devient l’état
+`Invisible` via `appliquer-etat`. L’API des définitions d’effet est paginée.
+Les tables legacy `spell_effects` / `spell_effect_types` sont retirées. Les
+listes Inertia et tableaux API filtrent la visibilité comme la policy `view`.
 
 ## Août 2026 — Polish UI sorts (usage unifié)
 

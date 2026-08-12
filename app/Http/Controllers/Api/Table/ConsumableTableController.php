@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Gate;
 class ConsumableTableController extends Controller
 {
     use InterpretsEntityTableSort;
+    use PaginatesEntityTable;
 
     public function index(Request $request): JsonResponse
     {
@@ -39,8 +40,6 @@ class ConsumableTableController extends Controller
         }
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-        $limit = (int) $request->integer('limit', 5000);
-        $limit = max(1, min($limit, 20000));
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -81,7 +80,11 @@ class ConsumableTableController extends Controller
         $allowedSort = ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
-        $rows = $query->limit($limit)->get();
+        $pageResult = $this->paginateEntityTable($query, $request);
+        $rows = $pageResult['rows'];
+        $limit = $pageResult['limit'];
+        $page = $pageResult['page'];
+        $pagination = $pageResult['pagination'];
 
         $capabilities = [
             'viewAny' => Gate::allows('viewAny', Consumable::class),
@@ -154,6 +157,7 @@ class ConsumableTableController extends Controller
                         'sort' => $sort,
                         'order' => $order,
                         'limit' => $limit,
+                        'page' => $page,
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => [
@@ -163,6 +167,7 @@ class ConsumableTableController extends Controller
                         ])->values()->all(),
                         'consumable_type_id' => $consumableTypeOptions,
                     ],
+                    'pagination' => $pagination,
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -298,6 +303,7 @@ class ConsumableTableController extends Controller
                     'sort' => $sort,
                     'order' => $order,
                     'limit' => $limit,
+                    'page' => $page,
                 ],
                 'capabilities' => $capabilities,
                 'filterOptions' => [
@@ -307,6 +313,7 @@ class ConsumableTableController extends Controller
                     ])->values()->all(),
                     'consumable_type_id' => $consumableTypeOptions,
                 ],
+                'pagination' => $pagination,
             ],
             'rows' => $tableRows,
         ]);

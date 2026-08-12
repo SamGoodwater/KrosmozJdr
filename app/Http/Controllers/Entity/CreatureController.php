@@ -33,7 +33,9 @@ class CreatureController extends Controller
     {
         $this->authorize('viewAny', Creature::class);
 
-        $query = Creature::with(['createdBy', 'npc', 'monster']);
+        $query = Creature::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'npc', 'monster']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

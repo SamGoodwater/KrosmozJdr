@@ -71,7 +71,8 @@ return [
     145 => ['frapper', 'element', null],
     146 => ['autre', 'none', null],
     149 => ['autre', 'none', null],
-    150 => ['autre', 'none', null],
+    // Invisibilité Dofus → état Invisible (dofusdb state 250), via appliquer-etat.
+    150 => ['appliquer-etat', 'none', null],
     152 => ['retirer', 'characteristic', 'chance'],
     153 => ['retirer', 'characteristic', 'vitality'],
     154 => ['retirer', 'characteristic', 'agi'],

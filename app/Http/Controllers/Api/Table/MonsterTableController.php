@@ -40,6 +40,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class MonsterTableController extends Controller
 {
+    use PaginatesEntityTable;
+
     public function __construct(
         private readonly SpellEffectUsagesDataService $spellEffectUsagesDataService
     ) {}
@@ -63,8 +65,6 @@ class MonsterTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-        $limit = (int) $request->integer('limit', 5000);
-        $limit = max(1, min($limit, 20000));
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -154,7 +154,11 @@ class MonsterTableController extends Controller
             $query->whereNotIn('id', $blacklistIds);
         }
 
-        $rows = $query->limit($limit)->get();
+        $pageResult = $this->paginateEntityTable($query, $request);
+        $rows = $pageResult['rows'];
+        $limit = $pageResult['limit'];
+        $page = $pageResult['page'];
+        $pagination = $pageResult['pagination'];
 
         $capabilities = [
             'viewAny' => Gate::allows('viewAny', Monster::class),
@@ -338,9 +342,11 @@ class MonsterTableController extends Controller
                         'sort' => $sort,
                         'order' => $order,
                         'limit' => $limit,
+                        'page' => $page,
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
+                    'pagination' => $pagination,
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -466,6 +472,7 @@ class MonsterTableController extends Controller
                 ],
                 'capabilities' => $capabilities,
                 'filterOptions' => $filterOptions,
+                'pagination' => $pagination,
             ],
             'rows' => $tableRows,
         ]);

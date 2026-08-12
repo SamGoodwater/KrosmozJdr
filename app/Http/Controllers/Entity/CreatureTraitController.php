@@ -28,7 +28,9 @@ class CreatureTraitController extends Controller
     {
         $this->authorize('viewAny', CreatureTrait::class);
 
-        $query = CreatureTrait::with(['createdBy', 'creatures']);
+        $query = CreatureTrait::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'creatures']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

@@ -29,7 +29,9 @@ class ScenarioController extends Controller
     {
         $this->authorize('viewAny', Scenario::class);
 
-        $query = Scenario::with(['createdBy', 'users', 'campaigns']);
+        $query = Scenario::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'users', 'campaigns']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

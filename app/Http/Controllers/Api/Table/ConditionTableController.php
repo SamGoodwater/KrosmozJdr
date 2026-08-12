@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Gate;
 class ConditionTableController extends Controller
 {
     use InterpretsEntityTableSort;
+    use PaginatesEntityTable;
 
     private const STATE_COLORS = [
         'raw' => 'neutral',
@@ -61,8 +62,6 @@ class ConditionTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-        $limit = (int) $request->integer('limit', 5000);
-        $limit = max(1, min($limit, 20000));
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -112,7 +111,11 @@ class ConditionTableController extends Controller
         $allowedSort = ['id', 'name', 'state', 'dissipable', 'read_level', 'write_level', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
-        $rows = $query->limit($limit)->get();
+        $pageResult = $this->paginateEntityTable($query, $request);
+        $rows = $pageResult['rows'];
+        $limit = $pageResult['limit'];
+        $page = $pageResult['page'];
+        $pagination = $pageResult['pagination'];
 
         $capabilities = [
             'viewAny' => Gate::allows('viewAny', Condition::class),
@@ -171,9 +174,11 @@ class ConditionTableController extends Controller
                         'sort' => $sort,
                         'order' => $order,
                         'limit' => $limit,
+                        'page' => $page,
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
+                    'pagination' => $pagination,
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -310,6 +315,7 @@ class ConditionTableController extends Controller
                 ],
                 'capabilities' => $capabilities,
                 'filterOptions' => $filterOptions,
+                'pagination' => $pagination,
             ],
             'rows' => $tableRows,
         ]);

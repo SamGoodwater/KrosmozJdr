@@ -12,7 +12,8 @@
 - `GET /api/effects/definitions` — recherche defs pour liaison sort (payload edit allégé)
 - `GET /api/effects/effects?q=&per_page=` — index paginé (plus de dump massif)
 - `scrapping:effects:reapply-mappings` — reclasse les `autre` déjà mappés (ex. téléports)
-- Canal sorts : `effects_definitions` (table legacy `spell_effects` droppée)
+- Canal sorts : `effects_definitions` (legacy `spell_effects` / `spell_effect_types` droppés)
+- Invisibilité Dofus 150 → `appliquer-etat` (state 250)
 - `database/seeders/DofusdbEffectMappingSeeder.php`
 
 ## Hors périmètre

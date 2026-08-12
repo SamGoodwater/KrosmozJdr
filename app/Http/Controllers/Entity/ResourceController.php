@@ -38,7 +38,9 @@ class ResourceController extends Controller
 
         $user = request()->user();
 
-        $query = Resource::with(['createdBy', 'resourceType']);
+        $query = Resource::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'resourceType']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

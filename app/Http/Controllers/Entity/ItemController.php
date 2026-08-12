@@ -31,7 +31,9 @@ class ItemController extends Controller
     {
         $this->authorize('viewAny', Item::class);
 
-        $query = Item::with(['createdBy', 'itemType', 'resources']);
+        $query = Item::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'itemType', 'resources']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

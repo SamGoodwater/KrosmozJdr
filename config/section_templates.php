@@ -63,6 +63,7 @@ return [
         'settings' => [
             'entity' => 'spells',
             'filters' => [],
+            // Legacy : la lecture utilise la pagination serveur (ignore ce plafond).
             'limit' => 50,
         ],
         'data' => [

@@ -659,7 +659,7 @@ class CharacteristicController extends Controller
     /**
      * Met à jour les fichiers seeders à partir de la BDD (`php artisan scrapping:seeders:export`).
      * Exporte notamment les définitions JSON caractéristiques sous `characteristic-definitions/`
-     * (fichiers `*-definition.json` par groupe), ainsi que spell_effect_types, mappings scrapping et types item.
+     * (fichiers `*-definition.json` par groupe), ainsi que mappings scrapping et types item.
      * Réservé admin / super_admin. Désactivé en production (commande guardée).
      */
     public function runExportSeederData(Request $request): JsonResponse

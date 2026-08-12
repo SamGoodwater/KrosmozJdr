@@ -51,6 +51,7 @@ class SpecializationController extends Controller
         $this->authorize('viewAny', Specialization::class);
 
         $query = Specialization::query()
+            ->visibleToUser(request()->user())
             ->with([
                 'createdBy',
                 'npcs',

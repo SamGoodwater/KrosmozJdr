@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Gate;
 class ScenarioTableController extends Controller
 {
     use InterpretsEntityTableSort;
+    use PaginatesEntityTable;
 
     public function index(Request $request): JsonResponse
     {
@@ -39,8 +40,6 @@ class ScenarioTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-        $limit = (int) $request->integer('limit', 5000);
-        $limit = max(1, min($limit, 20000));
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -102,7 +101,11 @@ class ScenarioTableController extends Controller
         $allowedSort = ['id', 'name', 'slug', 'state', 'is_public', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
-        $rows = $query->limit($limit)->get();
+        $pageResult = $this->paginateEntityTable($query, $request);
+        $rows = $pageResult['rows'];
+        $limit = $pageResult['limit'];
+        $page = $pageResult['page'];
+        $pagination = $pageResult['pagination'];
 
         $capabilities = [
             'viewAny' => Gate::allows('viewAny', Scenario::class),
@@ -172,9 +175,11 @@ class ScenarioTableController extends Controller
                         'sort' => $sort,
                         'order' => $order,
                         'limit' => $limit,
+                        'page' => $page,
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
+                    'pagination' => $pagination,
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -294,6 +299,7 @@ class ScenarioTableController extends Controller
                 ],
                 'capabilities' => $capabilities,
                 'filterOptions' => $filterOptions,
+                'pagination' => $pagination,
             ],
             'rows' => $tableRows,
         ]);

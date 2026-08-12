@@ -8,7 +8,6 @@ use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\Scrapping\ScrappingEntityMappingTarget;
-use App\Models\SpellEffectType;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
 use App\Models\Type\ResourceType;
@@ -43,11 +42,10 @@ class ScrappingSeedersExportCommand extends Command
     protected $signature = 'scrapping:seeders:export
                             {--characteristics : Exporter uniquement characteristics}
                             {--formulas : Exporter les formules de conversion (tables characteristic_creature/object/spell)}
-                            {--spell-effect-types : Exporter uniquement spell_effect_types}
                             {--scrapping-mappings : Exporter les règles de mapping scrapping (DofusDB → Krosmoz)}
                             {--item-types : Exporter resource_types, consumable_types, item_types (types item scrapping)}';
 
-    protected $description = 'Exporte définitions JSON caractéristiques, spell_effect_types, mapping scrapping et types item vers database/seeders/data/';
+    protected $description = 'Exporte définitions JSON caractéristiques, mapping scrapping et types item vers database/seeders/data/';
 
     protected $aliases = ['db:export-seeder-data'];
 
@@ -64,7 +62,7 @@ class ScrappingSeedersExportCommand extends Command
         }
 
         $all = ! $this->option('characteristics') && ! $this->option('formulas')
-            && ! $this->option('spell-effect-types') && ! $this->option('scrapping-mappings')
+            && ! $this->option('scrapping-mappings')
             && ! $this->option('item-types');
 
         $dir = database_path('seeders/data');
@@ -83,9 +81,6 @@ class ScrappingSeedersExportCommand extends Command
         }
         if ($all || $this->option('formulas')) {
             $this->exportConversionFormulasInGroups($dir);
-        }
-        if ($all || $this->option('spell-effect-types')) {
-            $this->exportSpellEffectTypes($dir);
         }
         if ($all || $this->option('scrapping-mappings')) {
             $this->exportScrappingMappings($dir);
@@ -121,9 +116,6 @@ class ScrappingSeedersExportCommand extends Command
         }
         if ($all || $this->option('formulas')) {
             // formules exportées avec --characteristics
-        }
-        if ($all || $this->option('spell-effect-types')) {
-            $files[] = 'spell_effect_types.php';
         }
         if ($all || $this->option('scrapping-mappings')) {
             $files[] = 'scrapping_entity_mappings.php';
@@ -210,32 +202,6 @@ class ScrappingSeedersExportCommand extends Command
     private function exportConversionFormulasInGroups(string $dir): void
     {
         $this->info('Les formules de conversion sont dans les tables de groupe (characteristic_*). Utilisez --characteristics pour tout exporter.');
-    }
-
-    private function exportSpellEffectTypes(string $dir): void
-    {
-        $rows = SpellEffectType::query()
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get()
-            ->map(fn ($m) => [
-                'slug' => $m->slug,
-                'name' => $m->name,
-                'category' => $m->category,
-                'description' => $m->description,
-                'value_type' => $m->value_type,
-                'element' => $m->element,
-                'unit' => $m->unit,
-                'is_positive' => $m->is_positive,
-                'sort_order' => $m->sort_order,
-                'dofusdb_effect_id' => $m->dofusdb_effect_id,
-            ])
-            ->all();
-
-        $path = $dir.'/spell_effect_types.php';
-        $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Types d'effets de sort (export BDD).\n * Généré par php artisan scrapping:seeders:export\n */\n\nreturn ".$this->varExportShort($rows).";\n";
-        file_put_contents($path, $content);
-        $this->info('Exported '.count($rows).' spell effect types → '.$path);
     }
 
     private function exportItemTypes(string $dir): void

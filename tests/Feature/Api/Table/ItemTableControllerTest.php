@@ -41,6 +41,24 @@ class ItemTableControllerTest extends TestCase
         ], $overrides);
     }
 
+    public function test_format_entities_with_page_returns_pagination_meta(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Item::factory()->count(3)->create($this->playableAttrs());
+
+        $response = $this->actingAs($admin)
+            ->getJson('/api/tables/items?format=entities&limit=2&page=1');
+
+        $response->assertOk();
+        $pagination = $response->json('meta.pagination');
+        $this->assertIsArray($pagination);
+        $this->assertSame(3, $pagination['total']);
+        $this->assertSame(2, $pagination['perPage']);
+        $this->assertSame(1, $pagination['currentPage']);
+        $this->assertSame(2, $pagination['lastPage']);
+        $this->assertCount(2, $response->json('entities'));
+    }
+
     /**
      * Test : Le format `entities` retourne les données brutes
      */

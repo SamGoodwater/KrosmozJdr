@@ -12,6 +12,7 @@ mais sans `characteristic_key` convertible, et des effectId fréquents volontair
 | 120 | Rembourse PA | `pa` (`booster`) |
 | 132 | % Tacle | `tacle` |
 | 133 | % Fuite | `fuite` |
+| 150 | Rend la cible invisible | état `Invisible` (dofus 250) via `appliquer-etat` |
 
 ## Déplacements convertibles (`déplacer`)
 
@@ -30,7 +31,7 @@ Ces effectId ne doivent plus rester en `autre` après seed des mappings +
 
 Ces effets restent importables pour diagnostic, mais ne reçoivent pas de clé inventée :
 
-- cosmétique / UX Dofus : apparence, invisibilité (ex. 150), taille, confusion horaire ;
+- cosmétique / UX Dofus : apparence, taille, confusion horaire (l’invisibilité **150** est mappée) ;
 - économie Dofus : prospection, honneur, capture, XP monture ;
 - mécaniques absentes : érosion (ex. 776), tour annulé, % résistances génériques/mêlée/distance/armes/sorts ;
 - % de caractéristiques principales (échelle différente de Krosmoz) ;

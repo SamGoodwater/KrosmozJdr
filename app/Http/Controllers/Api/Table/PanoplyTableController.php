@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Gate;
 class PanoplyTableController extends Controller
 {
     use InterpretsEntityTableSort;
+    use PaginatesEntityTable;
 
     public function index(Request $request): JsonResponse
     {
@@ -31,8 +32,6 @@ class PanoplyTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-        $limit = (int) $request->integer('limit', 5000);
-        $limit = max(1, min($limit, 20000));
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -63,7 +62,11 @@ class PanoplyTableController extends Controller
         $allowedSort = ['id', 'name', 'items_count', 'dofusdb_id', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
-        $rows = $query->limit($limit)->get();
+        $pageResult = $this->paginateEntityTable($query, $request);
+        $rows = $pageResult['rows'];
+        $limit = $pageResult['limit'];
+        $page = $pageResult['page'];
+        $pagination = $pageResult['pagination'];
 
         $capabilities = [
             'viewAny' => Gate::allows('viewAny', Panoply::class),
@@ -102,9 +105,11 @@ class PanoplyTableController extends Controller
                         'sort' => $sort,
                         'order' => $order,
                         'limit' => $limit,
+                        'page' => $page,
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => [],
+                    'pagination' => $pagination,
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -205,9 +210,11 @@ class PanoplyTableController extends Controller
                     'sort' => $sort,
                     'order' => $order,
                     'limit' => $limit,
+                    'page' => $page,
                 ],
                 'capabilities' => $capabilities,
                 'filterOptions' => [],
+                'pagination' => $pagination,
             ],
             'rows' => $tableRows,
         ]);

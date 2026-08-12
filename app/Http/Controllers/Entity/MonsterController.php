@@ -37,7 +37,9 @@ class MonsterController extends Controller
     {
         $this->authorize('viewAny', Monster::class);
 
-        $query = Monster::with(['creature', 'monsterRace']);
+        $query = Monster::query()
+            ->visibleToUser(request()->user())
+            ->with(['creature', 'monsterRace']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

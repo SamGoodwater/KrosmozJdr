@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Gate;
 class CampaignTableController extends Controller
 {
     use InterpretsEntityTableSort;
+    use PaginatesEntityTable;
 
     private const STATE_LABELS = [
         Campaign::STATE_RAW => 'Brut',
@@ -46,8 +47,6 @@ class CampaignTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-        $limit = (int) $request->integer('limit', 5000);
-        $limit = max(1, min($limit, 20000));
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -118,7 +117,11 @@ class CampaignTableController extends Controller
         $allowedSort = ['id', 'name', 'slug', 'progress_state', 'state', 'read_level', 'write_level', 'is_public', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
-        $rows = $query->limit($limit)->get();
+        $pageResult = $this->paginateEntityTable($query, $request);
+        $rows = $pageResult['rows'];
+        $limit = $pageResult['limit'];
+        $page = $pageResult['page'];
+        $pagination = $pageResult['pagination'];
 
         $capabilities = [
             'viewAny' => Gate::allows('viewAny', Campaign::class),
@@ -188,9 +191,11 @@ class CampaignTableController extends Controller
                         'sort' => $sort,
                         'order' => $order,
                         'limit' => $limit,
+                        'page' => $page,
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
+                    'pagination' => $pagination,
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -310,6 +315,7 @@ class CampaignTableController extends Controller
                 ],
                 'capabilities' => $capabilities,
                 'filterOptions' => $filterOptions,
+                'pagination' => $pagination,
             ],
             'rows' => $tableRows,
         ]);

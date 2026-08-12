@@ -34,7 +34,7 @@ class MonsterTableControllerTest extends TestCase
      */
     public function test_format_entities_returns_raw_data(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $monster = Monster::factory()->create();
 
         $response = $this->actingAs($user)
@@ -71,7 +71,7 @@ class MonsterTableControllerTest extends TestCase
      */
     public function test_format_cells_returns_formatted_cells(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $monster = Monster::factory()->create();
 
         $response = $this->actingAs($user)
@@ -103,7 +103,7 @@ class MonsterTableControllerTest extends TestCase
      */
     public function test_entities_format_includes_relations(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $creature = Creature::factory()->create(['created_by' => $user->id]);
         $monster = Monster::factory()->create(['creature_id' => $creature->id]);
 
@@ -143,7 +143,7 @@ class MonsterTableControllerTest extends TestCase
      */
     public function test_entities_format_respects_limit(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
         Monster::factory()->count(15)->create();
 
         $response = $this->actingAs($user)
@@ -161,7 +161,7 @@ class MonsterTableControllerTest extends TestCase
      */
     public function test_entities_format_supports_search(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $creature1 = Creature::factory()->create(['name' => 'Dragon']);
         $creature2 = Creature::factory()->create(['name' => 'Goblin']);
         $creature3 = Creature::factory()->create(['name' => 'Orc']);
@@ -187,7 +187,7 @@ class MonsterTableControllerTest extends TestCase
      */
     public function test_entities_format_supports_sorting(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $creature1 = Creature::factory()->create(['name' => 'Z Monster']);
         $creature2 = Creature::factory()->create(['name' => 'A Monster']);
         Monster::factory()->create(['creature_id' => $creature1->id]);

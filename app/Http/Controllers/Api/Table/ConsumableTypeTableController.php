@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Gate;
 class ConsumableTypeTableController extends Controller
 {
     use InterpretsEntityTableSort;
+    use PaginatesEntityTable;
 
     public function index(Request $request): JsonResponse
     {
@@ -33,8 +34,6 @@ class ConsumableTypeTableController extends Controller
         }
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
-        $limit = (int) $request->integer('limit', 5000);
-        $limit = max(1, min($limit, 20000));
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -83,7 +82,11 @@ class ConsumableTypeTableController extends Controller
         $allowedSort = ['id', 'name', 'state', 'dofusdb_type_id', 'decision', 'consumables_count', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
-        $rows = $query->limit($limit)->get();
+        $pageResult = $this->paginateEntityTable($query, $request);
+        $rows = $pageResult['rows'];
+        $limit = $pageResult['limit'];
+        $page = $pageResult['page'];
+        $pagination = $pageResult['pagination'];
 
         $capabilities = [
             'viewAny' => Gate::allows('viewAny', ConsumableType::class),
@@ -127,6 +130,7 @@ class ConsumableTypeTableController extends Controller
                     'query' => ['search' => $search, 'filters' => $filters, 'sort' => $sort, 'order' => $order, 'limit' => $limit],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
+                    'pagination' => $pagination,
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -157,6 +161,7 @@ class ConsumableTypeTableController extends Controller
                 'query' => ['search' => $search, 'filters' => $filters, 'sort' => $sort, 'order' => $order, 'limit' => $limit],
                 'capabilities' => $capabilities,
                 'filterOptions' => $filterOptions,
+                'pagination' => $pagination,
             ],
             'rows' => $tableRows,
         ]);

@@ -27,7 +27,9 @@ class NpcController extends Controller
     {
         $this->authorize('viewAny', Npc::class);
 
-        $query = Npc::with(['creature', 'breed', 'specialization']);
+        $query = Npc::query()
+            ->visibleToUser(request()->user())
+            ->with(['creature', 'breed', 'specialization']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

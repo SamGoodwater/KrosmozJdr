@@ -30,7 +30,9 @@ class CapabilityController extends Controller
     {
         $this->authorize('viewAny', Capability::class);
 
-        $query = Capability::with(['createdBy', 'specializations', 'creatures', 'conditions']);
+        $query = Capability::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'specializations', 'creatures', 'conditions']);
 
         if (request()->has('search') && request()->search) {
             $search = request()->search;

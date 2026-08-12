@@ -14,6 +14,15 @@ use Illuminate\Support\Facades\DB;
  */
 final class SpellAutreMappingReapplyService
 {
+    /**
+     * effectId Dofus → dofusdb_id de l’état Condition (aligné sur SpellEffectsConversionService).
+     *
+     * @var array<int, int>
+     */
+    private const FORCED_STATE_DOFUSDB_ID_BY_EFFECT_ID = [
+        150 => 250,
+    ];
+
     public function __construct(
         private readonly DofusdbEffectMappingService $mappingService,
     ) {}
@@ -169,7 +178,46 @@ final class SpellAutreMappingReapplyService
             }
         }
 
+        if ($slug === 'appliquer-etat' || $slug === 's-appliquer-etat') {
+            $this->enrichApplyStateParams($params, $dofusEffectId);
+        }
+
         return $params;
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     */
+    private function enrichApplyStateParams(array &$params, int $dofusEffectId): void
+    {
+        $stateDofusId = self::FORCED_STATE_DOFUSDB_ID_BY_EFFECT_ID[$dofusEffectId] ?? null;
+        if ($stateDofusId === null) {
+            return;
+        }
+
+        $condition = DB::table('conditions')
+            ->where('dofusdb_id', $stateDofusId)
+            ->whereNull('deleted_at')
+            ->orderBy('id')
+            ->first(['id', 'name', 'dofusdb_id', 'icon', 'image']);
+
+        if ($condition === null) {
+            $params['condition_dofusdb_id'] = $stateDofusId;
+            $params['condition_name'] = $params['condition_name'] ?? 'Invisible';
+
+            return;
+        }
+
+        $params['condition_id'] = (int) $condition->id;
+        $params['condition_dofusdb_id'] = (int) $condition->dofusdb_id;
+        $params['condition_name'] = (string) ($condition->name ?: 'Invisible');
+        if (! empty($condition->icon)) {
+            $params['condition_icon'] = (string) $condition->icon;
+        }
+        if (! empty($condition->image)) {
+            $params['condition_image'] = (string) $condition->image;
+        }
+        unset($params['value'], $params['value_formula']);
     }
 
     private function resolveMovementKind(int $effectId, string $normalizedValue): string

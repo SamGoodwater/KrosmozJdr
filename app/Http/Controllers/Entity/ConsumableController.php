@@ -30,7 +30,9 @@ class ConsumableController extends Controller
     {
         $this->authorize('viewAny', Consumable::class);
 
-        $query = Consumable::with(['createdBy', 'consumableType', 'resources']);
+        $query = Consumable::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'consumableType', 'resources']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

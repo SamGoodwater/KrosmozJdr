@@ -12,7 +12,6 @@ use Database\Seeders\ObjectCharacteristicSeeder;
 use Database\Seeders\ScrappingEntityMappingCharacteristicSeeder;
 use Database\Seeders\ScrappingEntityMappingSeeder;
 use Database\Seeders\SpellCharacteristicSeeder;
-use Database\Seeders\SpellEffectTypeSeeder;
 use Database\Seeders\Type\TypeSeeder;
 
 /**
@@ -29,7 +28,6 @@ trait SeedsScrappingPipeline
             ObjectCharacteristicSeeder::class,
             DofusdbCharacteristicIdSeeder::class,
             SpellCharacteristicSeeder::class,
-            SpellEffectTypeSeeder::class,
             DofusdbEffectMappingSeeder::class,
             ScrappingEntityMappingSeeder::class,
             ScrappingEntityMappingCharacteristicSeeder::class,

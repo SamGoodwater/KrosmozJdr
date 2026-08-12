@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Effet appliqué à un sort (instance).
+ * @deprecated Table droppée — canal canon = Effect / effect_spell.
  *
  * @property int $id
  * @property int $spell_id

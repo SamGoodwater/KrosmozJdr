@@ -28,7 +28,9 @@ class ConditionController extends Controller
     {
         $this->authorize('viewAny', Condition::class);
 
-        $query = Condition::with(['createdBy', 'creatures']);
+        $query = Condition::query()
+            ->visibleToUser(request()->user())
+            ->with(['createdBy', 'creatures']);
 
         // Recherche
         if (request()->has('search') && request()->search) {

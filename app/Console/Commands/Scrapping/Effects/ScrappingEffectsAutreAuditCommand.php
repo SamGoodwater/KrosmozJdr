@@ -53,6 +53,7 @@ final class ScrappingEffectsAutreAuditCommand extends Command
             'removal_like' => 0,
             'movement_like' => 0,
             'support_like' => 0,
+            'out_of_scope' => 0,
             'unknown' => 0,
         ];
         $convertibleRows = 0;
@@ -64,6 +65,7 @@ final class ScrappingEffectsAutreAuditCommand extends Command
             'removal_like' => [],
             'movement_like' => [],
             'support_like' => [],
+            'out_of_scope' => [],
             'unknown' => [],
         ];
 
@@ -80,28 +82,28 @@ final class ScrappingEffectsAutreAuditCommand extends Command
                 $params = $this->decodeParams($row->params);
                 $rawText = isset($params['value']) && is_string($params['value']) ? $params['value'] : '';
                 $normalizedText = $this->normalizeText($rawText);
-                $reason = $this->classifyAutreText($normalizedText);
+                $dofusEffectId = $params['dofus_effect_id'] ?? null;
+                $dofusIdInt = is_numeric($dofusEffectId) ? (int) $dofusEffectId : null;
+                $reason = $this->classifyAutreRow($normalizedText, $dofusIdInt);
 
                 $reasonCounts[$reason]++;
-                if ($reason !== 'unknown') {
+                if (in_array($reason, ['damage_like', 'removal_like', 'movement_like', 'support_like'], true)) {
                     $convertibleRows++;
                 }
 
                 $normalizedKey = $normalizedText !== '' ? $normalizedText : '[vide]';
                 $normalizedTextCounts[$normalizedKey] = ($normalizedTextCounts[$normalizedKey] ?? 0) + 1;
 
-                $dofusEffectId = $params['dofus_effect_id'] ?? null;
-                if (is_numeric($dofusEffectId)) {
+                if ($dofusIdInt !== null) {
                     $withDofusEffectId++;
-                    $idKey = (int) $dofusEffectId;
-                    $dofusEffectIdCounts[$idKey] = ($dofusEffectIdCounts[$idKey] ?? 0) + 1;
+                    $dofusEffectIdCounts[$dofusIdInt] = ($dofusEffectIdCounts[$dofusIdInt] ?? 0) + 1;
                 }
 
                 if (count($reasonSamples[$reason]) < $sampleLimit) {
                     $reasonSamples[$reason][] = [
                         'effect_sub_effect_id' => (int) $row->id,
                         'effect_definition_id' => (int) $row->definition_effect_id,
-                        'dofus_effect_id' => is_numeric($dofusEffectId) ? (int) $dofusEffectId : null,
+                        'dofus_effect_id' => $dofusIdInt,
                         'value' => $rawText,
                     ];
                 }
@@ -223,6 +225,30 @@ final class ScrappingEffectsAutreAuditCommand extends Command
         $value = preg_replace('/\s+/', ' ', $value) ?? $value;
 
         return trim($value);
+    }
+
+    /**
+     * effectId volontairement hors périmètre JDR (glyphes, #1, kill, etc.).
+     *
+     * @see docs/features/effects/MAPPINGS_HORS_PERIMETRE.md
+     *
+     * @var list<int>
+     */
+    private const OUT_OF_SCOPE_EFFECT_IDS = [
+        141, 149, 406, 666, 776, 792, 1017, 1026, 1045, 1075, 1077,
+        1091, 1160, 2022, 2160, 2792, 2794, 2845, 2960, 3793, 4007,
+    ];
+
+    /**
+     * @return 'damage_like'|'removal_like'|'movement_like'|'support_like'|'out_of_scope'|'unknown'
+     */
+    private function classifyAutreRow(string $normalized, ?int $dofusEffectId): string
+    {
+        if ($dofusEffectId !== null && in_array($dofusEffectId, self::OUT_OF_SCOPE_EFFECT_IDS, true)) {
+            return 'out_of_scope';
+        }
+
+        return $this->classifyAutreText($normalized);
     }
 
     /**

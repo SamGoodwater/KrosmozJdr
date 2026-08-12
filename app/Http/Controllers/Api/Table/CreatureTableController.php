@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Gate;
 class CreatureTableController extends Controller
 {
     use InterpretsEntityTableSort;
+    use PaginatesEntityTable;
 
     public function index(Request $request): JsonResponse
     {
@@ -32,8 +33,6 @@ class CreatureTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-        $limit = (int) $request->integer('limit', 5000);
-        $limit = max(1, min($limit, 20000));
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -58,7 +57,11 @@ class CreatureTableController extends Controller
         $allowedSort = ['id', 'name', 'level', 'hostility', 'life', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
-        $rows = $query->limit($limit)->get();
+        $pageResult = $this->paginateEntityTable($query, $request);
+        $rows = $pageResult['rows'];
+        $limit = $pageResult['limit'];
+        $page = $pageResult['page'];
+        $pagination = $pageResult['pagination'];
 
         $capabilities = [
             'viewAny' => Gate::allows('viewAny', Creature::class),
@@ -101,6 +104,7 @@ class CreatureTableController extends Controller
                         'sort' => $sort,
                         'order' => $order,
                         'limit' => $limit,
+                        'page' => $page,
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => [
@@ -109,6 +113,7 @@ class CreatureTableController extends Controller
                             'label' => (string) $label,
                         ])->values()->all(),
                     ],
+                    'pagination' => $pagination,
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -210,6 +215,7 @@ class CreatureTableController extends Controller
                     'sort' => $sort,
                     'order' => $order,
                     'limit' => $limit,
+                    'page' => $page,
                 ],
                 'capabilities' => $capabilities,
                 'filterOptions' => [
@@ -218,6 +224,7 @@ class CreatureTableController extends Controller
                         'label' => (string) $label,
                     ])->values()->all(),
                 ],
+                'pagination' => $pagination,
             ],
             'rows' => $tableRows,
         ]);
