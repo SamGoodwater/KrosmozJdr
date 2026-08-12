@@ -154,7 +154,7 @@ final class CreatureRuntimeStatsService
             $object = (float) ($objectByKey[$key] ?? 0);
             $contextRaw = $creature->contextBonusRaw($column);
             $context = $this->evaluateContext($contextRaw, $variables);
-            $base = $this->evaluateBaseFormula($key, $entity, $variables);
+            $base = $this->evaluateBaseFormula($key, $entity, $variables) ?? 0.0;
             $characteristics[$key] = $this->buildCharacteristicRow(
                 $key,
                 $entity,
@@ -173,11 +173,27 @@ final class CreatureRuntimeStatsService
 
         // 2) Caractéristiques calculées / composées (passes itératives).
         $computedKeys = $this->listComposableAndComputedKeys($entity, $dbColumnByKey);
+        $computedKeySet = array_fill_keys($computedKeys, true);
         $maxPasses = max(32, count($computedKeys) + 5);
         for ($pass = 0; $pass < $maxPasses; $pass++) {
             $progress = false;
             foreach ($computedKeys as $key) {
                 if (isset($resolvedKeys[$key])) {
+                    continue;
+                }
+
+                $def = $this->getter->getDefinition($key, $entity);
+                $hasFormula = is_string($def['formula'] ?? null) && trim((string) $def['formula']) !== '';
+                // Ne pas figer une formule tant que ses dépendances calculées (mods, bonus maîtrise…)
+                // ne sont pas résolues — sinon les placeholders manquants valent 0 trop tôt.
+                if (
+                    $hasFormula
+                    && $this->formulaHasUnresolvedComputedDependency(
+                        (string) $def['formula'],
+                        $computedKeySet,
+                        $resolvedKeys
+                    )
+                ) {
                     continue;
                 }
 
@@ -188,14 +204,15 @@ final class CreatureRuntimeStatsService
                 $base = $this->evaluateBaseFormula($key, $entity, $variables);
 
                 // Si pas de formule de base et pas de contexte/objet, ignorer (sauf si formule pure sans colonne).
-                $def = $this->getter->getDefinition($key, $entity);
-                $hasFormula = is_string($def['formula'] ?? null) && trim((string) $def['formula']) !== '';
                 if ($base === null && ! $hasFormula && $object === 0.0 && ($contextRaw === null || $context === 0.0)) {
                     if ($column === null) {
                         continue;
                     }
-                    // Colonne composable sans total ni contexte → 0
-                    $base = 0.0;
+                    // Colonne composable sans total ni contexte → default_value seed, sinon 0
+                    $default = $def['default_value'] ?? null;
+                    $base = ($default !== null && $default !== '' && is_numeric($default))
+                        ? (float) $default
+                        : 0.0;
                 }
                 if ($base === null && $hasFormula) {
                     // Formule non encore résolue (dépendances manquantes) → attendre une autre passe.
@@ -283,6 +300,27 @@ final class CreatureRuntimeStatsService
             'substituted' => $this->formulas->substitutePlaceholdersForDisplay($formula, $variables),
             'placeholders' => $placeholders,
         ];
+    }
+
+    /**
+     * @param  array<string, true>  $computedKeySet
+     * @param  array<string, true>  $resolvedKeys
+     */
+    private function formulaHasUnresolvedComputedDependency(
+        string $formula,
+        array $computedKeySet,
+        array $resolvedKeys
+    ): bool {
+        foreach ($this->formulas->extractVariablePlaceholders($formula) as $id) {
+            if ($id === '' || ! isset($computedKeySet[$id])) {
+                continue;
+            }
+            if (! isset($resolvedKeys[$id])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
+use App\Support\Creature\CreatureMasteryColumns;
 use App\Http\Resources\Entity\LanguageResource;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
@@ -284,6 +285,7 @@ class MonsterTableController extends Controller
                         'save_intelligence_mastery' => $c->save_intelligence_mastery ?? 0,
                         'save_chance_mastery' => $c->save_chance_mastery ?? 0,
                         'save_agility_mastery' => $c->save_agility_mastery ?? 0,
+                        ...CreatureMasteryColumns::extractFrom($c),
                         'spells' => $c->relationLoaded('spells')
                             ? $c->spells->map(fn (Spell $s) => [
                                 'id' => $s->id,

@@ -22,8 +22,13 @@
 - `app/Services/Characteristic/Domain/LevelDomainResolver.php`
 - `app/Services/Creature/Runtime/CreatureRuntimeStatsService.php`
 - `app/Support/Creature/CreatureComposableColumns.php`
+- `app/Support/Creature/CreatureMasteryColumns.php`
+- `resources/js/Utils/Entity/creatureCharacteristicGroups.manifest.js`
+- `resources/js/Utils/Entity/buildCreatureCharacteristicGroups.js`
+- `resources/js/Utils/Entity/buildCreatureCompetenceGroups.js`
 - `resources/js/Utils/characteristic/formulaGrammar.js`
 - `resources/js/Pages/Molecules/data-input/CharacteristicFormulaField.vue`
+- `resources/js/Pages/Molecules/data-display/AbilityScoreStack.vue`
 - `resources/js/Pages/Organismes/data-display/CharacteristicsCard.vue`
 - `database/seeders/*CharacteristicSeeder.php`
 

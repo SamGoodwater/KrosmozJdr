@@ -20,6 +20,7 @@ import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEn
 import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
 import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
+import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
 import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
@@ -78,19 +79,30 @@ const bossTooltip = computed(() =>
 /** Données créature (colonnes `*_mastery`, stats, etc.) */
 const creature = computed(() => entity.value?.creature ?? entity.value?._data?.creature ?? null);
 
-/** Groupes de maîtrises regroupés par caractéristique primaire (Force, Agilité, …). */
-const competenceGroups = computed(() => buildCreatureCompetenceGroupsByPrimary(creature.value));
+const creatureIdForStats = computed(() => creature.value?.id ?? null);
+const { runtime: fetchedRuntime } = useCreatureResolvedStats(creatureIdForStats);
+
+const characteristicRuntime = computed(
+    () => props.tableMeta?.characteristicRuntime ?? fetchedRuntime.value ?? null,
+);
+
+/** Compétences : totaux calculés (mod + maîtrise×bonus + bonus BDD/objets), y compris palier 0. */
+const competenceGroups = computed(() =>
+    buildCreatureCompetenceGroupsByPrimary(creature.value, {
+        includeZero: true,
+        runtime: characteristicRuntime.value,
+    }),
+);
 
 const summaryCharacteristicGroups = computed(() =>
-    buildCreatureCharacteristicGroups(creature.value, { mode: "summary" }),
+    buildCreatureCharacteristicGroups(creature.value, {
+        mode: "summary",
+        runtime: characteristicRuntime.value,
+    }),
 );
 
 const cardEntityForCompetences = computed(() =>
     creature.value ? { level: creature.value.level } : null,
-);
-
-const characteristicRuntime = computed(
-    () => props.tableMeta?.characteristicRuntime ?? null,
 );
 
 const getCell = (fieldKey) => {
@@ -271,7 +283,7 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
                 </div>
             </div>
 
-            <!-- Caractéristiques résumé (5 stats clés) -->
+            <!-- Caractéristiques résumé : mods + PA/PM/vie/CA/PO/ini/invoc -->
             <div class="w-full min-h-0 min-w-0 flex-1">
                 <CharacteristicsCard
                     v-if="summaryCharacteristicGroups.length"
@@ -284,25 +296,21 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
             </div>
         </div>
 
-        <!-- Maîtrises (par stat) : contenu long → visible au survol / focus de la ligne uniquement -->
+        <!-- Maîtrises (par stat) : visibles sous le résumé (scroll si long) -->
         <div
             v-if="competenceGroups.length"
-            class="monster-line-competences-outer transition-[max-height,opacity] duration-200 ease-out max-h-0 opacity-0 overflow-hidden group-hover:max-h-[min(90vh,44rem)] group-hover:opacity-100 group-focus-within:max-h-[min(90vh,44rem)] group-focus-within:opacity-100"
+            class="monster-line-competences max-h-[min(85vh,42rem)] overflow-y-auto overscroll-contain rounded-box border border-base-300/60 bg-base-200/25 px-2 py-1.5"
         >
-            <div
-                class="monster-line-competences max-h-[min(85vh,42rem)] overflow-y-auto overscroll-contain rounded-box border border-base-300/60 bg-base-200/25 px-2 py-1.5"
-            >
-                <p class="mb-1 text-[0.625rem] font-semibold uppercase tracking-wide text-base-content/60">
-                    Compétences
-                </p>
-                <CharacteristicsCard
-                    :entity="cardEntityForCompetences"
-                    :groups="competenceGroups"
-                    :runtime="characteristicRuntime"
-                    :density="CHARACTERISTIC_CARD_DENSITY.icon"
-                    class="border-0 bg-transparent p-0 shadow-none ring-0"
-                />
-            </div>
+            <p class="mb-1 text-[0.625rem] font-semibold uppercase tracking-wide text-base-content/60">
+                Compétences
+            </p>
+            <CharacteristicsCard
+                :entity="cardEntityForCompetences"
+                :groups="competenceGroups"
+                :runtime="characteristicRuntime"
+                :density="CHARACTERISTIC_CARD_DENSITY.icon"
+                class="border-0 bg-transparent p-0 shadow-none ring-0"
+            />
         </div>
 
         <!-- Sorts de la créature (texte + aperçu minimal au survol) -->
@@ -383,25 +391,26 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
     box-shadow: none;
 }
 .monster-line-competences :deep(.characteristic-group) {
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.15rem;
 }
 .monster-line-competences :deep(.characteristic-group:last-child) {
     margin-bottom: 0;
 }
 .monster-line-competences :deep(.characteristic-group h4) {
-    margin-bottom: 0.2rem;
-    font-size: 0.625rem;
+    margin-bottom: 0.1rem;
+    font-size: 0.6rem;
     font-weight: 600;
-    line-height: 1.2;
+    line-height: 1.1;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     opacity: 0.8;
 }
 .monster-line-competences :deep(.characteristic-group > .flex) {
-    gap: 0.25rem 0.35rem;
+    gap: 0.15rem 0.35rem;
 }
-.monster-line-competences :deep(.characteristic-formula) {
-    padding: 0.1rem 0.25rem;
+.monster-line-competences :deep(.characteristic-property) {
     font-size: 0.7rem;
+    line-height: 1.15;
+    gap: 0.2rem;
 }
 </style>

@@ -434,9 +434,9 @@ export function getMonsterFieldDescriptors(ctx = {}) {
     creature_summary_stats: {
       key: 'creature_summary_stats',
       general: {
-        label: 'Statistiques',
+        label: 'Caractéristiques',
         icon: 'fa-solid fa-chart-simple',
-        tooltip: 'Force, Intelligence, Agilité, Chance, Vitalité, Sagesse',
+        tooltip: 'Scores, modificateurs et sauvegardes (For, Int, Agi, Cha, Vit, Sag)',
       },
       table: {
         type: 'chips',
@@ -451,7 +451,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: {
         label: 'Combat',
         icon: 'fa-solid fa-bolt',
-        tooltip: 'PA, PM, Portée, PV, Initiative, Invocation',
+        tooltip: 'PA, PM, Portée, PV, Initiative, Invocation, CA',
       },
       table: {
         type: 'chips',
@@ -467,7 +467,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: {
         label: 'Contrôle',
         icon: 'fa-solid fa-shield',
-        tooltip: 'CA, esquive PA/PM, tacle, fuite',
+        tooltip: 'Esquive PA/PM, tacle, fuite',
       },
       table: {
         type: 'chips',

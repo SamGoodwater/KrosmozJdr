@@ -21,7 +21,9 @@ import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.v
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
+import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
+import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { useScrapping } from '@/Composables/utils/useScrapping';
@@ -194,6 +196,12 @@ const { runtime: creatureRuntimeStats } = useCreatureResolvedStats(creatureIdFor
 
 const creatureCharacteristicsGroups = computed(() =>
     buildCreatureCharacteristicGroups(creatureData.value, {
+        runtime: creatureRuntimeStats.value,
+    }),
+);
+const competenceGroups = computed(() =>
+    buildCreatureCompetenceGroupsByPrimary(creatureData.value, {
+        includeZero: true,
         runtime: creatureRuntimeStats.value,
     }),
 );
@@ -468,7 +476,7 @@ const handleAction = async (actionKey) => {
             <CharacteristicsCard
                 :entity="creatureData"
                 :groups="creatureCharacteristicsGroups"
-                :density="inModal ? 'labeled' : 'spacious'"
+                :density="inModal ? CHARACTERISTIC_CARD_DENSITY.labeled : CHARACTERISTIC_CARD_DENSITY.spacious"
                 :runtime="creatureRuntimeStats"
             />
         </section>
@@ -480,6 +488,23 @@ const handleAction = async (actionKey) => {
             <p class="text-sm text-primary-300/80">
                 Pas de créature associée — les caractéristiques ne peuvent pas être affichées.
             </p>
+        </section>
+
+        <section
+            v-if="competenceGroups.length"
+            class="pt-4 border-t border-base-300"
+            role="region"
+            aria-label="Compétences"
+        >
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300 mb-3">
+                Compétences
+            </h3>
+            <CharacteristicsCard
+                :entity="creatureData"
+                :groups="competenceGroups"
+                :density="inModal ? CHARACTERISTIC_CARD_DENSITY.labeled : CHARACTERISTIC_CARD_DENSITY.spacious"
+                :runtime="creatureRuntimeStats"
+            />
         </section>
 
         <section

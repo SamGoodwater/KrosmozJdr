@@ -1,5 +1,12 @@
 # Ce qui a été fait
 
+## Août 2026 — Fiches créature : mods, CA, compétences
+
+L’affichage des caractéristiques monstre (Minimal / Line / Full) met les
+**modificateurs** en avant, calcule la CA / l’initiative via formules + runtime
+(équipements inclus), empile score → mod → sauvegarde, libelle les résistances
+relatives (sans les 0 %), et montre les compétences groupées par stat.
+
 ## Août 2026 — PDF multi + index server-side (gros volumes)
 
 Les exports PDF multi-entités respectent la même visibilité que les listes

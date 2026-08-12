@@ -1,99 +1,129 @@
 <script setup>
 /**
- * Contenu riche du tooltip pour une caractéristique (vue unifiée).
+ * Tooltip caractéristique — présentation « fiche de jeu » (peu technique).
  *
- * @props {Object} model — sortie viewModel (useCharacteristicViewModel / viewModelFromFormulaGroupItem)
+ * Affiche : icône, nom, valeur, description, formule lisible, résolution,
+ * et la liste des termes (libellés joueur, pas les clés BDD).
+ *
+ * @props {Object} model — viewModel (useCharacteristicViewModel / formula group)
  */
+import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import {
+    humanizeCharacteristicFormulaText,
+    mapPlaceholdersForPlayer,
+    normalizeCharacteristicIcon,
+} from "@/Utils/Entity/characteristicTooltipLabels";
 
-defineProps({
+const props = defineProps({
     model: {
         type: Object,
         required: true,
     },
 });
+
+const iconSource = computed(() =>
+    normalizeCharacteristicIcon(props.model?.icon || props.model?._resolvedIcon || ""),
+);
+
+const friendlyFormula = computed(() => {
+    const raw = props.model?.formulaDisplay || "";
+    return humanizeCharacteristicFormulaText(raw);
+});
+
+const friendlyResolution = computed(() => {
+    const raw = props.model?.substituted || "";
+    return humanizeCharacteristicFormulaText(raw);
+});
+
+const termRows = computed(() => mapPlaceholdersForPlayer(props.model?.placeholders));
+
+const hasCalculation = computed(
+    () => Boolean(friendlyFormula.value || friendlyResolution.value || termRows.value.length),
+);
+
+const levelRows = computed(() => {
+    const table = props.model?.levelTable;
+    if (!Array.isArray(table) || table.length <= 1) return [];
+    return table;
+});
 </script>
 
 <template>
-    <div class="characteristic-property-tooltip max-w-xs space-y-2 text-left text-sm text-white/95">
-        <div class="flex items-start gap-2">
+    <div class="characteristic-property-tooltip max-w-xs space-y-2.5 text-left text-sm text-white/95">
+        <div class="flex items-start gap-2.5">
             <Icon
-                v-if="model.icon"
-                :source="model.icon"
-                :alt="model.name"
-                size="sm"
-                class="shrink-0 opacity-90"
+                v-if="iconSource"
+                :source="iconSource"
+                :alt="model.name || ''"
+                size="md"
+                class="mt-0.5 shrink-0 opacity-95"
             />
-            <div class="min-w-0 space-y-1">
-                <div class="font-semibold leading-tight">{{ model.name }}</div>
-                <div v-if="!model.hideDisplayValueInTooltip" class="text-lg font-medium text-white/90">
+            <div class="min-w-0 space-y-0.5">
+                <div class="font-semibold leading-snug tracking-wide">{{ model.name }}</div>
+                <div
+                    v-if="!model.hideDisplayValueInTooltip"
+                    class="text-xl font-semibold tabular-nums text-white"
+                >
                     {{ model.displayValue ?? "—" }}
                 </div>
             </div>
         </div>
 
-        <p v-if="model.subtitle" class="text-xs italic text-white/80">{{ model.subtitle }}</p>
-        <p v-if="model.helper" class="text-xs text-white/75">{{ model.helper }}</p>
-        <p v-if="model.descriptions && model.descriptions !== model.helper" class="text-xs text-white/65">
+        <p v-if="model.helper" class="text-xs leading-relaxed text-white/80">
+            {{ model.helper }}
+        </p>
+        <p
+            v-if="model.descriptions && model.descriptions !== model.helper"
+            class="text-xs leading-relaxed italic text-white/65"
+        >
             {{ model.descriptions }}
         </p>
 
-        <div v-if="model.formulaDisplay" class="text-xs text-white/65">
-            <span class="font-medium text-white/85">Affichage :</span>
-            {{ model.formulaDisplay }}
-        </div>
-
-        <div v-if="model.formulaBdd" class="text-xs text-white/65">
-            <span class="font-medium text-white/85">Formule (BDD) :</span>
-            <code class="ml-1 block break-all rounded bg-white/10 px-1 py-0.5 font-mono text-[11px] text-white/90">{{
-                model.formulaBdd
-            }}</code>
-        </div>
-
-        <div v-if="model.runtimeFormula" class="text-xs text-white/65">
-            <span class="font-medium text-white/85">Formule (runtime) :</span>
-            <code class="ml-1 block break-all rounded bg-white/10 px-1 py-0.5 font-mono text-[11px] text-white/90">{{
-                model.runtimeFormula
-            }}</code>
-        </div>
-
-        <div v-if="model.substituted" class="text-xs text-white/65">
-            <span class="font-medium text-white/85">Résolution :</span>
-            <code class="ml-1 block break-all rounded bg-white/10 px-1 py-0.5 font-mono text-[11px] text-white/90">{{
-                model.substituted
-            }}</code>
-        </div>
-
-        <ul
-            v-if="Array.isArray(model.placeholders) && model.placeholders.length > 0"
-            class="text-xs text-white/75"
+        <div
+            v-if="hasCalculation"
+            class="space-y-2 rounded-md border border-white/15 bg-white/5 px-2.5 py-2"
         >
-            <li v-for="(ph, idx) in model.placeholders" :key="idx" class="flex justify-between gap-2 border-t border-dashed border-white/20 pt-1 first:border-t-0 first:pt-0">
-                <span class="font-mono text-[11px] text-white/60">[{{ ph.id }}]</span>
-                <span class="font-medium text-white/90">{{ ph.value }}</span>
-            </li>
-        </ul>
+            <p class="text-[10px] font-semibold uppercase tracking-wider text-white/55">
+                Calcul
+            </p>
 
-        <div v-if="model.formulaMetaResolved && !model.substituted" class="text-xs text-white/65">
-            <span class="font-medium text-white/85">Métadonnée :</span>
-            <code class="ml-1 block break-all font-mono text-[11px] text-white/80">{{ model.formulaMetaResolved }}</code>
+            <div v-if="friendlyFormula" class="text-xs leading-snug text-white/85">
+                <span class="text-white/55">Formule · </span>
+                {{ friendlyFormula }}
+            </div>
+
+            <div v-if="friendlyResolution" class="text-xs leading-snug text-white/85">
+                <span class="text-white/55">Avec tes valeurs · </span>
+                <span class="tabular-nums">{{ friendlyResolution }}</span>
+            </div>
+
+            <ul v-if="termRows.length" class="space-y-1 pt-0.5">
+                <li
+                    v-for="row in termRows"
+                    :key="row.id"
+                    class="flex items-baseline justify-between gap-3 border-t border-dashed border-white/15 pt-1 text-xs first:border-t-0 first:pt-0"
+                >
+                    <span class="min-w-0 text-white/75">{{ row.label }}</span>
+                    <span class="shrink-0 font-medium tabular-nums text-white">{{ row.value }}</span>
+                </li>
+            </ul>
         </div>
 
-        <div v-if="Array.isArray(model.levelTable) && model.levelTable.length > 0" class="overflow-x-auto">
-            <table class="table table-xs table-pin-rows text-white/90 [&_th]:text-white/70 [&_td]:border-white/10">
-                <thead>
-                    <tr>
-                        <th>Niveau</th>
-                        <th>Valeur</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="row in model.levelTable" :key="row.level">
-                        <td>{{ row.level }}</td>
-                        <td>{{ row.value }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div v-if="levelRows.length" class="space-y-1">
+            <p class="text-[10px] font-semibold uppercase tracking-wider text-white/55">
+                Selon le niveau
+            </p>
+            <div class="flex flex-wrap gap-1">
+                <span
+                    v-for="row in levelRows"
+                    :key="row.level"
+                    class="inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 text-[11px] tabular-nums text-white/85"
+                >
+                    <span class="text-white/50">Niv.{{ row.level }}</span>
+                    <span class="font-medium">{{ row.value ?? row.total }}</span>
+                </span>
+            </div>
         </div>
     </div>
 </template>

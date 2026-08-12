@@ -10,6 +10,11 @@ import {
     updatePinnedWindowPosition,
 } from "@/Composables/entity/usePinnedEntityIds";
 import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
+import {
+    buildCreatureCompetenceGroupsByPrimary,
+    formatCreatureSkillDisplay,
+    resolveCreatureSkillTotal,
+} from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import { CREATURE_CHARACTERISTIC_SUMMARY_KEYS } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
 
 describe("ENTITY_ACTION_CONTEXT_PRESETS", () => {
@@ -84,59 +89,119 @@ describe("buildCreatureCharacteristicGroups", () => {
         po: 1,
         life: 40,
         ini: 12,
+        ca: null,
         strong: 14,
         intel: 10,
         agi: 12,
         chance: 10,
         vitality: 12,
         sagesse: 11,
+        res_fixe_terre: 3,
+        res_terre: 50,
+        res_feu: 0,
+        res_fixe_feu: 1,
+        athletisme_mastery: 1,
     };
 
-    it("mode summary = 5 clés plates", () => {
-        const groups = buildCreatureCharacteristicGroups(creature, {
-            mode: "summary",
-            byDbColumn: Object.fromEntries(
-                CREATURE_CHARACTERISTIC_SUMMARY_KEYS.map((k) => [
-                    k,
-                    { key: `${k}_creature`, name: k, short_name: k, db_column: k },
-                ]),
-            ),
-        });
-        expect(groups).toHaveLength(1);
-        expect(groups[0].title).toBe("");
-        expect(groups[0].characteristics.map((c) => c.def.db_column || c.def.key.replace(/_creature$/, ""))).toEqual(
-            expect.arrayContaining([...CREATURE_CHARACTERISTIC_SUMMARY_KEYS]),
-        );
-        expect(groups[0].characteristics).toHaveLength(5);
-    });
-
-    it("mode full expose Combat puis Stats", () => {
-        const allKeys = [
-            "pa",
-            "pm",
-            "po",
-            "life",
-            "ini",
-            "invocation",
+    const summaryKeys = [...CREATURE_CHARACTERISTIC_SUMMARY_KEYS];
+    const byDbColumn = Object.fromEntries(
+        [
+            ...summaryKeys,
             "strong",
             "intel",
             "agi",
             "chance",
             "vitality",
             "sagesse",
-            "ca",
             "dodge_pa",
             "dodge_pm",
             "fuite",
             "tacle",
             "critical_hit",
             "heal_bonus",
-        ];
-        const byDbColumn = Object.fromEntries(
-            allKeys.map((k) => [k, { key: `${k}_creature`, name: k, short_name: k, db_column: k }]),
+            "res_fixe_terre",
+            "res_terre",
+            "res_fixe_feu",
+            "res_feu",
+        ].map((k) => [k, { key: `${k}_creature`, name: k, short_name: k, db_column: k }]),
+    );
+
+    it("mode summary = mods + combat (dont CA calculée)", () => {
+        const groups = buildCreatureCharacteristicGroups(creature, {
+            mode: "summary",
+            byDbColumn,
+            byComputedKey: {
+                modifier_strength_creature: { key: "modifier_strength_creature", short_name: "For" },
+                modifier_intelligence_creature: { key: "modifier_intelligence_creature", short_name: "Int" },
+                modifier_agility_creature: { key: "modifier_agility_creature", short_name: "Agi" },
+                modifier_chance_creature: { key: "modifier_chance_creature", short_name: "Cha" },
+                modifier_vitality_creature: { key: "modifier_vitality_creature", short_name: "Vit" },
+                modifier_wisdom_creature: { key: "modifier_wisdom_creature", short_name: "Sag" },
+            },
+        });
+        expect(groups.length).toBeGreaterThanOrEqual(2);
+        expect(groups[0].kind).toBe("modifiers");
+        expect(groups[0].characteristics).toHaveLength(6);
+        const combat = groups.find((g) => g.kind === "combatSummary");
+        expect(combat).toBeTruthy();
+        const keys = combat.characteristics.map(
+            (c) => c.def.db_column || c.def.key.replace(/_creature$/, ""),
         );
+        expect(keys).toEqual(expect.arrayContaining(["pa", "pm", "life", "ca"]));
+        const ca = combat.characteristics.find(
+            (c) => (c.def.db_column || c.def.key.replace(/_creature$/, "")) === "ca",
+        );
+        expect(ca?.value).toBeTruthy();
+    });
+
+    it("mode full expose Combat puis Caractéristiques (abilityStack)", () => {
         const groups = buildCreatureCharacteristicGroups(creature, { mode: "full", byDbColumn });
         expect(groups[0].title).toBe("Combat");
-        expect(groups[1].title).toBe("Stats");
+        expect(groups[1].title).toBe("Caractéristiques");
+        expect(groups[1].kind).toBe("abilityStack");
+        expect(groups[1].characteristics).toHaveLength(6);
+        expect(groups[1].characteristics[0].type).toBe("abilityColumn");
+        expect(groups[1].characteristics[0].modifier.value).toMatch(/^[+-]?\d+/);
+    });
+
+    it("résistances : masque 0 % et libelle les paliers", () => {
+        const groups = buildCreatureCharacteristicGroups(creature, { mode: "full", byDbColumn });
+        const res = groups.find((g) => g.title === "Résistances");
+        expect(res).toBeTruthy();
+        const values = res.characteristics.map((c) => c.value);
+        expect(values.some((v) => String(v).includes("(R)"))).toBe(true);
+        expect(values.some((v) => String(v).includes("(0%") || String(v) === "0%")).toBe(false);
+        expect(values).toContain("1");
+    });
+});
+
+describe("buildCreatureCompetenceGroupsByPrimary", () => {
+    it("calcule mod + maîtrise×bonus + bonus BDD avec tags M/E", () => {
+        const creature = {
+            level: 8, // mastery bonus = 3
+            strong: 14, // mod = +2
+            athletisme_mastery: 2,
+            athletisme_bonus: 1,
+            acrobatie_mastery: 1,
+            acrobatie_bonus: 0,
+            agi: 10,
+        };
+        const athletics = resolveCreatureSkillTotal(creature, "athletisme_mastery");
+        // mod 2 + 3*2 + 1 = 9, expertise
+        expect(athletics).toEqual({ total: 9, tier: 2, tag: "E" });
+        expect(formatCreatureSkillDisplay(9, "E")).toBe("+9 (E)");
+
+        const acrobatics = resolveCreatureSkillTotal(creature, "acrobatie_mastery");
+        // mod 0 + 3*1 + 0 = 3, maîtrise
+        expect(acrobatics.tag).toBe("M");
+        expect(formatCreatureSkillDisplay(acrobatics.total, "M")).toBe("+3 (M)");
+
+        const groups = buildCreatureCompetenceGroupsByPrimary(creature, { includeZero: false });
+        const force = groups.find((g) => g.title === "Force");
+        expect(force?.characteristics[0]?.lockSkillDisplay).toBe(true);
+        expect(force?.characteristics[0]?.skillName).toBe("Athlétisme");
+        expect(force?.characteristics[0]?.skillTag).toBe("E");
+        expect(force?.characteristics[0]?.value).toContain("Athlétisme");
+        expect(force?.characteristics[0]?.value).toContain("+9 (E)");
     });
 });

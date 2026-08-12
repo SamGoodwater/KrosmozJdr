@@ -1,10 +1,18 @@
 <script setup>
 /**
- * Corps de décomposition d'une caractéristique (base / objets / contexte / total + table niveaux).
+ * Corps de décomposition d'une caractéristique (popover Full) — ton fiche de jeu.
  *
- * @props {Object} model — viewModel enrichi (base, object, context, total, source, levelTable…)
+ * @props {Object} model — viewModel enrichi (base, object, context, total, placeholders…)
  */
-defineProps({
+import { computed } from "vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import {
+    humanizeCharacteristicFormulaText,
+    mapPlaceholdersForPlayer,
+    normalizeCharacteristicIcon,
+} from "@/Utils/Entity/characteristicTooltipLabels";
+
+const props = defineProps({
     model: {
         type: Object,
         required: true,
@@ -15,82 +23,125 @@ function fmt(value) {
     if (value === null || value === undefined || value === "") return "—";
     return String(value);
 }
+
+const iconSource = computed(() =>
+    normalizeCharacteristicIcon(props.model?.icon || props.model?._resolvedIcon || ""),
+);
+
+const friendlyFormula = computed(() =>
+    humanizeCharacteristicFormulaText(props.model?.formulaDisplay || ""),
+);
+
+const friendlyResolution = computed(() =>
+    humanizeCharacteristicFormulaText(props.model?.substituted || ""),
+);
+
+const termRows = computed(() => mapPlaceholdersForPlayer(props.model?.placeholders));
+
+const hasLayers =
+    computed(() =>
+        props.model?.base != null ||
+        props.model?.object != null ||
+        props.model?.context != null ||
+        props.model?.total != null,
+    );
 </script>
 
 <template>
     <div class="characteristic-decomposition max-w-sm space-y-3 text-left text-sm">
-        <div>
-            <div class="font-semibold">{{ model.name }}</div>
-            <div class="text-lg font-medium">{{ model.displayValue ?? "—" }}</div>
-            <p v-if="model.source === 'total_column'" class="text-xs opacity-70">
-                Total explicite (colonne)
-            </p>
-            <p v-else-if="model.source === 'composed'" class="text-xs opacity-70">
-                Composition base + objets + contexte
-            </p>
+        <div class="flex items-start gap-2.5">
+            <Icon
+                v-if="iconSource"
+                :source="iconSource"
+                :alt="model.name || ''"
+                size="md"
+                class="mt-0.5 shrink-0 opacity-90"
+            />
+            <div class="min-w-0">
+                <div class="font-semibold leading-snug">{{ model.name }}</div>
+                <div class="text-lg font-semibold tabular-nums">{{ model.displayValue ?? "—" }}</div>
+                <p v-if="model.source === 'total_column'" class="text-xs opacity-70">
+                    Valeur fixée sur la fiche
+                </p>
+                <p v-else-if="model.source === 'composed'" class="text-xs opacity-70">
+                    Calculée : base, équipement et bonus de contexte
+                </p>
+            </div>
         </div>
 
-        <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+        <dl
+            v-if="hasLayers"
+            class="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 rounded-md border border-base-300/70 bg-base-200/40 px-2.5 py-2 text-xs"
+        >
             <dt class="opacity-70">Base</dt>
-            <dd class="font-mono text-right">{{ fmt(model.base) }}</dd>
-            <dt class="opacity-70">Objets</dt>
-            <dd class="font-mono text-right">{{ fmt(model.object) }}</dd>
+            <dd class="text-right tabular-nums">{{ fmt(model.base) }}</dd>
+            <dt class="opacity-70">Équipement</dt>
+            <dd class="text-right tabular-nums">{{ fmt(model.object) }}</dd>
             <dt class="opacity-70">Contexte</dt>
-            <dd class="font-mono text-right">
+            <dd class="text-right tabular-nums">
                 {{ fmt(model.context) }}
                 <span v-if="model.contextRaw" class="ml-1 opacity-60">({{ model.contextRaw }})</span>
             </dd>
             <dt class="font-medium">Total</dt>
-            <dd class="font-mono text-right font-medium">{{ fmt(model.total ?? model.displayValue) }}</dd>
+            <dd class="text-right font-medium tabular-nums">{{ fmt(model.total ?? model.displayValue) }}</dd>
         </dl>
 
-        <div v-if="model.formulaDisplay || model.runtimeFormula || model.formulaBdd" class="space-y-1 text-xs opacity-80">
-            <div v-if="model.formulaDisplay">
-                <span class="font-medium">Affichage :</span> {{ model.formulaDisplay }}
+        <div
+            v-if="friendlyFormula || friendlyResolution || termRows.length"
+            class="space-y-2 rounded-md border border-base-300/70 px-2.5 py-2 text-xs"
+        >
+            <p class="text-[10px] font-semibold uppercase tracking-wider opacity-60">Calcul</p>
+            <div v-if="friendlyFormula">
+                <span class="opacity-60">Formule · </span>{{ friendlyFormula }}
             </div>
-            <div v-if="model.runtimeFormula || model.formulaBdd">
-                <span class="font-medium">Formule :</span>
-                <code class="ml-1 break-all font-mono">{{ model.runtimeFormula || model.formulaBdd }}</code>
+            <div v-if="friendlyResolution">
+                <span class="opacity-60">Avec tes valeurs · </span>
+                <span class="tabular-nums">{{ friendlyResolution }}</span>
             </div>
-            <div v-if="model.substituted">
-                <span class="font-medium">Résolution :</span>
-                <code class="ml-1 break-all font-mono">{{ model.substituted }}</code>
-            </div>
+            <ul v-if="termRows.length" class="space-y-1">
+                <li
+                    v-for="row in termRows"
+                    :key="row.id"
+                    class="flex justify-between gap-3 border-t border-dashed border-base-300 pt-1 first:border-t-0 first:pt-0"
+                >
+                    <span class="min-w-0 opacity-80">{{ row.label }}</span>
+                    <span class="shrink-0 font-medium tabular-nums">{{ row.value }}</span>
+                </li>
+            </ul>
         </div>
 
         <ul
             v-if="Array.isArray(model.itemContributions) && model.itemContributions.length"
             class="space-y-1 text-xs"
         >
+            <p class="text-[10px] font-semibold uppercase tracking-wider opacity-60">Objets</p>
             <li
                 v-for="line in model.itemContributions"
                 :key="line.item_id"
                 class="flex justify-between gap-2 border-t border-dashed border-base-300 pt-1"
             >
                 <span class="truncate">{{ line.name }} ×{{ line.quantity }}</span>
-                <span class="font-mono">{{ line.amount }}</span>
+                <span class="tabular-nums">{{ line.amount }}</span>
             </li>
         </ul>
 
-        <div v-if="Array.isArray(model.levelTable) && model.levelTable.length > 0" class="overflow-x-auto">
-            <table class="table table-xs">
-                <thead>
-                    <tr>
-                        <th>Niveau</th>
-                        <th>Total</th>
-                        <th>Base</th>
-                        <th>Ctx</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="row in model.levelTable" :key="row.level">
-                        <td>{{ row.level }}</td>
-                        <td>{{ row.value ?? row.total }}</td>
-                        <td>{{ row.base ?? "—" }}</td>
-                        <td>{{ row.context ?? "—" }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div
+            v-if="Array.isArray(model.levelTable) && model.levelTable.length > 1"
+            class="space-y-1"
+        >
+            <p class="text-[10px] font-semibold uppercase tracking-wider opacity-60">
+                Selon le niveau
+            </p>
+            <div class="flex flex-wrap gap-1">
+                <span
+                    v-for="row in model.levelTable"
+                    :key="row.level"
+                    class="inline-flex items-center gap-1 rounded bg-base-200 px-1.5 py-0.5 text-[11px] tabular-nums"
+                >
+                    <span class="opacity-60">Niv.{{ row.level }}</span>
+                    <span class="font-medium">{{ row.value ?? row.total }}</span>
+                </span>
+            </div>
         </div>
     </div>
 </template>

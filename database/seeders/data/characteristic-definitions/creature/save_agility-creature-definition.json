@@ -26,7 +26,7 @@
             "min": "-1",
             "max": "16",
             "formula": "[modifier_agility_creature]+[mastery_bonus_creature]*[save_agility_mastery]+[save_agility_bonus]",
-            "formula_display": "modifier_agility_creature + mastery_bonus_creature + save_agility_mastery + save_agility_bonus",
+            "formula_display": "modifier_agility_creature + mastery_bonus_creature × save_agility_mastery + save_agility_bonus",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

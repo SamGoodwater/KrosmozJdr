@@ -26,7 +26,7 @@
             "min": "-2",
             "max": "24",
             "formula": "[modifier_wisdom_creature]+[mastery_bonus_creature]*[perspicacite_mastery]+[perspicacite_bonus]",
-            "formula_display": "modifier_wisdom_creature + mastery_bonus_creature + perspicacite_mastery + perspicacite_bonus",
+            "formula_display": "modifier_wisdom_creature + mastery_bonus_creature × perspicacite_mastery + perspicacite_bonus",
             "default_value": "0",
             "conversion_formula": null,
             "conversion_function": null,

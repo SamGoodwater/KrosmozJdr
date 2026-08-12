@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "summoning_object",
         "name": "Bonus au nombre d'invocations",

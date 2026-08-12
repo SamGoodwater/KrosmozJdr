@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "nature_passive_object",
         "name": "Bonus passif (Nature)",

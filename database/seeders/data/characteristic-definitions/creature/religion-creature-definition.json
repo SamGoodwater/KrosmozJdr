@@ -26,7 +26,7 @@
             "min": "-2",
             "max": "24",
             "formula": "[modifier_intelligence_creature]+[mastery_bonus_creature]*[religion_mastery]+[religion_bonus]",
-            "formula_display": "modifier_intelligence_creature + mastery_bonus_creature + religion_mastery + religion_bonus",
+            "formula_display": "modifier_intelligence_creature + mastery_bonus_creature × religion_mastery + religion_bonus",
             "default_value": "0",
             "conversion_formula": null,
             "conversion_function": null,

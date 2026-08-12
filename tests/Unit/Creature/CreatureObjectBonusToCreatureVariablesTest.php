@@ -33,7 +33,7 @@ final class CreatureObjectBonusToCreatureVariablesTest extends TestCase
         ]);
 
         $this->assertSame(2, $mapped['action_points_creature']);
-        $this->assertSame(3, $mapped['acrobatie_bonus']);
+        $this->assertSame(3, $mapped['acrobatics_creature']);
 
         $variables = ['action_points_creature' => 4.0];
         $merger->mergeInto($variables, 'monster', [
@@ -43,7 +43,7 @@ final class CreatureObjectBonusToCreatureVariablesTest extends TestCase
 
         $this->assertSame(4.0, $variables['action_points_creature']);
         $this->assertSame(2.0, $variables['action_points_creature_object']);
-        $this->assertSame(3.0, $variables['acrobatie_bonus_object']);
+        $this->assertSame(3.0, $variables['acrobatics_creature_object']);
     }
 
     public function test_french_skill_bonus_names_list_is_non_empty(): void

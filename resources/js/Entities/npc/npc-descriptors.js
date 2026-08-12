@@ -253,7 +253,7 @@ export function getNpcFieldDescriptors(ctx = {}) {
     },
     creature_summary_stats: {
       key: "creature_summary_stats",
-      label: "Statistiques",
+      label: "Caractéristiques",
       icon: "fa-solid fa-chart-simple",
       table: {
         type: "chips",

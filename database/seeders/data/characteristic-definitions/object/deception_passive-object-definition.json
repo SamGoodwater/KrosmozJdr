@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "deception_passive_object",
         "name": "Bonus passif (Supercherie)",

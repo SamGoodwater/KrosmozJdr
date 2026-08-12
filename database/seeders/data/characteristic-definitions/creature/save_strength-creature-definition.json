@@ -26,7 +26,7 @@
             "min": "-1",
             "max": "16",
             "formula": "[modifier_strength_creature]+[mastery_bonus_creature]*[save_strength_mastery]+[save_strength_bonus]",
-            "formula_display": "modifier_strength_creature + mastery_bonus_creature + save_strength_mastery + save_strength_bonus",
+            "formula_display": "modifier_strength_creature + mastery_bonus_creature × save_strength_mastery + save_strength_bonus",
             "default_value": "0",
             "conversion_formula": "[d]",
             "conversion_function": null,

@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "heal_bonus_object",
         "name": "Bonus de soins",

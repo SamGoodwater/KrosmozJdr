@@ -125,6 +125,9 @@ class MonsterTableControllerTest extends TestCase
             $this->assertArrayNotHasKey('effect_usages_chips', $spellRow);
             $this->assertArrayNotHasKey('effect_usages_summary', $spellRow);
         }
+        $this->assertArrayHasKey('acrobatie_mastery', $entity['creature']);
+        $this->assertArrayHasKey('athletisme_mastery', $entity['creature']);
+        $this->assertIsInt($entity['creature']['athletisme_mastery']);
     }
 
     /**

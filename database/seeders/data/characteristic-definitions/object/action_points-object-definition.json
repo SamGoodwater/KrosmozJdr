@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "action_points_object",
         "name": "Bonus de points d'action",

@@ -26,7 +26,7 @@
             "min": "8",
             "max": "34",
             "formula": "[modifier_intelligence_creature]+[mastery_bonus_creature]*[histoire_mastery]+[histoire_bonus]+10",
-            "formula_display": "modifier_intelligence_creature + mastery_bonus_creature + histoire_mastery + histoire_bonus",
+            "formula_display": "modifier_intelligence_creature + mastery_bonus_creature × histoire_mastery + histoire_bonus",
             "default_value": "10",
             "conversion_formula": null,
             "conversion_function": null,

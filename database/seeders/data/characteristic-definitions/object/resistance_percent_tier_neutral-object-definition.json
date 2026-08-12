@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "resistance_percent_tier_neutral_object",
         "name": "Bonus de résistance en % (Neutre, palier)",

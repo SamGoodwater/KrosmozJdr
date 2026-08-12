@@ -16,6 +16,7 @@ import { computed } from "vue";
 import CharacteristicProperty from "@/Pages/Atoms/data-display/CharacteristicProperty.vue";
 import CharacteristicBoolean from "@/Pages/Atoms/data-display/CharacteristicBoolean.vue";
 import CharacteristicBadges from "@/Pages/Atoms/data-display/CharacteristicBadges.vue";
+import AbilityScoreStack from "@/Pages/Molecules/data-display/AbilityScoreStack.vue";
 import {
     characteristicAtLevel,
     levelTableFromRuntime,
@@ -23,6 +24,7 @@ import {
     viewModelFromFormulaGroupItem,
 } from "@/Composables/entity/useCharacteristicViewModel";
 import { shouldHideCharacteristicLine } from "@/Composables/entity/useCharacteristicDisplay";
+import { formatCreatureSkillDisplay } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import {
     CHARACTERISTIC_PROPERTY_BADGE,
     CHARACTERISTIC_PROPERTY_DENSITY,
@@ -34,6 +36,8 @@ const props = defineProps({
     characteristics: { type: Array, default: () => [] },
     levelEffective: { type: [Number, String], default: null },
     title: { type: String, default: "" },
+    /** Kind de groupe (`abilityStack`, `db`, …) — piloté par le manifeste. */
+    kind: { type: String, default: "" },
     /** @deprecated Préférer density */
     compact: { type: Boolean, default: false },
     density: {
@@ -43,6 +47,13 @@ const props = defineProps({
     },
     runtime: { type: Object, default: null },
 });
+
+const isAbilityStack = computed(() => props.kind === "abilityStack");
+
+/** Densité icon (Minimal / Line) : tooltip au survol. Densités plus riches : popover de décomposition au clic. */
+const useDecompositionPopover = computed(
+    () => resolvedDensity.value !== CHARACTERISTIC_CARD_DENSITY.icon,
+);
 
 const list = computed(() => (Array.isArray(props.characteristics) ? props.characteristics : []));
 
@@ -108,6 +119,17 @@ function formulaViewModel(item) {
     const key = vm.key;
     const rc = characteristicAtLevel(props.runtime, props.levelEffective, key);
     vm = mergeRuntimeIntoViewModel(vm, rc);
+    // Compétences : conserver « Nom +N (M|E) » après fusion runtime (qui sinon n’affiche que le total).
+    if (item?.lockSkillDisplay && item.skillName) {
+        const total = vm.total ?? vm.rawValue;
+        const n = Number(total);
+        const signed = Number.isFinite(n)
+            ? formatCreatureSkillDisplay(n, item.skillTag || "")
+            : String(item.value || vm.displayValue || "");
+        vm.displayValue = Number.isFinite(n) ? `${item.skillName} ${signed}` : String(item.value || "");
+        vm.shortName = item.skillName;
+        vm.name = item.skillName;
+    }
     const table = levelTableFromRuntime(props.runtime, key);
     if (table.length > 0) {
         vm.levelTable = table;
@@ -118,11 +140,21 @@ function formulaViewModel(item) {
 </script>
 
 <template>
-    <div class="characteristic-group space-y-2">
+    <div
+        class="characteristic-group"
+        :class="resolvedDensity === CHARACTERISTIC_CARD_DENSITY.icon ? 'space-y-0.5' : 'space-y-2'"
+    >
         <h4 v-if="title" :class="titleClass">
             {{ title }}
         </h4>
-        <div :class="wrapClass">
+        <AbilityScoreStack
+            v-if="isAbilityStack"
+            :columns="list"
+            :level-effective="levelEffective"
+            :density="resolvedDensity"
+            :runtime="runtime"
+        />
+        <div v-else :class="wrapClass">
             <template v-for="(item, i) in list" :key="item.def?.key ?? i">
                 <CharacteristicProperty
                     v-if="item.type === 'formula' && !shouldHideCharacteristicLine(item.def, formulaViewModel(item).rawValue ?? item.value)"
@@ -131,7 +163,7 @@ function formulaViewModel(item) {
                     :layout="propertyLayout"
                     :badge="CHARACTERISTIC_PROPERTY_BADGE.none"
                     size="sm"
-                    :prefer-decomposition-popover="true"
+                    :prefer-decomposition-popover="useDecompositionPopover"
                 />
                 <CharacteristicBoolean
                     v-else-if="item.type === 'boolean'"

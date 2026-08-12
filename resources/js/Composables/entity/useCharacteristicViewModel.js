@@ -253,11 +253,20 @@ export function viewModelFromFormulaGroupItem(item) {
     const displayValue = unit ? `${valStr} ${unit}`.trim() : valStr;
     const hideWhenEmpty = Boolean(def.hide_when_empty);
     const characteristicType = def.type != null ? String(def.type) : "";
+    const rawIcon = def._resolvedIcon || def.icon || "";
+    const icon =
+        typeof rawIcon === "string" &&
+        rawIcon &&
+        !rawIcon.includes("/") &&
+        !rawIcon.startsWith("fa-") &&
+        !rawIcon.startsWith("http")
+            ? `icons/caracteristics/${rawIcon}`
+            : rawIcon;
     return {
         key: def.key || "unknown",
         name: def.name || def.key || "—",
         shortName: def.short_name || def.name || def.key || "—",
-        icon: def.icon || "",
+        icon,
         color: def.color || "",
         helper: def.helper || "",
         descriptions: def.descriptions || "",

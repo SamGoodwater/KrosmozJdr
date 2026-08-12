@@ -26,7 +26,7 @@
             "min": "8",
             "max": "34",
             "formula": "[modifier_chance_creature]+[mastery_bonus_creature]*[representation_mastery]+[representation_bonus]+10",
-            "formula_display": "modifier_chance_creature + mastery_bonus_creature + representation_mastery + representation_bonus",
+            "formula_display": "modifier_chance_creature + mastery_bonus_creature × representation_mastery + representation_bonus",
             "default_value": "10",
             "conversion_formula": null,
             "conversion_function": null,

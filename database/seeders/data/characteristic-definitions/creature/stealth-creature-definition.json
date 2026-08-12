@@ -26,7 +26,7 @@
             "min": "-2",
             "max": "24",
             "formula": "[modifier_agility_creature]+[mastery_bonus_creature]*[discretion_mastery]+[discretion_bonus]",
-            "formula_display": "modifier_agility_creature + mastery_bonus_creature + discretion_mastery + discretion_bonus",
+            "formula_display": "modifier_agility_creature + mastery_bonus_creature × discretion_mastery + discretion_bonus",
             "default_value": "0",
             "conversion_formula": null,
             "conversion_function": null,

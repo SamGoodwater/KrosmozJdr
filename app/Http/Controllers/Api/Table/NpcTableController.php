@@ -7,6 +7,7 @@ use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Specialization;
+use App\Support\Creature\CreatureMasteryColumns;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -212,6 +213,7 @@ class NpcTableController extends Controller
                         'res_eau' => $c->res_eau,
                         'res_sagesse' => $c->res_sagesse,
                         'res_vitalite' => $c->res_vitalite,
+                        ...CreatureMasteryColumns::extractFrom($c),
                     ];
                 }
 

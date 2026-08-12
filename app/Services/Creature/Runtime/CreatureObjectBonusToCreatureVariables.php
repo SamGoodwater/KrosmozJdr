@@ -12,18 +12,47 @@ use App\Contracts\Characteristic\CharacteristicDefinitionLookup;
  *
  * Les totaux restent séparés pour permettre la décomposition base / objets / contexte.
  *
- * @example
- *   $map = $merger->mapToCharacteristicKeys($entity, ['strength' => 2, 'athletics' => 1]);
- *   // ['strength_creature' => 2, 'athletisme_bonus' => 1]
- */
+     * @example
+     *   $map = $merger->mapToCharacteristicKeys($entity, ['strength' => 2, 'athletics' => 1]);
+     *   // ['strength_creature' => 2, 'athletics_creature' => 1]
+     *
+     * Les bonus compétences objet se rattachent à la clé stable `*_creature` (couche object
+     * du runtime), tandis que la formule conserve `[…_bonus]` pour le bonus BDD créature.
+     */
 final class CreatureObjectBonusToCreatureVariables
 {
     /**
-     * Clé JSON objet (sans _object) → nom de variable/colonne utilisé dans les formules [athletisme_bonus], etc.
+     * Clé JSON objet (sans _object) → clé caractéristique créature (totaux compétences).
      *
      * @var array<string, string>
      */
     private const SKILL_SHORT_KEY_TO_BONUS_VARIABLE = [
+        'athletics' => 'athletics_creature',
+        'intimidation' => 'intimidation_creature',
+        'acrobatics' => 'acrobatics_creature',
+        'stealth' => 'stealth_creature',
+        'sleight_of_hand' => 'sleight_of_hand_creature',
+        'arcana' => 'arcana_creature',
+        'history' => 'history_creature',
+        'investigation' => 'investigation_creature',
+        'nature' => 'nature_creature',
+        'religion' => 'religion_creature',
+        'animal_handling' => 'animal_handling_creature',
+        'medicine' => 'medicine_creature',
+        'perception' => 'perception_creature',
+        'insight' => 'insight_creature',
+        'survival' => 'survival_creature',
+        'persuasion' => 'persuasion_creature',
+        'performance' => 'performance_creature',
+        'deception' => 'deception_creature',
+    ];
+
+    /**
+     * Variables bonus FR encore acceptées dans les formules (`[athletisme_bonus]`, etc.).
+     *
+     * @var array<string, string>
+     */
+    private const SKILL_SHORT_KEY_TO_FRENCH_BONUS_COLUMN = [
         'athletics' => 'athletisme_bonus',
         'intimidation' => 'intimidation_bonus',
         'acrobatics' => 'acrobatie_bonus',
@@ -55,7 +84,7 @@ final class CreatureObjectBonusToCreatureVariables
      */
     public static function frenchSkillBonusVariableNames(): array
     {
-        return array_values(self::SKILL_SHORT_KEY_TO_BONUS_VARIABLE);
+        return array_values(self::SKILL_SHORT_KEY_TO_FRENCH_BONUS_COLUMN);
     }
 
     /**

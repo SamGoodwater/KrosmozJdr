@@ -26,7 +26,7 @@
             "min": "-2",
             "max": "24",
             "formula": "[modifier_intelligence_creature]+[mastery_bonus_creature]*[arcane_mastery]+[arcane_bonus]",
-            "formula_display": "modifier_intelligence_creature + mastery_bonus_creature + arcane_mastery + arcane_bonus",
+            "formula_display": "modifier_intelligence_creature + mastery_bonus_creature × arcane_mastery + arcane_bonus",
             "default_value": "0",
             "conversion_formula": null,
             "conversion_function": null,

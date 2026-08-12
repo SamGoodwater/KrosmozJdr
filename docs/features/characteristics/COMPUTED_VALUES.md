@@ -75,8 +75,23 @@ Composants : `Popover.vue`, `CharacteristicDecompositionBody.vue`,
 | `labeled` | Modal full | Icône + label + valeur |
 | `spacious` | Page full | Idem + aération |
 
-Groupes canoniques : `creatureCharacteristicGroups.manifest.js` (Combat → … → Sauvegardes).
-Résumé compact : `pa`, `pm`, `po`, `life`, `ini`.
+Groupes canoniques : `creatureCharacteristicGroups.manifest.js`
+(Combat → Caractéristiques/`abilityStack` → Résistances → Dommages → Contrôle).
+
+Résumé Minimal (`mode: summary`) :
+
+1. **Modificateurs** des 6 stats (mis en avant) ;
+2. Combat : `pa`, `pm`, `life`, `ca`, `po`, `ini`, `invocation`.
+
+Le groupe **Caractéristiques** empile par colonne : score → modificateur → sauvegarde
+(`AbilityScoreStack.vue`). Les valeurs DB nulles sont résolues via le runtime
+(`base + objets + contexte`) ; la CA utilise `10+[modifier_vitality_creature]`.
+
+Résistances : fixe + code relatif entre parenthèses seulement si ≠ 0 %
+(`V` Vulnérable / `F` Faiblesse / `R` Résistant / `I` Invulnérable).
+
+Compétences (UI) : total = mod. caractéristique + `mastery_bonus × palier(0|1|2)`
++ bonus BDD + bonus objets (couche runtime). Affichage `+N`, `+N (M)`, `+N (E)`.
 
 ## Édition
 

@@ -54,7 +54,7 @@ const cardClass = computed(() => {
 
 const spaceClass = computed(() => {
     const d = resolvedDensity.value;
-    if (d === CHARACTERISTIC_CARD_DENSITY.icon) return "space-y-2";
+    if (d === CHARACTERISTIC_CARD_DENSITY.icon) return "space-y-1";
     if (d === CHARACTERISTIC_CARD_DENSITY.spacious) return "space-y-5";
     return "space-y-3";
 });
@@ -116,6 +116,7 @@ const groupsList = computed(() => (Array.isArray(props.groups) ? props.groups : 
                 v-for="(group, i) in groupsList"
                 :key="i"
                 :title="group.title"
+                :kind="group.kind || ''"
                 :characteristics="group.characteristics"
                 :level-effective="levelEffective"
                 :density="resolvedDensity"

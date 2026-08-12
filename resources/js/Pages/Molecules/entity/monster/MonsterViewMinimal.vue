@@ -4,10 +4,9 @@
  *
  * @description
  * Identité et méta toujours visibles ; description discrète au survol (modes compact / hover) ;
- * résumés combat / stats / etc. en blocs compacts avec expansion au survol du bloc ;
- * relations (invocations, loot…) en une ligne de chips ; carte Compétences après les blocs résumé,
- * visible au survol / focus (liste longue, scroll interne) ; liste des sorts de la créature en fin
- * (lien texte + vignette, aperçu SpellViewMinimal au survol). Plus de carte caractéristiques complète dans l’overlay.
+ * résumés combat / stats en blocs compacts ; en état étendu : caractéristiques complètes,
+ * compétences (maîtrises, y compris à 0) groupées par stat, sorts de la créature.
+ * Pas de bloc « contenus liés » / ressources en Minimal.
  *
  * @props {Monster} monster - Instance du modèle Monster
  */
@@ -168,19 +167,17 @@ function getSummaryCell(fieldKey) {
     return { type: "text", value: "—", params: {} };
 }
 
-const relationsCell = computed(() => getSummaryCell("monster_summary_relations"));
-
-/** Maîtrises regroupées par caractéristique primaire (carte longue → affichée au survol de la carte). */
-const competenceGroups = computed(() => buildCreatureCompetenceGroupsByPrimary(creatureData.value));
+/** Maîtrises regroupées par caractéristique primaire (visibles en Minimal étendu, y compris palier 0). */
+const competenceGroups = computed(() =>
+    buildCreatureCompetenceGroupsByPrimary(creatureData.value, {
+        includeZero: true,
+        runtime: effectiveRuntime.value,
+    }),
+);
 
 const cardEntityForCompetences = computed(() =>
     creatureData.value ? { level: creatureData.value.level } : null,
 );
-
-const hasRelationsChips = computed(() => {
-    const items = relationsCell.value?.params?.items;
-    return Array.isArray(items) && items.length > 0;
-});
 
 const raceCell = computed(() => getSummaryCell("monster_race"));
 const sizeCell = computed(() => getSummaryCell("size"));
@@ -381,20 +378,6 @@ const handleAction = async (actionKey) => {
                 </div>
 
                 <div
-                    v-if="canShowField('monster_summary_relations') && hasRelationsChips"
-                    class="w-full border-t border-base-300/80 pt-1.5"
-                >
-                    <p class="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-300/90">
-                        Contenus liés
-                    </p>
-                    <CellRenderer
-                        :cell="relationsCell"
-                        ui-color="primary"
-                        class="text-[11px] leading-tight [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
-                    />
-                </div>
-
-                <div
                     v-if="hasLinkedLanguages"
                     class="w-full border-t border-base-300/80 pt-1.5"
                     role="region"
@@ -415,36 +398,32 @@ const handleAction = async (actionKey) => {
 
                 <div
                     v-if="creatureData && fullCharacteristicGroups.length"
-                    class="w-full border-t border-primary/20 bg-primary/5 pt-1.5"
+                    class="minimal-monster-full-chars w-full border-t border-primary/20 bg-primary/5 pt-1"
                 >
                     <CharacteristicsCard
                         :entity="cardEntityForCompetences"
                         :groups="fullCharacteristicGroups"
                         :runtime="effectiveRuntime"
                         :density="CHARACTERISTIC_CARD_DENSITY.icon"
-                        class="border-0 bg-transparent p-0 shadow-none ring-0 [&_.characteristic-group>h4]:!text-[0.6rem]"
+                        class="border-0 bg-transparent p-0 shadow-none ring-0"
                     />
                 </div>
 
-                <!-- Compétences (maîtrises) : bloc long, révélé au survol / focus de la carte -->
+                <!-- Compétences : totaux + noms + (M|E), densifié pour Minimal étendu -->
                 <div
                     v-if="creatureData && competenceGroups.length"
-                    class="minimal-monster-competences-outer transition-[max-height,opacity] duration-200 ease-out max-h-0 opacity-0 overflow-hidden group-hover:max-h-[min(90vh,44rem)] group-hover:opacity-100 group-focus-within:max-h-[min(90vh,44rem)] group-focus-within:opacity-100"
+                    class="minimal-monster-competences mt-1 max-h-[min(85vh,42rem)] overflow-y-auto overscroll-contain border-t border-base-300/80 pt-1"
                 >
-                    <div
-                        class="minimal-monster-competences mt-1.5 max-h-[min(85vh,42rem)] overflow-y-auto overscroll-contain border-t border-base-300/80 pt-1.5"
-                    >
-                        <p class="mb-1 text-[10px] font-semibold uppercase tracking-wide text-primary-300/90">
-                            Compétences
-                        </p>
-                        <CharacteristicsCard
-                            :entity="cardEntityForCompetences"
-                            :groups="competenceGroups"
-                            :runtime="effectiveRuntime"
-                            :density="CHARACTERISTIC_CARD_DENSITY.icon"
-                            class="border-0 bg-transparent p-0 shadow-none ring-0 [&_.characteristics-card]:!p-1 [&_.characteristic-group>h4]:!text-[0.6rem]"
-                        />
-                    </div>
+                    <p class="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-300/90 leading-none">
+                        Compétences
+                    </p>
+                    <CharacteristicsCard
+                        :entity="cardEntityForCompetences"
+                        :groups="competenceGroups"
+                        :runtime="effectiveRuntime"
+                        :density="CHARACTERISTIC_CARD_DENSITY.icon"
+                        class="minimal-monster-competences-card border-0 bg-transparent p-0 shadow-none ring-0"
+                    />
                 </div>
 
                 <!-- Sorts liés à la créature (texte + aperçu minimal au survol de chaque sort) -->
@@ -459,3 +438,35 @@ const handleAction = async (actionKey) => {
         </template>
     </EntityMinimalCard>
 </template>
+
+<style scoped>
+.minimal-monster-full-chars :deep(.characteristics-card),
+.minimal-monster-competences-card.characteristics-card,
+.minimal-monster-competences-card :deep(.characteristics-card) {
+    padding: 0;
+}
+.minimal-monster-full-chars :deep(.characteristic-group),
+.minimal-monster-competences-card :deep(.characteristic-group) {
+    margin-bottom: 0.15rem;
+}
+.minimal-monster-full-chars :deep(.characteristic-group:last-child),
+.minimal-monster-competences-card :deep(.characteristic-group:last-child) {
+    margin-bottom: 0;
+}
+.minimal-monster-full-chars :deep(.characteristic-group h4),
+.minimal-monster-competences-card :deep(.characteristic-group h4) {
+    margin-bottom: 0.1rem;
+    font-size: 0.6rem;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+}
+.minimal-monster-full-chars :deep(.characteristic-group > .flex),
+.minimal-monster-competences-card :deep(.characteristic-group > .flex) {
+    gap: 0.15rem 0.35rem;
+}
+.minimal-monster-competences-card :deep(.characteristic-property) {
+    font-size: 0.7rem;
+    line-height: 1.15;
+    gap: 0.2rem;
+}
+</style>

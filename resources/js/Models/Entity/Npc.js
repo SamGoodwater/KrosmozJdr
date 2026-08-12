@@ -369,17 +369,17 @@ export class Npc extends BaseModel {
 
     /** @private */
     _toSummaryStatsCell(_options) {
-        return this._toSummaryGroupCell(_options, 'Stats', ['strong', 'intel', 'agi', 'chance', 'vitality', 'sagesse']);
+        return this._toSummaryGroupCell(_options, 'Caractéristiques', ['strong', 'intel', 'agi', 'chance', 'vitality', 'sagesse']);
     }
 
     /** @private */
     _toSummaryCombatCell(_options) {
-        return this._toSummaryGroupCell(_options, 'Combat', ['pa', 'pm', 'po', 'life', 'ini', 'invocation']);
+        return this._toSummaryGroupCell(_options, 'Combat', ['pa', 'pm', 'po', 'life', 'ini', 'invocation', 'ca']);
     }
 
     /** @private */
     _toSummaryControlCell(_options) {
-        return this._toSummaryGroupCell(_options, 'Contrôle', ['ca', 'dodge_pa', 'dodge_pm', 'fuite', 'tacle']);
+        return this._toSummaryGroupCell(_options, 'Contrôle', ['dodge_pa', 'dodge_pm', 'fuite', 'tacle']);
     }
 
     /**

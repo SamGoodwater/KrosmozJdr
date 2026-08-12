@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "armor_class_object",
         "name": "Bonus de classe d'armure",

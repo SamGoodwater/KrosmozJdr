@@ -22,6 +22,7 @@ import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
 import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
 import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
+import { buildCreatureCompetenceGroupsByPrimary } from "@/Utils/Entity/buildCreatureCompetenceGroups";
 import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 
@@ -72,6 +73,12 @@ provideCharacteristicRuntime(creatureRuntimeStats);
 
 const creatureCharacteristicsGroups = computed(() =>
     buildCreatureCharacteristicGroups(creatureData.value, {
+        runtime: creatureRuntimeStats.value,
+    }),
+);
+const competenceGroups = computed(() =>
+    buildCreatureCompetenceGroupsByPrimary(creatureData.value, {
+        includeZero: true,
         runtime: creatureRuntimeStats.value,
     }),
 );
@@ -223,6 +230,23 @@ const handleAction = async (actionKey) => {
             <CharacteristicsCard
                 :entity="creatureData"
                 :groups="creatureCharacteristicsGroups"
+                :density="characteristicsDensity"
+                :runtime="creatureRuntimeStats"
+            />
+        </section>
+
+        <section
+            v-if="competenceGroups.length"
+            class="pt-4 border-t border-base-300"
+            role="region"
+            aria-label="Compétences"
+        >
+            <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-primary-300">
+                Compétences
+            </h3>
+            <CharacteristicsCard
+                :entity="creatureData"
+                :groups="competenceGroups"
                 :density="characteristicsDensity"
                 :runtime="creatureRuntimeStats"
             />
