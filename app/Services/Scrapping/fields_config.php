@@ -417,6 +417,10 @@ return [
                     'field_name' => 'do_fixe_eau',
                     'convert' => true,
                 ],
+                'do_fixe_multiple' => [
+                    'field_name' => 'do_fixe_multiple',
+                    'convert' => true,
+                ],
                 'res_fixe_neutre' => [
                     'field_name' => 'res_fixe_neutre',
                     'convert' => true,

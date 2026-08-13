@@ -47,6 +47,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $do_fixe_feu
  * @property string $do_fixe_air
  * @property string $do_fixe_eau
+ * @property string|null $do_fixe_multiple
  * @property string $do_sagesse
  * @property string $do_vitalite
  * @property string $res_fixe_neutre
@@ -284,6 +285,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $do_fixe_feu_context
  * @property string|null $do_fixe_air_context
  * @property string|null $do_fixe_eau_context
+ * @property string|null $do_fixe_multiple_context
  * @property string|null $do_sagesse_context
  * @property string|null $do_vitalite_context
  * @property string|null $res_fixe_neutre_context
@@ -444,6 +446,7 @@ class Creature extends Model implements HasMedia
         'do_fixe_feu',
         'do_fixe_air',
         'do_fixe_eau',
+        'do_fixe_multiple',
         'do_sagesse',
         'do_vitalite',
         'res_fixe_neutre',

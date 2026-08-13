@@ -52,4 +52,25 @@ final class CreatureObjectBonusToCreatureVariablesTest extends TestCase
         $this->assertNotEmpty($names);
         $this->assertContains('acrobatie_bonus', $names);
     }
+
+    public function test_map_fixed_damage_multiple_even_without_db_column(): void
+    {
+        $getter = Mockery::mock(CharacteristicDefinitionLookup::class);
+        $getter->shouldReceive('getDefinition')->andReturnUsing(static function (string $key, string $entity): ?array {
+            return match ($key) {
+                'fixed_damage_multiple_creature' => [
+                    'key' => 'fixed_damage_multiple_creature',
+                    'db_column' => null,
+                ],
+                default => null,
+            };
+        });
+
+        $merger = new CreatureObjectBonusToCreatureVariables($getter);
+        $mapped = $merger->mapToCharacteristicKeys('monster', [
+            'fixed_damage_multiple' => 3,
+        ]);
+
+        $this->assertSame(3, $mapped['fixed_damage_multiple_creature']);
+    }
 }

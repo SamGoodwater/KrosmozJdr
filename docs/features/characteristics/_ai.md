@@ -12,6 +12,7 @@
 
 - **Définitions** : JSON seeders → tables `characteristics` + pivots `characteristic_*`.
 - **Composition** : `total = base + objets + contexte`, sauf si un **total explicite** (colonne) est présent. Détail : [COMPUTED_VALUES.md](./COMPUTED_VALUES.md).
+- **DO mult.** : colonne composable `do_fixe_multiple` (`fixed_damage_multiple_creature`), visible dans Dommages.
 - **Grammaire** : `{ expression }` + suffixe d’arrondi ; domaines `[x-y]` / `[ndX]` **uniquement sur le niveau**.
 - **Runtime créature** : `CreatureRuntimeStatsService` → `levels[]` pour le sélecteur de niveau.
 - **Conversion Dofus** : pipeline séparé (`conversion_formula`, `[d]`).

@@ -123,7 +123,19 @@ describe("buildCreatureCharacteristicGroups", () => {
             "res_terre",
             "res_fixe_feu",
             "res_feu",
-        ].map((k) => [k, { key: `${k}_creature`, name: k, short_name: k, db_column: k }]),
+            "do_fixe_multiple",
+            "touch",
+        ].map((k) => [
+            k,
+            {
+                key: k === "do_fixe_multiple" ? "fixed_damage_multiple_creature" : `${k}_creature`,
+                name: k,
+                short_name: k === "do_fixe_multiple" ? "DO mult." : k,
+                db_column: k,
+                hide_when_empty: false,
+                type: "int",
+            },
+        ]),
     );
 
     it("mode summary = mods + combat (dont CA calculée)", () => {
@@ -172,6 +184,75 @@ describe("buildCreatureCharacteristicGroups", () => {
         expect(values.some((v) => String(v).includes("(R)"))).toBe(true);
         expect(values.some((v) => String(v).includes("(0%") || String(v) === "0%")).toBe(false);
         expect(values).toContain("1");
+    });
+
+    it("Dommages : expose DO mult. même à 0, sans do_sagesse / do_vitalite", () => {
+        const groups = buildCreatureCharacteristicGroups(
+            { ...creature, do_sagesse: 2, do_vitalite: 3 },
+            {
+                mode: "full",
+                byDbColumn: {
+                    ...byDbColumn,
+                    do_sagesse: {
+                        key: "fixed_damage_sagesse_creature",
+                        db_column: "do_sagesse",
+                        short_name: "DO sag",
+                        type: "int",
+                    },
+                    do_vitalite: {
+                        key: "fixed_damage_vitalite_creature",
+                        db_column: "do_vitalite",
+                        short_name: "DO vit",
+                        type: "int",
+                    },
+                },
+                byComputedKey: {
+                    fixed_damage_multiple_creature: {
+                        key: "fixed_damage_multiple_creature",
+                        short_name: "DO mult.",
+                        hide_when_empty: false,
+                        type: "int",
+                    },
+                },
+            },
+        );
+        const dmg = groups.find((g) => g.title === "Dommages");
+        expect(dmg).toBeTruthy();
+        expect(dmg.spread).toBe(true);
+        const keys = dmg.characteristics.map((c) => c.def.db_column || c.def.key);
+        expect(keys).not.toContain("do_sagesse");
+        expect(keys).not.toContain("do_vitalite");
+        const multi = dmg.characteristics.find(
+            (c) =>
+                c.def.db_column === "do_fixe_multiple" ||
+                c.def.key === "fixed_damage_multiple_creature",
+        );
+        expect(multi).toBeTruthy();
+        expect(String(multi.value)).toBe("0");
+    });
+
+    it("Dommages : lit DO mult. depuis le runtime", () => {
+        const groups = buildCreatureCharacteristicGroups(
+            { ...creature, do_fixe_multiple: null },
+            {
+                mode: "full",
+                byDbColumn,
+                runtime: {
+                    levels: [
+                        {
+                            characteristics: {
+                                fixed_damage_multiple_creature: { total: 3 },
+                            },
+                        },
+                    ],
+                },
+            },
+        );
+        const dmg = groups.find((g) => g.title === "Dommages");
+        const multi = dmg.characteristics.find(
+            (c) => c.def.key === "fixed_damage_multiple_creature",
+        );
+        expect(String(multi?.value)).toBe("3");
     });
 });
 

@@ -144,7 +144,7 @@ final class CreatureObjectBonusToCreatureVariables
 
         $creatureKey = $objectShortKey.'_creature';
         $def = $this->getter->getDefinition($creatureKey, $entity);
-        if ($def !== null && ! empty($def['db_column'])) {
+        if ($def !== null) {
             return $creatureKey;
         }
 

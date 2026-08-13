@@ -7,6 +7,10 @@ L’affichage des caractéristiques monstre (Minimal / Line / Full) met les
 (équipements inclus), empile score → mod → sauvegarde, libelle les résistances
 relatives (sans les 0 %), et montre les compétences groupées par stat.
 
+Le **Dommage fixe Multiples (DO mult.)** a maintenant une colonne composable
+(`do_fixe_multiple`) et apparaît dans le groupe Dommages (y compris à 0, ou via
+équipements / runtime).
+
 ## Août 2026 — PDF multi + index server-side (gros volumes)
 
 Les exports PDF multi-entités respectent la même visibilité que les listes

@@ -38,6 +38,8 @@ const props = defineProps({
     title: { type: String, default: "" },
     /** Kind de groupe (`abilityStack`, `db`, …) — piloté par le manifeste. */
     kind: { type: String, default: "" },
+    /** Répartir les caractéristiques sur toute la largeur (résistances / dommages / contrôle). */
+    spread: { type: Boolean, default: false },
     /** @deprecated Préférer density */
     compact: { type: Boolean, default: false },
     density: {
@@ -75,11 +77,17 @@ const titleClass = computed(() => {
     return "text-sm font-semibold text-base-content/90";
 });
 
-const wrapClass = computed(() =>
-    resolvedDensity.value === CHARACTERISTIC_CARD_DENSITY.spacious
-        ? "flex flex-wrap gap-3"
-        : "flex flex-wrap gap-2",
-);
+const wrapClass = computed(() => {
+    const gap = resolvedDensity.value === CHARACTERISTIC_CARD_DENSITY.spacious ? "gap-3" : "gap-2";
+    if (props.spread) {
+        // Rangée pleine largeur ; l’espace est pris par les cellules wrappers, pas par les tooltips.
+        return `characteristic-group__items flex w-full ${gap}`;
+    }
+    return `characteristic-group__items flex flex-wrap ${gap}`;
+});
+
+const spreadCellClass =
+    "characteristic-group__cell flex min-w-0 flex-1 basis-0 items-center justify-center";
 
 const propertyDensity = computed(() => {
     const d = resolvedDensity.value;
@@ -156,28 +164,61 @@ function formulaViewModel(item) {
         />
         <div v-else :class="wrapClass">
             <template v-for="(item, i) in list" :key="item.def?.key ?? i">
-                <CharacteristicProperty
+                <template
                     v-if="item.type === 'formula' && !shouldHideCharacteristicLine(item.def, formulaViewModel(item).rawValue ?? item.value)"
-                    :view-model="formulaViewModel(item)"
-                    :density="propertyDensity"
-                    :layout="propertyLayout"
-                    :badge="CHARACTERISTIC_PROPERTY_BADGE.none"
-                    size="sm"
-                    :prefer-decomposition-popover="useDecompositionPopover"
-                />
-                <CharacteristicBoolean
-                    v-else-if="item.type === 'boolean'"
-                    :def="item.def"
-                    :value="item.value"
-                    :compact="resolvedDensity === CHARACTERISTIC_CARD_DENSITY.icon"
-                />
-                <CharacteristicBadges
-                    v-else-if="item.type === 'badges'"
-                    :def="item.def"
-                    :items="item.items"
-                    :value="item.value"
-                    :compact="resolvedDensity === CHARACTERISTIC_CARD_DENSITY.icon"
-                />
+                >
+                    <div v-if="spread" :class="spreadCellClass">
+                        <CharacteristicProperty
+                            :view-model="formulaViewModel(item)"
+                            :density="propertyDensity"
+                            :layout="propertyLayout"
+                            :badge="CHARACTERISTIC_PROPERTY_BADGE.none"
+                            size="sm"
+                            :prefer-decomposition-popover="useDecompositionPopover"
+                        />
+                    </div>
+                    <CharacteristicProperty
+                        v-else
+                        :view-model="formulaViewModel(item)"
+                        :density="propertyDensity"
+                        :layout="propertyLayout"
+                        :badge="CHARACTERISTIC_PROPERTY_BADGE.none"
+                        size="sm"
+                        :prefer-decomposition-popover="useDecompositionPopover"
+                    />
+                </template>
+                <template v-else-if="item.type === 'boolean'">
+                    <div v-if="spread" :class="spreadCellClass">
+                        <CharacteristicBoolean
+                            :def="item.def"
+                            :value="item.value"
+                            :compact="resolvedDensity === CHARACTERISTIC_CARD_DENSITY.icon"
+                        />
+                    </div>
+                    <CharacteristicBoolean
+                        v-else
+                        :def="item.def"
+                        :value="item.value"
+                        :compact="resolvedDensity === CHARACTERISTIC_CARD_DENSITY.icon"
+                    />
+                </template>
+                <template v-else-if="item.type === 'badges'">
+                    <div v-if="spread" :class="spreadCellClass">
+                        <CharacteristicBadges
+                            :def="item.def"
+                            :items="item.items"
+                            :value="item.value"
+                            :compact="resolvedDensity === CHARACTERISTIC_CARD_DENSITY.icon"
+                        />
+                    </div>
+                    <CharacteristicBadges
+                        v-else
+                        :def="item.def"
+                        :items="item.items"
+                        :value="item.value"
+                        :compact="resolvedDensity === CHARACTERISTIC_CARD_DENSITY.icon"
+                    />
+                </template>
             </template>
         </div>
     </div>

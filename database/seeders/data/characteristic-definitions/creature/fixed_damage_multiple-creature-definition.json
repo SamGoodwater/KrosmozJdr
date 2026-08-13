@@ -22,7 +22,7 @@
     "entities": {
         "*": {
             "dofusdb_characteristic_id": null,
-            "db_column": null,
+            "db_column": "do_fixe_multiple",
             "min": "0",
             "max": "10",
             "formula": null,

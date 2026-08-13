@@ -337,7 +337,7 @@ export class Npc extends BaseModel {
                     if (v != null && String(v) !== '') filterParts.push(String(v));
                 });
             }
-            for (const db of ['res_sagesse', 'res_vitalite', 'do_sagesse', 'do_vitalite']) {
+            for (const db of ['res_sagesse', 'res_vitalite', 'do_fixe_multiple']) {
                 const v = c[db];
                 if (v != null && String(v) !== '') filterParts.push(String(v));
             }
@@ -364,7 +364,7 @@ export class Npc extends BaseModel {
 
     /** @private */
     _toSummaryDamageCell(_options) {
-        return this._toSummaryGroupCell(_options, 'Dommages', ['touch', 'do_fixe_neutre', 'do_fixe_terre', 'do_fixe_feu', 'do_fixe_air', 'do_fixe_eau', 'do_sagesse', 'do_vitalite']);
+        return this._toSummaryGroupCell(_options, 'Dommages', ['touch', 'do_fixe_neutre', 'do_fixe_terre', 'do_fixe_feu', 'do_fixe_air', 'do_fixe_eau', 'do_fixe_multiple']);
     }
 
     /** @private */

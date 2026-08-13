@@ -369,7 +369,7 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
     text-transform: uppercase;
     opacity: 0.72;
 }
-.monster-line-char-cell :deep(.characteristic-group > .flex) {
+.monster-line-char-cell :deep(.characteristic-group__items) {
     gap: 0.2rem 0.3rem;
 }
 .monster-line-char-cell :deep(.characteristic-formula) {
@@ -405,7 +405,7 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
     text-transform: uppercase;
     opacity: 0.8;
 }
-.monster-line-competences :deep(.characteristic-group > .flex) {
+.monster-line-competences :deep(.characteristic-group__items) {
     gap: 0.15rem 0.35rem;
 }
 .monster-line-competences :deep(.characteristic-property) {

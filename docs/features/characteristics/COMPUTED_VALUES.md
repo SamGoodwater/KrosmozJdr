@@ -90,6 +90,10 @@ Le groupe **Caractéristiques** empile par colonne : score → modificateur → 
 Résistances : fixe + code relatif entre parenthèses seulement si ≠ 0 %
 (`V` Vulnérable / `F` Faiblesse / `R` Résistant / `I` Invulnérable).
 
+Les groupes **Résistances**, **Dommages** et **Contrôle** répartissent leurs
+caractéristiques sur toute la largeur (`spread`). Les dommages fixe Sagesse /
+Vitalité ne sont plus affichés (hors usage JDR).
+
 Compétences (UI) : total = mod. caractéristique + `mastery_bonus × palier(0|1|2)`
 + bonus BDD + bonus objets (couche runtime). Affichage `+N`, `+N (M)`, `+N (E)`.
 
@@ -107,6 +111,11 @@ Migration `2026_08_07_220000_add_creature_context_bonus_columns` :
 - ajoute `<colonne>_context` (**TEXT** nullable) pour chaque colonne composable ;
   (TEXT plutôt que VARCHAR pour rester sous la limite MySQL de taille de ligne) ;
 - convertit aussi les totaux en TEXT et les rend **nullable** (null ≠ 0).
+
+Migration `2026_08_13_020000_add_creature_do_fixe_multiple_columns` :
+
+- ajoute `do_fixe_multiple` + `do_fixe_multiple_context` (Dommage fixe Multiples / DO mult.) ;
+- relie `fixed_damage_multiple_creature.db_column` sans reseed global.
 
 Liste des colonnes : `App\Support\Creature\CreatureComposableColumns`.
 

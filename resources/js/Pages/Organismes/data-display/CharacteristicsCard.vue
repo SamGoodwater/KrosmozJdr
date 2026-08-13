@@ -117,6 +117,7 @@ const groupsList = computed(() => (Array.isArray(props.groups) ? props.groups : 
                 :key="i"
                 :title="group.title"
                 :kind="group.kind || ''"
+                :spread="Boolean(group.spread)"
                 :characteristics="group.characteristics"
                 :level-effective="levelEffective"
                 :density="resolvedDensity"

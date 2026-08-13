@@ -25,6 +25,7 @@ final class CreatureComposableColumns
         'vitality', 'sagesse', 'strong', 'intel', 'agi', 'chance',
         // Dégâts fixes
         'do_fixe_neutre', 'do_fixe_terre', 'do_fixe_feu', 'do_fixe_air', 'do_fixe_eau',
+        'do_fixe_multiple',
         'do_sagesse', 'do_vitalite',
         // Résistances
         'res_fixe_neutre', 'res_fixe_terre', 'res_fixe_feu', 'res_fixe_air', 'res_fixe_eau',

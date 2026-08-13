@@ -257,6 +257,7 @@ class MonsterTableController extends Controller
                         'do_fixe_feu' => $c->do_fixe_feu,
                         'do_fixe_air' => $c->do_fixe_air,
                         'do_fixe_eau' => $c->do_fixe_eau,
+                        'do_fixe_multiple' => $c->do_fixe_multiple,
                         'do_sagesse' => $c->do_sagesse,
                         'do_vitalite' => $c->do_vitalite,
                         'res_fixe_neutre' => $c->res_fixe_neutre,

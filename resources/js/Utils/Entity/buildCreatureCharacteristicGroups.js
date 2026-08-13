@@ -103,6 +103,7 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
                 groups.push({
                     title: groupDef.title,
                     kind: "abilityStack",
+                    spread: Boolean(groupDef.spread),
                     characteristics: items,
                 });
             }
@@ -113,7 +114,12 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
             items = buildDamageItems(creature, makeFormula, getCompDef, runtime);
         }
         if (items.length > 0) {
-            groups.push({ title: groupDef.title, kind: groupDef.kind, characteristics: items });
+            groups.push({
+                title: groupDef.title,
+                kind: groupDef.kind,
+                spread: Boolean(groupDef.spread),
+                characteristics: items,
+            });
         }
     }
 
@@ -198,6 +204,9 @@ function fallbackDbValue(creature, dbColumn, runtime) {
         return 1;
     }
     if (dbColumn === "po") {
+        return 0;
+    }
+    if (dbColumn === "do_fixe_multiple") {
         return 0;
     }
     return null;
@@ -389,24 +398,46 @@ function buildDamageItems(creature, makeFormula, getCompDef, runtime) {
         const item = makeFormula(`do_fixe_${el}`);
         if (item) dmgItems.push(item);
     }
-    for (const db of ["do_sagesse", "do_vitalite"]) {
-        const item = makeFormula(db);
-        if (item) dmgItems.push(item);
-    }
 
-    // Dommages multi-éléments (souvent sans colonne BDD — via runtime / équipements)
+    // DO mult. : toujours listé (hide_when_empty=false) — colonne + runtime / équipements
+    const multiItem =
+        makeFormula("do_fixe_multiple", { forceShow: true }) ||
+        buildFixedDamageMultipleFallback(creature, getCompDef, runtime);
+    if (multiItem) dmgItems.push(multiItem);
+
+    return dmgItems;
+}
+
+/**
+ * Fallback si la def n’est pas encore indexée par db_column (avant reseed / cache).
+ *
+ * @param {Object} creature
+ * @param {(key: string) => Object} getCompDef
+ * @param {Object|null} runtime
+ * @returns {{ type: string, def: Object, value: string, formulaResolved: string, formulaRaw: string }|null}
+ */
+function buildFixedDamageMultipleFallback(creature, getCompDef, runtime) {
     const multiKey = "fixed_damage_multiple_creature";
     const multiFromRuntime = runtimeDisplayValue(runtime, multiKey);
-    const multiRaw = creature.do_fixe_multiple ?? creature.fixed_damage_multiple ?? multiFromRuntime;
-    if (multiRaw !== null && multiRaw !== undefined && String(multiRaw) !== "" && Number(multiRaw) !== 0) {
-        const def = getCompDef(multiKey);
-        dmgItems.push({
-            type: "formula",
-            def: { ...def, key: def.key || multiKey, hide_when_empty: false },
-            value: String(multiRaw),
-            formulaResolved: "",
-            formulaRaw: "",
-        });
-    }
-    return dmgItems;
+    const aggregated = runtime?.items?.aggregated;
+    const fromItems =
+        aggregated && typeof aggregated === "object"
+            ? (aggregated.fixed_damage_multiple ?? aggregated[multiKey] ?? null)
+            : null;
+    const multiRaw =
+        creature?.do_fixe_multiple ?? creature?.fixed_damage_multiple ?? multiFromRuntime ?? fromItems ?? 0;
+    if (multiRaw === null || multiRaw === undefined || multiRaw === "") return null;
+    const def = getCompDef(multiKey);
+    return {
+        type: "formula",
+        def: {
+            ...def,
+            key: def.key || multiKey,
+            db_column: def.db_column || "do_fixe_multiple",
+            hide_when_empty: false,
+        },
+        value: String(multiRaw),
+        formulaResolved: "",
+        formulaRaw: "",
+    };
 }

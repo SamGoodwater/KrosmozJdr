@@ -460,8 +460,8 @@ const handleAction = async (actionKey) => {
     line-height: 1.1;
     letter-spacing: 0.04em;
 }
-.minimal-monster-full-chars :deep(.characteristic-group > .flex),
-.minimal-monster-competences-card :deep(.characteristic-group > .flex) {
+.minimal-monster-full-chars :deep(.characteristic-group__items),
+.minimal-monster-competences-card :deep(.characteristic-group__items) {
     gap: 0.15rem 0.35rem;
 }
 .minimal-monster-competences-card :deep(.characteristic-property) {

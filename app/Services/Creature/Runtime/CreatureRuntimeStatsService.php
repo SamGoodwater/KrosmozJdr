@@ -242,6 +242,37 @@ final class CreatureRuntimeStatsService
             }
         }
 
+        // Bonus objet sans formule / hors liste composable : exposer quand même la couche object.
+        foreach ($objectByKey as $key => $amount) {
+            if (isset($resolvedKeys[$key]) || (float) $amount === 0.0) {
+                continue;
+            }
+            $def = $this->getter->getDefinition($key, $entity);
+            if ($def === null) {
+                continue;
+            }
+            $column = $dbColumnByKey[$key] ?? null;
+            $contextRaw = is_string($column) ? $creature->contextBonusRaw($column) : null;
+            $context = $this->evaluateContext($contextRaw, $variables);
+            $base = $this->evaluateBaseFormula($key, $entity, $variables) ?? 0.0;
+            $object = (float) $amount;
+            $total = $base + $object + $context;
+            $characteristics[$key] = $this->buildCharacteristicRow(
+                $key,
+                $entity,
+                $base,
+                $object,
+                $context,
+                $total,
+                'composed',
+                $contextRaw,
+                $variables
+            );
+            $variables[$key] = $total;
+            $resolvedKeys[$key] = true;
+        }
+        $variables = FormulaVariableResolver::withShortNames('creature', $variables);
+
         $unresolved = [];
         foreach ($computedKeys as $key) {
             if (! isset($resolvedKeys[$key])) {

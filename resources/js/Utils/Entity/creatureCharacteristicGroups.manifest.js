@@ -127,6 +127,7 @@ export const CREATURE_RESISTANCE_PERCENT_FULL_LABELS = Object.freeze({
  * @property {string} title
  * @property {'db'|'abilityStack'|'resistances'|'damages'} kind
  * @property {string[]} [dbColumns]
+ * @property {boolean} [spread] - Répartir les items sur toute la largeur disponible
  */
 
 /** @type {ReadonlyArray<CreatureCharacteristicGroupDef>} */
@@ -146,16 +147,19 @@ export const CREATURE_CHARACTERISTIC_GROUPS = Object.freeze([
         id: "resistances",
         title: "Résistances",
         kind: "resistances",
+        spread: true,
     },
     {
         id: "damages",
         title: "Dommages",
         kind: "damages",
+        spread: true,
     },
     {
         id: "control",
         title: "Contrôle",
         kind: "db",
+        spread: true,
         dbColumns: Object.freeze([
             "dodge_pa",
             "dodge_pm",
