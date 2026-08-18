@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Entity;
 
 use App\Services\Effect\SpellEffectDefinitionsSerializer;
+use App\Services\Effect\SpellEffectUsagesDataService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,6 +20,9 @@ class SpellResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+        $effectUsages = $this->relationLoaded('effects')
+            ? app(SpellEffectUsagesDataService::class)->build($this->resource)
+            : null;
 
         return [
             'id' => $this->id,
@@ -27,6 +31,8 @@ class SpellResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'effect' => $this->effect,
+            'effect_usages_summary' => $this->when($effectUsages !== null, $effectUsages['summary'] ?? ''),
+            'effect_usages_chips' => $this->when($effectUsages !== null, $effectUsages['chips'] ?? []),
             'area' => $this->area,
             'level' => $this->level,
             'po' => $this->po_display,

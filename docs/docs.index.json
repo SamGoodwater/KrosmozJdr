@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Les filtres, le tri et la recherche des catalogues marchent à nouveau : multi-sélection (`whereIn`), application automatique, alias de tri (type d’objet, niveau de créature), recherche serveur et repli sur le nom en client. Un clic sur un sort depuis la fiche minimale d’un monstre charge la vraie vue minimale (effets inclus), plus seulement PA/PO."
+    "description": "Ouvrir un sort depuis la fiche minimale d’un monstre montre enfin les effets (chips inclus dans le payload, sans dépendre d’un second fetch). Le menu d’options de l’entité est dans un dropdown en haut à gauche de la carte."
   },
   {
     "path": "backend/_ai.md",

@@ -1,8 +1,12 @@
 # Ce qui a été fait
 
+## Août 2026 — Aperçu sort depuis un monstre
+
+Ouvrir un sort depuis la fiche minimale d’un monstre montre enfin les effets (chips inclus dans le payload, sans dépendre d’un second fetch). Le menu d’options de l’entité est dans un dropdown en haut à gauche de la carte.
+
 ## Août 2026 — Tableaux d’entités + aperçu des sorts
 
-Les filtres, le tri et la recherche des catalogues marchent à nouveau : multi-sélection (`whereIn`), application automatique, alias de tri (type d’objet, niveau de créature), recherche serveur et repli sur le nom en client. Un clic sur un sort depuis la fiche minimale d’un monstre charge la vraie vue minimale (effets inclus), plus seulement PA/PO.
+Les filtres, le tri et la recherche des catalogues marchent à nouveau : multi-sélection (`whereIn`), application automatique, alias de tri (type d’objet, niveau de créature), recherche serveur et repli sur le nom en client.
 
 ## Août 2026 — Tableau objets plus lisible
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Entity;
 
+use App\Models\Entity\Spell;
+use App\Services\Effect\SpellNestedPreviewSerializer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -59,7 +61,16 @@ class CreatureResource extends JsonResource
                     ] : null,
                 ];
             })->values()->all() : [],
-            'spells' => $this->whenLoaded('spells'),
+            'spells' => $this->whenLoaded('spells', function () {
+                $serializer = app(SpellNestedPreviewSerializer::class);
+                foreach ($this->spells as $spell) {
+                    if ($spell instanceof Spell) {
+                        $serializer->decorate($spell);
+                    }
+                }
+
+                return $this->spells;
+            }),
             'consumables' => ($this->relationLoaded('consumables') || isset($this->consumables)) ? $this->consumables->map(function ($consumable) {
                 return [
                     'id' => $consumable->id,

@@ -31,7 +31,7 @@ minimal compact → survol : overlay déployé → double-clic / quick-view : mo
 - PNJ : mêmes densités de caractéristiques que les monstres (créature liée).
 - La **page** n’est pas l’entrée principale (icône / overflow uniquement).
 - En `line` : même logique → modal full (`EntityLineRowActions`).
-- Actions du minimal : visibles surtout en déployé (haut-droite), overflow automatique.
+- Actions du minimal : visibles surtout en déployé ; sorts : dropdown **haut gauche** (overlay `extended` toujours visible).
 - **Favoris** : persistés en BDD (`user_favorites`) pour les comptes connectés. Accès header
   (cœur) → modal sans changer de page ; page `/favoris`. Invité·e : message pour se connecter.
   Icône cœur plein/vide dans les menus d’options. Liste en vue Minimal ; recherche via
@@ -79,4 +79,7 @@ Index client (`npcs`, etc.) : le filtre/tri/recherche portent sur le dataset dé
 
 ### Sort depuis un monstre
 
-Le payload tableau des monstres n’embarque pas l’arbre d’effets. Un clic sur un sort (`MonsterCreatureSpellsList`) hydrate la fiche via `api.tables.spells?whitelist[]=` puis affiche `SpellViewMinimal` en `extended`.
+Le payload tableau / fiche d’un monstre embarque les sorts liés avec `effect_usages_chips`
+(pas l’arbre `effects`). Un clic ouvre `SpellViewMinimal` en `extended` : effets + menu
+d’options (dropdown haut gauche). Si les chips manquent, un fetch `api.tables.spells?whitelist[]=`
+complète la fiche.

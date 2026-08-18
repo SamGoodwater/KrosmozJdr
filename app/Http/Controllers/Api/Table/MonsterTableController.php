@@ -9,6 +9,7 @@ use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\Type\MonsterRace;
+use App\Services\Effect\SpellNestedPreviewSerializer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ use Illuminate\Support\Facades\Gate;
  *   - `whitelist` / `ids[]` : liste d'ids à inclure uniquement
  *   - `blacklist` / `exclude[]` : liste d'ids à exclure
  * - Réponse `format=entities` :
- *   - `entities[]` : monstre + créature (stats) + sorts **allégés** (pas d’arbre d’effets)
+ *   - `entities[]` : monstre + créature (stats) + sorts liés (méta + chips d’effets, pas l’arbre `effects`)
  *   - `meta.entityType` = `monsters`
  *   - `meta.query` = paramètres réellement appliqués
  *   - `meta.capabilities` = droits de l'utilisateur courant
@@ -42,6 +43,10 @@ class MonsterTableController extends Controller
 {
     use InterpretsEntityTableFilters;
     use PaginatesEntityTable;
+
+    public function __construct(
+        private readonly SpellNestedPreviewSerializer $spellNestedPreviewSerializer,
+    ) {}
 
     /**
      * Filtres monstres (colonnes propres + créature liée).
@@ -186,10 +191,13 @@ class MonsterTableController extends Controller
                 'creature' => fn ($q) => $q
                     ->with([
                         'creatureTraits',
-                        // Sorts allégés (pas d’arbre effets) : liste + hover Minimal basique.
+                        // Sorts liés : méta + chips d’effets (vue minimale), sans dump de l’arbre.
                         'spells' => fn ($sq) => $sq
                             ->orderBy('name')
-                            ->with(['spellTypes']),
+                            ->with([
+                                'spellTypes',
+                                'effects.degrees.effectSubEffects.subEffect',
+                            ]),
                     ])
                     ->withCount(['resources', 'items', 'consumables']),
                 'monsterRace',
@@ -348,30 +356,10 @@ class MonsterTableController extends Controller
                         'save_agility_mastery' => $c->save_agility_mastery ?? 0,
                         ...CreatureMasteryColumns::extractFrom($c),
                         'spells' => $c->relationLoaded('spells')
-                            ? $c->spells->map(fn (Spell $s) => [
-                                'id' => $s->id,
-                                'name' => $s->name,
-                                'description' => $s->description,
-                                'level' => $s->level,
-                                'pa' => $s->pa,
-                                'po_min' => $s->po_min,
-                                'po_max' => $s->po_max,
-                                'image' => $s->image,
-                                'category' => $s->category,
-                                'element' => $s->element,
-                                'is_magic' => $s->is_magic,
-                                'sight_line' => $s->sight_line,
-                                'po_editable' => $s->po_editable,
-                                'effect' => $s->effect ?? null,
-                                'spellTypes' => $s->relationLoaded('spellTypes')
-                                    ? $s->spellTypes->map(fn ($t) => [
-                                        'id' => $t->id,
-                                        'name' => $t->name,
-                                        'color' => $t->color ?? null,
-                                        'icon' => $t->icon ?? null,
-                                    ])->values()->all()
-                                    : [],
-                            ])->values()->all()
+                            ? $c->spells
+                                ->map(fn (Spell $s) => $this->spellNestedPreviewSerializer->serialize($s))
+                                ->values()
+                                ->all()
                             : [],
                         'creatureTraits' => $c->relationLoaded('creatureTraits')
                             ? $c->creatureTraits->map(fn ($t) => [

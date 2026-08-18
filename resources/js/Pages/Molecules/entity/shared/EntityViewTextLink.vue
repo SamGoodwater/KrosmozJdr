@@ -19,7 +19,11 @@ const props = defineProps({
   hoverCardClass: { type: String, default: "" },
   /** Placement du « tooltip » (Floating UI). */
   placement: { type: String, default: "bottom-start" },
-  showActionsOnHover: { type: Boolean, default: false },
+  /**
+   * Affiche le menu d’options sur la vue minimale ouverte (dropdown).
+   * Défaut vrai : on ouvre déjà une fiche, les actions doivent rester accessibles.
+   */
+  showActionsOnHover: { type: Boolean, default: true },
   /**
    * Conservé pour compatibilité ; ignoré pour le rendu : l’aperçu minimal utilise toujours
    * `displayMode: 'extended'` sur la vue cible. Le survol sur le **nom** ouvre déjà le tooltip ;
@@ -83,6 +87,20 @@ function handleAltNavigation(event) {
   window.location.assign(altClickHref.value);
 }
 
+function entityAlreadyHasEffects(entity) {
+  if (!entity) return false;
+  const chips =
+    entity.effectUsagesChips ??
+    entity._data?.effect_usages_chips ??
+    entity.effect_usages_chips;
+  if (Array.isArray(chips) && chips.length > 0) return true;
+  const defs =
+    entity.effectsDefinitions ??
+    entity._data?.effects_definitions ??
+    entity.effects_definitions;
+  return Array.isArray(defs) && defs.length > 0;
+}
+
 function buildMinimalProps(entity) {
   return {
     [props.entityProp]: entity,
@@ -97,7 +115,7 @@ function buildMinimalProps(entity) {
 const overlayContent = computed(() => {
   const hydrateType = String(props.hydrateType || "").trim();
   const entityId = props.entity?.id;
-  if (hydrateType && entityId) {
+  if (hydrateType && entityId && !entityAlreadyHasEffects(props.entity)) {
     return {
       key: `hydrate:${hydrateType}:${entityId}`,
       loader: async () => {
@@ -106,7 +124,7 @@ const overlayContent = computed(() => {
           const full = await fetchEntityModelById(hydrateType, entityId);
           if (full) entity = full;
         } catch {
-          /* payload allégé en repli */
+          /* payload déjà affiché / allégé en repli */
         }
         return {
           component: markRaw(props.minimalComponent),

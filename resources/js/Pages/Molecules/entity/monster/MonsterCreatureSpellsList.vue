@@ -4,9 +4,9 @@
  *
  * @description
  * Affiche une liste compacte : icône / vignette + nom ; au survol, `SpellViewMinimal`.
- * Données attendues : `creature.spells[]` (payload table allégé).
- * Au clic, `EntityViewTextLink` hydrate le sort via l’API (`hydrate-type="spells"`)
- * pour afficher la vue minimale étendue (effets inclus).
+ * Données attendues : `creature.spells[]` (méta + `effect_usages_chips`).
+ * Au clic, `EntityViewTextLink` ouvre `SpellViewMinimal` en `extended` (effets + menu d’options).
+ * Un fetch `hydrate-type="spells"` complète éventuellement la fiche.
  *
  * @props {Object|null} creature - Créature (souvent `monster.creature`) avec relation `spells`
  * @props {Object} [tableMeta] - Meta tableau / contexte pour les cellules
@@ -49,7 +49,7 @@ const spellModels = computed(() => {
                     :minimal-component="SpellViewMinimal"
                     fallback-icon="fa-solid fa-wand-magic-sparkles"
                     ui-color="primary"
-                    :show-actions-on-hover="false"
+                    :show-actions-on-hover="true"
                     hydrate-type="spells"
                     hover-width-class="w-[min(92vw,36rem)] max-w-[36rem]"
                     :table-meta="tableMeta"

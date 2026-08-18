@@ -5,7 +5,7 @@
 ## Fichiers pivots
 
 - `app/Models/Effect*.php`, `app/Models/ObjectEffect.php`
-- `app/Services/Effect/`
+- `app/Services/Effect/` (`SpellNestedPreviewSerializer` : chips d’aperçu sur sorts liés)
 - `app/Services/Scrapping/Core/Conversion/SpellEffects/`
 - `app/Support/DofusHyperlinkText.php` (libellés d’états `{{spell,…::Nom}}`)
 - `Spell::visibleToUser` / `EntityDisplayVisibilityService::constrainQueryToViewer` (listes)

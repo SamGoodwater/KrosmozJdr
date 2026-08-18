@@ -33,4 +33,26 @@ describe('Spell._toEffectSummaryCell fallback', () => {
         expect(cell.value).not.toBe('—');
         expect(String(cell.params?.searchValue || cell.value || '')).not.toBe('');
     });
+
+    it('produit des chips spell_effects en contexte minimal', () => {
+        const spell = new Spell({
+            id: 3,
+            name: 'Maxquale',
+            effect_usages_chips: [
+                {
+                    text: '10 à 15 (Terre)',
+                    degree: 1,
+                    element: 1,
+                    tooltip: '10 à 15 (Terre)',
+                },
+            ],
+            effect_usages_summary: '10 à 15 (Terre)',
+        });
+
+        const cell = spell.toCell('effect_summary', { context: 'minimal', size: 'xs' });
+
+        expect(cell.type).toBe('spell_effects');
+        expect(cell.params?.items?.length).toBe(1);
+        expect(cell.params?.chipsLayout?.layout).toBe('minimal');
+    });
 });

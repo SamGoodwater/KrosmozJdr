@@ -7,6 +7,7 @@
  * Méta : `SpellMinimalUsageMetaRow` (PA, PO + icônes portée/ligne de vue, lancers avec tooltip, élément au survol, types/catégorie au survol).
  * Résolution : ligne au-dessus des effets (`buildResolutionSummary`).
  * Invocations : portées par les sous-effets / chips (pas de bloc séparé).
+ * Options : dropdown `EntityActions` en haut à gauche (gain de place sur le titre).
  *
  * @props {Spell} spell - Instance du modèle Spell
  */
@@ -145,6 +146,24 @@ const handleAction = async (actionKey) => {
                 data-cy="entity-minimal-card-compact"
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
+                <div
+                    v-if="showActions"
+                    data-entity-actions
+                    class="absolute top-1 left-1 z-20"
+                    @click.stop
+                >
+                    <EntityActions
+                        entity-type="spells"
+                        :entity="entity"
+                        format="dropdown"
+                        display="icon-only"
+                        size="xs"
+                        placement="bottom-start"
+                        :whitelist="minimalActionWhitelist"
+                        :context="minimalActionsContext"
+                        @action="(k) => handleAction(k)"
+                    />
+                </div>
                 <div class="flex gap-2">
                     <EntityThumb
                         size="compact"
@@ -164,7 +183,6 @@ const handleAction = async (actionKey) => {
                             <div class="min-w-0 flex-1">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            
                         </div>
                         <SpellUsageBlock
                             parts="meta"
@@ -185,6 +203,7 @@ const handleAction = async (actionKey) => {
                     :table-meta="tableMeta"
                     :can-show-field="canShowField"
                     :max-effect-rows="3"
+                    :show-empty-effects="true"
                 />
             </div>
         </template>
@@ -193,6 +212,24 @@ const handleAction = async (actionKey) => {
                 data-cy="entity-minimal-card-expanded"
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
+                <div
+                    v-if="showActions"
+                    data-entity-actions
+                    class="absolute top-1 left-1 z-20"
+                    @click.stop
+                >
+                    <EntityActions
+                        entity-type="spells"
+                        :entity="entity"
+                        format="dropdown"
+                        display="icon-only"
+                        size="xs"
+                        placement="bottom-start"
+                        :whitelist="minimalActionWhitelist"
+                        :context="minimalActionsContext"
+                        @action="(k) => handleAction(k)"
+                    />
+                </div>
                 <div class="flex gap-2">
                     <EntityThumb
                         size="compact"
@@ -211,18 +248,6 @@ const handleAction = async (actionKey) => {
                             />
                             <div class="min-w-0 flex-1">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
-                            </div>
-                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
-                                <EntityActions
-                                    entity-type="spells"
-                                    :entity="entity"
-                                    format="dropdown"
-                                    display="icon-only"
-                                    size="xs"
-                                    :whitelist="minimalActionWhitelist"
-                                    :context="minimalActionsContext"
-                                    @action="(k) => handleAction(k)"
-                                />
                             </div>
                         </div>
                         <SpellUsageBlock
@@ -251,6 +276,7 @@ const handleAction = async (actionKey) => {
                     :table-meta="tableMeta"
                     :can-show-field="canShowField"
                     :max-effect-rows="3"
+                    :show-empty-effects="true"
                 />
             </div>
         </template>

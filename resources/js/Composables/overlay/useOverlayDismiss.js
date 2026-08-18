@@ -1,6 +1,19 @@
 import { onMounted, onUnmounted } from "vue";
 
 /**
+ * Clic « hors overlay » ignoré : menus dropdown téléportés (`Dropdown.vue`).
+ *
+ * @param {EventTarget|null|undefined} target
+ * @returns {boolean}
+ * @example
+ * isOverlayOutsideClickIgnored(document.querySelector("[data-dropdown-id]"));
+ */
+export function isOverlayOutsideClickIgnored(target) {
+    if (!(target instanceof Element)) return false;
+    return Boolean(target.closest("[data-dropdown-id]"));
+}
+
+/**
  * @param {{
  * openRef: import('vue').Ref<boolean>,
  * triggerRef: import('vue').Ref<HTMLElement|null>,
@@ -25,6 +38,7 @@ export function useOverlayDismiss(options) {
         const target = event.target;
         if (!(target instanceof Node)) return;
         if (containsNode(target)) return;
+        if (isOverlayOutsideClickIgnored(target)) return;
         options.onClose("outside");
     }
 
