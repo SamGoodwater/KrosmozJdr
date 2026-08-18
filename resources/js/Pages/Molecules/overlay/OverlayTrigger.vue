@@ -24,7 +24,9 @@ const props = defineProps({
 const emit = defineEmits(["open", "close", "error"]);
 
 const { service, position, trigger, a11y } = useOverlay({
-    content: props.content,
+    get content() {
+        return props.content;
+    },
     trigger: props.trigger,
     placement: props.placement,
     maxWidth: props.maxWidth,

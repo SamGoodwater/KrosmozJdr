@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class SpellTableController extends Controller
 {
+    use InterpretsEntityTableFilters;
     use InterpretsEntityTableSort;
 
     public function __construct(
@@ -62,6 +63,75 @@ class SpellTableController extends Controller
     }
 
     /**
+     * Filtres sorts : égalité / whereIn + types, PO, zone, sous-effet.
+     *
+     * @param  Builder<Spell>  $query
+     * @param  array<string, mixed>  $filters
+     */
+    private function applySpellTableFilters(Builder $query, array $filters): void
+    {
+        $scalar = [
+            'level' => ['level', 'string'],
+            'pa' => ['pa', 'string'],
+            'id' => ['id', 'int'],
+            'category' => ['category', 'int'],
+            'element' => ['element', 'int'],
+            'is_magic' => ['is_magic', 'int'],
+            'allows_reaction' => ['allows_reaction', 'int'],
+            'powerful' => ['powerful', 'int'],
+            'state' => ['state', 'string'],
+            'sight_line' => ['sight_line', 'int'],
+            'po_editable' => ['po_editable', 'int'],
+            'ritual_available' => ['ritual_available', 'int'],
+            'auto_update' => ['auto_update', 'int'],
+        ];
+        foreach ($scalar as $key => [$column, $cast]) {
+            if ($this->hasFilterValue($filters, $key)) {
+                $this->applyEqualityFilter($query, $column, $filters[$key], $cast);
+            }
+        }
+
+        if ($this->hasFilterValue($filters, 'types')) {
+            $ids = array_values(array_filter(
+                $this->castFilterList($filters['types'], 'int'),
+                fn ($id) => (int) $id > 0
+            ));
+            if ($ids !== []) {
+                $query->whereHas('spellTypes', function (Builder $q) use ($ids) {
+                    $q->whereIn($q->qualifyColumn('id'), $ids);
+                });
+            }
+        }
+
+        if ($this->hasFilterValue($filters, 'po')) {
+            $values = $this->normalizeFilterList($filters['po']);
+            $query->where(function (Builder $q) use ($values) {
+                foreach ($values as $value) {
+                    if ($value === '6') {
+                        $q->orWhere('po_min', '>=', 6)->orWhere('po_max', '>=', 6);
+
+                        continue;
+                    }
+                    $q->orWhere('po_min', $value)->orWhere('po_max', $value);
+                }
+            });
+        }
+
+        if ($this->hasFilterValue($filters, 'area')) {
+            $areas = $this->normalizeFilterList($filters['area']);
+            $query->whereHas('effects.degrees', fn (Builder $q) => $q->whereIn('area', $areas));
+        }
+
+        if ($this->hasFilterValue($filters, 'sub_effect')) {
+            $slugs = $this->normalizeFilterList($filters['sub_effect']);
+            $query->whereHas(
+                'effects.degrees.effectSubEffects.subEffect',
+                fn (Builder $q) => $q->whereIn('slug', $slugs)
+            );
+        }
+    }
+
+    /**
      * Tri tableau sorts : colonnes SQL + alias `po` (po_min/po_max) et `area` (sous-requête degré).
      *
      * @param  Builder<Spell>  $query
@@ -82,9 +152,9 @@ class SpellTableController extends Controller
                 if (! is_array($item)) {
                     continue;
                 }
-                $field = $item['field'] ?? $item['column'] ?? null;
+                $field = (string) ($item['field'] ?? $item['column'] ?? '');
                 $dir = strtolower((string) ($item['dir'] ?? $item['order'] ?? 'asc'));
-                if (! is_string($field) || ! in_array($field, $allowedSort, true)) {
+                if ($field === '' || ! in_array($field, $allowedSort, true)) {
                     continue;
                 }
                 if (! in_array($dir, ['asc', 'desc'], true)) {
@@ -179,7 +249,7 @@ class SpellTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['level', 'pa', 'category', 'element', 'is_magic', 'allows_reaction', 'powerful', 'state', 'sight_line', 'po_editable'] as $k) {
+        foreach (['level', 'pa', 'category', 'element', 'is_magic', 'allows_reaction', 'powerful', 'state', 'sight_line', 'po_editable', 'types', 'po', 'area', 'sub_effect'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -216,45 +286,8 @@ class SpellTableController extends Controller
             });
         }
 
-        if (array_key_exists('level', $filters) && $filters['level'] !== '' && $filters['level'] !== null) {
-            $query->where('level', (string) $filters['level']);
-        }
-        if (array_key_exists('pa', $filters) && $filters['pa'] !== '' && $filters['pa'] !== null) {
-            $query->where('pa', (string) $filters['pa']);
-        }
-        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
-            $query->where('id', (int) $filters['id']);
-        }
-        if (array_key_exists('category', $filters) && $filters['category'] !== '' && $filters['category'] !== null) {
-            $query->where('category', (int) $filters['category']);
-        }
-        if (array_key_exists('element', $filters) && $filters['element'] !== '' && $filters['element'] !== null) {
-            $query->where('element', (int) $filters['element']);
-        }
-        if (array_key_exists('is_magic', $filters) && $filters['is_magic'] !== '' && $filters['is_magic'] !== null) {
-            $query->where('is_magic', (int) $filters['is_magic']);
-        }
-        if (array_key_exists('allows_reaction', $filters) && $filters['allows_reaction'] !== '' && $filters['allows_reaction'] !== null) {
-            $query->where('allows_reaction', (int) $filters['allows_reaction']);
-        }
-        if (array_key_exists('powerful', $filters) && $filters['powerful'] !== '' && $filters['powerful'] !== null) {
-            $query->where('powerful', (int) $filters['powerful']);
-        }
-        if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
-            $query->where('state', (string) $filters['state']);
-        }
-        if (array_key_exists('sight_line', $filters) && $filters['sight_line'] !== '' && $filters['sight_line'] !== null) {
-            $query->where('sight_line', (int) $filters['sight_line']);
-        }
-        if (array_key_exists('po_editable', $filters) && $filters['po_editable'] !== '' && $filters['po_editable'] !== null) {
-            $query->where('po_editable', (int) $filters['po_editable']);
-        }
-        if (array_key_exists('ritual_available', $filters) && $filters['ritual_available'] !== '' && $filters['ritual_available'] !== null) {
-            $query->where('ritual_available', (int) $filters['ritual_available']);
-        }
-        if (array_key_exists('auto_update', $filters) && $filters['auto_update'] !== '' && $filters['auto_update'] !== null) {
-            $query->where('auto_update', (int) $filters['auto_update']);
-        }
+        $this->applySpellTableFilters($query, $filters);
+        $this->applyEntityTableIdList($query, $request);
 
         $this->applySpellTableSort($query, $request);
 

@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class ResourceTableController extends Controller
 {
+    use InterpretsEntityTableFilters;
     use InterpretsEntityTableSort;
     use PaginatesEntityTable;
 
@@ -89,33 +90,35 @@ class ResourceTableController extends Controller
             });
         }
 
-        // Filtres (select)
-        if (array_key_exists('level', $filters) && $filters['level'] !== '' && $filters['level'] !== null) {
-            $query->where('level', (string) $filters['level']);
+        // Filtres (select / multi)
+        if ($this->hasFilterValue($filters, 'level')) {
+            $this->applyEqualityFilter($query, 'level', $filters['level']);
         }
-        if (array_key_exists('resource_type_id', $filters) && $filters['resource_type_id'] !== '' && $filters['resource_type_id'] !== null) {
-            $query->where('resource_type_id', (int) $filters['resource_type_id']);
+        if ($this->hasFilterValue($filters, 'resource_type_id')) {
+            $this->applyEqualityFilter($query, 'resource_type_id', $filters['resource_type_id'], 'int');
         }
         foreach (['rarity', 'auto_update'] as $k) {
-            if (array_key_exists($k, $filters) && $filters[$k] !== '' && $filters[$k] !== null) {
-                $query->where($k, (int) $filters[$k]);
+            if ($this->hasFilterValue($filters, $k)) {
+                $this->applyEqualityFilter($query, $k, $filters[$k], 'int');
             }
         }
-        if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
-            $query->where('state', (string) $filters['state']);
+        if ($this->hasFilterValue($filters, 'state')) {
+            $this->applyEqualityFilter($query, 'state', $filters['state']);
         }
-        if (array_key_exists('read_level', $filters) && $filters['read_level'] !== '' && $filters['read_level'] !== null) {
-            $query->where('read_level', (int) $filters['read_level']);
+        if ($this->hasFilterValue($filters, 'read_level')) {
+            $this->applyEqualityFilter($query, 'read_level', $filters['read_level'], 'int');
         }
-        if (array_key_exists('write_level', $filters) && $filters['write_level'] !== '' && $filters['write_level'] !== null) {
-            $query->where('write_level', (int) $filters['write_level']);
+        if ($this->hasFilterValue($filters, 'write_level')) {
+            $this->applyEqualityFilter($query, 'write_level', $filters['write_level'], 'int');
         }
-        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
-            $query->where('id', (int) $filters['id']);
+        if ($this->hasFilterValue($filters, 'id')) {
+            $this->applyEqualityFilter($query, 'id', $filters['id'], 'int');
         }
 
+        $this->applyEntityTableIdList($query, $request);
+
         // Tri (liste blanche)
-        $allowedSort = ['id', 'name', 'level', 'rarity', 'price', 'weight', 'state', 'read_level', 'write_level', 'auto_update', 'dofusdb_id', 'created_at', 'updated_at'];
+        $allowedSort = ['id', 'name', 'level', 'rarity', 'price', 'weight', 'state', 'read_level', 'write_level', 'auto_update', 'resource_type_id', 'dofusdb_id', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $pageResult = $this->paginateEntityTable($query, $request);

@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class ConsumableTableController extends Controller
 {
+    use InterpretsEntityTableFilters;
     use InterpretsEntityTableSort;
     use PaginatesEntityTable;
 
@@ -64,20 +65,22 @@ class ConsumableTableController extends Controller
                     ->orWhere('effect', 'like', "%{$search}%");
             });
         }
-        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
-            $query->where('id', (int) $filters['id']);
+        if (array_key_exists('id', $filters) && $this->hasFilterValue($filters, 'id')) {
+            $this->applyEqualityFilter($query, 'id', $filters['id'], 'int');
         }
-        if (array_key_exists('level', $filters) && $filters['level'] !== '' && $filters['level'] !== null) {
-            $query->where('level', (string) $filters['level']);
+        if ($this->hasFilterValue($filters, 'level')) {
+            $this->applyEqualityFilter($query, 'level', $filters['level']);
         }
-        if (array_key_exists('rarity', $filters) && $filters['rarity'] !== '' && $filters['rarity'] !== null) {
-            $query->where('rarity', (int) $filters['rarity']);
+        if ($this->hasFilterValue($filters, 'rarity')) {
+            $this->applyEqualityFilter($query, 'rarity', $filters['rarity'], 'int');
         }
-        if (array_key_exists('consumable_type_id', $filters) && $filters['consumable_type_id'] !== '' && $filters['consumable_type_id'] !== null) {
-            $query->where('consumable_type_id', (int) $filters['consumable_type_id']);
+        if ($this->hasFilterValue($filters, 'consumable_type_id')) {
+            $this->applyEqualityFilter($query, 'consumable_type_id', $filters['consumable_type_id'], 'int');
         }
 
-        $allowedSort = ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'created_at', 'updated_at'];
+        $this->applyEntityTableIdList($query, $request);
+
+        $allowedSort = ['id', 'name', 'level', 'rarity', 'consumable_type_id', 'dofusdb_id', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $pageResult = $this->paginateEntityTable($query, $request);

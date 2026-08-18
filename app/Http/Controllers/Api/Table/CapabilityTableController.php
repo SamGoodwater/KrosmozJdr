@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class CapabilityTableController extends Controller
 {
+    use InterpretsEntityTableFilters;
     use InterpretsEntityTableSort;
     use PaginatesEntityTable;
 
@@ -117,33 +118,24 @@ class CapabilityTableController extends Controller
             });
         }
 
-        if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
-            $query->where('state', (string) $filters['state']);
+        $capFilters = [
+            'state' => ['state', 'string'],
+            'level' => ['level', 'string'],
+            'element' => ['element', 'int'],
+            'id' => ['id', 'int'],
+            'pa' => ['pa', 'string'],
+            'is_magic' => ['is_magic', 'int'],
+            'ritual_available' => ['ritual_available', 'int'],
+            'po_editable' => ['po_editable', 'int'],
+            'is_passive' => ['is_passive', 'int'],
+        ];
+        foreach ($capFilters as $key => [$column, $cast]) {
+            if ($this->hasFilterValue($filters, $key)) {
+                $this->applyEqualityFilter($query, $column, $filters[$key], $cast);
+            }
         }
-        if (array_key_exists('level', $filters) && $filters['level'] !== '' && $filters['level'] !== null) {
-            $query->where('level', (string) $filters['level']);
-        }
-        if (array_key_exists('element', $filters) && $filters['element'] !== '' && $filters['element'] !== null) {
-            $query->where('element', (int) $filters['element']);
-        }
-        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
-            $query->where('id', (int) $filters['id']);
-        }
-        if (array_key_exists('pa', $filters) && $filters['pa'] !== '' && $filters['pa'] !== null) {
-            $query->where('pa', (string) $filters['pa']);
-        }
-        if (array_key_exists('is_magic', $filters) && $filters['is_magic'] !== '' && $filters['is_magic'] !== null) {
-            $query->where('is_magic', (int) $filters['is_magic']);
-        }
-        if (array_key_exists('ritual_available', $filters) && $filters['ritual_available'] !== '' && $filters['ritual_available'] !== null) {
-            $query->where('ritual_available', (int) $filters['ritual_available']);
-        }
-        if (array_key_exists('po_editable', $filters) && $filters['po_editable'] !== '' && $filters['po_editable'] !== null) {
-            $query->where('po_editable', (int) $filters['po_editable']);
-        }
-        if (array_key_exists('is_passive', $filters) && $filters['is_passive'] !== '' && $filters['is_passive'] !== null) {
-            $query->where('is_passive', (int) $filters['is_passive']);
-        }
+
+        $this->applyEntityTableIdList($query, $request);
 
         $allowedSort = [
             'id', 'name', 'description', 'effect', 'level', 'pa', 'po', 'element', 'is_magic', 'ritual_available',

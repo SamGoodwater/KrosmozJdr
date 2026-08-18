@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class ConditionTableController extends Controller
 {
+    use InterpretsEntityTableFilters;
     use InterpretsEntityTableSort;
     use PaginatesEntityTable;
 
@@ -84,18 +85,18 @@ class ConditionTableController extends Controller
             });
         }
 
-        if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
-            $query->where('state', (string) $filters['state']);
+        if ($this->hasFilterValue($filters, 'state')) {
+            $this->applyEqualityFilter($query, 'state', $filters['state']);
         }
-        if (array_key_exists('read_level', $filters) && $filters['read_level'] !== '' && $filters['read_level'] !== null) {
-            $query->where('read_level', (int) $filters['read_level']);
+        if ($this->hasFilterValue($filters, 'read_level')) {
+            $this->applyEqualityFilter($query, 'read_level', $filters['read_level'], 'int');
         }
-        if (array_key_exists('write_level', $filters) && $filters['write_level'] !== '' && $filters['write_level'] !== null) {
-            $query->where('write_level', (int) $filters['write_level']);
+        if ($this->hasFilterValue($filters, 'write_level')) {
+            $this->applyEqualityFilter($query, 'write_level', $filters['write_level'], 'int');
         }
-        if (array_key_exists('dissipable', $filters) && $filters['dissipable'] !== '' && $filters['dissipable'] !== null) {
+        if ($this->hasFilterValue($filters, 'dissipable')) {
             $rawD = $filters['dissipable'];
-            $parts = is_array($rawD) ? $rawD : [$rawD];
+            $parts = $this->normalizeFilterList($rawD);
             $bools = [];
             foreach ($parts as $p) {
                 $b = $this->normalizeDissipableFilter($p);
@@ -107,6 +108,8 @@ class ConditionTableController extends Controller
                 $query->where('dissipable', (bool) reset($bools));
             }
         }
+
+        $this->applyEntityTableIdList($query, $request);
 
         $allowedSort = ['id', 'name', 'state', 'dissipable', 'read_level', 'write_level', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');

@@ -9,6 +9,7 @@ use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\Type\MonsterRace;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -39,7 +40,113 @@ use Illuminate\Support\Facades\Gate;
  */
 class MonsterTableController extends Controller
 {
+    use InterpretsEntityTableFilters;
     use PaginatesEntityTable;
+
+    /**
+     * Filtres monstres (colonnes propres + créature liée).
+     *
+     * @param  Builder<Monster>  $query
+     * @param  array<string, mixed>  $filters
+     */
+    private function applyMonsterTableFilters(Builder $query, array $filters): void
+    {
+        $own = [
+            'size' => ['size', 'int'],
+            'is_boss' => ['is_boss', 'int'],
+            'id' => ['id', 'int'],
+            'monster_race_id' => ['monster_race_id', 'int'],
+        ];
+        foreach ($own as $key => [$column, $cast]) {
+            if ($this->hasFilterValue($filters, $key)) {
+                $this->applyEqualityFilter($query, $column, $filters[$key], $cast);
+            }
+        }
+
+        $creature = [
+            'creature_level' => ['level', 'string'],
+            'creature_life' => ['life', 'string'],
+            'creature_pa' => ['pa', 'string'],
+            'creature_pm' => ['pm', 'string'],
+            'creature_po' => ['po', 'string'],
+            'creature_ini' => ['ini', 'string'],
+            'creature_ca' => ['ca', 'string'],
+            'creature_hostility' => ['hostility', 'int'],
+            'creature_state' => ['state', 'string'],
+            'creature_location' => ['location', 'string'],
+            'creature_strong' => ['strong', 'string'],
+            'creature_intel' => ['intel', 'string'],
+            'creature_agi' => ['agi', 'string'],
+            'creature_chance' => ['chance', 'string'],
+            'creature_vitality' => ['vitality', 'string'],
+            'creature_critical_hit' => ['critical_hit', 'string'],
+            'creature_heal_bonus' => ['heal_bonus', 'string'],
+        ];
+        foreach ($creature as $key => [$column, $cast]) {
+            if ($this->hasFilterValue($filters, $key)) {
+                $this->applyRelationEqualityFilter($query, 'creature', $column, $filters[$key], $cast);
+            }
+        }
+    }
+
+    /**
+     * Tri monstres : colonnes SQL + jointure créature (nom, niveau, stats).
+     *
+     * @param  Builder<Monster>  $query
+     */
+    private function applyMonsterTableSort(Builder $query, Request $request, string $sort, string $order): void
+    {
+        $sortsPayload = $request->input('sorts');
+        if (is_array($sortsPayload) && isset($sortsPayload[0]) && is_array($sortsPayload[0])) {
+            $sort = (string) ($sortsPayload[0]['field'] ?? $sortsPayload[0]['column'] ?? $sort);
+            $order = strtolower((string) ($sortsPayload[0]['dir'] ?? $sortsPayload[0]['order'] ?? $order));
+        }
+        if (! in_array($order, ['asc', 'desc'], true)) {
+            $order = 'desc';
+        }
+
+        $creatureSort = [
+            'name' => 'creatures.name',
+            'creature_name' => 'creatures.name',
+            'creature_level' => 'creatures.level',
+            'creature_life' => 'creatures.life',
+            'creature_pa' => 'creatures.pa',
+            'creature_pm' => 'creatures.pm',
+            'creature_po' => 'creatures.po',
+            'creature_ini' => 'creatures.ini',
+            'creature_ca' => 'creatures.ca',
+            'creature_hostility' => 'creatures.hostility',
+            'creature_state' => 'creatures.state',
+            'creature_location' => 'creatures.location',
+            'creature_strong' => 'creatures.strong',
+            'creature_intel' => 'creatures.intel',
+            'creature_agi' => 'creatures.agi',
+            'creature_chance' => 'creatures.chance',
+            'creature_vitality' => 'creatures.vitality',
+            'creature_critical_hit' => 'creatures.critical_hit',
+            'creature_heal_bonus' => 'creatures.heal_bonus',
+        ];
+
+        $allowedOwn = ['id', 'size', 'is_boss', 'boss_pa', 'dofusdb_id', 'monster_race_id', 'created_at', 'updated_at'];
+        $aliases = ['monster_race' => 'monster_race_id'];
+        $ownField = $aliases[$sort] ?? $sort;
+
+        if (array_key_exists($sort, $creatureSort)) {
+            $query->join('creatures', 'monsters.creature_id', '=', 'creatures.id')
+                ->orderBy($creatureSort[$sort], $order)
+                ->select('monsters.*');
+
+            return;
+        }
+
+        if (in_array($ownField, $allowedOwn, true)) {
+            $query->orderBy($ownField, $order);
+
+            return;
+        }
+
+        $query->latest();
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -52,7 +159,7 @@ class MonsterTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['size', 'is_boss', 'monster_race_id'] as $k) {
+        foreach (['size', 'is_boss', 'monster_race_id', 'creature_level', 'creature_state', 'creature_hostility'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -97,56 +204,9 @@ class MonsterTableController extends Controller
             });
         }
 
-        if (array_key_exists('size', $filters) && $filters['size'] !== '' && $filters['size'] !== null) {
-            $query->where('size', (int) $filters['size']);
-        }
-        if (array_key_exists('is_boss', $filters) && $filters['is_boss'] !== '' && $filters['is_boss'] !== null) {
-            $query->where('is_boss', (int) $filters['is_boss']);
-        }
-        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
-            $query->where('id', (int) $filters['id']);
-        }
-        if (array_key_exists('monster_race_id', $filters) && $filters['monster_race_id'] !== '' && $filters['monster_race_id'] !== null) {
-            $query->where('monster_race_id', (int) $filters['monster_race_id']);
-        }
-
-        // Liste blanche de tri : id, size, is_boss, dofusdb_id, dates, nom de créature (name ou creature_name).
-        $allowedSort = ['id', 'size', 'is_boss', 'boss_pa', 'dofusdb_id', 'created_at', 'updated_at', 'name', 'creature_name'];
-
-        if ($sort === 'name' || $sort === 'creature_name') {
-            // Tri par nom de créature (alphabétique)
-            $query->join('creatures', 'monsters.creature_id', '=', 'creatures.id')
-                ->orderBy('creatures.name', $order)
-                ->select('monsters.*');
-        } elseif (in_array($sort, $allowedSort, true)) {
-            $query->orderBy($sort, $order);
-        } else {
-            $query->latest();
-        }
-
-        // Whitelist / blacklist d'ids (utiles pour le moteur de recherche)
-        $whitelist = $request->input('whitelist', $request->input('ids', []));
-        $blacklist = $request->input('blacklist', $request->input('exclude', []));
-
-        $whitelistIds = collect((array) $whitelist)
-            ->map(fn ($v) => (int) $v)
-            ->filter(fn ($v) => $v > 0)
-            ->values()
-            ->all();
-
-        $blacklistIds = collect((array) $blacklist)
-            ->map(fn ($v) => (int) $v)
-            ->filter(fn ($v) => $v > 0)
-            ->values()
-            ->all();
-
-        if (! empty($whitelistIds)) {
-            $query->whereIn('id', $whitelistIds);
-        }
-
-        if (! empty($blacklistIds)) {
-            $query->whereNotIn('id', $blacklistIds);
-        }
+        $this->applyMonsterTableFilters($query, $filters);
+        $this->applyMonsterTableSort($query, $request, $sort, $order);
+        $this->applyEntityTableIdList($query, $request);
 
         $pageResult = $this->paginateEntityTable($query, $request);
         $rows = $pageResult['rows'];

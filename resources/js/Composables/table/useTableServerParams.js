@@ -58,11 +58,18 @@ export function buildFetchUrl(params, baseUrl, refreshToken = 0) {
     const filters = p.filters || {};
     for (const [key, value] of Object.entries(filters)) {
         if (value === null || typeof value === "undefined" || value === "") continue;
-        const normalized = Array.isArray(value)
-            ? value.map((v) => String(v)).filter(Boolean).join(",")
-            : typeof value === "boolean"
-                ? (value ? "1" : "0")
-                : String(value);
+        if (Array.isArray(value)) {
+            const vals = value.map((v) => String(v)).filter((v) => v !== "");
+            if (vals.length === 0) continue;
+            for (const v of vals) {
+                searchParams.append(`filters[${key}][]`, v);
+            }
+            continue;
+        }
+        const normalized = typeof value === "boolean"
+            ? (value ? "1" : "0")
+            : String(value);
+        if (normalized === "") continue;
         searchParams.set(`filters[${key}]`, normalized);
     }
     if (refreshToken !== null && refreshToken !== undefined && refreshToken !== 0 && refreshToken !== "0") {

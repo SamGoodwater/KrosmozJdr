@@ -323,4 +323,38 @@ class SpellTableControllerTest extends TestCase
         $names = collect($response->json('entities'))->pluck('name')->all();
         $this->assertSame(['Near', 'Far'], $names);
     }
+
+    public function test_types_filter_matches_related_spell_types(): void
+    {
+        $user = User::factory()->create();
+        $type = \App\Models\Type\SpellType::factory()->create([
+            'name' => 'FilterTypeUnique',
+            'state' => \App\Models\Type\SpellType::STATE_PLAYABLE,
+        ]);
+        $with = Spell::factory()->create($this->playableAttrs(['name' => 'Typed']));
+        Spell::factory()->create($this->playableAttrs(['name' => 'Untyped']));
+        $with->spellTypes()->attach($type->id);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/spells?format=entities&limit=20&filters[types][]='.$type->id);
+
+        $response->assertOk();
+        $names = collect($response->json('entities'))->pluck('name')->all();
+        $this->assertSame(['Typed'], $names);
+    }
+
+    public function test_whitelist_returns_only_requested_spell(): void
+    {
+        $user = User::factory()->create();
+        $keep = Spell::factory()->create($this->playableAttrs(['name' => 'Keep Spell']));
+        Spell::factory()->create($this->playableAttrs(['name' => 'Other Spell']));
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/spells?format=entities&limit=20&whitelist[]='.$keep->id);
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('entities'));
+        $this->assertSame($keep->id, $response->json('entities.0.id'));
+        $this->assertArrayHasKey('effects_definitions', $response->json('entities.0'));
+    }
 }

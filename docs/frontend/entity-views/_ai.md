@@ -10,6 +10,7 @@
 - Action `view-dofusdb` → store Pinia `dofusDbReference` + `DofusDbReferencePanel` (layout Main)
 - Favoris BDD → `useFavoriteEntityIds` + `api.favorites.*` ; UI `FavoritesModal` / page `/favoris`
 - Tableau objets (vue Colonnes) : image + nom + niveau + type + rareté + bonus ; description / résumé / prix masqués ; `state` réservé aux éditeurs. Tooltips d’en-tête : `TanStackTableHeader` lit `column.tooltip`.
+- Tableaux d’entités : filtres auto-appliqués (server-side), `filters[k][]`, tri via `sort.field` / alias SQL, recherche `search=` ou nom côté client. Overlay sort depuis monstre : hydrate API.
 
 Voir aussi [../../features/entities/_ai.md](../../features/entities/_ai.md) et
 [../../features/characteristics/COMPUTED_VALUES.md](../../features/characteristics/COMPUTED_VALUES.md).

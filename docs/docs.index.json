@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le catalogue d’équipements (vue Colonnes) montre d’abord portrait, nom, niveau, type, rareté et bonus. Description, résumé et prix restent optionnels. L’état de publication n’apparaît que pour les éditeurs. Un survol des en-têtes explique chaque colonne. En vue Line, la recette n’encombre plus la liste."
+    "description": "Les filtres, le tri et la recherche des catalogues marchent à nouveau : multi-sélection (`whereIn`), application automatique, alias de tri (type d’objet, niveau de créature), recherche serveur et repli sur le nom en client. Un clic sur un sort depuis la fiche minimale d’un monstre charge la vraie vue minimale (effets inclus), plus seulement PA/PO."
   },
   {
     "path": "backend/_ai.md",

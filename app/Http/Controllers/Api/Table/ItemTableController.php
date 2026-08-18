@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class ItemTableController extends Controller
 {
+    use InterpretsEntityTableFilters;
     use InterpretsEntityTableSort;
     use PaginatesEntityTable;
 
@@ -66,23 +67,25 @@ class ItemTableController extends Controller
             });
         }
 
-        if (array_key_exists('level', $filters) && $filters['level'] !== '' && $filters['level'] !== null) {
-            $query->where('level', $filters['level']);
+        if ($this->hasFilterValue($filters, 'level')) {
+            $this->applyEqualityFilter($query, 'level', $filters['level']);
         }
-        if (array_key_exists('item_type_id', $filters) && $filters['item_type_id'] !== '' && $filters['item_type_id'] !== null) {
-            $query->where('item_type_id', (int) $filters['item_type_id']);
+        if ($this->hasFilterValue($filters, 'item_type_id')) {
+            $this->applyEqualityFilter($query, 'item_type_id', $filters['item_type_id'], 'int');
         }
-        if (array_key_exists('rarity', $filters) && $filters['rarity'] !== '' && $filters['rarity'] !== null) {
-            $query->where('rarity', $filters['rarity']);
+        if ($this->hasFilterValue($filters, 'rarity')) {
+            $this->applyEqualityFilter($query, 'rarity', $filters['rarity'], 'int');
         }
-        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
-            $query->where('id', (int) $filters['id']);
+        if ($this->hasFilterValue($filters, 'id')) {
+            $this->applyEqualityFilter($query, 'id', $filters['id'], 'int');
         }
-        if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
-            $query->where('state', (string) $filters['state']);
+        if ($this->hasFilterValue($filters, 'state')) {
+            $this->applyEqualityFilter($query, 'state', $filters['state']);
         }
 
-        $allowedSort = ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'state', 'created_at', 'updated_at'];
+        $this->applyEntityTableIdList($query, $request);
+
+        $allowedSort = ['id', 'name', 'level', 'rarity', 'item_type_id', 'price_custom', 'dofusdb_id', 'state', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $pageResult = $this->paginateEntityTable($query, $request);

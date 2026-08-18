@@ -70,3 +70,13 @@ La vue **Colonnes** (`item-descriptors.js`) :
 | État (sm+) **si** `updateAny` | Métadonnées (id, dates, DofusDB…) |
 
 Les en-têtes affichent `helper` / `general.tooltip` au survol (`TanStackTableHeader.vue`).
+
+## Tableaux d’entités (filtres, tri, recherche)
+
+Index server-side (`items`, `monsters`, `spells`, `resources`, `consumables`, `conditions`) : changer un filtre relance la requête (debounce) ; Réinitialiser vide `filters` et revient à la page 1. Les multi-sélections partent en `filters[key][]`. Le tri envoie `sorts[i][field]` avec l’alias SQL (`item_type` → `item_type_id`, `creature_level` via jointure). La barre de recherche envoie `search=`.
+
+Index client (`npcs`, etc.) : le filtre/tri/recherche portent sur le dataset déjà chargé ; la recherche cible le nom (et les colonnes `searchable`) même si le payload n’a pas de `cells` pré-générées.
+
+### Sort depuis un monstre
+
+Le payload tableau des monstres n’embarque pas l’arbre d’effets. Un clic sur un sort (`MonsterCreatureSpellsList`) hydrate la fiche via `api.tables.spells?whitelist[]=` puis affiche `SpellViewMinimal` en `extended`.

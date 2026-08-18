@@ -4,6 +4,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
+import { fetchEntityModelById } from "@/Composables/entity/useEntityTableFetch";
 
 const props = defineProps({
   entity: { type: Object, required: true },
@@ -32,6 +33,11 @@ const props = defineProps({
   },
   tableMeta: { type: Object, default: () => ({}) },
   characteristicRuntime: { type: Object, default: null },
+  /**
+   * Type d’entité API (`spells`, `items`…) : hydrate la fiche complète au clic
+   * (payload tableau allégé → vue minimale avec effets).
+   */
+  hydrateType: { type: String, default: "" },
 });
 
 const entityName = computed(() => props.entity?.name || props.entity?.title || "");
@@ -77,17 +83,43 @@ function handleAltNavigation(event) {
   window.location.assign(altClickHref.value);
 }
 
-const overlayContent = computed(() => ({
-  component: markRaw(props.minimalComponent),
-  props: {
-    [props.entityProp]: props.entity,
+function buildMinimalProps(entity) {
+  return {
+    [props.entityProp]: entity,
     showActions: props.showActionsOnHover,
     displayMode: "extended",
     ...(Object.keys(props.tableMeta || {}).length > 0 ? { tableMeta: props.tableMeta } : {}),
     ...(props.characteristicRuntime != null ? { characteristicRuntime: props.characteristicRuntime } : {}),
     class: props.hoverCardClass,
-  },
-}));
+  };
+}
+
+const overlayContent = computed(() => {
+  const hydrateType = String(props.hydrateType || "").trim();
+  const entityId = props.entity?.id;
+  if (hydrateType && entityId) {
+    return {
+      key: `hydrate:${hydrateType}:${entityId}`,
+      loader: async () => {
+        let entity = props.entity;
+        try {
+          const full = await fetchEntityModelById(hydrateType, entityId);
+          if (full) entity = full;
+        } catch {
+          /* payload allégé en repli */
+        }
+        return {
+          component: markRaw(props.minimalComponent),
+          props: buildMinimalProps(entity),
+        };
+      },
+    };
+  }
+  return {
+    component: markRaw(props.minimalComponent),
+    props: buildMinimalProps(props.entity),
+  };
+});
 </script>
 
 <template>

@@ -415,6 +415,7 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-tags",
       table: {
         sortable: true,
+        sortField: "consumable_type_id",
         filterable: { id: "consumable_type_id", type: "multi", defaultVisible: true },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },

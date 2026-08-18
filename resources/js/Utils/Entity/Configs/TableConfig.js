@@ -141,7 +141,7 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
     column.asMain(true);
   }
   if (tableConfigDesc.sortable) {
-    column.withSort(true);
+    column.withSort(true, tableConfigDesc.sortField || null);
   }
   if (tableConfigDesc.searchable) {
     column.withSearch(true);

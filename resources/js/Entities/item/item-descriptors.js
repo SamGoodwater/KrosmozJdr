@@ -462,6 +462,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       helper: "Emplacement (anneau, cape, arme…)",
       table: {
         sortable: true,
+        sortField: "item_type_id",
         filterable: { id: "item_type_id", type: "multi", defaultVisible: true },
         defaultVisible: visibleFromSm,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },

@@ -29,26 +29,28 @@ export function useTableSearch(options = {}) {
 
     let _searchTimeout = null;
 
+    const isServerSide = () => Boolean(toValue(serverSide));
+
     const searchText = ref("");
     const searchDisplayValue = ref("");
 
     const effectiveSearchDisplayValue = computed(() =>
-        serverSide.value ? searchDisplayValue.value : searchText.value,
+        isServerSide() ? searchDisplayValue.value : searchText.value,
     );
 
     const handleSearchInput = (value) => {
         const v = String(value ?? "");
-        if (serverSide.value) {
+        if (isServerSide()) {
             searchDisplayValue.value = v;
         } else {
             searchText.value = v;
         }
         if (_searchTimeout) clearTimeout(_searchTimeout);
         _searchTimeout = setTimeout(() => {
-            if (serverSide.value) {
+            if (isServerSide()) {
                 onServerParamsChange({
                     search: v.trim(),
-                    filters: { ...(activeFilters.value || {}) },
+                    filters: { ...(toValue(activeFilters) || {}) },
                     page: 1,
                 });
             } else {
@@ -59,11 +61,11 @@ export function useTableSearch(options = {}) {
 
     const applySearchValue = (value) => {
         const next = String(value ?? "");
-        if (serverSide.value) {
+        if (isServerSide()) {
             searchDisplayValue.value = next;
             onServerParamsChange({
                 search: next.trim(),
-                filters: { ...(activeFilters.value || {}) },
+                filters: { ...(toValue(activeFilters) || {}) },
                 page: 1,
             });
         } else {
@@ -78,7 +80,7 @@ export function useTableSearch(options = {}) {
 
     /** Valeur courante pour comparaison preset / emptyState. */
     const getCurrentSearch = () =>
-        serverSide.value
+        isServerSide()
             ? String(searchDisplayValue.value || "").trim()
             : String(searchText.value || "").trim();
 
