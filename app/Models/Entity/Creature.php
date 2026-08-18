@@ -388,6 +388,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereTouchContext($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereVitalityContext($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature visibleToUser(?\App\Models\User $user)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeMultiple($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeMultipleContext($value)
  * @mixin \Eloquent
  */
 class Creature extends Model implements HasMedia
