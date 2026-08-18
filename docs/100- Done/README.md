@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Cadrage de l’IA générative
+
+Le besoin (sorts/monstres trop « Dofus », PNJ trop combinatoires pour un algo) est documenté dans `docs/IA/` : pas de modèle entraîné au départ, Laravel prépare le contexte, l’IA propose en file d’attente, les objets se réduisent par grille algorithmique, monstres et PNJ se génèrent à la demande (monstre + sorts dans le même paquet). Rien n’est encore branché au site.
+
 ## Août 2026 — Fiches créature : mods, CA, compétences
 
 L’affichage des caractéristiques monstre (Minimal / Line / Full) met les

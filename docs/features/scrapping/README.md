@@ -63,6 +63,8 @@ La conversion des objets utilise maintenant une couche norm-aware minimale :
 
 Cette v1 enrichit la preview et prépare l'import normé sans forcer de snap automatique à l'écriture. Les imports continuent de passer par les validations min/max existantes.
 
+La conversion borne les nombres ; elle ne produit pas un design JDR (sorts lisibles à table, PNJ cohérents). Ce chantier est cadré dans [IA générative](../../IA/README.md) (non implémenté).
+
 ## Où modifier le mapping
 
 | Type de règle | Où | Support |
