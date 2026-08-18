@@ -94,3 +94,4 @@ La restauration et la suppression définitive (`restore`, `forceDelete`) sont r�
 - `docs/features/entities/README.md` — modèle de données détaillé, champs par entité, pivots.
 - `docs/frontend/entity-views/README.md` — système de vues.
 - `.cursor/rules/entity-views.mdc` — conventions de vues.
+- [IA générative](../../IA/README.md) — cadrage d’un état `ai_review` (proposition LLM à relire), non implémenté.

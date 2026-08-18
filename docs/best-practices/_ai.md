@@ -5,7 +5,7 @@
 ## Documentation
 
 - `README.md` humain + `_ai.md` condensé par nœud.
-- Pas d'historique dans `/docs`.
+- Pas d'historique dans `/docs`, sauf le cadrage `docs/IA/` (LLM métier, pas encore de code).
 - Jeu/règles : `private/game/`.
 - Archives/plans/prompts : `private/archive/`.
 

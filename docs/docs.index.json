@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Les tableaux embarqués dans les pages Bibliothèque (CMS) paginent côté serveur :"
+    "description": "Le besoin (sorts/monstres trop « Dofus », PNJ trop combinatoires pour un algo) est documenté dans `docs/IA/` : pas de modèle entraîné au départ, Laravel prépare le contexte, l’IA propose en file d’attente, les objets se réduisent par grille algorithmique, monstres et PNJ se génèrent à la demande (monstre + sorts dans le même paquet). Rien n’est encore branché au site."
   },
   {
     "path": "backend/_ai.md",
@@ -213,6 +213,36 @@
     "path": "frontend/README.md",
     "title": "Frontend",
     "description": "Frontend Vue 3 en JavaScript, servi par Inertia.js. L'UI suit Atomic Design et utilise Tailwind CSS + DaisyUI."
+  },
+  {
+    "path": "IA/_ai.md",
+    "title": "IA générative — carte IA",
+    "description": "Améliorer des données Dofus pour le JDR (objets, sorts, monstres, PNJ)."
+  },
+  {
+    "path": "IA/ARCHITECTURE.md",
+    "title": "Architecture de la génération",
+    "description": "Cadrage, **pas encore de code dédié**. S’appuie sur le scrapping, les états d’entité et les validateurs déjà en place."
+  },
+  {
+    "path": "IA/CATALOGUE.md",
+    "title": "Catalogue objets et pré-filtre",
+    "description": "Les objets sont le **socle** : sans un petit référentiel `playable`, PNJ et rencontres n’ont rien de cohérent à porter. Ce n’est **pas** un import massif de tout Dofus."
+  },
+  {
+    "path": "IA/COUTS.md",
+    "title": "Coûts et choix de modèles",
+    "description": "Ordres de grandeur, tarifs publics **août 2026**. À revérifier sur les pages fournisseurs avant un run réel."
+  },
+  {
+    "path": "IA/README.md",
+    "title": "IA générative — cadrage",
+    "description": "Fonctionnalité **non implémentée**. Ce dossier fixe l’intention : une IA qui aide à produire du contenu **jouable en JDR**, pas à recopier Dofus."
+  },
+  {
+    "path": "IA/RENCONTRES.md",
+    "title": "Rencontres et PNJ (à la demande)",
+    "description": "Monstres, sorts de créature et PNJ ne se génèrent **pas** en masse au départ. On les crée quand un scénario en a besoin : moins cher, relecture d’une fiche à la fois."
   },
   {
     "path": "operations/_ai.md",
