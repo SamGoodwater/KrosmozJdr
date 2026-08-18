@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Tableau objets plus lisible
+
+Le catalogue d’équipements (vue Colonnes) montre d’abord portrait, nom, niveau, type, rareté et bonus. Description, résumé et prix restent optionnels. L’état de publication n’apparaît que pour les éditeurs. Un survol des en-têtes explique chaque colonne. En vue Line, la recette n’encombre plus la liste.
+
 ## Août 2026 — Alertes Dependabot Node (extract-zip, undici)
 
 Les alertes GitHub sur `extract-zip` et `undici` (CRLF, cookies, retry, keep-alive, blob) sont traitées : Puppeteer inutilisé est retiré ; `undici` transitif du SDK Cursor est forcé en 6.28.0. D’autres paquets jamais importés ont aussi été enlevés (`@playwright/mcp`, `mysql-mcp`, Pikaday, Precognition, Font Awesome npm, etc.).

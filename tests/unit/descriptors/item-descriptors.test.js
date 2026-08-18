@@ -146,6 +146,47 @@ describe('item-descriptors', () => {
         });
     });
 
+    describe('Vue Colonnes — visibilité par défaut', () => {
+        const allTrue = { xs: true, sm: true, md: true, lg: true, xl: true };
+        const fromSm = { xs: false, sm: true, md: true, lg: true, xl: true };
+        const fromMd = { xs: false, sm: false, md: true, lg: true, xl: true };
+        const hidden = { xs: false, sm: false, md: false, lg: false, xl: false };
+
+        it('montre image, nom, niveau, type, rareté et bonus', () => {
+            const d = getItemFieldDescriptors({ capabilities: { updateAny: true } });
+            expect(d.image.table.defaultVisible).toEqual(allTrue);
+            expect(d.name.table.defaultVisible).toEqual(allTrue);
+            expect(d.level.table.defaultVisible).toEqual(fromSm);
+            expect(d.item_type.table.defaultVisible).toEqual(fromSm);
+            expect(d.rarity.table.defaultVisible).toEqual(fromSm);
+            expect(d.effect.table.defaultVisible).toEqual(fromMd);
+        });
+
+        it('masque description, résumé, prix et version', () => {
+            const d = getItemFieldDescriptors();
+            expect(d.description.table.defaultVisible).toEqual(hidden);
+            expect(d.item_summary_meta.table.defaultVisible).toEqual(hidden);
+            expect(d.price.table.defaultVisible).toEqual(hidden);
+            expect(d.dofus_version.table.defaultVisible).toEqual(hidden);
+        });
+
+        it('réserve la colonne État aux éditeurs', () => {
+            const editor = getItemFieldDescriptors({ capabilities: { updateAny: true } });
+            const player = getItemFieldDescriptors({ capabilities: { updateAny: false } });
+            expect(editor.state.visibleIf?.()).toBe(true);
+            expect(editor.state.table.visibleIf?.()).toBe(true);
+            expect(editor.state.table.defaultVisible).toEqual(fromSm);
+            expect(player.state.visibleIf?.()).toBe(false);
+        });
+
+        it('utilise un langage fiche de jeu dans les tooltips', () => {
+            const d = getItemFieldDescriptors();
+            expect(d.name.helper).toBe('Nom de l’équipement');
+            expect(d.effect.helper).toMatch(/Bonus/);
+            expect(d.item_type.helper).toMatch(/Emplacement/);
+        });
+    });
+
     describe('Options des selects', () => {
         it('read_level a les bonnes options', () => {
             const descriptors = getItemFieldDescriptors();

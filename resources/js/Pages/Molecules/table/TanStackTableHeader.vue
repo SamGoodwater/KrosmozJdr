@@ -4,10 +4,12 @@
  *
  * @description
  * Header du tableau (labels + indicateur de tri).
+ * Affiche `column.tooltip` (issu de `general.tooltip` / `helper`) au survol.
  * La mécanique de tri est gérée par `TanStackTable` (Organism).
  */
 
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
 /** Colonnes à contenu riche : max-width aligné avec les cellules */
 const RICH_CONTENT_COLUMNS = new Set(["spell_summary_profile", "effect_summary"]);
@@ -36,6 +38,29 @@ const getAriaSort = (col) => {
     if (!isSortable(col)) return "none";
     if (props.sortBy !== col?.id) return "none";
     return props.sortOrder === "desc" ? "descending" : "ascending";
+};
+
+/**
+ * Tooltip fiche de jeu porté par la config de colonne.
+ *
+ * @param {Object} col
+ * @returns {string}
+ */
+const columnTooltip = (col) => {
+    const t = typeof col?.tooltip === "string" ? col.tooltip.trim() : "";
+    return t;
+};
+
+/**
+ * Libellé accessible du bouton de tri (inclut le tooltip s’il existe).
+ *
+ * @param {Object} col
+ * @returns {string}
+ */
+const sortAriaLabel = (col) => {
+    const tip = columnTooltip(col);
+    const base = `Trier par ${col?.label || ""}`;
+    return tip ? `${base}. ${tip}` : base;
 };
 </script>
 
@@ -66,16 +91,22 @@ const getAriaSort = (col) => {
                     v-if="isSortable(col)"
                     type="button"
                     class="w-full flex items-center gap-2 text-left hover:bg-base-200 rounded px-1 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-                    :aria-label="`Trier par ${col.label}`"
+                    :aria-label="sortAriaLabel(col)"
                     @click="emit('sort', col)"
                 >
-                    <span>{{ col.label }}</span>
+                    <Tooltip v-if="columnTooltip(col)" :content="columnTooltip(col)" placement="bottom">
+                        <span>{{ col.label }}</span>
+                    </Tooltip>
+                    <span v-else>{{ col.label }}</span>
                     <span v-if="sortBy === col.id" class="text-xs opacity-70">
                         {{ sortOrder === 'asc' ? '▲' : '▼' }}
                     </span>
                 </button>
                 <div v-else class="flex items-center gap-2 px-1 py-0.5">
-                    <span>{{ col.label }}</span>
+                    <Tooltip v-if="columnTooltip(col)" :content="columnTooltip(col)" placement="bottom">
+                        <span>{{ col.label }}</span>
+                    </Tooltip>
+                    <span v-else>{{ col.label }}</span>
                 </div>
             </th>
         </tr>

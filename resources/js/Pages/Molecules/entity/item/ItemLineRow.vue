@@ -3,8 +3,8 @@
  * ItemLineRow — Une ligne de la vue Line pour Item
  *
  * @description
- * Même structure que ResourceLineRow : State • Image • Level • Nom • Type • Rareté • Prix • Description • Effets
- * Pas de poids (équipements). Prix : `EntityPropertyDisplay` (aligné sur ItemViewFull).
+ * Même structure que ResourceLineRow, condensée : State • Image • Level • Nom • Type • Rareté • Prix • Description courte • Bonus (icônes).
+ * Recette et liens : fiche Full. Pas de poids (équipements). Prix : `EntityPropertyDisplay`.
  */
 import { computed } from "vue";
 import { Link } from "@inertiajs/vue3";
@@ -12,7 +12,6 @@ import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
-import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngredientsList.vue";
 import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
@@ -100,7 +99,7 @@ const effectItems = computed(() => {
         rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
         options: {},
         sourceGroups: ["item", "panoply"],
-        size: "md",
+        size: "sm",
     });
     return cell?.type === "chips" ? cell.params?.items || [] : [];
 });
@@ -110,11 +109,6 @@ const rarityConfig = computed(() => {
     const n = v != null ? Number(v) : null;
     return Number.isFinite(n) ? getRarityConfig(n) : null;
 });
-
-/** Ingrédients (ressources) de recette */
-const ingredients = computed(
-    () => entity.value?.resources ?? entity.value?._data?.resources ?? []
-);
 
 </script>
 
@@ -204,29 +198,22 @@ const ingredients = computed(
                     class="min-w-0"
                 />
             </div>
-            <!-- Ligne 3 : Description (complète, retour à la ligne) -->
+            <!-- Ligne 3 : Description courte -->
             <p
                 v-if="descriptionFull"
-                class="text-xs text-base-content/80 whitespace-normal wrap-break-word"
+                class="text-xs text-base-content/80 line-clamp-2"
                 :title="descriptionFull"
             >
                 {{ descriptionFull }}
             </p>
         </div>
         </div>
-        <!-- Effets : pleine largeur sous le bloc Image/titre/propriétés -->
+        <!-- Bonus : icônes (détail au survol) -->
         <div
             v-if="effectItems.length > 0"
             class="w-full pt-2 mt-1 border-t border-base-300"
         >
-            <CharacteristicEffectsGrid :items="effectItems" />
-        </div>
-        <!-- Ingrédients (ressources) : icône + nom, sous les effets -->
-        <div
-            v-if="ingredients.length > 0"
-            class="w-full pt-2 mt-1 border-t border-base-300"
-        >
-            <ResourceIngredientsList :ingredients="ingredients" />
+            <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
         </div>
     </div>
 

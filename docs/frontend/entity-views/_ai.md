@@ -9,7 +9,7 @@
 - `resources/js/Pages/Organismes/entity/EntityEditForm.vue`
 - Action `view-dofusdb` → store Pinia `dofusDbReference` + `DofusDbReferencePanel` (layout Main)
 - Favoris BDD → `useFavoriteEntityIds` + `api.favorites.*` ; UI `FavoritesModal` / page `/favoris`
-- Caractéristiques runtime : `CharacteristicsCard` densités `icon|labeled|spacious`, groupes via `creatureCharacteristicGroups.manifest.js`, `CharacteristicGroup` (`levelEffective` → `runtime.levels`), popover `CharacteristicDecompositionBody`
+- Tableau objets (vue Colonnes) : image + nom + niveau + type + rareté + bonus ; description / résumé / prix masqués ; `state` réservé aux éditeurs. Tooltips d’en-tête : `TanStackTableHeader` lit `column.tooltip`.
 
 Voir aussi [../../features/entities/_ai.md](../../features/entities/_ai.md) et
 [../../features/characteristics/COMPUTED_VALUES.md](../../features/characteristics/COMPUTED_VALUES.md).

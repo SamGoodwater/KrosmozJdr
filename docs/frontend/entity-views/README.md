@@ -57,3 +57,16 @@ et un bouton `window.open` (pas d’iframe).
 Densités `icon` / `labeled` / `spacious` sur `CharacteristicsCard` — voir
 [COMPUTED_VALUES.md](../../features/characteristics/COMPUTED_VALUES.md).
 Applicable aux **monstres** et **PNJ** (créature liée) ; sorts/objets gardent leurs effets dédiés.
+
+## Tableau objets
+
+La vue **Line** (`ItemLineRow`) reste courte : description sur 2 lignes, bonus en icônes, recette sur la fiche Full.
+
+La vue **Colonnes** (`item-descriptors.js`) :
+
+| Par défaut | Masqué (sélecteur de colonnes) |
+| --- | --- |
+| Image, nom, niveau (sm+), type (sm+), rareté (sm+), bonus (md+) | Description, résumé, prix, version Dofus |
+| État (sm+) **si** `updateAny` | Métadonnées (id, dates, DofusDB…) |
+
+Les en-têtes affichent `helper` / `general.tooltip` au survol (`TanStackTableHeader.vue`).

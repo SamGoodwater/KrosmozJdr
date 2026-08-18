@@ -19,6 +19,7 @@
 - **Vues** : `minimal` | `line` | `text` | `full` | `edit`. Résolution dynamique : `resources/js/Utils/entity/resolveEntityViewComponent.js`. Conventions : rule `.cursor/rules/entity-views.mdc`.
 - **Monstres** : coquille `Monster` + stats/sorts sur `Creature` ; table API sans arbre d’effets de sorts ; PDF multi + `visibleToUser` ; Full affiche sorts/empty states.
 - **Listes lourdes** : index items/monstres/ressources/consommables/conditions/sorts en pagination serveur ; PDF multi filtré `visibleToUser` sur les entités concernées.
+- **Objets (vue Colonnes)** : image, nom, niveau, type, rareté, bonus ; description et résumé masqués ; `state` si `updateAny`. En-têtes : `column.tooltip`.
 
 ## Fichiers pivots
 
