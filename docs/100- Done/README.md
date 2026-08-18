@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Alertes Dependabot Node (extract-zip, undici)
+
+Les alertes GitHub sur `extract-zip` et `undici` (CRLF, cookies, retry, keep-alive, blob) sont traitées : Puppeteer inutilisé est retiré ; `undici` transitif du SDK Cursor est forcé en 6.28.0. D’autres paquets jamais importés ont aussi été enlevés (`@playwright/mcp`, `mysql-mcp`, Pikaday, Precognition, Font Awesome npm, etc.).
+
 ## Août 2026 — Fiches créature : mods, CA, compétences
 
 L’affichage des caractéristiques monstre (Minimal / Line / Full) met les

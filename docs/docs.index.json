@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Les tableaux embarqués dans les pages Bibliothèque (CMS) paginent côté serveur :"
+    "description": "Les alertes GitHub sur `extract-zip` et `undici` (CRLF, cookies, retry, keep-alive, blob) sont traitées : Puppeteer inutilisé est retiré ; `undici` transitif du SDK Cursor est forcé en 6.28.0. D’autres paquets jamais importés ont aussi été enlevés (`@playwright/mcp`, `mysql-mcp`, Pikaday, Precognition, Font Awesome npm, etc.)."
   },
   {
     "path": "backend/_ai.md",
