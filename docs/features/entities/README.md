@@ -78,7 +78,7 @@ La restauration et la suppression définitive (`restore`, `forceDelete`) sont r�
   | `edit` | `EntityEditForm` / `*QuickEdit` | Édition |
 
   Les composants par type sont dans `resources/js/Pages/Molecules/entity/<type>/`. Le resolver supporte aussi des variantes d'édition (`quickedit`), mais on ne crée plus `ViewLarge`/`ViewCompact` (voir rule `.cursor/rules/entity-views.mdc`).
-- **Table** : `resources/js/Pages/Organismes/table/EntityTanStackTable.vue` (server-side) ; préférences/filtres via `resources/js/Composables/table/*`.
+- **Table** : `resources/js/Pages/Organismes/table/EntityTanStackTable.vue` (server-side) ; préférences/filtres via `resources/js/Composables/table/*`. Les en-têtes lisent `column.tooltip`. Catalogue objets : image, nom, niveau, type, rareté, bonus ; `state` réservé aux éditeurs.
 - **Édition** : `resources/js/Pages/Organismes/entity/EntityEditForm.vue`, modales (`EntityModal`, `CreateEntityModal`, `EntityQuickEditPanel`).
 - **Suppression UI** : `useEntityActionDispatcher` ouvre une `ConfirmModal` avec le récapitulatif `delete-impact` (relations détachées, médias) avant soft delete depuis page/modal d’entité.
 

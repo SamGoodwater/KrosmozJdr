@@ -93,6 +93,17 @@ describe("TableColumnConfig", () => {
     expect(column.isMain).toBe(true);
     expect(column.hideable).toBe(false);
   });
+
+  it("build propage le tooltip fiche de jeu", () => {
+    const column = new TableColumnConfig({
+      key: "level",
+      label: "Niveau",
+      type: "text",
+      tooltip: "Niveau requis pour porter l’objet",
+    }).build();
+
+    expect(column.tooltip).toBe("Niveau requis pour porter l’objet");
+  });
 });
 
 describe("TableConfig", () => {
