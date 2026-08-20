@@ -332,7 +332,8 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
  * le contenu (overflow, alignements). On révèle par opacité : largeur stable, overlay au-dessus.
  */
 .monster-line-actions-reveal :deep(.entity-row-actions-hover-reveal) {
-    max-width: none !important;
+    max-width: 12rem !important;
+    width: 12rem !important;
     overflow: visible !important;
     opacity: 0;
     pointer-events: none;

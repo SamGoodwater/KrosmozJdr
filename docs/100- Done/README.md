@@ -1,8 +1,12 @@
 # Ce qui a été fait
 
+## Août 2026 — Menu d’options adapté à la largeur du titre
+
+Sur les fiches (minimal, line, full, modal), les raccourcis d’actions à côté du titre n’occupent plus plus de place que l’espace restant jusqu’au bord : le surplus reste dans le dropdown « ⋮ ».
+
 ## Août 2026 — Aperçu sort depuis un monstre
 
-Ouvrir un sort depuis la fiche minimale d’un monstre montre enfin les effets (chips inclus dans le payload, sans dépendre d’un second fetch). Le menu d’options de l’entité est dans un dropdown en haut à gauche de la carte.
+Ouvrir un sort depuis la fiche minimale d’un monstre montre enfin les effets (chips inclus dans le payload, sans dépendre d’un second fetch). Le menu d’options suit la ligne du titre (raccourcis + overflow).
 
 ## Août 2026 — Tableaux d’entités + aperçu des sorts
 

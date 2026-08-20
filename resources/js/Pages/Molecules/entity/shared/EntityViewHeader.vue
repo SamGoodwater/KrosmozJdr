@@ -5,6 +5,7 @@
  * @description
  * Implémente la structure du header selon la doc ENTITY_VIEWS :
  * - full: image à gauche, title + main infos + (subtitle) à droite, actions en haut à droite (fiche page).
+ *   Les raccourcis d’actions tiennent dans l’espace entre le titre et le bord ; le surplus va au dropdown.
  * - compact: layout header dense (modal full) — pas la vue entité ViewCompact supprimée.
  * - minimal: title + actions sur la même ligne, main infos à droite du titre (icône-only).
  *
@@ -45,23 +46,27 @@ const isCompact = computed(() => props.mode === "compact");
     <slot v-if="!isMinimal" name="dot" />
 
     <!-- Minimal -->
-    <div v-if="isMinimal" class="flex items-start justify-between gap-2">
-      <div class="flex items-center gap-2 flex-1 min-w-0">
+    <div v-if="isMinimal" class="flex min-w-0 items-start gap-2">
+      <div class="flex min-w-0 items-center gap-2">
         <div class="flex-shrink-0 relative">
           <slot name="media" />
           <div class="absolute top-0 left-0">
             <slot name="dot" />
           </div>
         </div>
-        <div class="flex-1 min-w-0">
+        <div class="min-w-0">
           <slot name="title" />
           <slot name="subtitle" />
         </div>
       </div>
 
-      <div class="flex items-start gap-2 flex-shrink-0">
-        <slot name="mainInfosRight" />
-        <slot name="actions" />
+      <div class="flex min-w-8 flex-1 items-start justify-end gap-2">
+        <div class="shrink-0">
+          <slot name="mainInfosRight" />
+        </div>
+        <div class="flex min-w-8 flex-1 justify-end">
+          <slot name="actions" />
+        </div>
       </div>
     </div>
 
@@ -72,11 +77,11 @@ const isCompact = computed(() => props.mode === "compact");
       </div>
 
       <div class="flex-1 min-w-0">
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex-1 min-w-0">
+        <div class="flex min-w-0 items-start gap-2">
+          <div class="min-w-0">
             <slot name="title" />
           </div>
-          <div class="flex-shrink-0">
+          <div class="flex min-w-8 flex-1 justify-end">
             <slot name="actions" />
           </div>
         </div>
@@ -95,18 +100,19 @@ const isCompact = computed(() => props.mode === "compact");
         <slot name="media" />
       </div>
 
-      <div class="flex-1 w-full">
-        <div class="flex items-start justify-between gap-4">
-          <div class="flex-1 min-w-0">
+      <div class="flex-1 w-full min-w-0">
+        <div class="flex min-w-0 items-start gap-4">
+          <div class="min-w-0">
             <slot name="title" />
-            <slot name="mainInfos" />
-            <slot name="subtitle" />
           </div>
 
-          <div class="flex-shrink-0">
+          <div class="flex min-w-8 flex-1 justify-end">
             <slot name="actions" />
           </div>
         </div>
+
+        <slot name="mainInfos" />
+        <slot name="subtitle" />
       </div>
     </div>
   </div>

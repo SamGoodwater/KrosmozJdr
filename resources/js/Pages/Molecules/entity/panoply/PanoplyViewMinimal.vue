@@ -159,10 +159,10 @@ const handleAction = async (actionKey) => {
                     />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
-                            <div class="min-w-0 flex-1">
+                            <div class="min-w-0">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                            <div v-if="showActions" data-entity-actions class="flex min-w-8 flex-1 justify-end" @click.stop>
                                 <EntityActions
                                     entity-type="panoplies"
                                     :entity="entity"
