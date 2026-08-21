@@ -1,6 +1,4 @@
-# Mises à jour weekly, mineures/patch.
-# Pas de groupe Composer : un groupe unique a déjà tenté de rétrograder Symfony
-# en bumpant Laravel. Les majors (Vitest 4, actions/checkout v7) restent manuelles.
+# Weekly minor/patch only. Majors (Vitest 4, Tiptap 3, checkout v7…) stay manual.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -15,10 +13,7 @@ updates:
           - minor
           - patch
     ignore:
-      - dependency-name: vitest
-        update-types:
-          - version-update:semver-major
-      - dependency-name: "@vitest/ui"
+      - dependency-name: "*"
         update-types:
           - version-update:semver-major
 
@@ -28,6 +23,10 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 3
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: /
@@ -35,10 +34,7 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 2
-    groups:
-      github-actions:
+    ignore:
+      - dependency-name: "*"
         update-types:
-          - minor
-          - patch
-        patterns:
-          - "*"
+          - version-update:semver-major
