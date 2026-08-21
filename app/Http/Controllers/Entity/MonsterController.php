@@ -138,7 +138,7 @@ class MonsterController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Monster $monster): Response
+    public function show(Request $request, Monster $monster): Response
     {
         $this->authorize('view', $monster);
 
@@ -151,6 +151,10 @@ class MonsterController extends Controller
                         'spellTypes',
                         'effects.degrees.effectSubEffects.subEffect',
                     ]),
+                'items' => fn ($iq) => $iq
+                    ->visibleToUser($request->user())
+                    ->orderBy('name')
+                    ->with(['itemType:id,name']),
             ]),
             'monsterRace',
             'scenarios',

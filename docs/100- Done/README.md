@@ -1,8 +1,11 @@
 # Ce qui a été fait
 
-## Août 2026 — Menu d’options adapté à la largeur du titre
+## Août 2026 — Équipements monstre et menu d’options
 
-Sur les fiches (minimal, line, full, modal), les raccourcis d’actions à côté du titre n’occupent plus plus de place que l’espace restant jusqu’au bord : le surplus reste dans le dropdown « ⋮ ».
+Les fiches monstre (Minimal, Line, Full) listent les équipements de la créature
+s’il y en a, sur le même modèle que les sorts (nom + aperçu Minimal). Le menu
+d’options à côté du titre n’affiche que les raccourcis qui tiennent ; le reste
+passe dans le « ⋮ », pour toutes les vues d’entités.
 
 ## Août 2026 — Aperçu sort depuis un monstre
 

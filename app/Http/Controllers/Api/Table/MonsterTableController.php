@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
-use App\Support\Creature\CreatureMasteryColumns;
 use App\Http\Resources\Entity\LanguageResource;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\Type\MonsterRace;
 use App\Services\Effect\SpellNestedPreviewSerializer;
+use App\Support\Creature\CreatureMasteryColumns;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ use Illuminate\Support\Facades\Gate;
  *   - `whitelist` / `ids[]` : liste d'ids à inclure uniquement
  *   - `blacklist` / `exclude[]` : liste d'ids à exclure
  * - Réponse `format=entities` :
- *   - `entities[]` : monstre + créature (stats) + sorts liés (méta + chips d’effets, pas l’arbre `effects`)
+ *   - `entities[]` : monstre + créature (stats) + sorts liés (chips d’effets) + équipements allégés
  *   - `meta.entityType` = `monsters`
  *   - `meta.query` = paramètres réellement appliqués
  *   - `meta.capabilities` = droits de l'utilisateur courant
@@ -179,7 +180,6 @@ class MonsterTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
@@ -205,6 +205,10 @@ class MonsterTableController extends Controller
                                 'spellTypes',
                                 'effects.degrees.effectSubEffects.subEffect',
                             ]),
+                        'items' => fn ($iq) => $iq
+                            ->visibleToUser($request->user())
+                            ->orderBy('name')
+                            ->with(['itemType:id,name']),
                     ])
                     ->withCount(['resources', 'items', 'consumables']),
                 'monsterRace',
@@ -367,6 +371,27 @@ class MonsterTableController extends Controller
                                 ->map(fn (Spell $s) => $this->spellNestedPreviewSerializer->serialize($s))
                                 ->values()
                                 ->all()
+                            : [],
+                        'items' => $c->relationLoaded('items')
+                            ? $c->items->map(fn (Item $item) => [
+                                'id' => $item->id,
+                                'name' => $item->name,
+                                'description' => $item->description,
+                                'level' => $item->level,
+                                'image' => $item->image,
+                                'rarity' => $item->rarity,
+                                'bonus' => $item->bonus,
+                                'item_type_id' => $item->item_type_id,
+                                'itemType' => $item->relationLoaded('itemType') && $item->itemType
+                                    ? [
+                                        'id' => $item->itemType->id,
+                                        'name' => $item->itemType->name,
+                                    ]
+                                    : null,
+                                'pivot' => [
+                                    'quantity' => $item->pivot->quantity ?? 1,
+                                ],
+                            ])->values()->all()
                             : [],
                         'creatureTraits' => $c->relationLoaded('creatureTraits')
                             ? $c->creatureTraits->map(fn ($t) => [

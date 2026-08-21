@@ -3,9 +3,8 @@
  * EntityActionsDropdown Molecule
  *
  * @description
- * Menu dropdown d'actions pour une entité + raccourcis inline :
- * autant d’icônes que la largeur entre le titre et le bord le permet,
- * le reste reste dans le menu « ⋮ ».
+ * Menu d’actions + raccourcis inline : autant d’icônes que la largeur
+ * entre le titre et le bord le permet ; le reste reste dans le « ⋮ ».
  *
  * @example
  * <EntityActionsDropdown
@@ -28,84 +27,48 @@ import { useResolvedEntityActionState } from "@/Composables/entity/useResolvedEn
 import { useHorizontalOverflowCount } from "@/Composables/layout/useHorizontalOverflowCount";
 
 const props = defineProps({
-    /**
-     * Type d’entité plural (ex. `spells`) — requis pour l’épinglage local.
-     */
     entityType: {
         type: String,
         default: "",
     },
-    /**
-     * Liste des actions disponibles (format plat).
-     * @type {Array<Object>}
-     */
     actions: {
         type: Array,
         required: true,
         default: () => [],
     },
-    /**
-     * Actions groupées par groupe (pour séparateurs).
-     * @type {Object}
-     */
     groupedActions: {
         type: Object,
         default: () => ({}),
     },
-    /**
-     * Entité (pour afficher le nom en haut du menu).
-     * @type {Object|null}
-     */
     entity: {
         type: Object,
         default: null,
     },
-    /**
-     * Mode d'affichage : 'icon-only' ou 'icon-text'
-     */
     display: {
         type: String,
         default: "icon-text",
         validator: (v) => ["icon-only", "icon-text"].includes(v),
     },
-    /**
-     * Taille des boutons (xs, sm, md, lg)
-     */
     size: {
         type: String,
         default: "sm",
     },
-    /**
-     * Couleur des boutons (primary, secondary, etc.)
-     */
     color: {
         type: String,
         default: "primary",
     },
-    /**
-     * Position du dropdown (bottom-end, top-start, etc.)
-     */
     placement: {
         type: String,
         default: "bottom-end",
     },
-    /**
-     * Afficher uniquement l'icône dans le trigger (pour colonne Actions)
-     */
     iconOnlyTrigger: {
         type: Boolean,
         default: true,
     },
-    /**
-     * Variant du trigger (ghost, outline, etc.)
-     */
     triggerVariant: {
         type: String,
         default: "ghost",
     },
-    /**
-     * Ordre des raccourcis inline (clés d’action).
-     */
     inlineActionKeys: {
         type: Array,
         default: () => ["state", "pin", "quick-view", "quick-edit", "view-dofusdb", "favorite", "copy-link", "view", "edit"],
@@ -114,9 +77,6 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    /**
-     * Toujours afficher le bouton « ⋮ », même si tous les raccourcis tiennent.
-     */
     alwaysShowTrigger: {
         type: Boolean,
         default: true,
@@ -148,7 +108,7 @@ const rowRef = ref(null);
 const measureRef = ref(null);
 const promotedCount = computed(() => promotedActions.value.length);
 
-const { visibleCount, measureWidthPx } = useHorizontalOverflowCount({
+const { visibleCount, measureWidthPx, leftoverPx } = useHorizontalOverflowCount({
     rowRef,
     measureRef,
     itemCount: promotedCount,
@@ -169,6 +129,15 @@ const showMenuTrigger = computed(() => {
     return overflowPromotedActions.value.length > 0;
 });
 
+const rootStyle = computed(() => {
+    const w = leftoverPx.value;
+    if (!Number.isFinite(w) || w < 8) return {};
+    return {
+        maxWidth: `${Math.floor(w)}px`,
+        width: `${Math.floor(w)}px`,
+    };
+});
+
 /**
  * @param {string} actionKey
  */
@@ -187,12 +156,8 @@ function handleMenuAction(actionKey) {
     emit("action", actionKey);
 }
 
-/**
- * Récupère le nom de l'entité en gérant les modèles et objets bruts.
- */
 const getEntityName = () => {
     if (!props.entity) return null;
-
     if (props.entity && typeof props.entity._data !== "undefined") {
         return props.entity.name || props.entity.title || null;
     }
@@ -205,7 +170,8 @@ const entityName = computed(() => getEntityName());
 <template>
     <div
         ref="rowRef"
-        class="relative flex w-full min-w-0 items-center justify-end"
+        class="relative flex min-w-8 items-center justify-end"
+        :style="rootStyle"
     >
         <div
             v-if="promotedActions.length"

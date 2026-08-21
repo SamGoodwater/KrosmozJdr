@@ -45,6 +45,16 @@ class CreatureResource extends JsonResource
                     'name' => $item->name,
                     'description' => $item->description,
                     'level' => $item->level,
+                    'image' => $item->image,
+                    'rarity' => $item->rarity ?? null,
+                    'bonus' => $item->bonus ?? null,
+                    'item_type_id' => $item->item_type_id ?? null,
+                    'itemType' => $item->relationLoaded('itemType') && $item->itemType
+                        ? [
+                            'id' => $item->itemType->id,
+                            'name' => $item->itemType->name,
+                        ]
+                        : null,
                     'pivot' => $item->pivot ? [
                         'quantity' => $item->pivot->quantity ?? null,
                     ] : null,

@@ -31,7 +31,8 @@ minimal compact → survol : overlay déployé → double-clic / quick-view : mo
 - PNJ : mêmes densités de caractéristiques que les monstres (créature liée).
 - La **page** n’est pas l’entrée principale (icône / overflow uniquement).
 - En `line` : même logique → modal full (`EntityLineRowActions`).
-- Actions du titre : autant de raccourcis que la largeur restante (titre → bord) ; le reste dans le dropdown `EntityActions`. Sorts : même ligne que le titre (plus d’overlay haut gauche).
+- Actions du titre : autant de raccourcis que la largeur restante (titre → bord) ; le reste dans le dropdown `EntityActions`. Mesure : `useHorizontalOverflowCount` + `measureFlexRowLeftoverPx`. Sorts : même ligne que le titre.
+- **Monstres — équipements** : s’il y en a (`creature.items`), liste identique aux sorts (`EntityViewTextLink` + aperçu `ItemViewMinimal`) en Minimal / Line / Full. Section Full masquée si la liste est vide.
 - **Favoris** : persistés en BDD (`user_favorites`) pour les comptes connectés. Accès header
   (cœur) → modal sans changer de page ; page `/favoris`. Invité·e : message pour se connecter.
   Icône cœur plein/vide dans les menus d’options. Liste en vue Minimal ; recherche via

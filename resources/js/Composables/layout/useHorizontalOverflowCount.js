@@ -2,9 +2,9 @@
  * Compte d’items visibles dans une rangée à overflow mesuré.
  *
  * @description
- * Observe `rowRef` (largeur utile) et `measureRef` (rangée fantôme :
- * un enfant par item, plus le bouton « more » en dernier). Recalcule
- * au resize, au montage, et quand `itemCount` change.
+ * Observe `rowRef` et optionnellement l’espace restant dans la rangée titre
+ * (`measureFlexRowLeftoverPx`). Recalcule au resize, au montage, et quand
+ * `itemCount` change.
  *
  * @param {object} options
  * @param {import('vue').Ref<HTMLElement|null>} options.rowRef
@@ -12,10 +12,8 @@
  * @param {import('vue').Ref<number>|import('vue').ComputedRef<number>} options.itemCount
  * @param {import('vue').Ref<boolean>|boolean} [options.alwaysReserveMore=true]
  * @param {number} [options.gapFallbackPx=2]
- * @returns {{ visibleCount: import('vue').Ref<number> }}
- *
- * @example
- * const { visibleCount } = useHorizontalOverflowCount({ rowRef, measureRef, itemCount });
+ * @param {boolean} [options.useAncestorLeftover=true] Mesurer l’espace restant dans la rangée titre.
+ * @returns {{ visibleCount: import('vue').Ref<number>, measureWidthPx: import('vue').Ref<number>, leftoverPx: import('vue').Ref<number>, scheduleLayout: function }}
  */
 import {
     computed,
@@ -27,6 +25,7 @@ import {
     watch,
 } from "vue";
 import { countFittingItems } from "@/Utils/layout/countFittingItems";
+import { measureFlexRowLeftoverPx } from "@/Utils/layout/measureFlexRowLeftoverPx";
 
 /**
  * @param {HTMLElement | null} el
@@ -47,12 +46,14 @@ export function useHorizontalOverflowCount(options) {
     const measureRef = options.measureRef;
     const itemCount = options.itemCount;
     const gapFallbackPx = options.gapFallbackPx ?? 2;
+    const useAncestorLeftover = options.useAncestorLeftover !== false;
     const alwaysReserveMore = computed(() =>
         Boolean(unref(options.alwaysReserveMore ?? true)),
     );
 
     const visibleCount = ref(0);
     const measureWidthPx = ref(0);
+    const leftoverPx = ref(0);
 
     /** @type {ResizeObserver | null} */
     let rowObserver = null;
@@ -64,18 +65,53 @@ export function useHorizontalOverflowCount(options) {
         const measure = measureRef?.value;
         const n = Number(unref(itemCount)) || 0;
 
-        if (!row || !measure || n === 0) {
+        if (!row) {
             visibleCount.value = n;
             measureWidthPx.value = 0;
+            leftoverPx.value = 0;
             return;
         }
 
-        const available = row.getBoundingClientRect().width;
+        let available = row.getBoundingClientRect().width;
+        if (useAncestorLeftover) {
+            const leftover = measureFlexRowLeftoverPx(row);
+            if (leftover > 1) {
+                leftoverPx.value = leftover;
+                available = leftover;
+                const parent = row.parentElement;
+                if (parent) {
+                    const cs = getComputedStyle(parent);
+                    const grow = parseFloat(cs.flexGrow || "0") || 0;
+                    const maxWRaw = cs.maxWidth;
+                    const maxWPx =
+                        maxWRaw && maxWRaw.endsWith("px")
+                            ? parseFloat(maxWRaw)
+                            : Number.POSITIVE_INFINITY;
+                    if (Number.isFinite(maxWPx) && maxWPx > 0 && maxWPx < available) {
+                        available = maxWPx;
+                    }
+                    const own = row.getBoundingClientRect().width;
+                    if (grow < 0.01 && own > 1) {
+                        available = Math.min(available, own);
+                    }
+                }
+            } else {
+                leftoverPx.value = available;
+            }
+        } else {
+            leftoverPx.value = available;
+        }
+
         if (available <= 1) {
             return;
         }
 
         measureWidthPx.value = Math.floor(available);
+
+        if (!measure || n === 0) {
+            visibleCount.value = n;
+            return;
+        }
 
         const kids = Array.from(measure.children);
         if (kids.length < 2) {
@@ -115,7 +151,7 @@ export function useHorizontalOverflowCount(options) {
                 const measure = measureRef?.value;
                 const n = Number(unref(itemCount)) || 0;
                 const kids = measure ? measure.children.length : 0;
-                const measureReady = !measure || kids >= n + 1;
+                const measureReady = !measure || n === 0 || kids >= n + 1;
                 const rowReady = !row || row.getBoundingClientRect().width > 1;
 
                 if (retry < 4 && n > 0 && (!measureReady || !rowReady)) {
@@ -157,7 +193,6 @@ export function useHorizontalOverflowCount(options) {
     watch(
         () => Number(unref(itemCount)) || 0,
         () => {
-            visibleCount.value = 0;
             scheduleLayout();
         },
     );
@@ -170,12 +205,18 @@ export function useHorizontalOverflowCount(options) {
                 if (!rowObserver) {
                     rowObserver = new ResizeObserver(() => scheduleLayout());
                 }
-                rowObserver.observe(el);
+                let node = el;
+                let hops = 0;
+                while (node && hops < 8) {
+                    rowObserver.observe(node);
+                    node = node.parentElement;
+                    hops += 1;
+                }
             }
             scheduleLayout();
         },
         { immediate: true },
     );
 
-    return { visibleCount, measureWidthPx, scheduleLayout };
+    return { visibleCount, measureWidthPx, leftoverPx, scheduleLayout };
 }
