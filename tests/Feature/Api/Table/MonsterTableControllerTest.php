@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -119,6 +120,8 @@ class MonsterTableControllerTest extends TestCase
         $this->assertNotNull($entity['creature']);
         $this->assertArrayHasKey('spells', $entity['creature']);
         $this->assertIsArray($entity['creature']['spells']);
+        $this->assertArrayHasKey('items', $entity['creature']);
+        $this->assertIsArray($entity['creature']['items']);
         // Payload allégé : pas d’arbre effects / usages dans la table.
         foreach ($entity['creature']['spells'] as $spellRow) {
             $this->assertArrayNotHasKey('effects', $spellRow);
@@ -128,6 +131,36 @@ class MonsterTableControllerTest extends TestCase
         $this->assertArrayHasKey('acrobatie_mastery', $entity['creature']);
         $this->assertArrayHasKey('athletisme_mastery', $entity['creature']);
         $this->assertIsInt($entity['creature']['athletisme_mastery']);
+    }
+
+    /**
+     * Test : le format `entities` inclut les équipements de créature (payload allégé).
+     */
+    public function test_entities_format_includes_creature_items(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $creature = Creature::factory()->create(['created_by' => $user->id]);
+        $monster = Monster::factory()->create(['creature_id' => $creature->id]);
+        $item = Item::factory()->create([
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'name' => 'Coiffe de test',
+        ]);
+        $creature->items()->attach($item->id, ['quantity' => 2]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?format=entities&limit=10');
+
+        $response->assertOk();
+
+        $entity = collect($response->json('entities'))->firstWhere('id', $monster->id);
+        $this->assertIsArray($entity);
+        $this->assertArrayHasKey('items', $entity['creature']);
+        $this->assertCount(1, $entity['creature']['items']);
+        $this->assertSame($item->id, $entity['creature']['items'][0]['id']);
+        $this->assertSame('Coiffe de test', $entity['creature']['items'][0]['name']);
+        $this->assertSame(2, (int) $entity['creature']['items'][0]['pivot']['quantity']);
+        $this->assertArrayHasKey('image', $entity['creature']['items'][0]);
     }
 
     /**

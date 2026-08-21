@@ -154,10 +154,10 @@ const displayName = computed(() => props.resourceType?.name || "Type de ressourc
                     <Icon source="fa-solid fa-tag" :alt="displayName" size="sm" class="mt-0.5 shrink-0 text-primary-400" />
                     <div class="min-w-0 flex-1">
                         <div class="flex items-start gap-1.5">
-                            <div class="min-w-0 flex-1">
+                            <div class="min-w-0">
                                 <EntityMinimalTitle :label="displayName" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                            <div v-if="showActions" data-entity-actions class="flex min-w-8 flex-1 justify-end" @click.stop>
                                 <EntityActions
                                     entity-type="resource-types"
                                     :entity="entity"

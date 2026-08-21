@@ -1,5 +1,12 @@
 # Ce qui a été fait
 
+## Août 2026 — Équipements monstre et menu d’options
+
+Les fiches monstre (Minimal, Line, Full) listent les équipements de la créature
+s’il y en a, sur le même modèle que les sorts (nom + aperçu Minimal). Le menu
+d’options à côté du titre n’affiche que les raccourcis qui tiennent ; le reste
+passe dans le « ⋮ », pour toutes les vues d’entités.
+
 ## Août 2026 — CI MySQL, resolved-stats, tri catalogue monstres
 
 Les migrations CI passent sur MySQL : plus de DEFAULT SQL sur `notification_channels` (JSON). Les stats runtime d’une créature suivent la visibilité du monstre/PNJ (un brouillon n’est plus lisible par id). Trier le catalogue monstres par nom ne provoque plus d’erreur SQL pour un non-admin.

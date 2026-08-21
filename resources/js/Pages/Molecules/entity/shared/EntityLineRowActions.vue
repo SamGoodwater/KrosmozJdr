@@ -30,7 +30,7 @@ const LINE_ROW_ACTION_KEYS = Object.freeze([
 </script>
 
 <template>
-    <div class="entity-row-actions-hover-reveal" @click.stop>
+    <div class="entity-row-actions-hover-reveal w-full min-w-8" @click.stop>
         <EntityActions
             :entity-type="props.entityType"
             :entity="props.entity"

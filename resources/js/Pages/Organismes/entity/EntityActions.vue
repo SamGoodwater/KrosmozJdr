@@ -3,8 +3,8 @@
  *
  * @description
  * Composant flexible pour afficher les actions d'une entité.
- * Supporte différents formats : boutons, dropdown, menu contextuel.
- * Utilise useEntityActions pour la logique métier et les permissions.
+ * Formats : boutons (overflow vers « ⋮ » si besoin), dropdown, menu contextuel.
+ * Les raccourcis inline tiennent dans l’espace entre le titre et le bord.
  *
  * @example
  * Format buttons: entity-type="spells" :entity="entity" format="buttons" display="icon-only"
@@ -14,7 +14,6 @@
 import { computed } from "vue";
 import { useEntityActions } from "@/Composables/entity/useEntityActions";
 import { useDofusDbReferenceStore } from "@/Composables/store/useDofusDbReferenceStore";
-import EntityActionsList from "@/Pages/Molecules/entity/EntityActionsList.vue";
 import EntityActionsDropdown from "@/Pages/Molecules/entity/EntityActionsDropdown.vue";
 import EntityActionMenuList from "@/Pages/Molecules/entity/EntityActionMenuList.vue";
 
@@ -131,6 +130,11 @@ const getEntityName = () => {
 const entityName = computed(() => getEntityName());
 const showEntityName = computed(() => Boolean(entityName.value));
 
+const buttonInlineKeys = computed(() =>
+  (availableActions.value || []).map((action) => action?.key).filter(Boolean),
+);
+
+
 const contextMenuStyle = computed(() => {
   if (props.format !== "context" || !props.contextPosition) {
     return {};
@@ -145,19 +149,8 @@ const contextMenuStyle = computed(() => {
 </script>
 
 <template>
-  <EntityActionsList
-    v-if="format === 'buttons'"
-    :entity-type="entityType"
-    :entity="entity"
-    :actions="availableActions"
-    :display="display"
-    :size="size"
-    :color="color"
-    @action="handleAction"
-  />
-
   <EntityActionsDropdown
-    v-else-if="format === 'dropdown'"
+    v-if="format === 'buttons' || format === 'dropdown'"
     :entity-type="entityType"
     :actions="availableActions"
     :grouped-actions="groupedActions"
@@ -167,8 +160,9 @@ const contextMenuStyle = computed(() => {
     :color="color"
     :placement="placement"
     :icon-only-trigger="true"
-    :inline-action-keys="inlineActionKeys"
-    :show-inline-shortcuts="showInlineShortcuts"
+    :inline-action-keys="format === 'buttons' ? buttonInlineKeys : inlineActionKeys"
+    :show-inline-shortcuts="format === 'buttons' ? true : showInlineShortcuts"
+    :always-show-trigger="format === 'dropdown'"
     @action="handleAction"
   />
 

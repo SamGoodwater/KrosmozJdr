@@ -5,7 +5,7 @@
  * @description
  * Identité et méta toujours visibles ; description discrète au survol (modes compact / hover) ;
  * résumés combat / stats en blocs compacts ; en état étendu : caractéristiques complètes,
- * compétences (maîtrises, y compris à 0) groupées par stat, sorts de la créature.
+ * compétences (maîtrises, y compris à 0) groupées par stat, sorts et équipements de la créature.
  * Pas de bloc « contenus liés » / ressources en Minimal.
  *
  * @props {Monster} monster - Instance du modèle Monster
@@ -21,6 +21,7 @@ import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureC
 import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
 import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
+import MonsterCreatureItemsList from "@/Pages/Molecules/entity/monster/MonsterCreatureItemsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
@@ -316,10 +317,10 @@ const handleAction = async (actionKey) => {
                                 size-class="h-5 w-5"
                                 class="shrink-0"
                             />
-                            <div class="min-w-0 flex-1">
+                            <div class="min-w-0">
                                 <EntityMinimalTitle :label="creatureName" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                            <div v-if="showActions" data-entity-actions class="flex min-w-8 flex-1 justify-end" @click.stop>
                                 <EntityActions
                                     entity-type="monsters"
                                     :entity="entity"
@@ -428,6 +429,13 @@ const handleAction = async (actionKey) => {
 
                 <!-- Sorts liés à la créature (texte + aperçu minimal au survol de chaque sort) -->
                 <MonsterCreatureSpellsList
+                    v-if="creatureData"
+                    :creature="creatureData"
+                    :table-meta="tableMeta"
+                    :characteristic-runtime="characteristicRuntime"
+                    section-class="mt-1.5 border-t border-base-300/80 pt-1.5"
+                />
+                <MonsterCreatureItemsList
                     v-if="creatureData"
                     :creature="creatureData"
                     :table-meta="tableMeta"

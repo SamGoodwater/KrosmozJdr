@@ -161,8 +161,8 @@ const handleAction = async (actionKey) => {
 <template>
     <div class="space-y-6">
         <!-- En-tête avec nom et actions -->
-        <div class="flex items-start justify-between gap-4">
-            <div class="flex-1 min-w-0">
+        <div class="flex min-w-0 items-start gap-4">
+            <div class="min-w-0">
                 <div class="flex items-center gap-3">
                     <Image
                         v-if="shop.image"
@@ -183,7 +183,7 @@ const handleAction = async (actionKey) => {
             </div>
             
             <!-- Actions en haut à droite -->
-            <div v-if="showActions" class="flex-shrink-0">
+            <div v-if="showActions" class="flex min-w-8 flex-1 justify-end">
                 <EntityActions
                     entity-type="shops"
                     :entity="shop"

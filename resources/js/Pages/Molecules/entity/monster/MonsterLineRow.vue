@@ -7,7 +7,7 @@
  * Les résumés utilisent les mêmes clés que le tableau (`creature_summary_*`) via `getCellFor` + colonne factice.
  * Menu d’actions / sélection en overlay (coin supérieur droit) pour ne pas reflow la grille des résumés.
  * Carte Compétences sous les résumés : dépliée au survol / focus (contenu scrollable).
- * Liste des sorts de créature en fin de ligne (lien texte + aperçu minimal au survol).
+ * Liste des sorts et équipements de créature en fin de ligne (lien texte + aperçu minimal au survol).
  */
 import { computed } from "vue";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
@@ -23,6 +23,7 @@ import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacterist
 import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolvedStats";
 import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
+import MonsterCreatureItemsList from "@/Pages/Molecules/entity/monster/MonsterCreatureItemsList.vue";
 import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vue";
 import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
@@ -180,10 +181,10 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
     >
         <div
             v-if="showActions || showSelection"
-            class="monster-line-actions-host absolute top-2 right-2 z-20 flex items-center gap-2"
+            class="monster-line-actions-host absolute top-2 right-2 z-20 flex w-48 max-w-48 items-center justify-end gap-2"
             @click.stop
         >
-            <div v-if="showActions" class="monster-line-actions-reveal">
+            <div v-if="showActions" class="monster-line-actions-reveal min-w-0 flex-1">
                 <EntityLineRowActions
                     entity-type="monsters"
                     :entity="entity"
@@ -315,6 +316,13 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
 
         <!-- Sorts de la créature (texte + aperçu minimal au survol) -->
         <MonsterCreatureSpellsList
+            v-if="creature"
+            :creature="creature"
+            :table-meta="tableMeta"
+            :characteristic-runtime="characteristicRuntime"
+            section-class="mt-1.5 border-t border-base-300/50 pt-1.5"
+        />
+        <MonsterCreatureItemsList
             v-if="creature"
             :creature="creature"
             :table-meta="tableMeta"

@@ -35,6 +35,7 @@ import MonsterBossMark from "@/Pages/Molecules/entity/monster/MonsterBossMark.vu
 import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
+import MonsterCreatureItemsList from "@/Pages/Molecules/entity/monster/MonsterCreatureItemsList.vue";
 
 const props = defineProps({
     monster: {
@@ -227,6 +228,13 @@ const linkedSpells = computed(() => {
 });
 
 const hasLinkedSpells = computed(() => linkedSpells.value.length > 0);
+
+const linkedItems = computed(() => {
+    const raw = creatureData.value?.items;
+    return Array.isArray(raw) ? raw : [];
+});
+
+const hasLinkedItems = computed(() => linkedItems.value.length > 0);
 
 const linkedSpellInvocations = computed(() => {
     const raw = props.monster?._data?.spellInvocations ?? props.monster?.spellInvocations;
@@ -529,6 +537,23 @@ const handleAction = async (actionKey) => {
             >
                 Aucun sort lié à la créature de ce monstre.
             </p>
+        </section>
+
+        <section
+            v-if="hasLinkedItems"
+            class="pt-4 border-t border-base-300 space-y-3"
+            role="region"
+            aria-label="Équipements de la créature"
+        >
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">
+                Équipements
+            </h3>
+            <MonsterCreatureItemsList
+                :creature="creatureData"
+                :table-meta="tableMeta"
+                :characteristic-runtime="characteristicRuntime || creatureRuntimeStats"
+                section-class="rounded-box border border-base-300 bg-base-100/40 p-4"
+            />
         </section>
 
         <section
