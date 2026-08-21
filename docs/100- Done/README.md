@@ -2,7 +2,7 @@
 
 ## Août 2026 — GitHub : une seule `main`, Dependabot cadré
 
-Le dépôt n’a plus qu’une branche active (`main`). Les PR Cursor et l’ancienne PR Vitest 4 (base trop vieille) sont fermées. Les alertes Dependabot déjà corrigées restent en « fixed ». Un fichier `.github/dependabot.yml` groupe les mises à jour weekly npm / Composer / Actions (minor+patch) ; Vitest 4 reste un chantier dédié.
+Le dépôt n’a plus qu’une branche active (`main`). Les PR Cursor et l’ancienne PR Vitest 4 (base trop vieille) sont fermées. Les alertes Dependabot déjà corrigées restent en « fixed ». Un fichier `.github/dependabot.yml` lance des mises à jour weekly npm (groupe minor+patch), Composer (PR individuelles) et Actions (minor+patch) ; Vitest 4 et les majors d’actions restent un chantier dédié.
 
 ## Août 2026 — Équipements monstre et menu d’options
 

@@ -14,4 +14,4 @@
 - Backend Laravel classique, Form Requests, policies, services.
 - Frontend Vue 3 JS, Atomic Design, Tailwind/DaisyUI.
 - CVE transitives Node : `pnpm.overrides` dans `package.json` (`undici` 6.28.0).
-- Dependabot : `.github/dependabot.yml` (npm / Composer / Actions, groupes minor+patch, majors Vitest ignorées).
+- Dependabot : `.github/dependabot.yml` (npm groupé minor+patch, Composer en PR individuelles, Actions minor+patch ; majors Vitest ignorées).

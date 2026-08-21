@@ -1,5 +1,6 @@
-# Mises à jour groupées, mineures/patch uniquement.
-# Les majors (ex. Vitest 4) restent un chantier dédié, pas une PR automatique.
+# Mises à jour weekly, mineures/patch.
+# Pas de groupe Composer : un groupe unique a déjà tenté de rétrograder Symfony
+# en bumpant Laravel. Les majors (Vitest 4, actions/checkout v7) restent manuelles.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -27,11 +28,6 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 3
-    groups:
-      composer-minor-patch:
-        update-types:
-          - minor
-          - patch
 
   - package-ecosystem: github-actions
     directory: /
@@ -41,5 +37,8 @@ updates:
     open-pull-requests-limit: 2
     groups:
       github-actions:
+        update-types:
+          - minor
+          - patch
         patterns:
           - "*"
