@@ -147,7 +147,10 @@ class MonsterController extends Controller
                 'creatureTraits',
                 'spells' => fn ($sq) => $sq
                     ->orderBy('name')
-                    ->with(['spellTypes']),
+                    ->with([
+                        'spellTypes',
+                        'effects.degrees.effectSubEffects.subEffect',
+                    ]),
             ]),
             'monsterRace',
             'scenarios',

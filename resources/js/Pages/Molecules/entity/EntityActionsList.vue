@@ -3,8 +3,8 @@
  * EntityActionsList Molecule
  *
  * @description
- * Liste horizontale de boutons d'actions pour une entité.
- * Utilisé dans les vues entités (Compact, Minimal, Large).
+ * Liste horizontale brute de boutons d'actions (sans overflow).
+ * Pour une barre de titre, préférer `EntityActions` / `EntityActionsDropdown`.
  *
  * @example
  * <EntityActionsList

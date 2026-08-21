@@ -3,9 +3,9 @@
  * EntityActionsDropdown Molecule
  *
  * @description
- * Menu dropdown d'actions pour une entité + raccourcis inline (écran ≥ sm) :
- * épingler, copier le lien, ouvrir la page, édition rapide (si droits).
- * Le déclencheur « ⋮ » reste toujours visible.
+ * Menu dropdown d'actions pour une entité + raccourcis inline :
+ * autant d’icônes que la largeur entre le titre et le bord le permet,
+ * le reste reste dans le menu « ⋮ ».
  *
  * @example
  * <EntityActionsDropdown
@@ -21,10 +21,11 @@
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import EntityActionMenuList from "@/Pages/Molecules/entity/EntityActionMenuList.vue";
 import EntityStateAction from "@/Pages/Molecules/entity/EntityStateAction.vue";
 import { useResolvedEntityActionState } from "@/Composables/entity/useResolvedEntityActionState";
+import { useHorizontalOverflowCount } from "@/Composables/layout/useHorizontalOverflowCount";
 
 const props = defineProps({
     /**
@@ -113,6 +114,13 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    /**
+     * Toujours afficher le bouton « ⋮ », même si tous les raccourcis tiennent.
+     */
+    alwaysShowTrigger: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const emit = defineEmits(["action"]);
@@ -134,6 +142,31 @@ const promotedActions = computed(() => {
         if (action) out.push(action);
     }
     return out;
+});
+
+const rowRef = ref(null);
+const measureRef = ref(null);
+const promotedCount = computed(() => promotedActions.value.length);
+
+const { visibleCount, measureWidthPx } = useHorizontalOverflowCount({
+    rowRef,
+    measureRef,
+    itemCount: promotedCount,
+    alwaysReserveMore: computed(() => props.alwaysShowTrigger),
+    gapFallbackPx: 2,
+});
+
+const visiblePromotedActions = computed(() =>
+    promotedActions.value.slice(0, visibleCount.value),
+);
+
+const overflowPromotedActions = computed(() =>
+    promotedActions.value.slice(visibleCount.value),
+);
+
+const showMenuTrigger = computed(() => {
+    if (props.alwaysShowTrigger) return true;
+    return overflowPromotedActions.value.length > 0;
 });
 
 /**
@@ -170,13 +203,41 @@ const entityName = computed(() => getEntityName());
 </script>
 
 <template>
-    <div class="flex min-w-0 items-center justify-end gap-0.5">
-        <!-- Raccourcis : visibles à partir du breakpoint `sm` (place viewport) -->
+    <div
+        ref="rowRef"
+        class="relative flex w-full min-w-0 items-center justify-end"
+    >
         <div
             v-if="promotedActions.length"
-            class="hidden min-[640px]:flex min-[640px]:items-center min-[640px]:gap-0.5"
+            ref="measureRef"
+            class="pointer-events-none absolute top-0 right-0 flex items-center gap-0.5 overflow-hidden opacity-0"
+            :style="measureWidthPx > 0 ? { width: `${measureWidthPx}px` } : undefined"
+            aria-hidden="true"
         >
-            <template v-for="action in promotedActions" :key="action.key">
+            <Btn
+                v-for="action in promotedActions"
+                :key="'measure-' + action.key"
+                :size="size"
+                variant="ghost"
+                :color="color"
+                class="btn-square shrink-0"
+                tabindex="-1"
+            >
+                <Icon :source="action.icon || 'fa-solid fa-circle'" :size="size" />
+            </Btn>
+            <Btn
+                :size="size"
+                :variant="triggerVariant"
+                :color="color"
+                class="btn-square shrink-0"
+                tabindex="-1"
+            >
+                <Icon source="fa-solid fa-ellipsis-vertical" :size="size" />
+            </Btn>
+        </div>
+
+        <div class="flex min-w-0 items-center justify-end gap-0.5">
+            <template v-for="action in visiblePromotedActions" :key="action.key">
                 <EntityStateAction
                     v-if="action.key === 'state'"
                     :entity-type="entityType"
@@ -207,34 +268,38 @@ const entityName = computed(() => getEntityName());
                     />
                 </Btn>
             </template>
+            <Dropdown
+                v-if="showMenuTrigger"
+                :placement="placement"
+                :close-on-content-click="true"
+            >
+                <template #trigger>
+                    <Btn
+                        :size="size"
+                        :variant="triggerVariant"
+                        :color="color"
+                        :class="iconOnlyTrigger ? 'btn-square shrink-0' : ''"
+                        :title="iconOnlyTrigger ? 'Autres actions' : null"
+                    >
+                        <Icon source="fa-solid fa-ellipsis-vertical" :size="size" />
+                        <span v-if="!iconOnlyTrigger" class="ml-2">Actions</span>
+                    </Btn>
+                </template>
+                <template #content>
+                    <EntityActionMenuList
+                        :entity-type="entityType"
+                        :entity="entity"
+                        :actions="actions"
+                        :grouped-actions="groupedActions"
+                        :display="display"
+                        :size="size"
+                        :entity-name="entityName || ''"
+                        menu-class="menu bg-base-100 rounded-box z-1 w-56 p-2 shadow-lg border border-base-300"
+                        @action="handleMenuAction"
+                    />
+                </template>
+            </Dropdown>
         </div>
-        <Dropdown :placement="placement" :close-on-content-click="true">
-            <template #trigger>
-                <Btn
-                    :size="size"
-                    :variant="triggerVariant"
-                    :color="color"
-                    :class="iconOnlyTrigger ? 'btn-square shrink-0' : ''"
-                    :title="iconOnlyTrigger ? 'Autres actions' : null"
-                >
-                    <Icon source="fa-solid fa-ellipsis-vertical" :size="size" />
-                    <span v-if="!iconOnlyTrigger" class="ml-2">Actions</span>
-                </Btn>
-            </template>
-            <template #content>
-                <EntityActionMenuList
-                    :entity-type="entityType"
-                    :entity="entity"
-                    :actions="actions"
-                    :grouped-actions="groupedActions"
-                    :display="display"
-                    :size="size"
-                    :entity-name="entityName || ''"
-                    menu-class="menu bg-base-100 rounded-box z-1 w-56 p-2 shadow-lg border border-base-300"
-                    @action="handleMenuAction"
-                />
-            </template>
-        </Dropdown>
     </div>
 </template>
 

@@ -169,10 +169,14 @@ export class TableColumnConfig {
    * Configure le tri.
    *
    * @param {boolean} [enabled=true] - Activer le tri
+   * @param {string|null} [field=null] - Colonne SQL si différente de l’id UI
    * @returns {TableColumnConfig} Instance pour chaînage
    */
-  withSort(enabled = true) {
-    this.sort = { enabled: Boolean(enabled) };
+  withSort(enabled = true, field = null) {
+    this.sort = {
+      enabled: Boolean(enabled),
+      ...(field ? { field: String(field) } : {}),
+    };
     return this;
   }
 

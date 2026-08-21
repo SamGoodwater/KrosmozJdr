@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class NpcTableController extends Controller
 {
+    use InterpretsEntityTableFilters;
     use InterpretsEntityTableSort;
     use PaginatesEntityTable;
 
@@ -69,38 +70,20 @@ class NpcTableController extends Controller
             });
         }
 
-        if (array_key_exists('breed_id', $filters) && $filters['breed_id'] !== '' && $filters['breed_id'] !== null) {
-            $val = $filters['breed_id'];
-            $ids = is_array($val) ? array_map('intval', $val) : [(int) $val];
-            $ids = array_filter($ids, fn ($id) => $id > 0);
-            if ($ids !== []) {
-                $query->whereIn('breed_id', $ids);
-            }
+        if ($this->hasFilterValue($filters, 'breed_id')) {
+            $this->applyEqualityFilter($query, 'breed_id', $filters['breed_id'], 'int');
         }
-        if (array_key_exists('specialization_id', $filters) && $filters['specialization_id'] !== '' && $filters['specialization_id'] !== null) {
-            $val = $filters['specialization_id'];
-            $ids = is_array($val) ? array_map('intval', $val) : [(int) $val];
-            $ids = array_filter($ids, fn ($id) => $id > 0);
-            if ($ids !== []) {
-                $query->whereIn('specialization_id', $ids);
-            }
+        if ($this->hasFilterValue($filters, 'specialization_id')) {
+            $this->applyEqualityFilter($query, 'specialization_id', $filters['specialization_id'], 'int');
         }
-        if (array_key_exists('creature_level', $filters) && $filters['creature_level'] !== '' && $filters['creature_level'] !== null) {
-            $val = $filters['creature_level'];
-            $levels = is_array($val) ? $val : [$val];
-            $levels = array_filter($levels, fn ($v) => $v !== '' && $v !== null);
-            if ($levels !== []) {
-                $query->whereHas('creature', fn ($q) => $q->whereIn('level', $levels));
-            }
+        if ($this->hasFilterValue($filters, 'creature_level')) {
+            $this->applyRelationEqualityFilter($query, 'creature', 'level', $filters['creature_level']);
         }
-        if (array_key_exists('creature_state', $filters) && $filters['creature_state'] !== '' && $filters['creature_state'] !== null) {
-            $val = $filters['creature_state'];
-            $states = is_array($val) ? $val : [$val];
-            $states = array_filter($states, fn ($v) => $v !== '' && $v !== null);
-            if ($states !== []) {
-                $query->whereHas('creature', fn ($q) => $q->whereIn('state', $states));
-            }
+        if ($this->hasFilterValue($filters, 'creature_state')) {
+            $this->applyRelationEqualityFilter($query, 'creature', 'state', $filters['creature_state']);
         }
+
+        $this->applyEntityTableIdList($query, $request);
 
         $allowedSort = ['id', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');

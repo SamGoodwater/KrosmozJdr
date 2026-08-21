@@ -68,6 +68,7 @@ import { usePositioning } from '@/Composables/layout/usePositioning';
 import { useClickOutside } from '@/Composables/layout/useClickOutside';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { variantList, colorList, sizeList } from '@/Pages/Atoms/atomMap';
+import { OVERLAY_Z_INDEX } from '@/Composables/overlay/overlayConstants';
 
 const props = defineProps({
   ...getCommonProps(),
@@ -216,7 +217,7 @@ const open = () => {
     zIndex.value = 9999;
   } else {
     teleportTarget.value = typeof document !== 'undefined' ? document.body : 'body';
-    zIndex.value = 1000 + (Date.now() % 1000);
+    zIndex.value = OVERLAY_Z_INDEX.floatingPanel + 80;
   }
   containerRef.value?.setAttribute?.("data-dropdown-open", "true");
   enableClickOutside();

@@ -1,5 +1,21 @@
 # Ce qui a été fait
 
+## Août 2026 — Menu d’options adapté à la largeur du titre
+
+Sur les fiches (minimal, line, full, modal), les raccourcis d’actions à côté du titre n’occupent plus plus de place que l’espace restant jusqu’au bord : le surplus reste dans le dropdown « ⋮ ».
+
+## Août 2026 — Aperçu sort depuis un monstre
+
+Ouvrir un sort depuis la fiche minimale d’un monstre montre enfin les effets (chips inclus dans le payload, sans dépendre d’un second fetch). Le menu d’options suit la ligne du titre (raccourcis + overflow).
+
+## Août 2026 — Tableaux d’entités + aperçu des sorts
+
+Les filtres, le tri et la recherche des catalogues marchent à nouveau : multi-sélection (`whereIn`), application automatique, alias de tri (type d’objet, niveau de créature), recherche serveur et repli sur le nom en client.
+
+## Août 2026 — Tableau objets plus lisible
+
+Le catalogue d’équipements (vue Colonnes) montre d’abord portrait, nom, niveau, type, rareté et bonus. Description, résumé et prix restent optionnels. L’état de publication n’apparaît que pour les éditeurs. Un survol des en-têtes explique chaque colonne. En vue Line, la recette n’encombre plus la liste.
+
 ## Août 2026 — CI MySQL, resolved-stats, tri catalogue monstres
 
 Les migrations CI passent sur MySQL : plus de DEFAULT SQL sur `notification_channels` (JSON). Les stats runtime d’une créature suivent la visibilité du monstre/PNJ (un brouillon n’est plus lisible par id). Trier le catalogue monstres par nom ne provoque plus d’erreur SQL pour un non-admin.

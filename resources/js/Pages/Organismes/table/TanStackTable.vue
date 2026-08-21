@@ -940,7 +940,19 @@ const {
     applySearchValue,
     clearSearch,
     getCurrentSearch,
+    searchDisplayValue,
 } = tableSearch;
+
+watch(
+    () => props.serverParams?.search,
+    (s) => {
+        if (!props.serverSide) return;
+        const next = String(s ?? "");
+        if (searchDisplayValue.value !== next) {
+            searchDisplayValue.value = next;
+        }
+    },
+);
 
 const hasActiveFilters = computed(() => {
     const filters = activeFilters.value || {};
@@ -1227,6 +1239,20 @@ const getSearchValueFor = (row, col) => {
     return cell?.value ?? "";
 };
 
+const rowMatchesClientSearch = (row, search) => {
+    const haystacks = [];
+    const entity = getRowEntity(row);
+    if (entity && typeof entity === "object") {
+        haystacks.push(entity.name, entity.title, entity.description);
+    }
+    const searchableCols = columnsWithoutActions.value.filter((c) => c?.search?.enabled);
+    const cols = searchableCols.length > 0 ? searchableCols : columnsWithoutActions.value;
+    for (const col of cols) {
+        haystacks.push(getSearchValueFor(row, col));
+    }
+    return haystacks.some((v) => normalize(String(v ?? "")).includes(search));
+};
+
 const filteredRows = computed(() => {
     if (props.serverSide) {
         return props.rows || [];
@@ -1244,13 +1270,7 @@ const filteredRows = computed(() => {
 
         // search
         if (!searchEnabled.value || !search) return true;
-
-        const searchableCols = columnsWithoutActions.value.filter((c) => c?.search?.enabled);
-        for (const col of searchableCols) {
-            const v = getSearchValueFor(row, col);
-            if (normalize(v).includes(search)) return true;
-        }
-        return false;
+        return rowMatchesClientSearch(row, search);
     });
 });
 const emptyState = computed(() => {
@@ -1334,9 +1354,31 @@ watch(
 
 const setFilters = (v) => {
     activeFilters.value = v || {};
+    if (props.serverSide) {
+        scheduleServerFilterApply();
+    }
 };
 const resetFilters = () => {
+    if (_filterApplyTimeout) {
+        clearTimeout(_filterApplyTimeout);
+        _filterApplyTimeout = null;
+    }
     activeFilters.value = {};
+    paginationState.value = { ...paginationState.value, pageIndex: 0 };
+    if (props.serverSide) {
+        emit("update:serverParams", {
+            filters: {},
+            page: 1,
+        });
+    }
+};
+let _filterApplyTimeout = null;
+const scheduleServerFilterApply = () => {
+    if (_filterApplyTimeout) clearTimeout(_filterApplyTimeout);
+    _filterApplyTimeout = setTimeout(() => {
+        _filterApplyTimeout = null;
+        applyFilters();
+    }, 200);
 };
 const applyFilters = () => {
     paginationState.value = { ...paginationState.value, pageIndex: 0 };
@@ -1347,6 +1389,13 @@ const applyFilters = () => {
         });
     }
 };
+
+onUnmounted(() => {
+    if (_filterApplyTimeout) {
+        clearTimeout(_filterApplyTimeout);
+        _filterApplyTimeout = null;
+    }
+});
 
 const paginationState = ref({
     pageIndex: 0,
@@ -1452,11 +1501,17 @@ const table = useVueTable({
         if (props.serverSide) {
             const firstSort = Array.isArray(next) && next.length > 0 ? next[0] : null;
             const sortsPayload = Array.isArray(next)
-                ? next.map((s) => ({ field: s.id, dir: s.desc ? "desc" : "asc" }))
+                ? next.map((s) => {
+                    const col = (columnsWithoutActions.value || []).find((c) => c.id === s.id);
+                    return {
+                        field: col?.sort?.field || s.id,
+                        dir: s.desc ? "desc" : "asc",
+                    };
+                })
                 : [];
             emit("update:serverParams", {
                 sorts: sortsPayload,
-                sort: firstSort?.id || "id",
+                sort: sortsPayload[0]?.field || firstSort?.id || "id",
                 order: firstSort?.desc ? "desc" : "asc",
                 page: 1,
             });

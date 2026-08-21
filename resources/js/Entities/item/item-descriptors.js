@@ -58,6 +58,12 @@ export function getItemFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
   const canUpdateAny = Boolean(can?.updateAny);
   const canCreateAny = Boolean(can?.createAny);
+
+  /** Vue Colonnes : court à l’œil (image, nom, niveau, type, rareté, bonus). */
+  const visibleAlways = { xs: true, sm: true, md: true, lg: true, xl: true };
+  const visibleFromSm = { xs: false, sm: true, md: true, lg: true, xl: true };
+  const visibleFromMd = { xs: false, sm: false, md: true, lg: true, xl: true };
+  const hiddenByDefault = { xs: false, sm: false, md: false, lg: false, xl: false };
   
   const itemTypes = Array.isArray(ctx?.itemTypes) 
     ? ctx.itemTypes 
@@ -68,10 +74,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "id",
       label: "ID",
       icon: "fa-solid fa-hashtag",
+      helper: "Identifiant interne",
       visibleIf: () => canUpdateAny,
       table: {
         sortable: true,
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        defaultVisible: hiddenByDefault,
         filterable: { id: "id", type: "text", defaultVisible: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -89,10 +96,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "name",
       label: "Nom",
       icon: "fa-solid fa-font",
+      helper: "Nom de l’équipement",
       table: {
         sortable: true,
         searchable: true,
-        defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
+        defaultVisible: visibleAlways,
         cell: { sizes: { xs: { mode: "route", truncate: 15 }, sm: { mode: "route", truncate: 20 }, md: { mode: "route", truncate: 30 }, lg: { mode: "route", truncate: 40 }, xl: { mode: "route" } } },
       },
       display: {
@@ -117,10 +125,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "description",
       label: "Description",
       icon: "fa-solid fa-align-left",
+      helper: "Texte d’ambiance",
       table: {
         searchable: true,
         filterable: { id: "description", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text", truncate: 80 }, xl: { mode: "text" } } },
       },
       display: {
@@ -146,10 +155,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "effect",
       label: "Effet",
       icon: "fa-solid fa-sparkles",
+      helper: "Bonus de l’équipement",
       table: {
         searchable: true,
         filterable: { id: "effect", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: visibleFromMd,
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
       display: {
@@ -175,6 +185,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "level",
       label: "Niveau",
       icon: "fa-solid fa-level-up-alt",
+      helper: "Niveau requis pour porter l’objet",
       table: {
         sortable: true,
         filterable: {
@@ -186,7 +197,7 @@ export function getItemFieldDescriptors(ctx = {}) {
             maxOptions: 250,
           },
         },
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        defaultVisible: visibleFromSm,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -213,6 +224,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "rarity",
       label: "Rareté",
       icon: "fa-solid fa-star",
+      helper: "Rareté (Commun à Unique)",
       table: {
         sortable: true,
         filterable: {
@@ -221,7 +233,7 @@ export function getItemFieldDescriptors(ctx = {}) {
           defaultVisible: true,
           options: getRarityOptions().map(({ value, label }) => ({ value, label })),
         },
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        defaultVisible: visibleFromSm,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -257,6 +269,8 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "state",
       label: "État",
       icon: "fa-solid fa-circle-info",
+      helper: "Cycle de contenu : brouillon, jouable, archivé…",
+      visibleIf: () => canUpdateAny,
       table: {
         sortable: true,
         filterable: {
@@ -265,7 +279,8 @@ export function getItemFieldDescriptors(ctx = {}) {
           defaultVisible: true,
           options: getEntityStateOptions(),
         },
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        defaultVisible: visibleFromSm,
+        visibleIf: () => canUpdateAny,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -296,7 +311,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       visibleIf: () => canUpdateAny,
       table: {
         sortable: false,
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -325,7 +340,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-eye",
       table: {
         sortable: false,
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -355,7 +370,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-pen-to-square",
       table: {
         sortable: false,
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -383,10 +398,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "price",
       label: "Prix",
       icon: "fa-solid fa-coins",
+      helper: "Prix en kamas",
       table: {
         sortable: true,
         filterable: { id: "price", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -413,10 +429,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "dofus_version",
       label: "Version Dofus",
       icon: "fa-solid fa-code-branch",
+      helper: "Version Dofus d’origine",
       table: {
         sortable: true,
         filterable: { id: "dofus_version", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -442,10 +459,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "item_type",
       label: "Type",
       icon: "fa-solid fa-tags",
+      helper: "Emplacement (anneau, cape, arme…)",
       table: {
         sortable: true,
+        sortField: "item_type_id",
         filterable: { id: "item_type_id", type: "multi", defaultVisible: true },
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        defaultVisible: visibleFromSm,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
@@ -462,10 +481,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "item_summary_meta",
       label: "Résumé",
       icon: "fa-solid fa-layer-group",
+      helper: "Type, niveau, rareté et liens (panoplies, recettes…)",
       table: {
         type: "chips",
         searchable: true,
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
       display: {
@@ -482,6 +502,19 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "image",
       label: "Image",
       icon: "fa-solid fa-image",
+      helper: "Portrait de l’équipement",
+      table: {
+        defaultVisible: visibleAlways,
+        cell: {
+          sizes: {
+            xs: { mode: "thumb" },
+            sm: { mode: "thumb" },
+            md: { mode: "thumb" },
+            lg: { mode: "thumb" },
+            xl: { mode: "thumb" },
+          },
+        },
+      },
       display: {
         sizes: {
           xs: { mode: "thumb" },
@@ -509,7 +542,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       visibleIf: () => canUpdateAny,
       table: {
         sortable: true,
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "route" }, sm: { mode: "route" }, md: { mode: "route" }, lg: { mode: "route" }, xl: { mode: "route" } } },
       },
       display: {
@@ -544,7 +577,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       visibleIf: () => canUpdateAny,
       table: {
         sortable: true,
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -564,7 +597,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       visibleIf: () => canUpdateAny,
       table: {
         sortable: true,
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {

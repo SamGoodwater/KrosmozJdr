@@ -20,6 +20,7 @@
 .group:has(.entity-row-actions-hover-reveal [data-dropdown-open="true"]) .entity-row-actions-hover-reveal,
 .group:has(.entity-row-actions-hover-reveal [aria-expanded="true"]) .entity-row-actions-hover-reveal {
     max-width: 12rem;
+    width: 12rem;
     overflow: visible;
     opacity: 1;
     pointer-events: auto;

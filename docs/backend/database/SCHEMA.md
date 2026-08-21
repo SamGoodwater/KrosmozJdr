@@ -612,6 +612,8 @@ erDiagram
     save_intelligence_bonus_context : text
     save_chance_bonus_context : text
     save_agility_bonus_context : text
+    do_fixe_multiple : text
+    do_fixe_multiple_context : text
   }
   DATA_SUBJECT_REQUESTS {
     id : bigint(20) unsigned
@@ -963,6 +965,7 @@ erDiagram
     state : varchar(255)
     read_level : tinyint(4)
     write_level : tinyint(4)
+    created_by : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp
     deleted_at : timestamp
@@ -1554,6 +1557,7 @@ erDiagram
   NPC_SCENARIO }o--|| NPCS : "FK npc_id"
   NPC_SCENARIO }o--|| SCENARIOS : "FK scenario_id"
   NPCS }o--|| BREEDS : "FK breed_id"
+  NPCS }o--|| USERS : "FK created_by"
   NPCS }o--|| CREATURES : "FK creature_id"
   NPCS }o--|| SPECIALIZATIONS : "FK specialization_id"
   OAUTH_ACCOUNTS }o--|| USERS : "FK user_id"

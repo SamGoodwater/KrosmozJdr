@@ -4,6 +4,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
+import { fetchEntityModelById } from "@/Composables/entity/useEntityTableFetch";
 
 const props = defineProps({
   entity: { type: Object, required: true },
@@ -18,7 +19,11 @@ const props = defineProps({
   hoverCardClass: { type: String, default: "" },
   /** Placement du « tooltip » (Floating UI). */
   placement: { type: String, default: "bottom-start" },
-  showActionsOnHover: { type: Boolean, default: false },
+  /**
+   * Affiche le menu d’options sur la vue minimale ouverte (dropdown).
+   * Défaut vrai : on ouvre déjà une fiche, les actions doivent rester accessibles.
+   */
+  showActionsOnHover: { type: Boolean, default: true },
   /**
    * Conservé pour compatibilité ; ignoré pour le rendu : l’aperçu minimal utilise toujours
    * `displayMode: 'extended'` sur la vue cible. Le survol sur le **nom** ouvre déjà le tooltip ;
@@ -32,6 +37,11 @@ const props = defineProps({
   },
   tableMeta: { type: Object, default: () => ({}) },
   characteristicRuntime: { type: Object, default: null },
+  /**
+   * Type d’entité API (`spells`, `items`…) : hydrate la fiche complète au clic
+   * (payload tableau allégé → vue minimale avec effets).
+   */
+  hydrateType: { type: String, default: "" },
 });
 
 const entityName = computed(() => props.entity?.name || props.entity?.title || "");
@@ -77,17 +87,57 @@ function handleAltNavigation(event) {
   window.location.assign(altClickHref.value);
 }
 
-const overlayContent = computed(() => ({
-  component: markRaw(props.minimalComponent),
-  props: {
-    [props.entityProp]: props.entity,
+function entityAlreadyHasEffects(entity) {
+  if (!entity) return false;
+  const chips =
+    entity.effectUsagesChips ??
+    entity._data?.effect_usages_chips ??
+    entity.effect_usages_chips;
+  if (Array.isArray(chips) && chips.length > 0) return true;
+  const defs =
+    entity.effectsDefinitions ??
+    entity._data?.effects_definitions ??
+    entity.effects_definitions;
+  return Array.isArray(defs) && defs.length > 0;
+}
+
+function buildMinimalProps(entity) {
+  return {
+    [props.entityProp]: entity,
     showActions: props.showActionsOnHover,
     displayMode: "extended",
     ...(Object.keys(props.tableMeta || {}).length > 0 ? { tableMeta: props.tableMeta } : {}),
     ...(props.characteristicRuntime != null ? { characteristicRuntime: props.characteristicRuntime } : {}),
     class: props.hoverCardClass,
-  },
-}));
+  };
+}
+
+const overlayContent = computed(() => {
+  const hydrateType = String(props.hydrateType || "").trim();
+  const entityId = props.entity?.id;
+  if (hydrateType && entityId && !entityAlreadyHasEffects(props.entity)) {
+    return {
+      key: `hydrate:${hydrateType}:${entityId}`,
+      loader: async () => {
+        let entity = props.entity;
+        try {
+          const full = await fetchEntityModelById(hydrateType, entityId);
+          if (full) entity = full;
+        } catch {
+          /* payload déjà affiché / allégé en repli */
+        }
+        return {
+          component: markRaw(props.minimalComponent),
+          props: buildMinimalProps(entity),
+        };
+      },
+    };
+  }
+  return {
+    component: markRaw(props.minimalComponent),
+    props: buildMinimalProps(props.entity),
+  };
+});
 </script>
 
 <template>

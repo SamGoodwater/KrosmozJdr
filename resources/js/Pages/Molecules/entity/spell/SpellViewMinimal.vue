@@ -7,6 +7,7 @@
  * Méta : `SpellMinimalUsageMetaRow` (PA, PO + icônes portée/ligne de vue, lancers avec tooltip, élément au survol, types/catégorie au survol).
  * Résolution : ligne au-dessus des effets (`buildResolutionSummary`).
  * Invocations : portées par les sous-effets / chips (pas de bloc séparé).
+ * Options : raccourcis inline à droite du titre (overflow dans le dropdown).
  *
  * @props {Spell} spell - Instance du modèle Spell
  */
@@ -161,10 +162,27 @@ const handleAction = async (actionKey) => {
                                 :show-label="false"
                                 class="shrink-0"
                             />
-                            <div class="min-w-0 flex-1">
+                            <div class="min-w-0">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            
+                            <div
+                                v-if="showActions"
+                                data-entity-actions
+                                class="flex min-w-8 flex-1 justify-end"
+                                @click.stop
+                            >
+                                <EntityActions
+                                    entity-type="spells"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    placement="bottom-end"
+                                    :whitelist="minimalActionWhitelist"
+                                    :context="minimalActionsContext"
+                                    @action="(k) => handleAction(k)"
+                                />
+                            </div>
                         </div>
                         <SpellUsageBlock
                             parts="meta"
@@ -185,6 +203,7 @@ const handleAction = async (actionKey) => {
                     :table-meta="tableMeta"
                     :can-show-field="canShowField"
                     :max-effect-rows="3"
+                    :show-empty-effects="true"
                 />
             </div>
         </template>
@@ -209,16 +228,22 @@ const handleAction = async (actionKey) => {
                                 :show-label="false"
                                 class="shrink-0"
                             />
-                            <div class="min-w-0 flex-1">
+                            <div class="min-w-0">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="shrink-0" @click.stop>
+                            <div
+                                v-if="showActions"
+                                data-entity-actions
+                                class="flex min-w-8 flex-1 justify-end"
+                                @click.stop
+                            >
                                 <EntityActions
                                     entity-type="spells"
                                     :entity="entity"
                                     format="dropdown"
                                     display="icon-only"
                                     size="xs"
+                                    placement="bottom-end"
                                     :whitelist="minimalActionWhitelist"
                                     :context="minimalActionsContext"
                                     @action="(k) => handleAction(k)"
@@ -251,6 +276,7 @@ const handleAction = async (actionKey) => {
                     :table-meta="tableMeta"
                     :can-show-field="canShowField"
                     :max-effect-rows="3"
+                    :show-empty-effects="true"
                 />
             </div>
         </template>

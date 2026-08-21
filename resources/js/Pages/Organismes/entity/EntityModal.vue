@@ -232,13 +232,14 @@ const handleAction = async (actionKey, entity) => {
         @close="handleClose">
         
         <template #header>
-            <div class="flex items-center justify-between w-full gap-4">
-                <h3 class="text-lg font-bold text-primary-100 flex-1 min-w-0">
+            <div class="flex min-w-0 w-full items-center gap-4">
+                <h3 class="min-w-0 truncate text-lg font-bold text-primary-100">
                     {{ getEntityName() }}
                 </h3>
-                <div class="flex items-center gap-2 shrink-0">
+                <div class="flex min-w-8 flex-1 items-center justify-end gap-2">
                     <Dropdown
                         v-if="!view && useStoredFormat"
+                        class="shrink-0"
                         placement="bottom-end"
                         variant="glass"
                         color="primary"
@@ -293,20 +294,23 @@ const handleAction = async (actionKey, entity) => {
                         </template>
                     </Dropdown>
 
-                    <EntityActions
-                        :entity-type="entityTypePlural"
-                        :entity="entity"
-                        format="buttons"
-                        display="icon-only"
-                        size="sm"
-                        color="primary"
-                        :context="{ inModal: true, modalMode: 'view' }"
-                        @action="handleAction"
-                    />
+                    <div class="flex min-w-8 flex-1 justify-end">
+                        <EntityActions
+                            :entity-type="entityTypePlural"
+                            :entity="entity"
+                            format="buttons"
+                            display="icon-only"
+                            size="sm"
+                            color="primary"
+                            :context="{ inModal: true, modalMode: 'view' }"
+                            @action="handleAction"
+                        />
+                    </div>
                     <Btn
                         circle
                         size="sm"
                         variant="ghost"
+                        class="shrink-0"
                         aria-label="Fermer"
                         @click="handleClose"
                     >

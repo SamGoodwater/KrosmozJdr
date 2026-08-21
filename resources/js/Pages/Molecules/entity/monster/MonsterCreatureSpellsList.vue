@@ -4,8 +4,9 @@
  *
  * @description
  * Affiche une liste compacte : icône / vignette + nom ; au survol, `SpellViewMinimal`.
- * Données attendues : `creature.spells[]` (payload table allégé : id, nom, PA/PO, types…).
- * L’aperçu Minimal fonctionne sans arbre d’effets ; les chips d’usages restent optionnelles.
+ * Données attendues : `creature.spells[]` (méta + `effect_usages_chips`).
+ * Au clic, `EntityViewTextLink` ouvre `SpellViewMinimal` en `extended` (effets + menu d’options).
+ * Un fetch `hydrate-type="spells"` complète éventuellement la fiche.
  *
  * @props {Object|null} creature - Créature (souvent `monster.creature`) avec relation `spells`
  * @props {Object} [tableMeta] - Meta tableau / contexte pour les cellules
@@ -48,8 +49,9 @@ const spellModels = computed(() => {
                     :minimal-component="SpellViewMinimal"
                     fallback-icon="fa-solid fa-wand-magic-sparkles"
                     ui-color="primary"
-                    :show-actions-on-hover="false"
-                    hover-width-class="w-80 max-w-[min(92vw,22rem)]"
+                    :show-actions-on-hover="true"
+                    hydrate-type="spells"
+                    hover-width-class="w-[min(92vw,36rem)] max-w-[36rem]"
                     :table-meta="tableMeta"
                     :characteristic-runtime="characteristicRuntime"
                 />

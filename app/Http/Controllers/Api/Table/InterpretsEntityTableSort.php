@@ -15,6 +15,43 @@ use Illuminate\Http\Request;
 trait InterpretsEntityTableSort
 {
     /**
+     * Alias colonne UI → colonne SQL (ids de colonnes TanStack ≠ noms de colonnes).
+     *
+     * @return array<string, string>
+     */
+    protected function entityTableSortAliases(): array
+    {
+        return [
+            'item_type' => 'item_type_id',
+            'resource_type' => 'resource_type_id',
+            'consumable_type' => 'consumable_type_id',
+            'monster_race' => 'monster_race_id',
+            'price' => 'price_custom',
+        ];
+    }
+
+    /**
+     * @param  array<int, string>  $allowedSort
+     */
+    protected function resolveEntityTableSortField(string $field, array $allowedSort): ?string
+    {
+        if ($field === '') {
+            return null;
+        }
+
+        $aliases = $this->entityTableSortAliases();
+        $candidate = $aliases[$field] ?? $field;
+        if (in_array($candidate, $allowedSort, true)) {
+            return $candidate;
+        }
+        if (in_array($field, $allowedSort, true)) {
+            return $field;
+        }
+
+        return null;
+    }
+
+    /**
      * @param  array<int, string>  $allowedSort
      */
     protected function applyEntityTableSort(Builder $query, Request $request, array $allowedSort, string $defaultSort = 'id', string $defaultOrder = 'desc'): void
@@ -26,15 +63,16 @@ trait InterpretsEntityTableSort
                 if (! is_array($item)) {
                     continue;
                 }
-                $field = $item['field'] ?? $item['column'] ?? null;
+                $field = (string) ($item['field'] ?? $item['column'] ?? '');
+                $resolved = $this->resolveEntityTableSortField($field, $allowedSort);
                 $dir = strtolower((string) ($item['dir'] ?? $item['order'] ?? 'asc'));
-                if (! $field || ! in_array($field, $allowedSort, true)) {
+                if ($resolved === null) {
                     continue;
                 }
                 if (! in_array($dir, ['asc', 'desc'], true)) {
                     $dir = 'asc';
                 }
-                $query->orderBy((string) $field, $dir);
+                $query->orderBy($resolved, $dir);
                 $applied = true;
             }
             if ($applied) {
@@ -47,8 +85,9 @@ trait InterpretsEntityTableSort
         if (! in_array($order, ['asc', 'desc'], true)) {
             $order = $defaultOrder;
         }
-        if (in_array($sort, $allowedSort, true)) {
-            $query->orderBy($sort, $order);
+        $resolved = $this->resolveEntityTableSortField($sort, $allowedSort);
+        if ($resolved !== null) {
+            $query->orderBy($resolved, $order);
         } else {
             $query->latest();
         }

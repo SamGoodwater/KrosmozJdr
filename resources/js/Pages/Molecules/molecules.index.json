@@ -2531,12 +2531,12 @@
   },
   {
     "name": "CharacteristicPropertyTooltip",
-    "description": "Contenu riche du tooltip pour une caractéristique (vue unifiée).",
+    "description": "Tooltip caractéristique — présentation « fiche de jeu » (peu technique). Affiche : icône, nom, valeur, description, formule lisible, résolution, et la liste des termes (libellés joueur, pas les clés BDD).",
     "props": [
       {
         "name": "model",
         "type": "Object",
-        "desc": "— sortie viewModel (useCharacteristicViewModel / viewModelFromFormulaGroupItem)"
+        "desc": "— viewModel (useCharacteristicViewModel / formula group)"
       }
     ],
     "slots": [],
@@ -2633,12 +2633,12 @@
   },
   {
     "name": "CharacteristicDecompositionBody",
-    "description": "Corps de décomposition d'une caractéristique (base / objets / contexte / total + table niveaux).",
+    "description": "Corps de décomposition d'une caractéristique (popover Full) — ton fiche de jeu.",
     "props": [
       {
         "name": "model",
         "type": "Object",
-        "desc": "— viewModel enrichi (base, object, context, total, source, levelTable…)"
+        "desc": "— viewModel enrichi (base, object, context, total, placeholders…)"
       }
     ],
     "slots": [],
@@ -2697,6 +2697,34 @@
     "props": [],
     "slots": [],
     "file": "data-display/AdminDoughnutChart.vue"
+  },
+  {
+    "name": "AbilityScoreStack",
+    "description": "AbilityScoreStack — Grille score → modificateur → sauvegarde par caractéristique.",
+    "props": [
+      {
+        "name": "columns",
+        "type": "Array<{stat: string, score: Object, modifier: Object, save: Object}>",
+        "desc": ""
+      },
+      {
+        "name": "levelEffective",
+        "type": "number|null",
+        "desc": ""
+      },
+      {
+        "name": "density",
+        "type": "'icon'|'labeled'|'spacious'",
+        "desc": ""
+      },
+      {
+        "name": "runtime",
+        "type": "Object|null",
+        "desc": ""
+      }
+    ],
+    "slots": [],
+    "file": "data-display/AbilityScoreStack.vue"
   },
   {
     "name": "ThemeController",

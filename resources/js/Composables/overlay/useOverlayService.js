@@ -23,7 +23,12 @@ const stack = useOverlayStackStore();
 export function useOverlayService(options) {
     const isOpen = ref(false);
     const entryId = ref(options.id || "");
-    const resolver = useOverlayContentResolver({ content: options.content, cache: options.cache });
+    const resolver = useOverlayContentResolver({
+        get content() {
+            return options.content;
+        },
+        cache: options.cache,
+    });
 
     const inferredKind = computed(() => {
         const c = options.content;

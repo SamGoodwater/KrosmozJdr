@@ -399,6 +399,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       table: {
         order: 2,
+        sortable: true,
+        sortField: "resource_type_id",
         filterable: {
           id: "resource_type_id",
           type: "multi",

@@ -31,7 +31,7 @@ minimal compact → survol : overlay déployé → double-clic / quick-view : mo
 - PNJ : mêmes densités de caractéristiques que les monstres (créature liée).
 - La **page** n’est pas l’entrée principale (icône / overflow uniquement).
 - En `line` : même logique → modal full (`EntityLineRowActions`).
-- Actions du minimal : visibles surtout en déployé (haut-droite), overflow automatique.
+- Actions du titre : autant de raccourcis que la largeur restante (titre → bord) ; le reste dans le dropdown `EntityActions`. Sorts : même ligne que le titre (plus d’overlay haut gauche).
 - **Favoris** : persistés en BDD (`user_favorites`) pour les comptes connectés. Accès header
   (cœur) → modal sans changer de page ; page `/favoris`. Invité·e : message pour se connecter.
   Icône cœur plein/vide dans les menus d’options. Liste en vue Minimal ; recherche via
@@ -57,3 +57,29 @@ et un bouton `window.open` (pas d’iframe).
 Densités `icon` / `labeled` / `spacious` sur `CharacteristicsCard` — voir
 [COMPUTED_VALUES.md](../../features/characteristics/COMPUTED_VALUES.md).
 Applicable aux **monstres** et **PNJ** (créature liée) ; sorts/objets gardent leurs effets dédiés.
+
+## Tableau objets
+
+La vue **Line** (`ItemLineRow`) reste courte : description sur 2 lignes, bonus en icônes, recette sur la fiche Full.
+
+La vue **Colonnes** (`item-descriptors.js`) :
+
+| Par défaut | Masqué (sélecteur de colonnes) |
+| --- | --- |
+| Image, nom, niveau (sm+), type (sm+), rareté (sm+), bonus (md+) | Description, résumé, prix, version Dofus |
+| État (sm+) **si** `updateAny` | Métadonnées (id, dates, DofusDB…) |
+
+Les en-têtes affichent `helper` / `general.tooltip` au survol (`TanStackTableHeader.vue`).
+
+## Tableaux d’entités (filtres, tri, recherche)
+
+Index server-side (`items`, `monsters`, `spells`, `resources`, `consumables`, `conditions`) : changer un filtre relance la requête (debounce) ; Réinitialiser vide `filters` et revient à la page 1. Les multi-sélections partent en `filters[key][]`. Le tri envoie `sorts[i][field]` avec l’alias SQL (`item_type` → `item_type_id`, `creature_level` via jointure). La barre de recherche envoie `search=`.
+
+Index client (`npcs`, etc.) : le filtre/tri/recherche portent sur le dataset déjà chargé ; la recherche cible le nom (et les colonnes `searchable`) même si le payload n’a pas de `cells` pré-générées.
+
+### Sort depuis un monstre
+
+Le payload tableau / fiche d’un monstre embarque les sorts liés avec `effect_usages_chips`
+(pas l’arbre `effects`). Un clic ouvre `SpellViewMinimal` en `extended` : effets + menu
+d’options à droite du titre (raccourcis selon la largeur, overflow dans le dropdown). Si les chips manquent, un fetch `api.tables.spells?whitelist[]=`
+complète la fiche.

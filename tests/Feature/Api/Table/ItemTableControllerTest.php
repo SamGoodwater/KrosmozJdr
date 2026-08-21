@@ -273,4 +273,60 @@ class ItemTableControllerTest extends TestCase
         $this->assertEquals('A Item', $data['entities'][0]['name']);
         $this->assertEquals('Z Item', $data['entities'][1]['name']);
     }
+
+    public function test_multi_level_filter_accepts_array_and_csv(): void
+    {
+        $user = User::factory()->create();
+        Item::factory()->create($this->playableAttrs(['name' => 'Five', 'level' => '5']));
+        Item::factory()->create($this->playableAttrs(['name' => 'Twelve', 'level' => '12']));
+        Item::factory()->create($this->playableAttrs(['name' => 'Twenty', 'level' => '20']));
+
+        $arrayResponse = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=20&filters[level][]=5&filters[level][]=12');
+        $arrayResponse->assertOk();
+        $arrayNames = collect($arrayResponse->json('entities'))->pluck('name')->sort()->values()->all();
+        $this->assertSame(['Five', 'Twelve'], $arrayNames);
+
+        $csvResponse = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=20&filters[level]=5,12');
+        $csvResponse->assertOk();
+        $csvNames = collect($csvResponse->json('entities'))->pluck('name')->sort()->values()->all();
+        $this->assertSame(['Five', 'Twelve'], $csvNames);
+    }
+
+    public function test_sort_alias_item_type_uses_item_type_id(): void
+    {
+        $user = User::factory()->create();
+        $typeA = \App\Models\Type\ItemType::factory()->create(['name' => 'Type A']);
+        $typeB = \App\Models\Type\ItemType::factory()->create(['name' => 'Type B']);
+        Item::factory()->create($this->playableAttrs([
+            'name' => 'Second',
+            'item_type_id' => $typeB->id,
+        ]));
+        Item::factory()->create($this->playableAttrs([
+            'name' => 'First',
+            'item_type_id' => $typeA->id,
+        ]));
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=20&sort=item_type&order=asc');
+
+        $response->assertOk();
+        $names = collect($response->json('entities'))->pluck('name')->all();
+        $this->assertSame(['First', 'Second'], $names);
+    }
+
+    public function test_whitelist_returns_only_requested_ids(): void
+    {
+        $user = User::factory()->create();
+        $keep = Item::factory()->create($this->playableAttrs(['name' => 'Keep']));
+        Item::factory()->create($this->playableAttrs(['name' => 'Drop']));
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=20&whitelist[]='.$keep->id);
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('entities'));
+        $this->assertSame($keep->id, $response->json('entities.0.id'));
+    }
 }

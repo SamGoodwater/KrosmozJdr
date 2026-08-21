@@ -146,6 +146,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
       table: {
         sortable: true,
+        sortField: 'monster_race_id',
         filterable: {
           id: 'monster_race_id',
           type: 'multi',
@@ -394,7 +395,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
       table: {
         type: 'chips',
-        sortable: true,
+        sortable: false,
         searchable: true,
         // Masque par défaut pour alléger la vue "monster" initiale.
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -410,7 +411,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
       table: {
         type: 'chips',
-        sortable: true,
+        sortable: false,
         searchable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'chips' }, sm: { mode: 'chips' }, md: { mode: 'chips' }, lg: { mode: 'chips' }, xl: { mode: 'chips' } } },
@@ -425,7 +426,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
       table: {
         type: 'chips',
-        sortable: true,
+        sortable: false,
         searchable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'chips' }, sm: { mode: 'chips' }, md: { mode: 'chips' }, lg: { mode: 'chips' }, xl: { mode: 'chips' } } },
@@ -440,7 +441,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
       table: {
         type: 'chips',
-        sortable: true,
+        sortable: false,
         searchable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'chips' }, sm: { mode: 'chips' }, md: { mode: 'chips' }, lg: { mode: 'chips' }, xl: { mode: 'chips' } } },
@@ -455,7 +456,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
       table: {
         type: 'chips',
-        sortable: true,
+        sortable: false,
         searchable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: { sizes: { xs: { mode: 'chips' }, sm: { mode: 'chips' }, md: { mode: 'chips' }, lg: { mode: 'chips' }, xl: { mode: 'chips' } } },
@@ -471,7 +472,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
       table: {
         type: 'chips',
-        sortable: true,
+        sortable: false,
         searchable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'chips' }, sm: { mode: 'chips' }, md: { mode: 'chips' }, lg: { mode: 'chips' }, xl: { mode: 'chips' } } },

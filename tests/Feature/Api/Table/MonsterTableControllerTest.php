@@ -5,6 +5,7 @@ namespace Tests\Feature\Api\Table;
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
+use App\Models\Entity\Spell;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -119,11 +120,11 @@ class MonsterTableControllerTest extends TestCase
         $this->assertNotNull($entity['creature']);
         $this->assertArrayHasKey('spells', $entity['creature']);
         $this->assertIsArray($entity['creature']['spells']);
-        // Payload allégé : pas d’arbre effects / usages dans la table.
+        // Payload sorts liés : chips d’effets pour la vue minimale, pas l’arbre `effects`.
         foreach ($entity['creature']['spells'] as $spellRow) {
             $this->assertArrayNotHasKey('effects', $spellRow);
-            $this->assertArrayNotHasKey('effect_usages_chips', $spellRow);
-            $this->assertArrayNotHasKey('effect_usages_summary', $spellRow);
+            $this->assertArrayHasKey('effect_usages_chips', $spellRow);
+            $this->assertArrayHasKey('effect_usages_summary', $spellRow);
         }
         $this->assertArrayHasKey('acrobatie_mastery', $entity['creature']);
         $this->assertArrayHasKey('athletisme_mastery', $entity['creature']);
@@ -239,5 +240,54 @@ class MonsterTableControllerTest extends TestCase
         $response->assertOk();
         $names = collect($response->json('entities'))->pluck('creature.name')->all();
         $this->assertSame(['Abraknyde', 'Zibouya'], $names);
+    }
+
+    public function test_creature_level_filter_and_sort(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $low = Creature::factory()->create(['name' => 'Low', 'level' => '1']);
+        $high = Creature::factory()->create(['name' => 'High', 'level' => '50']);
+        Monster::factory()->create(['creature_id' => $low->id]);
+        Monster::factory()->create(['creature_id' => $high->id]);
+
+        $filterResponse = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?format=entities&limit=20&filters[creature_level][]=50');
+        $filterResponse->assertOk();
+        $filterNames = collect($filterResponse->json('entities'))->pluck('creature.name')->all();
+        $this->assertSame(['High'], $filterNames);
+
+        $sortResponse = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?format=entities&limit=20&sort=creature_level&order=asc');
+        $sortResponse->assertOk();
+        $sortNames = collect($sortResponse->json('entities'))->pluck('creature.name')->all();
+        $this->assertSame(['Low', 'High'], $sortNames);
+    }
+
+    public function test_entities_format_nested_spells_include_effect_chips(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $creature = Creature::factory()->create(['created_by' => $user->id]);
+        $spell = Spell::factory()->create([
+            'name' => 'Maxquale',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'created_by' => $user->id,
+        ]);
+        $creature->spells()->attach($spell->id);
+        Monster::factory()->create(['creature_id' => $creature->id]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?format=entities&limit=10');
+
+        $response->assertOk();
+        $spellRow = collect($response->json('entities.0.creature.spells'))
+            ->firstWhere('id', $spell->id);
+        $this->assertIsArray($spellRow);
+        $this->assertSame('Maxquale', $spellRow['name']);
+        $this->assertArrayHasKey('effect_usages_chips', $spellRow);
+        $this->assertIsArray($spellRow['effect_usages_chips']);
+        $this->assertArrayHasKey('effect_usages_summary', $spellRow);
+        $this->assertArrayNotHasKey('effects', $spellRow);
+        $this->assertArrayHasKey('resolution_mode', $spellRow);
     }
 }

@@ -17,8 +17,10 @@
 - **Tables (lecture)** : API server-side TanStack via `app/Http/Controllers/Api/*TableController.php` + bulk via `*BulkController`, changement d'état via `EntityStateController`.
 - **Registre front** : `resources/js/Entities/entity-registry.js` (modèle + descriptors + adapter par type ; `normalizeEntityType()` normalise singulier/pluriel).
 - **Vues** : `minimal` | `line` | `text` | `full` | `edit`. Résolution dynamique : `resources/js/Utils/entity/resolveEntityViewComponent.js`. Conventions : rule `.cursor/rules/entity-views.mdc`.
-- **Monstres** : coquille `Monster` + stats/sorts sur `Creature` ; table API sans arbre d’effets de sorts ; PDF multi + `visibleToUser` ; Full affiche sorts/empty states. `resolved-stats` créature : même visibilité que le monstre/PNJ lié.
+- **Monstres** : coquille `Monster` + stats/sorts sur `Creature` ; sorts liés en aperçu (`effect_usages_chips`, pas l’arbre) ; PDF multi + `visibleToUser` ; Full affiche sorts/empty states. `resolved-stats` créature : même visibilité que le monstre/PNJ lié. Tri catalogue par nom via sous-requête (pas de JOIN `creatures`).
 - **Listes lourdes** : index items/monstres/ressources/consommables/conditions/sorts en pagination serveur ; PDF multi filtré `visibleToUser` sur les entités concernées.
+- **Tableaux (query)** : `filters[k][]` (multi) ou CSV ; `whereIn` via `InterpretsEntityTableFilters`. Tri : alias UI→SQL (`item_type` → `item_type_id`) + `sort.field` colonnes. Recherche : `search=` (serveur) ou nom/description (client). Overlay sort depuis un monstre : chips dans le payload nested (`SpellNestedPreviewSerializer`).
+- **Objets (vue Colonnes)** : image, nom, niveau, type, rareté, bonus ; description et résumé masqués ; `state` si `updateAny`. En-têtes : `column.tooltip`.
 
 ## Fichiers pivots
 

@@ -111,7 +111,10 @@ onUnmounted(() => {
     <div
         ref="cardRef"
         class="entity-minimal-card group relative w-full"
-        :class="{ 'entity-minimal-card--expanded': showExpanded && canHover }"
+        :class="{
+            'entity-minimal-card--expanded': showExpanded && canHover,
+            'entity-minimal-card--extended': displayMode === 'extended',
+        }"
         @mouseenter="onEnter"
         @mouseleave="onLeave"
         @focusin="onFocusIn"
@@ -199,6 +202,7 @@ onUnmounted(() => {
 }
 .entity-minimal-card:hover :deep([data-entity-actions]),
 .entity-minimal-card:focus-within :deep([data-entity-actions]),
+.entity-minimal-card--extended :deep([data-entity-actions]),
 /* Menu téléporté : survol perdu entre trigger et panneau */
 .entity-minimal-card :deep([data-entity-actions]:has([data-dropdown-open="true"])),
 .entity-minimal-card :deep([data-entity-actions]:has([aria-expanded="true"])) {
