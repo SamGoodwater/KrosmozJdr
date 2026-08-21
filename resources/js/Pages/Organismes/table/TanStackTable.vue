@@ -38,6 +38,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import TanStackTableShortcutsModal from "@/Pages/Molecules/table/TanStackTableShortcutsModal.vue";
 import { matchTableEnterIntent } from "@/Composables/table/useTanStackTableKeyboard.js";
+import { resolveFilterDefaultValue } from "@/Utils/table/resolveFilterDefaultValue.js";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import {
     classifyRowPointerModifiers,
@@ -904,16 +905,69 @@ const resolvedFilterOptions = computed(() => {
 });
 const activeFilters = ref({});
 
+/**
+ * Clone les valeurs de filtre pour ne pas partager les tableaux avec les props
+ * (sinon un deep watch parent/enfant se déclenche à chaque mutation).
+ *
+ * @param {unknown} value
+ * @returns {unknown}
+ */
+function cloneFilterValue(value) {
+    if (Array.isArray(value)) {
+        return value.map((item) => item);
+    }
+    return value;
+}
+
+/**
+ * Signature stable des filtres (ignore l’identité des objets / tableaux).
+ *
+ * @param {unknown} source
+ * @returns {string}
+ */
+function serializeFilterValues(source) {
+    const raw = source && typeof source === "object" ? source : {};
+    const normalized = {};
+    for (const key of Object.keys(raw).sort()) {
+        const value = raw[key];
+        if (value === null || typeof value === "undefined" || value === "") {
+            continue;
+        }
+        normalized[key] = Array.isArray(value) ? value.map((item) => String(item)) : value;
+    }
+    return JSON.stringify(normalized);
+}
+
+/**
+ * Applique les filtres initiaux (query / défauts page) sans écraser
+ * les autres clés déjà saisies par l’utilisateur.
+ *
+ * @param {unknown} source
+ */
 function applyInitialFilterValues(source) {
     const initial = source && typeof source === "object" ? source : {};
-    const next = {};
+    const incoming = {};
     for (const [key, value] of Object.entries(initial)) {
-        if (value === null || value === undefined || value === "") {
+        if (value === null || typeof value === "undefined" || value === "") {
+            continue;
+        }
+        incoming[key] = cloneFilterValue(value);
+    }
+    if (Object.keys(incoming).length === 0) {
+        return;
+    }
+
+    const current = activeFilters.value || {};
+    const next = { ...current };
+    let changed = false;
+    for (const [key, value] of Object.entries(incoming)) {
+        if (serializeFilterValues({ [key]: next[key] }) === serializeFilterValues({ [key]: value })) {
             continue;
         }
         next[key] = value;
+        changed = true;
     }
-    if (Object.keys(next).length > 0) {
+    if (changed) {
         activeFilters.value = next;
     }
 }
@@ -921,9 +975,10 @@ function applyInitialFilterValues(source) {
 applyInitialFilterValues(props.initialFilterValues);
 
 watch(
-    () => props.initialFilterValues,
-    (next) => applyInitialFilterValues(next),
-    { deep: true }
+    () => serializeFilterValues(props.initialFilterValues),
+    () => {
+        applyInitialFilterValues(props.initialFilterValues);
+    },
 );
 
 const tableSearch = useTableSearch({
@@ -967,33 +1022,31 @@ const hasActiveFilters = computed(() => {
 /**
  * Appliquer des filtres par défaut (déclaratifs) si fournis sur les colonnes.
  * Exemple d'usage dans un descriptor:
- * table: { filterable: { id: 'state', type: 'multi' } }
+ * table: { filterable: { id: 'item_type_id', type: 'multi', defaultByLabel: ['Amulette'] } }
  *
  * Règle: on ne remplace jamais un filtre déjà défini (même vide) par le user.
+ * @returns {boolean}
  */
 const applyDefaultFilters = () => {
     const current = activeFilters.value || {};
     const next = { ...current };
     let changed = false;
+    const optionsById = resolvedFilterOptions.value || {};
 
     for (const col of columnsWithoutActions.value || []) {
         const f = col?.filter;
         if (!f?.id || !f?.type) continue;
-        if (typeof f?.defaultValue === "undefined") continue;
         if (Object.prototype.hasOwnProperty.call(next, f.id)) continue;
-        next[f.id] = f.defaultValue;
+        const resolved = resolveFilterDefaultValue(f, optionsById[f.id] || []);
+        if (typeof resolved === "undefined") continue;
+        next[f.id] = resolved;
         changed = true;
     }
 
-    if (changed) activeFilters.value = next;
+    if (!changed) return false;
+    activeFilters.value = next;
+    return true;
 };
-
-watch(
-    () => columnsWithoutActions.value.map((c) => `${c?.id}:${c?.filter?.id || ""}:${c?.filter?.type || ""}:${typeof c?.filter?.defaultValue !== "undefined" ? "1" : "0"}`).join("|"),
-    () => applyDefaultFilters(),
-    { immediate: true },
-);
-
 
 const clearAllQueryState = () => {
     resetFilters();
@@ -1364,10 +1417,11 @@ const resetFilters = () => {
         _filterApplyTimeout = null;
     }
     activeFilters.value = {};
+    applyDefaultFilters();
     paginationState.value = { ...paginationState.value, pageIndex: 0 };
     if (props.serverSide) {
         emit("update:serverParams", {
-            filters: {},
+            filters: { ...(activeFilters.value || {}) },
             page: 1,
         });
     }
@@ -1389,6 +1443,44 @@ const applyFilters = () => {
         });
     }
 };
+
+watch(
+    () =>
+        columnsWithoutActions.value
+            .map((c) => `${c?.id}:${c?.filter?.id || ""}:${c?.filter?.type || ""}:${typeof c?.filter?.defaultValue !== "undefined" || c?.filter?.defaultByLabel || c?.filter?.defaultByDofusTypeId ? "1" : "0"}`)
+            .join("|"),
+    () => {
+        if (applyDefaultFilters() && props.serverSide) {
+            scheduleServerFilterApply();
+        }
+    },
+    { immediate: true },
+);
+
+watch(
+    () =>
+        columnsWithoutActions.value
+            .filter((col) => {
+                const f = col?.filter;
+                if (!f?.id) return false;
+                return (
+                    typeof f.defaultValue !== "undefined"
+                    || Boolean(f.defaultByLabel)
+                    || Boolean(f.defaultByDofusTypeId)
+                );
+            })
+            .map((col) => {
+                const id = col.filter.id;
+                const opts = resolvedFilterOptions.value?.[id];
+                return `${id}:${Array.isArray(opts) ? opts.length : 0}`;
+            })
+            .join("|"),
+    () => {
+        if (applyDefaultFilters() && props.serverSide) {
+            scheduleServerFilterApply();
+        }
+    },
+);
 
 onUnmounted(() => {
     if (_filterApplyTimeout) {

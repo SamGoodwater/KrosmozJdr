@@ -53,7 +53,7 @@ defineOptions({ inheritAttrs: false });
 // ------------------------------------------
 // 📦 Import des outils
 // ------------------------------------------
-import { computed, useAttrs } from 'vue'
+import { computed, getCurrentInstance, useAttrs } from 'vue'
 import { getInputStyle } from '@/Composables/form/useInputStyle'
 import useInputProps from '@/Composables/form/useInputProps'
 import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
@@ -65,6 +65,7 @@ import { mergeClasses } from '@/Utils/atomic-design/uiHelper'
 const props = defineProps(getInputPropsDefinition('input', 'core'))
 const emit = defineEmits(['update:modelValue', 'update:model-value'])
 const $attrs = useAttrs()
+const instance = getCurrentInstance()
 
 // ------------------------------------------
 // ⚙️ Attributs HTML + événements natifs filtrés
@@ -77,9 +78,17 @@ const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'input', 'c
  * - en usage via les Molecules (InputField/FieldTemplate) : la valeur arrive souvent via `inputAttrs.value`
  */
 const hasVModelListener = computed(() => {
-  // Quand un parent utilise v-model, Vue passe un listener `onUpdate:modelValue`
-  // (qui reste présent dans $attrs). En usage "field", ce listener n'est pas fourni.
-  return !!($attrs?.['onUpdate:modelValue'] || $attrs?.['onUpdate:model-value'])
+  // Les listeners d'emits déclarés (`update:modelValue`) ne sont PAS dans `$attrs`.
+  // Ils restent sur `vnode.props`. Sans ce test, `:value` retombe à '' à chaque re-render
+  // et les champs contrôlés (filtres tableau, etc.) s'effacent à chaque frappe.
+  const attrs = $attrs || {}
+  const vnodeProps = instance?.vnode?.props || {}
+  return Boolean(
+    attrs['onUpdate:modelValue']
+    || attrs['onUpdate:model-value']
+    || vnodeProps['onUpdate:modelValue']
+    || vnodeProps['onUpdate:model-value']
+  )
 })
 
 const effectiveValue = computed(() => {
