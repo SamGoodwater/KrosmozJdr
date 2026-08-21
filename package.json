@@ -73,7 +73,7 @@
         "@tailwindcss/postcss": "^4.3.3",
         "@tanstack/table-core": "^8.21.3",
         "@tanstack/vue-table": "^8.21.3",
-        "@tanstack/vue-virtual": "^3.13.35",
+        "@tanstack/vue-virtual": "^3.13.36",
         "@tiptap/core": "^2.27.2",
         "@tiptap/extension-character-count": "^2.27.2",
         "@tiptap/extension-color": "^2.27.2",
