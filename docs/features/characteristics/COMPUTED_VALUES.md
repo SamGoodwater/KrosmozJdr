@@ -52,7 +52,10 @@ Les autres caractéristiques se calculent ensuite niveau par niveau.
 
 L’UI affiche d’abord la valeur du **premier niveau possible**, avec un sélecteur qui
 recalcule toute la fiche sans nouvel aller-retour (payload `levels[]` de
-`GET /entities/creatures/{id}/resolved-stats`).
+`GET /entities/creatures/{id}/resolved-stats`). L’endpoint est public pour les fiches
+consultables, mais `CreaturePolicy::viewResolvedStats` n’autorise que si le **monstre
+ou le PNJ lié** est `view` pour le visiteur (un brouillon n’est pas lisible par id
+créature).
 
 ## Décomposition UI
 

@@ -64,7 +64,7 @@ Exemple : les routes scrapping cumulent `web`, `auth`, `role:admin`, `password.c
 
 `app/Policies/Entity/BaseEntityPolicy.php` est la base des entités. Pour `view` : admin → auteur (`created_by`) → matrice « Gérer l'affichage » (`EntityDisplayVisibilityService`) → selon `state` (`playable`/`archived` : `rôle ≥ read_level` ; `raw`/`draft` : `rôle ≥ write_level`). Globales : `viewAny` true, `create` admin, `updateAny` game_master, `deleteAny`/`manageAny` admin.
 
-Surcharges notables : `SpellPolicy` (`updateAny` admin), `BreedPolicy` (logique propre, n'étend pas la base), `PagePolicy`/`SectionPolicy` (CMS via `canBeViewedBy`/`canBeEditedBy`), `UserPolicy` (`before` = super_admin interactif, `updateRole` restreint). Enregistrement explicite partiel dans `app/Providers/AuthServiceProvider.php` ; le reste par auto-discovery Laravel.
+Surcharges notables : `SpellPolicy` (`updateAny` admin), `BreedPolicy` (logique propre, n'étend pas la base), `PagePolicy`/`SectionPolicy` (CMS via `canBeViewedBy`/`canBeEditedBy`), `UserPolicy` (`before` = super_admin interactif, `updateRole` restreint), `CreaturePolicy::viewResolvedStats` (stats JSON : `view` du monstre/PNJ lié, pas un accès public inconditionnel). Enregistrement explicite partiel dans `app/Providers/AuthServiceProvider.php` ; le reste par auto-discovery Laravel.
 
 ## Configuration des permissions
 
