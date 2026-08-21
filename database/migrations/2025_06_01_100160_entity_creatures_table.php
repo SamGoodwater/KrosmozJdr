@@ -43,11 +43,12 @@ return new class extends Migration
             $table->string('do_fixe_eau')->default('0');
             $table->string('do_sagesse')->default('0');
             $table->string('do_vitalite')->default('0');
-            $table->text('res_fixe_neutre')->default('0');
-            $table->text('res_fixe_terre')->default('0');
-            $table->text('res_fixe_feu')->default('0');
-            $table->text('res_fixe_air')->default('0');
-            $table->text('res_fixe_eau')->default('0');
+            // MySQL refuse DEFAULT sur TEXT/BLOB/JSON (SQLSTATE 1101). Défaut applicatif : Creature::$attributes.
+            $table->text('res_fixe_neutre');
+            $table->text('res_fixe_terre');
+            $table->text('res_fixe_feu');
+            $table->text('res_fixe_air');
+            $table->text('res_fixe_eau');
             $table->string('res_neutre')->default('0');
             $table->string('res_terre')->default('0');
             $table->string('res_feu')->default('0');

@@ -8,11 +8,9 @@ stockées en base. Détails stack : `docs/_ai.md`, `docs/project/README.md`.
 
 ### Base de données : MariaDB, pas MySQL (important)
 
-- Le service de base de données installé est **MariaDB**, **pas** MySQL, même si `.env` et la CI mentionnent MySQL.
-  C'est volontaire : plusieurs migrations déclarent des colonnes `json ... default '[...]'` (défaut littéral sur
-  colonne JSON). **MySQL 8.x (8.0 comme 8.4) rejette** ce défaut (`ERROR 1101 ... JSON column can't have a default value`),
-  alors que **MariaDB l'accepte** (Laravel détecte MariaDB via `isMaria()` et contourne la restriction). Sur MySQL les
-  migrations échouent dès la table `users`.
+- Le service de base de données installé en Cloud est **MariaDB**, **pas** MySQL, même si `.env` et la CI mentionnent MySQL.
+  **MySQL 8.x refuse** un `DEFAULT` SQL sur JSON/TEXT/BLOB (`ERROR 1101`). Les défauts concernés sont applicatifs
+  (`User::$attributes`, `Creature::$attributes`). La CI GitHub tourne sur `mysql:8.4` ; le dev local Cloud reste MariaDB.
 - `DB_CONNECTION` reste `mysql` dans `.env` : le driver MySQL de Laravel se connecte à MariaDB et détecte automatiquement
   la grammaire MariaDB. Ne pas changer cette valeur.
 - Démarrer la base : `sudo service mariadb start` (pas de systemd dans le conteneur ; `service` fonctionne).

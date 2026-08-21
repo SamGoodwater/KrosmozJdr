@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — CI MySQL : TEXT sans DEFAULT
+
+MySQL 8 refuse un DEFAULT SQL sur TEXT/BLOB/JSON (`SQLSTATE 1101`). Après le JSON `notification_channels`, les résistances fixes créature (`res_fixe_*`) bloquaient encore `php artisan migrate` en CI. Le défaut `'0'` est désormais dans `Creature::$attributes`.
+
 ## Août 2026 — GitHub : une seule `main`, Dependabot cadré
 
 Le dépôt n’a plus qu’une branche active (`main`). Les PR Cursor et l’ancienne PR Vitest 4 (base trop vieille) sont fermées. Les alertes Dependabot déjà corrigées restent en « fixed ». Un fichier `.github/dependabot.yml` lance des mises à jour weekly npm (groupe minor+patch), Composer (PR individuelles) et Actions (minor+patch) ; Vitest 4 et les majors d’actions restent un chantier dédié.

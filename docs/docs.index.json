@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le dépôt n’a plus qu’une branche active (`main`). Les PR Cursor et l’ancienne PR Vitest 4 (base trop vieille) sont fermées."
+    "description": "MySQL 8 refuse un DEFAULT SQL sur TEXT/BLOB/JSON (`SQLSTATE 1101`). Après le JSON `notification_channels`, les résistances fixes créature (`res_fixe_*`) bloquaient encore `php artisan migrate` en CI."
   },
   {
     "path": "backend/_ai.md",
