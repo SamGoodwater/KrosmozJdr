@@ -15,7 +15,7 @@
 - **Auth** : session guard `web` ; contrôleurs `app/Http/Controllers/Auth/*` ; routes `routes/auth.php`. Sanctum présent mais **non branché** sur `User` (pas de tokens) → auth réelle = session.
 - **OAuth** : `OAuthController` + modèle `OAuthAccount` (providers github/discord/steam), flux redirect/callback/link/transfer. Détail : [README](./README.md#oauth).
 - **Middlewares** : `role:` (`CheckRole`), `admin.area`, `content.area`, `password.confirm` (`RequirePasswordWithInactivity`, 423 si JSON). Détail : [README](./README.md#middlewares).
-- **Policies** : `BaseEntityPolicy` (admin → auteur → matrice affichage → state + read/write_level) ; surcharges par entité ; `UserPolicy`. Détail : [README](./README.md#policies).
+- **Policies** : `BaseEntityPolicy` (admin → auteur → matrice affichage → state + read/write_level) ; surcharges par entité ; `UserPolicy`. `CreaturePolicy::viewResolvedStats` suit le `view` du monstre/PNJ lié (pas un bypass public). Détail : [README](./README.md#policies).
 - **Projection front** : `EntityPermissionService` calcule les droits (cache 10 min) → partagés via `HandleInertiaRequests` → composable `usePermissions` (`can`, `canAccess`). Les droits **par ligne** viennent du champ `can` des Resources, pas de `usePermissions`.
 
 ## Fichiers pivots
@@ -24,7 +24,7 @@
 - `app/Http/Controllers/Auth/*`, `app/Http/Controllers/Auth/OAuthController.php`, `app/Support/OAuthConfig.php`.
 - `app/Http/Middleware/CheckRole.php`, `EnsureAdminAreaAccess.php`, `EnsureContentManagementAccess.php`, `RequirePasswordWithInactivity.php`, `HandleInertiaRequests.php`.
 - `app/Policies/Entity/BaseEntityPolicy.php`, `app/Policies/UserPolicy.php`.
-- `app/Support/EntityPermissions/EntityPermissionService.php`, `app/Services/EntityDisplay/EntityDisplayVisibilityService.php` (`constrainQueryToViewer` pour listes).
+- `app/Support/EntityPermissions/EntityPermissionService.php`, `app/Services/EntityDisplay/EntityDisplayVisibilityService.php` (`constrainQueryToViewer` pour listes ; colonnes `state`/`read_level`/`write_level`/`created_by` qualifiées par table, pour rester valides après un JOIN).
 - `config/entity-permissions.php`, `config/access-permissions.php`, `config/auth.php`.
 - `resources/js/Composables/permissions/usePermissions.js`, `Composables/auth/useProtectedAdminAction.js`, `Pages/Molecules/action/ConfirmPasswordModal.vue`.
 

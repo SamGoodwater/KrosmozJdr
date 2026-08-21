@@ -2,8 +2,10 @@
 
 namespace App\Policies\Entity;
 
+use App\Models\Entity\Creature;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Policy d'autorisation pour l'entité Creature.
@@ -24,11 +26,37 @@ class CreaturePolicy extends BaseEntityPolicy
     }
 
     /**
-     * Stats runtime (JSON) pour fiches consultables sans compte — route publique.
+     * Stats runtime (JSON) pour fiches consultables sans compte.
+     *
+     * Aligné sur la visibilité du monstre / PNJ lié : un brouillon ne fuit pas
+     * via l’id créature (énumérable). Une créature orpheline suit {@see parent::view()}.
+     *
+     * @example Gate::forUser($guest)->allows('viewResolvedStats', $creature)
      */
     public function viewResolvedStats(?User $user, Model $model): bool
     {
-        return true;
+        if (! $model instanceof Creature) {
+            return false;
+        }
+
+        $model->loadMissing(['monster', 'npc']);
+        $monster = $model->monster;
+        $npc = $model->npc;
+        $hasShell = $monster !== null || $npc !== null;
+
+        if ($monster !== null && Gate::forUser($user)->allows('view', $monster)) {
+            return true;
+        }
+
+        if ($npc !== null && Gate::forUser($user)->allows('view', $npc)) {
+            return true;
+        }
+
+        if ($hasShell) {
+            return false;
+        }
+
+        return parent::view($user, $model);
     }
 
     public function create(User $user): bool

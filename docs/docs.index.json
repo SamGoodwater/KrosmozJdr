@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le besoin (sorts/monstres trop « Dofus », PNJ trop combinatoires pour un algo) est documenté dans `docs/IA/` : pas de modèle entraîné au départ, Laravel prépare le contexte, l’IA propose en file d’attente, les objets se réduisent par grille algorithmique, monstres et PNJ se génèrent à la demande (monstre + sorts dans le même paquet). Rien n’est encore branché au site."
+    "description": "Les migrations CI passent sur MySQL : plus de DEFAULT SQL sur `notification_channels` (JSON). Les stats runtime d’une créature suivent la visibilité du monstre/PNJ (un brouillon n’est plus lisible par id). Trier le catalogue monstres par nom ne provoque plus d’erreur SQL pour un non-admin."
   },
   {
     "path": "backend/_ai.md",

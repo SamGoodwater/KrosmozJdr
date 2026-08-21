@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Entity;
 
+use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\User;
@@ -45,5 +46,42 @@ class EntityDisplayVisibilityQueryTest extends TestCase
         ]);
 
         $this->assertSame(3, Spell::query()->visibleToUser($admin)->count());
+    }
+
+    public function test_monster_visibility_sql_stays_valid_after_joining_creatures(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+        $visible = Creature::factory()->create();
+        $hidden = Creature::factory()->create();
+        Monster::factory()->create([
+            'creature_id' => $visible->id,
+            'state' => 'playable',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+        Monster::factory()->create([
+            'creature_id' => $hidden->id,
+            'state' => 'draft',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $sql = Monster::query()
+            ->visibleToUser($user)
+            ->join('creatures', 'monsters.creature_id', '=', 'creatures.id')
+            ->select('monsters.*')
+            ->toSql();
+
+        $this->assertStringContainsString('`monsters`.`state`', $sql);
+        $this->assertStringContainsString('`monsters`.`read_level`', $sql);
+        $this->assertDoesNotMatchRegularExpression('/where `state`/i', $sql);
+
+        $ids = Monster::query()
+            ->visibleToUser($user)
+            ->join('creatures', 'monsters.creature_id', '=', 'creatures.id')
+            ->select('monsters.*')
+            ->pluck('monsters.id');
+
+        $this->assertCount(1, $ids);
     }
 }

@@ -20,7 +20,8 @@ return new class extends Migration
             $table->boolean('is_system')->default(false);
             $table->string('avatar')->nullable();
             $table->boolean('notifications_enabled')->default(true);
-            $table->json('notification_channels')->default(json_encode(['database']));
+            // MySQL refuse DEFAULT sur JSON (SQLSTATE 1101). Défaut applicatif : User::$attributes.
+            $table->json('notification_channels');
             $table->json('notification_preferences')->nullable();
             $table->softDeletes();
             $table->timestamps();

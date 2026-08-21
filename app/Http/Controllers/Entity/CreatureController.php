@@ -90,7 +90,7 @@ class CreatureController extends Controller
 
     /**
      * Stats runtime : variables fusionnées (créature + objets), formules évaluées, décomposition pour tooltips / API.
-     * Route publique (pas d’auth) pour les fiches consultables librement.
+     * Autorisé si le monstre / PNJ lié est `view` pour le visiteur (fiches jouables sans compte).
      *
      * Query : entity=monster|class|npc (défaut monster) — aligné sur les surcharges characteristic_creature.
      */

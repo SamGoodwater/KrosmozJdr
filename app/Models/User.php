@@ -243,6 +243,15 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     ];
 
     /**
+     * Défaut JSON côté Eloquent : MySQL n’accepte pas DEFAULT sur une colonne JSON.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'notification_channels' => '["database"]',
+    ];
+
+    /**
      * Retourne true si l'utilisateur souhaite recevoir des notifications (hors notification de profil).
      * Si $type est fourni, utilise les préférences par type (notification_preferences).
      *

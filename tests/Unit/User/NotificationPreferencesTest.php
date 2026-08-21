@@ -176,4 +176,16 @@ class NotificationPreferencesTest extends TestCase
         $userNoPref = User::factory()->create(['notification_preferences' => []]);
         $this->assertTrue($userNoPref->wantsNotification('entity_modified')); // config default
     }
+
+    public function test_notification_channels_default_to_database_without_sql_json_default(): void
+    {
+        $user = User::query()->create([
+            'name' => 'Json Default',
+            'email' => 'json-default-channels@example.test',
+            'password' => 'password',
+            'role' => User::ROLE_USER,
+        ]);
+
+        $this->assertSame(['database'], $user->fresh()->notification_channels);
+    }
 }

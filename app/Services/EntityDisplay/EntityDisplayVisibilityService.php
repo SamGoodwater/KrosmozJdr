@@ -198,39 +198,46 @@ final class EntityDisplayVisibilityService
         // Monstres / PNJ : pas de created_by sur la table (auteur via créature liée).
         $hasCreatedBy = Schema::hasColumn($query->getModel()->getTable(), 'created_by');
 
-        $query->where(function (Builder $outer) use ($user, $role, $minRaw, $minDraft, $minPlayable, $minArchived, $hasCreatedBy): void {
+        // Qualifier les colonnes : un JOIN (ex. monstres + créatures, mêmes `state`/`id`)
+        // rendrait `where state` ambigu et casserait le catalogue pour les non-admins.
+        $stateCol = $query->qualifyColumn('state');
+        $readLevelCol = $query->qualifyColumn('read_level');
+        $writeLevelCol = $query->qualifyColumn('write_level');
+        $createdByCol = $query->qualifyColumn('created_by');
+
+        $query->where(function (Builder $outer) use ($user, $role, $minRaw, $minDraft, $minPlayable, $minArchived, $hasCreatedBy, $stateCol, $readLevelCol, $writeLevelCol, $createdByCol): void {
             // Base fausse : sans branche OR, aucune ligne ne fuit.
             $outer->whereRaw('0 = 1');
 
             if ($user !== null && $hasCreatedBy) {
-                $outer->orWhere('created_by', $user->id);
+                $outer->orWhere($createdByCol, $user->id);
             }
 
             if ($role >= $minPlayable) {
-                $outer->orWhere(function (Builder $q) use ($role): void {
-                    $q->where('state', 'playable')
-                        ->where('read_level', '<=', $role);
+                $outer->orWhere(function (Builder $q) use ($role, $stateCol, $readLevelCol): void {
+                    $q->where($stateCol, 'playable')
+                        ->where($readLevelCol, '<=', $role);
                 });
             }
 
             if ($role >= $minArchived) {
-                $outer->orWhere(function (Builder $q) use ($role): void {
-                    $q->where('state', 'archived')
-                        ->where('read_level', '<=', $role);
+                $outer->orWhere(function (Builder $q) use ($role, $stateCol, $readLevelCol): void {
+                    $q->where($stateCol, 'archived')
+                        ->where($readLevelCol, '<=', $role);
                 });
             }
 
             if ($user !== null && $role >= $minRaw) {
-                $outer->orWhere(function (Builder $q) use ($role): void {
-                    $q->where('state', 'raw')
-                        ->where('write_level', '<=', $role);
+                $outer->orWhere(function (Builder $q) use ($role, $stateCol, $writeLevelCol): void {
+                    $q->where($stateCol, 'raw')
+                        ->where($writeLevelCol, '<=', $role);
                 });
             }
 
             if ($user !== null && $role >= $minDraft) {
-                $outer->orWhere(function (Builder $q) use ($role): void {
-                    $q->where('state', 'draft')
-                        ->where('write_level', '<=', $role);
+                $outer->orWhere(function (Builder $q) use ($role, $stateCol, $writeLevelCol): void {
+                    $q->where($stateCol, 'draft')
+                        ->where($writeLevelCol, '<=', $role);
                 });
             }
         });

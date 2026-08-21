@@ -214,4 +214,30 @@ class MonsterTableControllerTest extends TestCase
         // Vérifier que les créatures sont triées (via la relation creature)
         $this->assertArrayHasKey('creature', $data['entities'][0]);
     }
+
+    public function test_non_admin_can_sort_playable_monsters_by_creature_name(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+        $creatureZ = Creature::factory()->create(['name' => 'Zibouya']);
+        $creatureA = Creature::factory()->create(['name' => 'Abraknyde']);
+        Monster::factory()->create([
+            'creature_id' => $creatureZ->id,
+            'state' => 'playable',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+        Monster::factory()->create([
+            'creature_id' => $creatureA->id,
+            'state' => 'playable',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?format=entities&sort=creature_name&order=asc&limit=10');
+
+        $response->assertOk();
+        $names = collect($response->json('entities'))->pluck('creature.name')->all();
+        $this->assertSame(['Abraknyde', 'Zibouya'], $names);
+    }
 }
