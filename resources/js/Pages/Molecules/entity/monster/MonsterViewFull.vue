@@ -369,7 +369,7 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #title>
-                <div class="flex min-w-0 items-start gap-3">
+                <div class="flex w-full min-w-0 items-start gap-3">
                     <MonsterBossMark
                         v-if="isBoss && canShowField('is_boss')"
                         :tooltip="getFieldTooltip('is_boss')"

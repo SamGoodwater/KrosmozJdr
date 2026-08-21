@@ -294,7 +294,7 @@ const handleAction = async (actionKey, entity) => {
                         </template>
                     </Dropdown>
 
-                    <div class="flex min-w-8 flex-1 justify-end">
+                    <div class="ml-auto flex min-w-8 flex-1 justify-end">
                         <EntityActions
                             :entity-type="entityTypePlural"
                             :entity="entity"

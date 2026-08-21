@@ -181,13 +181,13 @@ const getCell = (fieldKey) => {
         <div class="flex flex-col md:flex-row gap-4 items-start">
             <!-- Informations principales -->
             <div class="flex-1 w-full">
-                <div class="flex min-w-0 items-start gap-4">
+                <div class="flex w-full min-w-0 items-start gap-4">
                     <div class="min-w-0">
                         <h2 class="text-2xl font-bold text-primary-100 break-words">{{ resourceType.name }}</h2>
                     </div>
                     
                     <!-- Actions en haut à droite -->
-                    <div v-if="showActions" class="flex min-w-8 flex-1 justify-end">
+                    <div v-if="showActions" class="ml-auto flex min-w-8 flex-1 justify-end">
                         <EntityActions
                             entity-type="resource-type"
                             :entity="resourceType"

@@ -142,14 +142,14 @@ const handleAction = async (actionKey) => {
         <!-- Bloc héros : contenu à gauche, visuel à droite (desktop) -->
         <div class="flex flex-col gap-6 md:flex-row md:items-start md:justify-between md:gap-8">
             <div class="min-w-0 flex-1 space-y-4">
-                <div class="flex min-w-0 items-start gap-3">
+                <div class="flex w-full min-w-0 items-start gap-3">
                     <h2 class="min-w-0 text-2xl font-bold text-primary-100 wrap-break-word md:text-3xl">
                         <CellRenderer
                             :cell="getCell('name')"
                             ui-color="primary"
                         />
                     </h2>
-                    <div v-if="showActions" class="flex min-w-8 flex-1 justify-end pt-0.5">
+                    <div v-if="showActions" class="ml-auto flex min-w-8 flex-1 justify-end pt-0.5">
                         <EntityActions
                             entity-type="specializations"
                             :entity="specialization"
