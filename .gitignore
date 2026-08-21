@@ -116,3 +116,5 @@ Thumbs.db
 /test-results
 /playwright-report
 /blob-report
+
+/.cursor/*.json
