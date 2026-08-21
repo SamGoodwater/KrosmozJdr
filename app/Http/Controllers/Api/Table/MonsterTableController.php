@@ -114,10 +114,14 @@ class MonsterTableController extends Controller
         $allowedSort = ['id', 'size', 'is_boss', 'boss_pa', 'dofusdb_id', 'created_at', 'updated_at', 'name', 'creature_name'];
 
         if ($sort === 'name' || $sort === 'creature_name') {
-            // Tri par nom de créature (alphabétique)
-            $query->join('creatures', 'monsters.creature_id', '=', 'creatures.id')
-                ->orderBy('creatures.name', $order)
-                ->select('monsters.*');
+            // Sous-requête : un JOIN creatures rend `state`/`id` ambigus avec visibleToUser().
+            $query->orderBy(
+                Creature::query()
+                    ->select('name')
+                    ->whereColumn('creatures.id', $query->qualifyColumn('creature_id'))
+                    ->limit(1),
+                $order
+            );
         } elseif (in_array($sort, $allowedSort, true)) {
             $query->orderBy($sort, $order);
         } else {
@@ -140,12 +144,13 @@ class MonsterTableController extends Controller
             ->values()
             ->all();
 
+        $qualifiedKey = $query->getModel()->getQualifiedKeyName();
         if (! empty($whitelistIds)) {
-            $query->whereIn('id', $whitelistIds);
+            $query->whereIn($qualifiedKey, $whitelistIds);
         }
 
         if (! empty($blacklistIds)) {
-            $query->whereNotIn('id', $blacklistIds);
+            $query->whereNotIn($qualifiedKey, $blacklistIds);
         }
 
         $pageResult = $this->paginateEntityTable($query, $request);

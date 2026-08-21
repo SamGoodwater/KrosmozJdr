@@ -64,7 +64,7 @@ Exemple : les routes scrapping cumulent `web`, `auth`, `role:admin`, `password.c
 
 `app/Policies/Entity/BaseEntityPolicy.php` est la base des entités. Pour `view` : admin → auteur (`created_by`) → matrice « Gérer l'affichage » (`EntityDisplayVisibilityService`) → selon `state` (`playable`/`archived` : `rôle ≥ read_level` ; `raw`/`draft` : `rôle ≥ write_level`). Globales : `viewAny` true, `create` admin, `updateAny` game_master, `deleteAny`/`manageAny` admin.
 
-Surcharges notables : `SpellPolicy` (`updateAny` admin), `BreedPolicy` (logique propre, n'étend pas la base), `PagePolicy`/`SectionPolicy` (CMS via `canBeViewedBy`/`canBeEditedBy`), `UserPolicy` (`before` = super_admin interactif, `updateRole` restreint). Enregistrement explicite partiel dans `app/Providers/AuthServiceProvider.php` ; le reste par auto-discovery Laravel.
+Surcharges notables : `SpellPolicy` (`updateAny` admin), `BreedPolicy` (logique propre, n'étend pas la base), `PagePolicy`/`SectionPolicy` (CMS via `canBeViewedBy`/`canBeEditedBy`), `UserPolicy` (`before` = super_admin interactif, `updateRole` restreint), `CreaturePolicy::viewResolvedStats` (stats JSON : `view` du monstre/PNJ lié, pas un accès public inconditionnel). Enregistrement explicite partiel dans `app/Providers/AuthServiceProvider.php` ; le reste par auto-discovery Laravel.
 
 ## Configuration des permissions
 
@@ -82,7 +82,7 @@ flowchart LR
   Policies --> Service --> Inertia --> Use
 ```
 
-`EntityPermissionService` (`app/Support/EntityPermissions/`) produit `{ entities: { type: { viewAny, create, createAny, updateAny, deleteAny, manageAny } }, access: { key: bool } }`. `EntityDisplayVisibilityService` gère la matrice rôle minimal × état (réglages en `application_settings`) et expose `constrainQueryToViewer()` pour les listes SQL (ex. `Spell::visibleToUser($user)` sur l’API tableau / index / PDF multi).
+`EntityPermissionService` (`app/Support/EntityPermissions/`) produit `{ entities: { type: { viewAny, create, createAny, updateAny, deleteAny, manageAny } }, access: { key: bool } }`. `EntityDisplayVisibilityService` gère la matrice rôle minimal × état (réglages en `application_settings`) et expose `constrainQueryToViewer()` pour les listes SQL (ex. `Spell::visibleToUser($user)` sur l’API tableau / index / PDF multi). Les prédicats `state` / `read_level` / `write_level` / `created_by` sont qualifiés par table : un JOIN vers `creatures` (tri du catalogue monstres) ne rend plus ces colonnes ambiguës.
 
 Côté Vue : `usePermissions.js` lit `page.props.permissions` (`can(entity, ability)`, `canAccess(key)`, `isAdmin`/`isSuperAdmin`). Les droits **par ligne** (`view`/`update`/`delete` d'une fiche précise) viennent du champ `can` des Resources, pas de `usePermissions`. Pour les actions admin sensibles : `useProtectedAdminAction` + `ConfirmPasswordModal` (POST `user.password.confirm`).
 
