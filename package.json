@@ -92,7 +92,7 @@
         "@tiptap/extension-table-header": "^2.27.2",
         "@tiptap/extension-table-row": "^2.27.2",
         "@tiptap/extension-task-item": "^2.27.2",
-        "@tiptap/extension-task-list": "^2.27.2",
+        "@tiptap/extension-task-list": "^3.30.1",
         "@tiptap/extension-text-align": "^2.27.2",
         "@tiptap/extension-underline": "^2.27.2",
         "@tiptap/pm": "^2.27.2",
