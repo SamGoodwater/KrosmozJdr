@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — CVE-2026-13149 brace-expansion
+
+`brace-expansion` (via `minimatch` / `glob` / ESLint) est forcé en 1.1.18, 2.1.4 et 5.0.9 dans `pnpm.overrides`, au-dessus des correctifs 1.1.16 / 2.1.2 / 5.0.7. Ça évite le DoS O(2ⁿ) sur des groupes `{}` non expansifs.
+
 ## Août 2026 — CI MySQL : TEXT sans DEFAULT
 
 MySQL 8 refuse un DEFAULT SQL sur TEXT/BLOB/JSON (`SQLSTATE 1101`). Après le JSON `notification_channels`, les résistances fixes créature (`res_fixe_*`) bloquaient encore `php artisan migrate` en CI. Le défaut `'0'` est désormais dans `Creature::$attributes`.
