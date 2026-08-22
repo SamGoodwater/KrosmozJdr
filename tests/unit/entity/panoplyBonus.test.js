@@ -3,6 +3,8 @@ import {
     parsePanoplyBonus,
     serializePanoplyBonus,
     shortBonusKey,
+    visiblePanoplyBonusTiers,
+    panoplyTierStatMap,
 } from "@/Utils/entity/panoplyBonus";
 
 describe("panoplyBonus", () => {
@@ -34,5 +36,21 @@ describe("panoplyBonus", () => {
             { key: "strength", value: "2" },
             { key: "vitality", value: "1" },
         ]);
+    });
+
+    it("n’expose que les paliers avec un bonus non nul", () => {
+        const tiers = visiblePanoplyBonusTiers({
+            2: { strength: 1 },
+            3: { vitality: 0 },
+            4: {},
+        });
+        expect(tiers).toEqual([{ pieceCount: 2, rows: [{ key: "strength", value: "1" }] }]);
+    });
+
+    it("construit un objet de stats pour un palier", () => {
+        expect(panoplyTierStatMap({
+            pieceCount: 2,
+            rows: [{ key: "strength", value: "1" }, { key: "", value: "9" }],
+        })).toEqual({ strength: "1" });
     });
 });

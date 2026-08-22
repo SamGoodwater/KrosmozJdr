@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Sur la page Modifier, on commence par les équipements et les bonus de set. Nom, description et droits (lecture / écriture) sont en bas."
+    "description": "Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie."
   },
   {
     "path": "backend/_ai.md",

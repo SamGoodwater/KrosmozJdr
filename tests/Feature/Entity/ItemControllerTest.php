@@ -4,6 +4,7 @@ namespace Tests\Feature\Entity;
 
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Item;
+use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -362,5 +363,38 @@ class ItemControllerTest extends TestCase
 
         $response->assertRedirect();
         $this->assertCount(0, $item->fresh()->resources);
+    }
+
+    public function test_show_page_includes_panoply_summary(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $hat = Item::factory()->create([
+            'name' => 'Coiffe Show Panoply',
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $cape = Item::factory()->create([
+            'name' => 'Cape Show Panoply',
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $panoply = Panoply::factory()->create([
+            'name' => 'Panoplie Show Payload',
+            'bonus' => json_encode(['2' => ['strength' => 3]], JSON_THROW_ON_ERROR),
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $panoply->items()->sync([$hat->id, $cape->id]);
+
+        $response = $this->actingAs($admin)
+            ->get(route('entities.items.show', $hat));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Pages/entity/item/Show')
+            ->has('item.data.panoplies', 1)
+            ->where('item.data.panoplies.0.name', 'Panoplie Show Payload')
+            ->has('item.data.panoplies.0.items', 2)
+        );
     }
 }

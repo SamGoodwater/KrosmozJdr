@@ -66,6 +66,14 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    interactive: {
+        type: Boolean,
+        default: true,
+    },
+    maxWidth: {
+        type: String,
+        default: "auto",
+    },
 });
 
 const emit = defineEmits(["open", "close"]);
@@ -138,7 +146,8 @@ const overlayContent = computed(() =>
         trigger="hover"
         :placement="placement"
         :allow-flip="allowFlip"
-        :interactive="false"
+        :interactive="interactive"
+        :max-width="maxWidth"
         :close-on-outside="false"
         :close-on-escape="true"
         :panel-class="floatingPanelClasses"

@@ -7,6 +7,7 @@
  * L'overlay ne modifie pas le flux du DOM : la carte conserve sa place,
  * le contenu étendu passe par-dessus le reste (z-index &lt; tooltips).
  * En `display-mode="extended"` (popover, favoris) : une seule carte, hauteur du contenu.
+ * Un tooltip ouvert (OverlayTrigger téléporté) maintient la carte déployée.
  *
  * @slot compact - Contenu toujours visible, définit la taille du slot dans la grille
  * @slot expanded - Contenu affiché au hover (ou toujours si display-mode="extended")
@@ -14,6 +15,7 @@
  * @props displayMode - 'hover' : expansion au survol | 'extended' : toujours étendu | 'compact' : jamais étendu
  */
 import { ref, computed, onMounted, onUnmounted } from "vue";
+import { provideEntityMinimalCardOverlayHold } from "@/Composables/overlay/entityMinimalCardOverlayHold";
 
 const props = defineProps({
     displayMode: {
@@ -38,11 +40,17 @@ const isHovered = ref(props.displayMode === "extended");
 const isFocusWithin = ref(false);
 const isExpandedLocked = ref(false);
 const cardRef = ref(null);
+const overlayHoldCount = provideEntityMinimalCardOverlayHold();
 
 const showExpanded = computed(() => {
     if (props.displayMode === "compact") return false;
     if (props.displayMode === "extended") return true;
-    return isExpandedLocked.value || isHovered.value || isFocusWithin.value;
+    return (
+        isExpandedLocked.value ||
+        isHovered.value ||
+        isFocusWithin.value ||
+        overlayHoldCount.value > 0
+    );
 });
 
 const canHover = computed(() => props.displayMode === "hover");

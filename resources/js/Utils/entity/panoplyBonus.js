@@ -101,6 +101,53 @@ export function parsePanoplyBonus(raw) {
 }
 
 /**
+ * @param {unknown} value
+ * @returns {boolean}
+ */
+function isBonusValueEmpty(value) {
+    if (value === null || typeof value === "undefined" || value === "") {
+        return true;
+    }
+    const n = Number(value);
+    return Number.isFinite(n) && n === 0;
+}
+
+/**
+ * Paliers de bonus avec au moins une valeur non nulle (les paliers vides sont omis).
+ *
+ * @param {unknown} raw
+ * @returns {Array<{ pieceCount: number, rows: Array<{ key: string, value: string }> }>}
+ *
+ * @example
+ * visiblePanoplyBonusTiers({ 2: { strength: 1 }, 3: { vitality: 0 } });
+ * // [{ pieceCount: 2, rows: [{ key: 'strength', value: '1' }] }]
+ */
+export function visiblePanoplyBonusTiers(raw) {
+    return parsePanoplyBonus(raw)
+        .map((tier) => ({
+            pieceCount: tier.pieceCount,
+            rows: (tier.rows || []).filter((row) => !isBonusValueEmpty(row?.value)),
+        }))
+        .filter((tier) => tier.rows.length > 0);
+}
+
+/**
+ * @param {{ rows?: Array<{ key?: string, value?: unknown }> }} tier
+ * @returns {Record<string, string>}
+ */
+export function panoplyTierStatMap(tier) {
+    const out = {};
+    for (const row of Array.isArray(tier?.rows) ? tier.rows : []) {
+        const key = String(row?.key || "").trim();
+        if (!key || isBonusValueEmpty(row?.value)) {
+            continue;
+        }
+        out[key] = String(row.value);
+    }
+    return out;
+}
+
+/**
  * @param {Array<{ pieceCount?: number, rows?: Array<{ key?: string, value?: unknown }> }>} tiers
  * @returns {string|null}
  *

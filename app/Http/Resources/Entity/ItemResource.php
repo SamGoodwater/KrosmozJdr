@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Entity;
 
+use App\Support\Entity\ItemPanoplyPayload;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -50,7 +51,10 @@ class ItemResource extends JsonResource
             'createdBy' => $this->whenLoaded('createdBy'),
             'itemType' => $this->whenLoaded('itemType'),
             'resources' => $this->getResourcesArray(),
-            'panoplies' => $this->whenLoaded('panoplies'),
+            'panoplies' => $this->whenLoaded(
+                'panoplies',
+                fn () => ItemPanoplyPayload::fromItem($this->resource)
+            ),
             'scenarios' => $this->whenLoaded('scenarios'),
             'campaigns' => $this->whenLoaded('campaigns'),
             'shops' => $this->whenLoaded('shops'),

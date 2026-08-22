@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\Type\ItemType;
+use App\Support\Entity\ItemPanoplyPayload;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -55,7 +56,7 @@ class ItemTableController extends Controller
 
         $query = Item::query()
             ->visibleToUser($request->user())
-            ->with(['createdBy', 'itemType', 'resources'])
+            ->with(['createdBy', 'itemType', 'resources', ...ItemPanoplyPayload::eagerLoad()])
             ->withCount(['resources', 'panoplies', 'shops', 'campaigns', 'scenarios']);
 
         if ($search !== '') {
@@ -177,6 +178,7 @@ class ItemTableController extends Controller
                         'pivot' => ['quantity' => $res->pivot?->quantity ?? 1],
                     ])->values()->all(),
                     'resources_count' => (int) ($it->resources_count ?? 0),
+                    'panoplies' => ItemPanoplyPayload::fromItem($it),
                     'panoplies_count' => (int) ($it->panoplies_count ?? 0),
                     'shops_count' => (int) ($it->shops_count ?? 0),
                     'campaigns_count' => (int) ($it->campaigns_count ?? 0),
@@ -341,6 +343,7 @@ class ItemTableController extends Controller
                             'name' => $it->itemType->name,
                         ] : null,
                         'resources_count' => (int) ($it->resources_count ?? 0),
+                        'panoplies' => ItemPanoplyPayload::fromItem($it),
                         'panoplies_count' => (int) ($it->panoplies_count ?? 0),
                         'shops_count' => (int) ($it->shops_count ?? 0),
                         'campaigns_count' => (int) ($it->campaigns_count ?? 0),

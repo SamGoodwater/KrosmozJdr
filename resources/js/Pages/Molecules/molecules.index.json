@@ -1625,6 +1625,19 @@
     "file": "entity/panoply/PanoplyEquipmentTextList.vue"
   },
   {
+    "name": "PanoplyBonusTiers",
+    "description": "Bonus de panoplie par palier de pièces (chiffre seul, comme les sorts).",
+    "props": [
+      {
+        "name": "bonus",
+        "type": "Object|String",
+        "desc": "- JSON paliers { \"2\": { strength: 1 } }"
+      }
+    ],
+    "slots": [],
+    "file": "entity/panoply/PanoplyBonusTiers.vue"
+  },
+  {
     "name": "NpcViewText",
     "description": "NpcViewText — Vue Texte pour NPC",
     "props": [
@@ -1810,6 +1823,24 @@
     ],
     "slots": [],
     "file": "entity/item/ItemViewText.vue"
+  },
+  {
+    "name": "ItemPanoplyMark",
+    "description": "Marque de panoplie sur une fiche équipement (icône, nom, tooltip, full).",
+    "props": [
+      {
+        "name": "item",
+        "type": "Object",
+        "desc": "- Équipement (instance Item ou payload plat)"
+      },
+      {
+        "name": "density",
+        "type": "String",
+        "desc": "- icon | named | full"
+      }
+    ],
+    "slots": [],
+    "file": "entity/item/ItemPanoplyMark.vue"
   },
   {
     "name": "ItemViewMinimal",

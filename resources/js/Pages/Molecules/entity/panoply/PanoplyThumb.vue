@@ -16,8 +16,18 @@ const props = defineProps({
     size: {
         type: String,
         default: "line",
-        validator: (v) => ["xs", "compact", "line", "fill"].includes(v),
+        validator: (v) => ["badge", "xs", "compact", "line", "fill"].includes(v),
     },
+});
+
+const emptyThumbSize = computed(() => {
+    if (props.size === "badge") {
+        return "table";
+    }
+    if (props.size === "xs" || props.size === "compact") {
+        return props.size;
+    }
+    return "line";
 });
 
 const imageUrls = computed(() => {
@@ -56,7 +66,7 @@ const gridClass = computed(() => {
         :class="[`panoply-thumb--${size}`]"
     >
         <EntityThumb
-            size="line"
+            :size="emptyThumbSize"
             :label="label"
             class="panoply-thumb__initials"
         />
@@ -91,6 +101,10 @@ const gridClass = computed(() => {
 </template>
 
 <style scoped>
+.panoply-thumb--badge {
+    width: 1.75rem;
+    height: 1.75rem;
+}
 .panoply-thumb--xs {
     width: 2.5rem;
     height: 2.5rem;
