@@ -162,9 +162,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.campaigns.edit', { campaign: campaignId }));
             emit('edit', props.campaign);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.campaign);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('campaign');
             const url = resolveEntityRouteUrl('campaign', 'show', props.campaign.slug || campaignId, cfg);

@@ -6,13 +6,14 @@
  * Source: API Table v2 (`api.tables.{entity}`) au format `entities`,
  * en pagination serveur (évite le plafond historique `limit: 50` → 2 pages).
  */
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityConfig, getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getEntitySingularRouteKey } from "@/Composables/entity/entityRouteRegistry";
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vue";
+import EntityModal from "@/Pages/Organismes/entity/EntityModal.vue";
 
 /**
  * Virtualisation client (TanStackTable) — activée uniquement dans les sections CMS.
@@ -99,8 +100,43 @@ const resolveEntityId = (raw) => {
     return null;
 };
 
+const selectedEntity = ref(null);
+const modalOpen = ref(false);
+
+const resolveModel = (raw) => {
+    if (!raw) return null;
+    const ModelClass = entityConfig.value?.model;
+    if (!ModelClass) return raw;
+    if (raw instanceof ModelClass) return raw;
+    if (typeof ModelClass.fromArray === "function") {
+        return ModelClass.fromArray([raw])[0] || null;
+    }
+    return new ModelClass(raw);
+};
+
+const openViewModal = (raw) => {
+    const model = resolveModel(raw);
+    if (!resolveEntityId(model)) return;
+    selectedEntity.value = model;
+    modalOpen.value = true;
+};
+
+const closeViewModal = () => {
+    modalOpen.value = false;
+    selectedEntity.value = null;
+};
+
+const handleViewModalExpand = (entity) => {
+    const entityId = resolveEntityId(entity ?? selectedEntity.value);
+    if (entityId === null || entityId === "") return;
+    const plural = entityType.value;
+    const paramKey = getEntitySingularRouteKey(plural);
+    router.visit(route(`entities.${plural}.show`, { [paramKey]: entityId }));
+    closeViewModal();
+};
+
 /**
- * Navigation fiche entité (pages Show / Edit) — requis car ce wrapper n’avait pas d’écouteurs `@action`.
+ * Navigation fiche entité — Afficher / double-clic → modal full ; Agrandir (expand) → page Show.
  *
  * @param {string} actionKey
  * @param {unknown} entity
@@ -108,40 +144,36 @@ const resolveEntityId = (raw) => {
  */
 const handleTableAction = (actionKey, entity, row) => {
     const raw = entity || row?.rowParams?.entity;
-    const entityId = resolveEntityId(raw);
-    if (entityId === null || entityId === "") return;
-
-    const plural = entityType.value;
-    const paramKey = getEntitySingularRouteKey(plural);
 
     switch (actionKey) {
         case "view":
         case "quick-view":
+            openViewModal(raw);
+            break;
         case "expand":
-            router.visit(route(`entities.${plural}.show`, { [paramKey]: entityId }));
+            handleViewModalExpand(raw);
             break;
         case "edit":
-        case "edit-page":
+        case "edit-page": {
+            const entityId = resolveEntityId(raw);
+            if (entityId === null || entityId === "") return;
+            const plural = entityType.value;
+            const paramKey = getEntitySingularRouteKey(plural);
             router.visit(route(`entities.${plural}.edit`, { [paramKey]: entityId }));
             break;
+        }
         default:
             break;
     }
 };
 
 /**
- * Double-clic : ouvrir la fiche (même comportement que sur les pages Index entité).
+ * Double-clic : ouvrir la vue full en modal (même parcours que Afficher).
  *
  * @param {unknown} row
  */
 const handleRowDoubleClick = (row) => {
-    const raw = row?.rowParams?.entity;
-    const entityId = resolveEntityId(raw);
-    if (entityId === null || entityId === "") return;
-
-    const plural = entityType.value;
-    const paramKey = getEntitySingularRouteKey(plural);
-    router.visit(route(`entities.${plural}.show`, { [paramKey]: entityId }));
+    openViewModal(row?.rowParams?.entity);
 };
 </script>
 
@@ -162,6 +194,17 @@ const handleRowDoubleClick = (row) => {
             :response-adapter="responseAdapter"
             @action="handleTableAction"
             @row-dblclick="handleRowDoubleClick"
+        />
+
+        <EntityModal
+            v-if="selectedEntity"
+            :entity="selectedEntity"
+            :entity-type="entityType"
+            view="full"
+            :open="modalOpen"
+            :use-stored-format="false"
+            @close="closeViewModal"
+            @expand="handleViewModalExpand"
         />
     </div>
 </template>

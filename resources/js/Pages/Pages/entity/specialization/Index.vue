@@ -26,11 +26,9 @@ import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vu
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
-import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
-import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 const props = defineProps({
     specializations: {
@@ -78,16 +76,7 @@ const tableConfig = computed(() => {
 });
 const serverUrl = computed(() => `${route('api.tables.specializations')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 
-// Fields config pour les formulaires (généré depuis les descriptors)
-const fieldsConfig = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createFieldsConfigFromDescriptors(getSpecializationFieldDescriptors(ctx));
-});
 
-const defaultEntity = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createDefaultEntityFromDescriptors(getSpecializationFieldDescriptors(ctx));
-});
 
 // Calcul des entités sélectionnées depuis les IDs et les rows
 const selectedEntities = computed(() => {
@@ -135,8 +124,6 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('full');
 const createModalOpen = ref(false);
-const quickEditEntity = ref(null);
-const quickEditModalOpen = ref(false);
 
 const handleCreate = () => {
     createModalOpen.value = true;
@@ -168,8 +155,8 @@ const { handleKeyboardIntent } = useEntityIndexTableIntents({
         modalOpen.value = true;
     },
     openEdit: (model) => {
-        quickEditEntity.value = model;
-        quickEditModalOpen.value = true;
+        if (!model?.id) return;
+        router.visit(route('entities.specializations.edit', { specialization: model.id }));
     },
 });
 
@@ -187,9 +174,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.specializations.show', { specialization: entityId }));
-            break;
-
         case 'quick-view':
             selectedEntity.value = model;
             modalView.value = 'full';
@@ -197,12 +181,8 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'edit':
-            router.visit(route('entities.specializations.edit', { specialization: entityId }));
-            break;
-
         case 'quick-edit':
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
+            router.visit(route('entities.specializations.edit', { specialization: entityId }));
             break;
 
         case 'copy-link': {
@@ -238,9 +218,10 @@ const handleTableAction = async (actionKey, entity, row) => {
 
 // Handlers pour les actions du modal
 const handleModalQuickEdit = (entity) => {
-    quickEditEntity.value = entity;
-    quickEditModalOpen.value = true;
+    const entityId = entity?.id;
+    if (!entityId) return;
     closeModal();
+    router.visit(route('entities.specializations.edit', { specialization: entityId }));
 };
 
 const handleModalExpand = (entity) => {
@@ -287,15 +268,6 @@ const handleModalDelete = (entity) => {
     }
 };
 
-const handleQuickEditSubmit = async (payload) => {
-    if (payload) {
-        const ok = await bulkPatchJson("/api/entities/specializations/bulk", payload);
-        if (!ok) return;
-    }
-    refreshToken.value++;
-    quickEditEntity.value = null;
-    quickEditModalOpen.value = false;
-};
 </script>
 
 <template>
@@ -375,17 +347,6 @@ const handleQuickEditSubmit = async (payload) => {
             @download-pdf="handleModalDownloadPdf"
             @refresh="handleModalRefresh"
             @delete="handleModalDelete"
-        />
-
-        <!-- Modal d'édition rapide -->
-        <EntityQuickEditModal
-            v-if="quickEditEntity"
-            :entity="quickEditEntity"
-            entity-type="specializations"
-            :fields-config="fieldsConfig"
-            :open="quickEditModalOpen"
-            @close="quickEditModalOpen = false"
-            @submit="handleQuickEditSubmit"
         />
     </div>
 </template>

@@ -368,7 +368,7 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       actions: {
         enabled: true,
         permission: "view",
-        available: ["view", "edit", "quick-edit", "delete", "copy-link", "refresh"],
+        available: ["view", "edit", "delete", "copy-link", "refresh"],
         defaultVisible: {
           xs: false,
           sm: true,

@@ -18,9 +18,9 @@ import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Modal from "@/Pages/Molecules/action/Modal.vue";
 import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vue";
 import CreateEntityModal from "@/Pages/Organismes/entity/CreateEntityModal.vue";
+import EntityModal from "@/Pages/Organismes/entity/EntityModal.vue";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel.vue";
-import EntityQuickEditModal from "@/Pages/Organismes/entity/EntityQuickEditModal.vue";
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
@@ -51,9 +51,10 @@ const { refreshEntity } = useScrapping();
 
 const selectedEntity = ref(null);
 const editOpen = ref(false);
+const viewEntity = ref(null);
+const viewModalOpen = ref(false);
+const modalView = ref("full");
 const createOpen = ref(false);
-const quickEditModalOpen = ref(false);
-const quickEditEntity = ref(null);
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
@@ -86,13 +87,23 @@ const handleEdit = (entity) => {
     editOpen.value = true;
 };
 
+const openViewModal = (model) => {
+    viewEntity.value = model;
+    modalView.value = "full";
+    viewModalOpen.value = true;
+};
+
+const closeViewModal = () => {
+    viewModalOpen.value = false;
+    viewEntity.value = null;
+};
+
 const handleRowDoubleClick = (row) => {
-    if (!canModifyResolved.value) return;
     const raw = row?.rowParams?.entity;
     if (!raw) return;
     const model = raw instanceof ResourceType ? raw : ResourceType.fromArray([raw])[0] || null;
     if (!model) return;
-    handleEdit(model);
+    openViewModal(model);
 };
 
 const handleBulkApplied = async (payload) => {
@@ -117,13 +128,9 @@ const { handleKeyboardIntent } = useEntityIndexTableIntents({
     routeShowName: "entities.resource-types.show",
     routeShowParam: "resourceType",
     canModify: () => canModifyResolved.value,
-    openFullModal: (model) => {
-        selectedEntity.value = model;
-        editOpen.value = true;
-    },
+    openFullModal: openViewModal,
     openEdit: (model) => {
-        quickEditEntity.value = model;
-        quickEditModalOpen.value = true;
+        handleEdit(model);
     },
 });
 
@@ -157,21 +164,13 @@ const handleTableAction = async (actionKey, entity, row) => {
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.resource-types.show', { resourceType: entityId }));
-            break;
-
         case 'quick-view':
-            selectedEntity.value = model;
-            editOpen.value = true;
+            openViewModal(model);
             break;
 
         case 'edit':
-            handleEdit(model);
-            break;
-
         case 'quick-edit':
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
+            handleEdit(model);
             break;
 
         case 'copy-link': {
@@ -195,14 +194,17 @@ const handleTableAction = async (actionKey, entity, row) => {
     }
 };
 
-const handleQuickEditSubmit = async (payload) => {
-    if (payload) {
-        const ok = await bulkPatchJson("/api/scrapping/resource-types/bulk", payload);
-        if (!ok) return;
-    }
-    refreshToken.value++;
-    quickEditEntity.value = null;
-    quickEditModalOpen.value = false;
+
+const handleViewModalQuickEdit = (entity) => {
+    closeViewModal();
+    handleEdit(entity);
+};
+
+const handleViewModalExpand = (entity) => {
+    const id = entity?.id;
+    if (!id) return;
+    router.visit(route("entities.resource-types.show", { resourceType: id }));
+    closeViewModal();
 };
 
 const resourceTypeDescriptors = computed(() => getResourceTypeFieldDescriptors({ capabilities: props.can || {} }));
@@ -281,6 +283,18 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
             @created="handleEntityCreated"
         />
 
+        <EntityModal
+            v-if="viewEntity"
+            :entity="viewEntity"
+            entity-type="resource-types"
+            :view="modalView"
+            :open="viewModalOpen"
+            :table-meta="tableMeta"
+            @close="closeViewModal"
+            @quick-edit="handleViewModalQuickEdit"
+            @expand="handleViewModalExpand"
+        />
+
         <Modal :open="editOpen" size="xl" placement="middle-center" close-on-esc @close="closeEdit">
             <template #header>
                 <h3 class="text-2xl font-bold text-primary-100">Éditer type de ressource</h3>
@@ -299,19 +313,6 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
                 />
             </div>
         </Modal>
-
-        <!-- Modal d'édition rapide -->
-        <EntityQuickEditModal
-            v-if="quickEditEntity"
-            :entity="quickEditEntity"
-            entity-type="resourceType"
-            :fields-config="fieldsConfig"
-            :open="quickEditModalOpen"
-            route-name-base="entities.resource-types"
-            route-param-key="resourceType"
-            @close="quickEditModalOpen = false"
-            @submit="handleQuickEditSubmit"
-        />
     </div>
 </template>
 

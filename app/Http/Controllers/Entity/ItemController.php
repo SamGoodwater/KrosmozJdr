@@ -11,6 +11,7 @@ use App\Http\Resources\Entity\ItemResource;
 use App\Models\Effect;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
+use App\Models\Type\ItemType;
 use App\Models\User;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
@@ -72,6 +73,9 @@ class ItemController extends Controller
         return Inertia::render('Pages/entity/item/Index', [
             'items' => ItemResource::collection($items),
             'filters' => request()->only(['search', 'level', 'rarity', 'item_type_id']),
+            'itemTypes' => ItemType::query()
+                ->orderBy('name')
+                ->get(['id', 'name', 'dofusdb_type_id']),
         ]);
     }
 

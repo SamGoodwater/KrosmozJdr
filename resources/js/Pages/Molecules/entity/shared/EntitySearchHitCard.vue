@@ -145,6 +145,7 @@ onMounted(() => {
             :close-on-outside="true"
             :close-on-escape="true"
             panel-class="max-w-[min(92vw,24rem)]"
+            :chromeless="true"
             :focus-trap="false"
             class="min-w-0 flex-1"
         >

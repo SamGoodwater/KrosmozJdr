@@ -130,9 +130,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.scenarios.edit', { scenario: scenarioId }));
             emit('edit', props.scenario);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.scenario);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('scenario');
             const url = resolveEntityRouteUrl('scenario', 'show', props.scenario.slug || scenarioId, cfg);

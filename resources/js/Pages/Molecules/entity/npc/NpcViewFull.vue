@@ -160,9 +160,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.npcs.edit', { npc: npcId }));
             emit('edit', props.npc);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.npc);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('npc');
             const url = resolveEntityRouteUrl('npc', 'show', npcId, cfg);

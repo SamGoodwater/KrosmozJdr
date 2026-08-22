@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StorePanoplyRequest;
 use App\Http\Requests\Entity\UpdatePanoplyRequest;
 use App\Http\Resources\Entity\PanoplyResource;
-use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
 use App\Models\User;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use App\Support\Entity\ObjectEffectEditOptions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -83,7 +83,13 @@ class PanoplyController extends Controller
      */
     public function show(Panoply $panoply)
     {
-        //
+        $this->authorize('view', $panoply);
+
+        $panoply->load(['createdBy', 'items']);
+
+        return Inertia::render('Pages/entity/panoply/Show', [
+            'panoply' => new PanoplyResource($panoply),
+        ]);
     }
 
     /**
@@ -95,14 +101,9 @@ class PanoplyController extends Controller
 
         $panoply->load(['createdBy', 'items']);
 
-        // Charger tous les items disponibles pour la recherche
-        $availableItems = Item::select('id', 'name', 'description', 'level')
-            ->orderBy('name')
-            ->get();
-
         return Inertia::render('Pages/entity/panoply/Edit', [
             'panoply' => new PanoplyResource($panoply),
-            'availableItems' => $availableItems,
+            'bonusCharacteristics' => ObjectEffectEditOptions::toArray()['objectEffectCharacteristics'],
         ]);
     }
 
@@ -116,6 +117,13 @@ class PanoplyController extends Controller
         $panoply->update($request->validated());
 
         $panoply->load(['createdBy', 'items']);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'ok' => true,
+                'bonus' => $panoply->bonus,
+            ]);
+        }
 
         return redirect()->route('entities.panoplies.show', $panoply)
             ->with('success', 'Panoplie mise à jour avec succès.');

@@ -25,11 +25,9 @@ import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vu
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
-import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
-import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 
 const props = defineProps({
@@ -66,8 +64,6 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('full');
 const createModalOpen = ref(false);
-const quickEditModalOpen = ref(false);
-const quickEditEntity = ref(null);
 
 // Table v2
 const selectedIds = ref([]);
@@ -102,16 +98,7 @@ const tableConfig = computed(() => {
 const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
 const serverBaseUrl = computed(() => route('api.tables.consumables'));
 
-// Fields config pour les formulaires (généré depuis les descriptors)
-const fieldsConfig = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createFieldsConfigFromDescriptors(getConsumableFieldDescriptors(ctx));
-});
 
-const defaultEntity = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createDefaultEntityFromDescriptors(getConsumableFieldDescriptors(ctx));
-});
 
 const clearSelection = () => {
     selectedIds.value = [];
@@ -168,8 +155,8 @@ const { handleKeyboardIntent } = useEntityIndexTableIntents({
         modalOpen.value = true;
     },
     openEdit: (model) => {
-        quickEditEntity.value = model;
-        quickEditModalOpen.value = true;
+        if (!model?.id) return;
+        router.visit(route('entities.consumables.edit', { consumable: model.id }));
     },
 });
 
@@ -186,9 +173,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.consumables.show', { consumable: entityId }));
-            break;
-
         case 'quick-view':
             selectedEntity.value = model;
             modalView.value = 'full';
@@ -196,12 +180,8 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'edit':
-            router.visit(route('entities.consumables.edit', { consumable: entityId }));
-            break;
-
         case 'quick-edit':
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
+            router.visit(route('entities.consumables.edit', { consumable: entityId }));
             break;
 
         case 'copy-link': {
@@ -230,9 +210,10 @@ const handleTableAction = async (actionKey, entity, row) => {
 
 // Handlers pour les actions du modal
 const handleModalQuickEdit = (entity) => {
-    quickEditEntity.value = entity;
-    quickEditModalOpen.value = true;
+    const entityId = entity?.id;
+    if (!entityId) return;
     closeModal();
+    router.visit(route('entities.consumables.edit', { consumable: entityId }));
 };
 
 const handleModalExpand = (entity) => {
@@ -268,15 +249,6 @@ const handleModalDelete = (entity) => {
     // TODO: Implémenter la suppression avec confirmation
 };
 
-const handleQuickEditSubmit = async (payload) => {
-    if (payload) {
-        const ok = await bulkPatchJson("/api/entities/consumables/bulk", payload);
-        if (!ok) return;
-    }
-    refreshToken.value++;
-    quickEditEntity.value = null;
-    quickEditModalOpen.value = false;
-};
 </script>
 
 <template>
@@ -359,17 +331,6 @@ const handleQuickEditSubmit = async (payload) => {
             @download-pdf="handleModalDownloadPdf"
             @refresh="handleModalRefresh"
             @delete="handleModalDelete"
-        />
-
-        <!-- Modal d'édition rapide -->
-        <EntityQuickEditModal
-            v-if="quickEditEntity"
-            :entity="quickEditEntity"
-            entity-type="consumable"
-            :fields-config="fieldsConfig"
-            :open="quickEditModalOpen"
-            @close="quickEditModalOpen = false"
-            @submit="handleQuickEditSubmit"
         />
     </div>
 </template>

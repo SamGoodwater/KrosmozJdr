@@ -251,14 +251,9 @@ export function useEntityActions(entityType, entity = null, options = {}) {
 }
 
 function resolveActionIntent(actionKey, context) {
-  const modal = Boolean(context?.inModal);
-  const page = Boolean(context?.inPage);
-  const minimalLine = Boolean(context?.inMinimal || context?.inLine || context?.viewMode === "minimal" || context?.viewMode === "line");
-
-  if (actionKey === "view") return modal ? "open-page" : "open-page";
-  if (actionKey === "quick-view") return page ? "open-modal" : "open-modal";
-  if (actionKey === "edit") return modal || page ? "edit-page" : "edit-page";
-  if (actionKey === "quick-edit") return minimalLine || !page ? "edit-modal" : "edit-modal";
+  if (actionKey === "view") return "open-page";
+  if (actionKey === "quick-view") return "open-modal";
+  if (actionKey === "edit" || actionKey === "quick-edit") return "edit-page";
   if (actionKey === "copy-link") return "copy-link";
   if (actionKey === "refresh") return "refresh";
   if (actionKey === "delete") return "delete";

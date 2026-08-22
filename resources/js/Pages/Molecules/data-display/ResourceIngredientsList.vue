@@ -1,123 +1,68 @@
 <script setup>
 /**
- * ResourceIngredientsList — Liste d'ingrédients (ressources) avec icône + nom.
+ * ResourceIngredientsList — Ingrédients (ressources) en vue texte + aperçu au clic.
  *
  * @description
- * Vue texte : icône + nom × quantité, tooltip minimal au survol.
- * Pour équipements (items), consommables et ressources (recette).
+ * Même présentation que les sorts d’un monstre : icône + nom ; clic → `ResourceViewMinimal`.
+ * Quantité affichée à côté du nom si &gt; 1.
  *
- * @props {Array} ingredients - Liste {id, name, image?, pivot?: {quantity}}}
+ * @props {Array} ingredients - Liste {id, name, image?, pivot?: {quantity}}
  * @example
  * <ResourceIngredientsList :ingredients="item.resources" />
  */
 import { computed } from "vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
-import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
+import EntityViewTextLink from "@/Pages/Molecules/entity/shared/EntityViewTextLink.vue";
 import ResourceViewMinimal from "@/Pages/Molecules/entity/resource/ResourceViewMinimal.vue";
+import { Resource } from "@/Models/Entity/Resource";
 
 const props = defineProps({
     ingredients: {
         type: Array,
         default: () => [],
     },
+    tableMeta: { type: Object, default: () => ({}) },
 });
 
-const normalizedIngredients = computed(() => {
+const resourceModels = computed(() => {
     const raw = props.ingredients || [];
-    return raw.map((ing) => ({
-        id: ing.id ?? ing.resource_id,
-        name: ing.name ?? "—",
-        image: ing.image ?? null,
-        quantity: ing.pivot?.quantity ?? ing.quantity ?? 1,
-    }));
+    if (!Array.isArray(raw) || raw.length === 0) return [];
+    return raw
+        .map((row) => (row instanceof Resource ? row : new Resource(row)))
+        .filter((row) => row?.id);
 });
 
-const showHref = (id) => (id ? route("entities.resources.show", { resource: id }) : null);
-
-const buildOverlayContent = (ing) => ({
-    key: `resource-ingredient:${ing.id}`,
-    loader: async ({ signal }) => {
-        const url = `${route("api.tables.resources")}?format=entities&filters[id]=${ing.id}&limit=1`;
-        const response = await fetch(url, {
-            credentials: "include",
-            headers: { Accept: "application/json" },
-            signal,
-        });
-        const json = await response.json();
-        const entity = Array.isArray(json?.entities) ? json.entities[0] || null : null;
-        if (!entity) {
-            return `Ressource #${ing.id}`;
-        }
-        return {
-            component: ResourceViewMinimal,
-            props: {
-                resource: entity,
-                displayMode: "extended",
-                showActions: false,
-            },
-        };
-    },
-});
+const quantityOf = (resource) => {
+    const q = resource?.pivot?.quantity ?? resource?._data?.pivot?.quantity ?? resource?._data?.quantity ?? 1;
+    const n = Number(q);
+    return Number.isFinite(n) && n > 1 ? n : 0;
+};
 </script>
 
 <template>
-    <div v-if="normalizedIngredients.length > 0" class="flex flex-wrap items-center gap-2">
-        <OverlayTrigger
-            v-for="ing in normalizedIngredients"
-            :key="ing.id"
-            :content="buildOverlayContent(ing)"
-            trigger="hover"
-            placement="top"
-            max-width="md"
-            :interactive="true"
-            :lazy="true"
-            :cache="{ key: `resource-ingredient:${ing.id}`, ttlMs: 600000, maxEntries: 300 }"
-            panel-class="p-1"
+    <ul
+        v-if="resourceModels.length > 0"
+        class="flex list-none flex-wrap items-center gap-x-3 gap-y-1.5 p-0 m-0"
+    >
+        <li
+            v-for="resource in resourceModels"
+            :key="resource.id"
+            class="inline-flex min-w-0 max-w-full items-center gap-1"
         >
-            <Route
-                v-if="showHref(ing.id)"
-                :href="showHref(ing.id)"
-                color="neutral"
-                class="inline-flex items-center gap-1.5 text-xs text-base-content/90 hover:text-base-content no-underline"
-            >
-                <div
-                    class="w-4 h-4 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
-                >
-                    <Image
-                        v-if="ing.image"
-                        :source="ing.image"
-                        :alt="ing.name"
-                        fit="contain"
-                        class="h-full w-full"
-                    />
-                    <Icon v-else source="fa-solid fa-box" alt="" size="xs" class="text-base-content/50" />
-                </div>
-                <span class="truncate max-w-[8rem]">
-                    {{ ing.name }}<template v-if="ing.quantity > 1">×{{ ing.quantity }}</template>
-                </span>
-            </Route>
+            <EntityViewTextLink
+                :entity="resource"
+                entity-prop="resource"
+                :minimal-component="ResourceViewMinimal"
+                fallback-icon="fa-solid fa-gem"
+                ui-color="primary"
+                :show-actions-on-hover="true"
+                hydrate-type="resources"
+                hover-width-class="w-[min(92vw,22rem)] max-w-[22rem]"
+                :table-meta="tableMeta"
+            />
             <span
-                v-else
-                class="inline-flex items-center gap-1.5 text-xs text-base-content/90"
-            >
-                <div
-                    class="w-4 h-4 shrink-0 rounded overflow-hidden bg-base-200 flex items-center justify-center"
-                >
-                    <Image
-                        v-if="ing.image"
-                        :source="ing.image"
-                        :alt="ing.name"
-                        fit="contain"
-                        class="h-full w-full"
-                    />
-                    <Icon v-else source="fa-solid fa-box" alt="" size="xs" class="text-base-content/50" />
-                </div>
-                <span class="truncate max-w-[8rem]">
-                    {{ ing.name }}<template v-if="ing.quantity > 1">×{{ ing.quantity }}</template>
-                </span>
-            </span>
-        </OverlayTrigger>
-    </div>
+                v-if="quantityOf(resource)"
+                class="shrink-0 text-[0.65rem] text-base-content/55"
+            >×{{ quantityOf(resource) }}</span>
+        </li>
+    </ul>
 </template>

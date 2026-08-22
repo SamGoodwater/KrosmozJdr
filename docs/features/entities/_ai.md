@@ -19,8 +19,11 @@
 - **Vues** : `minimal` | `line` | `text` | `full` | `edit`. Résolution dynamique : `resources/js/Utils/entity/resolveEntityViewComponent.js`. Conventions : rule `.cursor/rules/entity-views.mdc`.
 - **Monstres** : coquille `Monster` + stats/sorts/équipements sur `Creature` ; sorts liés en aperçu (`effect_usages_chips`, pas l’arbre) ; équipements allégés si présents ; PDF multi + `visibleToUser` ; Full affiche sorts/empty states, équipements seulement s’il y en a. `resolved-stats` créature : même visibilité que le monstre/PNJ lié. Tri catalogue par nom via sous-requête (pas de JOIN `creatures`).
 - **Listes lourdes** : index items/monstres/ressources/consommables/conditions/sorts en pagination serveur ; PDF multi filtré `visibleToUser` sur les entités concernées.
-- **Tableaux (query)** : `filters[k][]` (multi) ou CSV ; `whereIn` via `InterpretsEntityTableFilters`. Tri : alias UI→SQL (`item_type` → `item_type_id`) + `sort.field` colonnes. Recherche : `search=` (serveur) ou nom/description (client). Overlay sort depuis un monstre : chips dans le payload nested (`SpellNestedPreviewSerializer`).
-- **Objets (vue Colonnes)** : image, nom, niveau, type, rareté, bonus ; description et résumé masqués ; `state` si `updateAny`. En-têtes : `column.tooltip`.
+- **Tableaux (query)** : `filters[k][]` (multi) ou CSV ; `whereIn` via `InterpretsEntityTableFilters`. Tri : alias UI→SQL (`item_type` → `item_type_id`) + `sort.field` colonnes. Recherche : `search=` (serveur) ou nom/description (client). Défauts de filtres : uniquement si la clé n’est pas déjà posée ; pas de re-apply sur tout `filterOptions` (évite d’effacer la saisie). Overlay sort depuis un monstre : chips dans le payload nested (`SpellNestedPreviewSerializer`).
+- **Objets (vue Colonnes)** : image, nom, niveau, type, rareté, bonus (`items.bonus`) ; description et résumé masqués ; `state` si `updateAny`. En-têtes : `column.tooltip`. Filtre Type : emplacements de jeu précochés (pas apparats/costumes).
+- **Panoplies** : pièces en vue texte + vignette d’équipements ; bonus par palier de pièces (`2p` / `3p`) via `buildCharacteristicEffectCell`. Édition : équipements puis bonus en tête (`PanoplyBonusEditor`, champs glass) ; recherche via `api.tables.items` (`EntityPickerCore`) ; droits en bas de page.
+- **Ouverture fiche** : Afficher (Minimal / Line / Index / table CMS) → `EntityModal` full ; Agrandir (modal) ou Ctrl+clic → page Show. Éditer (options Minimal / Line / tableau) → page Modifier. Panneau `EntityQuickEditPanel` = édition multiple. Config : `entity-actions-config.js`.
+- **Rareté** : 0 Commun, 1 Peu commun, 2 Rare, 3 Très rare, 4 Légendaire, 5 Unique — mêmes libellés filtres / vues / édition (`Resource::RARITY`, `RARITY_GRADIENT`).
 
 ## Fichiers pivots
 

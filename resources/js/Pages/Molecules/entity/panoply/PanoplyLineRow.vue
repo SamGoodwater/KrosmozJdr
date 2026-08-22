@@ -6,7 +6,8 @@
  * Aligné sur BreedLineRow : état • picto • nom • nb objets • bonus • relations • description.
  */
 import { computed } from "vue";
-import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
+import PanoplyThumb from "@/Pages/Molecules/entity/panoply/PanoplyThumb.vue";
+import PanoplyEquipmentTextList from "@/Pages/Molecules/entity/panoply/PanoplyEquipmentTextList.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
@@ -36,9 +37,13 @@ const getCell = (fieldKey) => {
 };
 
 const nameCell = computed(() => getCell("name"));
-const itemsCountCell = computed(() => getCell("items_count"));
 const bonusCell = computed(() => getCell("bonus"));
 const relationsCell = computed(() => getCell("panoply_summary_relations"));
+
+const linkedItems = computed(() => {
+    const raw = entity.value?.items ?? entity.value?._data?.items;
+    return Array.isArray(raw) ? raw : [];
+});
 
 const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
@@ -56,8 +61,9 @@ const descriptionFull = computed(
         @dblclick="(e) => emitLineRowDblClick(emit, row, e)"
     >
         <div class="flex gap-3">
-            <EntityThumb
+            <PanoplyThumb
                 size="line"
+                :items="linkedItems"
                 :label="nameCell?.value || 'Panoplie'"
             />
             <div class="flex-1 min-w-0 flex flex-col gap-1.5 pl-1">
@@ -93,14 +99,15 @@ const descriptionFull = computed(
                         />
                     </div>
                 </div>
+                <div
+                    v-if="linkedItems.length"
+                    class="text-sm"
+                    @click.stop
+                    @dblclick.stop
+                >
+                    <PanoplyEquipmentTextList :items="linkedItems" :table-meta="tableMeta" />
+                </div>
                 <div class="flex flex-wrap items-center gap-2 text-sm">
-                    <span
-                        v-if="itemsCountCell?.value && itemsCountCell.value !== '-' && itemsCountCell.value !== '—'"
-                        class="text-xs text-base-content/80"
-                    >
-                        <span class="font-medium text-base-content">Objets</span>
-                        {{ itemsCountCell.value }}
-                    </span>
                     <CellRenderer
                         v-if="bonusCell && bonusCell.type === 'chips' && (bonusCell?.params?.items?.length ?? 0) > 0"
                         :cell="bonusCell"

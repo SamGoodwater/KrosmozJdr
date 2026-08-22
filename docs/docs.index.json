@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le dépôt n’a plus qu’une branche active (`main`). Les PR Cursor et l’ancienne PR Vitest 4 (base trop vieille) sont fermées."
+    "description": "On peut à nouveau taper dans les champs des filtres (recherche d’un type, filtres texte, etc.) : la valeur n’est plus effacée à chaque rafraîchissement de la liste."
   },
   {
     "path": "backend/_ai.md",

@@ -5,6 +5,7 @@
 ## Attention
 
 - `Btn` : `color` = teinte DaisyUI, `variant` = style (`glass`/`ghost`/`outline`/…). Une couleur passée en `variant` (`variant="primary"`) est remappée vers `color` + `glass` (compat) — les usages corrects ne changent pas.
+- `InputCore` : v-model via `vnode.props.onUpdate:modelValue` (pas `$attrs` — emits déclarés). `InputField` continue de passer `value` via `inputAttrs`.
 
 ## Fichiers pivots
 

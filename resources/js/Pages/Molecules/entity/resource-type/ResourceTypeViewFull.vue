@@ -132,9 +132,7 @@ const handleAction = async (actionKey) => {
             emit('edit', props.resourceType);
             break;
 
-        case 'quick-edit':
-            emit('quick-edit', props.resourceType);
-            break;
+        
 
         case 'copy-link': {
             const cfg = getEntityRouteConfig('resource-type');

@@ -110,9 +110,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.specializations.edit', { specialization: specializationId }));
             emit('edit', props.specialization);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.specialization);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('specialization');
             const url = resolveEntityRouteUrl('specialization', 'show', specializationId, cfg);

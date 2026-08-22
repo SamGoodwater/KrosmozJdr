@@ -25,6 +25,7 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
+import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
 import { normalizeEntityType, getEntityResponseAdapter } from '@/Entities/entity-registry';
 import { resolveEntityViewComponent } from '@/Utils/entity/resolveEntityViewComponent';
 import { warnDev } from '@/Utils/dev-logger';
@@ -67,15 +68,39 @@ const props = defineProps({
             /** Si défini (ex: `spells`), complète la recherche locale via `api.tables.{type}`. */
             searchApiEntityType: null,
         })
-    }
+    },
+    /**
+     * Affiche le titre interne (`relationName`). Mettre à false si le parent fournit déjà un titre de section.
+     */
+    showTitle: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const emit = defineEmits(['update:relations']);
 
 const notificationStore = useNotificationStore();
 
+const relationId = (item) => {
+    const n = Number(item?.id ?? item?._data?.id);
+    return Number.isFinite(n) ? n : null;
+};
+
+const relationsIdsKey = (list) =>
+    (Array.isArray(list) ? list : [])
+        .map((item) => relationId(item))
+        .filter((id) => id != null)
+        .sort((a, b) => a - b)
+        .join(',');
+
 // Relations locales (copie pour modification)
-const localRelations = ref([...props.relations]);
+const localRelations = ref([...(props.relations || [])]);
+const selectedRelationIds = computed(() =>
+    localRelations.value.map((item) => relationId(item)).filter((id) => id != null)
+);
+
+const pickerValue = ref(null);
 
 const relationEntityType = computed(() =>
     normalizeEntityType(props.config.relatedEntityType || props.relationType)
@@ -294,7 +319,7 @@ const filteredAvailableItems = computed(() => {
     }
     const query = searchQuery.value.toLowerCase();
     const searchFields = props.config.searchFields || ['name', 'description'];
-    const selectedIds = new Set(localRelations.value.map((item) => Number(item.id)));
+    const selectedIds = new Set(localRelations.value.map((item) => relationId(item)).filter((id) => id != null));
 
     const matchesLocal = (props.availableItems || []).filter((item) => {
         if (selectedIds.has(Number(item.id))) return false;
@@ -308,10 +333,10 @@ const filteredAvailableItems = computed(() => {
         return matchesLocal;
     }
 
-    const localIds = new Set(matchesLocal.map((item) => Number(item.id)));
+    const localIds = new Set(matchesLocal.map((item) => relationId(item)).filter((id) => id != null));
     const fromRemote = (remoteSearchItems.value || []).filter((item) => {
-        const id = Number(item?.id);
-        if (!Number.isFinite(id) || selectedIds.has(id) || localIds.has(id)) return false;
+        const id = relationId(item);
+        if (id == null || selectedIds.has(id) || localIds.has(id)) return false;
         return true;
     });
 
@@ -345,63 +370,80 @@ const routeName = computed(() => {
     return `entities.${entityTypePlural}.update${relationTypeCamel}`;
 });
 
-// Ajouter un élément à la relation
-const addItem = (item) => {
-    if (!localRelations.value.some(i => i.id === item.id)) {
-        localRelations.value.push(item);
-        
-        // Initialiser les valeurs de pivot si nécessaire
-        if (props.config.pivotFields && props.config.pivotFields.length > 0) {
-            if (!pivotValues.value[item.id]) {
-                pivotValues.value[item.id] = {};
-                props.config.pivotFields.forEach((field) => {
-                    pivotValues.value[item.id][field] = getPivotDefault(field);
-                });
-            }
-        }
-        
-        emit('update:relations', localRelations.value);
-        searchQuery.value = '';
-        notificationStore.success(
-            `${props.config.itemLabel.charAt(0).toUpperCase() + props.config.itemLabel.slice(1)} "${item.name || item.id}" ajouté`,
-            {
-                duration: 3000,
-                placement: 'top-center'
-            }
-        );
-    }
+const normalizePickedEntity = (raw) => {
+    if (!raw || typeof raw !== 'object') return null;
+    const data = raw._data && typeof raw._data === 'object' ? { ...raw._data, ...raw } : raw;
+    const id = relationId(data);
+    if (id == null) return null;
+    return {
+        ...data,
+        id,
+        name: data.name ?? data.title ?? `#${id}`,
+    };
 };
 
-// Retirer un élément de la relation
-const removeItem = (itemId) => {
-    const item = localRelations.value.find(i => i.id === itemId);
-    if (item) {
-        localRelations.value = localRelations.value.filter(i => i.id !== itemId);
-        
-        // Supprimer les valeurs de pivot
-        if (pivotValues.value[itemId]) {
-            delete pivotValues.value[itemId];
+const addItem = (item) => {
+    const normalized = normalizePickedEntity(item);
+    if (!normalized) return;
+    if (localRelations.value.some((i) => relationId(i) === normalized.id)) {
+        return;
+    }
+    localRelations.value.push(normalized);
+
+    if (props.config.pivotFields && props.config.pivotFields.length > 0) {
+        if (!pivotValues.value[normalized.id]) {
+            pivotValues.value[normalized.id] = {};
+            props.config.pivotFields.forEach((field) => {
+                pivotValues.value[normalized.id][field] = getPivotDefault(field);
+            });
         }
-        
+    }
+
+    emit('update:relations', localRelations.value);
+    searchQuery.value = '';
+    pickerValue.value = null;
+    notificationStore.success(
+        `${props.config.itemLabel.charAt(0).toUpperCase() + props.config.itemLabel.slice(1)} "${normalized.name}" ajouté`,
+        {
+            duration: 3000,
+            placement: 'top-center',
+        }
+    );
+};
+
+const onPickerSelectedEntities = (entities) => {
+    const entity = Array.isArray(entities) ? entities[0] : null;
+    if (!entity) return;
+    addItem(entity);
+};
+
+const removeItem = (itemId) => {
+    const targetId = Number(itemId);
+    const item = localRelations.value.find((i) => relationId(i) === targetId);
+    if (item) {
+        localRelations.value = localRelations.value.filter((i) => relationId(i) !== targetId);
+
+        if (pivotValues.value[targetId]) {
+            delete pivotValues.value[targetId];
+        }
+
         emit('update:relations', localRelations.value);
         notificationStore.success(
             `${props.config.itemLabel.charAt(0).toUpperCase() + props.config.itemLabel.slice(1)} "${item.name || item.id}" retiré`,
             {
                 duration: 3000,
-                placement: 'top-center'
+                placement: 'top-center',
             }
         );
     }
 };
 
-// Mettre à jour les relations locales quand les props changent
 watch(
-    () => props.relations,
-    (newRelations) => {
-        localRelations.value = [...newRelations];
+    () => relationsIdsKey(props.relations),
+    () => {
+        localRelations.value = [...(props.relations || [])];
         initializePivotValues();
-    },
-    { deep: true }
+    }
 );
 
 const hasUnsavedRelationChanges = computed(() => {
@@ -511,8 +553,8 @@ const displayField = (item, field) => {
 <template>
     <Container class="space-y-4">
         <div class="flex justify-between items-center">
-            <h3 class="text-lg font-semibold">{{ relationName }}</h3>
-            <Badge :content="localRelations.length.toString()" color="primary" />
+            <h3 v-if="showTitle" class="text-lg font-semibold">{{ relationName }}</h3>
+            <Badge :content="localRelations.length.toString()" color="primary" class="ml-auto" />
         </div>
 
         <!-- Liste des éléments actuels -->
@@ -600,13 +642,15 @@ const displayField = (item, field) => {
                     </div>
                     <Tooltip :content="`Retirer cet ${config.itemLabel}`" placement="top">
                         <Btn
-                            @click="removeItem(entry.item.id)"
                             variant="ghost"
                             size="sm"
                             color="error"
                             class="shrink-0"
+                            :aria-label="`Retirer cet ${config.itemLabel}`"
+                            @click.stop="removeItem(entry.item.id)"
                         >
-                            <i class="fa-solid fa-times"></i>
+                            <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                            <span class="sr-only">Retirer</span>
                         </Btn>
                     </Tooltip>
                 </div>
@@ -618,7 +662,23 @@ const displayField = (item, field) => {
 
         <!-- Recherche et ajout d'éléments -->
         <div class="border-t pt-4">
-            <div class="space-y-2">
+            <div v-if="searchApiEntityType" class="space-y-2">
+                <p class="text-sm font-medium">
+                    Rechercher un {{ config.itemLabel }} à ajouter
+                </p>
+                <EntityPickerCore
+                    :model-value="pickerValue"
+                    :entity-type="searchApiEntityType"
+                    :multiple="false"
+                    variant="extended"
+                    :blacklist="selectedRelationIds"
+                    :placeholder="`Rechercher un ${config.itemLabel}…`"
+                    size="sm"
+                    @update:model-value="pickerValue = $event"
+                    @update:selected-entities="onPickerSelectedEntities"
+                />
+            </div>
+            <div v-else class="space-y-2">
                 <InputField
                     v-model="searchQuery"
                     :label="`Rechercher un ${config.itemLabel} à ajouter`"
@@ -645,14 +705,14 @@ const displayField = (item, field) => {
                         <div class="font-medium">
                             {{ displayField(item, config.displayFields[0] || 'name') }}
                         </div>
-                        <div 
-                            v-if="config.displayFields[1] && displayField(item, config.displayFields[1])" 
+                        <div
+                            v-if="config.displayFields[1] && displayField(item, config.displayFields[1])"
                             class="text-sm text-base-content/70 line-clamp-2 mt-1"
                         >
                             {{ displayField(item, config.displayFields[1]) }}
                         </div>
-                        <div 
-                            v-if="config.displayFields[2] && displayField(item, config.displayFields[2])" 
+                        <div
+                            v-if="config.displayFields[2] && displayField(item, config.displayFields[2])"
                             class="text-xs text-base-content/50 mt-1"
                         >
                             {{ config.displayFields[2] === 'level' ? `Niveau ${displayField(item, config.displayFields[2])}` : displayField(item, config.displayFields[2]) }}

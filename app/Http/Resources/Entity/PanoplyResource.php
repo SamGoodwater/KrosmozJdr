@@ -41,6 +41,7 @@ class PanoplyResource extends JsonResource
                     'name' => $item->name,
                     'description' => $item->description,
                     'level' => $item->level,
+                    'image' => $item->image,
                 ];
             })->values()->all() : [],
             'npcs' => $this->whenLoaded('npcs'),

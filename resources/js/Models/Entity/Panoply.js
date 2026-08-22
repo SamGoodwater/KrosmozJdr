@@ -224,11 +224,6 @@ export class Panoply extends BaseModel {
     _toPanoplySummaryRelationsCell(_format, _size, _options) {
         const items = [
             {
-                icon: 'fa-solid fa-sword',
-                value: this.itemsCount > 0 ? `${this.itemsCount} équipement${this.itemsCount > 1 ? 's' : ''}` : null,
-                tooltip: this.itemsCount > 0 ? `Équipements: ${this.itemsCount}` : '',
-            },
-            {
                 icon: 'fa-solid fa-user',
                 value: this.npcsCount > 0 ? `${this.npcsCount} PNJ` : null,
                 tooltip: this.npcsCount > 0 ? `PNJ: ${this.npcsCount}` : '',
@@ -258,7 +253,6 @@ export class Panoply extends BaseModel {
             params: {
                 items,
                 sortValue:
-                    this.itemsCount +
                     this.npcsCount +
                     this.campaignsCount +
                     this.scenariosCount +

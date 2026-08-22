@@ -561,7 +561,7 @@ export function getNpcFieldDescriptors(ctx = {}) {
       actions: {
         enabled: true,
         permission: "view",
-        available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
+        available: ["view", "edit", "delete", "copy-link", "download-pdf", "refresh"],
         defaultVisible: {
           xs: false,
           sm: true,

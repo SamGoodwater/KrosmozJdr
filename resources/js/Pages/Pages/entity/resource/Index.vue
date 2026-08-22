@@ -26,7 +26,6 @@ import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vu
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
-import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
@@ -74,8 +73,6 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('full');
 const createModalOpen = ref(false);
-const quickEditModalOpen = ref(false);
-const quickEditEntity = ref(null);
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
@@ -176,8 +173,8 @@ const { handleKeyboardIntent } = useEntityIndexTableIntents({
     canModify: () => canModify.value,
     openFullModal: openModal,
     openEdit: (model) => {
-        quickEditEntity.value = model;
-        quickEditModalOpen.value = true;
+        if (!model?.id) return;
+        router.visit(route('entities.resources.edit', { resource: model.id }));
     },
 });
 
@@ -205,20 +202,13 @@ const handleTableAction = async (actionKey, entity, row) => {
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.resources.show', { resource: entityId }));
-            break;
-
         case 'quick-view':
             openModal(model);
             break;
 
         case 'edit':
-            router.visit(route('entities.resources.edit', { resource: entityId }));
-            break;
-
         case 'quick-edit':
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
+            router.visit(route('entities.resources.edit', { resource: entityId }));
             break;
 
         case 'copy-link': {
@@ -247,9 +237,10 @@ const handleTableAction = async (actionKey, entity, row) => {
 
 // Handlers pour les actions du modal (reçoivent directement l'entité depuis l'événement)
 const handleModalQuickEdit = (entity) => {
-    quickEditEntity.value = entity;
-    quickEditModalOpen.value = true;
+    const entityId = entity?.id;
+    if (!entityId) return;
     closeModal();
+    router.visit(route('entities.resources.edit', { resource: entityId }));
 };
 
 const handleModalExpand = (entity) => {
@@ -285,15 +276,6 @@ const handleModalDelete = (entity) => {
     // TODO: Implémenter la suppression avec confirmation
 };
 
-const handleQuickEditSubmit = async (payload) => {
-    if (payload) {
-        const ok = await bulkPatchJson("/api/entities/resources/bulk", payload);
-        if (!ok) return;
-    }
-    refreshToken.value++;
-    quickEditEntity.value = null;
-    quickEditModalOpen.value = false;
-};
 </script>
 
 <template>
@@ -387,17 +369,6 @@ const handleQuickEditSubmit = async (payload) => {
             @download-pdf="handleModalDownloadPdf"
             @refresh="handleModalRefresh"
             @delete="handleModalDelete"
-        />
-
-        <!-- Modal d'édition rapide -->
-        <EntityQuickEditModal
-            v-if="quickEditEntity"
-            :entity="quickEditEntity"
-            entity-type="resource"
-            :fields-config="fieldsConfig"
-            :open="quickEditModalOpen"
-            @close="quickEditModalOpen = false"
-            @submit="handleQuickEditSubmit"
         />
     </div>
 </template>

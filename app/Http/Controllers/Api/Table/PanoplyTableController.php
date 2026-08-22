@@ -32,7 +32,6 @@ class PanoplyTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
@@ -48,7 +47,7 @@ class PanoplyTableController extends Controller
             ->visibleToUser($request->user())
             ->with([
                 'createdBy',
-                'items' => static fn ($q) => $q->select(['items.id', 'items.name', 'items.level']),
+                'items' => static fn ($q) => $q->select(['items.id', 'items.name', 'items.level', 'items.image']),
             ])
             ->withCount(['items', 'npcs', 'campaigns', 'scenarios', 'shops']);
 
@@ -82,6 +81,14 @@ class PanoplyTableController extends Controller
                 $createdBy = $p->createdBy;
 
                 return $p->toArray() + [
+                    'items' => $p->relationLoaded('items')
+                        ? $p->items->map(static fn ($item) => [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'level' => $item->level,
+                            'image' => $item->image,
+                        ])->values()->all()
+                        : [],
                     'items_count' => $p->items_count ?? 0,
                     'npcs_count' => $p->npcs_count ?? 0,
                     'campaigns_count' => $p->campaigns_count ?? 0,

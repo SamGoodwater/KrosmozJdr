@@ -159,9 +159,9 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
         form: {
           type: "textarea",
           group: "Métier",
-          placeholder: "Ex: +10 Force, +5 Agilité",
+          placeholder: "Bonus de set (édition structurée sur la page Modifier)",
           required: false,
-          showInCompact: true,
+          showInCompact: false,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
@@ -390,7 +390,7 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       actions: {
         enabled: true,
         permission: "view",
-        available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
+        available: ["view", "quick-view", "edit", "delete", "copy-link", "download-pdf", "refresh"],
         defaultVisible: {
           xs: false,
           sm: true,
@@ -432,7 +432,6 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
     // Configuration globale du quickedit
     _quickeditConfig: {
       fields: [
-        "bonus",
         "state",
         "read_level",
         "write_level",

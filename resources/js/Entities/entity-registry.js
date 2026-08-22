@@ -115,7 +115,7 @@ export function getEntityConfig(entityType) {
         model: Item,
         getDescriptors: getItemFieldDescriptors,
         responseAdapter: createEntityAdapter(Item),
-        defaults: { minimalImportantFields: ["level", "item_type", "rarity"] },
+        defaults: { minimalImportantFields: ["level", "item_type", "rarity", "bonus"] },
       };
     case "spells":
       return {

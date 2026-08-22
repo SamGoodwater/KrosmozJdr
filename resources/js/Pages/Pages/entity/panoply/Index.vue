@@ -26,11 +26,9 @@ import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vu
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
-import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
-import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 const props = defineProps({
     panoplies: {
@@ -63,8 +61,6 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('full');
 const createModalOpen = ref(false);
-const quickEditModalOpen = ref(false);
-const quickEditEntity = ref(null);
 
 // Table v2
 const selectedIds = ref([]);
@@ -86,16 +82,7 @@ const tableConfig = computed(() => {
 });
 const serverUrl = computed(() => `${route('api.tables.panoplies')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 
-// Fields config pour les formulaires (généré depuis les descriptors)
-const fieldsConfig = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createFieldsConfigFromDescriptors(getPanoplyFieldDescriptors(ctx));
-});
 
-const defaultEntity = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createDefaultEntityFromDescriptors(getPanoplyFieldDescriptors(ctx));
-});
 
 // Calcul des entités sélectionnées depuis les IDs et les rows
 const selectedEntities = computed(() => {
@@ -127,15 +114,24 @@ const handleTableLoaded = ({ rows, meta }) => {
     tableMeta.value = meta || {};
 };
 
+const openModal = (model) => {
+    selectedEntity.value = model;
+    modalView.value = "full";
+    modalOpen.value = true;
+};
+
+const closeModal = () => {
+    modalOpen.value = false;
+    selectedEntity.value = null;
+};
+
 const handleRowDoubleClick = (row) => {
     const raw = row?.rowParams?.entity;
     if (!raw) return;
     // Si c'est déjà une instance Panoply, l'utiliser directement
     const model = raw instanceof Panoply ? raw : Panoply.fromArray([raw])[0] || null;
     if (!model) return;
-    selectedEntity.value = model;
-    modalView.value = "full";
-    modalOpen.value = true;
+    openModal(model);
 };
 
 const handleCreate = () => {
@@ -151,25 +147,15 @@ const handleEntityCreated = () => {
     refreshToken.value++;
 };
 
-const closeModal = () => {
-    modalOpen.value = false;
-    selectedEntity.value = null;
-};
-
-
 const { handleKeyboardIntent } = useEntityIndexTableIntents({
     ModelClass: Panoply,
     routeShowName: "entities.panoplies.show",
     routeShowParam: "panoply",
     canModify: () => canModify.value,
-    openFullModal: (model) => {
-        selectedEntity.value = model;
-        modalView.value = "full";
-        modalOpen.value = true;
-    },
+    openFullModal: openModal,
     openEdit: (model) => {
-        quickEditEntity.value = model;
-        quickEditModalOpen.value = true;
+        if (!model?.id) return;
+        router.visit(route('entities.panoplies.edit', { panoply: model.id }));
     },
 });
 
@@ -187,22 +173,13 @@ const handleTableAction = async (actionKey, entity, row) => {
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.panoplies.show', { panoply: entityId }));
-            break;
-
         case 'quick-view':
-            selectedEntity.value = model;
-            modalView.value = 'full';
-            modalOpen.value = true;
+            openModal(model);
             break;
 
         case 'edit':
-            router.visit(route('entities.panoplies.edit', { panoply: entityId }));
-            break;
-
         case 'quick-edit':
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
+            router.visit(route('entities.panoplies.edit', { panoply: entityId }));
             break;
 
         case 'copy-link': {
@@ -231,9 +208,10 @@ const handleTableAction = async (actionKey, entity, row) => {
 
 // Handlers pour les actions du modal
 const handleModalQuickEdit = (entity) => {
-    quickEditEntity.value = entity;
-    quickEditModalOpen.value = true;
+    const entityId = entity?.id;
+    if (!entityId) return;
     closeModal();
+    router.visit(route('entities.panoplies.edit', { panoply: entityId }));
 };
 
 const handleModalExpand = (entity) => {
@@ -271,15 +249,6 @@ const handleModalDelete = (_entity) => {
     // TODO: Implémenter la suppression avec confirmation
 };
 
-const handleQuickEditSubmit = async (payload) => {
-    if (payload) {
-        const ok = await bulkPatchJson("/api/entities/panoplies/bulk", payload);
-        if (!ok) return;
-    }
-    refreshToken.value++;
-    quickEditEntity.value = null;
-    quickEditModalOpen.value = false;
-};
 </script>
 
 <template>
@@ -359,17 +328,6 @@ const handleQuickEditSubmit = async (payload) => {
             @download-pdf="handleModalDownloadPdf"
             @refresh="handleModalRefresh"
             @delete="handleModalDelete"
-        />
-
-        <!-- Modal d'édition rapide -->
-        <EntityQuickEditModal
-            v-if="quickEditEntity"
-            :entity="quickEditEntity"
-            entity-type="panoplies"
-            :fields-config="fieldsConfig"
-            :open="quickEditModalOpen"
-            @close="quickEditModalOpen = false"
-            @submit="handleQuickEditSubmit"
         />
     </div>
 </template>

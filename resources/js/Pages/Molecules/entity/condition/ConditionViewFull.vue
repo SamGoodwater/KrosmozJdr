@@ -121,9 +121,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.conditions.edit', { condition: conditionId }));
             emit('edit', props.condition);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.condition);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('condition');
             const url = resolveEntityRouteUrl('condition', 'show', conditionId, cfg);

@@ -131,9 +131,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.shops.edit', { shop: shopId }));
             emit('edit', props.shop);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.shop);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('shop');
             const url = resolveEntityRouteUrl('shop', 'show', shopId, cfg);

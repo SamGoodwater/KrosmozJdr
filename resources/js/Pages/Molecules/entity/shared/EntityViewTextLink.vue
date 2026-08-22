@@ -166,6 +166,7 @@ const overlayContent = computed(() => {
       :interactive="true"
       :close-on-outside="true"
       :close-on-escape="true"
+      :chromeless="true"
       :panel-class="hoverWidthClass"
       :focus-trap="false"
     >

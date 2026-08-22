@@ -154,9 +154,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.consumables.edit', { consumable: consumableId }));
             emit('edit', props.consumable);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.consumable);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('consumable');
             const url = resolveEntityRouteUrl('consumable', 'show', consumableId, cfg);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Item;
+use App\Models\Entity\Resource;
 use App\Models\Type\ItemType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -40,7 +41,6 @@ class ItemTableController extends Controller
         }
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
-
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -104,26 +104,32 @@ class ItemTableController extends Controller
 
         // Options filtres
         $itemTypes = ItemType::query()
-            ->select(['id', 'name'])
+            ->select(['id', 'name', 'dofusdb_type_id'])
             ->orderBy('name')
             ->limit(5000)
             ->get()
-            ->map(fn ($t) => ['value' => (string) $t->id, 'label' => (string) $t->name])
+            ->map(fn ($t) => [
+                'value' => (string) $t->id,
+                'label' => (string) $t->name,
+                'dofusdb_type_id' => $t->dofusdb_type_id !== null ? (int) $t->dofusdb_type_id : null,
+            ])
             ->values()
             ->all();
 
-        $rarityMap = [
-            '0' => ['label' => 'Commun', 'color' => 'success', 'sort' => 0],
-            '1' => ['label' => 'Peu commun', 'color' => 'info', 'sort' => 1],
-            '2' => ['label' => 'Rare', 'color' => 'primary', 'sort' => 2],
-            '3' => ['label' => 'Épique', 'color' => 'warning', 'sort' => 3],
-            '4' => ['label' => 'Légendaire', 'color' => 'error', 'sort' => 4],
-        ];
+        $rarityColor = fn (int $r) => match ($r) {
+            0 => 'success',
+            1 => 'info',
+            2 => 'primary',
+            3 => 'warning',
+            4 => 'error',
+            5 => 'neutral',
+            default => 'primary',
+        };
 
         $filterOptions = [
             'item_type_id' => $itemTypes,
-            'rarity' => collect($rarityMap)
-                ->map(fn ($meta, $value) => ['value' => (string) $value, 'label' => (string) $meta['label']])
+            'rarity' => collect(Resource::RARITY)
+                ->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])
                 ->values()
                 ->all(),
             'level' => [
@@ -205,7 +211,7 @@ class ItemTableController extends Controller
             ]);
         }
 
-        $tableRows = $rows->map(function (Item $it) use ($rarityMap) {
+        $tableRows = $rows->map(function (Item $it) use ($rarityColor) {
             $showHref = route('entities.items.show', $it->id);
             $dofusDbHref = $it->dofusdb_id ? "https://www.dofus.com/fr/mmorpg/encyclopedie/equipements/{$it->dofusdb_id}" : null;
 
@@ -221,12 +227,11 @@ class ItemTableController extends Controller
             $itemTypeName = $it->itemType?->name ?? '-';
 
             $rarityRaw = $it->rarity;
-            $rarityKey = is_string($rarityRaw) ? $rarityRaw : (string) $rarityRaw;
-            $rarityMeta = $rarityMap[$rarityKey] ?? null;
-
-            $rarityLabel = $rarityMeta ? $rarityMeta['label'] : ($rarityKey ?: '-');
-            $rarityColor = $rarityMeta ? $rarityMeta['color'] : 'primary';
-            $raritySort = $rarityMeta ? (int) $rarityMeta['sort'] : $rarityKey;
+            $rarityInt = is_numeric((string) $rarityRaw) ? (int) $rarityRaw : null;
+            $rarityKey = $rarityInt === null ? '' : (string) $rarityInt;
+            $rarityLabel = $rarityInt === null ? '-' : (Resource::RARITY[$rarityInt] ?? (string) $rarityInt);
+            $rarityColorToken = $rarityInt === null ? 'primary' : $rarityColor($rarityInt);
+            $raritySort = $rarityInt === null ? -1 : $rarityInt;
 
             return [
                 'id' => $it->id,
@@ -262,7 +267,7 @@ class ItemTableController extends Controller
                         'type' => 'badge',
                         'value' => $rarityLabel,
                         'params' => [
-                            'color' => $rarityColor,
+                            'color' => $rarityColorToken,
                             'filterValue' => $rarityKey,
                             'sortValue' => $raritySort,
                         ],

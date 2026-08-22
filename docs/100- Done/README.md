@@ -1,5 +1,47 @@
 # Ce qui a été fait
 
+## Août 2026 — Modifier une panoplie : ordre et style
+
+Sur la page Modifier, on commence par les équipements et les bonus de set. Nom, description et droits (lecture / écriture) sont en bas. Les bonus utilisent les mêmes champs verre que le reste du site, plus de panneau bleu plein.
+
+## Août 2026 — Éditer ouvre la page Modifier
+
+Le crayon du menu d’options (carte, ligne, tableau) ouvre la même page Modifier que le bouton Éditer de la fiche. L’ancienne fenêtre « Édition rapide » d’une seule entité a été retirée : elle n’avait plus les mêmes champs que la page. On peut toujours modifier plusieurs lignes d’un coup via le panneau du tableau.
+
+## Août 2026 — Modifier une panoplie : pièces et bonus
+
+On peut chercher un équipement à ajouter (catalogue, pas une liste figée), le retirer de la panoplie, et saisir les bonus de set comme les effets d’un objet : une caractéristique et une valeur, par nombre de pièces.
+
+## Août 2026 — Afficher ouvre la fiche en modal
+
+Sur toutes les entités, Afficher (carte minimale, ligne, liste) ouvre le détail en fenêtre, pas la page. On passe à la page complète depuis cette fenêtre (Agrandir) ou avec Ctrl+clic.
+
+## Août 2026 — Afficher une panoplie ouvre la fiche
+
+Le bouton Afficher d’une panoplie dans la liste ouvre la modal de détail, au lieu de recharger le tableau. Agrandir (ou Ctrl+clic) mène à une vraie page de lecture.
+
+## Août 2026 — Fiches overlay : une seule carte
+
+Ouvrir une entité depuis un nom (équipement d’une panoplie, sort d’un monstre, etc.) n’affiche plus une grande boîte vide autour de la fiche. La carte s’ajuste à son contenu. Le menu « ⋮ » n’a plus de fond gris derrière les icônes.
+
+## Août 2026 — Vues panoplie : pièces et vignette
+
+Les fiches panoplie (ligne, carte, détail) listent les équipements en vue texte (icône + nom, aperçu au clic). La vignette reprend les images des pièces s’il y en a, sinon le nom en initiales. Les bonus de set ne s’affichent plus en `[object Object]`.
+
+## Août 2026 — Saisie dans les filtres des tableaux
+
+On peut à nouveau taper dans les champs des filtres (recherche d’un type, filtres texte, etc.) : la valeur n’est plus effacée à chaque rafraîchissement de la liste.
+
+## Août 2026 — Catalogue objets : types de jeu par défaut
+
+Le filtre Type du catalogue d’équipements arrive précoché sur les emplacements utiles en jeu (amulette, armes, cape, dofus, familiers, trophées, etc.). Apparats, costumes et autres cosmétiques restent disponibles dans le filtre, mais seulement si on les coche.
+
+## Août 2026 — Bonus et rareté des équipements
+
+Les fiches équipement (Minimal, Line, Full, tableau) lisent les **bonus**
+(`items.bonus`, repli sur `effect`). Les libellés de rareté sont les mêmes
+partout : Commun, Peu commun, Rare, Très rare, Légendaire, Unique (0 à 5).
+
 ## Août 2026 — GitHub : une seule `main`, Dependabot cadré
 
 Le dépôt n’a plus qu’une branche active (`main`). Les PR Cursor et l’ancienne PR Vitest 4 (base trop vieille) sont fermées. Les alertes Dependabot déjà corrigées restent en « fixed ». Un fichier `.github/dependabot.yml` lance des mises à jour weekly npm (groupe minor+patch), Composer (PR individuelles) et Actions (minor+patch) ; Vitest 4 et les majors d’actions restent un chantier dédié.

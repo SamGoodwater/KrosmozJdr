@@ -84,10 +84,8 @@ const mockActionsConfig = {
     getTooltip: (ctx) => (ctx?.inModal && ctx?.modalMode === 'edit' ? 'Agrandir' : 'Éditer'),
     getIcon: (ctx) => (ctx?.inModal && ctx?.modalMode === 'edit' ? 'fa-solid fa-expand' : 'fa-solid fa-pen-to-square'),
     visibleIf: (ctx) => {
-      if (ctx?.inMinimal || ctx?.inLine || ctx?.viewMode === 'line' || ctx?.viewMode === 'minimal') return false;
-      if (ctx?.inModal) return ctx?.modalMode === 'edit';
       if (ctx?.inPage) return ctx?.pageMode !== 'edit';
-      return false;
+      return true;
     },
   },
   'quick-edit': {
@@ -100,7 +98,7 @@ const mockActionsConfig = {
     group: 'edition',
     getLabel: () => 'Éditer',
     getTooltip: () => 'Éditer',
-    visibleIf: (ctx) => !ctx?.inPage && !(ctx?.inModal && ctx?.modalMode === 'edit'),
+    visibleIf: () => false,
   },
   'copy-link': {
     key: 'copy-link',
@@ -175,10 +173,10 @@ vi.mock('@/Entities/entity-actions-config', () => ({
   getActionsForEntityType: vi.fn(() => mockActionsConfig),
   ACTION_GROUPS_ORDER: ['status', 'navigation', 'edition', 'tools', 'destructive'],
   ENTITY_ACTION_CONTEXT_PRESETS: {
-    minimalLine: ['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit'],
-    modalDetail: ['state', 'favorite', 'copy-link', 'view', 'edit', 'quick-edit', 'refresh', 'delete'],
+    minimalLine: ['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'edit'],
+    modalDetail: ['state', 'favorite', 'copy-link', 'view', 'edit', 'refresh', 'delete'],
     pageDetail: ['state', 'favorite', 'copy-link', 'view', 'edit', 'refresh', 'delete'],
-    tableDropdown: ['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'quick-edit'],
+    tableDropdown: ['state', 'pin', 'favorite', 'copy-link', 'quick-view', 'edit'],
   },
   normalizeActionEntityType: (entityType) => entityType,
   isScrappableEntityType: (entityType) => ['spells', 'items'].includes(entityType),
@@ -217,7 +215,7 @@ describe('useEntityActions', () => {
       const actions = readAvailableActions(wrapper);
       expect(actions.length).toBeGreaterThan(0);
       expect(actions.some((a) => a.key === 'view')).toBe(true);
-      expect(actions.some((a) => a.key === 'quick-edit')).toBe(true);
+      expect(actions.some((a) => a.key === 'edit')).toBe(true);
     });
 
     it('exclut les actions sans permission canView', () => {
@@ -310,7 +308,7 @@ describe('useEntityActions', () => {
       const TestComponent = defineComponent({
         setup() {
           const { availableActions } = useEntityActions('spells', { id: 1 }, {
-            whitelist: ['view', 'quick-edit'],
+            whitelist: ['view', 'edit'],
             context: { inModal: true, modalMode: 'view' },
           });
           return { availableActions };
@@ -322,7 +320,7 @@ describe('useEntityActions', () => {
 
       const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
       expect(actionKeys).toContain('view');
-      expect(actionKeys).toContain('quick-edit');
+      expect(actionKeys).toContain('edit');
       expect(actionKeys).not.toContain('delete');
       expect(actionKeys).not.toContain('copy-link');
     });
@@ -345,7 +343,7 @@ describe('useEntityActions', () => {
       expect(actionKeys).not.toContain('delete');
       expect(actionKeys).not.toContain('refresh');
       expect(actionKeys).toContain('view');
-      expect(actionKeys).toContain('quick-edit');
+      expect(actionKeys).toContain('edit');
     });
   });
 
@@ -400,7 +398,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
       const actionKeys = readAvailableActions(wrapper).map((a) => a.key);
-      expect(actionKeys).toEqual(['quick-view', 'quick-edit', 'copy-link', 'favorite', 'pin']);
+      expect(actionKeys).toEqual(['pin', 'favorite', 'copy-link', 'quick-view', 'edit']);
     });
 
     it('expose les intentions modales et page', () => {
@@ -417,7 +415,7 @@ describe('useEntityActions', () => {
       const wrapper = mount(TestComponent);
       const byKey = Object.fromEntries(readAvailableActions(wrapper).map((a) => [a.key, a.intent]));
       expect(byKey.view).toBe('open-page');
-      expect(byKey['quick-edit']).toBe('edit-modal');
+      expect(byKey.edit).toBe('edit-page');
       expect(byKey.favorite).toBe('favorite');
     });
 
@@ -446,11 +444,11 @@ describe('useEntityActions', () => {
         icon: 'fa-solid fa-eye',
         intent: 'open-modal',
       });
-      expect(getAction('minimal', 'quick-edit')).toMatchObject({
+      expect(getAction('minimal', 'edit')).toMatchObject({
         label: 'Éditer',
         tooltip: 'Éditer',
         icon: 'fa-solid fa-pen-to-square',
-        intent: 'edit-modal',
+        intent: 'edit-page',
       });
       expect(getAction('modalView', 'view')).toMatchObject({
         label: 'Agrandir',
@@ -458,11 +456,11 @@ describe('useEntityActions', () => {
         icon: 'fa-solid fa-expand',
         intent: 'open-page',
       });
-      expect(getAction('modalView', 'quick-edit')).toMatchObject({
+      expect(getAction('modalView', 'edit')).toMatchObject({
         label: 'Éditer',
         tooltip: 'Éditer',
         icon: 'fa-solid fa-pen-to-square',
-        intent: 'edit-modal',
+        intent: 'edit-page',
       });
       expect(getAction('modalEdit', 'edit')).toMatchObject({
         label: 'Agrandir',

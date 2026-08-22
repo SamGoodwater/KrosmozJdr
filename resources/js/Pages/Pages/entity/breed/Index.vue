@@ -22,11 +22,9 @@ import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vu
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
-import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
-import { createFieldsConfigFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 defineProps({
     breeds: {
@@ -56,8 +54,6 @@ const tableRows = ref([]);
 const refreshToken = ref(0);
 const {
     tableQuickEditEnabled,
-    quickEditModalOpen,
-    quickEditEntity,
     onUpdateTableQuickEdit,
 } = useEntityIndexQuickEditTable(Breed);
 
@@ -83,10 +79,6 @@ const tableConfig = computed(() => {
 });
 const serverUrl = computed(() => `${route('api.tables.breeds')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 
-const fieldsConfig = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createFieldsConfigFromDescriptors(getBreedFieldDescriptors(ctx));
-});
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
@@ -137,8 +129,8 @@ const { handleKeyboardIntent } = useEntityIndexTableIntents({
     canModify: () => canModify.value,
     openFullModal: openPreviewModal,
     openEdit: (model) => {
-        quickEditEntity.value = model;
-        quickEditModalOpen.value = true;
+        if (!model?.id) return;
+        router.visit(route('entities.breeds.edit', { breed: model.id }));
     },
 });
 
@@ -182,9 +174,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.breeds.show', { breed: entityId }));
-            break;
-
         case 'quick-view':
             selectedEntity.value = model;
             modalView.value = 'full';
@@ -192,12 +181,8 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'edit':
-            router.visit(route('entities.breeds.edit', { breed: entityId }));
-            break;
-
         case 'quick-edit':
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
+            router.visit(route('entities.breeds.edit', { breed: entityId }));
             break;
 
         case 'copy-link': {
@@ -223,9 +208,10 @@ const handleTableAction = async (actionKey, entity, row) => {
 };
 
 const handleModalQuickEdit = (entity) => {
-    quickEditEntity.value = entity;
-    quickEditModalOpen.value = true;
+    const entityId = entity?.id;
+    if (!entityId) return;
     closeModal();
+    router.visit(route('entities.breeds.edit', { breed: entityId }));
 };
 
 const handleModalExpand = (entity) => {
@@ -257,15 +243,6 @@ const handleModalRefresh = async (entity) => {
 
 const handleModalDelete = (_entity) => {};
 
-const handleQuickEditSubmit = async (payload) => {
-    if (payload) {
-        const ok = await bulkPatchJson("/api/entities/breeds/bulk", payload);
-        if (!ok) return;
-    }
-    refreshToken.value++;
-    quickEditEntity.value = null;
-    quickEditModalOpen.value = false;
-};
 </script>
 
 <template>
@@ -341,16 +318,6 @@ const handleQuickEditSubmit = async (payload) => {
             @download-pdf="handleModalDownloadPdf"
             @refresh="handleModalRefresh"
             @delete="handleModalDelete"
-        />
-
-        <EntityQuickEditModal
-            v-if="quickEditEntity"
-            :entity="quickEditEntity"
-            entity-type="breeds"
-            :fields-config="fieldsConfig"
-            :open="quickEditModalOpen"
-            @close="quickEditModalOpen = false"
-            @submit="handleQuickEditSubmit"
         />
     </div>
 </template>

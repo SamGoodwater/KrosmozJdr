@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
+use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -123,6 +124,36 @@ class PanoplyTableControllerTest extends TestCase
         $this->assertArrayHasKey('createdBy', $entity);
         $this->assertNotNull($entity['createdBy']);
         $this->assertEquals($user->id, $entity['createdBy']['id']);
+    }
+
+    /**
+     * Test : le format `entities` embarque les équipements (id, nom, image) pour la vue texte.
+     */
+    public function test_entities_format_includes_item_previews(): void
+    {
+        $user = User::factory()->create();
+        $panoply = Panoply::factory()->create([
+            'created_by' => $user->id,
+        ]);
+        $item = Item::factory()->create([
+            'name' => 'Coiffe du Bouftou',
+            'image' => '/images/entity/items/bouftou.png',
+            'created_by' => $user->id,
+        ]);
+        $panoply->items()->attach($item->id);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/panoplies?format=entities&limit=10');
+
+        $response->assertOk();
+
+        $entity = collect($response->json('entities'))->firstWhere('id', $panoply->id);
+        $this->assertIsArray($entity);
+        $this->assertIsArray($entity['items'] ?? null);
+        $this->assertCount(1, $entity['items']);
+        $this->assertSame($item->id, $entity['items'][0]['id']);
+        $this->assertSame('Coiffe du Bouftou', $entity['items'][0]['name']);
+        $this->assertSame('/images/entity/items/bouftou.png', $entity['items'][0]['image']);
     }
 
     /**

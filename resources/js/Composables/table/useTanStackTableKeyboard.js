@@ -46,7 +46,7 @@ export const TANSTACK_TABLE_KEYBOARD_SHORTCUTS = [
     { keys: "Espace", action: "Sélectionner ou désélectionner la ligne focalisée" },
     { keys: "Entrée", action: "Ouvrir l’aperçu (modal vue)" },
     { keys: "Ctrl+Entrée", action: "Ouvrir la page fiche entité" },
-    { keys: "Alt+Entrée ou Alt+E", action: "Édition rapide (modal)" },
+    { keys: "Alt+Entrée ou Alt+E", action: "Ouvrir la page d’édition" },
     { keys: "Alt+O", action: "Ouvrir le menu actions (comme clic droit sur la ligne)" },
 ];
 
@@ -55,7 +55,7 @@ export const TANSTACK_TABLE_POINTER_SHORTCUTS = [
     { keys: "Clic", action: "Sélectionner la ligne (si sélection activée) ; quick edit si option activée" },
     { keys: "Double-clic", action: "Selon la page (souvent aperçu / modal)" },
     { keys: "Ctrl+clic / Cmd+clic", action: "Ouvrir la page fiche entité" },
-    { keys: "Alt+clic", action: "Édition rapide (modal)" },
+    { keys: "Alt+clic", action: "Ouvrir la page d’édition" },
 ];
 
 /**

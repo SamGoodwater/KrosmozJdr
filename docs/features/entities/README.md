@@ -75,11 +75,13 @@ La restauration et la suppression définitive (`restore`, `forceDelete`) sont r�
   | `line` | `*LineRow` | Liste dense (table) |
   | `text` | `*ViewText` | Inline + overlay |
   | `full` | `*ViewFull` | Détail page ou modal |
-  | `edit` | `EntityEditForm` / `*QuickEdit` | Édition |
+  | `edit` | `EntityEditForm` / pages `Edit.vue` | Édition unitaire |
 
-  Les composants par type sont dans `resources/js/Pages/Molecules/entity/<type>/`. Le resolver supporte aussi des variantes d'édition (`quickedit`), mais on ne crée plus `ViewLarge`/`ViewCompact` (voir rule `.cursor/rules/entity-views.mdc`).
-- **Table** : `resources/js/Pages/Organismes/table/EntityTanStackTable.vue` (server-side) ; préférences/filtres via `resources/js/Composables/table/*`. Les en-têtes lisent `column.tooltip`. Catalogue objets : image, nom, niveau, type, rareté, bonus ; `state` réservé aux éditeurs.
-- **Query tableaux** : filtres multi en `filters[key][]` (CSV encore accepté) ; `InterpretsEntityTableFilters` fait un `whereIn`. Le tri mappe les ids de colonnes (`item_type`, `monster_race`) vers les FK SQL ; `column.sort.field` côté front. La recherche serveur envoie `search=` ; en client elle porte aussi sur le nom / la description de l’entité.
+  Les composants par type sont dans `resources/js/Pages/Molecules/entity/<type>/`. Le resolver charge encore une vue `quickedit` (`EntityQuickEdit.vue`) pour le panneau d’édition multiple du tableau (voir rule `.cursor/rules/entity-views.mdc`).
+- **Table** : `resources/js/Pages/Organismes/table/EntityTanStackTable.vue` (server-side) ; préférences/filtres via `resources/js/Composables/table/*`. Les en-têtes lisent `column.tooltip`. Catalogue objets : image, nom, niveau, type, rareté, bonus (`items.bonus`) ; `state` réservé aux éditeurs. Rareté 0–5 : Commun, Peu commun, Rare, Très rare, Légendaire, Unique (mêmes libellés filtres et vues). Panoplies : pièces en vue texte, vignette = images d’équipements ou initiales. Édition panoplie : équipements puis bonus en tête (cartes du formulaire, `PanoplyBonusEditor`) ; droits en bas. Recherche catalogue (`EntityPickerCore`).
+- **Afficher** : Minimal / Line / Index / CMS (`SectionEntityTableRead`) ouvrent la modal full (`EntityModal`). **Agrandir** (depuis la modal) ou Ctrl+clic mènent à la page Show.
+- **Éditer** : raccourci des options → page Modifier. Panneau tableau `EntityQuickEditPanel` pour l’édition multiple.
+- **Query tableaux** : filtres multi en `filters[key][]` (CSV encore accepté) ; `InterpretsEntityTableFilters` fait un `whereIn`. Le tri mappe les ids de colonnes (`item_type`, `monster_race`) vers les FK SQL ; `column.sort.field` côté front. La recherche serveur envoie `search=` ; en client elle porte aussi sur le nom / la description de l’entité. Les inputs de filtres gardent la saisie en cours (défauts seulement si la clé n’est pas déjà posée).
 - **Aperçu sort depuis un monstre** : sorts liés avec `effect_usages_chips` (`SpellNestedPreviewSerializer`) ; clic → `SpellViewMinimal` étendu (effets + actions à droite du titre, overflow dropdown). Fetch `api.tables.spells` seulement si les chips manquent.
 - **Édition** : `resources/js/Pages/Organismes/entity/EntityEditForm.vue`, modales (`EntityModal`, `CreateEntityModal`, `EntityQuickEditPanel`).
 - **Suppression UI** : `useEntityActionDispatcher` ouvre une `ConfirmModal` avec le récapitulatif `delete-impact` (relations détachées, médias) avant soft delete depuis page/modal d’entité.

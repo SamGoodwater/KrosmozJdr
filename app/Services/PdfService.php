@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Entity\Breed;
+use App\Models\Entity\Resource;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -325,13 +326,6 @@ class PdfService
             return null;
         }
 
-        return match ($rarity) {
-            0 => 'Commun',
-            1 => 'Peu commun',
-            2 => 'Rare',
-            3 => 'Épique',
-            4 => 'Légendaire',
-            default => "Rareté {$rarity}",
-        };
+        return Resource::RARITY[$rarity] ?? "Rareté {$rarity}";
     }
 }

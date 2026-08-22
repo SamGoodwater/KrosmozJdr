@@ -95,8 +95,10 @@ const typeCell = computed(() => getCell("item_type"));
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
 
 const effectItems = computed(() => {
+    const bonus = entity.value?.bonus ?? entity.value?._data?.bonus;
+    const effect = entity.value?.effect ?? entity.value?._data?.effect;
     const cell = buildCharacteristicEffectCell({
-        rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
+        rawValues: [bonus, effect],
         options: {},
         sourceGroups: ["item", "panoply"],
         size: "sm",

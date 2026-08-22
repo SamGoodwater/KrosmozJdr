@@ -15,6 +15,10 @@
  */
 
 import { getEntityStateOptions, getRarityOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+import {
+    GAMEPLAY_ITEM_TYPE_DOFUS_IDS,
+    GAMEPLAY_ITEM_TYPE_LABELS,
+} from "@/Utils/Entity/gameplayItemTypes";
 
 /**
  * @typedef {Object} ItemFieldDescriptor
@@ -155,11 +159,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "effect",
       label: "Effet",
       icon: "fa-solid fa-sparkles",
-      helper: "Bonus de l’équipement",
+      helper: "Résumé converti (Krosmoz) ; les bonus complets sont dans Bonus",
       table: {
         searchable: true,
         filterable: { id: "effect", type: "text", defaultVisible: false },
-        defaultVisible: visibleFromMd,
+        defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
       display: {
@@ -175,6 +179,36 @@ export function getItemFieldDescriptors(ctx = {}) {
         form: {
           type: "textarea",
           group: "Contenu",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    bonus: {
+      key: "bonus",
+      label: "Bonus",
+      icon: "fa-solid fa-star",
+      helper: "Bonus de l’équipement",
+      table: {
+        searchable: true,
+        filterable: { id: "bonus", type: "text", defaultVisible: false },
+        defaultVisible: visibleFromMd,
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "chips" },
+          sm: { mode: "chips" },
+          md: { mode: "chips" },
+          lg: { mode: "chips" },
+          xl: { mode: "chips" },
+        },
+      },
+      edit: {
+        form: {
+          type: "textarea",
+          group: "Métier",
           required: false,
           showInCompact: false,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
@@ -252,14 +286,7 @@ export function getItemFieldDescriptors(ctx = {}) {
           help: "Rareté stockée en base comme entier (0..5).",
           required: false,
           showInCompact: true,
-          options: [
-            { value: 0, label: "Commun" },
-            { value: 1, label: "Peu commun" },
-            { value: 2, label: "Rare" },
-            { value: 3, label: "Très rare" },
-            { value: 4, label: "Légendaire" },
-            { value: 5, label: "Unique" },
-          ],
+          options: getRarityOptions().map(({ value, label }) => ({ value, label })),
           defaultValue: 0,
           bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
         },
@@ -463,7 +490,13 @@ export function getItemFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         sortField: "item_type_id",
-        filterable: { id: "item_type_id", type: "multi", defaultVisible: true },
+        filterable: {
+          id: "item_type_id",
+          type: "multi",
+          defaultVisible: true,
+          defaultByLabel: [...GAMEPLAY_ITEM_TYPE_LABELS],
+          defaultByDofusTypeId: [...GAMEPLAY_ITEM_TYPE_DOFUS_IDS],
+        },
         defaultVisible: visibleFromSm,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -622,7 +655,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       actions: {
         enabled: true,
         permission: "view",
-        available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
+        available: ["view", "edit", "delete", "copy-link", "download-pdf", "refresh"],
         defaultVisible: {
           xs: false,
           sm: true,

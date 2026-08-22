@@ -103,7 +103,6 @@ const { downloadPdf } = useDownloadPdf(normalizedEntityType);
 const entityTypePlural = computed(() => normalizeEntityType(props.entityType));
 
 const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete } = useEntityActionDispatcher(entityTypePlural, {
-    openEditModal: (entity) => emit('quick-edit', entity),
     onOpenPage: (entity) => {
         emit('expand', entity);
         handleClose();

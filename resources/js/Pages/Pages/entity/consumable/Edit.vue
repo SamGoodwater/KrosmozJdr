@@ -15,6 +15,7 @@ import { computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Consumable } from '@/Models/Entity/Consumable';
+import { getRarityOptions } from '@/Utils/Entity/SharedConstants';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EffectUsagesManager from '@/Pages/Organismes/entity/EffectUsagesManager.vue';
 import ObjectEffectsManager from '@/Pages/Organismes/entity/ObjectEffectsManager.vue';
@@ -91,13 +92,7 @@ const fieldsConfig = computed(() => ({
         label: 'Rareté',
         required: false,
         showInCompact: true,
-        options: [
-            { value: 0, label: 'Commun' },
-            { value: 1, label: 'Peu commun' },
-            { value: 2, label: 'Rare' },
-            { value: 3, label: 'Épique' },
-            { value: 4, label: 'Légendaire' }
-        ]
+        options: getRarityOptions().map(({ value, label }) => ({ value, label })),
     },
     state: {
         type: 'select',

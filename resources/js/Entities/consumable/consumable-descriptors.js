@@ -211,14 +211,7 @@ export function getConsumableFieldDescriptors(ctx = {}) {
           help: "Rareté stockée en base comme entier (0..5).",
           required: false,
           showInCompact: true,
-          options: [
-            { value: 0, label: "Commun" },
-            { value: 1, label: "Peu commun" },
-            { value: 2, label: "Rare" },
-            { value: 3, label: "Très rare" },
-            { value: 4, label: "Légendaire" },
-            { value: 5, label: "Unique" },
-          ],
+          options: getRarityOptions().map(({ value, label }) => ({ value, label })),
           defaultValue: 0,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
@@ -600,7 +593,7 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       actions: {
         enabled: true,
         permission: "view",
-        available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
+        available: ["view", "edit", "delete", "copy-link", "download-pdf", "refresh"],
         defaultVisible: {
           xs: false,
           sm: true,

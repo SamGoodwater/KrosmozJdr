@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Item;
+use App\Models\Type\ItemType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -297,8 +298,8 @@ class ItemTableControllerTest extends TestCase
     public function test_sort_alias_item_type_uses_item_type_id(): void
     {
         $user = User::factory()->create();
-        $typeA = \App\Models\Type\ItemType::factory()->create(['name' => 'Type A']);
-        $typeB = \App\Models\Type\ItemType::factory()->create(['name' => 'Type B']);
+        $typeA = ItemType::factory()->create(['name' => 'Type A']);
+        $typeB = ItemType::factory()->create(['name' => 'Type B']);
         Item::factory()->create($this->playableAttrs([
             'name' => 'Second',
             'item_type_id' => $typeB->id,
@@ -328,5 +329,67 @@ class ItemTableControllerTest extends TestCase
         $response->assertOk();
         $this->assertCount(1, $response->json('entities'));
         $this->assertSame($keep->id, $response->json('entities.0.id'));
+    }
+
+    public function test_filter_options_item_types_include_dofusdb_id(): void
+    {
+        $user = User::factory()->create();
+        $type = ItemType::factory()->create([
+            'name' => 'Amulette',
+            'dofusdb_type_id' => 1,
+        ]);
+        Item::factory()->create($this->playableAttrs([
+            'item_type_id' => $type->id,
+        ]));
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=1');
+
+        $response->assertOk();
+        $options = collect($response->json('meta.filterOptions.item_type_id'));
+        $amulette = $options->firstWhere('label', 'Amulette');
+        $this->assertIsArray($amulette);
+        $this->assertSame((string) $type->id, $amulette['value']);
+        $this->assertSame(1, $amulette['dofusdb_type_id']);
+    }
+
+    public function test_filter_options_rarity_uses_canonical_labels(): void
+    {
+        $user = User::factory()->create();
+        Item::factory()->create($this->playableAttrs());
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=1');
+
+        $response->assertOk();
+        $this->assertSame(
+            collect(\App\Models\Entity\Resource::RARITY)
+                ->map(fn ($label, $value) => [
+                    'value' => (string) $value,
+                    'label' => (string) $label,
+                ])
+                ->values()
+                ->all(),
+            $response->json('meta.filterOptions.rarity')
+        );
+    }
+
+    public function test_entities_format_includes_item_bonus(): void
+    {
+        $user = User::factory()->create();
+        Item::factory()->create($this->playableAttrs([
+            'name' => 'Bonus Item',
+            'bonus' => json_encode([
+                ['from' => 10, 'to' => 20, 'characteristic' => 11],
+            ]),
+        ]));
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=10');
+
+        $response->assertOk();
+        $entity = collect($response->json('entities'))->firstWhere('name', 'Bonus Item');
+        $this->assertNotNull($entity);
+        $this->assertNotEmpty($entity['bonus']);
     }
 }

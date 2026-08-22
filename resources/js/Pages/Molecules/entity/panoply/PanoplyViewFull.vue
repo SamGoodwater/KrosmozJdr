@@ -13,6 +13,8 @@ import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import PanoplyEquipmentTextList from "@/Pages/Molecules/entity/panoply/PanoplyEquipmentTextList.vue";
+import PanoplyThumb from "@/Pages/Molecules/entity/panoply/PanoplyThumb.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
@@ -102,13 +104,16 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-const headlineFields = computed(() => ["items_count"].filter(canShowField));
-
 const metaFields = computed(() =>
-    ["bonus", "panoply_summary_relations", "state"].filter(canShowField).filter((k) => !headlineFields.value.includes(k))
+    ["bonus", "panoply_summary_relations", "state"].filter(canShowField)
 );
 
-const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
+const displayMetaFields = computed(() => metaFields.value);
+
+const linkedItems = computed(() => {
+    const raw = props.panoply?.items ?? props.panoply?._data?.items;
+    return Array.isArray(raw) ? raw : [];
+});
 
 const userCanEditFields = computed(() => ["read_level", "write_level"].filter(canShowField));
 
@@ -192,9 +197,7 @@ const handleAction = async (actionKey) => {
             router.visit(route("entities.panoplies.edit", { panoply: panoplyId }));
             emit("edit", props.panoply);
             break;
-        case "quick-edit":
-            emit("quick-edit", props.panoply);
-            break;
+        
         case "copy-link": {
             const cfg = getEntityRouteConfig("panoply");
             const url = resolveEntityRouteUrl("panoply", "show", panoplyId, cfg);
@@ -227,29 +230,12 @@ const handleAction = async (actionKey) => {
     <div class="space-y-6">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
-                    <div
-                        v-if="headlineFields.length > 0"
-                        class="absolute top-2 right-2 z-20 flex flex-wrap gap-1 justify-end max-w-[75%] transition-opacity duration-150 group-hover:opacity-0"
-                    >
-                        <template v-for="fieldKey in headlineFields" :key="fieldKey">
-                            <Badge
-                                :color="getBadgeColor(fieldKey)"
-                                :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                                :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                                :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
-                                size="sm"
-                            >
-                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                            </Badge>
-                        </template>
-                    </div>
-
-                    <div
-                        class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box border border-base-300/60"
-                    >
-                        <Icon source="fa-solid fa-layer-group" :alt="panoply.name || 'Panoplie'" size="xl" />
-                    </div>
+                <div class="w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72 overflow-hidden rounded-box border border-base-300/60 bg-base-200">
+                    <PanoplyThumb
+                        size="fill"
+                        :items="linkedItems"
+                        :label="panoply.name || 'Panoplie'"
+                    />
                 </div>
             </template>
 
@@ -262,6 +248,15 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #mainInfos>
+                <div
+                    v-if="linkedItems.length"
+                    class="mt-3"
+                >
+                    <div class="text-[0.625rem] font-semibold uppercase tracking-wide text-base-content/60 mb-1">
+                        Équipements
+                    </div>
+                    <PanoplyEquipmentTextList :items="linkedItems" :table-meta="tableMeta" />
+                </div>
                 <div v-if="displayMetaFields.length > 0" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                     <EntityPropertyDisplay
                         v-for="fieldKey in displayMetaFields"

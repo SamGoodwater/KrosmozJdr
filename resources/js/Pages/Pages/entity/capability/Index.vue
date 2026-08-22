@@ -207,9 +207,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.capabilities.show', { capability: entityId }));
-            break;
-
         case 'quick-view':
             selectedEntity.value = model;
             modalView.value = 'full';
