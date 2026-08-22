@@ -565,6 +565,19 @@ class Creature extends Model implements HasMedia
     }
 
     /**
+     * Défauts applicatifs : MySQL 8 refuse DEFAULT SQL sur TEXT (SQLSTATE 1101).
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'res_fixe_neutre' => '0',
+        'res_fixe_terre' => '0',
+        'res_fixe_feu' => '0',
+        'res_fixe_air' => '0',
+        'res_fixe_eau' => '0',
+    ];
+
+    /**
      * The conditions that should be cast.
      *
      * @var array<string, string>

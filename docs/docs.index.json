@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "On peut à nouveau taper dans les champs des filtres (recherche d’un type, filtres texte, etc.) : la valeur n’est plus effacée à chaque rafraîchissement de la liste."
+    "description": "Sur la page Modifier, on commence par les équipements et les bonus de set. Nom, description et droits (lecture / écriture) sont en bas."
   },
   {
     "path": "backend/_ai.md",
